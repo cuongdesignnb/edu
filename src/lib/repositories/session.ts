@@ -123,7 +123,10 @@ export const sessionRepo = {
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
         .map((n) => {
           const m = db.memberships.find((x) => x.userId === uid && x.schoolId === n.schoolId);
-          return { ...n, schoolName: db.schools.find((s) => s.id === n.schoolId)?.shortName ?? "", accessible: !!m && m.status === "active" || n.kind === "system" };
+          const school = db.schools.find((s) => s.id === n.schoolId);
+          // A notification only links through while the membership AND the school are usable (Q16/NV-03).
+          const accessible = n.kind === "system" || (!!m && m.status === "active" && school?.status === "active");
+          return { ...n, schoolName: school?.shortName ?? "", accessible };
         }),
     );
   },

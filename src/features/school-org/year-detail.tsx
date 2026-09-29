@@ -171,9 +171,9 @@ const dm = (d: string) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
 
 function Fact({ icon, label, value, wide }: { icon: React.ReactNode; label: string; value: string; wide?: boolean }) {
   return (
-    <div className={clsx("flex gap-2.5", wide && "col-span-2")}>
-      <span className="mt-0.5 text-muted [&>svg]:size-4" aria-hidden>{icon}</span>
-      <div><dt className="text-body">{label}</dt><dd className="font-medium text-ink">{value}</dd></div>
+    <div className={clsx("relative pl-[26px]", wide && "col-span-2")}>
+      <dt className="text-body"><span className="absolute left-0 top-0.5 text-muted [&>svg]:size-4" aria-hidden>{icon}</span>{label}</dt>
+      <dd className="font-medium text-ink">{value}</dd>
     </div>
   );
 }

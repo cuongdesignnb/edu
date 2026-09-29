@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { CalendarCheck, CalendarDays, ClipboardCheck, LayoutGrid, Star, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Archive, CalendarCheck, CalendarDays, ClipboardCheck, LayoutGrid, Star, ArrowRight, CheckCircle2 } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDateLong, fmtDate } from "@/lib/formatters";
@@ -15,7 +15,7 @@ const TONE_CLS: Record<string, string> = { danger: "bg-danger-bg text-danger-tex
 
 /** CL01 — class overview (derived from R05/R06): tasks, attendance today, timetable, groups, activities. */
 export default function ClassOverview() {
-  const { schoolId, yearId, classId, base, can } = useClassroom();
+  const { schoolId, yearId, classId, base, can, readOnly } = useClassroom();
   const q = useRepo(["class-overview", classId], (ctx) => classroomRepo.overview(ctx, schoolId, yearId, classId));
   return (
     <div className="page">
@@ -27,6 +27,17 @@ export default function ClassOverview() {
           return (
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
               <div className="space-y-5">
+                {readOnly ? (
+                  <Card>
+                    <CardHeader title="Năm học đã kết thúc" icon={<Archive className="size-5" />} subtitle="Không còn việc cần làm, lịch học hay điểm danh trong ngày cho năm lưu trữ." />
+                    <div className="flex flex-wrap gap-2 px-5 pb-5">
+                      <ButtonLink href={`${base}/reports`} size="sm" variant="secondary">Báo cáo lớp</ButtonLink>
+                      <ButtonLink href={`${base}/attendance/weekly`} size="sm" variant="secondary">Điểm danh theo tuần</ButtonLink>
+                      <ButtonLink href={`${base}/conduct`} size="sm" variant="secondary">Điểm nề nếp các tuần</ButtonLink>
+                      <ButtonLink href={`${base}/timetable`} size="sm" variant="secondary">Thời khóa biểu</ButtonLink>
+                    </div>
+                  </Card>
+                ) : (<>
                 <Card>
                   <CardHeader title="Việc cần làm của lớp" icon={<ClipboardCheck className="size-5" />} subtitle={fmtDateLong(d.date)} />
                   {d.tasks.length === 0 ? <EmptyState compact icon={<CheckCircle2 className="size-6" />} title="Không còn việc tồn đọng" description="Các việc mới (điểm danh, ghi nhận chờ rà soát, minh chứng) sẽ hiện ở đây." /> : (
@@ -54,8 +65,10 @@ export default function ClassOverview() {
                     </div>
                   )}
                 </Card>
+                </>)}
               </div>
               <div className="space-y-5">
+                {!readOnly && (
                 <Card>
                   <CardHeader title="Điểm danh buổi sáng" icon={<CalendarCheck className="size-5" />} action={can("attendance.record") ? <CardLink href={`${base}/attendance`}>Mở điểm danh</CardLink> : undefined} />
                   <div className="flex flex-wrap items-center gap-5 px-5 pb-5">
@@ -70,6 +83,7 @@ export default function ClassOverview() {
                     </ul>
                   </div>
                 </Card>
+                )}
                 <Card>
                   <CardHeader title="Tổ và sơ đồ" icon={<LayoutGrid className="size-5" />} action={can("groups.manage") || can("student.profile.view") ? <CardLink href={`${base}/groups`}>Xem tổ & chức vụ</CardLink> : undefined} />
                   <div className="grid grid-cols-2 gap-3 px-5 pb-5">
@@ -84,7 +98,7 @@ export default function ClassOverview() {
                     {d.activities.map((a) => (
                       <li key={a.id}>
                         <Link href={`${base}/activities/${a.id}`} className="group block">
-                          <ProgressBar value={a.done} total={a.total} label={<span className="group-hover:underline">{a.title}</span>} color="var(--color-purple)" />
+                          <ProgressBar value={a.done} total={a.total} ariaLabel={`Tiến độ ${a.title}`} label={<span className="group-hover:underline">{a.title}</span>} color="var(--color-purple)" />
                           <p className="mt-1 flex items-center justify-between text-[12px] text-muted"><span>{a.done}/{a.total} học sinh được giao đã duyệt</span><span>Hạn {fmtDate(a.dueDate)}</span></p>
                         </Link>
                       </li>

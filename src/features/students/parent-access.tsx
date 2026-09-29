@@ -128,20 +128,20 @@ export function AccessDetailPage({ schoolId, accessId }: { schoolId: string; acc
               <div className="min-w-0 space-y-5">
                 <Card>
                   <CardHeader title="Thông tin quyền" icon={<KeyRound className="size-5" />} />
-                  <dl className="grid gap-x-8 px-5 pb-4 sm:grid-cols-2">
-                    <div>
+                  <div className="grid gap-x-8 px-5 pb-4 sm:grid-cols-2">
+                    <dl>
                       <InfoRow label="Người được cấp">{d.relationship.relation} — {d.guardian.fullName}</InfoRow>
                       <InfoRow label="Điện thoại">{d.guardian.phoneMasked}</InfoRow>
                       <InfoRow label="Học sinh"><Link href={`${base}/students/${d.student.id}`} className="hover:underline">{d.student.fullName}</Link> <span className="font-normal text-muted">({d.student.code} · {d.student.className})</span></InfoRow>
                       <InfoRow label="Năm học">{d.yearLabel}</InfoRow>
-                    </div>
-                    <div>
+                    </dl>
+                    <dl>
                       <InfoRow label="Ngày cấp">{fmtDateTime(a.issuedAt)}</InfoRow>
                       <InfoRow label="Người cấp">{d.issuedByName}</InfoRow>
                       <InfoRow label="Hạn sử dụng">{fmtDate(a.expiresAt)}{a.status === "active" && <span className="font-normal text-muted"> (còn {days} ngày)</span>}</InfoRow>
                       <InfoRow label="Lượt mở link">{opens}</InfoRow>
-                    </div>
-                  </dl>
+                    </dl>
+                  </div>
                   {a.revokedAt && <div className="mx-5 mb-4"><Callout tone="danger" icon={<Ban />} title={`Đã thu hồi lúc ${fmtDateTime(a.revokedAt)} — ${d.revokedByName}`}>{a.revokeReason}{d.replacedBy && <> · <Link href={`${base}/parent-access/${d.replacedBy}`} className="font-semibold underline">Xem link thay thế</Link></>}</Callout></div>}
                   <div className="px-5 pb-5">
                     <p className="mb-2 text-sm font-semibold text-ink">Mục được xem ({a.modules.length}/8)</p>

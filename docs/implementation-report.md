@@ -53,13 +53,26 @@ Mười màn tham chiếu R01–R10 được đối chiếu; ngoại lệ nghi�
 - Điểm danh bộ môn theo tiết được lưu nhưng báo cáo tuần/phụ huynh dùng buổi sáng (buổi chủ nhiệm); ghi chú hiển thị trên CL05.
 - Nhập “Giáo viên/Lớp/Lịch” ở SC26 chỉ có tệp mẫu, nhãn “Mô phỏng: chưa bật nhập tự động”.
 
-## 6. Còn thiếu / hạn chế đã biết
+## 6. Đợt sửa hạn chế cuối (đã kiểm)
+
+- Ranh giới lỗi `error.tsx`/`global-error.tsx` kích hoạt thật qua `/preview/crash` (chỉ demo) + E2E.
+- SC07 chạy trọn trên UI (E2E `rollover.spec.ts`).
+- Tổng quan lớp năm lưu trữ: bỏ việc cần làm/lịch/điểm danh hôm nay, thay bằng lối tắt báo cáo; header hiện “Đã lưu trữ”.
+- Roster trên điện thoại hiển thị dạng thẻ; header lớp “full” gọn 2 cột trên điện thoại.
+- Hoạt động nháp chỉ hiện cho người có quyền quản lý hoạt động lớp (repository, cả list và detail).
+- “Hoạt động gần đây” của giáo viên và lớp khớp nhật ký theo id thực thể/lớp (`auditClassIds`), không theo tên lớp.
+- “In QR” chỉ hiện sau khi hiển thị link (SC13).
+- Sơ đồ chỗ ngồi áp dụng hôm nay chuyển bản đang dùng sang “Đã thay”.
+- Thông báo chỉ mở được khi thành viên và trường còn hoạt động.
+- PublicShell bỏ padding kép; AuditDiff hiển thị nhãn tiếng Việt cho trường/giá trị.
+- Lịch sử trường ở nền tảng gồm lời mời/quyền quản trị/quyền hỗ trợ (không lộ nhật ký nội bộ trường).
+- Accessibility: axe 0 vi phạm serious/critical trên 123 route (chi tiết ở test-report).
+- Sửa lỗi hydration do extension trình duyệt (ảnh lỗi `cz-shortcut-listen`).
+
+## 7. Còn thiếu / hạn chế đã biết
 
 - Không backend, không xác thực thật, không đồng bộ đa thiết bị, không email/Zalo, không lưu trữ tệp thật.
-- SC07 (chuẩn bị năm mới): bước áp dụng được kiểm bằng unit test repository; chưa chạy trọn trên UI.
-- Tổng quan lớp của năm lưu trữ vẫn hiện ô điểm danh trống cho ngày tham chiếu.
-- Hoạt động nháp hiển thị (chỉ đọc) cho nhân sự trường xem theo quyền nhà trường.
-- Bảng roster trên điện thoại cuộn ngang trong khung thay vì chuyển thẻ; header lớp “full” chiếm cao trên điện thoại.
-- Luồng giáo viên “hoạt động gần đây” khớp nhật ký theo tên lớp (có thể trùng khi nhãn nhắc 2 lớp).
-- Nội dung pháp lý (SY03/SY04) là bản nháp chờ duyệt.
+- Nội dung pháp lý (SY03/SY04) là bản nháp chờ chủ dự án/pháp chế duyệt — không thể tự hoàn tất.
+- Báo cáo chuyên cần tuần/phụ huynh dùng buổi sáng (buổi chủ nhiệm); điểm danh theo tiết được lưu nhưng chưa gộp vào tỉ lệ — quyết định nghiệp vụ cần chủ dự án xác nhận, đã ghi chú trên CL05.
+- Chưa kiểm trên thiết bị thật, Safari/Firefox, trình đọc màn hình thật.
 - Ảnh bằng chứng sao sang `public/preview-references/evidence` (≈100 MB, đã gitignore; tạo lại bằng `node scripts/copy-references.mjs`).

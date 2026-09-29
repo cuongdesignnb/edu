@@ -1,5 +1,5 @@
 /** Pure lookups over DemoDB shared by all repository modules (single source of truth). */
-import type { DemoDB, ID, Student, StaffUser, Membership, Lesson, RuleSet, Week, ClassRoom, AcademicYear } from "@/lib/model/types";
+import type { DemoDB, ID, Student, StaffUser, Membership, Lesson, RuleSet, Week, ClassRoom, AcademicYear, AuditEvent } from "@/lib/model/types";
 import { isAssignmentLive } from "@/lib/permissions/can";
 import { weekdayOf } from "@/lib/demo/clock";
 import { nameCompare } from "@/lib/formatters";
@@ -134,4 +134,26 @@ export function teacherLessonsOn(db: DemoDB, membershipId: ID, date: string): Re
 
 export function studentsById(db: DemoDB): Map<ID, Student> {
   return new Map(db.students.map((s) => [s.id, s]));
+}
+
+/** Class(es) an audit event belongs to, resolved by entity id — never by matching the display label. */
+export function auditClassIds(db: DemoDB, a: AuditEvent): ID[] {
+  const by = <T extends { id: ID }>(list: T[], pick: (x: T) => (ID | undefined)[]) => { const x = list.find((i) => i.id === a.entityId); return x ? pick(x).filter((v): v is ID => !!v) : []; };
+  switch (a.entityType) {
+    case "class": case "conduct": return db.classes.some((c) => c.id === a.entityId) ? [a.entityId] : by(db.conductRecords, (x) => [x.classId]);
+    case "activity": return by(db.activities, (x) => [x.classId]);
+    case "evidence": return by(db.evidence, (x) => [x.classId]);
+    case "file": return by(db.files, (x) => [x.classId]);
+    case "seating": return by(db.seatingPlans, (x) => [x.classId]);
+    case "lessonChange": return by(db.lessonChanges, (x) => [x.classId]);
+    case "duty": return by(db.duties, (x) => [x.classId]);
+    case "attendance": return by(db.attendanceSessions, (x) => [x.classId]);
+    case "period": return by(db.conductPeriods, (x) => [x.classId]);
+    case "snapshot": return by(db.snapshots, (x) => [x.classId]);
+    case "adjustment": return by(db.adjustments, (x) => [x.classId]);
+    case "assignment": return by(db.assignments, (x) => [x.classId]);
+    case "transfer": return by(db.transfers, (x) => [x.fromClassId, x.toClassId]);
+    case "announcement": return by(db.announcements, (x) => [x.originClassId]);
+    default: return [];
+  }
 }

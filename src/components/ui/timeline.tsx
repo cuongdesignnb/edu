@@ -23,10 +23,26 @@ export function Timeline({ items, empty = "Chưa có lịch sử.", className }:
   );
 }
 
+/** Human labels for audit fields/values; unknown keys fall back to the raw key. */
+const FIELD_LABEL: Record<string, string> = {
+  accentColor: "Màu nhận diện", added: "Thêm", address: "Địa chỉ", afterTotal: "Tổng sau", assignee: "Người phụ trách", beforeTotal: "Tổng trước",
+  brandName: "Tên hiển thị", changed: "Thay đổi", dob: "Ngày sinh", effectiveDate: "Ngày áp dụng", effectiveFrom: "Hiệu lực từ", endDate: "Ngày kết thúc",
+  enrolled: "Ghi danh", from: "Từ", fromYearId: "Từ năm học", fullName: "Họ và tên", gender: "Giới tính", homeroom: "Giáo viên chủ nhiệm", left: "Rời lớp",
+  linkedCreated: "Link tạo mới", linkedVoided: "Link vô hiệu", motto: "Khẩu hiệu", name: "Tên", province: "Tỉnh/thành", removed: "Gỡ bỏ", roles: "Vai trò",
+  share: "Chia sẻ", shortName: "Tên ngắn", status: "Trạng thái", st: "Trạng thái", startDate: "Ngày bắt đầu", supportEmail: "Email hỗ trợ", supportPhone: "Điện thoại hỗ trợ",
+  total: "Tổng", validFrom: "Hiệu lực từ", validTo: "Hiệu lực đến",
+};
+const VALUE_LABEL: Record<string, string> = {
+  active: "Đang hoạt động", suspended: "Tạm dừng", archived: "Lưu trữ", draft: "Nháp", pending: "Chờ xử lý", approved: "Đã duyệt", rejected: "Từ chối",
+  revoked: "Đã thu hồi", expired: "Hết hạn", published: "Đã công bố", locked: "Đã chốt", open: "Đang mở", superseded: "Đã thay thế", ended: "Đã kết thúc",
+  present: "Có mặt", late: "Đi muộn", excused: "Nghỉ có phép", unexcused: "Nghỉ không phép", male: "Nam", female: "Nữ", true: "Có", false: "Không",
+};
 function show(v: unknown): string {
   if (v === undefined || v === null || v === "") return "—";
-  if (typeof v === "object") return JSON.stringify(v);
-  return String(v);
+  if (Array.isArray(v)) return v.length ? v.map((x) => show(x)).join(", ") : "—";
+  if (typeof v === "object") return Object.entries(v as Record<string, unknown>).map(([k, x]) => `${FIELD_LABEL[k] ?? k}: ${show(x)}`).join("; ");
+  const s = String(v);
+  return VALUE_LABEL[s] ?? s;
 }
 
 /** Before → after table for audit details. */
@@ -39,7 +55,7 @@ export function AuditDiff({ before, after }: { before?: Record<string, unknown>;
         <thead><tr><th>Trường</th><th>Trước</th><th>Sau</th></tr></thead>
         <tbody>
           {keys.map((k) => (
-            <tr key={k}><td className="font-medium text-ink">{k}</td><td className="text-danger-text">{show(before?.[k])}</td><td className="text-success-text">{show(after?.[k])}</td></tr>
+            <tr key={k}><td className="font-medium text-ink">{FIELD_LABEL[k] ?? k}</td><td className="text-danger-text">{show(before?.[k])}</td><td className="text-success-text">{show(after?.[k])}</td></tr>
           ))}
         </tbody>
       </table>

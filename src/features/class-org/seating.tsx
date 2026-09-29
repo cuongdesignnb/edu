@@ -147,7 +147,7 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
                       return (
                         <button key={k} type="button" onClick={() => clickSeat(k)} aria-pressed={on} aria-label={`${seatLabel(k)}: ${nm ?? "trống"}`}
                           className={clsx("flex items-center justify-center rounded-lg border px-1 text-center shadow-sm transition-colors focus-visible:outline-2", cell,
-                            on ? "border-primary bg-primary text-white" : nm ? "border-[#e6dccb] bg-white text-ink hover:border-primary" : "border-dashed border-[#cdb68f] bg-[#f8efe0] text-[#9b8566] hover:border-primary",
+                            on ? "border-primary bg-primary text-white" : nm ? "border-[#e6dccb] bg-white text-ink hover:border-primary" : "border-dashed border-[#cdb68f] bg-[#f8efe0] text-[#7a6446] hover:border-primary",
                             sel && !on && "ring-1 ring-primary/30")}>
                           <span className="line-clamp-2">{nm ? (fit ? nm.split(" ").pop() : shortName(nm)) : "Trống"}</span>
                         </button>

@@ -26,7 +26,7 @@ export function SchoolsTable({ pageSize = 8, showCreate = true }: { pageSize?: n
 
   const columns: Column<Row>[] = [
     { key: "idx", header: "#", cell: (r) => <span className="text-muted">{(q.data!.page - 1) * q.data!.pageSize + q.data!.items.indexOf(r) + 1}</span> },
-    { key: "name", header: "Tên trường", sortable: true, cell: (r) => <span className="flex items-center gap-2.5"><SchoolMark name={r.name} color={r.status === "active" ? "#0a72e6" : "#8a9bb6"} size={30} /><span className="min-w-[190px]"><span className="block font-semibold text-ink">{r.name}</span><span className="block text-[12px] text-muted">{r.code} · {r.province}</span></span></span> },
+    { key: "name", header: "Tên trường", sortable: true, cell: (r) => <span className="flex items-center gap-2.5"><SchoolMark name={r.name} color={r.status === "active" ? "#0a72e6" : "#64748b"} size={30} /><span className="min-w-[190px]"><span className="block font-semibold text-ink">{r.name}</span><span className="block text-[12px] text-muted">{r.code} · {r.province}</span></span></span> },
     { key: "status", header: "Trạng thái", cell: (r) => <StatusBadge status={r.status} map={schoolStatus} /> },
     { key: "admin", header: "Quản trị trường", cell: (r) => r.adminNames.length ? r.adminNames.join(", ") : <span className="text-warning-text">Chưa có</span>, hideBelow: "lg" },
     { key: "classCount", header: "Số lớp", sortable: true, align: "right", cell: (r) => fmtNumber(r.classCount) },

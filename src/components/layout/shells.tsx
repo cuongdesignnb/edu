@@ -219,7 +219,7 @@ export function PublicShell({ children, schoolName }: { children: ReactNode; sch
           </nav>
         </div>
       </header>
-      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">{children}</main>
+      <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 [&>.page]:!p-0">{children}</main>
       <footer className="border-t border-line bg-white/70 px-4 py-5 text-center text-[13px] text-muted">EduManage — bản demo dữ liệu giả định. Trang công khai không có công cụ tra cứu hồ sơ học sinh.</footer>
     </div>
   );

@@ -23,15 +23,20 @@ export const activitiesRepo = {
       const c = classGuard(db, ctx, schoolId, yearId, classId);
       requireAnyAction(db, ctx, ["activity.manage", "evidence.manage", "report.class"], { schoolId, classId });
       const ref = refDateOf(db, c, ctx.today);
-      const items = db.activities.filter((a) => a.classId === classId && (!opts.status || a.status === opts.status || (opts.status === "due" && a.status === "active" && a.dueDate <= ref)) && matches(opts.q ?? "", a.title, a.description))
+      // Drafts are the author's working copies: only people who can manage class activities see them.
+      const canManage = allowed(db, ctx, "activity.manage", { schoolId, classId });
+      const visible = (a: Activity) => a.classId === classId && (canManage || a.status !== "draft");
+      const items = db.activities.filter((a) => visible(a) && (!opts.status || a.status === opts.status || (opts.status === "due" && a.status === "active" && a.dueDate <= ref)) && matches(opts.q ?? "", a.title, a.description))
         .sort((a, b) => (a.status === "draft" ? 1 : 0) - (b.status === "draft" ? 1 : 0) || a.dueDate.localeCompare(b.dueDate))
         .map((a) => ({ ...a, progress: progress(db, a), groupName: db.groups.find((g) => g.id === a.assignedGroupId)?.name, createdByName: staffNameById(db, a.createdBy), dueSoon: a.status === "active" && a.dueDate >= ref && a.dueDate <= clockAdd(ref, 7), overdue: a.status === "active" && a.dueDate < ref }));
       const all = db.activities.filter((a) => a.classId === classId && a.status !== "draft");
+      const ownActs = new Set(db.activities.filter(visible).map((a) => a.id));
+      const ownEvidence = new Set(db.evidence.filter((e) => e.classId === classId).map((e) => e.id));
       const totals = all.reduce((acc, a) => { const p = progress(db, a); acc.total += p.total; acc.approved += p.approved; acc.notReceived += p.notReceived; return acc; }, { total: 0, approved: 0, notReceived: 0 });
       return {
         items, totals, pendingEvidence: db.evidence.filter((e) => e.classId === classId && e.status === "pending").length,
-        recent: db.audit.filter((x) => x.schoolId === schoolId && (x.entityType === "evidence" || x.entityType === "activity") && x.entityLabel.includes(className(db, classId))).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6).map((x) => ({ ...x, actorName: staffNameById(db, x.actorId) })),
-        canManage: allowed(db, ctx, "activity.manage", { schoolId, classId }), canEvidence: allowed(db, ctx, "evidence.manage", { schoolId, classId }),
+        recent: db.audit.filter((x) => x.schoolId === schoolId && (x.entityType === "activity" ? ownActs.has(x.entityId) : x.entityType === "evidence" && ownEvidence.has(x.entityId))).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6).map((x) => ({ ...x, actorName: staffNameById(db, x.actorId) })),
+        canManage, canEvidence: allowed(db, ctx, "evidence.manage", { schoolId, classId }),
       };
     });
   },
@@ -40,7 +45,8 @@ export const activitiesRepo = {
     return read((db) => {
       const c = classGuard(db, ctx, schoolId, yearId, classId);
       requireAnyAction(db, ctx, ["activity.manage", "evidence.manage", "report.class"], { schoolId, classId });
-      const a = findOr404(db.activities.find((x) => x.id === activityId && x.classId === classId), "hoạt động");
+      const canManageDraft = allowed(db, ctx, "activity.manage", { schoolId, classId });
+      const a = findOr404(db.activities.find((x) => x.id === activityId && x.classId === classId && (canManageDraft || x.status !== "draft")), "hoạt động");
       const ref = refDateOf(db, c, ctx.today);
       const students = a.assignedStudentIds.map((sid) => {
         const s = db.students.find((x) => x.id === sid)!;
@@ -105,7 +111,8 @@ export const activitiesRepo = {
     return write((db) => {
       classGuard(db, ctx, schoolId, yearId, classId);
       requireAction(db, ctx, "activity.manage", { schoolId, classId });
-      const a = findOr404(db.activities.find((x) => x.id === activityId && x.classId === classId), "hoạt động");
+      const canManageDraft = allowed(db, ctx, "activity.manage", { schoolId, classId });
+      const a = findOr404(db.activities.find((x) => x.id === activityId && x.classId === classId && (canManageDraft || x.status !== "draft")), "hoạt động");
       a.status = status;
       if (status === "active") a.publishedToParents = true;
       a.version += 1;

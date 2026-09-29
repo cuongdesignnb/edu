@@ -257,3 +257,43 @@ describe("F11 / Q35 — lesson change with effective date and conflict detection
     expect(await code(classroomRepo.saveLessonChange(hanh, SCHOOL_A, { classId: CLASS_A_10A1, date: "2026-10-02", period: 1, kind: "cancel", reason: "Đổi lịch quá khứ", publish: true }))).toBe("VALIDATION");
   });
 });
+
+describe("Limitations closed in the final pass", () => {
+  it("draft activities are visible only to people who can manage class activities", async () => {
+    const { activitiesRepo } = await import("@/lib/repositories");
+    const own = await activitiesRepo.list(lan, SCHOOL_A, YEAR_A, CLASS_A_10A1);
+    expect(own.canManage).toBe(true);
+    expect(own.items.some((a) => a.id === "act-4")).toBe(true);
+    let checked = 0;
+    for (const who of [dung, hanh, hung, makeCtx({ kind: "staff", userId: "u-quan" })]) {
+      const r = await activitiesRepo.list(who, SCHOOL_A, YEAR_A, CLASS_A_10A1).catch(() => null);
+      if (!r || r.canManage) continue;
+      checked++;
+      expect(r.items.some((a) => a.status === "draft")).toBe(false);
+      expect(await code(activitiesRepo.detail(who, SCHOOL_A, YEAR_A, CLASS_A_10A1, "act-4"))).toBe("NOT_FOUND");
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+
+  it("notifications stop linking through when the school is suspended", async () => {
+    const { sessionRepo } = await import("@/lib/repositories");
+    expect((await sessionRepo.notifications(lan, { schoolId: SCHOOL_A })).some((n) => n.accessible)).toBe(true);
+    getDB().schools.find((s) => s.id === SCHOOL_A)!.status = "suspended";
+    expect((await sessionRepo.notifications(lan, { schoolId: SCHOOL_A })).filter((n) => n.kind !== "system").every((n) => !n.accessible)).toBe(true);
+  });
+
+  it("a seating version effective today supersedes the one in force", async () => {
+    const s = await classroomRepo.seating(lan, SCHOOL_A, YEAR_A, CLASS_A_10A1);
+    const base = Math.max(...s.history.map((h) => h.version));
+    await classroomRepo.saveSeating(lan, SCHOOL_A, CLASS_A_10A1, { rows: s.plan!.rows, cols: s.plan!.cols, seats: s.plan!.seats, effectiveDate: lan.today, basedOnVersion: base });
+    const active = getDB().seatingPlans.filter((p) => p.classId === CLASS_A_10A1 && p.status === "active");
+    expect(active).toHaveLength(1);
+    expect(active[0].version).toBe(base + 1);
+  });
+
+  it("platform school history includes the admin invitation", async () => {
+    const d = await platformRepo.school(platform, "sch-chuvanan");
+    expect(d.history.some((h) => h.entityId === "inv-cva-admin")).toBe(true);
+    expect(d.history.every((h) => h.level === "platform" || h.entityType === "invitation")).toBe(true);
+  });
+});

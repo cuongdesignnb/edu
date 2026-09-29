@@ -50,7 +50,7 @@ function InvitationBody({ d }: { d: Data }) {
 
   const header = (
     <div className="flex items-start gap-3 rounded-xl border border-line bg-[#f7fbff] p-4">
-      <SchoolMark name={school.name} size={44} color={school.status === "active" ? "#0a72e6" : "#8a9bb6"} />
+      <SchoolMark name={school.name} size={44} color={school.status === "active" ? "#0a72e6" : "#64748b"} />
       <div className="min-w-0 flex-1">
         <p className="text-[16px] font-bold text-ink">{school.name}</p>
         <p className="text-[13px] text-muted">Người mời: {inviterName}</p>

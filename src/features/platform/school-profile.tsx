@@ -62,7 +62,7 @@ function Body({ d, reload }: { d: Data; reload: () => void }) {
       <div className="grid gap-5 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader title="Thông tin vận hành" icon={<Building2 className="size-5" />} subtitle={`Phiên bản ${s.version}`} action={s.status === "active" ? <ButtonLink size="sm" variant="ghost" href={`/schools/${s.slug}`} icon={<Globe className="size-4" />} target="_blank">Trang công khai</ButtonLink> : undefined} />
-          <div className="flex items-center gap-4 px-5 pb-2"><SchoolMark name={s.name} size={56} color={s.status === "active" ? s.accentColor : "#8a9bb6"} /><p className="text-[13.5px] text-body">{s.publicIntro || "Chưa có giới thiệu công khai (nhà trường tự cập nhật)."}</p></div>
+          <div className="flex items-center gap-4 px-5 pb-2"><SchoolMark name={s.name} size={56} color={s.status === "active" ? s.accentColor : "#64748b"} /><p className="text-[13.5px] text-body">{s.publicIntro || "Chưa có giới thiệu công khai (nhà trường tự cập nhật)."}</p></div>
           <dl className="grid gap-x-8 px-5 pb-5 md:grid-cols-2">
             <InfoRow label="Tên ngắn">{s.shortName}</InfoRow>
             <InfoRow label="Đường dẫn công khai">/schools/{s.slug}</InfoRow>

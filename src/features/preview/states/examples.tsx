@@ -143,5 +143,5 @@ export const STATE_EXAMPLES: Record<string, () => ReactNode> = {
   ST25: () => <div className="space-y-1.5"><div className="flex flex-wrap gap-2">{(["studying", "transferred_out", "left"] as const).map((k) => <Badge key={k} tone={studentStatus[k].tone}>{studentStatus[k].label}</Badge>)}</div><p className="text-[12.5px] text-muted">Báo cáo cũ vẫn giữ lớp cũ theo đúng thời gian. <RouteLink id="SC20">Chuyển lớp</RouteLink></p></div>,
   ST26: () => <Box><DeniedState compact revoked message="Phân công của bạn tại lớp này vừa bị thu hồi." /></Box>,
   ST27: () => <ConfirmExample />,
-  ST28: () => <div className="flex flex-wrap gap-2"><ButtonLink href="/khong-ton-tai-demo" size="sm" variant="secondary">Mở một route không tồn tại (404)</ButtonLink></div>,
+  ST28: () => <div className="flex flex-wrap gap-2"><ButtonLink href="/khong-ton-tai-demo" size="sm" variant="secondary">Mở một route không tồn tại (404)</ButtonLink><ButtonLink href="/preview/crash" size="sm" variant="secondary">Thử lỗi hiển thị (error / global-error)</ButtonLink></div>,
 };

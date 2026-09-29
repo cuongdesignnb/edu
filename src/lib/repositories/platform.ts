@@ -73,9 +73,17 @@ export const platformRepo = {
         membershipId: m.id, userId: m.userId, name: staffNameById(db, m.userId, false), email: db.users.find((u) => u.id === m.userId)?.email ?? "", status: m.status, since: m.joinedAt,
       }));
       const invitations = db.invitations.filter((i) => i.schoolId === s.id && i.roleTemplateIds.some((r) => adminRoleIds.includes(r)));
+      // Platform sees the school's lifecycle: its own platform-level actions about this school, plus the
+      // admin-invitation outcomes (accept/decline) — never the school's internal audit trail.
+      const adminInv = new Set(invitations.map((i) => i.id));
+      const adminMs = new Set(admins.map((a) => a.membershipId));
+      const grants = new Set(db.supportGrants.filter((g) => g.schoolId === s.id).map((g) => g.id));
+      const belongsToSchool = (a: (typeof db.audit)[number]) =>
+        a.level === "platform" ? a.entityId === s.id || adminInv.has(a.entityId) || adminMs.has(a.entityId) || grants.has(a.entityId) || (a.schoolId === s.id && a.entityType !== "school")
+          : a.schoolId === s.id && a.entityType === "invitation" && adminInv.has(a.entityId);
       return {
         school: s, row: schoolRow(db, s), admins, invitations,
-        history: db.audit.filter((a) => a.level === "platform" && a.entityId === s.id).sort((a, b) => b.at.localeCompare(a.at)),
+        history: db.audit.filter((a) => belongsToSchool(a)).sort((a, b) => b.at.localeCompare(a.at)),
         tickets: db.tickets.filter((t) => t.schoolId === s.id).length,
         activeGrants: db.supportGrants.filter((g) => g.schoolId === s.id && g.status === "active").length,
       };

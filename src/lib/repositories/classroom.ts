@@ -10,6 +10,7 @@ import { audit, findOr404, read, requireAction, requireAnyAction, requireStaff, 
 import {
   className, groupOf, homeroomTeacher, lessonsOn, positionsOf, rosterOn, roomName, staffName, staffNameById, subjectName,
   teacherLessonsOn, userOfMembership, weekOfDate, subjectAssignments, rosterBetween,
+  auditClassIds,
 } from "./selectors";
 import { accessStatus } from "./students";
 
@@ -247,7 +248,11 @@ export const classroomRepo = {
       if (input.effectiveDate < ctx.today) validation({ effectiveDate: "Ngày áp dụng không trước hôm nay" });
       const roster = new Set(rosterOn(db, classId, input.effectiveDate).map((s) => s.id));
       if (ids.some((id) => !roster.has(id))) throw new RepoError("VALIDATION", "Có học sinh không thuộc lớp vào ngày áp dụng.");
-      db.seatingPlans.filter((p) => p.classId === classId && p.status === "active" && p.effectiveDate >= input.effectiveDate).forEach((p) => (p.status = "superseded"));
+      // Same/later-dated active versions are replaced now. Earlier versions stay "active" only until the new
+      // one takes effect: if it applies today, the one currently in force is superseded as well.
+      const active = db.seatingPlans.filter((p) => p.classId === classId && p.status === "active");
+      active.filter((p) => p.effectiveDate >= input.effectiveDate).forEach((p) => (p.status = "superseded"));
+      if (input.effectiveDate <= ctx.today) active.filter((p) => p.effectiveDate < input.effectiveDate).forEach((p) => (p.status = "superseded"));
       const plan: SeatingPlan = { id: newId("seat"), classId, version: latest + 1, rows: input.rows, cols: input.cols, effectiveDate: input.effectiveDate, status: "active", seats: input.seats, createdBy: actorId(ctx), createdAt: ctx.now, note: input.note };
       db.seatingPlans.push(plan);
       audit(db, ctx, { level: "school", schoolId, action: "Lưu sơ đồ lớp", entityType: "seating", entityId: plan.id, entityLabel: `${className(db, classId)} — phiên bản ${plan.version}, áp dụng ${input.effectiveDate}` });
@@ -427,7 +432,7 @@ export const classroomRepo = {
       }).sort((a, b) => Number(b.isHomeroom) - Number(a.isHomeroom) || a.name.localeCompare(b.name, "vi"));
       const tasks = teacherTasks(db, ctx, schoolId, m.id);
       const hc = classes.find((c) => c.isHomeroom);
-      const recentFeed = db.audit.filter((a) => a.schoolId === schoolId && (classIds.some((cid) => a.entityLabel.includes(className(db, cid))) || a.actorId === uid)).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6).map((a) => ({ ...a, actorName: staffNameById(db, a.actorId) }));
+      const recentFeed = db.audit.filter((a) => a.schoolId === schoolId && (auditClassIds(db, a).some((cid) => classIds.includes(cid)) || a.actorId === uid)).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6).map((a) => ({ ...a, actorName: staffNameById(db, a.actorId) }));
       return {
         classes, tasks, homeroom: hc ?? null,
         kpi: {

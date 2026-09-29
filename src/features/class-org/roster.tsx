@@ -88,7 +88,35 @@ export function ClassRoster() {
                 </FilterBar>
                 {!d.seeGuardians && <p className="mx-4 mb-3 rounded-lg bg-neutral-bg px-3 py-2 text-[12.5px] text-neutral-text">Bạn xem danh sách theo phạm vi giáo viên bộ môn: không hiển thị người giám hộ và link tra cứu.</p>}
                 {d.rows.length === 0 ? <EmptyState title="Lớp chưa có học sinh" description={d.canAdd ? "Thêm học sinh hoặc nhập danh sách từ tệp ở phần Học sinh của nhà trường." : "Nhà trường chưa xếp học sinh vào lớp này."} />
-                  : <div className="[&_td]:!px-2.5 [&_th]:!px-2.5 [&_td]:text-[13.5px]"><DataTable rows={pageRows} columns={columns} rowKey={(r) => r.id} caption={`Học sinh lớp ${header.class.name}`} minWidth={d.seeGuardians ? 680 : 520} dense empty={<EmptyFiltered onReset={reset} what="học sinh" />} /></div>}
+                  : <>
+                    <div className="hidden sm:block [&_td]:!px-2.5 [&_th]:!px-2.5 [&_td]:text-[13.5px]"><DataTable rows={pageRows} columns={columns} rowKey={(r) => r.id} caption={`Học sinh lớp ${header.class.name}`} minWidth={d.seeGuardians ? 680 : 520} dense empty={<EmptyFiltered onReset={reset} what="học sinh" />} /></div>
+                    {/* Phones: one card per student instead of a horizontally scrolling table. */}
+                    {pageRows.length === 0 ? <div className="sm:hidden"><EmptyFiltered onReset={reset} what="học sinh" /></div> : (
+                      <ul className="divide-y divide-line border-t border-line sm:hidden" aria-label={`Học sinh lớp ${header.class.name}`}>
+                        {pageRows.map((r) => {
+                          const ls = LINK_STATUS[r.link ?? "none"];
+                          return (
+                            <li key={r.id} className="flex items-start gap-3 px-4 py-3">
+                              <span className="w-6 pt-2 text-right text-[12px] tabular-nums text-muted">{indexOf.get(r.id)}</span>
+                              <Link href={`${base}/students/${r.id}`} className="flex-none"><Avatar name={r.fullName} tone={r.avatarTone} size={36} /></Link>
+                              <div className="min-w-0 flex-1">
+                                <Link href={`${base}/students/${r.id}`} className="block truncate font-semibold text-ink hover:underline">{r.fullName}</Link>
+                                <p className="text-[12px] text-muted">{r.code}{r.transferredIn ? " · chuyển đến" : ""} · {r.groupName ?? <span className="text-warning-text">Chưa phân tổ</span>}</p>
+                                {(r.positions.length > 0 || d.seeLinks) && (
+                                  <p className="mt-1.5 flex flex-wrap gap-1">
+                                    {r.positions.map((p) => <Badge key={p} tone={POS_TONE[p] ?? "info"} dot={false}>{p}</Badge>)}
+                                    {d.seeLinks && <Badge tone={ls.tone}>{ls.label}</Badge>}
+                                  </p>
+                                )}
+                                {d.seeGuardians && <p className="mt-1 truncate text-[12px] text-muted">{r.guardian ? `${r.guardian.name} (${r.guardian.relation})${r.guardian.verification !== "verified" ? " · chưa xác minh" : ""}` : <span className="text-warning-text">Chưa có người giám hộ</span>}</p>}
+                              </div>
+                              {columns[columns.length - 1].cell(r)}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </>}
                 {rows.length > 0 && <Pagination page={cur} pageCount={pageCount} total={rows.length} pageSize={PAGE} onPage={setPage} what="học sinh" />}
               </Card>
               <Card>

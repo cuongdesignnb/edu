@@ -3,12 +3,13 @@ import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 
 /** Progress bar with explicit numerator/denominator label (never a bare percentage). */
-export function ProgressBar({ value, total, color, label, className, showPercent = true }: { value: number; total: number; color?: string; label?: ReactNode; className?: string; showPercent?: boolean }) {
+export function ProgressBar({ value, total, color, label, className, showPercent = true, ariaLabel }: { value: number; total: number; color?: string; label?: ReactNode; className?: string; showPercent?: boolean; ariaLabel?: string }) {
   const pct = total ? Math.round((value / total) * 100) : 0;
+  const name = ariaLabel ?? (typeof label === "string" ? label : `Tiến độ ${value}/${total}`);
   return (
     <div className={clsx("min-w-0", className)}>
       {label && <div className="mb-1.5 flex items-center justify-between gap-2 text-[13px]"><span className="font-medium text-ink">{label}</span>{showPercent && <span className="tabular-nums text-muted">{total ? `${pct}%` : "—"}</span>}</div>}
-      <div className="progress" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={total} aria-valuetext={`${value}/${total}`}>
+      <div className="progress" role="progressbar" aria-label={name} aria-valuenow={value} aria-valuemin={0} aria-valuemax={total} aria-valuetext={`${value}/${total}`}>
         <span style={{ width: `${pct}%`, background: color }} />
       </div>
     </div>

@@ -71,8 +71,8 @@ export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string;
             <InfoRow label="Ngôn ngữ">Tiếng Việt</InfoRow>
             <InfoRow label="Múi giờ">Asia/Ho_Chi_Minh (UTC+7)</InfoRow>
             <InfoRow label="Định dạng ngày">dd/MM/yyyy</InfoRow>
-            <p className="pt-1 text-[12.5px] text-muted">Cố định trong bản demo.</p>
           </dl>
+          <p className="-mt-4 px-5 pb-5 text-[12.5px] text-muted">Cố định trong bản demo.</p>
         </Card>
       </div>
       {!ro && (

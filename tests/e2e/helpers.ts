@@ -47,3 +47,20 @@ export async function horizontalOverflow(page: Page) {
 export async function hasMojibake(page: Page) {
   return page.evaluate(() => /�|Ã[\u0080-¿]|Ä[\u0080-¿]|á»|Ä‘/.test(document.body.innerText));
 }
+
+/** Route fixture ids + the persona that should open each route (shared by links/a11y specs). */
+const FIXTURE: Record<string, string> = {
+  schoolId: "demo-school-a", yearId: "y-a-2026", classId: "c-a-10a1", memberId: "m-a-lan", roleId: "demo-school-a-role-homeroom",
+  studentId: "demo-student-a-001", guardianId: "gd-2", accessId: "pa-minhanh-me", importId: "imp-2", ruleSetId: "rs-a-3",
+  reportType: "attendance", ticketId: "tk-2", inviteId: "inv-b-lan", publicationId: "snap-c-a-10a1-w4-v1", activityId: "act-1",
+  periodId: "y-a-2026-w4", schoolSlug: "binh-minh", announcementId: "an-1",
+};
+export const routeHref = (route: string) => route.replace(/:([A-Za-z]+)/g, (_, k: string) => FIXTURE[k] ?? k);
+export function routePersona(route: string): PersonaSpec {
+  if (route.startsWith("/platform")) return { kind: "platform", userId: "u-bao" };
+  if (route.startsWith("/school/")) return { kind: "staff", userId: "u-hanh" };
+  if (route.startsWith("/teacher/") || route.startsWith("/classroom/") || ["/account", "/notifications", "/choose-school"].some((x) => route.startsWith(x))) return { kind: "staff", userId: "u-lan" };
+  if (route.startsWith("/p/")) return { kind: "parent", token: "demo-minhanh-me", slug: "binh-minh" };
+  return { kind: "public" };
+}
+

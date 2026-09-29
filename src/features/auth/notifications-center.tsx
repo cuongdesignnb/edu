@@ -13,7 +13,7 @@ import { Card, Callout } from "@/components/ui/card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InlineSelect } from "@/components/ui/form";
-import { Tabs } from "@/components/ui/tabs";
+import { Tabs, TabPanel } from "@/components/ui/tabs";
 import { FilterBar, Pagination, useClientList } from "@/components/data/table";
 import { EmptyState, EmptyFiltered, ErrorState, Skeleton } from "@/components/ui/states";
 
@@ -68,9 +68,8 @@ function StaffNotifications() {
           Đánh dấu đã đọc {unreadVisible.length ? `(${unreadVisible.length})` : ""}
         </Button>} />
       <Card>
-        <div className="px-4 pt-4">
-          <Tabs tabs={[{ value: "all", label: "Tất cả", count: all.length }, { value: "unread", label: "Chưa đọc", count: unreadCount }]} value={tab} onChange={(v) => { setTab(v); list.setPage(1); }}><span /></Tabs>
-        </div>
+        <Tabs className="[&>[role=tablist]]:mx-4 [&>[role=tablist]]:mt-4" tabs={[{ value: "all", label: "Tất cả", count: all.length }, { value: "unread", label: "Chưa đọc", count: unreadCount }]} value={tab} onChange={(v) => { setTab(v); list.setPage(1); }}>
+        <TabPanel value={tab} className="!mt-0">
         <div className="pt-3">
           <FilterBar q={list.q} onQ={list.setQ} placeholder="Tìm trong tiêu đề, nội dung…" active={filtersActive} onReset={() => { list.setQ(""); setSchool(""); setKind(""); }}>
             <InlineSelect label="Lọc theo trường" allLabel="Tất cả trường" value={school} onChange={(v) => { setSchool(v); list.setPage(1); }} options={schools} />
@@ -107,6 +106,8 @@ function StaffNotifications() {
               <Pagination page={list.page} pageCount={list.pageCount} total={list.total} pageSize={list.pageSize} onPage={list.setPage} what="thông báo" />
             </>
           )}
+        </TabPanel>
+        </Tabs>
       </Card>
       <Callout tone="neutral">Thông báo chỉ là lối tắt. Khi mở, hệ thống kiểm tra lại quyền theo phân công hiện tại; mục đã bị thu hồi quyền sẽ không hiển thị nội dung.</Callout>
     </div>

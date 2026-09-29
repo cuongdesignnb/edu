@@ -24,7 +24,7 @@ export function ClassroomFrame({ children, compact, className }: { children: Rea
         <div className="flex min-w-0 flex-1 justify-center">
           <div className={clsx("w-[85%] rounded-md border-4 border-[#6b4a2b] bg-[#1f6b4a] text-center font-bold tracking-[0.3em] text-white shadow-inner", compact ? "py-1.5 text-[12px]" : "py-2.5 text-sm")} aria-label="Bảng lớp (phía trước)">BẢNG</div>
         </div>
-        <div className={clsx("flex-none rounded-md bg-[#b88a5a] text-white shadow", compact ? "px-2 py-1 text-[10.5px]" : "px-3 py-1.5 text-[12px]")}>Bàn giáo viên</div>
+        <div className={clsx("flex-none rounded-md bg-[#8a5f33] text-white shadow", compact ? "px-2 py-1 text-[10.5px]" : "px-3 py-1.5 text-[12px]")}>Bàn giáo viên</div>
       </div>
       {children}
     </div>
@@ -42,7 +42,7 @@ export function SeatMapView({ rows, cols, seats, names, compact, maxRows }: { ro
         const name = sid ? names.get(sid) : undefined;
         return (
           <div key={`${r}-${c}`} role="listitem" aria-label={`Hàng ${r + 1}, ghế ${c + 1}: ${name ?? "trống"}`}
-            className={clsx("flex min-w-0 items-center justify-center rounded-md border text-center shadow-sm", compact ? "h-7 px-0.5 text-[11px]" : "h-9 px-1.5 text-[12px]", name ? "border-[#e6dccb] bg-white text-ink" : "border-dashed border-[#d6c3a0] bg-transparent text-[#9b8566]")}>
+            className={clsx("flex min-w-0 items-center justify-center rounded-md border text-center shadow-sm", compact ? "h-7 px-0.5 text-[11px]" : "h-9 px-1.5 text-[12px]", name ? "border-[#e6dccb] bg-white text-ink" : "border-dashed border-[#d6c3a0] bg-transparent text-[#7a6446]")}>
             <span className="truncate" title={name}>{name ? (compact ? tinyName(name) : shortName(name)) : compact ? "–" : "Trống"}</span>
           </div>
         );

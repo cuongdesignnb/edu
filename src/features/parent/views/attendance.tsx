@@ -18,7 +18,7 @@ const DAY_STATUS: Record<string, { label: string; short: string; cls: string; do
   not_published: { label: "Chưa công bố", short: "Chưa CB", cls: "bg-white text-muted border-dashed border-line-strong", dot: "bg-faint" },
   holiday: { label: "Ngày nghỉ", short: "Nghỉ lễ", cls: "bg-purple-bg text-purple-text border-[#ddd2ff]", dot: "bg-purple" },
   weekend: { label: "Chủ nhật", short: "CN", cls: "bg-neutral-bg text-neutral-text border-line", dot: "bg-neutral-text" },
-  future: { label: "Chưa đến", short: "", cls: "bg-white text-faint border-line", dot: "bg-line-strong" },
+  future: { label: "Chưa đến", short: "", cls: "bg-white text-muted border-line", dot: "bg-line-strong" },
 };
 
 const WD = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
@@ -52,17 +52,18 @@ export function ParentAttendanceView() {
                     <IconButton label="Tháng sau" icon={<ChevronRight className="size-5" />} variant="secondary" disabled={month >= d.yearEnd} onClick={() => setMonth(shiftMonth(month, 1))} />
                   </div>} />
                 <div className="px-3 pb-4 sm:px-5">
-                  <div className="grid grid-cols-7 gap-1 sm:gap-2" role="grid" aria-label={`Lịch chuyên cần tháng ${m}/${y}`}>
-                    {WD.map((w) => <div key={w} role="columnheader" className="pb-1 text-center text-[12px] font-semibold text-muted">{w}</div>)}
+                  <div className="grid grid-cols-7 gap-1 sm:gap-2" role="group" aria-label={`Lịch chuyên cần tháng ${m}/${y}`}>
+                    {WD.map((w) => <div key={w} aria-hidden className="pb-1 text-center text-[12px] font-semibold text-muted">{w}</div>)}
                     {Array.from({ length: lead }).map((_, i) => <div key={`e${i}`} aria-hidden />)}
                     {d.days.map((day) => {
                       const st = DAY_STATUS[day.status] ?? DAY_STATUS.not_published;
                       return (
-                        <div key={day.date} role="gridcell" title={`${fmtDateLong(day.date)}: ${st.label}${day.note ? ` — ${day.note}` : ""}`} aria-label={`${fmtDateLong(day.date)}: ${st.label}`}
+                        <div key={day.date} title={`${fmtDateLong(day.date)}: ${st.label}${day.note ? ` — ${day.note}` : ""}`}
                           className={clsx("flex min-h-[54px] flex-col rounded-lg border p-1 sm:min-h-[76px] sm:rounded-xl sm:p-2", st.cls)}>
-                          <span className="text-[12px] font-bold sm:text-[14px]">{Number(day.date.slice(8))}</span>
-                          <span className="mt-auto text-[10px] font-semibold leading-tight sm:hidden">{st.short}</span>
-                          <span className="mt-auto hidden text-[12px] font-semibold leading-tight sm:block">{day.status === "future" ? "" : st.label}</span>
+                          <span className="sr-only">{fmtDateLong(day.date)}: {st.label}{day.note ? ` — ${day.note}` : ""}</span>
+                          <span className="text-[12px] font-bold sm:text-[14px]" aria-hidden>{Number(day.date.slice(8))}</span>
+                          <span className="mt-auto text-[10px] font-semibold leading-tight sm:hidden" aria-hidden>{st.short}</span>
+                          <span className="mt-auto hidden text-[12px] font-semibold leading-tight sm:block" aria-hidden>{day.status === "future" ? "" : st.label}</span>
                         </div>
                       );
                     })}

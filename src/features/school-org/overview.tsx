@@ -98,7 +98,7 @@ function QuickActions({ onCreateClass, onInvite, archived }: { onCreateClass: ()
             <>
               <span className="flex h-14 items-center justify-center" aria-hidden>{c.icon}</span>
               <span className="mt-2 block text-[15px] font-bold leading-snug text-ink">{c.title}</span>
-              <span className="mt-1 block text-[12.5px] leading-snug text-muted">{c.text}</span>
+              <span className="mt-1 block text-[12.5px] leading-snug text-body">{c.text}</span>
             </>
           );
           const cls = clsx("flex min-h-[124px] sm:min-h-[150px] flex-col items-center justify-center rounded-xl border border-transparent px-3 py-4 text-center transition-colors", c.tone);

@@ -18,8 +18,10 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
-      <body>
+    // Browser extensions (e.g. ColorZilla, Grammarly) inject attributes into <html>/<body> before React
+    // hydrates; suppress only these two elements' attribute-mismatch warnings.
+    <html lang="vi" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

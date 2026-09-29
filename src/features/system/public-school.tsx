@@ -36,7 +36,7 @@ function PublicSchoolBody({ d }: { d: SchoolData }) {
     <div className="space-y-5">
       <Card className="overflow-hidden">
         <div className="flex flex-wrap items-center gap-5 p-5 sm:p-7" style={{ background: `linear-gradient(120deg, ${s.accentColor}14, #ffffff 70%)` }}>
-          <SchoolMark name={s.name} color={active ? s.accentColor : "#8a9bb6"} size={72} />
+          <SchoolMark name={s.name} color={active ? s.accentColor : "#64748b"} size={72} />
           <div className="min-w-0 flex-[1_1_300px]">
             <div className="flex flex-wrap items-center gap-2"><h1 className="page-title !text-[26px] sm:!text-[30px]">{s.name}</h1>{!active && <StatusBadge status={s.status} map={schoolStatus} />}</div>
             <p className="mt-0.5 text-[14px] text-muted">{s.level}</p>

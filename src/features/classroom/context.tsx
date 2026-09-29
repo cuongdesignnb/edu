@@ -152,42 +152,50 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
         {actions && <div className="flex flex-wrap items-center gap-2 lg:ml-auto">{actions}</div>}
       </div>
       {variant === "full" && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="card card-pad flex items-center gap-3.5">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4 max-sm:[&_.icon-tile]:hidden max-sm:[&_.card-pad]:!p-3.5">
+          <div className="card card-pad col-span-2 flex items-center gap-3.5 sm:col-span-1">
             {h.homeroom ? <Avatar name={h.homeroom.name} tone={h.homeroom.tone} size={56} square /> : <IconTile tone="neutral"><Users className="size-6" /></IconTile>}
             <div className="min-w-0 text-[13px]">
               <p className="text-body">Giáo viên chủ nhiệm</p>
               <p className="truncate text-[15px] font-bold text-ink">{h.homeroom?.name ?? "Chưa phân công"}</p>
-              {h.homeroom && <><p className="flex items-center gap-1.5 text-muted"><Phone className="size-3.5" aria-hidden />{h.homeroom.phone}</p><p className="flex items-center gap-1.5 truncate text-muted"><Mail className="size-3.5 flex-none" aria-hidden />{h.homeroom.email}</p></>}
+              {h.homeroom && <><p className="hidden items-center gap-1.5 text-muted sm:flex"><Phone className="size-3.5" aria-hidden />{h.homeroom.phone}</p><p className="hidden items-center gap-1.5 truncate text-muted sm:flex"><Mail className="size-3.5 flex-none" aria-hidden />{h.homeroom.email}</p></>}
             </div>
           </div>
           <div className="card card-pad flex items-center gap-4">
             <IconTile tone="blue"><Users className="size-7" /></IconTile>
-            <div><p className="text-[13.5px] text-body">Sĩ số lớp</p><p className="text-[28px] font-extrabold leading-tight text-ink">{h.size}</p><p className="text-[12px] text-muted">{h.male} nam · {h.female} nữ</p></div>
+            <div><p className="text-[13.5px] text-body">Sĩ số lớp</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.size}</p><p className="text-[12px] text-muted">{h.male} nam · {h.female} nữ</p></div>
           </div>
           {h.summary.links ? (
             <div className="card card-pad flex items-center gap-4">
               <IconTile tone="green"><Link2 className="size-7" /></IconTile>
               <div className="min-w-0 flex-1">
                 <p className="text-[13.5px] text-body">Học sinh có link tra cứu</p>
-                <p className="text-[28px] font-extrabold leading-tight text-ink">{h.summary.links.studentsWithLink}<span className="text-lg text-muted"> / {h.size}</span></p>
-                <ProgressBar value={h.summary.links.studentsWithLink} total={h.size} color="var(--color-success)" />
+                <p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.links.studentsWithLink}<span className="text-lg text-muted"> / {h.size}</span></p>
+                <ProgressBar value={h.summary.links.studentsWithLink} total={h.size} ariaLabel="Tỉ lệ học sinh có link tra cứu" color="var(--color-success)" />
                 <p className="mt-1 text-[12px] text-muted">{h.summary.links.opened} em có link đã được mở ({fmtPercent(h.summary.links.opened, h.size)})</p>
               </div>
             </div>
           ) : (
             <div className="card card-pad flex items-center gap-4">
               <IconTile tone="amber"><ClipboardList className="size-7" /></IconTile>
-              <div><p className="text-[13.5px] text-body">Ghi nhận chờ rà soát</p><p className="text-[28px] font-extrabold leading-tight text-ink">{h.summary.pending}</p><p className="text-[12px] text-muted">Tuần {h.summary.weekIndex ?? "—"}</p></div>
+              <div><p className="text-[13.5px] text-body">Ghi nhận chờ rà soát</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.pending}</p><p className="text-[12px] text-muted">Tuần {h.summary.weekIndex ?? "—"}</p></div>
             </div>
           )}
-          <div className="card card-pad flex items-center gap-4">
-            <IconTile tone="pink"><Speaker className="size-7" /></IconTile>
-            <div className="min-w-0">
-              <p className="text-[13.5px] text-body">Thi đua tuần {h.summary.weekIndex ?? "—"}</p>
-              <p className="mt-1"><Badge tone={statusMap.tone}>{statusMap.label}</Badge></p>
-              <p className="mt-1.5 text-[12px] text-muted">Công bố gần nhất: {h.summary.lastPublishedAt ? fmtDate(h.summary.lastPublishedAt) : "—"}</p>
-            </div>
+          <div className="card card-pad col-span-2 flex items-center gap-4 sm:col-span-1">
+            <IconTile tone="pink">{h.readOnly ? <Archive className="size-7" /> : <Speaker className="size-7" />}</IconTile>
+            {h.readOnly ? (
+              <div className="min-w-0">
+                <p className="text-[13.5px] text-body">Năm học {h.year.label}</p>
+                <p className="mt-1"><Badge tone="neutral">Đã lưu trữ</Badge></p>
+                <p className="mt-1.5 text-[12px] text-muted">Công bố gần nhất: {h.summary.lastPublishedAt ? fmtDate(h.summary.lastPublishedAt) : "—"}</p>
+              </div>
+            ) : (
+              <div className="min-w-0">
+                <p className="text-[13.5px] text-body">Thi đua tuần {h.summary.weekIndex ?? "—"}</p>
+                <p className="mt-1"><Badge tone={statusMap.tone}>{statusMap.label}</Badge></p>
+                <p className="mt-1.5 text-[12px] text-muted">Công bố gần nhất: {h.summary.lastPublishedAt ? fmtDate(h.summary.lastPublishedAt) : "—"}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

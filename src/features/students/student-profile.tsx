@@ -210,7 +210,7 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
                 <div className="flex flex-wrap gap-2">
                   {studying && <Button variant="primary" size="sm" icon={<RefreshCw className="size-4" />} onClick={() => setIssue({})}>Cấp link mới</Button>}
                   {link.status === "active" && <Button variant="danger-soft" size="sm" icon={<Ban className="size-4" />} onClick={() => setRevoke({ accessId: link.id, label: linkLabel(link) })}>Thu hồi</Button>}
-                  {link.status === "active" && url && <Button size="sm" icon={<Printer className="size-4" />} onClick={() => print(<QrPrintCard url={url} studentName={s.fullName} className={d.currentClass?.name ?? "—"} relation={link.relation} schoolName={school.name} expiresAt={link.expiresAt} />)}>In QR</Button>}
+                  {link.status === "active" && url && revealed === link.id && <Button size="sm" icon={<Printer className="size-4" />} onClick={() => print(<QrPrintCard url={url} studentName={s.fullName} className={d.currentClass?.name ?? "—"} relation={link.relation} schoolName={school.name} expiresAt={link.expiresAt} />)}>In QR</Button>}
                   <ButtonLink size="sm" href={`${base}/parent-access/${link.id}`} icon={<BarChart3 className="size-4" />}>Xem nhật ký truy cập</ButtonLink>
                 </div>
               </div>

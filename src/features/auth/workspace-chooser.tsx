@@ -67,7 +67,7 @@ function WorkspaceCard({ w }: { w: Workspace }) {
   return (
     <Card as="article" className={disabled ? "bg-[#fafcff] p-5" : "p-5"} aria-label={w.school.name}>
       <div className="flex items-start gap-3">
-        <SchoolMark name={w.school.name} size={44} color={disabled ? "#8a9bb6" : "#0a72e6"} />
+        <SchoolMark name={w.school.name} size={44} color={disabled ? "#64748b" : "#0a72e6"} />
         <div className="min-w-0 flex-1">
           <h2 className="text-[17px] font-bold text-ink">{w.school.name}</h2>
           <p className="text-[13px] text-muted">{w.department}{w.roleNames.length ? ` · ${w.roleNames.join(", ")}` : ""}</p>

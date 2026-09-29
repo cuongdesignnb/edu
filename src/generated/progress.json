@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T07:24:43.985Z",
+  "generatedAt": "2026-09-29T08:15:09.789Z",
   "note": "Trạng thái lấy từ qa/status/*.json do từng nhóm ghi kèm bằng chứng; mục không có bằng chứng giữ not_started.",
   "screens": [
     {
@@ -359,14 +359,15 @@
     },
     {
       "id": "SC07",
-      "status": "qa_screenshot",
+      "status": "qa_e2e",
       "route": "/school/demo-school-a/academic-years/y-a-2026/rollover",
       "evidence": [
+        "tests/e2e/rollover.spec.ts",
         "qa/screenshots/SC07-desktop.png",
         "qa/screenshots/SC07-mobile.png"
       ],
-      "notes": "Target year select / guide to SC04 when none; per-class + per-student decisions; preview counts & target sizes; apply via ConfirmDialog. Apply path NOT exercised end-to-end (needs classes in target year; UI guides to create them).",
-      "source": "school-org"
+      "notes": "Chạy trọn trên UI: tạo năm 2027–2028 qua wizard → tạo lớp 11A1 → rollover 10A1 lên 11A1 (42 HS) → năm cũ giữ nguyên 42 HS. | Target year select / guide to SC04 when none; per-class + per-student decisions; preview counts & target sizes; apply via ConfirmDialog. Apply path NOT exercised end-to-end (needs classes in target year; UI guides to create them).",
+      "source": "final-pass"
     },
     {
       "id": "SC08",
@@ -880,19 +881,22 @@
     {
       "id": "CL01",
       "status": "qa_screenshot",
-      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1",
+      "route": "/classroom/demo-school-a/y-a-2025/c-a-2025-10a1",
       "evidence": [
+        "qa/screenshots/CL01-archived-year.png",
+        "qa/screenshots/CL01-mobile-compact.png",
         "qa/screenshots/CL01-desktop.png",
         "qa/screenshots/CL01-mobile.png"
       ],
-      "notes": "Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress.",
-      "source": "lead"
+      "notes": "Năm lưu trữ: thay việc cần làm/lịch hôm nay/điểm danh bằng thẻ “Năm học đã kết thúc”; header hiện “Đã lưu trữ”. Header full trên điện thoại gọn 2 cột. | Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress.",
+      "source": "final-pass"
     },
     {
       "id": "CL02",
       "status": "qa_screenshot",
       "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/students",
       "evidence": [
+        "qa/screenshots/CL02-mobile-cards.png",
         "qa/screenshots/CL02-desktop.png",
         "qa/screenshots/CL02-mobile.png",
         "qa/screenshots/CL02-mobile-full.png",
@@ -901,8 +905,8 @@
         "qa/screenshots/CL02-hanh-desktop.png",
         "qa/screenshots/O11-transfer-validation.png"
       ],
-      "notes": "R06: ClassHeader full, roster (search, tổ, link status filters; guardian/link columns only with grants), row menu Xem hồ sơ / Đổi tổ (O23 quick) / Đề nghị chuyển lớp (O11, applyNow=false), pagination, 'Thêm học sinh' only with student.edit, students who left (ST25), seating mini preview -> CL14, groups & positions cards -> CL13. Subject scope (u-hung, u-lan in 10A2) = minimal roster, no side panels. Roster table scrolls inside .table-wrap on phones.",
-      "source": "teacher-class-1"
+      "notes": "Điện thoại: danh sách thẻ học sinh thay bảng cuộn ngang. | R06: ClassHeader full, roster (search, tổ, link status filters; guardian/link columns only with grants), row menu Xem hồ sơ / Đổi tổ (O23 quick) / Đề nghị chuyển lớp (O11, applyNow=false), pagination, 'Thêm học sinh' only with student.edit, students who left (ST25), seating mini preview -> CL14, groups & positions cards -> CL13. Subject scope (u-hung, u-lan in 10A2) = minimal roster, no side panels. Roster table scrolls inside .table-wrap on phones.",
+      "source": "final-pass"
     },
     {
       "id": "CL03",
@@ -1460,14 +1464,15 @@
     },
     {
       "id": "SY08",
-      "status": "qa_screenshot",
-      "route": "/khong-ton-tai-demo",
+      "status": "qa_e2e",
+      "route": "/preview/crash",
       "evidence": [
         "qa/screenshots/SY08-desktop.png",
-        "qa/screenshots/SY08-mobile.png"
+        "qa/screenshots/SY08-mobile.png",
+        "tests/e2e/errors.spec.ts"
       ],
-      "notes": "app/not-found.tsx đã chụp. app/error.tsx (retry, không stack trace) và app/global-error.tsx (html/body riêng) đã dựng nhưng chưa chụp — không có cách kích hoạt lỗi render chủ đích an toàn.",
-      "source": "auth-platform-system"
+      "notes": "app/error.tsx và app/global-error.tsx được kích hoạt thật qua /preview/crash (chỉ chế độ demo); không lộ stack trace; Thử lại phục hồi.",
+      "source": "final-pass"
     },
     {
       "id": "DV01",
@@ -2973,14 +2978,15 @@
     },
     {
       "id": "ST28",
-      "status": "qa_screenshot",
-      "route": "/khong-ton-tai-demo",
+      "status": "qa_e2e",
+      "route": "/preview/crash",
       "evidence": [
         "qa/screenshots/SY08-desktop.png",
-        "qa/screenshots/SY08-mobile.png"
+        "qa/screenshots/SY08-mobile.png",
+        "tests/e2e/errors.spec.ts"
       ],
-      "notes": "not-found chụp được; error.tsx/global-error.tsx dựng xong, chưa chụp.",
-      "source": "auth-platform-system"
+      "notes": "404 + ranh giới lỗi trang + ranh giới lỗi toàn ứng dụng đều được kiểm E2E.",
+      "source": "final-pass"
     }
   ]
 }

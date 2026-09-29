@@ -5,6 +5,8 @@ import { initStore, subscribe } from "@/lib/repositories";
 import { ToastProvider } from "@/components/ui/toast";
 import { UnsavedChangesProvider } from "@/components/ui/guards";
 import { PageSkeleton } from "@/components/ui/states";
+import { takeGlobalCrash } from "@/lib/demo/crash";
+import { IS_DEMO } from "@/lib/demo/session";
 
 /**
  * Initialises the local demo store once, then invalidates queries whenever the store
@@ -13,6 +15,9 @@ import { PageSkeleton } from "@/components/ui/states";
 function StoreGate({ client, children }: { client: QueryClient; children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  // /preview/crash arms a one-shot flag to exercise app/global-error.tsx (demo only).
+  const [crash, setCrash] = useState(false);
+  useEffect(() => { if (IS_DEMO && takeGlobalCrash()) setCrash(true); }, []);
   useEffect(() => {
     let off = () => {};
     initStore().then(() => {
@@ -22,6 +27,7 @@ function StoreGate({ client, children }: { client: QueryClient; children: ReactN
     return () => off();
   }, [client]);
   if (failed) return <div role="alert" className="p-8 text-center text-danger-text">Trình duyệt chặn bộ nhớ cục bộ (IndexedDB) nên bản demo không khởi tạo được dữ liệu. Hãy tắt chế độ duyệt ẩn danh nghiêm ngặt hoặc cho phép lưu trữ trang.</div>;
+  if (crash) throw new Error("Lỗi toàn ứng dụng mô phỏng (demo)");
   if (!ready) return <PageSkeleton />;
   return <>{children}</>;
 }

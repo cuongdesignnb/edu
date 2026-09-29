@@ -26,7 +26,7 @@ export function GlobalSearch({ schoolId, placeholder }: { schoolId?: string; pla
   const icon = (k: SearchHit["kind"]) => k === "student" ? <GraduationCap className="size-4" /> : k === "teacher" ? <Users className="size-4" /> : k === "school" ? <Building2 className="size-4" /> : <School className="size-4" />;
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="flex h-11 w-full max-w-[480px] items-center gap-3 rounded-xl border border-line bg-[#f7fbff] px-4 text-left text-sm text-faint hover:border-line-strong" aria-label="Mở tìm kiếm">
+      <button type="button" onClick={() => setOpen(true)} className="flex h-11 w-full max-w-[480px] items-center gap-3 rounded-xl border border-line bg-[#f7fbff] px-4 text-left text-sm text-muted hover:border-line-strong" aria-label="Mở tìm kiếm">
         <Search className="size-[18px] flex-none text-muted" aria-hidden />
         <span className="truncate">{placeholder}</span>
         <span className="kbd ml-auto hidden md:inline">Ctrl K</span>

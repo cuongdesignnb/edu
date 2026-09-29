@@ -1,0 +1,36 @@
+{
+  "screens": {
+    "SC07": {
+      "status": "qa_e2e",
+      "route": "/school/demo-school-a/academic-years/y-a-2026/rollover",
+      "evidence": ["tests/e2e/rollover.spec.ts"],
+      "notes": "Chạy trọn trên UI: tạo năm 2027–2028 qua wizard → tạo lớp 11A1 → rollover 10A1 lên 11A1 (42 HS) → năm cũ giữ nguyên 42 HS."
+    },
+    "SY08": {
+      "status": "qa_e2e",
+      "route": "/preview/crash",
+      "evidence": ["tests/e2e/errors.spec.ts"],
+      "notes": "app/error.tsx và app/global-error.tsx được kích hoạt thật qua /preview/crash (chỉ chế độ demo); không lộ stack trace; Thử lại phục hồi."
+    },
+    "CL01": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2025/c-a-2025-10a1",
+      "evidence": ["qa/screenshots/CL01-archived-year.png", "qa/screenshots/CL01-mobile-compact.png"],
+      "notes": "Năm lưu trữ: thay việc cần làm/lịch hôm nay/điểm danh bằng thẻ “Năm học đã kết thúc”; header hiện “Đã lưu trữ”. Header full trên điện thoại gọn 2 cột."
+    },
+    "CL02": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/students",
+      "evidence": ["qa/screenshots/CL02-mobile-cards.png"],
+      "notes": "Điện thoại: danh sách thẻ học sinh thay bảng cuộn ngang."
+    }
+  },
+  "states": {
+    "ST28": {
+      "status": "qa_e2e",
+      "route": "/preview/crash",
+      "evidence": ["tests/e2e/errors.spec.ts"],
+      "notes": "404 + ranh giới lỗi trang + ranh giới lỗi toàn ứng dụng đều được kiểm E2E."
+    }
+  }
+}

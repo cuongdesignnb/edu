@@ -137,7 +137,7 @@ export const DATA_EXAMPLES: Record<string, () => ReactNode> = {
   C030: () => <div className="flex flex-wrap items-center gap-4"><Avatar name="Trần Thị Lan" tone="pink" size={42} /><Identity name="Nguyễn Minh Anh" sub="HS 10A1" tone="blue" /><SchoolMark name="Trường THPT Bình Minh" /><Avatar name="Lớp" tone="green" square /></div>,
   C031: () => (
     <div className="grid gap-3 sm:grid-cols-2">
-      <Card><CardHeader title="Thẻ thông tin" icon={<Users className="size-5" />} action={<CardLink href={registryById("SC16")!.href} />} /><div className="space-y-1 px-5 pb-4"><InfoRow label="Trường">THPT Bình Minh</InfoRow><InfoRow label="Năm học">2026–2027</InfoRow></div></Card>
+      <Card><CardHeader title="Thẻ thông tin" icon={<Users className="size-5" />} action={<CardLink href={registryById("SC16")!.href} />} /><dl className="space-y-1 px-5 pb-4"><InfoRow label="Trường">THPT Bình Minh</InfoRow><InfoRow label="Năm học">2026–2027</InfoRow></dl></Card>
       <div className="space-y-3"><div className="flex gap-2">{(["blue", "green", "amber", "pink", "purple", "neutral"] as const).map((t) => <IconTile key={t} tone={t} size="sm"><School className="size-4" /></IconTile>)}</div><Callout tone="info" icon={<Info />} title="Callout thông tin">Dùng cho giải thích ngắn trong trang.</Callout><div className="panel-soft p-3 text-[13px]">Panel nền nhạt (panel-soft)</div></div>
     </div>
   ),

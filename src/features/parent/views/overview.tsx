@@ -151,9 +151,10 @@ function PublishState({ at, compact }: { at?: string; compact?: boolean }) {
 
 function Tile({ icon, label, value, className }: { icon: React.ReactNode; label: string; value: string; className?: string }) {
   return (
-    <div className={clsx("flex items-center gap-3 rounded-xl border border-line bg-[#f7fbff] px-3 py-2.5 sm:px-4 sm:py-3", className)}>
-      <span className="flex-none text-primary" aria-hidden>{icon}</span>
-      <div className="min-w-0"><dt className="text-[12px] text-muted">{label}</dt><dd className="text-[13.5px] font-bold leading-snug text-ink sm:truncate sm:text-[15px]">{value}</dd></div>
+    // Only <dt>/<dd> may sit directly in a <dl> group, so the icon lives inside <dt> (absolutely placed).
+    <div className={clsx("relative flex min-w-0 flex-col justify-center rounded-xl border border-line bg-[#f7fbff] py-2.5 pl-11 pr-3 sm:py-3 sm:pl-12 sm:pr-4", className)}>
+      <dt className="text-[12px] text-muted"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary sm:left-4" aria-hidden>{icon}</span>{label}</dt>
+      <dd className="min-w-0 text-[13.5px] font-bold leading-snug text-ink sm:truncate sm:text-[15px]">{value}</dd>
     </div>
   );
 }
