@@ -445,7 +445,7 @@ export const schoolRepo = {
         grades: db.grades.filter((g) => g.schoolId === schoolId && g.status === "active"),
         subjects: db.subjects.filter((g) => g.schoolId === schoolId && g.status === "active" && !["CHAOCO", "SHL"].includes(g.code)),
         rooms: db.rooms.filter((g) => g.schoolId === schoolId && g.status === "active"),
-        teachers: db.memberships.filter((m) => m.schoolId === schoolId && m.status === "active").map((m) => ({ membershipId: m.id, userId: m.userId, name: staffNameById(db, m.userId), department: m.department })).sort((a, b) => nameCompare(a.name, b.name)),
+        teachers: db.memberships.filter((m) => m.schoolId === schoolId && m.status === "active").map((m) => ({ membershipId: m.id, userId: m.userId, name: staffNameById(db, m.userId), department: m.department, homeroomOf: db.assignments.filter((x) => x.membershipId === m.id && x.kind === "homeroom" && isAssignmentLive(x, ctx.today)).map((x) => className(db, x.classId)) })).sort((a, b) => nameCompare(a.name, b.name)),
       };
     });
   },

@@ -20,6 +20,9 @@ import { PeriodStateBanner } from "@/features/conduct/shared";
 import { SeatMapView, ClassroomFrame } from "@/features/class-org/seat-view";
 import { AnnouncementComposer, ParentPreview } from "@/features/announcements/composer";
 import { ReportViewer } from "@/features/reports/viewer";
+import { StatusButtons, StatusLegend } from "@/features/attendance/status";
+import type { AttendanceStatus } from "@/lib/model/types";
+import { Identity } from "@/components/ui/avatar";
 import { OpenButton, PARENT_LINKS, accessHref } from "../open";
 import { NeedPersona, Frame } from "./common";
 
@@ -145,6 +148,29 @@ function TransferTrigger() {
   return <><Button size="sm" variant="secondary" onClick={() => setOpen(true)}>Mở hộp thoại chuyển lớp</Button><TransferDialog open={open} onOpenChange={setOpen} schoolId={A} canDecide /></>;
 }
 
+/** C058 / C059 — the real attendance status control on real roster rows (local state only, not saved). */
+function AttendanceRows({ large }: { large?: boolean }) {
+  const q = useRepo(["preview-roster"], (ctx) => classroomRepo.roster(ctx, A, Y, C));
+  const [v, setV] = useState<Record<string, AttendanceStatus>>({});
+  if (q.isLoading) return <Loading />;
+  if (q.error || !q.data) return <ErrorState compact error={q.error} onRetry={() => q.refetch()} />;
+  const rows = q.data.rows.slice(0, large ? 1 : 3);
+  return (
+    <div className="space-y-2">
+      <ul className={large ? "max-w-sm space-y-2" : "divide-y divide-line rounded-xl border border-line bg-white"}>
+        {rows.map((r) => (
+          <li key={r.id} className={large ? "card space-y-3 p-3" : "flex flex-wrap items-center gap-3 px-3 py-2"}>
+            <Identity name={r.fullName} sub={r.code} size={32} />
+            <div className={large ? "" : "ml-auto"}><StatusButtons name={r.fullName} value={v[r.id] ?? "unmarked"} onChange={(x) => setV({ ...v, [r.id]: x })} large={large} /></div>
+          </li>
+        ))}
+      </ul>
+      {!large && <StatusLegend />}
+      <p className="text-[12.5px] text-muted">Mặc định “Chưa điểm danh”, không tự tính có mặt. Ví dụ này không lưu — điểm danh thật ở CL04.</p>
+    </div>
+  );
+}
+
 const staff = (u: string) => ({ kind: "staff" as const, userId: u });
 
 export const DOMAIN_EXAMPLES: Record<string, () => ReactNode> = {
@@ -158,8 +184,8 @@ export const DOMAIN_EXAMPLES: Record<string, () => ReactNode> = {
   C055: () => <NeedPersona need={staff("u-hanh")} why="Thẻ link của mẹ Minh Anh đọc từ studentsRepo.access (Quản trị trường A)."><AccessCard /></NeedPersona>,
   C056: () => <p className="text-[13px] text-body">QR, ô sao chép link và thẻ in hiển thị trực tiếp trong ví dụ C055 (QrImage, LinkBox, QrPrintCard thật).</p>,
   C057: () => <p className="text-[13px] text-body">Nhật ký link (“Link cấp cho … được mở”) hiển thị trong ví dụ C055, đọc từ repository.</p>,
-  C058: () => <Host ids={["CL04"]} note="Dòng điểm danh với 5 trạng thái loại trừ nhau, không mặc định có mặt — nằm trong màn hình điểm danh lớp." />,
-  C059: () => <Host ids={["CL04"]} note="Thẻ điểm danh cho điện thoại — mở CL04 ở độ rộng 390px." />,
+  C058: () => <NeedPersona need={staff("u-lan")} why="Dòng điểm danh dùng roster 10A1 từ classroomRepo.roster (Cô Lan)."><div className="space-y-2"><AttendanceRows /><Host ids={["CL04"]} note="Bảng điểm danh đầy đủ (lưu, sửa có lịch sử, hàng loạt có xác nhận):" /></div></NeedPersona>,
+  C059: () => <NeedPersona need={staff("u-lan")}><AttendanceRows large /></NeedPersona>,
   C060: () => <Host ids={["CL06"]} note="Chọn quy định cộng/trừ theo bộ nội quy đang hiệu lực — trong biểu mẫu ghi nhận thi đua." />,
   C061: () => <Host ids={["CL06"]} note="Biểu mẫu ghi nhận có chống trùng sự kiện nguồn (hộp thoại O18)." />,
   C062: () => <NeedPersona need={staff("u-lan")} why="Bảng thi đua tuần 4 đọc từ snapshot đã công bố (Cô Lan)."><ConductSnapshot /></NeedPersona>,
@@ -188,4 +214,4 @@ export const DOMAIN_EXAMPLES: Record<string, () => ReactNode> = {
 };
 
 /** Components rendered live from real code on this page (the rest link to their route). */
-export const DOMAIN_LIVE = ["C048", "C049", "C050", "C051", "C055", "C056", "C057", "C062", "C064", "C066", "C071", "C073", "C074"];
+export const DOMAIN_LIVE = ["C058", "C059", "C048", "C049", "C050", "C051", "C055", "C056", "C057", "C062", "C064", "C071", "C073", "C074"];

@@ -224,3 +224,19 @@ describe("F04 — school B policy: only school leaders publish", () => {
     expect(await code(conductRepo.publish(loc, SCHOOL_B, YEAR_B, CLASS_B_10A1, W))).toBe("OK");
   });
 });
+
+describe("SC07 / NV-13 — new school year rollover", () => {
+  it("creates a year, enrols chosen students into new classes, leaves the old year untouched", async () => {
+    const { schoolRepo } = await import("@/lib/repositories");
+    const y = await schoolRepo.createYear(hanh, SCHOOL_A, { label: "2027–2028", startDate: "2027-08-01", endDate: "2028-07-31", terms: [{ name: "Học kỳ 1", startDate: "2027-09-06", endDate: "2028-01-09" }], holidays: [], copyRules: false });
+    const cls = await schoolRepo.saveClass(hanh, SCHOOL_A, { yearId: y.id, gradeId: "g-a-11", name: "11A1", capacity: 45 });
+    const pre = await schoolRepo.rolloverPreview(hanh, SCHOOL_A, YEAR_A);
+    const src = pre.classes.find((c) => c.id === CLASS_A_10A1)!;
+    const before = getDB().enrollments.filter((e) => e.yearId === YEAR_A).length;
+    const res = await schoolRepo.rolloverApply(hanh, SCHOOL_A, YEAR_A, y.id, src.students.map((s, i) => (i === 0 ? { studentId: s.id, action: "leave" as const } : { studentId: s.id, action: "promote" as const, targetClassId: cls.id })));
+    expect(res).toEqual({ enrolled: src.students.length - 1, left: 1 });
+    expect(getDB().enrollments.filter((e) => e.yearId === YEAR_A).length).toBe(before);
+    const again = await schoolRepo.rolloverApply(hanh, SCHOOL_A, YEAR_A, y.id, src.students.slice(1).map((s) => ({ studentId: s.id, action: "promote" as const, targetClassId: cls.id })));
+    expect(again.enrolled).toBe(0);
+  });
+});

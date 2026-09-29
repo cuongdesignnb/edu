@@ -1,0 +1,24 @@
+// Verifies persona switching + parent new-tab opening from /preview (group ui-lab).
+import { chromium } from "@playwright/test";
+const browser = await chromium.launch({ channel: "msedge" });
+const ctx = await browser.newContext({ viewport: { width: 1448, height: 1086 } });
+const s = JSON.stringify({ actor: { kind: "staff", userId: "u-lan" }, startedAt: "2026-10-05T08:00:00+07:00", via: "demo" });
+await ctx.addInitScript((v) => { if (!sessionStorage.getItem("edumanage-demo-session")) sessionStorage.setItem("edumanage-demo-session", v); }, s);
+const page = await ctx.newPage();
+const out = {};
+await page.goto("http://localhost:3000/preview/sitemap?q=PL01", { waitUntil: "networkidle" });
+await page.waitForTimeout(2500);
+await page.getByRole("button", { name: "Mở", exact: true }).first().click();
+await page.waitForURL("**/platform", { timeout: 15000 }).catch(() => {});
+out.pl01Url = page.url();
+out.session = await page.evaluate(() => sessionStorage.getItem("edumanage-demo-session"));
+await page.goto("http://localhost:3000/preview/flows#F03", { waitUntil: "networkidle" });
+await page.waitForTimeout(2500);
+const [popup] = await Promise.all([page.waitForEvent("popup"), page.locator("#F03").getByRole("button", { name: "Mở tab mới" }).first().click()]);
+await popup.waitForLoadState("networkidle");
+await popup.waitForTimeout(3500);
+out.parentUrl = popup.url();
+out.parentText = (await popup.locator("main").first().innerText().catch(() => "")).slice(0, 200);
+await popup.screenshot({ path: process.argv[2] });
+console.log(JSON.stringify(out, null, 1));
+await browser.close();

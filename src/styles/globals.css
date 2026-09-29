@@ -5,7 +5,7 @@
    Adjusted for WCAG AA: --color-muted and --color-primary are slightly darker
    than the concept images (documented in docs/visual-diff-report.md).
    ========================================================================== */
-@theme {
+@theme static {
   --font-sans: "Be Vietnam Pro", system-ui, "Segoe UI", sans-serif;
 
   --color-primary: #0a72e6;

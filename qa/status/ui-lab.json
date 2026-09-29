@@ -1,0 +1,825 @@
+{
+  "screens": {
+    "DV02": {
+      "status": "qa_screenshot",
+      "route": "/preview/references",
+      "evidence": [
+        "qa/screenshots/DV02-desktop.png",
+        "qa/screenshots/DV02-mobile.png"
+      ],
+      "notes": "15 ảnh theo manifest (10/4/1), mã, kích thước, dung lượng, xem cỡ đầy đủ (Modal) + mở tab mới, ghi chú sửa sai theo docs/03, số màn hình tham chiếu (tính từ registry, link sang sitemap). Bản sao ảnh ở public/preview-references (scripts/copy-references.mjs, kiểm SHA-256)."
+    },
+    "DV03": {
+      "status": "qa_screenshot",
+      "route": "/preview/sitemap",
+      "evidence": [
+        "qa/screenshots/DV03-desktop.png",
+        "qa/screenshots/DV03-mobile.png"
+      ],
+      "notes": "Cây route tự sinh từ REGISTRY theo 9 khu vực (cha = route tiền tố dài nhất), dạng cây/danh sách, tìm kiếm (?q=), lọc khu vực/trạng thái; mỗi nút: ID, tên, cơ sở, phạm vi, persona, trạng thái progress; Mở = signIn persona rồi điều hướng, phụ huynh mở tab mới; EX01–03 Tắt mặc định không link."
+    },
+    "DV04": {
+      "status": "qa_screenshot",
+      "route": "/preview/checklist",
+      "evidence": [
+        "qa/screenshots/DV04-desktop.png",
+        "qa/screenshots/DV04-mobile.png"
+      ],
+      "notes": "4 tab (128/75/34/28) từ manifest + progress.json; KPI tính (tổng lõi+nội bộ, không tính optional; đã nối mock, đã QA, chưa làm; theo phạm vi); lọc derived/chưa dựng/chưa QA/nhóm/trạng thái/tìm; phân trang; bằng chứng link ảnh (mirror qua copy-references.mjs)."
+    },
+    "DV05": {
+      "status": "qa_screenshot",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png",
+        "qa/screenshots/DV05-mobile.png",
+        "qa/screenshots/DV05-C025.png",
+        "qa/screenshots/DV05-C055.png",
+        "qa/screenshots/DV05-C059.png",
+        "qa/screenshots/DV05-C062.png"
+      ],
+      "notes": "75 component theo nhóm docs/02, token màu/chữ/khoảng cách/bo góc/đổ bóng đọc từ CSS variables, ghi chú bàn phím/điện thoại, 58 ví dụ chạy trực tiếp (component dùng chung + component nghiệp vụ của nhóm khác + dữ liệu repository), phần còn lại mở route thật; lọc/tìm."
+    },
+    "DV06": {
+      "status": "qa_screenshot",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png",
+        "qa/screenshots/DV06-mobile.png",
+        "qa/screenshots/DV06-live-st05.png",
+        "qa/screenshots/DV06-live-st07.png",
+        "qa/screenshots/DV06-live-st08.png",
+        "qa/screenshots/DV06-O33.png",
+        "qa/screenshots/DV06-O19.png"
+      ],
+      "notes": "Kịch bản ghi/đọc (setScenario), biểu mẫu lưu thật (sessionRepo.updateProfile) cho ST05/06/07/08/20 + O32/O33, ST01–ST28 ví dụ, O01–O34: 20 overlay thật của các nhóm, 14 mẫu tương đương (không ghi dữ liệu, link route thật)."
+    },
+    "DV07": {
+      "status": "qa_screenshot",
+      "route": "/preview/flows",
+      "evidence": [
+        "qa/screenshots/DV07-desktop.png",
+        "qa/screenshots/DV07-mobile.png"
+      ],
+      "notes": "F01–F12: mục tiêu, vai trò, bước có nút đổi persona + mở route fixture (phụ huynh tab mới, kế thừa ngữ cảnh link), kỳ vọng theo docs/05 (97 → 102, thu hồi link mẹ/link bố độc lập), ô Đã thử lưu localStorage — không phải kiểm thử tự động."
+    }
+  },
+  "components": {
+    "C003": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-layout.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C004": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-layout.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. SchoolYearBar thật trong SchoolContextProvider (u-hanh)."
+    },
+    "C005": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-layout.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C006": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C007": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C008": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C009": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C010": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C011": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C012": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C013": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C014": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C015": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Combobox đơn/nhiều với lớp trường A từ schoolRepo.classOptions."
+    },
+    "C016": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C017": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C018": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C019": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C020": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C021": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. RichTextEditor của nhóm thông báo."
+    },
+    "C022": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. AudienceSelector thật + composeOptions."
+    },
+    "C023": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. FilterBar lọc thật qua studentsRepo.list."
+    },
+    "C025": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C025.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. DataTable + useListQuery + studentsRepo.list (u-hanh), sort/lọc/phân trang/chọn."
+    },
+    "C026": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C025."
+    },
+    "C027": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C025."
+    },
+    "C028": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. KPI link tra cứu từ studentsRepo.accessList."
+    },
+    "C029": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C030": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C031": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C032": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Timeline + AuditDiff từ lịch sử người giám hộ gd-2."
+    },
+    "C033": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C034": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. ChartCard stack từ KPI link, có Xem dạng bảng."
+    },
+    "C035": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. FilePreview + downloadFileAsset với tệp lớp 10A1 (u-lan)."
+    },
+    "C036": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C037": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C038": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C039": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C040": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C041": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C042": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C043": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C044": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C045": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. useUnsavedChanges thật (hộp thoại O32 của provider)."
+    },
+    "C046": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Xung đột thật: kịch bản conflict-next + sessionRepo.updateProfile → ConflictDialog."
+    },
+    "C047": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components."
+    },
+    "C048": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. SchoolsTable của nhóm platform (u-bao)."
+    },
+    "C049": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. AssignDrawer thật."
+    },
+    "C050": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. PermissionSummary với staffRepo.member(m-a-lan)."
+    },
+    "C051": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. ClassHeroCard với classroomRepo.teacherClasses (u-lan)."
+    },
+    "C055": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C055.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. QrPrintCard/LinkBox/QrImage + nhật ký từ studentsRepo.access(pa-minhanh-me)."
+    },
+    "C056": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C055.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C055."
+    },
+    "C057": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C055.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C055 (Timeline + logLabel)."
+    },
+    "C058": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. StatusButtons/StatusLegend của nhóm điểm danh trên roster 10A1 (không lưu)."
+    },
+    "C059": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C059.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. StatusButtons large (thẻ điện thoại)."
+    },
+    "C062": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C062.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. WeeklyConductTable + ExplainDrawer với snapshot tuần 4 (u-lan)."
+    },
+    "C064": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-C062.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. PeriodStateBanner + ExplainDrawer với snapshot đã công bố."
+    },
+    "C071": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. ParentPreview với an-1 + AnnouncementComposer thật (mở khi bấm)."
+    },
+    "C073": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. TransferDialog thật (students)."
+    },
+    "C074": {
+      "status": "mock_connected",
+      "route": "/preview/components",
+      "evidence": [
+        "qa/screenshots/DV05-desktop.png"
+      ],
+      "notes": "Ví dụ chạy trực tiếp ở /preview/components. ReportViewer với reportsRepo.school attendance, xuất CSV/XLSX thật."
+    }
+  },
+  "overlays": {
+    "O01": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. SchoolStatusDialog thật (u-bao)."
+    },
+    "O02": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O02.png"
+      ],
+      "notes": "Mở từ /preview/states. InviteAdminDialog thật (u-bao)."
+    },
+    "O03": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O03.png"
+      ],
+      "notes": "Mở từ /preview/states. ClassDrawer thật trong SchoolContextProvider."
+    },
+    "O04": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O04.png"
+      ],
+      "notes": "Mở từ /preview/states. TermDialog thật với học kỳ I 2026–2027."
+    },
+    "O05": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. InviteModal thật."
+    },
+    "O06": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O06.png"
+      ],
+      "notes": "Mở từ /preview/states. AssignDrawer thật."
+    },
+    "O07": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O06.png"
+      ],
+      "notes": "Mở từ /preview/states. Xem trước quyền trong AssignDrawer thật."
+    },
+    "O09": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. GuardianDialog thật cho Minh Anh."
+    },
+    "O10": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. VerifyDialog thật (gd-2)."
+    },
+    "O11": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. TransferDialog thật."
+    },
+    "O12": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. IssueAccessDialog thật."
+    },
+    "O13": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O13.png"
+      ],
+      "notes": "Mở từ /preview/states. QrImage + LinkBox thật."
+    },
+    "O14": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O14.png"
+      ],
+      "notes": "Mở từ /preview/states. RevokeAccessDialog thật (link khác bố/mẹ Minh Anh)."
+    },
+    "O19": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O19.png"
+      ],
+      "notes": "Mở từ /preview/states. ExplainDrawer thật (Minh Anh tuần 4 = 97)."
+    },
+    "O25": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O25.png"
+      ],
+      "notes": "Mở từ /preview/states. LessonChangeDrawer thật (10A1 tiết 2, 06/10/2026)."
+    },
+    "O28": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. FileViewerDialog thật với tệp lớp 10A1."
+    },
+    "O30": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O30.png"
+      ],
+      "notes": "Mở từ /preview/states. ExportFormatDialog thật + exportReportFile (CSV/XLSX thật)."
+    },
+    "O32": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. useUnsavedChanges + hộp thoại của UnsavedChangesProvider."
+    },
+    "O33": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O33.png"
+      ],
+      "notes": "Mở từ /preview/states. ConflictDialog từ lỗi CONFLICT thật của repository."
+    },
+    "O34": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Mở từ /preview/states. RequestSupportDialog thật (u-bao)."
+    }
+  },
+  "states": {
+    "ST01": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "PageSkeleton các biến thể + kịch bản mạng chậm."
+    },
+    "ST02": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "EmptyState có CTA theo quyền."
+    },
+    "ST03": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "EmptyFiltered trên lọc thật danh sách link demo."
+    },
+    "ST04": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Lỗi đọc thật (read error-next) + ErrorState Thử lại."
+    },
+    "ST05": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-live-st05.png"
+      ],
+      "notes": "Lưu thật với fail-next: không báo thành công, giữ nội dung."
+    },
+    "ST06": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-live-st05.png"
+      ],
+      "notes": "Nút lưu loading/khóa khi đang ghi."
+    },
+    "ST07": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-live-st07.png"
+      ],
+      "notes": "Lưu thành công thật → badge Đã lưu cục bộ (mô phỏng)."
+    },
+    "ST08": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-live-st08.png"
+      ],
+      "notes": "Lỗi VALIDATION thật → lỗi đúng ô + ErrorSummary."
+    },
+    "ST09": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "DeniedState."
+    },
+    "ST11": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "Hết phiên demo thật (expire) + khôi phục."
+    },
+    "ST13": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "SuspendedState + link phụ huynh trường tạm dừng."
+    },
+    "ST20": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-O33.png"
+      ],
+      "notes": "Xung đột phiên bản thật → ConflictDialog."
+    },
+    "ST22": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "LinkUnavailable + link hết hạn/thu hồi/không hợp lệ (tab mới)."
+    },
+    "ST23": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "FilePreview trạng thái bị thu hồi."
+    },
+    "ST26": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "DeniedState revoked."
+    },
+    "ST27": {
+      "status": "mock_connected",
+      "route": "/preview/states",
+      "evidence": [
+        "qa/screenshots/DV06-desktop.png"
+      ],
+      "notes": "ConfirmDialog đối tượng + hậu quả + lý do."
+    }
+  }
+}

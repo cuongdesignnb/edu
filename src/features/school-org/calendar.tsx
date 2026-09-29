@@ -38,7 +38,7 @@ export function YearCalendar({ yearId }: { yearId: string }) {
               breadcrumbs={[{ label: "Nhà trường", href: b }, { label: "Năm học", href: `${b}/academic-years` }, { label: d.year.label, href: `${b}/academic-years/${d.year.id}` }, { label: "Học kỳ, tuần & ngày nghỉ" }]}
               actions={<ButtonLink href={`${b}/academic-years/${d.year.id}`} icon={<ArrowLeft className="size-4" />}>Về năm học</ButtonLink>} />
             {!editable && <Callout tone="neutral">{d.year.status === "archived" ? "Năm học đã lưu trữ — chỉ xem." : "Bạn chỉ có quyền xem lịch năm học. Chỉnh mốc cần quyền quản lý năm học."}</Callout>}
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.3fr)]">
               <div className="flex min-w-0 flex-col gap-5">
                 <TermsList d={d} editable={editable} />
                 <MonthView d={d} />
@@ -161,7 +161,7 @@ function WeeksTable({ d, editable }: { d: Detail; editable: boolean }) {
         <>
           <div className="px-4">
             <div className="table-wrap rounded-xl border border-line" role="region" aria-label="Danh sách tuần" tabIndex={0}>
-              <table className="table" style={{ minWidth: 540 }}>
+              <table className="table" style={{ minWidth: 520 }}>
                 <thead><tr><th>Tuần</th><th>Thời gian</th><th>Học kỳ</th><th>Hạn chốt</th><th>Trạng thái</th>{editable && <th className="center">Thao tác</th>}</tr></thead>
                 <tbody>
                   {shown.map((w) => (

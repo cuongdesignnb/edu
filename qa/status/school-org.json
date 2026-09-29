@@ -1,0 +1,228 @@
+{
+  "screens": {
+    "SC01": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a",
+      "evidence": [
+        "qa/screenshots/SC01-desktop.png",
+        "qa/screenshots/SC01-mobile.png",
+        "qa/screenshots/SC01-desktop-u-dung.png",
+        "qa/screenshots/SC01-desktop-u-quan.png"
+      ],
+      "notes": "R02 layout; KPIs from overview.kpi (deltas vs 2025–2026 only when prevYear); quick actions by permission (u-dung: only Công bố thông báo; u-quan: only Nhập danh sách); classesNeedingAction table + row menu; setup donut computed; todayItems replaces fake calendar; announcements; motto banner. Links to imports/new and announcements/new belong to other groups."
+    },
+    "SC02": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/profile",
+      "evidence": [
+        "qa/screenshots/SC02-desktop.png",
+        "qa/screenshots/SC02-mobile.png"
+      ],
+      "notes": "saveProfile with version/CONFLICT dialog; accent color picker + presets + live preview; HTML/JS rejected client+repo; logo is LOCAL preview only (no logo field in School model)."
+    },
+    "SC03": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years",
+      "evidence": [
+        "qa/screenshots/SC03-desktop.png",
+        "qa/screenshots/SC03-mobile.png"
+      ],
+      "notes": "Year cards; activate draft / archive active with confirm; choose working year; link to rollover."
+    },
+    "SC04": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years/new",
+      "evidence": [
+        "qa/screenshots/SC04-desktop.png",
+        "qa/screenshots/SC04-mobile.png",
+        "qa/screenshots/flow-SC04-done.png"
+      ],
+      "notes": "4-step wizard, suggested dates, weeks computed, copy holidays (+1 year), copyRules; never moves students. Tested create 2027–2028."
+    },
+    "SC05": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years/y-a-2026",
+      "evidence": [
+        "qa/screenshots/SC05-desktop.png",
+        "qa/screenshots/SC05-mobile.png",
+        "qa/screenshots/SC05-drawer-desktop.png",
+        "qa/screenshots/SC05-drawer-mobile.png",
+        "qa/screenshots/flow-SC05-created.png"
+      ],
+      "notes": "R03: completeness stepper from real data, year card, terms accordion with weeks timeline + O04 edit, grouped class table, O03 drawer (Combobox GVCN optional → Nháp). Tested create 10A4."
+    },
+    "SC06": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years/y-a-2026/calendar",
+      "evidence": [
+        "qa/screenshots/SC06-desktop.png",
+        "qa/screenshots/SC06-mobile.png"
+      ],
+      "notes": "Terms edit (overlap/locked errors verified), month view, weeks table with deadline edit (locked disabled), holidays add/remove with confirm."
+    },
+    "SC07": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years/y-a-2026/rollover",
+      "evidence": [
+        "qa/screenshots/SC07-desktop.png",
+        "qa/screenshots/SC07-mobile.png"
+      ],
+      "notes": "Target year select / guide to SC04 when none; per-class + per-student decisions; preview counts & target sizes; apply via ConfirmDialog. Apply path NOT exercised end-to-end (needs classes in target year; UI guides to create them)."
+    },
+    "SC08": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/dictionaries",
+      "evidence": [
+        "qa/screenshots/SC08-desktop.png",
+        "qa/screenshots/SC08-mobile.png"
+      ],
+      "notes": "Tabs grade/subject/room, search/status filter/paging, add/edit modal (duplicate code error verified), deactivate/reactivate; no delete."
+    },
+    "SC09": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/classes",
+      "evidence": [
+        "qa/screenshots/SC09-desktop.png",
+        "qa/screenshots/SC09-mobile.png",
+        "qa/screenshots/SC09-desktop-u-dung.png"
+      ],
+      "notes": "Filters year/grade/GVCN/status, search, sort, paging; O03 drawer (?new=1&year=); activate (needs GVCN), back to draft, archive confirm; Mở không gian lớp link."
+    },
+    "SC10": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/teachers",
+      "evidence": [
+        "qa/screenshots/SC10-desktop.png",
+        "qa/screenshots/SC10-mobile.png",
+        "qa/screenshots/SC10-panel-mobile.png",
+        "qa/screenshots/SC10-desktop-u-quan.png"
+      ],
+      "notes": "R04: 4 KPIs, filters incl. Lời mời, row select → Chi tiết phân quyền panel (tabs Phân quyền/Thông tin/Lịch sử, Vietnamese labels, no toggles), invitations panel with revoke, recent changes (school-org-extra), invite O05, CSV/XLSX export of filtered list (verified). Mobile: Drawer. KPI row is full width (R04 puts 3 KPIs left of panel)."
+    },
+    "SC11": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/teachers/m-a-lan",
+      "evidence": [
+        "qa/screenshots/SC11-desktop.png",
+        "qa/screenshots/SC11-mobile.png"
+      ],
+      "notes": "Assignments table with status filter, O06/O07 assign, O08 revoke with reason, membership suspend/unlock/revoke (not self; last-admin error shown), school roles modal (no self/escalation), permission summary, other schools count, history."
+    },
+    "SC12": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/assignments",
+      "evidence": [
+        "qa/screenshots/SC12-desktop.png",
+        "qa/screenshots/SC12-mobile.png",
+        "qa/screenshots/flow-SC12-preview.png"
+      ],
+      "notes": "Classes × homeroom+subjects, validity, conflicts column, empty cell → prefilled assign drawer (verified), cell menu revoke/handover; mobile accordion cards; year via SchoolYearBar."
+    },
+    "SC13": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/roles",
+      "evidence": [
+        "qa/screenshots/SC13-desktop.png",
+        "qa/screenshots/SC13-mobile.png"
+      ],
+      "notes": "School vs assignment templates, counts."
+    },
+    "SC14": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/roles/demo-school-a-role-academic",
+      "evidence": [
+        "qa/screenshots/SC14-desktop.png",
+        "qa/screenshots/SC14-mobile.png",
+        "qa/screenshots/SC14-desktop-u-dung.png"
+      ],
+      "notes": "Grouped checklist, technical keys in collapsible, diff + reason + confirm (verified save v2), own-role and escalation blocked, read-only for non role.manage, history."
+    },
+    "SC15": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/handovers",
+      "evidence": [
+        "qa/screenshots/SC15-desktop.png",
+        "qa/screenshots/SC15-mobile.png",
+        "qa/screenshots/flow-SC15-done.png"
+      ],
+      "notes": "5-step wizard (class → current → new → date/note → confirm), open items preview, handover history (verified 11A1)."
+    }
+  },
+  "overlays": {
+    "O03": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/academic-years/y-a-2026",
+      "evidence": [
+        "qa/screenshots/SC05-drawer-desktop.png"
+      ],
+      "notes": "ClassDrawer create/edit, dirty guard, conflict dialog"
+    },
+    "O04": {
+      "status": "mock_connected",
+      "route": "/school/demo-school-a/academic-years/y-a-2026/calendar",
+      "evidence": [],
+      "notes": "TermDialog + DeadlineDialog; overlap error verified by flow script"
+    },
+    "O05": {
+      "status": "mock_connected",
+      "route": "/school/demo-school-a/teachers",
+      "evidence": [],
+      "notes": "InviteModal; roles exceeding inviter disabled; verified by flow script"
+    },
+    "O06": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/assignments",
+      "evidence": [
+        "qa/screenshots/flow-SC12-preview.png"
+      ],
+      "notes": "AssignDrawer"
+    },
+    "O07": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/assignments",
+      "evidence": [
+        "qa/screenshots/flow-SC12-preview.png"
+      ],
+      "notes": "preview added/kept/not included"
+    },
+    "O08": {
+      "status": "mock_connected",
+      "route": "/school/demo-school-a/teachers/m-a-lan",
+      "evidence": [],
+      "notes": "ConfirmDialog with required reason for assignment/membership revoke"
+    }
+  },
+  "states": {
+    "ST01": {
+      "status": "built"
+    },
+    "ST02": {
+      "status": "built"
+    },
+    "ST03": {
+      "status": "built"
+    },
+    "ST04": {
+      "status": "built"
+    },
+    "ST08": {
+      "status": "mock_connected",
+      "notes": "ErrorSummary + inline"
+    },
+    "ST09": {
+      "status": "built",
+      "notes": "DeniedState / read-only callouts"
+    },
+    "ST20": {
+      "status": "built",
+      "notes": "ConflictDialog on SC02/SC14/O03"
+    },
+    "ST24": {
+      "status": "built",
+      "notes": "archived year read-only"
+    },
+    "ST27": {
+      "status": "built"
+    }
+  }
+}

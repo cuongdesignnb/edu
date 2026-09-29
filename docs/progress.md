@@ -1,15 +1,15 @@
 # Tiến độ triển khai theo ID
 
-> Tự sinh bởi `npm run progress` lúc 2026-09-29T06:42:08.315Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
+> Tự sinh bởi `npm run progress` lúc 2026-09-29T06:47:14.203Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
 
 | Nhóm | Tổng | Đã nối mock trở lên | Đã QA (ảnh) | Đã QA (E2E) |
 |---|---|---|---|---|
-| Màn hình core | 118 | 103 | 103 | 0 |
-| Màn hình internal | 7 | 1 | 0 | 0 |
+| Màn hình core | 118 | 118 | 118 | 0 |
+| Màn hình internal | 7 | 7 | 6 | 0 |
 | Màn hình optional | 3 | 0 | 0 | 0 |
-| Component | 75 | 15 | 10 | 0 |
-| Overlay | 34 | 27 | 25 | 0 |
-| Trạng thái | 28 | 13 | 12 | 0 |
+| Component | 75 | 65 | 10 | 0 |
+| Overlay | 34 | 34 | 28 | 0 |
+| Trạng thái | 28 | 24 | 12 | 0 |
 
 ## Màn hình
 
@@ -36,21 +36,21 @@
 | PL09 | Nhật ký nền tảng | core | `/platform/audit` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PL09-desktop.png) [ảnh](../qa/screenshots/PL09-mobile.png) [ảnh](../qa/screenshots/PL09-detail-drawer.png) [ảnh](../qa/screenshots/PL09-detail-drawer-mobile.png) | Lọc tìm kiếm/người thao tác/từ–đến ngày, phân trang, drawer chi tiết với AuditDiff (nhãn tiếng Việt), xuất CSV/XLSX toàn bộ kết quả lọc (đã kiểm tải về bằng Playwright). |
 | PL10 | Tình trạng vận hành | core | `/platform/operations` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PL10-desktop.png) [ảnh](../qa/screenshots/PL10-mobile.png) [ảnh](../qa/screenshots/PL10-restore-explained.png) | Dịch vụ/sao lưu mô phỏng có nhãn; checklist tính từ dữ liệu demo; thông tin kho demo thật; nút Sao lưu/Khôi phục chỉ mở giải thích, không thực thi. |
 | PL11 | Cấu hình nền tảng | core | `/platform/settings` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PL11-desktop.png) [ảnh](../qa/screenshots/PL11-mobile.png) [ảnh](../qa/screenshots/PL11-preview-validation.png) | Form thương hiệu/liên hệ hỗ trợ/ghi chú, xem trước trực tiếp, lưu có version + conflict + guard; không có gói cước/thanh toán. |
-| SC01 | Tổng quan trường | core | — | chưa làm | — |  |
-| SC02 | Thông tin và nhận diện trường | core | — | chưa làm | — |  |
-| SC03 | Danh sách năm học | core | — | chưa làm | — |  |
-| SC04 | Thiết lập năm học | core | — | chưa làm | — |  |
-| SC05 | Chi tiết năm học | core | — | chưa làm | — |  |
-| SC06 | Học kỳ, tuần và ngày nghỉ | core | — | chưa làm | — |  |
-| SC07 | Kết thúc năm và chuẩn bị năm mới | core | — | chưa làm | — |  |
-| SC08 | Danh mục khối, môn, phòng | core | — | chưa làm | — |  |
-| SC09 | Danh sách lớp | core | — | chưa làm | — |  |
-| SC10 | Danh sách giáo viên | core | — | chưa làm | — |  |
-| SC11 | Hồ sơ và phân công giáo viên | core | — | chưa làm | — |  |
-| SC12 | Ma trận phân công | core | — | chưa làm | — |  |
-| SC13 | Mẫu quyền nhà trường | core | — | chưa làm | — |  |
-| SC14 | Chi tiết mẫu quyền | core | — | chưa làm | — |  |
-| SC15 | Bàn giao giáo viên chủ nhiệm | core | — | chưa làm | — |  |
+| SC01 | Tổng quan trường | core | `/school/demo-school-a` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC01-desktop.png) [ảnh](../qa/screenshots/SC01-mobile.png) [ảnh](../qa/screenshots/SC01-desktop-u-dung.png) [ảnh](../qa/screenshots/SC01-desktop-u-quan.png) | R02 layout; KPIs from overview.kpi (deltas vs 2025–2026 only when prevYear); quick actions by permission (u-dung: only Công bố thông báo; u-quan: only Nhập danh sách); classesNeedingAction table + row menu; setup donut computed; todayItems replaces fake calendar; announcements; motto banner. Links to imports/new and announcements/new belong to other groups. |
+| SC02 | Thông tin và nhận diện trường | core | `/school/demo-school-a/profile` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC02-desktop.png) [ảnh](../qa/screenshots/SC02-mobile.png) | saveProfile with version/CONFLICT dialog; accent color picker + presets + live preview; HTML/JS rejected client+repo; logo is LOCAL preview only (no logo field in School model). |
+| SC03 | Danh sách năm học | core | `/school/demo-school-a/academic-years` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC03-desktop.png) [ảnh](../qa/screenshots/SC03-mobile.png) | Year cards; activate draft / archive active with confirm; choose working year; link to rollover. |
+| SC04 | Thiết lập năm học | core | `/school/demo-school-a/academic-years/new` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC04-desktop.png) [ảnh](../qa/screenshots/SC04-mobile.png) [ảnh](../qa/screenshots/flow-SC04-done.png) | 4-step wizard, suggested dates, weeks computed, copy holidays (+1 year), copyRules; never moves students. Tested create 2027–2028. |
+| SC05 | Chi tiết năm học | core | `/school/demo-school-a/academic-years/y-a-2026` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC05-desktop.png) [ảnh](../qa/screenshots/SC05-mobile.png) [ảnh](../qa/screenshots/SC05-drawer-desktop.png) [ảnh](../qa/screenshots/SC05-drawer-mobile.png) [ảnh](../qa/screenshots/flow-SC05-created.png) | R03: completeness stepper from real data, year card, terms accordion with weeks timeline + O04 edit, grouped class table, O03 drawer (Combobox GVCN optional → Nháp). Tested create 10A4. |
+| SC06 | Học kỳ, tuần và ngày nghỉ | core | `/school/demo-school-a/academic-years/y-a-2026/calendar` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC06-desktop.png) [ảnh](../qa/screenshots/SC06-mobile.png) | Terms edit (overlap/locked errors verified), month view, weeks table with deadline edit (locked disabled), holidays add/remove with confirm. |
+| SC07 | Kết thúc năm và chuẩn bị năm mới | core | `/school/demo-school-a/academic-years/y-a-2026/rollover` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC07-desktop.png) [ảnh](../qa/screenshots/SC07-mobile.png) | Target year select / guide to SC04 when none; per-class + per-student decisions; preview counts & target sizes; apply via ConfirmDialog. Apply path NOT exercised end-to-end (needs classes in target year; UI guides to create them). |
+| SC08 | Danh mục khối, môn, phòng | core | `/school/demo-school-a/dictionaries` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC08-desktop.png) [ảnh](../qa/screenshots/SC08-mobile.png) | Tabs grade/subject/room, search/status filter/paging, add/edit modal (duplicate code error verified), deactivate/reactivate; no delete. |
+| SC09 | Danh sách lớp | core | `/school/demo-school-a/classes` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC09-desktop.png) [ảnh](../qa/screenshots/SC09-mobile.png) [ảnh](../qa/screenshots/SC09-desktop-u-dung.png) | Filters year/grade/GVCN/status, search, sort, paging; O03 drawer (?new=1&year=); activate (needs GVCN), back to draft, archive confirm; Mở không gian lớp link. |
+| SC10 | Danh sách giáo viên | core | `/school/demo-school-a/teachers` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC10-desktop.png) [ảnh](../qa/screenshots/SC10-mobile.png) [ảnh](../qa/screenshots/SC10-panel-mobile.png) [ảnh](../qa/screenshots/SC10-desktop-u-quan.png) | R04: 4 KPIs, filters incl. Lời mời, row select → Chi tiết phân quyền panel (tabs Phân quyền/Thông tin/Lịch sử, Vietnamese labels, no toggles), invitations panel with revoke, recent changes (school-org-extra), invite O05, CSV/XLSX export of filtered list (verified). Mobile: Drawer. KPI row is full width (R04 puts 3 KPIs left of panel). |
+| SC11 | Hồ sơ và phân công giáo viên | core | `/school/demo-school-a/teachers/m-a-lan` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC11-desktop.png) [ảnh](../qa/screenshots/SC11-mobile.png) | Assignments table with status filter, O06/O07 assign, O08 revoke with reason, membership suspend/unlock/revoke (not self; last-admin error shown), school roles modal (no self/escalation), permission summary, other schools count, history. |
+| SC12 | Ma trận phân công | core | `/school/demo-school-a/assignments` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC12-desktop.png) [ảnh](../qa/screenshots/SC12-mobile.png) [ảnh](../qa/screenshots/flow-SC12-preview.png) | Classes × homeroom+subjects, validity, conflicts column, empty cell → prefilled assign drawer (verified), cell menu revoke/handover; mobile accordion cards; year via SchoolYearBar. |
+| SC13 | Mẫu quyền nhà trường | core | `/school/demo-school-a/roles` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC13-desktop.png) [ảnh](../qa/screenshots/SC13-mobile.png) | School vs assignment templates, counts. |
+| SC14 | Chi tiết mẫu quyền | core | `/school/demo-school-a/roles/demo-school-a-role-academic` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC14-desktop.png) [ảnh](../qa/screenshots/SC14-mobile.png) [ảnh](../qa/screenshots/SC14-desktop-u-dung.png) | Grouped checklist, technical keys in collapsible, diff + reason + confirm (verified save v2), own-role and escalation blocked, read-only for non role.manage, history. |
+| SC15 | Bàn giao giáo viên chủ nhiệm | core | `/school/demo-school-a/handovers` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC15-desktop.png) [ảnh](../qa/screenshots/SC15-mobile.png) [ảnh](../qa/screenshots/flow-SC15-done.png) | 5-step wizard (class → current → new → date/note → confirm), open items preview, handover history (verified 11A1). |
 | SC16 | Danh sách học sinh | core | `/school/:schoolId/students` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC16-desktop.png) [ảnh](../qa/screenshots/SC16-mobile.png) [ảnh](../qa/screenshots/SC16-u-dung.png) | Tìm tên/mã, lọc lớp/trạng thái/chưa xác minh giám hộ, sắp xếp tên/mã/lớp, phân trang repo, chọn trang vs tất cả kết quả lọc, xuất CSV/XLSX; trùng tên phân biệt bằng mã+ngày sinh+lớp; menu dòng mở hồ sơ/sửa/chuyển lớp (O11). |
 | SC17 | Thêm học sinh | core | `/school/:schoolId/students/new` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC17-desktop.png) [ảnh](../qa/screenshots/SC17-mobile.png) | Trường tối thiểu + giám hộ tùy chọn (lưu chưa xác minh); validate client + fieldErrors repo; cảnh báo chưa lưu; thành công → hồ sơ. |
 | SC18 | Hồ sơ học sinh | core | `/school/:schoolId/students/:studentId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC18-desktop.png) [ảnh](../qa/screenshots/SC18-mobile.png) [ảnh](../qa/screenshots/SC18-desktop-full.png) [ảnh](../qa/screenshots/SC18-u-dung.png) [ảnh](../qa/screenshots/SC18-u-quan.png) | So với R07 ở 1448×1086: bố cục header/thông tin/giám hộ/lịch sử lớp/quyền xem/nội dung được xem/nhật ký. Khác ảnh có chủ đích: không CCCD/dân tộc/email/SĐT/địa chỉ HS, không IP, không 'Kết quả học tập', QR ẩn tới khi bấm 'Hiện link/QR demo', ảnh chân dung thay bằng avatar chữ. |
@@ -134,12 +134,12 @@
 | SY07 | Bảo trì mô phỏng | core | `/maintenance` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SY07-desktop.png) [ảnh](../qa/screenshots/SY07-mobile.png) [ảnh](../qa/screenshots/SY07-retry-ok.png) | Không đưa ETA; 'Thử lại' kiểm kho demo cục bộ; về nơi an toàn. |
 | SY08 | Không tìm thấy và ranh giới lỗi | core | `/khong-ton-tai-demo` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SY08-desktop.png) [ảnh](../qa/screenshots/SY08-mobile.png) | app/not-found.tsx đã chụp. app/error.tsx (retry, không stack trace) và app/global-error.tsx (html/body riêng) đã dựng nhưng chưa chụp — không có cách kích hoạt lỗi render chủ đích an toàn. |
 | DV01 | Chọn vai trò và kịch bản demo | internal | `/demo` | đã nối mock | — | Personas (9), parent demo links from repository, write/read scenarios, DemoClock presets, reset seed with confirm. |
-| DV02 | Thư viện ảnh tham chiếu | internal | — | chưa làm | — |  |
-| DV03 | Sitemap triển khai | internal | — | chưa làm | — |  |
-| DV04 | Checklist giao diện | internal | — | chưa làm | — |  |
-| DV05 | Thư viện component | internal | — | chưa làm | — |  |
-| DV06 | Trạng thái và tương tác | internal | — | chưa làm | — |  |
-| DV07 | Các luồng nghiệp vụ demo | internal | — | chưa làm | — |  |
+| DV02 | Thư viện ảnh tham chiếu | internal | `/preview/references` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV02-desktop.png) [ảnh](../qa/screenshots/DV02-mobile.png) | 15 ảnh theo manifest (10/4/1), mã, kích thước, dung lượng, xem cỡ đầy đủ (Modal) + mở tab mới, ghi chú sửa sai theo docs/03, số màn hình tham chiếu (tính từ registry, link sang sitemap). Bản sao ảnh ở public/preview-references (scripts/copy-references.mjs, kiểm SHA-256). |
+| DV03 | Sitemap triển khai | internal | `/preview/sitemap` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV03-desktop.png) [ảnh](../qa/screenshots/DV03-mobile.png) | Cây route tự sinh từ REGISTRY theo 9 khu vực (cha = route tiền tố dài nhất), dạng cây/danh sách, tìm kiếm (?q=), lọc khu vực/trạng thái; mỗi nút: ID, tên, cơ sở, phạm vi, persona, trạng thái progress; Mở = signIn persona rồi điều hướng, phụ huynh mở tab mới; EX01–03 Tắt mặc định không link. |
+| DV04 | Checklist giao diện | internal | `/preview/checklist` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV04-desktop.png) [ảnh](../qa/screenshots/DV04-mobile.png) | 4 tab (128/75/34/28) từ manifest + progress.json; KPI tính (tổng lõi+nội bộ, không tính optional; đã nối mock, đã QA, chưa làm; theo phạm vi); lọc derived/chưa dựng/chưa QA/nhóm/trạng thái/tìm; phân trang; bằng chứng link ảnh (mirror qua copy-references.mjs). |
+| DV05 | Thư viện component | internal | `/preview/components` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV05-desktop.png) [ảnh](../qa/screenshots/DV05-mobile.png) [ảnh](../qa/screenshots/DV05-C025.png) [ảnh](../qa/screenshots/DV05-C055.png) [ảnh](../qa/screenshots/DV05-C059.png) [ảnh](../qa/screenshots/DV05-C062.png) | 75 component theo nhóm docs/02, token màu/chữ/khoảng cách/bo góc/đổ bóng đọc từ CSS variables, ghi chú bàn phím/điện thoại, 58 ví dụ chạy trực tiếp (component dùng chung + component nghiệp vụ của nhóm khác + dữ liệu repository), phần còn lại mở route thật; lọc/tìm. |
+| DV06 | Trạng thái và tương tác | internal | `/preview/states` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV06-desktop.png) [ảnh](../qa/screenshots/DV06-mobile.png) [ảnh](../qa/screenshots/DV06-live-st05.png) [ảnh](../qa/screenshots/DV06-live-st07.png) [ảnh](../qa/screenshots/DV06-live-st08.png) [ảnh](../qa/screenshots/DV06-O33.png) [ảnh](../qa/screenshots/DV06-O19.png) | Kịch bản ghi/đọc (setScenario), biểu mẫu lưu thật (sessionRepo.updateProfile) cho ST05/06/07/08/20 + O32/O33, ST01–ST28 ví dụ, O01–O34: 20 overlay thật của các nhóm, 14 mẫu tương đương (không ghi dữ liệu, link route thật). |
+| DV07 | Các luồng nghiệp vụ demo | internal | `/preview/flows` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/DV07-desktop.png) [ảnh](../qa/screenshots/DV07-mobile.png) | F01–F12: mục tiêu, vai trò, bước có nút đổi persona + mở route fixture (phụ huynh tab mới, kế thừa ngữ cảnh link), kỳ vọng theo docs/05 (97 → 102, thu hồi link mẹ/link bố độc lập), ô Đã thử lưu localStorage — không phải kiểm thử tự động. |
 | EX01 | Kết quả học tập tổng hợp | optional | — | chưa làm | — | Tắt mặc định (ENABLE_ACADEMIC_RESULTS_PREVIEW=false) — không triển khai. |
 | EX02 | Kết quả môn được phân công | optional | — | chưa làm | — | Tắt mặc định (ENABLE_ACADEMIC_RESULTS_PREVIEW=false) — không triển khai. |
 | EX03 | Kết quả học tập đã công bố của con | optional | — | chưa làm | — | Tắt mặc định (ENABLE_ACADEMIC_RESULTS_PREVIEW=false) — không triển khai. |
@@ -150,148 +150,148 @@
 |---|---|---|---|---|
 | C001 | AppShell | chưa làm |   |  |
 | C002 | Sidebar | chưa làm |   |  |
-| C003 | Topbar | chưa làm |   |  |
-| C004 | ContextSwitcher | chưa làm |   |  |
-| C005 | Breadcrumbs | chưa làm |   |  |
-| C006 | PageHeader | chưa làm |   |  |
-| C007 | TabsAndSectionNav | chưa làm |   |  |
-| C008 | GlobalSearch | chưa làm |   |  |
-| C009 | UserMenu | chưa làm |   |  |
-| C010 | FooterAndHelp | chưa làm |   |  |
-| C011 | Button | chưa làm |   |  |
-| C012 | DropdownActionMenu | chưa làm |   |  |
-| C013 | TextField | chưa làm |   |  |
-| C014 | Textarea | chưa làm |   |  |
-| C015 | SelectCombobox | chưa làm |   |  |
-| C016 | CheckboxRadioSwitch | chưa làm |   |  |
-| C017 | DateTimePicker | chưa làm |   |  |
-| C018 | NumberInput | chưa làm |   |  |
-| C019 | FormFieldAndErrorSummary | chưa làm |   |  |
-| C020 | FileDropzone | chưa làm |   |  |
-| C021 | RichTextEditor | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx (RichTextEditor)` [ảnh](../qa/screenshots/C071-composer-filled.png) | structured blocks p/h/li, toolbar, preview |
-| C022 | AudienceSelector | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx (AudienceSelector)` [ảnh](../qa/screenshots/SC34-desktop.png) |  |
-| C023 | FilterBar | chưa làm |   |  |
+| C003 | Topbar | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-layout.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C004 | ContextSwitcher | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-layout.png) | Ví dụ chạy trực tiếp ở /preview/components. SchoolYearBar thật trong SchoolContextProvider (u-hanh). |
+| C005 | Breadcrumbs | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-layout.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C006 | PageHeader | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C007 | TabsAndSectionNav | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C008 | GlobalSearch | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C009 | UserMenu | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C010 | FooterAndHelp | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C011 | Button | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C012 | DropdownActionMenu | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C013 | TextField | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C014 | Textarea | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C015 | SelectCombobox | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. Combobox đơn/nhiều với lớp trường A từ schoolRepo.classOptions. |
+| C016 | CheckboxRadioSwitch | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C017 | DateTimePicker | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C018 | NumberInput | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C019 | FormFieldAndErrorSummary | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C020 | FileDropzone | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C021 | RichTextEditor | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx (RichTextEditor)` [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/DV05-desktop.png) | structured blocks p/h/li, toolbar, preview / Ví dụ chạy trực tiếp ở /preview/components. RichTextEditor của nhóm thông báo. |
+| C022 | AudienceSelector | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx (AudienceSelector)` [ảnh](../qa/screenshots/SC34-desktop.png) [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. AudienceSelector thật + composeOptions. |
+| C023 | FilterBar | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. FilterBar lọc thật qua studentsRepo.list. |
 | C024 | StickyActionBar | chưa làm |   |  |
-| C025 | DataTable | chưa làm |   |  |
-| C026 | Pagination | chưa làm |   |  |
-| C027 | BulkSelectionBar | chưa làm |   |  |
-| C028 | KpiCard | chưa làm |   |  |
-| C029 | StatusBadge | chưa làm |   |  |
-| C030 | AvatarAndIdentity | chưa làm |   |  |
-| C031 | CardAndPanel | chưa làm |   |  |
-| C032 | TimelineAndAuditDiff | chưa làm |   |  |
-| C033 | ProgressAndStepper | chưa làm |   |  |
-| C034 | Charts | chưa làm |   |  |
-| C035 | FilePreviewAndDownload | chưa làm |   |  |
-| C036 | EmptyFilteredList | chưa làm |   |  |
-| C037 | ModalDialog | chưa làm |   |  |
-| C038 | SideDrawer | chưa làm |   |  |
-| C039 | MobileBottomSheet | chưa làm |   |  |
-| C040 | ConfirmDialog | chưa làm |   |  |
-| C041 | ToastAndInlineFeedback | chưa làm |   |  |
-| C042 | LoadingSkeleton | chưa làm |   |  |
-| C043 | EmptyState | chưa làm |   |  |
-| C044 | ErrorAndDeniedState | chưa làm |   |  |
-| C045 | UnsavedChangesGuard | chưa làm |   |  |
-| C046 | VersionConflictResolver | chưa làm |   |  |
-| C047 | DemoScenarioBanner | chưa làm |   |  |
-| C048 | SchoolCardAndOnboarding | chưa làm |   |  |
-| C049 | TeacherAssignmentPicker | chưa làm |   |  |
-| C050 | PermissionMatrix | chưa làm |   |  |
-| C051 | ClassCardAndContextHeader | chưa làm |   |  |
+| C025 | DataTable | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-C025.png) | Ví dụ chạy trực tiếp ở /preview/components. DataTable + useListQuery + studentsRepo.list (u-hanh), sort/lọc/phân trang/chọn. |
+| C026 | Pagination | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C025. |
+| C027 | BulkSelectionBar | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C025. |
+| C028 | KpiCard | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. KPI link tra cứu từ studentsRepo.accessList. |
+| C029 | StatusBadge | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C030 | AvatarAndIdentity | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C031 | CardAndPanel | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C032 | TimelineAndAuditDiff | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. Timeline + AuditDiff từ lịch sử người giám hộ gd-2. |
+| C033 | ProgressAndStepper | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C034 | Charts | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. ChartCard stack từ KPI link, có Xem dạng bảng. |
+| C035 | FilePreviewAndDownload | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. FilePreview + downloadFileAsset với tệp lớp 10A1 (u-lan). |
+| C036 | EmptyFilteredList | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C037 | ModalDialog | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C038 | SideDrawer | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C039 | MobileBottomSheet | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C040 | ConfirmDialog | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C041 | ToastAndInlineFeedback | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C042 | LoadingSkeleton | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C043 | EmptyState | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C044 | ErrorAndDeniedState | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C045 | UnsavedChangesGuard | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. useUnsavedChanges thật (hộp thoại O32 của provider). |
+| C046 | VersionConflictResolver | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. Xung đột thật: kịch bản conflict-next + sessionRepo.updateProfile → ConflictDialog. |
+| C047 | DemoScenarioBanner | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. |
+| C048 | SchoolCardAndOnboarding | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. SchoolsTable của nhóm platform (u-bao). |
+| C049 | TeacherAssignmentPicker | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. AssignDrawer thật. |
+| C050 | PermissionMatrix | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. PermissionSummary với staffRepo.member(m-a-lan). |
+| C051 | ClassCardAndContextHeader | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. ClassHeroCard với classroomRepo.teacherClasses (u-lan). |
 | C052 | StudentRosterAndQuickView | chưa làm |   |  |
 | C053 | StudentProfileSections | chưa làm |   |  |
 | C054 | GuardianRelationshipCard | chưa làm |   |  |
-| C055 | ParentAccessCard | chưa làm |   |  |
-| C056 | QrAndLinkDisplay | chưa làm |   |  |
-| C057 | ParentAccessLog | chưa làm |   |  |
-| C058 | AttendanceRow | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-desktop.png) | features/attendance/status.tsx StatusButtons |
-| C059 | AttendanceMobileCard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-mobile-full.png) |  |
+| C055 | ParentAccessCard | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-C055.png) | Ví dụ chạy trực tiếp ở /preview/components. QrPrintCard/LinkBox/QrImage + nhật ký từ studentsRepo.access(pa-minhanh-me). |
+| C056 | QrAndLinkDisplay | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-C055.png) | Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C055. |
+| C057 | ParentAccessLog | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-C055.png) | Ví dụ chạy trực tiếp ở /preview/components. Trong ví dụ C055 (Timeline + logLabel). |
+| C058 | AttendanceRow | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-desktop.png) [ảnh](../qa/screenshots/DV05-desktop.png) | features/attendance/status.tsx StatusButtons / Ví dụ chạy trực tiếp ở /preview/components. StatusButtons/StatusLegend của nhóm điểm danh trên roster 10A1 (không lưu). |
+| C059 | AttendanceMobileCard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-mobile-full.png) [ảnh](../qa/screenshots/DV05-C059.png) | Ví dụ chạy trực tiếp ở /preview/components. StatusButtons large (thẻ điện thoại). |
 | C060 | ConductRulePicker | đã nối mock |   | Danh sách quy định theo nhóm trong CL06 (src/features/conduct/record-screen.tsx) |
 | C061 | ConductRecordForm | đã nối mock |   | src/features/conduct/record-form.tsx |
-| C062 | WeeklyConductTable | đã nối mock |   | src/features/conduct/week-table.tsx |
+| C062 | WeeklyConductTable | đã nối mock |  [ảnh](../qa/screenshots/DV05-C062.png) | src/features/conduct/week-table.tsx / Ví dụ chạy trực tiếp ở /preview/components. WeeklyConductTable + ExplainDrawer với snapshot tuần 4 (u-lan). |
 | C063 | ReviewAndPublishPanel | đã nối mock |   | src/features/conduct/publish.tsx + review-screen.tsx |
-| C064 | PublishedSnapshotAndDiff | đã nối mock |   | src/features/conduct/publications.tsx |
+| C064 | PublishedSnapshotAndDiff | đã nối mock |  [ảnh](../qa/screenshots/DV05-C062.png) | src/features/conduct/publications.tsx / Ví dụ chạy trực tiếp ở /preview/components. PeriodStateBanner + ExplainDrawer với snapshot đã công bố. |
 | C065 | GroupsAndRolesBoard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL13-desktop.png) |  |
 | C066 | SeatingMapEditor | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL14-desktop.png) |  |
 | C067 | TimetableGridAndDayList | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL15-desktop.png) [ảnh](../qa/screenshots/CL15-mobile.png) |  |
 | C068 | DutyAssignmentBoard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL16-desktop.png) |  |
 | C069 | ActivityProgressCard | chưa làm |   |  |
 | C070 | EvidenceReviewPanel | chưa làm |   |  |
-| C071 | AnnouncementComposerAndPreview | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx` [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/C071-composer-preview-mobile.png) | AnnouncementComposer; optional onCancel prop added on lead request |
+| C071 | AnnouncementComposerAndPreview | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx` [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/C071-composer-preview-mobile.png) [ảnh](../qa/screenshots/DV05-desktop.png) | AnnouncementComposer; optional onCancel prop added on lead request / Ví dụ chạy trực tiếp ở /preview/components. ParentPreview với an-1 + AnnouncementComposer thật (mở khi bấm). |
 | C072 | ImportWizardAndMapping | chưa làm |   |  |
-| C073 | TransferAndHandoverWizard | chưa làm |   |  |
-| C074 | ReportViewerAndExport | đã QA (ảnh chụp) | `src/features/reports/viewer.tsx` [ảnh](../qa/screenshots/SC38-desktop.png) [ảnh](../qa/screenshots/SC38-print-preview.png) [ảnh](../qa/screenshots/O30-export-format.png) | ReportViewer; optional canExport prop (default true) |
+| C073 | TransferAndHandoverWizard | đã nối mock | `/preview/components` [ảnh](../qa/screenshots/DV05-desktop.png) | Ví dụ chạy trực tiếp ở /preview/components. TransferDialog thật (students). |
+| C074 | ReportViewerAndExport | đã QA (ảnh chụp) | `src/features/reports/viewer.tsx` [ảnh](../qa/screenshots/SC38-desktop.png) [ảnh](../qa/screenshots/SC38-print-preview.png) [ảnh](../qa/screenshots/O30-export-format.png) [ảnh](../qa/screenshots/DV05-desktop.png) | ReportViewer; optional canExport prop (default true) / Ví dụ chạy trực tiếp ở /preview/components. ReportViewer với reportsRepo.school attendance, xuất CSV/XLSX thật. |
 | C075 | ParentReadOnlyShell | chưa làm |   |  |
 
 ## Overlay / form
 
 | ID | Tên | Trạng thái | Bằng chứng / nơi dùng | Ghi chú |
 |---|---|---|---|---|
-| O01 | Thay đổi trạng thái trường | đã QA (ảnh chụp) | `/platform/schools/demo-school-a` [ảnh](../qa/screenshots/O01-suspend-confirm.png) [ảnh](../qa/screenshots/PL04-activate-blocked.png) | Dùng lại src/features/platform/school-status-dialog.tsx có sẵn. / SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository. |
-| O02 | Mời / thay quản trị trường | đã QA (ảnh chụp) | `/platform/schools/demo-school-a/admins` [ảnh](../qa/screenshots/O02-invite-admin.png) [ảnh](../qa/screenshots/O02-replace-admin.png) [ảnh](../qa/screenshots/PL05-after-invite.png) | src/features/platform/invite-admin-dialog.tsx — mời/thay, thời hạn, không gửi email, không để mất quản trị cuối. |
-| O03 | Tạo / sửa lớp | chưa làm |   |  |
-| O04 | Học kỳ / mốc tuần / hạn chốt | chưa làm |   |  |
-| O05 | Mời giáo viên | chưa làm |   |  |
-| O06 | Gán phân công | chưa làm |   |  |
-| O07 | Xem thay đổi quyền | chưa làm |   |  |
-| O08 | Thu hồi thành viên / phân công | chưa làm |   |  |
-| O09 | Thêm / sửa người giám hộ | đã nối mock | `SC18/SC22`  | Thêm/sửa giám hộ; không tự xác minh. |
-| O10 | Xác minh / thu hồi quan hệ | đã nối mock | `SC18/SC22`  | Xác minh (căn cứ bắt buộc) / thu hồi (thu hồi link của quan hệ đó). |
-| O11 | Chuyển lớp / ngừng theo học | đã QA (ảnh chụp) | `SC16/SC18/SC20` [ảnh](../qa/screenshots/O11-transfer-validation.png) | TransferDialog (features/class-org/dialogs.tsx) — request only (applyNow=false), same-year targets with capacity from teacherExtraRepo.transferTargets. |
-| O12 | Cấp đường dẫn riêng | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O12-desktop.png) [ảnh](../qa/screenshots/O12-unverified-desktop.png) [ảnh](../qa/screenshots/O12-mobile.png) | Chỉ chọn được quan hệ đã xác minh; mục mặc định theo chính sách; hạn ≤ hết năm học. |
-| O13 | Kết quả cấp link / in QR | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O13-desktop.png) [ảnh](../qa/screenshots/O13-mobile.png) | QR thật (qrcode) mã hóa link demo, sao chép có toast 'Đã sao chép', in thẻ QR. |
-| O14 | Thu hồi / cấp lại link | đã QA (ảnh chụp) | `SC18/SC22/SC23/SC24` [ảnh](../qa/screenshots/O14-desktop.png) | Thu hồi có lý do; cấp lại thu hồi link cũ + tạo link mới; link giám hộ khác không đổi. |
+| O01 | Thay đổi trạng thái trường | đã QA (ảnh chụp) | `/platform/schools/demo-school-a` [ảnh](../qa/screenshots/O01-suspend-confirm.png) [ảnh](../qa/screenshots/PL04-activate-blocked.png) [ảnh](../qa/screenshots/DV06-desktop.png) | Dùng lại src/features/platform/school-status-dialog.tsx có sẵn. / SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository. / Mở từ /preview/states. SchoolStatusDialog thật (u-bao). |
+| O02 | Mời / thay quản trị trường | đã QA (ảnh chụp) | `/platform/schools/demo-school-a/admins` [ảnh](../qa/screenshots/O02-invite-admin.png) [ảnh](../qa/screenshots/O02-replace-admin.png) [ảnh](../qa/screenshots/PL05-after-invite.png) [ảnh](../qa/screenshots/DV06-O02.png) | src/features/platform/invite-admin-dialog.tsx — mời/thay, thời hạn, không gửi email, không để mất quản trị cuối. / Mở từ /preview/states. InviteAdminDialog thật (u-bao). |
+| O03 | Tạo / sửa lớp | đã QA (ảnh chụp) | `/school/demo-school-a/academic-years/y-a-2026` [ảnh](../qa/screenshots/SC05-drawer-desktop.png) [ảnh](../qa/screenshots/DV06-O03.png) | ClassDrawer create/edit, dirty guard, conflict dialog / Mở từ /preview/states. ClassDrawer thật trong SchoolContextProvider. |
+| O04 | Học kỳ / mốc tuần / hạn chốt | đã nối mock | `/school/demo-school-a/academic-years/y-a-2026/calendar` [ảnh](../qa/screenshots/DV06-O04.png) | TermDialog + DeadlineDialog; overlap error verified by flow script / Mở từ /preview/states. TermDialog thật với học kỳ I 2026–2027. |
+| O05 | Mời giáo viên | đã nối mock | `/school/demo-school-a/teachers` [ảnh](../qa/screenshots/DV06-desktop.png) | InviteModal; roles exceeding inviter disabled; verified by flow script / Mở từ /preview/states. InviteModal thật. |
+| O06 | Gán phân công | đã QA (ảnh chụp) | `/school/demo-school-a/assignments` [ảnh](../qa/screenshots/flow-SC12-preview.png) [ảnh](../qa/screenshots/DV06-O06.png) | AssignDrawer / Mở từ /preview/states. AssignDrawer thật. |
+| O07 | Xem thay đổi quyền | đã QA (ảnh chụp) | `/school/demo-school-a/assignments` [ảnh](../qa/screenshots/flow-SC12-preview.png) [ảnh](../qa/screenshots/DV06-O06.png) | preview added/kept/not included / Mở từ /preview/states. Xem trước quyền trong AssignDrawer thật. |
+| O08 | Thu hồi thành viên / phân công | đã nối mock | `/school/demo-school-a/teachers/m-a-lan`  | ConfirmDialog with required reason for assignment/membership revoke |
+| O09 | Thêm / sửa người giám hộ | đã nối mock | `SC18/SC22` [ảnh](../qa/screenshots/DV06-desktop.png) | Thêm/sửa giám hộ; không tự xác minh. / Mở từ /preview/states. GuardianDialog thật cho Minh Anh. |
+| O10 | Xác minh / thu hồi quan hệ | đã nối mock | `SC18/SC22` [ảnh](../qa/screenshots/DV06-desktop.png) | Xác minh (căn cứ bắt buộc) / thu hồi (thu hồi link của quan hệ đó). / Mở từ /preview/states. VerifyDialog thật (gd-2). |
+| O11 | Chuyển lớp / ngừng theo học | đã QA (ảnh chụp) | `SC16/SC18/SC20` [ảnh](../qa/screenshots/O11-transfer-validation.png) [ảnh](../qa/screenshots/DV06-desktop.png) | TransferDialog (features/class-org/dialogs.tsx) — request only (applyNow=false), same-year targets with capacity from teacherExtraRepo.transferTargets. / Mở từ /preview/states. TransferDialog thật. |
+| O12 | Cấp đường dẫn riêng | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O12-desktop.png) [ảnh](../qa/screenshots/O12-unverified-desktop.png) [ảnh](../qa/screenshots/O12-mobile.png) [ảnh](../qa/screenshots/DV06-desktop.png) | Chỉ chọn được quan hệ đã xác minh; mục mặc định theo chính sách; hạn ≤ hết năm học. / Mở từ /preview/states. IssueAccessDialog thật. |
+| O13 | Kết quả cấp link / in QR | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O13-desktop.png) [ảnh](../qa/screenshots/O13-mobile.png) [ảnh](../qa/screenshots/DV06-O13.png) | QR thật (qrcode) mã hóa link demo, sao chép có toast 'Đã sao chép', in thẻ QR. / Mở từ /preview/states. QrImage + LinkBox thật. |
+| O14 | Thu hồi / cấp lại link | đã QA (ảnh chụp) | `SC18/SC22/SC23/SC24` [ảnh](../qa/screenshots/O14-desktop.png) [ảnh](../qa/screenshots/DV06-O14.png) | Thu hồi có lý do; cấp lại thu hồi link cũ + tạo link mới; link giám hộ khác không đổi. / Mở từ /preview/states. RevokeAccessDialog thật (link khác bố/mẹ Minh Anh). |
 | O15 | Ghi chú và sửa điểm danh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O15-edit-published-reason.png) [ảnh](../qa/screenshots/CL04-history-drawer.png) |  |
 | O16 | Điểm danh hàng loạt | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O16-bulk-confirm.png) |  |
 | O17 | Ghi nhận cộng / trừ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O17-record-form.png) | requestId sinh 1 lần/lần mở form (NV-10); DateField trong tuần ≤ hôm nay; điểm lấy từ nội quy; cảnh báo chưa lưu. |
 | O18 | Xử lý ghi nhận trùng | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O18-duplicate-hard.png) [ảnh](../qa/screenshots/O18-duplicate-soft.png) | Hard (từ điểm danh) chỉ giải thích + xem bản cũ; soft: giữ bản cũ hoặc 'sự việc khác' bắt buộc ghi chú. |
-| O19 | Xem giải trình điểm | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O19-explain.png) |  |
+| O19 | Xem giải trình điểm | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O19-explain.png) [ảnh](../qa/screenshots/DV06-O19.png) | Mở từ /preview/states. ExplainDrawer thật (Minh Anh tuần 4 = 97). |
 | O20 | Chốt / công bố kết quả | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O20-lock.png) [ảnh](../qa/screenshots/O20-publish.png) |  |
 | O21 | Điều chỉnh sau chốt | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O21-adjustment.png) |  |
 | O22 | Thêm quy tắc / ban hành phiên bản | đã QA (ảnh chụp) | `/school/demo-school-a/conduct-rules` [ảnh](../qa/screenshots/O22-publish-ruleset.png) | New version dialog + publish confirm |
 | O23 | Phân tổ / chức vụ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL13-desktop.png) [ảnh](../qa/screenshots/CL13-duplicate-error.png) | Board + quick ChangeGroupDialog in CL02. |
 | O24 | Đổi ghế / lưu sơ đồ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL14-edited.png) |  |
-| O25 | Đổi tiết / lịch nghỉ | đã QA (ảnh chụp) | `/school/demo-school-a/timetable` [ảnh](../qa/screenshots/O25-lesson-change-drawer.png) [ảnh](../qa/screenshots/O25-lesson-change-drawer-mobile.png) [ảnh](../qa/screenshots/O25-lesson-change.png) |  |
+| O25 | Đổi tiết / lịch nghỉ | đã QA (ảnh chụp) | `/school/demo-school-a/timetable` [ảnh](../qa/screenshots/O25-lesson-change-drawer.png) [ảnh](../qa/screenshots/O25-lesson-change-drawer-mobile.png) [ảnh](../qa/screenshots/O25-lesson-change.png) [ảnh](../qa/screenshots/DV06-O25.png) | Mở từ /preview/states. LessonChangeDrawer thật (10A1 tiết 2, 06/10/2026). |
 | O26 | Phân công trực nhật | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O26-duty-drawer.png) |  |
 | O27 | Tải / duyệt minh chứng | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O27-desktop.png) [ảnh](../qa/screenshots/O27-mobile.png) [ảnh](../qa/screenshots/O27-validation-desktop.png) [ảnh](../qa/screenshots/O27-discard-mobile.png) [ảnh](../qa/screenshots/review-approve-desktop.png) | Record evidence (student limited to assigned, image/PDF <= 5MB, note, local-only label) + review dialog (approve with share toggle, supplement/reject with reason). |
-| O28 | Xem tệp / ảnh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O28-desktop.png) [ảnh](../qa/screenshots/O28-mobile.png) | FilePreview in Modal with metadata + download; revoked fallback from FilePreview. / Parent file viewer modal (ParentFileViewer), revoked-file fallback. |
+| O28 | Xem tệp / ảnh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O28-desktop.png) [ảnh](../qa/screenshots/O28-mobile.png) [ảnh](../qa/screenshots/DV06-desktop.png) | FilePreview in Modal with metadata + download; revoked fallback from FilePreview. / Parent file viewer modal (ParentFileViewer), revoked-file fallback. / Mở từ /preview/states. FileViewerDialog thật với tệp lớp 10A1. |
 | O29 | Công bố / thu hồi thông báo | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/an-1` [ảnh](../qa/screenshots/CL23-desktop.png) [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/O29-withdraw.png) |  |
-| O30 | Chọn định dạng xuất | đã QA (ảnh chụp) | `/school/demo-school-a/reports/attendance` [ảnh](../qa/screenshots/O30-export-format.png) |  |
+| O30 | Chọn định dạng xuất | đã QA (ảnh chụp) | `/school/demo-school-a/reports/attendance` [ảnh](../qa/screenshots/O30-export-format.png) [ảnh](../qa/screenshots/DV06-O30.png) | Mở từ /preview/states. ExportFormatDialog thật + exportReportFile (CSV/XLSX thật). |
 | O31 | Lưu trữ / xóa dữ liệu nháp | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/an-4` [ảnh](../qa/screenshots/CL23-desktop.png) [ảnh](../qa/screenshots/O31-delete-announcement-draft.png) [ảnh](../qa/screenshots/O31-delete-ruleset-draft.png) |  |
-| O32 | Chưa lưu thay đổi | chưa làm |   |  |
-| O33 | Xung đột phiên bản | đã QA (ảnh chụp) | `SC19` [ảnh](../qa/screenshots/SC19-conflict-desktop.png) | ConflictDialog dùng chung. |
-| O34 | Yêu cầu / thu hồi hỗ trợ | đã QA (ảnh chụp) | `/platform/support-access` [ảnh](../qa/screenshots/O34-request-support.png) [ảnh](../qa/screenshots/O34-validation.png) [ảnh](../qa/screenshots/O34-revoke-grant.png) | Phía nền tảng: src/features/platform/support-request-dialog.tsx (chỉ đề nghị; trường duyệt/thu hồi ở nhóm school). |
+| O32 | Chưa lưu thay đổi | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | Mở từ /preview/states. useUnsavedChanges + hộp thoại của UnsavedChangesProvider. |
+| O33 | Xung đột phiên bản | đã QA (ảnh chụp) | `SC19` [ảnh](../qa/screenshots/SC19-conflict-desktop.png) [ảnh](../qa/screenshots/DV06-O33.png) | ConflictDialog dùng chung. / Mở từ /preview/states. ConflictDialog từ lỗi CONFLICT thật của repository. |
+| O34 | Yêu cầu / thu hồi hỗ trợ | đã QA (ảnh chụp) | `/platform/support-access` [ảnh](../qa/screenshots/O34-request-support.png) [ảnh](../qa/screenshots/O34-validation.png) [ảnh](../qa/screenshots/O34-revoke-grant.png) [ảnh](../qa/screenshots/DV06-desktop.png) | Phía nền tảng: src/features/platform/support-request-dialog.tsx (chỉ đề nghị; trường duyệt/thu hồi ở nhóm school). / Mở từ /preview/states. RequestSupportDialog thật (u-bao). |
 
 ## Trạng thái
 
 | ID | Tên | Trạng thái | Bằng chứng / nơi dùng | Ghi chú |
 |---|---|---|---|---|
-| ST01 | Đang tải | chưa làm |   |  |
-| ST02 | Chưa có dữ liệu | chưa làm |   |  |
-| ST03 | Không có kết quả lọc | đã dựng | `lists`  | EmptyFiltered in all lists |
-| ST04 | Lỗi đọc dữ liệu | chưa làm |   |  |
-| ST05 | Mất mạng khi lưu | chưa làm |   |  |
-| ST06 | Đang lưu | chưa làm |   |  |
-| ST07 | Đã lưu cục bộ demo | chưa làm |   |  |
-| ST08 | Lỗi form | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/new` [ảnh](../qa/screenshots/C071-composer-validation.png) |  |
-| ST09 | Không có quyền | chưa làm |   |  |
+| ST01 | Đang tải | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | PageSkeleton các biến thể + kịch bản mạng chậm. |
+| ST02 | Chưa có dữ liệu | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | EmptyState có CTA theo quyền. |
+| ST03 | Không có kết quả lọc | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | EmptyFiltered trên lọc thật danh sách link demo. |
+| ST04 | Lỗi đọc dữ liệu | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | Lỗi đọc thật (read error-next) + ErrorState Thử lại. |
+| ST05 | Mất mạng khi lưu | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-live-st05.png) | Lưu thật với fail-next: không báo thành công, giữ nội dung. |
+| ST06 | Đang lưu | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-live-st05.png) | Nút lưu loading/khóa khi đang ghi. |
+| ST07 | Đã lưu cục bộ demo | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-live-st07.png) | Lưu thành công thật → badge Đã lưu cục bộ (mô phỏng). |
+| ST08 | Lỗi form | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/new` [ảnh](../qa/screenshots/C071-composer-validation.png) [ảnh](../qa/screenshots/DV06-live-st08.png) | ErrorSummary + inline / Lỗi VALIDATION thật → lỗi đúng ô + ErrorSummary. |
+| ST09 | Không có quyền | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | DeniedState. |
 | ST10 | Chưa được phân công | chưa làm |   |  |
-| ST11 | Hết phiên nhân sự demo | đã QA (ảnh chụp) | `/account/security` [ảnh](../qa/screenshots/ST11-session-expired.png) [ảnh](../qa/screenshots/ST11-login-after-expire.png) | expire() → RequireStaffSession hiển thị 'Phiên demo đã hết'; /login có callout phiên trước đã hết. |
+| ST11 | Hết phiên nhân sự demo | đã QA (ảnh chụp) | `/account/security` [ảnh](../qa/screenshots/ST11-session-expired.png) [ảnh](../qa/screenshots/ST11-login-after-expire.png) [ảnh](../qa/screenshots/DV06-desktop.png) | expire() → RequireStaffSession hiển thị 'Phiên demo đã hết'; /login có callout phiên trước đã hết. / Hết phiên demo thật (expire) + khôi phục. |
 | ST12 | Lời mời hết hạn / thu hồi | đã QA (ảnh chụp) | `/invitations/inv-a-loan` [ảnh](../qa/screenshots/ST12-expired-desktop.png) [ảnh](../qa/screenshots/ST12-expired-mobile.png) [ảnh](../qa/screenshots/ST12-revoked-desktop.png) [ảnh](../qa/screenshots/ST12-revoked-mobile.png) | Không cho chấp nhận, nêu người mời để liên hệ. |
-| ST13 | Trường tạm dừng | đã QA (ảnh chụp) | `/school-suspended?school=tran-phu` [ảnh](../qa/screenshots/SY06-desktop.png) [ảnh](../qa/screenshots/SY06-mobile.png) [ảnh](../qa/screenshots/ST13-choose-desktop.png) | Không nút ghi dữ liệu; dữ liệu không bị xóa. |
+| ST13 | Trường tạm dừng | đã QA (ảnh chụp) | `/school-suspended?school=tran-phu` [ảnh](../qa/screenshots/SY06-desktop.png) [ảnh](../qa/screenshots/SY06-mobile.png) [ảnh](../qa/screenshots/ST13-choose-desktop.png) [ảnh](../qa/screenshots/DV06-desktop.png) | Không nút ghi dữ liệu; dữ liệu không bị xóa. / SuspendedState + link phụ huynh trường tạm dừng. |
 | ST14 | Chưa điểm danh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-subject-desktop.png) | 42 'Chưa điểm danh' never counted as present; publish blocked while any unmarked. |
 | ST15 | Chưa công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL08-desktop.png) [ảnh](../qa/screenshots/F03-parent-before-publish.png) | 'Chưa công bố' / 'Chưa có dữ liệu công bố' instead of 0. |
 | ST16 | Đã chốt chưa công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL08-locked-ST16.png) [ảnh](../qa/screenshots/F03-parent-after-lock.png) | Saved vs published distinguished on CL04/CL05/TE01; locked conduct week surfaced as a warning on CL04. |
 | ST17 | Đã công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O19-explain.png) [ảnh](../qa/screenshots/F03-parent-after-publish.png) |  |
 | ST18 | Đang điều chỉnh | đã nối mock |  [ảnh](../qa/screenshots/CL11-approved.png) | Callout + dialog; repository giữ bản cũ published đến khi publishAdjustment. |
 | ST19 | Bị thu hồi công bố | chưa làm |   |  |
-| ST20 | Xung đột phiên bản | đã dựng | `settings/policy/rules/composer`  | ConflictDialog on CONFLICT |
+| ST20 | Xung đột phiên bản | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-O33.png) | Xung đột phiên bản thật → ConflictDialog. |
 | ST21 | Trùng sự kiện | chưa làm |   |  |
-| ST22 | Link tra cứu hết hạn / thu hồi / không hợp lệ | đã QA (ảnh chụp) | `/p/:slug/access-unavailable` [ảnh](../qa/screenshots/PA14-revoked-desktop.png) [ảnh](../qa/screenshots/F06-parent-revoked.png) | F06 verified: scripts/qa-parent-f06.mjs (revoke via SC24 UI as u-lan; open parent tab redirected to reason=revoked; demo-minhanh-bo still works). |
-| ST23 | Tệp lỗi / không hỗ trợ / bị thu hồi | chưa làm |   |  |
-| ST24 | Năm học lưu trữ | chưa làm |   |  |
+| ST22 | Link tra cứu hết hạn / thu hồi / không hợp lệ | đã QA (ảnh chụp) | `/p/:slug/access-unavailable` [ảnh](../qa/screenshots/PA14-revoked-desktop.png) [ảnh](../qa/screenshots/F06-parent-revoked.png) [ảnh](../qa/screenshots/DV06-desktop.png) | F06 verified: scripts/qa-parent-f06.mjs (revoke via SC24 UI as u-lan; open parent tab redirected to reason=revoked; demo-minhanh-bo still works). / LinkUnavailable + link hết hạn/thu hồi/không hợp lệ (tab mới). |
+| ST23 | Tệp lỗi / không hỗ trợ / bị thu hồi | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | FilePreview trạng thái bị thu hồi. |
+| ST24 | Năm học lưu trữ | đã dựng |   | archived year read-only |
 | ST25 | Học sinh chuyển lớp / nghỉ học | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL02-mobile-full.png) | Students who left 10A1 listed with date/reason; history retained. |
-| ST26 | Giáo viên bị thu hồi trong tab đang mở | chưa làm |   |  |
-| ST27 | Thao tác cần xác nhận | đã QA (ảnh chụp) | `many` [ảnh](../qa/screenshots/O29-withdraw.png) |  |
+| ST26 | Giáo viên bị thu hồi trong tab đang mở | đã nối mock | `/preview/states` [ảnh](../qa/screenshots/DV06-desktop.png) | DeniedState revoked. |
+| ST27 | Thao tác cần xác nhận | đã QA (ảnh chụp) | `many` [ảnh](../qa/screenshots/O29-withdraw.png) [ảnh](../qa/screenshots/DV06-desktop.png) | ConfirmDialog đối tượng + hậu quả + lý do. |
 | ST28 | 404 và lỗi toàn trang | đã QA (ảnh chụp) | `/khong-ton-tai-demo` [ảnh](../qa/screenshots/SY08-desktop.png) [ảnh](../qa/screenshots/SY08-mobile.png) | not-found chụp được; error.tsx/global-error.tsx dựng xong, chưa chụp. |
