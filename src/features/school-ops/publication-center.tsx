@@ -78,7 +78,7 @@ export function PublicationCenter({ schoolId }: { schoolId: string }) {
                   <li key={a.id} className="flex flex-wrap items-center gap-3 py-3">
                     <div className="min-w-[200px] flex-1"><p className="text-sm font-semibold text-ink">{a.studentName} · lớp {a.className}</p><p className="text-[12.5px] text-muted">Tổng {a.beforeTotal} → {a.afterTotal} · {a.reason} · {a.requestedByName}</p></div>
                     <StatusBadge status={a.status} map={PUBLICATION_STATUS} />
-                    <Link href={`/classroom/${schoolId}/${a.yearId}/${a.classId}/conduct/adjustments`} className="card-link">Xem<ArrowRight className="size-3.5" aria-hidden /></Link>
+                    <Link href={`/classroom/${schoolId}/${a.yearId}/${a.classId}/adjustments`} className="card-link">Xem<ArrowRight className="size-3.5" aria-hidden /></Link>
                   </li>
                 ))}</ul> : <EmptyState compact title="Không có điều chỉnh đang chờ" />}
               </Card>

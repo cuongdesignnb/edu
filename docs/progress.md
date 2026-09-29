@@ -1,6 +1,6 @@
 # Tiến độ triển khai theo ID
 
-> Tự sinh bởi `npm run progress` lúc 2026-09-29T06:49:26.695Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
+> Tự sinh bởi `npm run progress` lúc 2026-09-29T07:24:43.985Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
 
 | Nhóm | Tổng | Đã nối mock trở lên | Đã QA (ảnh) | Đã QA (E2E) |
 |---|---|---|---|---|
