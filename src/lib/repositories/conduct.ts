@@ -1,5 +1,5 @@
 import type { AdjustmentRequest, ConductPeriod, ConductRecord, ConductRule, DemoDB, ID, PublicationPolicy, PublishedSnapshot, RuleSet } from "@/lib/model/types";
-import { addDays } from "@/lib/demo/clock";
+import { addDays, demoToday } from "@/lib/demo/clock";
 import { newId } from "@/lib/demo/ids";
 import { computeRows, findDuplicates, gradeFor } from "@/lib/domain/conduct";
 import { countAttendance } from "@/lib/domain/attendance";
@@ -46,7 +46,8 @@ function reviewChecks(db: DemoDB, classId: ID, weekId: ID) {
   const dups = findDuplicates(recs.filter((r) => r.status === "pending_review" || r.status === "approved"));
   const w = db.weeks.find((x) => x.id === weekId)!;
   const days = [0, 1, 2, 3, 4, 5].map((i) => addDays(w.startDate, i));
-  const missingAttendance = days.filter((d) => !db.holidays.some((h) => h.schoolId === db.classes.find((c) => c.id === classId)!.schoolId && h.startDate <= d && h.endDate >= d))
+  const today = demoToday();
+  const missingAttendance = days.filter((d) => d <= today).filter((d) => !db.holidays.some((h) => h.schoolId === db.classes.find((c) => c.id === classId)!.schoolId && h.startDate <= d && h.endDate >= d))
     .filter((d) => { const s = db.attendanceSessions.find((x) => x.classId === classId && x.date === d && x.slot === "morning"); return !s; });
   const unmarkedDays = days.filter((d) => {
     const s = db.attendanceSessions.find((x) => x.classId === classId && x.date === d && x.slot === "morning");

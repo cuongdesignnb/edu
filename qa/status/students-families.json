@@ -1,0 +1,183 @@
+{
+  "screens": {
+    "SC16": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students",
+      "evidence": [
+        "qa/screenshots/SC16-desktop.png",
+        "qa/screenshots/SC16-mobile.png",
+        "qa/screenshots/SC16-u-dung.png"
+      ],
+      "notes": "Tìm tên/mã, lọc lớp/trạng thái/chưa xác minh giám hộ, sắp xếp tên/mã/lớp, phân trang repo, chọn trang vs tất cả kết quả lọc, xuất CSV/XLSX; trùng tên phân biệt bằng mã+ngày sinh+lớp; menu dòng mở hồ sơ/sửa/chuyển lớp (O11)."
+    },
+    "SC17": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/new",
+      "evidence": [
+        "qa/screenshots/SC17-desktop.png",
+        "qa/screenshots/SC17-mobile.png"
+      ],
+      "notes": "Trường tối thiểu + giám hộ tùy chọn (lưu chưa xác minh); validate client + fieldErrors repo; cảnh báo chưa lưu; thành công → hồ sơ."
+    },
+    "SC18": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/:studentId",
+      "evidence": [
+        "qa/screenshots/SC18-desktop.png",
+        "qa/screenshots/SC18-mobile.png",
+        "qa/screenshots/SC18-desktop-full.png",
+        "qa/screenshots/SC18-u-dung.png",
+        "qa/screenshots/SC18-u-quan.png"
+      ],
+      "notes": "So với R07 ở 1448×1086: bố cục header/thông tin/giám hộ/lịch sử lớp/quyền xem/nội dung được xem/nhật ký. Khác ảnh có chủ đích: không CCCD/dân tộc/email/SĐT/địa chỉ HS, không IP, không 'Kết quả học tập', QR ẩn tới khi bấm 'Hiện link/QR demo', ảnh chân dung thay bằng avatar chữ."
+    },
+    "SC19": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/:studentId/edit",
+      "evidence": [
+        "qa/screenshots/SC19-desktop.png",
+        "qa/screenshots/SC19-mobile.png",
+        "qa/screenshots/SC19-conflict-desktop.png",
+        "qa/screenshots/SC19-conflict-mobile.png"
+      ],
+      "notes": "Có version; nút 'Mô phỏng' lưu bản ghi ở phiên khác → Lưu gặp CONFLICT → ConflictDialog, không ghi đè; tải bản mới cập nhật form."
+    },
+    "SC20": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/transfers",
+      "evidence": [
+        "qa/screenshots/SC20-desktop.png",
+        "qa/screenshots/SC20-mobile.png"
+      ],
+      "notes": "Lọc trạng thái, tìm, phân trang; duyệt/từ chối qua ConfirmDialog; tạo yêu cầu (O11)."
+    },
+    "SC21": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/guardians",
+      "evidence": [
+        "qa/screenshots/SC21-desktop.png",
+        "qa/screenshots/SC21-mobile.png"
+      ],
+      "notes": "KPI, tìm, lọc xác minh, số HS liên quan và link đang hoạt động."
+    },
+    "SC22": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/guardians/:guardianId",
+      "evidence": [
+        "qa/screenshots/SC22-desktop.png",
+        "qa/screenshots/SC22-mobile.png"
+      ],
+      "notes": "Thẻ quan hệ từng học sinh: xác minh/thu hồi (O10), sửa (O09), cấp link (O12, bị khóa khi chưa xác minh), thu hồi link (O14), lịch sử."
+    },
+    "SC23": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/parent-access",
+      "evidence": [
+        "qa/screenshots/SC23-desktop.png",
+        "qa/screenshots/SC23-mobile.png",
+        "qa/screenshots/SC23-u-quan.png"
+      ],
+      "notes": "KPI hoạt động/hết hạn/thu hồi, lọc trạng thái/lớp, tìm, sắp xếp, phân trang, menu chi tiết/xem trước (route SC25 của nhóm khác)/thu hồi/cấp lại; nút Cấp link chọn học sinh."
+    },
+    "SC24": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/parent-access/:accessId",
+      "evidence": [
+        "qa/screenshots/SC24-desktop.png",
+        "qa/screenshots/SC24-mobile.png",
+        "qa/screenshots/SC24-revealed-desktop.png"
+      ],
+      "notes": "Thông tin quyền, mục được xem, link/QR chỉ hiện sau khi bấm (cảnh báo không đăng nhóm chung), in thẻ QR (print-only), link khác của HS, nhật ký đầy đủ."
+    },
+    "SC26": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports",
+      "evidence": [
+        "qa/screenshots/SC26-desktop.png",
+        "qa/screenshots/SC26-mobile.png"
+      ],
+      "notes": "4 loại; Học sinh chạy thật, 3 loại còn lại tải mẫu CSV/XLSX + nhãn Mô phỏng; lịch sử nhập tìm/lọc/phân trang."
+    },
+    "SC27": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports/new",
+      "evidence": [
+        "qa/screenshots/SC27-desktop.png",
+        "qa/screenshots/SC27-mobile.png",
+        "qa/screenshots/SC27-step1-desktop.png",
+        "qa/screenshots/SC27-step1-mobile.png",
+        "qa/screenshots/SC27-step2-desktop.png",
+        "qa/screenshots/SC27-step2-mobile.png",
+        "qa/screenshots/SC27-step3-desktop.png",
+        "qa/screenshots/SC27-step3-mobile.png",
+        "qa/screenshots/SC27-step4-desktop.png",
+        "qa/screenshots/SC27-step4-mobile.png",
+        "qa/screenshots/SC27-step5-desktop.png",
+        "qa/screenshots/SC27-step5-mobile.png"
+      ],
+      "notes": "Tệp → Ghép cột (tự khớp) → Kiểm tra từng dòng → Xem trước (lớp, chế độ, gồm cảnh báo) → Nhập → SC28."
+    },
+    "SC28": {
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports/:importId",
+      "evidence": [
+        "qa/screenshots/SC28-desktop.png",
+        "qa/screenshots/SC28-mobile.png",
+        "qa/screenshots/SC28-after-import-desktop.png"
+      ],
+      "notes": "Số thêm/cập nhật/bỏ qua/lỗi, batch id, bảng dòng lỗi, tải tệp lỗi CSV/XLSX, giải thích nhập lại không nhân đôi."
+    }
+  },
+  "overlays": {
+    "O09": {
+      "status": "mock_connected",
+      "route": "SC18/SC22",
+      "notes": "Thêm/sửa giám hộ; không tự xác minh."
+    },
+    "O10": {
+      "status": "mock_connected",
+      "route": "SC18/SC22",
+      "notes": "Xác minh (căn cứ bắt buộc) / thu hồi (thu hồi link của quan hệ đó)."
+    },
+    "O11": {
+      "status": "mock_connected",
+      "route": "SC16/SC18/SC20",
+      "notes": "Chuyển lớp cùng năm / ngừng theo học; ngày hiệu lực; lý do; áp dụng ngay nếu có quyền."
+    },
+    "O12": {
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23",
+      "evidence": [
+        "qa/screenshots/O12-desktop.png",
+        "qa/screenshots/O12-unverified-desktop.png",
+        "qa/screenshots/O12-mobile.png"
+      ],
+      "notes": "Chỉ chọn được quan hệ đã xác minh; mục mặc định theo chính sách; hạn ≤ hết năm học."
+    },
+    "O13": {
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23",
+      "evidence": [
+        "qa/screenshots/O13-desktop.png",
+        "qa/screenshots/O13-mobile.png"
+      ],
+      "notes": "QR thật (qrcode) mã hóa link demo, sao chép có toast 'Đã sao chép', in thẻ QR."
+    },
+    "O14": {
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23/SC24",
+      "evidence": [
+        "qa/screenshots/O14-desktop.png"
+      ],
+      "notes": "Thu hồi có lý do; cấp lại thu hồi link cũ + tạo link mới; link giám hộ khác không đổi."
+    },
+    "O33": {
+      "status": "qa_screenshot",
+      "route": "SC19",
+      "evidence": [
+        "qa/screenshots/SC19-conflict-desktop.png"
+      ],
+      "notes": "ConflictDialog dùng chung."
+    }
+  }
+}

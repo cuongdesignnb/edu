@@ -112,6 +112,8 @@ export const announcementsRepo = {
       if (input.scope.type === "student" && !(input.scope.studentIds ?? []).length) errors.scope = "Chọn học sinh nhận thông báo riêng";
       if (input.scope.type === "grade" && !(input.scope.gradeIds ?? []).length) errors.scope = "Chọn khối";
       if (input.scope.type === "class" && !(input.scope.classIds ?? []).length) errors.scope = "Chọn lớp";
+      const privateFiles = input.attachmentIds.filter((id) => db.files.find((f) => f.id === id)?.share === "student_parent");
+      if (privateFiles.length && input.scope.type !== "student") errors.attachmentIds = "Tệp chỉ chia sẻ cho phụ huynh một em không được đính kèm thông báo gửi rộng";
       if (input.isPublic && (input.scope.type !== "school" || input.audience === "staff")) errors.isPublic = "Chỉ thông báo toàn trường gửi gia đình mới được đăng công khai";
       if (input.action === "schedule" && (!input.scheduledAt || input.scheduledAt <= ctx.now)) errors.scheduledAt = "Chọn thời điểm công bố sau hiện tại (theo đồng hồ demo)";
       if (Object.keys(errors).length) validation(errors);

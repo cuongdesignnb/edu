@@ -333,7 +333,7 @@ export const studentsRepo = {
         const g = db.guardians.find((x) => x.id === rel.guardianId)!;
         const s = db.students.find((x) => x.id === p.studentId)!;
         const logs = db.parentAccessLogs.filter((l) => l.accessId === p.id && (l.event === "opened" || l.event === "viewed"));
-        return { id: p.id, studentId: s.id, studentName: s.fullName, studentCode: s.code, className: latestClassOf(db, s.id)?.name ?? "—", guardianName: g.fullName, relation: rel.relation,
+        return { id: p.id, relationshipId: p.relationshipId, studentStatus: s.status, studentId: s.id, studentName: s.fullName, studentCode: s.code, className: latestClassOf(db, s.id)?.name ?? "—", guardianName: g.fullName, relation: rel.relation,
           yearLabel: db.years.find((y) => y.id === p.yearId)?.label ?? "", status: accessStatus(p, ctx.now), issuedAt: p.issuedAt, expiresAt: p.expiresAt, modules: p.modules,
           opens: logs.length, lastOpenedAt: logs.map((l) => l.at).sort().pop(), issuedByName: staffNameById(db, p.issuedBy) };
       }).filter((r) => matches(q.q ?? "", r.studentName, r.studentCode, r.guardianName) && (!f.status || r.status === f.status) && (!f.classId || latestClassOf(db, r.studentId)?.id === f.classId))

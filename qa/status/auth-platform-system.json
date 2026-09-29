@@ -1,0 +1,381 @@
+{
+ "screens": {
+  "AU01": {
+   "status": "qa_screenshot",
+   "route": "/login",
+   "evidence": [
+    "qa/screenshots/AU01-desktop.png",
+    "qa/screenshots/AU01-mobile.png",
+    "qa/screenshots/AU01-validation.png",
+    "qa/screenshots/AU01-error.png",
+    "qa/screenshots/AU01-success-choose-school.png"
+   ],
+   "notes": "Form email+mật khẩu (nhãn hiện, validate, hiện/ẩn mật khẩu), sessionRepo.demoLogin, lỗi chung không lộ trường nào sai, loading, callout phiên hết / phiên đang mở, hướng dẫn lời mời, chip email demo (authDemoRepo.loginHints), không đăng ký tự do. Điều hướng: platform→/platform; đúng 1 không gian→/school hoặc /teacher; còn lại→/choose-school (đã kiểm: u-nam→/choose-school, u-hanh→/school/demo-school-a)."
+  },
+  "AU02": {
+   "status": "qa_screenshot",
+   "route": "/forgot-password",
+   "evidence": [
+    "qa/screenshots/AU02-desktop.png",
+    "qa/screenshots/AU02-mobile.png",
+    "qa/screenshots/AU02-result.png"
+   ],
+   "notes": "Kết quả chung không xác nhận tài khoản tồn tại; 'Đã gửi hướng dẫn (mô phỏng, không gửi email)'; link /reset-password?token=demo-valid và demo-expired."
+  },
+  "AU03": {
+   "status": "qa_screenshot",
+   "route": "/reset-password?token=demo-valid",
+   "evidence": [
+    "qa/screenshots/AU03-desktop.png",
+    "qa/screenshots/AU03-mobile.png",
+    "qa/screenshots/AU03-validation.png",
+    "qa/screenshots/AU03-success.png",
+    "qa/screenshots/AU03-expired-desktop.png",
+    "qa/screenshots/AU03-expired-mobile.png"
+   ],
+   "notes": "demo-valid → form + quy tắc hiển thị trực tiếp; demo-expired/thiếu token → trạng thái hết hạn; thành công mô phỏng, không lưu."
+  },
+  "AU04": {
+   "status": "qa_screenshot",
+   "route": "/invitations/inv-b-lan",
+   "evidence": [
+    "qa/screenshots/AU04-desktop.png",
+    "qa/screenshots/AU04-mobile.png",
+    "qa/screenshots/AU04-new-desktop.png",
+    "qa/screenshots/AU04-new-mobile.png",
+    "qa/screenshots/AU04-accepted.png",
+    "qa/screenshots/AU04-decline-confirm.png",
+    "qa/screenshots/AU04-declined.png",
+    "qa/screenshots/ST12-expired-desktop.png",
+    "qa/screenshots/ST12-revoked-desktop.png"
+   ],
+   "notes": "Trường, nhiệm vụ, người mời, hạn, danh tính sẵn có (inv-b-lan); người mới nhập họ tên (inv-a-ngoc); chấp nhận → 'Vào không gian (demo)' signIn(via invitation) → /choose-school; từ chối có xác nhận; accepted / expired (inv-a-loan) / revoked (inv-a-duc) / declined."
+  },
+  "AU05": {
+   "status": "qa_screenshot",
+   "route": "/choose-school",
+   "evidence": [
+    "qa/screenshots/AU05-desktop.png",
+    "qa/screenshots/AU05-mobile.png",
+    "qa/screenshots/AU05-suspended-member-desktop.png",
+    "qa/screenshots/AU05-suspended-member-mobile.png",
+    "qa/screenshots/ST13-choose-desktop.png",
+    "qa/screenshots/ST13-choose-mobile.png",
+    "qa/screenshots/AU05-new-member-unassigned.png"
+   ],
+   "notes": "AccountShell. Thẻ trường từ sessionRepo.me: trạng thái trường và thành viên, vai trò, nhiệm vụ; nút 'Quản lý nhà trường'/'Lớp học của tôi' chỉ khi có; thành viên tạm khóa/thu hồi bị khóa + giải thích; trường tạm dừng → /school-suspended?school=slug; chưa phân công → AU08; tài khoản platform có thẻ vào /platform."
+  },
+  "AU06": {
+   "status": "qa_screenshot",
+   "route": "/account/profile",
+   "evidence": [
+    "qa/screenshots/AU06-desktop.png",
+    "qa/screenshots/AU06-mobile.png",
+    "qa/screenshots/AU06-validation.png",
+    "qa/screenshots/AU06-saved.png"
+   ],
+   "notes": "Sửa họ tên/số liên hệ/giới thiệu có version; email chỉ đọc; ErrorSummary; hủy; cảnh báo chưa lưu; ConflictDialog; danh sách trường tham gia chỉ đọc, không sửa phân công."
+  },
+  "AU07": {
+   "status": "qa_screenshot",
+   "route": "/account/security",
+   "evidence": [
+    "qa/screenshots/AU07-desktop.png",
+    "qa/screenshots/AU07-mobile.png",
+    "qa/screenshots/ST11-session-expired.png",
+    "qa/screenshots/ST11-login-after-expire.png"
+   ],
+   "notes": "Đổi mật khẩu mô phỏng (validate, không lưu), thông tin phiên demo, 'Kết thúc phiên demo' → expire() → ST11, 'Thoát phiên' → /login; nhãn Mô phỏng rõ."
+  },
+  "AU08": {
+   "status": "qa_screenshot",
+   "route": "/account/no-access",
+   "evidence": [
+    "qa/screenshots/AU08-desktop.png",
+    "qa/screenshots/AU08-mobile.png"
+   ],
+   "notes": "Giải thích chung, không lộ dữ liệu; liệt kê trường bị giới hạn (thành viên tạm khóa/thu hồi, trường tạm dừng, chưa phân công); nút chọn không gian hợp lệ. Chụp với u-huong (thành viên tạm khóa) thay cho u-lan của registry để thấy nội dung."
+  },
+  "AU09": {
+   "status": "qa_screenshot",
+   "route": "/notifications",
+   "evidence": [
+    "qa/screenshots/AU09-desktop.png",
+    "qa/screenshots/AU09-mobile.png",
+    "qa/screenshots/AU09-unread.png",
+    "qa/screenshots/AU09-all-read.png"
+   ],
+   "notes": "Tab Tất cả/Chưa đọc, lọc trường + loại, tìm kiếm, phân trang, đánh dấu đã đọc từng mục/tất cả mục đang lọc; 'Mở' chỉ khi accessible (tự đánh dấu đã đọc); tài khoản platform được hướng sang nhật ký nền tảng."
+  },
+  "AU10": {
+   "status": "qa_screenshot",
+   "route": "/help",
+   "evidence": [
+    "qa/screenshots/AU10-desktop.png",
+    "qa/screenshots/AU10-mobile.png",
+    "qa/screenshots/AU10-session-desktop.png",
+    "qa/screenshots/AU10-session-mobile.png",
+    "qa/screenshots/AU10-anchor-publication.png",
+    "qa/screenshots/AU10-search.png"
+   ],
+   "notes": "Anchor #nen-tang #nha-truong #giao-vien #phu-huynh #quy-trinh-cong-bo; tìm kiếm cục bộ; giải thích Lưu ≠ Chốt ≠ Công bố; PublicShell khi không có phiên, AccountShell khi có; nút quay lại theo vai trò; không chat."
+  },
+  "PL02": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools",
+   "evidence": [
+    "qa/screenshots/PL02-desktop.png",
+    "qa/screenshots/PL02-mobile.png"
+   ],
+   "notes": "KPI từ platformRepo.overview + SchoolsTable (tìm/lọc/sort/phân trang ở repository, O01 kích hoạt/tạm dừng/lưu trữ)."
+  },
+  "PL03": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools/new",
+   "evidence": [
+    "qa/screenshots/PL03-desktop.png",
+    "qa/screenshots/PL03-mobile.png",
+    "qa/screenshots/PL03-validation.png",
+    "qa/screenshots/PL03-duplicate-code.png",
+    "qa/screenshots/PL03-step2.png",
+    "qa/screenshots/PL03-review.png",
+    "qa/screenshots/PL03-done.png"
+   ],
+   "notes": "Wizard 4 bước; gợi ý slug; kiểm tra trùng mã/slug trực tiếp (platformExtraRepo.checkSchoolIdentity) + repo kiểm lại; lưu nháp ở mọi bước; luôn 'Chờ kích hoạt'; màn hoàn tất có link lời mời demo + sao chép; cảnh báo chưa lưu."
+  },
+  "PL04": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools/demo-school-a",
+   "evidence": [
+    "qa/screenshots/PL04-desktop.png",
+    "qa/screenshots/PL04-mobile.png",
+    "qa/screenshots/PL04-draft-desktop.png",
+    "qa/screenshots/PL04-draft-mobile.png",
+    "qa/screenshots/PL04-edit-drawer.png",
+    "qa/screenshots/PL04-activate-blocked.png",
+    "qa/screenshots/O01-suspend-confirm.png"
+   ],
+   "notes": "Hồ sơ vận hành, chỉ số tổng hợp, checklist khởi tạo, quản trị + lời mời, lịch sử; drawer sửa thông tin vận hành (version, conflict, guard); đổi trạng thái O01; kích hoạt bị chặn khi thiếu quản trị; không liên kết học sinh/gia đình."
+  },
+  "PL05": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools/demo-school-a/admins",
+   "evidence": [
+    "qa/screenshots/PL05-desktop.png",
+    "qa/screenshots/PL05-mobile.png",
+    "qa/screenshots/PL05-last-admin-guard.png",
+    "qa/screenshots/PL05-after-invite.png",
+    "qa/screenshots/O02-invite-admin.png",
+    "qa/screenshots/O02-replace-admin.png"
+   ],
+   "notes": "Bảng quản trị + lời mời (hạn, trạng thái, mở/sao chép/thu hồi), lịch sử; O02 mời/thay; chặn thu hồi quản trị cuối (menu disabled + callout + repository)."
+  },
+  "PL06": {
+   "status": "qa_screenshot",
+   "route": "/platform/support",
+   "evidence": [
+    "qa/screenshots/PL06-desktop.png",
+    "qa/screenshots/PL06-mobile.png",
+    "qa/screenshots/PL06-assign.png",
+    "qa/screenshots/PL06-after-assign.png"
+   ],
+   "notes": "KPI theo trạng thái (platformExtraRepo.ticketStats), tìm/lọc trạng thái + ưu tiên/sort/phân trang, phân công nội bộ (platformExtraRepo.assignTicket)."
+  },
+  "PL07": {
+   "status": "qa_screenshot",
+   "route": "/platform/support/tk-2",
+   "evidence": [
+    "qa/screenshots/PL07-desktop.png",
+    "qa/screenshots/PL07-mobile.png"
+   ],
+   "notes": "Nội dung, timeline cập nhật, ghi cập nhật + đổi trạng thái (updateTicket), phân công, quyền hỗ trợ liên quan, đề nghị O34; nêu rõ không có chức năng đăng nhập thay giáo viên."
+  },
+  "PL08": {
+   "status": "qa_screenshot",
+   "route": "/platform/support-access",
+   "evidence": [
+    "qa/screenshots/PL08-desktop.png",
+    "qa/screenshots/PL08-mobile.png",
+    "qa/screenshots/O34-request-support.png",
+    "qa/screenshots/O34-validation.png"
+   ],
+   "notes": "Danh sách quyền (lọc/tìm/phân trang), đề nghị O34 (requestSupportGrant), rút đề nghị / kết thúc sớm (platformExtraRepo.relinquishGrant); duyệt chỉ ở phía trường."
+  },
+  "PL09": {
+   "status": "qa_screenshot",
+   "route": "/platform/audit",
+   "evidence": [
+    "qa/screenshots/PL09-desktop.png",
+    "qa/screenshots/PL09-mobile.png",
+    "qa/screenshots/PL09-detail-drawer.png",
+    "qa/screenshots/PL09-detail-drawer-mobile.png"
+   ],
+   "notes": "Lọc tìm kiếm/người thao tác/từ–đến ngày, phân trang, drawer chi tiết với AuditDiff (nhãn tiếng Việt), xuất CSV/XLSX toàn bộ kết quả lọc (đã kiểm tải về bằng Playwright)."
+  },
+  "PL10": {
+   "status": "qa_screenshot",
+   "route": "/platform/operations",
+   "evidence": [
+    "qa/screenshots/PL10-desktop.png",
+    "qa/screenshots/PL10-mobile.png",
+    "qa/screenshots/PL10-restore-explained.png"
+   ],
+   "notes": "Dịch vụ/sao lưu mô phỏng có nhãn; checklist tính từ dữ liệu demo; thông tin kho demo thật; nút Sao lưu/Khôi phục chỉ mở giải thích, không thực thi."
+  },
+  "PL11": {
+   "status": "qa_screenshot",
+   "route": "/platform/settings",
+   "evidence": [
+    "qa/screenshots/PL11-desktop.png",
+    "qa/screenshots/PL11-mobile.png",
+    "qa/screenshots/PL11-preview-validation.png"
+   ],
+   "notes": "Form thương hiệu/liên hệ hỗ trợ/ghi chú, xem trước trực tiếp, lưu có version + conflict + guard; không có gói cước/thanh toán."
+  },
+  "SY01": {
+   "status": "qa_screenshot",
+   "route": "/schools/binh-minh",
+   "evidence": [
+    "qa/screenshots/SY01-desktop.png",
+    "qa/screenshots/SY01-mobile.png"
+   ],
+   "notes": "PublicShell: nhận diện, liên hệ chính thức, tin công khai (tìm/phân trang), thẻ phụ huynh giải thích link riêng; không có công cụ tra cứu học sinh; trường tạm dừng ẩn tin."
+  },
+  "SY02": {
+   "status": "qa_screenshot",
+   "route": "/schools/binh-minh/announcements/an-1",
+   "evidence": [
+    "qa/screenshots/SY02-desktop.png",
+    "qa/screenshots/SY02-mobile.png"
+   ],
+   "notes": "Chỉ bản công khai (repository trả NOT_FOUND cho tin riêng tư), tệp công khai tải được, quay lại trường."
+  },
+  "SY03": {
+   "status": "qa_screenshot",
+   "route": "/privacy",
+   "evidence": [
+    "qa/screenshots/SY03-desktop.png",
+    "qa/screenshots/SY03-mobile.png"
+   ],
+   "notes": "Bản nháp chờ chủ dự án/pháp chế duyệt; mục lục anchor; liên hệ lấy từ cấu hình nền tảng; không tuyên bố tuân thủ/chứng nhận."
+  },
+  "SY04": {
+   "status": "qa_screenshot",
+   "route": "/terms",
+   "evidence": [
+    "qa/screenshots/SY04-desktop.png",
+    "qa/screenshots/SY04-mobile.png"
+   ],
+   "notes": "Bản nháp, đánh dấu chưa thẩm định pháp lý, không có điều khoản thanh toán."
+  },
+  "SY05": {
+   "status": "qa_screenshot",
+   "route": "/access-denied",
+   "evidence": [
+    "qa/screenshots/SY05-desktop.png",
+    "qa/screenshots/SY05-mobile.png"
+   ],
+   "notes": "Không tiết lộ dữ liệu bị chặn; về không gian hợp lệ / quay lại / vì sao."
+  },
+  "SY06": {
+   "status": "qa_screenshot",
+   "route": "/school-suspended?school=tran-phu",
+   "evidence": [
+    "qa/screenshots/SY06-desktop.png",
+    "qa/screenshots/SY06-mobile.png"
+   ],
+   "notes": "Giải thích vận hành, lý do, đầu mối công khai; không có nút ghi dữ liệu; liệt kê trường khác còn làm việc được."
+  },
+  "SY07": {
+   "status": "qa_screenshot",
+   "route": "/maintenance",
+   "evidence": [
+    "qa/screenshots/SY07-desktop.png",
+    "qa/screenshots/SY07-mobile.png",
+    "qa/screenshots/SY07-retry-ok.png"
+   ],
+   "notes": "Không đưa ETA; 'Thử lại' kiểm kho demo cục bộ; về nơi an toàn."
+  },
+  "SY08": {
+   "status": "qa_screenshot",
+   "route": "/khong-ton-tai-demo",
+   "evidence": [
+    "qa/screenshots/SY08-desktop.png",
+    "qa/screenshots/SY08-mobile.png"
+   ],
+   "notes": "app/not-found.tsx đã chụp. app/error.tsx (retry, không stack trace) và app/global-error.tsx (html/body riêng) đã dựng nhưng chưa chụp — không có cách kích hoạt lỗi render chủ đích an toàn."
+  }
+ },
+ "overlays": {
+  "O01": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools/demo-school-a",
+   "evidence": [
+    "qa/screenshots/O01-suspend-confirm.png",
+    "qa/screenshots/PL04-activate-blocked.png"
+   ],
+   "notes": "Dùng lại src/features/platform/school-status-dialog.tsx có sẵn."
+  },
+  "O02": {
+   "status": "qa_screenshot",
+   "route": "/platform/schools/demo-school-a/admins",
+   "evidence": [
+    "qa/screenshots/O02-invite-admin.png",
+    "qa/screenshots/O02-replace-admin.png",
+    "qa/screenshots/PL05-after-invite.png"
+   ],
+   "notes": "src/features/platform/invite-admin-dialog.tsx — mời/thay, thời hạn, không gửi email, không để mất quản trị cuối."
+  },
+  "O34": {
+   "status": "qa_screenshot",
+   "route": "/platform/support-access",
+   "evidence": [
+    "qa/screenshots/O34-request-support.png",
+    "qa/screenshots/O34-validation.png"
+   ],
+   "notes": "Phía nền tảng: src/features/platform/support-request-dialog.tsx (chỉ đề nghị; trường duyệt/thu hồi ở nhóm school)."
+  }
+ },
+ "states": {
+  "ST11": {
+   "status": "qa_screenshot",
+   "route": "/account/security",
+   "evidence": [
+    "qa/screenshots/ST11-session-expired.png",
+    "qa/screenshots/ST11-login-after-expire.png"
+   ],
+   "notes": "expire() → RequireStaffSession hiển thị 'Phiên demo đã hết'; /login có callout phiên trước đã hết."
+  },
+  "ST12": {
+   "status": "qa_screenshot",
+   "route": "/invitations/inv-a-loan",
+   "evidence": [
+    "qa/screenshots/ST12-expired-desktop.png",
+    "qa/screenshots/ST12-expired-mobile.png",
+    "qa/screenshots/ST12-revoked-desktop.png",
+    "qa/screenshots/ST12-revoked-mobile.png"
+   ],
+   "notes": "Không cho chấp nhận, nêu người mời để liên hệ."
+  },
+  "ST13": {
+   "status": "qa_screenshot",
+   "route": "/school-suspended?school=tran-phu",
+   "evidence": [
+    "qa/screenshots/SY06-desktop.png",
+    "qa/screenshots/SY06-mobile.png",
+    "qa/screenshots/ST13-choose-desktop.png"
+   ],
+   "notes": "Không nút ghi dữ liệu; dữ liệu không bị xóa."
+  },
+  "ST28": {
+   "status": "qa_screenshot",
+   "route": "/khong-ton-tai-demo",
+   "evidence": [
+    "qa/screenshots/SY08-desktop.png",
+    "qa/screenshots/SY08-mobile.png"
+   ],
+   "notes": "not-found chụp được; error.tsx/global-error.tsx dựng xong, chưa chụp."
+  }
+ },
+ "components": {}
+}

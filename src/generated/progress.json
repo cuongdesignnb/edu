@@ -1,0 +1,2170 @@
+{
+  "generatedAt": "2026-09-29T06:37:29.627Z",
+  "note": "Trạng thái lấy từ qa/status/*.json do từng nhóm ghi kèm bằng chứng; mục không có bằng chứng giữ not_started.",
+  "screens": [
+    {
+      "id": "AU01",
+      "status": "qa_screenshot",
+      "route": "/login",
+      "evidence": [
+        "qa/screenshots/AU01-desktop.png",
+        "qa/screenshots/AU01-mobile.png",
+        "qa/screenshots/AU01-validation.png",
+        "qa/screenshots/AU01-error.png",
+        "qa/screenshots/AU01-success-choose-school.png"
+      ],
+      "notes": "Form email+mật khẩu (nhãn hiện, validate, hiện/ẩn mật khẩu), sessionRepo.demoLogin, lỗi chung không lộ trường nào sai, loading, callout phiên hết / phiên đang mở, hướng dẫn lời mời, chip email demo (authDemoRepo.loginHints), không đăng ký tự do. Điều hướng: platform→/platform; đúng 1 không gian→/school hoặc /teacher; còn lại→/choose-school (đã kiểm: u-nam→/choose-school, u-hanh→/school/demo-school-a).",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU02",
+      "status": "qa_screenshot",
+      "route": "/forgot-password",
+      "evidence": [
+        "qa/screenshots/AU02-desktop.png",
+        "qa/screenshots/AU02-mobile.png",
+        "qa/screenshots/AU02-result.png"
+      ],
+      "notes": "Kết quả chung không xác nhận tài khoản tồn tại; 'Đã gửi hướng dẫn (mô phỏng, không gửi email)'; link /reset-password?token=demo-valid và demo-expired.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU03",
+      "status": "qa_screenshot",
+      "route": "/reset-password?token=demo-valid",
+      "evidence": [
+        "qa/screenshots/AU03-desktop.png",
+        "qa/screenshots/AU03-mobile.png",
+        "qa/screenshots/AU03-validation.png",
+        "qa/screenshots/AU03-success.png",
+        "qa/screenshots/AU03-expired-desktop.png",
+        "qa/screenshots/AU03-expired-mobile.png"
+      ],
+      "notes": "demo-valid → form + quy tắc hiển thị trực tiếp; demo-expired/thiếu token → trạng thái hết hạn; thành công mô phỏng, không lưu.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU04",
+      "status": "qa_screenshot",
+      "route": "/invitations/inv-b-lan",
+      "evidence": [
+        "qa/screenshots/AU04-desktop.png",
+        "qa/screenshots/AU04-mobile.png",
+        "qa/screenshots/AU04-new-desktop.png",
+        "qa/screenshots/AU04-new-mobile.png",
+        "qa/screenshots/AU04-accepted.png",
+        "qa/screenshots/AU04-decline-confirm.png",
+        "qa/screenshots/AU04-declined.png",
+        "qa/screenshots/ST12-expired-desktop.png",
+        "qa/screenshots/ST12-revoked-desktop.png"
+      ],
+      "notes": "Trường, nhiệm vụ, người mời, hạn, danh tính sẵn có (inv-b-lan); người mới nhập họ tên (inv-a-ngoc); chấp nhận → 'Vào không gian (demo)' signIn(via invitation) → /choose-school; từ chối có xác nhận; accepted / expired (inv-a-loan) / revoked (inv-a-duc) / declined.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU05",
+      "status": "qa_screenshot",
+      "route": "/choose-school",
+      "evidence": [
+        "qa/screenshots/AU05-desktop.png",
+        "qa/screenshots/AU05-mobile.png",
+        "qa/screenshots/AU05-suspended-member-desktop.png",
+        "qa/screenshots/AU05-suspended-member-mobile.png",
+        "qa/screenshots/ST13-choose-desktop.png",
+        "qa/screenshots/ST13-choose-mobile.png",
+        "qa/screenshots/AU05-new-member-unassigned.png"
+      ],
+      "notes": "AccountShell. Thẻ trường từ sessionRepo.me: trạng thái trường và thành viên, vai trò, nhiệm vụ; nút 'Quản lý nhà trường'/'Lớp học của tôi' chỉ khi có; thành viên tạm khóa/thu hồi bị khóa + giải thích; trường tạm dừng → /school-suspended?school=slug; chưa phân công → AU08; tài khoản platform có thẻ vào /platform.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU06",
+      "status": "qa_screenshot",
+      "route": "/account/profile",
+      "evidence": [
+        "qa/screenshots/AU06-desktop.png",
+        "qa/screenshots/AU06-mobile.png",
+        "qa/screenshots/AU06-validation.png",
+        "qa/screenshots/AU06-saved.png"
+      ],
+      "notes": "Sửa họ tên/số liên hệ/giới thiệu có version; email chỉ đọc; ErrorSummary; hủy; cảnh báo chưa lưu; ConflictDialog; danh sách trường tham gia chỉ đọc, không sửa phân công.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU07",
+      "status": "qa_screenshot",
+      "route": "/account/security",
+      "evidence": [
+        "qa/screenshots/AU07-desktop.png",
+        "qa/screenshots/AU07-mobile.png",
+        "qa/screenshots/ST11-session-expired.png",
+        "qa/screenshots/ST11-login-after-expire.png"
+      ],
+      "notes": "Đổi mật khẩu mô phỏng (validate, không lưu), thông tin phiên demo, 'Kết thúc phiên demo' → expire() → ST11, 'Thoát phiên' → /login; nhãn Mô phỏng rõ.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU08",
+      "status": "qa_screenshot",
+      "route": "/account/no-access",
+      "evidence": [
+        "qa/screenshots/AU08-desktop.png",
+        "qa/screenshots/AU08-mobile.png"
+      ],
+      "notes": "Giải thích chung, không lộ dữ liệu; liệt kê trường bị giới hạn (thành viên tạm khóa/thu hồi, trường tạm dừng, chưa phân công); nút chọn không gian hợp lệ. Chụp với u-huong (thành viên tạm khóa) thay cho u-lan của registry để thấy nội dung.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU09",
+      "status": "qa_screenshot",
+      "route": "/notifications",
+      "evidence": [
+        "qa/screenshots/AU09-desktop.png",
+        "qa/screenshots/AU09-mobile.png",
+        "qa/screenshots/AU09-unread.png",
+        "qa/screenshots/AU09-all-read.png"
+      ],
+      "notes": "Tab Tất cả/Chưa đọc, lọc trường + loại, tìm kiếm, phân trang, đánh dấu đã đọc từng mục/tất cả mục đang lọc; 'Mở' chỉ khi accessible (tự đánh dấu đã đọc); tài khoản platform được hướng sang nhật ký nền tảng.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "AU10",
+      "status": "qa_screenshot",
+      "route": "/help",
+      "evidence": [
+        "qa/screenshots/AU10-desktop.png",
+        "qa/screenshots/AU10-mobile.png",
+        "qa/screenshots/AU10-session-desktop.png",
+        "qa/screenshots/AU10-session-mobile.png",
+        "qa/screenshots/AU10-anchor-publication.png",
+        "qa/screenshots/AU10-search.png"
+      ],
+      "notes": "Anchor #nen-tang #nha-truong #giao-vien #phu-huynh #quy-trinh-cong-bo; tìm kiếm cục bộ; giải thích Lưu ≠ Chốt ≠ Công bố; PublicShell khi không có phiên, AccountShell khi có; nút quay lại theo vai trò; không chat.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL01",
+      "status": "qa_screenshot",
+      "route": "/platform",
+      "evidence": [
+        "qa/screenshots/PL01-desktop.png",
+        "qa/screenshots/PL01-mobile.png"
+      ],
+      "notes": "R01 layout; KPIs from fixture (8 schools); 4th KPI renamed to link-open count (no parent accounts); row actions with O01.",
+      "source": "lead"
+    },
+    {
+      "id": "PL02",
+      "status": "qa_screenshot",
+      "route": "/platform/schools",
+      "evidence": [
+        "qa/screenshots/PL02-desktop.png",
+        "qa/screenshots/PL02-mobile.png"
+      ],
+      "notes": "KPI từ platformRepo.overview + SchoolsTable (tìm/lọc/sort/phân trang ở repository, O01 kích hoạt/tạm dừng/lưu trữ).",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL03",
+      "status": "qa_screenshot",
+      "route": "/platform/schools/new",
+      "evidence": [
+        "qa/screenshots/PL03-desktop.png",
+        "qa/screenshots/PL03-mobile.png",
+        "qa/screenshots/PL03-validation.png",
+        "qa/screenshots/PL03-duplicate-code.png",
+        "qa/screenshots/PL03-step2.png",
+        "qa/screenshots/PL03-review.png",
+        "qa/screenshots/PL03-done.png"
+      ],
+      "notes": "Wizard 4 bước; gợi ý slug; kiểm tra trùng mã/slug trực tiếp (platformExtraRepo.checkSchoolIdentity) + repo kiểm lại; lưu nháp ở mọi bước; luôn 'Chờ kích hoạt'; màn hoàn tất có link lời mời demo + sao chép; cảnh báo chưa lưu.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL04",
+      "status": "qa_screenshot",
+      "route": "/platform/schools/demo-school-a",
+      "evidence": [
+        "qa/screenshots/PL04-desktop.png",
+        "qa/screenshots/PL04-mobile.png",
+        "qa/screenshots/PL04-draft-desktop.png",
+        "qa/screenshots/PL04-draft-mobile.png",
+        "qa/screenshots/PL04-edit-drawer.png",
+        "qa/screenshots/PL04-activate-blocked.png",
+        "qa/screenshots/O01-suspend-confirm.png"
+      ],
+      "notes": "Hồ sơ vận hành, chỉ số tổng hợp, checklist khởi tạo, quản trị + lời mời, lịch sử; drawer sửa thông tin vận hành (version, conflict, guard); đổi trạng thái O01; kích hoạt bị chặn khi thiếu quản trị; không liên kết học sinh/gia đình.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL05",
+      "status": "qa_screenshot",
+      "route": "/platform/schools/demo-school-a/admins",
+      "evidence": [
+        "qa/screenshots/PL05-desktop.png",
+        "qa/screenshots/PL05-mobile.png",
+        "qa/screenshots/PL05-last-admin-guard.png",
+        "qa/screenshots/PL05-after-invite.png",
+        "qa/screenshots/O02-invite-admin.png",
+        "qa/screenshots/O02-replace-admin.png"
+      ],
+      "notes": "Bảng quản trị + lời mời (hạn, trạng thái, mở/sao chép/thu hồi), lịch sử; O02 mời/thay; chặn thu hồi quản trị cuối (menu disabled + callout + repository).",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL06",
+      "status": "qa_screenshot",
+      "route": "/platform/support",
+      "evidence": [
+        "qa/screenshots/PL06-desktop.png",
+        "qa/screenshots/PL06-mobile.png",
+        "qa/screenshots/PL06-assign.png",
+        "qa/screenshots/PL06-after-assign.png"
+      ],
+      "notes": "KPI theo trạng thái (platformExtraRepo.ticketStats), tìm/lọc trạng thái + ưu tiên/sort/phân trang, phân công nội bộ (platformExtraRepo.assignTicket).",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL07",
+      "status": "qa_screenshot",
+      "route": "/platform/support/tk-2",
+      "evidence": [
+        "qa/screenshots/PL07-desktop.png",
+        "qa/screenshots/PL07-mobile.png"
+      ],
+      "notes": "Nội dung, timeline cập nhật, ghi cập nhật + đổi trạng thái (updateTicket), phân công, quyền hỗ trợ liên quan, đề nghị O34; nêu rõ không có chức năng đăng nhập thay giáo viên.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL08",
+      "status": "qa_screenshot",
+      "route": "/platform/support-access",
+      "evidence": [
+        "qa/screenshots/PL08-desktop.png",
+        "qa/screenshots/PL08-mobile.png",
+        "qa/screenshots/O34-request-support.png",
+        "qa/screenshots/O34-validation.png"
+      ],
+      "notes": "Danh sách quyền (lọc/tìm/phân trang), đề nghị O34 (requestSupportGrant), rút đề nghị / kết thúc sớm (platformExtraRepo.relinquishGrant); duyệt chỉ ở phía trường.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL09",
+      "status": "qa_screenshot",
+      "route": "/platform/audit",
+      "evidence": [
+        "qa/screenshots/PL09-desktop.png",
+        "qa/screenshots/PL09-mobile.png",
+        "qa/screenshots/PL09-detail-drawer.png",
+        "qa/screenshots/PL09-detail-drawer-mobile.png"
+      ],
+      "notes": "Lọc tìm kiếm/người thao tác/từ–đến ngày, phân trang, drawer chi tiết với AuditDiff (nhãn tiếng Việt), xuất CSV/XLSX toàn bộ kết quả lọc (đã kiểm tải về bằng Playwright).",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL10",
+      "status": "qa_screenshot",
+      "route": "/platform/operations",
+      "evidence": [
+        "qa/screenshots/PL10-desktop.png",
+        "qa/screenshots/PL10-mobile.png",
+        "qa/screenshots/PL10-restore-explained.png"
+      ],
+      "notes": "Dịch vụ/sao lưu mô phỏng có nhãn; checklist tính từ dữ liệu demo; thông tin kho demo thật; nút Sao lưu/Khôi phục chỉ mở giải thích, không thực thi.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "PL11",
+      "status": "qa_screenshot",
+      "route": "/platform/settings",
+      "evidence": [
+        "qa/screenshots/PL11-desktop.png",
+        "qa/screenshots/PL11-mobile.png",
+        "qa/screenshots/PL11-preview-validation.png"
+      ],
+      "notes": "Form thương hiệu/liên hệ hỗ trợ/ghi chú, xem trước trực tiếp, lưu có version + conflict + guard; không có gói cước/thanh toán.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SC01",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC08",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC09",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC10",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC11",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC12",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC13",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC14",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC15",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC16",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students",
+      "evidence": [
+        "qa/screenshots/SC16-desktop.png",
+        "qa/screenshots/SC16-mobile.png",
+        "qa/screenshots/SC16-u-dung.png"
+      ],
+      "notes": "Tìm tên/mã, lọc lớp/trạng thái/chưa xác minh giám hộ, sắp xếp tên/mã/lớp, phân trang repo, chọn trang vs tất cả kết quả lọc, xuất CSV/XLSX; trùng tên phân biệt bằng mã+ngày sinh+lớp; menu dòng mở hồ sơ/sửa/chuyển lớp (O11).",
+      "source": "students-families"
+    },
+    {
+      "id": "SC17",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/new",
+      "evidence": [
+        "qa/screenshots/SC17-desktop.png",
+        "qa/screenshots/SC17-mobile.png"
+      ],
+      "notes": "Trường tối thiểu + giám hộ tùy chọn (lưu chưa xác minh); validate client + fieldErrors repo; cảnh báo chưa lưu; thành công → hồ sơ.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC18",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/:studentId",
+      "evidence": [
+        "qa/screenshots/SC18-desktop.png",
+        "qa/screenshots/SC18-mobile.png",
+        "qa/screenshots/SC18-desktop-full.png",
+        "qa/screenshots/SC18-u-dung.png",
+        "qa/screenshots/SC18-u-quan.png"
+      ],
+      "notes": "So với R07 ở 1448×1086: bố cục header/thông tin/giám hộ/lịch sử lớp/quyền xem/nội dung được xem/nhật ký. Khác ảnh có chủ đích: không CCCD/dân tộc/email/SĐT/địa chỉ HS, không IP, không 'Kết quả học tập', QR ẩn tới khi bấm 'Hiện link/QR demo', ảnh chân dung thay bằng avatar chữ.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC19",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/students/:studentId/edit",
+      "evidence": [
+        "qa/screenshots/SC19-desktop.png",
+        "qa/screenshots/SC19-mobile.png",
+        "qa/screenshots/SC19-conflict-desktop.png",
+        "qa/screenshots/SC19-conflict-mobile.png"
+      ],
+      "notes": "Có version; nút 'Mô phỏng' lưu bản ghi ở phiên khác → Lưu gặp CONFLICT → ConflictDialog, không ghi đè; tải bản mới cập nhật form.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC20",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/transfers",
+      "evidence": [
+        "qa/screenshots/SC20-desktop.png",
+        "qa/screenshots/SC20-mobile.png"
+      ],
+      "notes": "Lọc trạng thái, tìm, phân trang; duyệt/từ chối qua ConfirmDialog; tạo yêu cầu (O11).",
+      "source": "students-families"
+    },
+    {
+      "id": "SC21",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/guardians",
+      "evidence": [
+        "qa/screenshots/SC21-desktop.png",
+        "qa/screenshots/SC21-mobile.png"
+      ],
+      "notes": "KPI, tìm, lọc xác minh, số HS liên quan và link đang hoạt động.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC22",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/guardians/:guardianId",
+      "evidence": [
+        "qa/screenshots/SC22-desktop.png",
+        "qa/screenshots/SC22-mobile.png"
+      ],
+      "notes": "Thẻ quan hệ từng học sinh: xác minh/thu hồi (O10), sửa (O09), cấp link (O12, bị khóa khi chưa xác minh), thu hồi link (O14), lịch sử.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC23",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/parent-access",
+      "evidence": [
+        "qa/screenshots/SC23-desktop.png",
+        "qa/screenshots/SC23-mobile.png",
+        "qa/screenshots/SC23-u-quan.png"
+      ],
+      "notes": "KPI hoạt động/hết hạn/thu hồi, lọc trạng thái/lớp, tìm, sắp xếp, phân trang, menu chi tiết/xem trước (route SC25 của nhóm khác)/thu hồi/cấp lại; nút Cấp link chọn học sinh.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC24",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/parent-access/:accessId",
+      "evidence": [
+        "qa/screenshots/SC24-desktop.png",
+        "qa/screenshots/SC24-mobile.png",
+        "qa/screenshots/SC24-revealed-desktop.png"
+      ],
+      "notes": "Thông tin quyền, mục được xem, link/QR chỉ hiện sau khi bấm (cảnh báo không đăng nhóm chung), in thẻ QR (print-only), link khác của HS, nhật ký đầy đủ.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC25",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SC26",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports",
+      "evidence": [
+        "qa/screenshots/SC26-desktop.png",
+        "qa/screenshots/SC26-mobile.png"
+      ],
+      "notes": "4 loại; Học sinh chạy thật, 3 loại còn lại tải mẫu CSV/XLSX + nhãn Mô phỏng; lịch sử nhập tìm/lọc/phân trang.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC27",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports/new",
+      "evidence": [
+        "qa/screenshots/SC27-desktop.png",
+        "qa/screenshots/SC27-mobile.png",
+        "qa/screenshots/SC27-step1-desktop.png",
+        "qa/screenshots/SC27-step1-mobile.png",
+        "qa/screenshots/SC27-step2-desktop.png",
+        "qa/screenshots/SC27-step2-mobile.png",
+        "qa/screenshots/SC27-step3-desktop.png",
+        "qa/screenshots/SC27-step3-mobile.png",
+        "qa/screenshots/SC27-step4-desktop.png",
+        "qa/screenshots/SC27-step4-mobile.png",
+        "qa/screenshots/SC27-step5-desktop.png",
+        "qa/screenshots/SC27-step5-mobile.png"
+      ],
+      "notes": "Tệp → Ghép cột (tự khớp) → Kiểm tra từng dòng → Xem trước (lớp, chế độ, gồm cảnh báo) → Nhập → SC28.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC28",
+      "status": "qa_screenshot",
+      "route": "/school/:schoolId/imports/:importId",
+      "evidence": [
+        "qa/screenshots/SC28-desktop.png",
+        "qa/screenshots/SC28-mobile.png",
+        "qa/screenshots/SC28-after-import-desktop.png"
+      ],
+      "notes": "Số thêm/cập nhật/bỏ qua/lỗi, batch id, bảng dòng lỗi, tải tệp lỗi CSV/XLSX, giải thích nhập lại không nhân đôi.",
+      "source": "students-families"
+    },
+    {
+      "id": "SC29",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/conduct-rules",
+      "evidence": [
+        "qa/screenshots/SC29-desktop.png",
+        "qa/screenshots/SC29-mobile.png"
+      ],
+      "notes": "Versions, status, effective range, current marker, snapshot count; O22 create (one draft rule). Flow tested: delete draft -> new version -> publish.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC30",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/conduct-rules/rs-a-3",
+      "evidence": [
+        "qa/screenshots/SC30-desktop.png",
+        "qa/screenshots/SC30-mobile.png",
+        "qa/screenshots/SC30-published-readonly.png",
+        "qa/screenshots/O22-publish-ruleset.png",
+        "qa/screenshots/O31-delete-ruleset-draft.png"
+      ],
+      "notes": "Draft editor (rows, base/cap/floor, bands, effective date, deadline), simulator via conductRepo.simulate (rs-a-1: 100-5+2=97), diff vs previous, publish confirm (NV-08), delete draft; published = read-only + copy.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC31",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/publication-policy",
+      "evidence": [
+        "qa/screenshots/SC31-desktop.png",
+        "qa/screenshots/SC31-mobile.png"
+      ],
+      "notes": "Lock/publish roles, leader approval, week close day, parent module chips, attendance auto publish; confirm lists changes + impact; conflict dialog. u-dung sees read-only.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC32",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/timetable",
+      "evidence": [
+        "qa/screenshots/SC32-desktop.png",
+        "qa/screenshots/SC32-mobile.png",
+        "qa/screenshots/SC32-timetable-mobile-agenda.png",
+        "qa/screenshots/O25-lesson-change-drawer.png",
+        "qa/screenshots/O25-lesson-change-drawer-mobile.png"
+      ],
+      "notes": "Filters class/teacher/room, week nav, desktop grid, mobile day agenda, clash callout (none in seed), O25 drawer with live conflict check, draft/publish, week change list with publish/delete draft. Past days read-only.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC33",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements",
+      "evidence": [
+        "qa/screenshots/SC33-desktop.png",
+        "qa/screenshots/SC33-mobile.png"
+      ],
+      "notes": "Status tabs with counts, origin filter, search, pagination, delete draft O31.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC34",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements/new",
+      "evidence": [
+        "qa/screenshots/SC34-desktop.png",
+        "qa/screenshots/SC34-mobile.png",
+        "qa/screenshots/C071-composer-filled.png",
+        "qa/screenshots/C071-composer-preview-mobile.png",
+        "qa/screenshots/C071-composer-validation.png"
+      ],
+      "notes": "AnnouncementComposer origin school. Flow tested: save draft -> detail -> publish.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC35",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements/an-4",
+      "evidence": [
+        "qa/screenshots/SC35-desktop.png",
+        "qa/screenshots/SC35-mobile.png",
+        "qa/screenshots/O29-withdraw.png",
+        "qa/screenshots/O31-delete-announcement-draft.png"
+      ],
+      "notes": "Content, audience, estimate, status, history, attachments, internal note 'Nội bộ'; edit route /announcements/[id]/edit; publish, withdraw (reason, screenshot warning), delete draft.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC36",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/publications",
+      "evidence": [
+        "qa/screenshots/SC36-desktop.png",
+        "qa/screenshots/SC36-mobile.png"
+      ],
+      "notes": "Week selector, per-class status/pending/blocking/overdue/attendance, links to class review, adjustments, pending announcements. No bulk actions.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC37",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/reports",
+      "evidence": [
+        "qa/screenshots/SC37-desktop.png",
+        "qa/screenshots/SC37-mobile.png"
+      ],
+      "notes": "Cards from SCHOOL_REPORTS + keyword/group filters; no academic report.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC38",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/reports/conduct",
+      "evidence": [
+        "qa/screenshots/SC38-desktop.png",
+        "qa/screenshots/SC38-mobile.png",
+        "qa/screenshots/SC38-print-preview.png",
+        "qa/screenshots/O30-export-format.png"
+      ],
+      "notes": "Filters week/date range/grade -> ReportViewer; exports recorded via recordExport (tested xlsx download + SC39 row). Export buttons hidden without export.run (u-quan).",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC39",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/exports",
+      "evidence": [
+        "qa/screenshots/SC39-desktop.png",
+        "qa/screenshots/SC39-mobile.png"
+      ],
+      "notes": "Status/creator/expiry/rows, Tải lại regenerates locally (schoolOpsRepo.regenerateExport), cancel confirm, expired/cancelled -> recreate link; no email.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC40",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/audit",
+      "evidence": [
+        "qa/screenshots/SC40-desktop.png",
+        "qa/screenshots/SC40-mobile.png",
+        "qa/screenshots/SC40-audit-detail.png"
+      ],
+      "notes": "Filters entity/actor/date range/keyword, paginated table, detail drawer with AuditDiff + reason, filtered CSV export; read-only.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC41",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/settings",
+      "evidence": [
+        "qa/screenshots/SC41-desktop.png",
+        "qa/screenshots/SC41-mobile.png"
+      ],
+      "notes": "Link days, teacher phone/email, contact hours, report header + preview, legal disclaimer, conflict dialog, dirty guard.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC42",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/support",
+      "evidence": [
+        "qa/screenshots/SC42-desktop.png",
+        "qa/screenshots/SC42-mobile.png",
+        "qa/screenshots/SC42-create-ticket.png",
+        "qa/screenshots/O34-revoke-grant.png"
+      ],
+      "notes": "Tickets list/filter/search + create (PII warning), grants approve/decline/revoke with O34 confirm. Seed has no 'requested' grant for school A so approve/decline buttons not visually captured.",
+      "source": "school-ops"
+    },
+    {
+      "id": "SC43",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/support/tk-2",
+      "evidence": [
+        "qa/screenshots/SC43-desktop.png",
+        "qa/screenshots/SC43-mobile.png"
+      ],
+      "notes": "Ticket info, updates thread, add update, grants of the ticket (revoke).",
+      "source": "school-ops"
+    },
+    {
+      "id": "TE01",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "TE02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "TE03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "TE04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "TE05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "TE06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL01",
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1",
+      "evidence": [
+        "qa/screenshots/CL01-desktop.png",
+        "qa/screenshots/CL01-mobile.png"
+      ],
+      "notes": "Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress.",
+      "source": "lead"
+    },
+    {
+      "id": "CL02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL08",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL09",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL10",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL11",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL12",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL13",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL14",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL15",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL16",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "CL17",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/activities",
+      "evidence": [
+        "qa/screenshots/CL17-desktop.png",
+        "qa/screenshots/CL17-desktop-full.png",
+        "qa/screenshots/CL17-mobile.png",
+        "qa/screenshots/CL17-u-hung.png",
+        "qa/screenshots/CL17-u-hanh.png"
+      ],
+      "notes": "R09 layout: section tabs, activity cards (illustration/icon tile, due date red when due soon/overdue, scope Cả lớp/Tổ/N học sinh, status badge, x/y assigned approved + bar + %, row menu), overview KPIs, recent feed, pending evidence table (FileThumb + Duyệt/Yêu cầu bổ sung), upcoming class announcements (only with announcement.class). Search + status filter + pagination.",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL18",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/activities/new (edit: /activities/:activityId/edit)",
+      "evidence": [
+        "qa/screenshots/CL18-desktop.png",
+        "qa/screenshots/CL18-mobile.png",
+        "qa/screenshots/CL18-validation-desktop.png"
+      ],
+      "notes": "Title/description/illustration/due date (>= today)/whole class|tổ|students (Combobox multi)/evidence toggle; Lưu nháp vs Giao hoạt động; validation + ErrorSummary; unsaved guard with save; conflict dialog; note no automatic conduct points. Flow tested (scripts/qa-class-activities-flow.mjs).",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL19",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/activities/:activityId",
+      "evidence": [
+        "qa/screenshots/CL19-desktop.png",
+        "qa/screenshots/CL19-mobile.png",
+        "qa/screenshots/CL19-progress-desktop.png",
+        "qa/screenshots/CL19-evidence-desktop.png"
+      ],
+      "notes": "Tabs Thông tin/Tiến độ/Minh chứng/Lịch sử; per-student table with search/status/tổ filters, sort, paging, bulk status (needs_supplement requires note); record evidence O27; review approve (share toggle)/supplement/reject; O28 viewer; close/reopen/publish draft with confirm.",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL20",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/evidence",
+      "evidence": [
+        "qa/screenshots/CL20-desktop.png",
+        "qa/screenshots/CL20-mobile.png"
+      ],
+      "notes": "Gallery/table toggle, filters status/activity/search (?status=pending deep link), bulk approve of selected pending items, same dialogs; teacher-recorded only.",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL21",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/announcements",
+      "evidence": [
+        "qa/screenshots/CL21-desktop.png",
+        "qa/screenshots/CL21-mobile.png",
+        "qa/screenshots/CL21-u-hung.png"
+      ],
+      "notes": "Own announcements (Nháp/Đã đặt lịch/Đã công bố/Đã thu hồi) with search/status filter/paging + 'Từ nhà trường' section. u-hung gets DeniedState.",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL22",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/announcements/new (edit: /announcements/:announcementId/edit)",
+      "evidence": [
+        "qa/screenshots/CL22-desktop.png",
+        "qa/screenshots/CL22-mobile.png"
+      ],
+      "notes": "Uses shared AnnouncementComposer origin=class (school-ops). Cancel link in header (guarded by unsaved-changes provider).",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL23",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/announcements/:announcementId",
+      "evidence": [
+        "qa/screenshots/CL23-desktop.png",
+        "qa/screenshots/CL23-mobile.png"
+      ],
+      "notes": "Content, audience (Lớp / Riêng em …), estimate, status, history, attachments, internal note 'Nội bộ — phụ huynh không thấy'; edit draft/scheduled, publish, withdraw with reason, delete draft (O31), parent preview.",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL24",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/files",
+      "evidence": [
+        "qa/screenshots/CL24-desktop.png",
+        "qa/screenshots/CL24-mobile.png",
+        "qa/screenshots/CL24-upload-desktop.png",
+        "qa/screenshots/CL24-upload-mobile.png",
+        "qa/screenshots/CL24-u-hung.png"
+      ],
+      "notes": "List (name/type/size/owner/share/status), filters, paging; upload (local blob, share scope, student when riêng một em, blocks images to Phụ huynh cả lớp); preview/download O28; change share; revoke sharing (→ Nội bộ, confirm); archive/restore (confirm).",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL25",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/reports",
+      "evidence": [
+        "qa/screenshots/CL25-desktop.png",
+        "qa/screenshots/CL25-mobile.png",
+        "qa/screenshots/CL25-u-hung.png"
+      ],
+      "notes": "Catalog from activitiesExtraRepo.classReportCatalog (subject teacher: attendance + activities only).",
+      "source": "class-activities"
+    },
+    {
+      "id": "CL26",
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/reports/:reportType",
+      "evidence": [
+        "qa/screenshots/CL26-desktop.png",
+        "qa/screenshots/CL26-mobile.png"
+      ],
+      "notes": "Params (week for conduct, date range + quick picks for attendance, student Combobox for student type; ?studentId= deep link) -> reportsRepo.classReport -> shared ReportViewer; exports recorded via reportsRepo.recordExport only when report.export; print uses no-print shell.",
+      "source": "class-activities"
+    },
+    {
+      "id": "PA01",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA08",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA09",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA10",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA11",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA12",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA13",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "PA14",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "SY01",
+      "status": "qa_screenshot",
+      "route": "/schools/binh-minh",
+      "evidence": [
+        "qa/screenshots/SY01-desktop.png",
+        "qa/screenshots/SY01-mobile.png"
+      ],
+      "notes": "PublicShell: nhận diện, liên hệ chính thức, tin công khai (tìm/phân trang), thẻ phụ huynh giải thích link riêng; không có công cụ tra cứu học sinh; trường tạm dừng ẩn tin.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY02",
+      "status": "qa_screenshot",
+      "route": "/schools/binh-minh/announcements/an-1",
+      "evidence": [
+        "qa/screenshots/SY02-desktop.png",
+        "qa/screenshots/SY02-mobile.png"
+      ],
+      "notes": "Chỉ bản công khai (repository trả NOT_FOUND cho tin riêng tư), tệp công khai tải được, quay lại trường.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY03",
+      "status": "qa_screenshot",
+      "route": "/privacy",
+      "evidence": [
+        "qa/screenshots/SY03-desktop.png",
+        "qa/screenshots/SY03-mobile.png"
+      ],
+      "notes": "Bản nháp chờ chủ dự án/pháp chế duyệt; mục lục anchor; liên hệ lấy từ cấu hình nền tảng; không tuyên bố tuân thủ/chứng nhận.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY04",
+      "status": "qa_screenshot",
+      "route": "/terms",
+      "evidence": [
+        "qa/screenshots/SY04-desktop.png",
+        "qa/screenshots/SY04-mobile.png"
+      ],
+      "notes": "Bản nháp, đánh dấu chưa thẩm định pháp lý, không có điều khoản thanh toán.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY05",
+      "status": "qa_screenshot",
+      "route": "/access-denied",
+      "evidence": [
+        "qa/screenshots/SY05-desktop.png",
+        "qa/screenshots/SY05-mobile.png"
+      ],
+      "notes": "Không tiết lộ dữ liệu bị chặn; về không gian hợp lệ / quay lại / vì sao.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY06",
+      "status": "qa_screenshot",
+      "route": "/school-suspended?school=tran-phu",
+      "evidence": [
+        "qa/screenshots/SY06-desktop.png",
+        "qa/screenshots/SY06-mobile.png"
+      ],
+      "notes": "Giải thích vận hành, lý do, đầu mối công khai; không có nút ghi dữ liệu; liệt kê trường khác còn làm việc được.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY07",
+      "status": "qa_screenshot",
+      "route": "/maintenance",
+      "evidence": [
+        "qa/screenshots/SY07-desktop.png",
+        "qa/screenshots/SY07-mobile.png",
+        "qa/screenshots/SY07-retry-ok.png"
+      ],
+      "notes": "Không đưa ETA; 'Thử lại' kiểm kho demo cục bộ; về nơi an toàn.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "SY08",
+      "status": "qa_screenshot",
+      "route": "/khong-ton-tai-demo",
+      "evidence": [
+        "qa/screenshots/SY08-desktop.png",
+        "qa/screenshots/SY08-mobile.png"
+      ],
+      "notes": "app/not-found.tsx đã chụp. app/error.tsx (retry, không stack trace) và app/global-error.tsx (html/body riêng) đã dựng nhưng chưa chụp — không có cách kích hoạt lỗi render chủ đích an toàn.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "DV01",
+      "status": "mock_connected",
+      "route": "/demo",
+      "evidence": [],
+      "notes": "Personas (9), parent demo links from repository, write/read scenarios, DemoClock presets, reset seed with confirm.",
+      "source": "lead"
+    },
+    {
+      "id": "DV02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "DV03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "DV04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "DV05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "DV06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "DV07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "EX01",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "EX02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "EX03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    }
+  ],
+  "components": [
+    {
+      "id": "C001",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C002",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C003",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C004",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C005",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C006",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C007",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C008",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C009",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C010",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C011",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C012",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C013",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C014",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C015",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C016",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C017",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C018",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C019",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C020",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C021",
+      "status": "qa_screenshot",
+      "route": "src/features/announcements/composer.tsx (RichTextEditor)",
+      "evidence": [
+        "qa/screenshots/C071-composer-filled.png"
+      ],
+      "notes": "structured blocks p/h/li, toolbar, preview",
+      "source": "school-ops"
+    },
+    {
+      "id": "C022",
+      "status": "qa_screenshot",
+      "route": "src/features/announcements/composer.tsx (AudienceSelector)",
+      "evidence": [
+        "qa/screenshots/SC34-desktop.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "C023",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C024",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C025",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C026",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C027",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C028",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C029",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C030",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C031",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C032",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C033",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C034",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C035",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C036",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C037",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C038",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C039",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C040",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C041",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C042",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C043",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C044",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C045",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C046",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C047",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C048",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C049",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C050",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C051",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C052",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C053",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C054",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C055",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C056",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C057",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C058",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C059",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C060",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C061",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C062",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C063",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C064",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C065",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C066",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C067",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C068",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C069",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C070",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C071",
+      "status": "qa_screenshot",
+      "route": "src/features/announcements/composer.tsx",
+      "evidence": [
+        "qa/screenshots/C071-composer-filled.png",
+        "qa/screenshots/C071-composer-preview-mobile.png"
+      ],
+      "notes": "AnnouncementComposer; optional onCancel prop added on lead request",
+      "source": "school-ops"
+    },
+    {
+      "id": "C072",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C073",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "C074",
+      "status": "qa_screenshot",
+      "route": "src/features/reports/viewer.tsx",
+      "evidence": [
+        "qa/screenshots/SC38-desktop.png",
+        "qa/screenshots/SC38-print-preview.png",
+        "qa/screenshots/O30-export-format.png"
+      ],
+      "notes": "ReportViewer; optional canExport prop (default true)",
+      "source": "school-ops"
+    },
+    {
+      "id": "C075",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    }
+  ],
+  "overlays": [
+    {
+      "id": "O01",
+      "status": "qa_screenshot",
+      "route": "/platform/schools/demo-school-a",
+      "evidence": [
+        "qa/screenshots/O01-suspend-confirm.png",
+        "qa/screenshots/PL04-activate-blocked.png"
+      ],
+      "notes": "Dùng lại src/features/platform/school-status-dialog.tsx có sẵn. | SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "O02",
+      "status": "qa_screenshot",
+      "route": "/platform/schools/demo-school-a/admins",
+      "evidence": [
+        "qa/screenshots/O02-invite-admin.png",
+        "qa/screenshots/O02-replace-admin.png",
+        "qa/screenshots/PL05-after-invite.png"
+      ],
+      "notes": "src/features/platform/invite-admin-dialog.tsx — mời/thay, thời hạn, không gửi email, không để mất quản trị cuối.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "O03",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O08",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O09",
+      "status": "mock_connected",
+      "route": "SC18/SC22",
+      "evidence": [],
+      "notes": "Thêm/sửa giám hộ; không tự xác minh.",
+      "source": "students-families"
+    },
+    {
+      "id": "O10",
+      "status": "mock_connected",
+      "route": "SC18/SC22",
+      "evidence": [],
+      "notes": "Xác minh (căn cứ bắt buộc) / thu hồi (thu hồi link của quan hệ đó).",
+      "source": "students-families"
+    },
+    {
+      "id": "O11",
+      "status": "mock_connected",
+      "route": "SC16/SC18/SC20",
+      "evidence": [],
+      "notes": "Chuyển lớp cùng năm / ngừng theo học; ngày hiệu lực; lý do; áp dụng ngay nếu có quyền.",
+      "source": "students-families"
+    },
+    {
+      "id": "O12",
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23",
+      "evidence": [
+        "qa/screenshots/O12-desktop.png",
+        "qa/screenshots/O12-unverified-desktop.png",
+        "qa/screenshots/O12-mobile.png"
+      ],
+      "notes": "Chỉ chọn được quan hệ đã xác minh; mục mặc định theo chính sách; hạn ≤ hết năm học.",
+      "source": "students-families"
+    },
+    {
+      "id": "O13",
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23",
+      "evidence": [
+        "qa/screenshots/O13-desktop.png",
+        "qa/screenshots/O13-mobile.png"
+      ],
+      "notes": "QR thật (qrcode) mã hóa link demo, sao chép có toast 'Đã sao chép', in thẻ QR.",
+      "source": "students-families"
+    },
+    {
+      "id": "O14",
+      "status": "qa_screenshot",
+      "route": "SC18/SC22/SC23/SC24",
+      "evidence": [
+        "qa/screenshots/O14-desktop.png"
+      ],
+      "notes": "Thu hồi có lý do; cấp lại thu hồi link cũ + tạo link mới; link giám hộ khác không đổi.",
+      "source": "students-families"
+    },
+    {
+      "id": "O15",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O16",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O17",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O18",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O19",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O20",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O21",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O22",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/conduct-rules",
+      "evidence": [
+        "qa/screenshots/O22-publish-ruleset.png"
+      ],
+      "notes": "New version dialog + publish confirm",
+      "source": "school-ops"
+    },
+    {
+      "id": "O23",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O24",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O25",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/timetable",
+      "evidence": [
+        "qa/screenshots/O25-lesson-change-drawer.png",
+        "qa/screenshots/O25-lesson-change-drawer-mobile.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "O26",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O27",
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O27-desktop.png",
+        "qa/screenshots/O27-mobile.png",
+        "qa/screenshots/O27-validation-desktop.png",
+        "qa/screenshots/O27-discard-mobile.png",
+        "qa/screenshots/review-approve-desktop.png"
+      ],
+      "notes": "Record evidence (student limited to assigned, image/PDF <= 5MB, note, local-only label) + review dialog (approve with share toggle, supplement/reject with reason).",
+      "source": "class-activities"
+    },
+    {
+      "id": "O28",
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O28-desktop.png",
+        "qa/screenshots/O28-mobile.png"
+      ],
+      "notes": "FilePreview in Modal with metadata + download; revoked fallback from FilePreview.",
+      "source": "class-activities"
+    },
+    {
+      "id": "O29",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements/an-1",
+      "evidence": [
+        "qa/screenshots/CL23-desktop.png",
+        "qa/screenshots/C071-composer-filled.png",
+        "qa/screenshots/O29-withdraw.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "O30",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/reports/attendance",
+      "evidence": [
+        "qa/screenshots/O30-export-format.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "O31",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements/an-4",
+      "evidence": [
+        "qa/screenshots/CL23-desktop.png",
+        "qa/screenshots/O31-delete-announcement-draft.png",
+        "qa/screenshots/O31-delete-ruleset-draft.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "O32",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "O33",
+      "status": "qa_screenshot",
+      "route": "SC19",
+      "evidence": [
+        "qa/screenshots/SC19-conflict-desktop.png"
+      ],
+      "notes": "ConflictDialog dùng chung.",
+      "source": "students-families"
+    },
+    {
+      "id": "O34",
+      "status": "qa_screenshot",
+      "route": "/platform/support-access",
+      "evidence": [
+        "qa/screenshots/O34-request-support.png",
+        "qa/screenshots/O34-validation.png",
+        "qa/screenshots/O34-revoke-grant.png"
+      ],
+      "notes": "Phía nền tảng: src/features/platform/support-request-dialog.tsx (chỉ đề nghị; trường duyệt/thu hồi ở nhóm school).",
+      "source": "auth-platform-system"
+    }
+  ],
+  "states": [
+    {
+      "id": "ST01",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST02",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST03",
+      "status": "built",
+      "route": "lists",
+      "evidence": [],
+      "notes": "EmptyFiltered in all lists",
+      "source": "school-ops"
+    },
+    {
+      "id": "ST04",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST05",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST06",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST07",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST08",
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/announcements/new",
+      "evidence": [
+        "qa/screenshots/C071-composer-validation.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "ST09",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST10",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST11",
+      "status": "qa_screenshot",
+      "route": "/account/security",
+      "evidence": [
+        "qa/screenshots/ST11-session-expired.png",
+        "qa/screenshots/ST11-login-after-expire.png"
+      ],
+      "notes": "expire() → RequireStaffSession hiển thị 'Phiên demo đã hết'; /login có callout phiên trước đã hết.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "ST12",
+      "status": "qa_screenshot",
+      "route": "/invitations/inv-a-loan",
+      "evidence": [
+        "qa/screenshots/ST12-expired-desktop.png",
+        "qa/screenshots/ST12-expired-mobile.png",
+        "qa/screenshots/ST12-revoked-desktop.png",
+        "qa/screenshots/ST12-revoked-mobile.png"
+      ],
+      "notes": "Không cho chấp nhận, nêu người mời để liên hệ.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "ST13",
+      "status": "qa_screenshot",
+      "route": "/school-suspended?school=tran-phu",
+      "evidence": [
+        "qa/screenshots/SY06-desktop.png",
+        "qa/screenshots/SY06-mobile.png",
+        "qa/screenshots/ST13-choose-desktop.png"
+      ],
+      "notes": "Không nút ghi dữ liệu; dữ liệu không bị xóa.",
+      "source": "auth-platform-system"
+    },
+    {
+      "id": "ST14",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST15",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST16",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST17",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST18",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST19",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST20",
+      "status": "built",
+      "route": "settings/policy/rules/composer",
+      "evidence": [],
+      "notes": "ConflictDialog on CONFLICT",
+      "source": "school-ops"
+    },
+    {
+      "id": "ST21",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST22",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST23",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST24",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST25",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST26",
+      "status": "not_started",
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "ST27",
+      "status": "qa_screenshot",
+      "route": "many",
+      "evidence": [
+        "qa/screenshots/O29-withdraw.png"
+      ],
+      "notes": "",
+      "source": "school-ops"
+    },
+    {
+      "id": "ST28",
+      "status": "qa_screenshot",
+      "route": "/khong-ton-tai-demo",
+      "evidence": [
+        "qa/screenshots/SY08-desktop.png",
+        "qa/screenshots/SY08-mobile.png"
+      ],
+      "notes": "not-found chụp được; error.tsx/global-error.tsx dựng xong, chưa chụp.",
+      "source": "auth-platform-system"
+    }
+  ]
+}

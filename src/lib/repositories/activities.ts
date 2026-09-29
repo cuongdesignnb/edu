@@ -124,6 +124,7 @@ export const activitiesRepo = {
       classGuard(db, ctx, schoolId, yearId, classId);
       requireAction(db, ctx, "evidence.manage", { schoolId, classId });
       const a = findOr404(db.activities.find((x) => x.id === input.activityId && x.classId === classId), "hoạt động");
+      if (a.status !== "active") throw new RepoError("VALIDATION", "Hoạt động không ở trạng thái đang diễn ra — không ghi nhận thêm minh chứng.");
       if (!a.assignedStudentIds.includes(input.studentId)) validation({ studentId: "Học sinh không được giao hoạt động này" });
       const f: FileAsset = { id: newId("f"), schoolId, classId, studentId: input.studentId, name: input.file.name, mime: input.file.type, size: input.file.size, source: { kind: "blob", blobKey }, ownerId: actorId(ctx), share: "internal", category: "evidence", status: "active", createdAt: ctx.now };
       db.files.push(f);

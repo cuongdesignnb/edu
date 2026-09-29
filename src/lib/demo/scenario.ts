@@ -18,11 +18,16 @@ export function getScenario(): Scenario {
   if (typeof window === "undefined") return memory;
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? { ...DEFAULT, ...JSON.parse(raw) } : DEFAULT;
+    if (raw === cachedRaw && cached) return cached; // stable snapshot for useSyncExternalStore
+    cachedRaw = raw;
+    cached = raw ? { ...DEFAULT, ...JSON.parse(raw) } : DEFAULT;
+    return cached!;
   } catch {
     return DEFAULT;
   }
 }
+let cachedRaw: string | null = null;
+let cached: Scenario | null = null;
 
 export function setScenario(patch: Partial<Scenario>) {
   const next = { ...getScenario(), ...patch };

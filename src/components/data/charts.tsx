@@ -17,7 +17,7 @@ export function ChartCard({ title, series, kind = "bar", unit, denominatorLabel,
     <figure className={clsx("rounded-xl border border-line bg-white p-4", className)}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <figcaption className="text-sm font-semibold text-ink">{title}</figcaption>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setAsTable((v) => !v)} aria-pressed={asTable}>
+        <button type="button" className="btn btn-ghost btn-sm no-print" onClick={() => setAsTable((v) => !v)} aria-pressed={asTable}>
           {asTable ? <BarChart3 className="size-4" aria-hidden /> : <Table2 className="size-4" aria-hidden />}{asTable ? "Xem biểu đồ" : "Xem dạng bảng"}
         </button>
       </div>

@@ -85,7 +85,7 @@ export function ClassTabs() {
   const primary = tabs.slice(0, 4);
   const rest = tabs.slice(4);
   const item = (t: (typeof tabs)[number], extra?: string) => (
-    <Link key={t.key} href={`${base}${t.path}`} className={clsx("tab !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
+    <Link key={t.key} href={`${base}${t.path}`} className={clsx("tab flex-none whitespace-nowrap !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
       <span aria-hidden>{TAB_ICONS[t.key]}</span>{t.label}
     </Link>
   );

@@ -75,7 +75,7 @@ export function DataTable<T>({ rows, columns, rowKey, sort, dir, onSort, selecta
           {rows.map((r) => {
             const id = rowKey(r);
             return (
-              <tr key={id} aria-selected={selected?.has(id) || rowSelectedKey === id || undefined} className={clsx(onRowClick && "cursor-pointer")} onClick={onRowClick ? (e) => { if ((e.target as HTMLElement).closest("button,a,input,select,label")) return; onRowClick(r); } : undefined}>
+              <tr key={id} aria-selected={selected?.has(id) || rowSelectedKey === id || undefined} className={clsx(onRowClick && "cursor-pointer")} onClick={onRowClick ? (e) => { if (!e.currentTarget.contains(e.target as Node) || (e.target as HTMLElement).closest("button,a,input,select,label,[role=menuitem]")) return; onRowClick(r); } : undefined}>
                 {selectable && (
                   <td><input type="checkbox" className="size-4 accent-[var(--color-primary)]" aria-label="Chọn dòng" checked={!!selected?.has(id)} onChange={() => { const n = new Set(selected); if (n.has(id)) n.delete(id); else n.add(id); onSelectedChange?.(n); }} /></td>
                 )}

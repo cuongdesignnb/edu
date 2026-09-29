@@ -42,7 +42,6 @@ export async function buildXLSX(columns: ExportColumn[], rows: ExportRow[], meta
       return { value: v === undefined || v === null ? "" : String(v), type: String };
     })),
   ];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return writeXlsxFile(data as any, { columns: columns.map((c) => ({ width: Math.min(40, Math.max(10, c.label.length + 4)) })) } as any).toBlob();
 }
 

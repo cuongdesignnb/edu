@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
 import { makeCtx, type Ctx, isRepoError, errorMessage, type RepoError } from "@/lib/repositories";
 import { onSessionChange, readSession, writeSession, type DemoSession } from "@/lib/demo/session";
@@ -65,7 +65,7 @@ export function useCommand<A extends unknown[], R>(fn: (ctx: Ctx, ...args: A) =>
   const [error, setError] = useState<RepoError | null>(null);
   const inFlight = useRef(false);
   const optsRef = useRef(opts);
-  optsRef.current = opts;
+  useEffect(() => { optsRef.current = opts; });
   const run = useCallback(async (...args: A): Promise<R | undefined> => {
     if (inFlight.current) return undefined;
     inFlight.current = true;

@@ -65,7 +65,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
   const router = useRouter();
   const [token, setToken] = useState<string | null | undefined>(undefined);
   useEffect(() => { setToken(preview ? null : readParentToken(slug)); }, [slug, preview, pathname]);
-  const key: ParentKey | null = preview ? preview.key : token ? { token } : null;
+  const key = useMemo<ParentKey | null>(() => (preview ? preview.key : token ? { token } : null), [preview, token]);
   const ctxQ = useQuery({ queryKey: ["parent", preview ? "preview" : "link", slug, "context", token], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
   const reason = unavailableReason(ctxQ.error as RepoError | null);
   useEffect(() => { if (reason && !preview) router.replace(`/p/${slug}/access-unavailable?reason=${reason}`); }, [reason, preview, slug, router]);

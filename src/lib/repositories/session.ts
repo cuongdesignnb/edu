@@ -95,7 +95,9 @@ export const sessionRepo = {
       const inv = findOr404(db.invitations.find((i) => i.id === inviteId), "lời mời");
       const st = effectiveInvitationStatus(inv, ctx.now);
       if (st !== "pending") throw new RepoError(st === "expired" ? "EXPIRED" : "REVOKED", st === "accepted" ? "Lời mời này đã được chấp nhận trước đó." : undefined);
-      if (!accept) { inv.status = "declined"; return { userId: undefined as ID | undefined }; }
+      const sch = db.schools.find((s) => s.id === inv.schoolId);
+      if (accept && sch && sch.status !== "active" && sch.status !== "draft") throw new RepoError("SUSPENDED");
+      if (!accept) { inv.status = "declined"; db.audit.push({ id: newId("au"), level: "school", schoolId: inv.schoolId, actorId: "anonymous", action: "Từ chối lời mời", entityType: "invitation", entityId: inv.id, entityLabel: inv.email, at: ctx.now }); return { userId: undefined as ID | undefined }; }
       let userId = inv.existingUserId;
       if (!userId) {
         const u: StaffUser = { id: newId("u"), fullName: (fullName ?? inv.fullName).trim(), email: inv.email, workPhone: "Chưa cập nhật", avatarTone: "blue", version: 1 };
@@ -104,7 +106,7 @@ export const sessionRepo = {
       }
       // Existing identity: only a NEW membership for this school is created; nothing at other schools changes.
       if (!db.memberships.some((m) => m.userId === userId && m.schoolId === inv.schoolId)) {
-        db.memberships.push({ id: newId("m"), schoolId: inv.schoolId, userId, department: "Chưa phân tổ", roleTemplateIds: inv.roleTemplateIds, status: "active", joinedAt: ctx.today, staffCode: `GV${Date.now().toString().slice(-4)}`, version: 1 });
+        db.memberships.push({ id: newId("m"), schoolId: inv.schoolId, userId, department: "Chưa phân tổ", roleTemplateIds: inv.roleTemplateIds, status: "active", joinedAt: ctx.today, staffCode: `GV${String(db.memberships.filter((m) => m.schoolId === inv.schoolId).length + 1).padStart(4, "0")}`, version: 1 });
       }
       inv.status = "accepted";
       audit(db, { ...ctx, actor: { kind: "staff", userId } }, { level: "school", schoolId: inv.schoolId, action: "Chấp nhận lời mời", entityType: "invitation", entityId: inv.id, entityLabel: inv.email });

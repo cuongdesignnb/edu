@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initStore, subscribe } from "@/lib/repositories";
 import { ToastProvider } from "@/components/ui/toast";
@@ -32,7 +32,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={client}>
       <ToastProvider>
         <StoreGate client={client}>
-          <UnsavedChangesProvider>{children}</UnsavedChangesProvider>
+          <Suspense fallback={<PageSkeleton />}><UnsavedChangesProvider>{children}</UnsavedChangesProvider></Suspense>
         </StoreGate>
       </ToastProvider>
     </QueryClientProvider>

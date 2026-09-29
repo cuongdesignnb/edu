@@ -1,3 +1,53 @@
+# EduManage — frontend demo (Next.js)
+
+> **Chưa có backend thật, chưa xác thực/phân quyền bảo mật thật, chỉ dùng dữ liệu giả định, không dùng cho production.** Mọi dữ liệu nằm trong trình duyệt (IndexedDB) và có thể bị người dùng xem/sửa. Kiểm tra quyền trong bản này chỉ để giao diện và adapter mô phỏng nhất quán.
+
+Giao diện tương tác cho bốn khu vực: **Vận hành nền tảng**, **Nhà trường**, **Giáo viên + Không gian lớp**, **Phụ huynh (chỉ xem qua link riêng, không tài khoản)**, cùng UI lab nội bộ `/demo` và `/preview/*`.
+
+## Chạy
+
+Yêu cầu: Node.js ≥ 20.9 (đã dùng 20.15.1), npm 10.
+
+```bash
+npm install
+npm run dev          # http://localhost:3000 → tự chuyển tới /demo
+npm run build && npm start   # bản build production (vẫn là demo dữ liệu giả)
+```
+
+`.env.example`: `NEXT_PUBLIC_APP_MODE=demo` (bật /demo và /preview/*), `NEXT_PUBLIC_ENABLE_ACADEMIC_RESULTS_PREVIEW=false` (module kết quả học tập tắt). Không có secret.
+
+## Dùng bản demo
+
+- `/demo`: chọn vai trò (vận hành nền tảng, quản trị trường, BGH, giáo vụ, GVCN, GVBM, giáo viên 2 trường, trường B), mở link phụ huynh mẫu, bật kịch bản lỗi (mất mạng khi lưu, xung đột phiên bản, lỗi đọc, mạng chậm), đổi đồng hồ demo, đặt lại dữ liệu.
+- `/login`: màn hình đăng nhập **mô phỏng** (khớp email trong dữ liệu mẫu, không kiểm/lưu mật khẩu).
+- Link phụ huynh mẫu: `/p/binh-minh/access?t=demo-minhanh-me` (mẹ em Minh Anh). Link bị thu hồi/hết hạn mở ra trang giải thích, không lộ dữ liệu.
+- `/preview/flows`: hướng dẫn chạy 12 luồng nghiệp vụ; `/preview/checklist`: tiến độ theo ID có bằng chứng.
+- DemoClock cố định Thứ Hai 05/10/2026 08:00 (Asia/Ho_Chi_Minh) để ảnh chụp và test lặp lại được.
+
+## Kiểm thử
+
+```bash
+npm run typecheck    # tsc --noEmit
+npm run lint         # eslint src tests
+npm test             # Vitest: bất biến dữ liệu mẫu + luồng nghiệp vụ trên repository
+npm run test:e2e     # Playwright (dùng Microsoft Edge đã cài; cần dev/prod server ở :3000)
+npm run progress     # sinh docs/progress.md + src/generated/progress.json từ qa/status/*.json
+```
+
+## Cấu trúc
+
+`src/app` (route theo sitemap), `src/components/{ui,data,layout}` (primitives dùng chung), `src/features/*` (component nghiệp vụ theo module), `src/lib/model` (model frontend), `src/lib/fixtures` (seed xác định), `src/lib/repositories` (MockRepository), `src/lib/permissions` (mô hình quyền duy nhất), `src/lib/routing` (registry route → URL demo), `tests/unit`, `tests/e2e`, `qa/` (trạng thái + ảnh chụp).
+
+Tài liệu bàn giao: `docs/progress.md`, `docs/implementation-report.md`, `docs/visual-diff-report.md`, `docs/test-report.md`, `docs/frontend-data-contract.md`, `docs/ui-conventions.md`.
+
+## Giới hạn
+
+Không backend/API/database, không gửi email/Zalo, không thanh toán, không tài khoản phụ huynh, không đồng bộ giữa thiết bị (chỉ giữa các tab cùng trình duyệt), “đặt lịch công bố” chỉ mô phỏng theo DemoClock, tệp tải lên chỉ lưu cục bộ, PDF dùng chức năng In/Lưu PDF của trình duyệt. Nội dung pháp lý (quyền riêng tư, điều kiện sử dụng) là bản nháp chờ duyệt.
+
+---
+
+# Bộ bàn giao ban đầu (giữ nguyên)
+
 # EduManage — Bộ bàn giao dựng frontend
 
 **Mục đích:** giao bộ ảnh có tên cố định và chỉ dẫn đầy đủ cho Agent lập trình toàn bộ giao diện nền tảng trước khi làm backend.

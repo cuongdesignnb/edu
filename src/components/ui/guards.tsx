@@ -16,14 +16,15 @@ const GuardCtx = createContext<GuardApi>({ register: () => undefined, confirm: (
 
 export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
   const dirtyMap = useRef(new Map<string, { dirty: boolean; save?: () => Promise<boolean> }>());
-  const [pending, setPending] = useState<null | (() => void)>(null);
+  const [pending, setPending] = useState<null | { proceed: () => void; save?: () => Promise<boolean> }>(null);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
   const isDirty = () => [...dirtyMap.current.values()].some((v) => v.dirty);
   const register = useCallback((id: string, dirty: boolean, save?: () => Promise<boolean>) => {
     if (!dirty) dirtyMap.current.delete(id); else dirtyMap.current.set(id, { dirty, save });
   }, []);
-  const confirm = useCallback((proceed: () => void) => { if (isDirty()) setPending(() => proceed); else proceed(); }, []);
+  const firstSaver = () => [...dirtyMap.current.values()].find((v) => v.dirty && v.save)?.save;
+  const confirm = useCallback((proceed: () => void) => { if (isDirty()) setPending({ proceed, save: firstSaver() }); else proceed(); }, []);
 
   useEffect(() => {
     const onBefore = (e: BeforeUnloadEvent) => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } };
@@ -35,14 +36,13 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
       if (url.origin !== window.location.origin || (url.pathname === window.location.pathname && url.search === window.location.search)) return;
       e.preventDefault();
       e.stopPropagation();
-      setPending(() => () => router.push(url.pathname + url.search + url.hash));
+      setPending({ proceed: () => router.push(url.pathname + url.search + url.hash), save: firstSaver() });
     };
     window.addEventListener("beforeunload", onBefore);
     document.addEventListener("click", onClick, true);
     return () => { window.removeEventListener("beforeunload", onBefore); document.removeEventListener("click", onClick, true); };
   }, [router]);
 
-  const saver = [...dirtyMap.current.values()].find((v) => v.dirty && v.save)?.save;
   return (
     <GuardCtx.Provider value={{ register, confirm }}>
       {children}
@@ -50,8 +50,8 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
         description="Rời trang bây giờ sẽ mất nội dung chưa lưu."
         footer={<>
           <Button variant="ghost" onClick={() => setPending(null)} disabled={saving}>Ở lại</Button>
-          <Button variant="danger-soft" disabled={saving} onClick={() => { const p = pending; dirtyMap.current.clear(); setPending(null); p?.(); }}>Bỏ thay đổi</Button>
-          {saver && <Button variant="primary" loading={saving} onClick={async () => { setSaving(true); const ok = await saver(); setSaving(false); if (ok) { const p = pending; dirtyMap.current.clear(); setPending(null); p?.(); } }}>Lưu rồi tiếp tục</Button>}
+          <Button variant="danger-soft" disabled={saving} onClick={() => { const p = pending; dirtyMap.current.clear(); setPending(null); p?.proceed(); }}>Bỏ thay đổi</Button>
+          {pending?.save && <Button variant="primary" loading={saving} onClick={async () => { const p = pending; setSaving(true); const ok = await p.save!(); setSaving(false); if (ok) { dirtyMap.current.clear(); setPending(null); p.proceed(); } }}>Lưu rồi tiếp tục</Button>}
         </>}>
         <p className="flex gap-2.5 text-sm text-body"><AlertTriangle className="mt-0.5 size-4 flex-none text-warning" aria-hidden />Dữ liệu chưa lưu chỉ còn trong biểu mẫu đang mở. Chọn “Ở lại” để tiếp tục chỉnh sửa.</p>
       </Modal>

@@ -1,0 +1,275 @@
+{
+ "screens": {
+  "SC29": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/conduct-rules",
+   "evidence": [
+    "qa/screenshots/SC29-desktop.png",
+    "qa/screenshots/SC29-mobile.png"
+   ],
+   "notes": "Versions, status, effective range, current marker, snapshot count; O22 create (one draft rule). Flow tested: delete draft -> new version -> publish."
+  },
+  "SC30": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/conduct-rules/rs-a-3",
+   "evidence": [
+    "qa/screenshots/SC30-desktop.png",
+    "qa/screenshots/SC30-mobile.png",
+    "qa/screenshots/SC30-published-readonly.png",
+    "qa/screenshots/O22-publish-ruleset.png",
+    "qa/screenshots/O31-delete-ruleset-draft.png"
+   ],
+   "notes": "Draft editor (rows, base/cap/floor, bands, effective date, deadline), simulator via conductRepo.simulate (rs-a-1: 100-5+2=97), diff vs previous, publish confirm (NV-08), delete draft; published = read-only + copy."
+  },
+  "SC31": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/publication-policy",
+   "evidence": [
+    "qa/screenshots/SC31-desktop.png",
+    "qa/screenshots/SC31-mobile.png"
+   ],
+   "notes": "Lock/publish roles, leader approval, week close day, parent module chips, attendance auto publish; confirm lists changes + impact; conflict dialog. u-dung sees read-only."
+  },
+  "SC32": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/timetable",
+   "evidence": [
+    "qa/screenshots/SC32-desktop.png",
+    "qa/screenshots/SC32-mobile.png",
+    "qa/screenshots/SC32-timetable-mobile-agenda.png",
+    "qa/screenshots/O25-lesson-change-drawer.png",
+    "qa/screenshots/O25-lesson-change-drawer-mobile.png"
+   ],
+   "notes": "Filters class/teacher/room, week nav, desktop grid, mobile day agenda, clash callout (none in seed), O25 drawer with live conflict check, draft/publish, week change list with publish/delete draft. Past days read-only."
+  },
+  "SC33": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements",
+   "evidence": [
+    "qa/screenshots/SC33-desktop.png",
+    "qa/screenshots/SC33-mobile.png"
+   ],
+   "notes": "Status tabs with counts, origin filter, search, pagination, delete draft O31."
+  },
+  "SC34": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements/new",
+   "evidence": [
+    "qa/screenshots/SC34-desktop.png",
+    "qa/screenshots/SC34-mobile.png",
+    "qa/screenshots/C071-composer-filled.png",
+    "qa/screenshots/C071-composer-preview-mobile.png",
+    "qa/screenshots/C071-composer-validation.png"
+   ],
+   "notes": "AnnouncementComposer origin school. Flow tested: save draft -> detail -> publish."
+  },
+  "SC35": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements/an-4",
+   "evidence": [
+    "qa/screenshots/SC35-desktop.png",
+    "qa/screenshots/SC35-mobile.png",
+    "qa/screenshots/O29-withdraw.png",
+    "qa/screenshots/O31-delete-announcement-draft.png"
+   ],
+   "notes": "Content, audience, estimate, status, history, attachments, internal note 'Nội bộ'; edit route /announcements/[id]/edit; publish, withdraw (reason, screenshot warning), delete draft."
+  },
+  "SC36": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/publications",
+   "evidence": [
+    "qa/screenshots/SC36-desktop.png",
+    "qa/screenshots/SC36-mobile.png"
+   ],
+   "notes": "Week selector, per-class status/pending/blocking/overdue/attendance, links to class review, adjustments, pending announcements. No bulk actions."
+  },
+  "SC37": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/reports",
+   "evidence": [
+    "qa/screenshots/SC37-desktop.png",
+    "qa/screenshots/SC37-mobile.png"
+   ],
+   "notes": "Cards from SCHOOL_REPORTS + keyword/group filters; no academic report."
+  },
+  "SC38": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/reports/conduct",
+   "evidence": [
+    "qa/screenshots/SC38-desktop.png",
+    "qa/screenshots/SC38-mobile.png",
+    "qa/screenshots/SC38-print-preview.png",
+    "qa/screenshots/O30-export-format.png"
+   ],
+   "notes": "Filters week/date range/grade -> ReportViewer; exports recorded via recordExport (tested xlsx download + SC39 row). Export buttons hidden without export.run (u-quan)."
+  },
+  "SC39": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/exports",
+   "evidence": [
+    "qa/screenshots/SC39-desktop.png",
+    "qa/screenshots/SC39-mobile.png"
+   ],
+   "notes": "Status/creator/expiry/rows, Tải lại regenerates locally (schoolOpsRepo.regenerateExport), cancel confirm, expired/cancelled -> recreate link; no email."
+  },
+  "SC40": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/audit",
+   "evidence": [
+    "qa/screenshots/SC40-desktop.png",
+    "qa/screenshots/SC40-mobile.png",
+    "qa/screenshots/SC40-audit-detail.png"
+   ],
+   "notes": "Filters entity/actor/date range/keyword, paginated table, detail drawer with AuditDiff + reason, filtered CSV export; read-only."
+  },
+  "SC41": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/settings",
+   "evidence": [
+    "qa/screenshots/SC41-desktop.png",
+    "qa/screenshots/SC41-mobile.png"
+   ],
+   "notes": "Link days, teacher phone/email, contact hours, report header + preview, legal disclaimer, conflict dialog, dirty guard."
+  },
+  "SC42": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/support",
+   "evidence": [
+    "qa/screenshots/SC42-desktop.png",
+    "qa/screenshots/SC42-mobile.png",
+    "qa/screenshots/SC42-create-ticket.png",
+    "qa/screenshots/O34-revoke-grant.png"
+   ],
+   "notes": "Tickets list/filter/search + create (PII warning), grants approve/decline/revoke with O34 confirm. Seed has no 'requested' grant for school A so approve/decline buttons not visually captured."
+  },
+  "SC43": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/support/tk-2",
+   "evidence": [
+    "qa/screenshots/SC43-desktop.png",
+    "qa/screenshots/SC43-mobile.png"
+   ],
+   "notes": "Ticket info, updates thread, add update, grants of the ticket (revoke)."
+  }
+ },
+ "overlays": {
+  "O22": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/conduct-rules",
+   "evidence": [
+    "qa/screenshots/O22-publish-ruleset.png"
+   ],
+   "notes": "New version dialog + publish confirm"
+  },
+  "O25": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/timetable",
+   "evidence": [
+    "qa/screenshots/O25-lesson-change-drawer.png",
+    "qa/screenshots/O25-lesson-change-drawer-mobile.png"
+   ],
+   "notes": ""
+  },
+  "O29": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements/an-1",
+   "evidence": [
+    "qa/screenshots/C071-composer-filled.png",
+    "qa/screenshots/O29-withdraw.png"
+   ],
+   "notes": ""
+  },
+  "O30": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/reports/attendance",
+   "evidence": [
+    "qa/screenshots/O30-export-format.png"
+   ],
+   "notes": ""
+  },
+  "O31": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements/an-4",
+   "evidence": [
+    "qa/screenshots/O31-delete-announcement-draft.png",
+    "qa/screenshots/O31-delete-ruleset-draft.png"
+   ],
+   "notes": ""
+  },
+  "O34": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/support",
+   "evidence": [
+    "qa/screenshots/O34-revoke-grant.png"
+   ],
+   "notes": ""
+  }
+ },
+ "states": {
+  "ST03": {
+   "status": "built",
+   "route": "lists",
+   "evidence": [],
+   "notes": "EmptyFiltered in all lists"
+  },
+  "ST08": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/announcements/new",
+   "evidence": [
+    "qa/screenshots/C071-composer-validation.png"
+   ],
+   "notes": ""
+  },
+  "ST20": {
+   "status": "built",
+   "route": "settings/policy/rules/composer",
+   "evidence": [],
+   "notes": "ConflictDialog on CONFLICT"
+  },
+  "ST27": {
+   "status": "qa_screenshot",
+   "route": "many",
+   "evidence": [
+    "qa/screenshots/O29-withdraw.png"
+   ],
+   "notes": ""
+  }
+ },
+ "components": {
+  "C021": {
+   "status": "qa_screenshot",
+   "route": "src/features/announcements/composer.tsx (RichTextEditor)",
+   "evidence": [
+    "qa/screenshots/C071-composer-filled.png"
+   ],
+   "notes": "structured blocks p/h/li, toolbar, preview"
+  },
+  "C022": {
+   "status": "qa_screenshot",
+   "route": "src/features/announcements/composer.tsx (AudienceSelector)",
+   "evidence": [
+    "qa/screenshots/SC34-desktop.png"
+   ],
+   "notes": ""
+  },
+  "C071": {
+   "status": "qa_screenshot",
+   "route": "src/features/announcements/composer.tsx",
+   "evidence": [
+    "qa/screenshots/C071-composer-filled.png",
+    "qa/screenshots/C071-composer-preview-mobile.png"
+   ],
+   "notes": "AnnouncementComposer; optional onCancel prop added on lead request"
+  },
+  "C074": {
+   "status": "qa_screenshot",
+   "route": "src/features/reports/viewer.tsx",
+   "evidence": [
+    "qa/screenshots/SC38-desktop.png",
+    "qa/screenshots/SC38-print-preview.png",
+    "qa/screenshots/O30-export-format.png"
+   ],
+   "notes": "ReportViewer; optional canExport prop (default true)"
+  }
+ }
+}

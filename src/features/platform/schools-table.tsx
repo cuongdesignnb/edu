@@ -32,13 +32,13 @@ export function SchoolsTable({ pageSize = 8, showCreate = true }: { pageSize?: n
     { key: "classCount", header: "Số lớp", sortable: true, align: "right", cell: (r) => fmtNumber(r.classCount) },
     { key: "staffCount", header: "Số nhân sự", sortable: true, align: "right", cell: (r) => fmtNumber(r.staffCount), hideBelow: "sm" },
     { key: "act", header: <span className="sr-only">Hành động</span>, align: "center", cell: (r) => (
-      <ActionMenu label={`Thao tác với ${r.name}`} items={[
+      <span onClick={(e) => e.stopPropagation()}><ActionMenu label={`Thao tác với ${r.name}`} items={[
         { label: "Mở hồ sơ trường", icon: <Eye />, href: `/platform/schools/${r.id}` },
         { label: "Quản trị trường", icon: <UserCog />, href: `/platform/schools/${r.id}/admins` },
         ...(r.status !== "active" && r.status !== "archived" ? [{ label: "Kích hoạt", icon: <Power />, onSelect: () => setStatus({ id: r.id, name: r.name, to: "active" }), separatorBefore: true }] : []),
         ...(r.status === "active" ? [{ label: "Tạm dừng", icon: <PauseCircle />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, to: "suspended" }), separatorBefore: true }] : []),
         ...(r.status === "suspended" ? [{ label: "Lưu trữ", icon: <Archive />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, to: "archived" }) }] : []),
-      ]} />
+      ]} /></span>
     ) },
   ];
 

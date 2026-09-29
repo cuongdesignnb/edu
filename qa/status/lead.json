@@ -1,0 +1,8 @@
+{
+  "screens": {
+    "PL01": { "status": "qa_screenshot", "route": "/platform", "evidence": ["qa/screenshots/PL01-desktop.png", "qa/screenshots/PL01-mobile.png"], "notes": "R01 layout; KPIs from fixture (8 schools); 4th KPI renamed to link-open count (no parent accounts); row actions with O01." },
+    "CL01": { "status": "qa_screenshot", "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1", "evidence": ["qa/screenshots/CL01-desktop.png", "qa/screenshots/CL01-mobile.png"], "notes": "Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress." },
+    "DV01": { "status": "mock_connected", "route": "/demo", "evidence": [], "notes": "Personas (9), parent demo links from repository, write/read scenarios, DemoClock presets, reset seed with confirm." }
+  },
+  "overlays": { "O01": { "status": "mock_connected", "route": "/platform", "notes": "SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository." } }
+}

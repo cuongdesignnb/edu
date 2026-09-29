@@ -56,7 +56,7 @@ export const reportsRepo = {
   async schoolCatalog(ctx: Ctx, schoolId: ID) {
     return read((db) => {
       requireAction(db, ctx, "report.school", { schoolId });
-      return { reports: SCHOOL_REPORTS, canExport: allowed(db, ctx, "export.run", { schoolId }), weeks: db.weeks.filter((w) => w.yearId === currentYear(db, schoolId)?.id && w.startDate <= ctx.today).sort((a, b) => b.index - a.index) };
+      return { reports: SCHOOL_REPORTS, grades: db.grades.filter((g) => g.schoolId === schoolId && g.status === "active"), canExport: allowed(db, ctx, "export.run", { schoolId }), weeks: db.weeks.filter((w) => w.yearId === currentYear(db, schoolId)?.id && w.startDate <= ctx.today).sort((a, b) => b.index - a.index) };
     });
   },
 
@@ -165,7 +165,8 @@ export const reportsRepo = {
     return read((db) => {
       const c = classGuard(db, ctx, schoolId, yearId, classId);
       requireAction(db, ctx, "report.class", { schoolId, classId });
-      return { reports: CLASS_REPORTS, canExport: allowed(db, ctx, "report.export", { schoolId, classId }), students: rosterOn(db, classId, refDateOf(db, c, ctx.today)).map((s) => ({ id: s.id, fullName: s.fullName })), weeks: db.weeks.filter((w) => w.yearId === yearId && w.startDate <= ctx.today).sort((a, b) => b.index - a.index) };
+      const isHr = allowed(db, ctx, "conduct.review", { schoolId, classId }) || allowed(db, ctx, "report.school", { schoolId });
+      return { reports: CLASS_REPORTS.filter((r) => isHr || r.type === "attendance" || r.type === "activities"), canExport: allowed(db, ctx, "report.export", { schoolId, classId }), students: rosterOn(db, classId, refDateOf(db, c, ctx.today)).map((s) => ({ id: s.id, fullName: s.fullName })), weeks: db.weeks.filter((w) => w.yearId === yearId && w.startDate <= ctx.today).sort((a, b) => b.index - a.index) };
     });
   },
 
