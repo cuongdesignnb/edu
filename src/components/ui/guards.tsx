@@ -102,7 +102,7 @@ export function DemoScenarioBanner({ compact }: { compact?: boolean }) {
     <div className={special ? "no-print flex flex-wrap items-center gap-2 bg-warning-bg px-4 py-1.5 text-[12.5px] text-warning-text" : "no-print flex flex-wrap items-center gap-2 bg-[#0b3f80] px-4 py-1 text-[12px] text-white/90"} role="note">
       <FlaskConical className="size-3.5 flex-none" aria-hidden />
       <span className="font-semibold">Bản demo</span>
-      {!compact && <span className="hidden sm:inline">— dữ liệu giả định, chưa có backend thật, chưa xác thực/phân quyền bảo mật thật. Không dùng cho dữ liệu học sinh thật.</span>}
+      {!compact && <span className="hidden lg:inline">— dữ liệu giả định, chưa có backend thật, chưa xác thực/phân quyền bảo mật thật. Không dùng cho dữ liệu học sinh thật.</span>}
       {special && <span className="font-semibold">· {label}</span>}
       {special && <button type="button" className="underline" onClick={() => setScenario({ write: "normal", read: "normal" })}>Tắt kịch bản</button>}
       <Link href="/demo" className="ml-auto underline" data-no-guard>Đổi vai trò / kịch bản</Link>

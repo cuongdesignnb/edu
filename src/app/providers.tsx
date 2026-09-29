@@ -27,7 +27,8 @@ function StoreGate({ client, children }: { client: QueryClient; children: ReactN
 }
 
 export function Providers({ children }: { children: ReactNode }) {
-  const [client] = useState(() => new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } }));
+  const [client] = useState(() => new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false, // an errored query is only refetched by an explicit "Thử lại" — prevents mount/refetch loops
+    refetchOnMount: (q) => q.state.status !== "error" } } }));
   return (
     <QueryClientProvider client={client}>
       <ToastProvider>

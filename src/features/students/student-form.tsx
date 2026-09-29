@@ -1,4 +1,5 @@
 "use client";
+import { StickyActionBar } from "@/components/ui/sticky-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, UserPlus, Users, Info, FlaskConical, Lock } from "lucide-react";
@@ -157,10 +158,10 @@ function EditBody({ d, schoolId, reload }: { d: Awaited<ReturnType<typeof studen
               <div data-field="internalNote" className="sm:col-span-2"><TextArea label="Ghi chú nội bộ (chỉ nhân sự có quyền xem)" rows={3} maxChars={300} value={f.internalNote} onChange={(e) => setF({ ...f, internalNote: e.target.value })} error={errs.internalNote} helper="Không ghi thông tin nhạy cảm không cần thiết." /></div>
             </div>
           </Card>
-          <div className="flex flex-wrap justify-end gap-2">
+          <StickyActionBar className="!mx-0 rounded-xl border !px-4" tone={dirty ? "warning" : "default"} status={cmd.pending ? "Đang lưu…" : dirty ? "Có thay đổi chưa lưu" : "Không có thay đổi"}>
             <Button variant="ghost" onClick={() => leave(() => router.push(`${base}/students/${s.id}`))} disabled={cmd.pending}>Hủy</Button>
             <Button type="submit" variant="primary" icon={<Save className="size-4" />} loading={cmd.pending} disabled={!dirty}>Lưu thay đổi</Button>
-          </div>
+          </StickyActionBar>
         </div>
         <div className="space-y-4">
           <Card>

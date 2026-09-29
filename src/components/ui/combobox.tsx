@@ -68,7 +68,9 @@ export function Combobox({ label, options, value, onChange, multiple, placeholde
                 <li key={o.value} role="option" aria-selected={selected.has(o.value)} aria-disabled={o.disabled || undefined}
                   onMouseEnter={() => setActive(i)} onClick={() => choose(o)}
                   className={clsx("flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm", i === active && "bg-primary-light", o.disabled && "cursor-not-allowed opacity-50")}>
-                  <span className={clsx("flex size-4 flex-none items-center justify-center rounded border", selected.has(o.value) ? "border-primary bg-primary text-white" : "border-line-strong")} aria-hidden>{selected.has(o.value) && <Check className="size-3" />}</span>
+                  {multiple
+                    ? <span className={clsx("flex size-4 flex-none items-center justify-center rounded border", selected.has(o.value) ? "border-primary bg-primary text-white" : "border-line-strong")} aria-hidden>{selected.has(o.value) && <Check className="size-3" />}</span>
+                    : <span className="flex size-4 flex-none items-center justify-center text-primary" aria-hidden>{selected.has(o.value) && <Check className="size-4" />}</span>}
                   <span className="min-w-0 flex-1"><span className="block truncate text-ink">{o.label}</span>{o.hint && <span className="block truncate text-[12px] text-muted">{o.hint}</span>}</span>
                 </li>
               ))}

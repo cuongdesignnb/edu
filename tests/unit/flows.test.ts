@@ -240,3 +240,20 @@ describe("SC07 / NV-13 — new school year rollover", () => {
     expect(again.enrolled).toBe(0);
   });
 });
+
+describe("F11 / Q35 — lesson change with effective date and conflict detection", () => {
+  it("detects a teacher already teaching another class; publishing is blocked; past dates refused", async () => {
+    const { classroomRepo } = await import("@/lib/repositories");
+    const db = getDB();
+    // Tuesday 06/10: find a period where Thầy Hùng teaches 10A2, then try to put him into 10A1 at that period
+    const hungM = db.memberships.find((m) => m.userId === "u-hung" && m.schoolId === SCHOOL_A)!.id;
+    const l = db.lessons.find((x) => x.classId === CLASS_A_10A2 && x.teacherMembershipId === hungM && x.weekday >= 2)!;
+    const date = `2026-10-${String(4 + l.weekday).padStart(2, "0")}`; // Mon 05/10 + (weekday-1)
+    const conflicts = await classroomRepo.checkLessonChange(hanh, SCHOOL_A, { classId: CLASS_A_10A1, date, period: l.period, teacherMembershipId: hungM });
+    expect(conflicts.some((c) => c.kind === "teacher")).toBe(true);
+    expect(await code(classroomRepo.saveLessonChange(hanh, SCHOOL_A, { classId: CLASS_A_10A1, date, period: l.period, kind: "substitute", teacherMembershipId: hungM, reason: "Dạy thay thử nghiệm", publish: true }))).toBe("VALIDATION");
+    const draft = await classroomRepo.saveLessonChange(hanh, SCHOOL_A, { classId: CLASS_A_10A1, date, period: l.period, kind: "substitute", teacherMembershipId: hungM, reason: "Dạy thay thử nghiệm", publish: false });
+    expect(draft.change.status).toBe("draft");
+    expect(await code(classroomRepo.saveLessonChange(hanh, SCHOOL_A, { classId: CLASS_A_10A1, date: "2026-10-02", period: 1, kind: "cancel", reason: "Đổi lịch quá khứ", publish: true }))).toBe("VALIDATION");
+  });
+});

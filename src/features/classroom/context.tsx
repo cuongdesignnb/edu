@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
@@ -58,7 +58,10 @@ export function ClassroomLayout({ schoolId, yearId, classId, children }: { schoo
 function ShellChooser({ schoolId, yearId, classId, children }: { schoolId: string; yearId: string; classId: string; children: ReactNode }) {
   const me = useRepo(["me"], (c) => sessionRepo.me(c));
   const cls = useRepo(["teacher-classes", schoolId], (c) => classroomRepo.teacherClasses(c, schoolId), { retry: false });
-  if (me.isLoading || cls.isLoading) return <PageSkeleton />;
+  // Latch the first decision so a background refetch never unmounts the chosen shell.
+  const [ready, setReady] = useState(false);
+  useEffect(() => { if (!me.isLoading && !cls.isLoading) setReady(true); }, [me.isLoading, cls.isLoading]);
+  if (!ready) return <PageSkeleton />;
   const ws = me.data?.workspaces.find((w) => w.school.id === schoolId);
   const teaches = !!cls.data?.some((c) => c.id === classId && c.live);
   const inner = <ClassroomInner schoolId={schoolId} yearId={yearId} classId={classId}>{children}</ClassroomInner>;

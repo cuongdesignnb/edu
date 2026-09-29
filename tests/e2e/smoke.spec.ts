@@ -50,14 +50,15 @@ for (const vp of VIEWPORTS) {
         }
         await settle(page);
         const body = await page.locator("body").innerText();
-        if (s.id !== "SY08") expect(body).not.toMatch(/404|This page could not be found/);
+        // DV06 intentionally demonstrates the 404 state (ST28); SY08 is the 404 page itself.
+        if (s.id !== "SY08" && s.id !== "DV06") expect(body).not.toMatch(/404|This page could not be found/);
         expect(await horizontalOverflow(page), "horizontal overflow (px)").toBeLessThanOrEqual(1);
         expect(await hasMojibake(page), "mojibake").toBe(false);
         if (s.route.startsWith("/p/")) {
           expect(await page.locator("input[type=password]").count(), "no password field on parent pages").toBe(0);
           expect(body).not.toMatch(/Đăng ký tài khoản|Nhắn tin|Gửi tin nhắn|Kết quả học tập/);
         }
-        expect(errors.filter((e) => !(s.id === "SY08" && e.startsWith("404"))), errors.join("\n")).toEqual([]);
+        expect(errors.filter((e) => !(s.id === "SY08" && (e.startsWith("404") || /status of 404/.test(e)))), errors.join("\n")).toEqual([]);
       });
     }
   });

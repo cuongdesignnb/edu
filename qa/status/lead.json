@@ -1,8 +1,160 @@
 {
   "screens": {
-    "PL01": { "status": "qa_screenshot", "route": "/platform", "evidence": ["qa/screenshots/PL01-desktop.png", "qa/screenshots/PL01-mobile.png"], "notes": "R01 layout; KPIs from fixture (8 schools); 4th KPI renamed to link-open count (no parent accounts); row actions with O01." },
-    "CL01": { "status": "qa_screenshot", "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1", "evidence": ["qa/screenshots/CL01-desktop.png", "qa/screenshots/CL01-mobile.png"], "notes": "Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress." },
-    "DV01": { "status": "mock_connected", "route": "/demo", "evidence": [], "notes": "Personas (9), parent demo links from repository, write/read scenarios, DemoClock presets, reset seed with confirm." }
+    "PL01": {
+      "status": "qa_screenshot",
+      "route": "/platform",
+      "evidence": [
+        "qa/screenshots/PL01-desktop.png",
+        "qa/screenshots/PL01-mobile.png"
+      ],
+      "notes": "R01 layout; KPIs from fixture (8 schools); 4th KPI renamed to link-open count (no parent accounts); row actions with O01."
+    },
+    "CL01": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1",
+      "evidence": [
+        "qa/screenshots/CL01-desktop.png",
+        "qa/screenshots/CL01-mobile.png"
+      ],
+      "notes": "Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress."
+    },
+    "DV01": {
+      "status": "mock_connected",
+      "route": "/demo",
+      "evidence": [],
+      "notes": "Personas (9), parent demo links from repository, write/read scenarios, DemoClock presets, reset seed with confirm."
+    }
   },
-  "overlays": { "O01": { "status": "mock_connected", "route": "/platform", "notes": "SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository." } }
+  "overlays": {
+    "O01": {
+      "status": "mock_connected",
+      "route": "/platform",
+      "notes": "SchoolStatusDialog: activate/suspend/archive with reason; last-admin rule enforced by repository."
+    }
+  },
+  "components": {
+    "C001": {
+      "status": "qa_screenshot",
+      "route": "/platform, /school/*, /teacher/*, /classroom/*, /p/*, /schools/*, /preview/*",
+      "evidence": [
+        "qa/screenshots/PL01-desktop.png",
+        "qa/screenshots/CL01-desktop.png",
+        "qa/screenshots/PA02-desktop.png"
+      ],
+      "notes": "Lead-verified: 6 shell variants (Platform/School/Teacher/Account/Public/Parent/Preview); ClassroomLayout picks Teacher vs School shell from real grants."
+    },
+    "C002": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a",
+      "evidence": [
+        "qa/screenshots/PL01-desktop.png",
+        "qa/screenshots/C002-mobile-drawer.png"
+      ],
+      "notes": "Expanded, collapsed (remembered), mobile drawer; items filtered by school-level actions; active by longest route match."
+    },
+    "C024": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/students/demo-student-a-001/edit",
+      "evidence": [
+        "qa/screenshots/C024-sticky-mobile.png"
+      ],
+      "notes": "Shared StickyActionBar adopted in SC19 edit form (dirty status, cancel, loading save). CL04 keeps its own sticky save bar with equivalent behaviour."
+    },
+    "C052": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/students",
+      "evidence": [
+        "qa/screenshots/CL02-desktop.png",
+        "qa/screenshots/CL02-subject-desktop.png"
+      ],
+      "notes": "Full vs subject-minimal roster (no guardians/links for GVBM)."
+    },
+    "C053": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/students/demo-student-a-001",
+      "evidence": [
+        "qa/screenshots/SC18-desktop.png",
+        "qa/screenshots/CL03-subject-desktop.png"
+      ],
+      "notes": "One source (studentsRepo.profile) projected by scope."
+    },
+    "C054": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/guardians/gd-2",
+      "evidence": [
+        "qa/screenshots/SC18-desktop.png",
+        "qa/screenshots/SC22-desktop.png"
+      ],
+      "notes": "Unverified / verified / revoked relationship with verifier and basis."
+    },
+    "C069": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/activities",
+      "evidence": [
+        "qa/screenshots/CL17-desktop.png"
+      ],
+      "notes": "Denominator = assigned students."
+    },
+    "C070": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/evidence",
+      "evidence": [
+        "qa/screenshots/CL20-desktop.png",
+        "qa/screenshots/CL19-evidence-desktop.png"
+      ],
+      "notes": "Approve / reject / supplement with reason; teacher is uploader."
+    },
+    "C072": {
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/imports/new",
+      "evidence": [
+        "qa/screenshots/SC27-step1-desktop.png",
+        "qa/screenshots/SC27-step2-desktop.png",
+        "qa/screenshots/SC27-step3-desktop.png"
+      ],
+      "notes": "5-step wizard with local CSV/XLSX parse (see students-families status for SC27 screenshots)."
+    },
+    "C075": {
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/overview",
+      "evidence": [
+        "qa/screenshots/PA02-desktop.png",
+        "qa/screenshots/PA02-mobile.png"
+      ],
+      "notes": "No account/login/upload/chat; link-scoped context; mobile bottom bar."
+    }
+  },
+  "states": {
+    "ST10": {
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-b (u-khang)",
+      "evidence": [
+        "qa/screenshots/ST10-desktop.png"
+      ],
+      "notes": "No live assignment: guidance, no fabricated classes."
+    },
+    "ST19": {
+      "status": "mock_connected",
+      "route": "/p/binh-minh/announcements/an-5",
+      "evidence": [],
+      "notes": "Withdrawn announcement not returned on new reads (unit test 'Q34 withdrawn announcement stops showing')."
+    },
+    "ST21": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/conduct",
+      "evidence": [
+        "qa/screenshots/O18-duplicate-hard.png",
+        "qa/screenshots/O18-duplicate-soft.png"
+      ],
+      "notes": "Hard duplicate (attendance source) blocked; soft duplicate requires explanation."
+    },
+    "ST24": {
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2025/c-a-2025-10a1",
+      "evidence": [
+        "qa/screenshots/ST24-desktop.png"
+      ],
+      "notes": "Archived year read-only banner. Known gap: overview still renders an empty attendance donut for the archived date."
+    }
+  }
 }
