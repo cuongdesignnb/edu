@@ -1,0 +1,240 @@
+[
+  {
+    "id": "O01",
+    "title": "Thay đổi trạng thái trường",
+    "fields": "Tên trường, trạng thái mới, lý do",
+    "acceptance": "Confirm; tạm dừng không xóa dữ liệu; chỉ platform",
+    "status": "not_started"
+  },
+  {
+    "id": "O02",
+    "title": "Mời / thay quản trị trường",
+    "fields": "Email demo, vai trò, thời hạn",
+    "acceptance": "Không mất quản trị cuối; không gửi email thật",
+    "status": "not_started"
+  },
+  {
+    "id": "O03",
+    "title": "Tạo / sửa lớp",
+    "fields": "Năm, khối, tên, sức chứa, chủ nhiệm tùy giai đoạn",
+    "acceptance": "Mã/tên đúng scope; chưa đủ phân công thì lớp giữ nháp",
+    "status": "not_started"
+  },
+  {
+    "id": "O04",
+    "title": "Học kỳ / mốc tuần / hạn chốt",
+    "fields": "Ngày bắt đầu-kết thúc, hạn, hiệu lực",
+    "acceptance": "Không chồng kỳ sai, không áp ngược dữ liệu đã chốt",
+    "status": "not_started"
+  },
+  {
+    "id": "O05",
+    "title": "Mời giáo viên",
+    "fields": "Email, nhiệm vụ sơ bộ, lớp/môn, thời hạn",
+    "acceptance": "Người đã có danh tính chỉ thêm membership, không đổi mật khẩu chung",
+    "status": "not_started"
+  },
+  {
+    "id": "O06",
+    "title": "Gán phân công",
+    "fields": "Người, nhiệm vụ, lớp, môn, từ-đến",
+    "acceptance": "Kiểm trùng phân công chủ nhiệm chính, preview quyền từng scope",
+    "status": "not_started"
+  },
+  {
+    "id": "O07",
+    "title": "Xem thay đổi quyền",
+    "fields": "Quyền trước-sau, phạm vi, tác động",
+    "acceptance": "Xác nhận cụ thể; không nút Toàn quyền tất cả lớp mặc định",
+    "status": "not_started"
+  },
+  {
+    "id": "O08",
+    "title": "Thu hồi thành viên / phân công",
+    "fields": "Người, scope bị thu hồi, thời điểm, lý do",
+    "acceptance": "Không xóa danh tính toàn hệ thống hoặc lịch sử dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "O09",
+    "title": "Thêm / sửa người giám hộ",
+    "fields": "Tên, quan hệ, kênh liên hệ, người xác minh",
+    "acceptance": "Không tự xác minh chỉ vì nhập số điện thoại",
+    "status": "not_started"
+  },
+  {
+    "id": "O10",
+    "title": "Xác minh / thu hồi quan hệ",
+    "fields": "Người giám hộ, học sinh, căn cứ ghi chú, lý do",
+    "acceptance": "Quyền nhận thông tin tách biệt với trường liên hệ",
+    "status": "not_started"
+  },
+  {
+    "id": "O11",
+    "title": "Chuyển lớp / ngừng theo học",
+    "fields": "Lớp đích, ngày hiệu lực, lý do",
+    "acceptance": "Giữ enrollment cũ, không hard-delete lịch sử",
+    "status": "not_started"
+  },
+  {
+    "id": "O12",
+    "title": "Cấp đường dẫn riêng",
+    "fields": "Học sinh, giám hộ đã xác minh, năm, mục được xem, hạn",
+    "acceptance": "Mock link một trường/một em/một năm; không nhiều em tùy chọn cho parent",
+    "status": "not_started"
+  },
+  {
+    "id": "O13",
+    "title": "Kết quả cấp link / in QR",
+    "fields": "Link demo, QR thực biểu diễn link, cảnh báo chia sẻ",
+    "acceptance": "Copy có phản hồi, bản in rõ đúng người được cấp; không đăng nhóm chung",
+    "status": "not_started"
+  },
+  {
+    "id": "O14",
+    "title": "Thu hồi / cấp lại link",
+    "fields": "Access id, người được cấp, lý do",
+    "acceptance": "Chặn lần đọc mới từ link cũ; link giám hộ khác không đổi",
+    "status": "not_started"
+  },
+  {
+    "id": "O15",
+    "title": "Ghi chú và sửa điểm danh",
+    "fields": "Học sinh, buổi/tiết, trạng thái, lý do",
+    "acceptance": "Chưa điểm danh không có mặt; sửa đã công bố phải có lịch sử",
+    "status": "not_started"
+  },
+  {
+    "id": "O16",
+    "title": "Điểm danh hàng loạt",
+    "fields": "Phạm vi được chọn, trạng thái đích, số dòng thay",
+    "acceptance": "Xác nhận rõ chỉ chọn trang hay tất cả, không ghi đè ngoài lựa chọn",
+    "status": "not_started"
+  },
+  {
+    "id": "O17",
+    "title": "Ghi nhận cộng / trừ",
+    "fields": "Học sinh, rule version, thời điểm, điểm, lý do, nguồn",
+    "acceptance": "Chống nhân đôi sự kiện nguồn; không nhập sai lớp/môn",
+    "status": "not_started"
+  },
+  {
+    "id": "O18",
+    "title": "Xử lý ghi nhận trùng",
+    "fields": "Sự kiện cũ/mới, điểm hiện tại, lựa chọn bỏ/liên kết",
+    "acceptance": "Không nút cứ lưu 2 lần mặc định; có giải thích",
+    "status": "not_started"
+  },
+  {
+    "id": "O19",
+    "title": "Xem giải trình điểm",
+    "fields": "Điểm gốc, từng record, rule version, tổng, giới hạn",
+    "acceptance": "Tổng chính xác; nguồn đã duyệt và trạng thái rõ",
+    "status": "not_started"
+  },
+  {
+    "id": "O20",
+    "title": "Chốt / công bố kết quả",
+    "fields": "Kỳ, lớp, người nhận, lỗi còn lại, preview",
+    "acceptance": "Chỉ đủ quyền; success sau mutation; draft không rò vào parent",
+    "status": "not_started"
+  },
+  {
+    "id": "O21",
+    "title": "Điều chỉnh sau chốt",
+    "fields": "Bản cũ, giá trị mới, lý do, người duyệt",
+    "acceptance": "Giữ snapshot cũ, tạo bản điều chỉnh và công bố lại",
+    "status": "not_started"
+  },
+  {
+    "id": "O22",
+    "title": "Thêm quy tắc / ban hành phiên bản",
+    "fields": "Nhóm, điểm, cách tính, ngày hiệu lực",
+    "acceptance": "Không sửa âm thầm bản đã ban hành; không áp lại quá khứ",
+    "status": "not_started"
+  },
+  {
+    "id": "O23",
+    "title": "Phân tổ / chức vụ",
+    "fields": "Học sinh, tổ/chức vụ, thời gian",
+    "acceptance": "Không tạo account học sinh, không gán trùng chức vụ duy nhất",
+    "status": "not_started"
+  },
+  {
+    "id": "O24",
+    "title": "Đổi ghế / lưu sơ đồ",
+    "fields": "Ghế nguồn-đích, học sinh, ngày hiệu lực",
+    "acceptance": "Validate một học sinh một ghế, cancel không thay đổi",
+    "status": "not_started"
+  },
+  {
+    "id": "O25",
+    "title": "Đổi tiết / lịch nghỉ",
+    "fields": "Lớp, môn, giáo viên, phòng, thời gian, hiệu lực",
+    "acceptance": "Hiện xung đột và quyền; không ghi đè lịch quá khứ",
+    "status": "not_started"
+  },
+  {
+    "id": "O26",
+    "title": "Phân công trực nhật",
+    "fields": "Ngày, học sinh/tổ, nhiệm vụ",
+    "acceptance": "Scope lớp hiện tại; có preview phần parent thấy",
+    "status": "not_started"
+  },
+  {
+    "id": "O27",
+    "title": "Tải / duyệt minh chứng",
+    "fields": "Học sinh, hoạt động, file, nhận xét, trạng thái",
+    "acceptance": "File blob cục bộ; người tải giáo viên; giới hạn loại/size",
+    "status": "not_started"
+  },
+  {
+    "id": "O28",
+    "title": "Xem tệp / ảnh",
+    "fields": "Metadata, ảnh/PDF, quyền tải",
+    "acceptance": "Chặn file chưa chia sẻ khi xem parent; fallback loại không preview",
+    "status": "not_started"
+  },
+  {
+    "id": "O29",
+    "title": "Công bố / thu hồi thông báo",
+    "fields": "Audience, nội dung preview, thời điểm",
+    "acceptance": "Giữ riêng tin cá nhân; lịch hẹn chỉ simulation, không background server",
+    "status": "not_started"
+  },
+  {
+    "id": "O30",
+    "title": "Chọn định dạng xuất",
+    "fields": "Báo cáo, kỳ, scope, CSV/XLSX/In-PDF",
+    "acceptance": "Tệp đúng nội dung và định dạng, không giả .xlsx bằng CSV",
+    "status": "not_started"
+  },
+  {
+    "id": "O31",
+    "title": "Lưu trữ / xóa dữ liệu nháp",
+    "fields": "Đối tượng, hậu quả, lý do",
+    "acceptance": "Record có lịch sử thì archive; xóa vĩnh viễn không mặc định",
+    "status": "not_started"
+  },
+  {
+    "id": "O32",
+    "title": "Chưa lưu thay đổi",
+    "fields": "Lưu / bỏ / ở lại",
+    "acceptance": "Chặn điều hướng/context switch, không mất form",
+    "status": "not_started"
+  },
+  {
+    "id": "O33",
+    "title": "Xung đột phiên bản",
+    "fields": "Bản vừa tải, bản mới trong mock, chi tiết đổi",
+    "acceptance": "Không overwrite âm thầm; retry an toàn",
+    "status": "not_started"
+  },
+  {
+    "id": "O34",
+    "title": "Yêu cầu / thu hồi hỗ trợ",
+    "fields": "Trường, scope, lý do, hạn",
+    "acceptance": "Trường cho phép, platform không tự cấp quyền đọc trẻ em",
+    "status": "not_started"
+  }
+]

@@ -1,0 +1,602 @@
+[
+  {
+    "id": "C001",
+    "group": "Bố cục và điều hướng",
+    "name": "AppShell",
+    "variants": "Platform / School / Teacher / Parent / Public / Preview",
+    "acceptance": "Không chia sẻ nhầm sidebar hoặc context giữa các vai trò",
+    "status": "not_started"
+  },
+  {
+    "id": "C002",
+    "group": "Bố cục và điều hướng",
+    "name": "Sidebar",
+    "variants": "Mở rộng / thu gọn / mobile drawer",
+    "acceptance": "Active theo route thật; chỉ menu trong scope; focus bàn phím",
+    "status": "not_started"
+  },
+  {
+    "id": "C003",
+    "group": "Bố cục và điều hướng",
+    "name": "Topbar",
+    "variants": "Nhân sự / phụ huynh chỉ đọc",
+    "acceptance": "Parent không avatar tài khoản, user menu hay trường tùy chọn",
+    "status": "not_started"
+  },
+  {
+    "id": "C004",
+    "group": "Bố cục và điều hướng",
+    "name": "ContextSwitcher",
+    "variants": "School / AcademicYear / Class",
+    "acceptance": "Chỉ context được cấp; đổi context xóa cache/query không tương thích",
+    "status": "not_started"
+  },
+  {
+    "id": "C005",
+    "group": "Bố cục và điều hướng",
+    "name": "Breadcrumbs",
+    "variants": "Trang / lớp / chi tiết",
+    "acceptance": "Link thật và nhãn thân thiện, không hiện ID kỹ thuật thô",
+    "status": "not_started"
+  },
+  {
+    "id": "C006",
+    "group": "Bố cục và điều hướng",
+    "name": "PageHeader",
+    "variants": "Tiêu đề / subtitle / actions / illustration",
+    "acceptance": "Đúng typography và khoảng trắng theo ảnh, không header quá cao trên mobile",
+    "status": "not_started"
+  },
+  {
+    "id": "C007",
+    "group": "Bố cục và điều hướng",
+    "name": "TabsAndSectionNav",
+    "variants": "Tabs trang / tabs lớp / mobile section menu",
+    "acceptance": "Deep link, focus, nội dung hiện đúng, không hàng 12 tab tràn màn hình",
+    "status": "not_started"
+  },
+  {
+    "id": "C008",
+    "group": "Bố cục và điều hướng",
+    "name": "GlobalSearch",
+    "variants": "Dialog nhân sự / tìm cục bộ",
+    "acceptance": "Không tìm dữ liệu vượt scope; không tồn tại search cả hệ thống cho parent",
+    "status": "not_started"
+  },
+  {
+    "id": "C009",
+    "group": "Bố cục và điều hướng",
+    "name": "UserMenu",
+    "variants": "Hồ sơ / trường / thoát demo",
+    "acceptance": "Không đặt role switcher giả làm tính năng production",
+    "status": "not_started"
+  },
+  {
+    "id": "C010",
+    "group": "Bố cục và điều hướng",
+    "name": "FooterAndHelp",
+    "variants": "Nhân sự / public / parent",
+    "acceptance": "Không footer cố định đè bảng, liên kết hữu dụng và dễ đọc",
+    "status": "not_started"
+  },
+  {
+    "id": "C011",
+    "group": "Hành động và nhập liệu",
+    "name": "Button",
+    "variants": "Primary / secondary / ghost / destructive / loading / disabled",
+    "acceptance": "Không nút chết; icon đơn có accessible name; chống bấm gửi hai lần",
+    "status": "not_started"
+  },
+  {
+    "id": "C012",
+    "group": "Hành động và nhập liệu",
+    "name": "DropdownActionMenu",
+    "variants": "Hành động dòng / menu nhiều lựa chọn",
+    "acceptance": "Xử lý focus/escape; destructive có confirm đúng đối tượng",
+    "status": "not_started"
+  },
+  {
+    "id": "C013",
+    "group": "Hành động và nhập liệu",
+    "name": "TextField",
+    "variants": "Text / email / password / search / read-only",
+    "acceptance": "Label, helper, lỗi tiếng Việt; không dùng placeholder thay label",
+    "status": "not_started"
+  },
+  {
+    "id": "C014",
+    "group": "Hành động và nhập liệu",
+    "name": "Textarea",
+    "variants": "Ngắn / nhiều dòng / đếm ký tự",
+    "acceptance": "Giữ nội dung lỗi, chiều cao phù hợp, cảnh báo chưa lưu",
+    "status": "not_started"
+  },
+  {
+    "id": "C015",
+    "group": "Hành động và nhập liệu",
+    "name": "SelectCombobox",
+    "variants": "Single / multi / async mock / no results",
+    "acceptance": "Tìm kiếm có bàn phím; chỉ option đúng school/class/scope",
+    "status": "not_started"
+  },
+  {
+    "id": "C016",
+    "group": "Hành động và nhập liệu",
+    "name": "CheckboxRadioSwitch",
+    "variants": "Mặc định / focus / disabled / indeterminate",
+    "acceptance": "Ghi nhãn rõ; không dùng switch thay hành động cần phê duyệt",
+    "status": "not_started"
+  },
+  {
+    "id": "C017",
+    "group": "Hành động và nhập liệu",
+    "name": "DateTimePicker",
+    "variants": "Date / range / time / timezone",
+    "acceptance": "Hiển thị dd/MM/yyyy và Asia/Ho_Chi_Minh; kiểm tra khoảng ngày",
+    "status": "not_started"
+  },
+  {
+    "id": "C018",
+    "group": "Hành động và nhập liệu",
+    "name": "NumberInput",
+    "variants": "Điểm âm/dương / số lượng / giới hạn",
+    "acceptance": "Không chấp nhận NaN; phân biệt 0 với chưa có dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "C019",
+    "group": "Hành động và nhập liệu",
+    "name": "FormFieldAndErrorSummary",
+    "variants": "Inline error / summary / success",
+    "acceptance": "Submit đưa focus đến lỗi, không xóa dữ liệu đã nhập",
+    "status": "not_started"
+  },
+  {
+    "id": "C020",
+    "group": "Hành động và nhập liệu",
+    "name": "FileDropzone",
+    "variants": "Single/multi / upload / invalid / retry",
+    "acceptance": "Kiểm dung lượng/loại file; blob cục bộ; báo không upload máy chủ",
+    "status": "not_started"
+  },
+  {
+    "id": "C021",
+    "group": "Hành động và nhập liệu",
+    "name": "RichTextEditor",
+    "variants": "Toolbar gọn / preview / read-only",
+    "acceptance": "Nội dung có cấu trúc, không chèn script; đúng tiếng Việt",
+    "status": "not_started"
+  },
+  {
+    "id": "C022",
+    "group": "Hành động và nhập liệu",
+    "name": "AudienceSelector",
+    "variants": "Trường / khối / lớp / học sinh",
+    "acceptance": "Chỉ đối tượng được phép; hiển thị số người nhận ước tính từ fixture",
+    "status": "not_started"
+  },
+  {
+    "id": "C023",
+    "group": "Hành động và nhập liệu",
+    "name": "FilterBar",
+    "variants": "Search / chips / advanced / reset",
+    "acceptance": "Tìm/lọc/sort thật từ repository; reset về trang 1 khi đổi filter",
+    "status": "not_started"
+  },
+  {
+    "id": "C024",
+    "group": "Hành động và nhập liệu",
+    "name": "StickyActionBar",
+    "variants": "Form dirty / chọn nhiều / chốt",
+    "acceptance": "Không đè nội dung/keyboard mobile; có hủy và trạng thái xử lý",
+    "status": "not_started"
+  },
+  {
+    "id": "C025",
+    "group": "Hiển thị dữ liệu",
+    "name": "DataTable",
+    "variants": "Sticky header / sort / selectable / row action",
+    "acceptance": "Search/filter/page thật; không paginate chỉ thay số nhưng giữ dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "C026",
+    "group": "Hiển thị dữ liệu",
+    "name": "Pagination",
+    "variants": "Compact / full / page size",
+    "acceptance": "Tổng dòng từ kết quả lọc; xử lý trang cuối và không có dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "C027",
+    "group": "Hiển thị dữ liệu",
+    "name": "BulkSelectionBar",
+    "variants": "Chọn trang / chọn tất cả kết quả",
+    "acceptance": "Phân biệt hai phạm vi; xác nhận số bản ghi bị ảnh hưởng",
+    "status": "not_started"
+  },
+  {
+    "id": "C028",
+    "group": "Hiển thị dữ liệu",
+    "name": "KpiCard",
+    "variants": "Số / tỷ lệ / không có dữ liệu",
+    "acceptance": "Tính từ fixture; tăng/giảm có cơ sở so sánh hoặc bỏ chỉ số tăng trưởng",
+    "status": "not_started"
+  },
+  {
+    "id": "C029",
+    "group": "Hiển thị dữ liệu",
+    "name": "StatusBadge",
+    "variants": "Draft / active / locked / published / revoked",
+    "acceptance": "Chữ + icon/màu; không chỉ màu",
+    "status": "not_started"
+  },
+  {
+    "id": "C030",
+    "group": "Hiển thị dữ liệu",
+    "name": "AvatarAndIdentity",
+    "variants": "Người / trường / fallback initials",
+    "acceptance": "Tên/avatar nhất quán giữa màn hình, ảnh local không broken",
+    "status": "not_started"
+  },
+  {
+    "id": "C031",
+    "group": "Hiển thị dữ liệu",
+    "name": "CardAndPanel",
+    "variants": "Bảng / thông tin / nổi bật / pastel",
+    "acceptance": "Border/radius/shadow nhất quán với ảnh, không default kit khác style",
+    "status": "not_started"
+  },
+  {
+    "id": "C032",
+    "group": "Hiển thị dữ liệu",
+    "name": "TimelineAndAuditDiff",
+    "variants": "Sự kiện / trước-sau / hiệu lực",
+    "acceptance": "Tách lịch sử nghiệp vụ và nhật ký mở link, không sửa lịch sử đã chốt",
+    "status": "not_started"
+  },
+  {
+    "id": "C033",
+    "group": "Hiển thị dữ liệu",
+    "name": "ProgressAndStepper",
+    "variants": "Wizard / tiến độ / phần trăm",
+    "acceptance": "Tỷ lệ tính đúng; quay bước không mất dữ liệu; hoàn tất không giả",
+    "status": "not_started"
+  },
+  {
+    "id": "C034",
+    "group": "Hiển thị dữ liệu",
+    "name": "Charts",
+    "variants": "Bar / donut / trend / no data",
+    "acceptance": "Có bảng thay thế; mẫu số rõ; không tạo số ngẫu nhiên mỗi render",
+    "status": "not_started"
+  },
+  {
+    "id": "C035",
+    "group": "Hiển thị dữ liệu",
+    "name": "FilePreviewAndDownload",
+    "variants": "Image / PDF browser / unsupported / revoked",
+    "acceptance": "Preview đúng blob, có fallback; quyền mock kiểm mỗi lần đọc",
+    "status": "not_started"
+  },
+  {
+    "id": "C036",
+    "group": "Hiển thị dữ liệu",
+    "name": "EmptyFilteredList",
+    "variants": "Không bản ghi / không khớp bộ lọc",
+    "acceptance": "Phân biệt chưa có dữ liệu với bộ lọc không có kết quả",
+    "status": "not_started"
+  },
+  {
+    "id": "C037",
+    "group": "Popup và phản hồi",
+    "name": "ModalDialog",
+    "variants": "Form / confirm / small / wide",
+    "acceptance": "Focus trap, escape theo trạng thái, trả focus về nút mở",
+    "status": "not_started"
+  },
+  {
+    "id": "C038",
+    "group": "Popup và phản hồi",
+    "name": "SideDrawer",
+    "variants": "Chi tiết / form / audit",
+    "acceptance": "Mobile thành full-screen/bottom sheet; không chồng layer lỗi",
+    "status": "not_started"
+  },
+  {
+    "id": "C039",
+    "group": "Popup và phản hồi",
+    "name": "MobileBottomSheet",
+    "variants": "Chọn trạng thái / bộ lọc / menu lớp",
+    "acceptance": "Touch targets đủ lớn, bàn phím không che nút chính",
+    "status": "not_started"
+  },
+  {
+    "id": "C040",
+    "group": "Popup và phản hồi",
+    "name": "ConfirmDialog",
+    "variants": "Archive / revoke / publish / transfer",
+    "acceptance": "Tên đối tượng, hậu quả, lý do nếu cần; hủy không thay dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "C041",
+    "group": "Popup và phản hồi",
+    "name": "ToastAndInlineFeedback",
+    "variants": "Success / error / retry / warning",
+    "acceptance": "Chỉ báo thành công sau mock transaction thành công",
+    "status": "not_started"
+  },
+  {
+    "id": "C042",
+    "group": "Popup và phản hồi",
+    "name": "LoadingSkeleton",
+    "variants": "Table / form / cards / parent",
+    "acceptance": "Giữ bố cục tránh nhảy, có aria-busy; không che lỗi vô thời hạn",
+    "status": "not_started"
+  },
+  {
+    "id": "C043",
+    "group": "Popup và phản hồi",
+    "name": "EmptyState",
+    "variants": "Chưa phân công / chưa công bố / chưa nhập",
+    "acceptance": "CTA phù hợp quyền; parent không CTA nhập dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "C044",
+    "group": "Popup và phản hồi",
+    "name": "ErrorAndDeniedState",
+    "variants": "Network / retry / no permission / not found",
+    "acceptance": "Không stack trace/PII; giữ unsaved draft khi retry",
+    "status": "not_started"
+  },
+  {
+    "id": "C045",
+    "group": "Popup và phản hồi",
+    "name": "UnsavedChangesGuard",
+    "variants": "Navigation / context switch / dialog close",
+    "acceptance": "Lưu hoặc bỏ rõ ràng; không tự mất form khi chọn trường khác",
+    "status": "not_started"
+  },
+  {
+    "id": "C046",
+    "group": "Popup và phản hồi",
+    "name": "VersionConflictResolver",
+    "variants": "Dữ liệu cũ / tải lại / xem thay đổi",
+    "acceptance": "Không ghi đè âm thầm; hiển thị người/thời điểm demo thay đổi",
+    "status": "not_started"
+  },
+  {
+    "id": "C047",
+    "group": "Popup và phản hồi",
+    "name": "DemoScenarioBanner",
+    "variants": "Demo / state preset / reset",
+    "acceptance": "Phân biệt prototype với hệ thống thật; không lộ vai trò giả trên production",
+    "status": "not_started"
+  },
+  {
+    "id": "C048",
+    "group": "Component nghiệp vụ",
+    "name": "SchoolCardAndOnboarding",
+    "variants": "Draft / active / suspended / archived",
+    "acceptance": "Checklist khởi tạo có hành động thật, không do thanh toán",
+    "status": "not_started"
+  },
+  {
+    "id": "C049",
+    "group": "Component nghiệp vụ",
+    "name": "TeacherAssignmentPicker",
+    "variants": "Chủ nhiệm / bộ môn / thời gian",
+    "acceptance": "Grant là tổ hợp nhiệm vụ+scope; không hợp nhất quyền chéo lớp",
+    "status": "not_started"
+  },
+  {
+    "id": "C050",
+    "group": "Component nghiệp vụ",
+    "name": "PermissionMatrix",
+    "variants": "Vai trò mẫu / xem / chỉnh / diff",
+    "acceptance": "Nhãn tiếng Việt; chọn quyền không tự nâng cấp người đang thao tác",
+    "status": "not_started"
+  },
+  {
+    "id": "C051",
+    "group": "Component nghiệp vụ",
+    "name": "ClassCardAndContextHeader",
+    "variants": "Chủ nhiệm / bộ môn / admin",
+    "acceptance": "Luôn thấy trường/năm/lớp, sĩ số thống nhất với roster",
+    "status": "not_started"
+  },
+  {
+    "id": "C052",
+    "group": "Component nghiệp vụ",
+    "name": "StudentRosterAndQuickView",
+    "variants": "Full / subject-minimal / read-only",
+    "acceptance": "Bộ môn không thấy giám hộ/ghi chú nội bộ nếu thiếu quyền",
+    "status": "not_started"
+  },
+  {
+    "id": "C053",
+    "group": "Component nghiệp vụ",
+    "name": "StudentProfileSections",
+    "variants": "Trường / lớp / parent-minimal",
+    "acceptance": "Một nguồn dữ liệu; chọn field theo scope, không reuse toàn bộ cho parent",
+    "status": "not_started"
+  },
+  {
+    "id": "C054",
+    "group": "Component nghiệp vụ",
+    "name": "GuardianRelationshipCard",
+    "variants": "Chưa xác minh / đã xác minh / revoked",
+    "acceptance": "Xác minh quan hệ khác với tài khoản; không gộp qua số điện thoại",
+    "status": "not_started"
+  },
+  {
+    "id": "C055",
+    "group": "Component nghiệp vụ",
+    "name": "ParentAccessCard",
+    "variants": "Mới cấp / active / expired / revoked",
+    "acceptance": "Scope một em+trường+năm; cấp link riêng từng giám hộ",
+    "status": "not_started"
+  },
+  {
+    "id": "C056",
+    "group": "Component nghiệp vụ",
+    "name": "QrAndLinkDisplay",
+    "variants": "Show-on-issue / copy / print / invalid",
+    "acceptance": "QR demo dùng thực được trong app demo; không hiển thị QR giả ngẫu nhiên",
+    "status": "not_started"
+  },
+  {
+    "id": "C057",
+    "group": "Component nghiệp vụ",
+    "name": "ParentAccessLog",
+    "variants": "Link / lần mở / thời gian / thiết bị mẫu",
+    "acceptance": "Ghi Link cấp cho…, không tuyên bố chính người đó đã mở",
+    "status": "not_started"
+  },
+  {
+    "id": "C058",
+    "group": "Component nghiệp vụ",
+    "name": "AttendanceRow",
+    "variants": "Chưa điểm danh / có mặt / đi muộn / nghỉ phép / nghỉ không phép",
+    "acceptance": "Trạng thái loại trừ nhau; không mặc định có mặt",
+    "status": "not_started"
+  },
+  {
+    "id": "C059",
+    "group": "Component nghiệp vụ",
+    "name": "AttendanceMobileCard",
+    "variants": "Học sinh + các nút trạng thái",
+    "acceptance": "Dễ thao tác bằng một tay; giữ lựa chọn khi đổi người",
+    "status": "not_started"
+  },
+  {
+    "id": "C060",
+    "group": "Component nghiệp vụ",
+    "name": "ConductRulePicker",
+    "variants": "Cộng / trừ / tùy chỉnh được phép",
+    "acceptance": "Hiện số điểm và lý do; chỉ rule version còn hiệu lực",
+    "status": "not_started"
+  },
+  {
+    "id": "C061",
+    "group": "Component nghiệp vụ",
+    "name": "ConductRecordForm",
+    "variants": "Tạo / chỉnh / từ sự kiện nguồn / duplicate",
+    "acceptance": "Cùng sự kiện không ghi trùng điểm; validate phiên bản",
+    "status": "not_started"
+  },
+  {
+    "id": "C062",
+    "group": "Component nghiệp vụ",
+    "name": "WeeklyConductTable",
+    "variants": "Chưa rà / đã chốt / công bố",
+    "acceptance": "Giải trình phép tính; khóa dữ liệu sau chốt",
+    "status": "not_started"
+  },
+  {
+    "id": "C063",
+    "group": "Component nghiệp vụ",
+    "name": "ReviewAndPublishPanel",
+    "variants": "Checklist / preview / chốt / công bố",
+    "acceptance": "Không nhầm lưu với công bố; không publish khi còn lỗi chặn",
+    "status": "not_started"
+  },
+  {
+    "id": "C064",
+    "group": "Component nghiệp vụ",
+    "name": "PublishedSnapshotAndDiff",
+    "variants": "Bản công bố / bản điều chỉnh",
+    "acceptance": "Giữ bản cũ; thay rule hiện tại không đổi snapshot",
+    "status": "not_started"
+  },
+  {
+    "id": "C065",
+    "group": "Component nghiệp vụ",
+    "name": "GroupsAndRolesBoard",
+    "variants": "Tổ / lớp trưởng / nhiệm vụ",
+    "acceptance": "Chức vụ là dữ liệu học sinh, không quyền đăng nhập",
+    "status": "not_started"
+  },
+  {
+    "id": "C066",
+    "group": "Component nghiệp vụ",
+    "name": "SeatingMapEditor",
+    "variants": "Layout / assign / empty / undo / effective date",
+    "acceptance": "Có chọn ghế qua form thay kéo; không 1 học sinh ở 2 ghế cùng phiên bản",
+    "status": "not_started"
+  },
+  {
+    "id": "C067",
+    "group": "Component nghiệp vụ",
+    "name": "TimetableGridAndDayList",
+    "variants": "Tuần desktop / ngày mobile",
+    "acceptance": "Conflict giáo viên/phòng; giữ lịch sử theo ngày hiệu lực",
+    "status": "not_started"
+  },
+  {
+    "id": "C068",
+    "group": "Component nghiệp vụ",
+    "name": "DutyAssignmentBoard",
+    "variants": "Ngày / tổ / học sinh",
+    "acceptance": "Parent projection chỉ nhiệm vụ của con, không thông tin bạn khác",
+    "status": "not_started"
+  },
+  {
+    "id": "C069",
+    "group": "Component nghiệp vụ",
+    "name": "ActivityProgressCard",
+    "variants": "Nháp / đang thực hiện / đến hạn / hoàn tất",
+    "acceptance": "Mẫu số là số học sinh được giao; không tự cộng điểm",
+    "status": "not_started"
+  },
+  {
+    "id": "C070",
+    "group": "Component nghiệp vụ",
+    "name": "EvidenceReviewPanel",
+    "variants": "Pending / approved / rejected / supplement",
+    "acceptance": "Người tải là nhân sự trong core; từ chối/yêu cầu bổ sung có lý do",
+    "status": "not_started"
+  },
+  {
+    "id": "C071",
+    "group": "Component nghiệp vụ",
+    "name": "AnnouncementComposerAndPreview",
+    "variants": "Trường / lớp / cá nhân / scheduled mock",
+    "acceptance": "Scope đúng, parent không xem bản nháp hoặc file chưa chia sẻ",
+    "status": "not_started"
+  },
+  {
+    "id": "C072",
+    "group": "Component nghiệp vụ",
+    "name": "ImportWizardAndMapping",
+    "variants": "File / mapping / validation / preview / result",
+    "acceptance": "Báo dòng lỗi, xung đột, không overwrite âm thầm",
+    "status": "not_started"
+  },
+  {
+    "id": "C073",
+    "group": "Component nghiệp vụ",
+    "name": "TransferAndHandoverWizard",
+    "variants": "Chuyển lớp / bàn giao / kết thúc năm",
+    "acceptance": "Có ngày hiệu lực và preview thay đổi quyền/lịch sử",
+    "status": "not_started"
+  },
+  {
+    "id": "C074",
+    "group": "Component nghiệp vụ",
+    "name": "ReportViewerAndExport",
+    "variants": "Cá nhân / lớp / trường",
+    "acceptance": "Không xuất dữ liệu vượt quyền; CSV/XLSX/PDF thật ở mức file cục bộ",
+    "status": "not_started"
+  },
+  {
+    "id": "C075",
+    "group": "Component nghiệp vụ",
+    "name": "ParentReadOnlyShell",
+    "variants": "Overview / detail / unavailable",
+    "acceptance": "Không đăng ký, đăng nhập, upload, sửa, chat, chọn học sinh tùy ý",
+    "status": "not_started"
+  }
+]

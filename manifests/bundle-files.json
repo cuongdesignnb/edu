@@ -1,0 +1,171 @@
+{
+  "kind": "design-and-frontend-specification-handoff",
+  "application_implemented": false,
+  "files": [
+    {
+      "path": "AGENT-FRONTEND.md",
+      "bytes": 21006,
+      "sha256": "4ca8b674e26b1afb6b95d015942dfdd4f9f23c6829cef024177d2dbb1a62dd47"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5937,
+      "sha256": "f08a3f107dc7f99f3a163e22e036d920163720a5d0a58d58f31a06e573ab431c"
+    },
+    {
+      "path": "docs/01-SITEMAP-AND-SCREENS.md",
+      "bytes": 49358,
+      "sha256": "12c442411f8a442710e83b0280d12db82cac829d2c20df382d7c4b22059e89bf"
+    },
+    {
+      "path": "docs/02-COMPONENTS-OVERLAYS-STATES.md",
+      "bytes": 22990,
+      "sha256": "39862dd9e3540092baf896ffba50ed83600d6d2c4f1711718dfcc83e8668eb8e"
+    },
+    {
+      "path": "docs/03-REFERENCE-MAP-AND-CORRECTIONS.md",
+      "bytes": 10564,
+      "sha256": "f2f4a9b10342aa35211d368873f2881ea745b7dda191a7d96ec95efe69477f54"
+    },
+    {
+      "path": "docs/04-DESIGN-SYSTEM-AND-RESPONSIVE.md",
+      "bytes": 6492,
+      "sha256": "9725d82531b5f3c2fa3cfd3466d07bd963991ecd6ba2283b0bf09818937aefa0"
+    },
+    {
+      "path": "docs/05-MOCK-DATA-AND-FLOWS.md",
+      "bytes": 11556,
+      "sha256": "abcd9ee68ba5f953da1bfac98f859a28cf03b1caa16f0aa0b943b1a4ed366da4"
+    },
+    {
+      "path": "docs/06-QA-AND-DELIVERY.md",
+      "bytes": 7912,
+      "sha256": "e9df50253704c30cf63e4e0f246a9ee4c44e112a498ad22f405f2c094ed2b1cb"
+    },
+    {
+      "path": "docs/BUSINESS-V2.md",
+      "bytes": 34161,
+      "sha256": "76bc296046500f4656ccb6a78c71d9f2ff67f4a349c5087b9305824e4dd1d12d"
+    },
+    {
+      "path": "docs/PACKAGE-QA.md",
+      "bytes": 2378,
+      "sha256": "aba2b1da4c845067706efebe49d4c9422d016a388f9bb8058f1fa0b7e8bd638a"
+    },
+    {
+      "path": "manifests/components.json",
+      "bytes": 21416,
+      "sha256": "77672708dfacd1e9a5c80c52b74c941784f90ed3441d1ffb7522cdb129b29067"
+    },
+    {
+      "path": "manifests/overlays.json",
+      "bytes": 8831,
+      "sha256": "727a3e023287bc70d25e0b20c37535befb80de351ca06805fd35efa7bec79ba7"
+    },
+    {
+      "path": "manifests/reference-images.json",
+      "bytes": 5722,
+      "sha256": "491d090a60c5ac4b96de6abddff7c0cd75085bcfdfac2192d1191b3cdb180cf3"
+    },
+    {
+      "path": "manifests/screens.json",
+      "bytes": 85514,
+      "sha256": "f8af3342b41e020d3b9b4087017309968c729bde66ea8dbf8f1f2a22f909bf90"
+    },
+    {
+      "path": "manifests/states.json",
+      "bytes": 5084,
+      "sha256": "e18b26b59c3b90c465ac397851c31e7ae2e98150cf05e8d072bad57a24aea6ce"
+    },
+    {
+      "path": "preview/00-reference-contact-sheet.jpg",
+      "bytes": 692714,
+      "sha256": "684ed7af4e676823fc5bcd519979c4907e184d7717f379c49d24174fb5d794f9"
+    },
+    {
+      "path": "preview/index.html",
+      "bytes": 14974,
+      "sha256": "8299c09198297b24ddf9cbd7f7e79ac37c02f770afa5c86ad157b04c7ddd54f9"
+    },
+    {
+      "path": "references/archive/15-parent-teacher-directory-early-concept.png",
+      "bytes": 1551476,
+      "sha256": "986fef27e8c188650f3fa28ddb8dff1a9e5a19fdcba5ffdfff371ad79672f41c"
+    },
+    {
+      "path": "references/planning/11-sitemap-board.png",
+      "bytes": 1673754,
+      "sha256": "261f13d70f75d6c48d6ee07e6e8d720d935b0b7eba6ed15f03409a99b0430f54"
+    },
+    {
+      "path": "references/planning/12-screen-checklist-board.png",
+      "bytes": 1674342,
+      "sha256": "6d1affbdc7f47f2ba5f4dcc9f6c77ab65313d3846cb973ef328730491fbc69a7"
+    },
+    {
+      "path": "references/planning/13-component-checklist-board.png",
+      "bytes": 1673310,
+      "sha256": "942322048cd6177573ec2e1541bb33f853902152877600466454f87989ecc03a"
+    },
+    {
+      "path": "references/planning/14-ux-states-and-flows-board.png",
+      "bytes": 1662295,
+      "sha256": "c5823892158b5ed35f94999d1deb9b581afce25f55edee43900d7be40b672017"
+    },
+    {
+      "path": "references/screens/01-platform-overview.png",
+      "bytes": 1488395,
+      "sha256": "23389c8332de91b50d27616e06cd25245926a281f95cc2961bc02fe722c1b314"
+    },
+    {
+      "path": "references/screens/02-school-overview.png",
+      "bytes": 1559799,
+      "sha256": "0d6893ca559872d3de15799acf0dec2285feeaf4c1929ca31cf2d5b9635e190f"
+    },
+    {
+      "path": "references/screens/03-academic-years-and-classes.png",
+      "bytes": 1522451,
+      "sha256": "bd9ecb99cbbb6f3487eaa3798ce0857e3c25531429b918f07bb3fe781aed094f"
+    },
+    {
+      "path": "references/screens/04-teachers-and-permissions.png",
+      "bytes": 1673665,
+      "sha256": "75c3051852786f2c2ff6bef2295451302fbeba63364b08df7809a2c8eae1c341"
+    },
+    {
+      "path": "references/screens/05-teacher-my-classes.png",
+      "bytes": 1583322,
+      "sha256": "ece91985d95d831cd7818d8f891206fe3091c736a8e8a12b49b762803a72ec4d"
+    },
+    {
+      "path": "references/screens/06-classroom-students-and-seating.png",
+      "bytes": 1567325,
+      "sha256": "837f2fe05d790665783c2c00d098cd5044aa4c940183e12d5606686e0160b340"
+    },
+    {
+      "path": "references/screens/07-student-profile-and-parent-access.png",
+      "bytes": 1593800,
+      "sha256": "43edb9cf81fa074dc355128dece1ee57050da29e6b582b06905249bfc29e1f77"
+    },
+    {
+      "path": "references/screens/08-attendance-and-conduct.png",
+      "bytes": 1547891,
+      "sha256": "7457d536f1daf251ec3493718a02484916745e1abfc58301e983a5910fea89bc"
+    },
+    {
+      "path": "references/screens/09-activities-evidence-announcements.png",
+      "bytes": 1640085,
+      "sha256": "550f6083a14f9321f47a3f081c1ece4fb0ac367424e1a59076da7c1da59ddf8d"
+    },
+    {
+      "path": "references/screens/10-parent-portal-overview.png",
+      "bytes": 1678855,
+      "sha256": "16eba0ffe5d046712d065403c757c9f9e1204c513dc919eb3e65edeb9666f5f7"
+    },
+    {
+      "path": "tools/verify_bundle.py",
+      "bytes": 3998,
+      "sha256": "be7fc5a650958a14c9697411de2bfbfdacd83b8622971deee3fbdc5031c0f5cc"
+    }
+  ]
+}

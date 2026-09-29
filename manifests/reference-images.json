@@ -1,0 +1,167 @@
+[
+  {
+    "id": "R01",
+    "title": "Tổng quan nền tảng",
+    "path": "references/screens/01-platform-overview.png",
+    "original_filename": "modern_edumanage_vietnamese_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1488395,
+    "sha256": "23389c8332de91b50d27616e06cd25245926a281f95cc2961bc02fe722c1b314",
+    "category": "screens"
+  },
+  {
+    "id": "R02",
+    "title": "Tổng quan nhà trường",
+    "path": "references/screens/02-school-overview.png",
+    "original_filename": "edumanage_school_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1559799,
+    "sha256": "0d6893ca559872d3de15799acf0dec2285feeaf4c1929ca31cf2d5b9635e190f",
+    "category": "screens"
+  },
+  {
+    "id": "R03",
+    "title": "Năm học và lớp học",
+    "path": "references/screens/03-academic-years-and-classes.png",
+    "original_filename": "edumanage_academic_structure_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1522451,
+    "sha256": "bd9ecb99cbbb6f3487eaa3798ce0857e3c25531429b918f07bb3fe781aed094f",
+    "category": "screens"
+  },
+  {
+    "id": "R04",
+    "title": "Giáo viên và phân quyền",
+    "path": "references/screens/04-teachers-and-permissions.png",
+    "original_filename": "edumanage_teacher_management_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1673665,
+    "sha256": "75c3051852786f2c2ff6bef2295451302fbeba63364b08df7809a2c8eae1c341",
+    "category": "screens"
+  },
+  {
+    "id": "R05",
+    "title": "Lớp học của tôi",
+    "path": "references/screens/05-teacher-my-classes.png",
+    "original_filename": "edumanage_teacher_dashboard_in_vietnamese.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1583322,
+    "sha256": "ece91985d95d831cd7818d8f891206fe3091c736a8e8a12b49b762803a72ec4d",
+    "category": "screens"
+  },
+  {
+    "id": "R06",
+    "title": "Lớp học, học sinh và sơ đồ",
+    "path": "references/screens/06-classroom-students-and-seating.png",
+    "original_filename": "edumanage_classroom_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1567325,
+    "sha256": "837f2fe05d790665783c2c00d098cd5044aa4c940183e12d5606686e0160b340",
+    "category": "screens"
+  },
+  {
+    "id": "R07",
+    "title": "Hồ sơ học sinh và quyền tra cứu",
+    "path": "references/screens/07-student-profile-and-parent-access.png",
+    "original_filename": "edumanage_student_profile_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1593800,
+    "sha256": "43edb9cf81fa074dc355128dece1ee57050da29e6b582b06905249bfc29e1f77",
+    "category": "screens"
+  },
+  {
+    "id": "R08",
+    "title": "Điểm danh và thi đua",
+    "path": "references/screens/08-attendance-and-conduct.png",
+    "original_filename": "edumanage_attendance_and_conduct_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1547891,
+    "sha256": "7457d536f1daf251ec3493718a02484916745e1abfc58301e983a5910fea89bc",
+    "category": "screens"
+  },
+  {
+    "id": "R09",
+    "title": "Hoạt động, minh chứng và thông báo",
+    "path": "references/screens/09-activities-evidence-announcements.png",
+    "original_filename": "vietnamese_classroom_activity_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1640085,
+    "sha256": "550f6083a14f9321f47a3f081c1ece4fb0ac367424e1a59076da7c1da59ddf8d",
+    "category": "screens"
+  },
+  {
+    "id": "R10",
+    "title": "Tổng quan cổng phụ huynh",
+    "path": "references/screens/10-parent-portal-overview.png",
+    "original_filename": "edumanage_parent_portal_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1678855,
+    "sha256": "16eba0ffe5d046712d065403c757c9f9e1204c513dc919eb3e65edeb9666f5f7",
+    "category": "screens"
+  },
+  {
+    "id": "P01",
+    "title": "Bảng định hướng sitemap",
+    "path": "references/planning/11-sitemap-board.png",
+    "original_filename": "edumanage_cms_sitemap_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1673754,
+    "sha256": "261f13d70f75d6c48d6ee07e6e8d720d935b0b7eba6ed15f03409a99b0430f54",
+    "category": "planning"
+  },
+  {
+    "id": "P02",
+    "title": "Bảng định hướng checklist màn hình",
+    "path": "references/planning/12-screen-checklist-board.png",
+    "original_filename": "edumanage_dashboard_checklist.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1674342,
+    "sha256": "6d1affbdc7f47f2ba5f4dcc9f6c77ab65313d3846cb973ef328730491fbc69a7",
+    "category": "planning"
+  },
+  {
+    "id": "P03",
+    "title": "Bảng định hướng component",
+    "path": "references/planning/13-component-checklist-board.png",
+    "original_filename": "edumanage_component_checklist_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1673310,
+    "sha256": "942322048cd6177573ec2e1541bb33f853902152877600466454f87989ecc03a",
+    "category": "planning"
+  },
+  {
+    "id": "P04",
+    "title": "Bảng định hướng trạng thái và luồng",
+    "path": "references/planning/14-ux-states-and-flows-board.png",
+    "original_filename": "edumanage_ux_checklist_dashboard.png",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 1662295,
+    "sha256": "c5823892158b5ed35f94999d1deb9b581afce25f55edee43900d7be40b672017",
+    "category": "planning"
+  },
+  {
+    "id": "A01",
+    "title": "Concept ban đầu: giáo viên phụ trách",
+    "path": "references/archive/15-parent-teacher-directory-early-concept.png",
+    "original_filename": "a_clean_modern_web_application_dashboard_screensh.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1551476,
+    "sha256": "986fef27e8c188650f3fa28ddb8dff1a9e5a19fdcba5ffdfff371ad79672f41c",
+    "category": "archive"
+  }
+]

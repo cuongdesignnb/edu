@@ -1,0 +1,170 @@
+[
+  {
+    "id": "ST01",
+    "title": "Đang tải",
+    "acceptance": "Loading skeleton đúng bố cục, không spinner vô hạn",
+    "status": "not_started"
+  },
+  {
+    "id": "ST02",
+    "title": "Chưa có dữ liệu",
+    "acceptance": "Mô tả và CTA theo quyền để khởi tạo",
+    "status": "not_started"
+  },
+  {
+    "id": "ST03",
+    "title": "Không có kết quả lọc",
+    "acceptance": "Giữ filter, có Xóa bộ lọc",
+    "status": "not_started"
+  },
+  {
+    "id": "ST04",
+    "title": "Lỗi đọc dữ liệu",
+    "acceptance": "Thông điệp không kỹ thuật, nút Thử lại",
+    "status": "not_started"
+  },
+  {
+    "id": "ST05",
+    "title": "Mất mạng khi lưu",
+    "acceptance": "Không toast thành công; giữ nội dung chưa lưu",
+    "status": "not_started"
+  },
+  {
+    "id": "ST06",
+    "title": "Đang lưu",
+    "acceptance": "Khóa submit chống bấm trùng, không khóa mọi điều hướng vô lý",
+    "status": "not_started"
+  },
+  {
+    "id": "ST07",
+    "title": "Đã lưu cục bộ demo",
+    "acceptance": "Có trạng thái mô phỏng, không khẳng định đã gửi lên server",
+    "status": "not_started"
+  },
+  {
+    "id": "ST08",
+    "title": "Lỗi form",
+    "acceptance": "Inline errors và focus đến lỗi đầu",
+    "status": "not_started"
+  },
+  {
+    "id": "ST09",
+    "title": "Không có quyền",
+    "acceptance": "Không hiện dữ liệu bị cấm và không gợi ý tự nâng quyền",
+    "status": "not_started"
+  },
+  {
+    "id": "ST10",
+    "title": "Chưa được phân công",
+    "acceptance": "Chỉ dẫn liên hệ trường, không tạo dữ liệu mẫu lấp khoảng trống",
+    "status": "not_started"
+  },
+  {
+    "id": "ST11",
+    "title": "Hết phiên nhân sự demo",
+    "acceptance": "Quay đăng nhập demo an toàn, giữ draft ở mức được phép",
+    "status": "not_started"
+  },
+  {
+    "id": "ST12",
+    "title": "Lời mời hết hạn / thu hồi",
+    "acceptance": "Không cho chấp nhận, liên hệ người mời",
+    "status": "not_started"
+  },
+  {
+    "id": "ST13",
+    "title": "Trường tạm dừng",
+    "acceptance": "Chặn thao tác nghiệp vụ mô phỏng, không xóa dữ liệu",
+    "status": "not_started"
+  },
+  {
+    "id": "ST14",
+    "title": "Chưa điểm danh",
+    "acceptance": "Trạng thái độc lập, không tự đếm có mặt",
+    "status": "not_started"
+  },
+  {
+    "id": "ST15",
+    "title": "Chưa công bố",
+    "acceptance": "Parent không hiện 0 điểm hoặc Không vi phạm thay dữ liệu chưa có",
+    "status": "not_started"
+  },
+  {
+    "id": "ST16",
+    "title": "Đã chốt chưa công bố",
+    "acceptance": "Nhân sự đủ quyền xem; parent vẫn chưa thấy",
+    "status": "not_started"
+  },
+  {
+    "id": "ST17",
+    "title": "Đã công bố",
+    "acceptance": "Hiện phiên bản và thời điểm, đúng đối tượng",
+    "status": "not_started"
+  },
+  {
+    "id": "ST18",
+    "title": "Đang điều chỉnh",
+    "acceptance": "Parent vẫn bản công bố trước, không thấy draft điều chỉnh",
+    "status": "not_started"
+  },
+  {
+    "id": "ST19",
+    "title": "Bị thu hồi công bố",
+    "acceptance": "Lần tải mới dừng hiển thị, không giữ cache cũ",
+    "status": "not_started"
+  },
+  {
+    "id": "ST20",
+    "title": "Xung đột phiên bản",
+    "acceptance": "Có trước/sau và lựa chọn an toàn, không đè",
+    "status": "not_started"
+  },
+  {
+    "id": "ST21",
+    "title": "Trùng sự kiện",
+    "acceptance": "Cảnh báo có record nguồn, không nhân đôi điểm",
+    "status": "not_started"
+  },
+  {
+    "id": "ST22",
+    "title": "Link tra cứu hết hạn / thu hồi / không hợp lệ",
+    "acceptance": "Trang giải thích hạn chế, không hiện PII; một template nhiều biến thể",
+    "status": "not_started"
+  },
+  {
+    "id": "ST23",
+    "title": "Tệp lỗi / không hỗ trợ / bị thu hồi",
+    "acceptance": "Có lý do và retry/thay tệp khi có quyền",
+    "status": "not_started"
+  },
+  {
+    "id": "ST24",
+    "title": "Năm học lưu trữ",
+    "acceptance": "Read-only trừ workflow được cấp riêng",
+    "status": "not_started"
+  },
+  {
+    "id": "ST25",
+    "title": "Học sinh chuyển lớp / nghỉ học",
+    "acceptance": "Hiện lịch sử đúng thời gian, không biến mất báo cáo cũ",
+    "status": "not_started"
+  },
+  {
+    "id": "ST26",
+    "title": "Giáo viên bị thu hồi trong tab đang mở",
+    "acceptance": "Lần đọc/ghi mock tiếp theo bị chặn; UI cập nhật lại",
+    "status": "not_started"
+  },
+  {
+    "id": "ST27",
+    "title": "Thao tác cần xác nhận",
+    "acceptance": "Nêu đúng đối tượng, tác động, confirm/cancel có focus",
+    "status": "not_started"
+  },
+  {
+    "id": "ST28",
+    "title": "404 và lỗi toàn trang",
+    "acceptance": "Not-found/error boundary, retry không lộ stack trace",
+    "status": "not_started"
+  }
+]
