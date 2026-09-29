@@ -44,10 +44,10 @@ export function FlowsView() {
   return (
     <div className="page">
       <PageHeader title="Các luồng nghiệp vụ demo" subtitle={`${FLOWS.length} luồng, ${totalSteps} bước. Mỗi bước đổi vai trò demo rồi mở đúng route với dữ liệu mẫu.`} />
-      <Callout tone="info" icon={<Info />} title="Ô “Đã thử” chỉ là ghi chú cá nhân" action={<Button size="sm" variant="ghost" icon={<RotateCcw className="size-4" />} onClick={clear} disabled={!done}>Bỏ đánh dấu tất cả</Button>}>
+      <Callout tone="info" icon={<Info />} title="Ô “Đã thử” chỉ là ghi chú cá nhân">
         Đánh dấu lưu trong trình duyệt này (localStorage) để bạn tự theo dõi — <b>không phải kết quả kiểm thử tự động</b> và không được tính vào tiến độ. Muốn quay lại dữ liệu ban đầu, dùng “Đặt lại dữ liệu demo” ở trang chọn vai trò.
       </Callout>
-      <div className="card card-pad"><ProgressBar value={done} total={totalSteps} label={`Bạn đã đánh dấu thử ${done}/${totalSteps} bước`} /></div>
+      <div className="card card-pad flex flex-wrap items-center gap-3"><ProgressBar className="flex-[1_1_240px]" value={done} total={totalSteps} label={`Bạn đã đánh dấu thử ${done}/${totalSteps} bước`} /><Button size="sm" variant="ghost" icon={<RotateCcw className="size-4" />} onClick={clear} disabled={!done}>Bỏ đánh dấu tất cả</Button></div>
       <nav aria-label="Danh sách luồng" className="flex flex-wrap gap-2">
         {FLOWS.map((f) => <a key={f.id} href={`#${f.id}`} className={clsx("chip hover:bg-primary-light", f.highlight && "chip-active")}>{f.id} · {f.title}</a>)}
       </nav>

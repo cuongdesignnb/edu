@@ -7,6 +7,7 @@ import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { fmtDate, positionLabel } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
+import { ClassOrgNav } from "./org-nav";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function GroupsBoard() {
   return (
     <div className="page">
       <ClassHeader title="Tổ & chức vụ" subtitle="Phân tổ và giao chức vụ cho học sinh theo ngày hiệu lực" crumbs={[{ label: "Tổ & chức vụ" }]} />
+      <ClassOrgNav />
       <Callout tone="info" icon={<Info />} title="Chức vụ là dữ liệu tổ chức lớp, không phải tài khoản">Lớp trưởng, tổ trưởng… không đăng nhập và không nhập liệu thay giáo viên. Mỗi thay đổi có ngày hiệu lực; lịch sử cũ được giữ.</Callout>
       <QueryState query={q} skeleton="cards">{(d) => <Board d={d} />}</QueryState>
     </div>

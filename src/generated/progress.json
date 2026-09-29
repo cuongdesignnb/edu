@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T06:37:29.627Z",
+  "generatedAt": "2026-09-29T06:42:08.315Z",
   "note": "Trạng thái lấy từ qa/status/*.json do từng nhóm ghi kèm bằng chứng; mục không có bằng chứng giữ not_started.",
   "screens": [
     {
@@ -484,9 +484,19 @@
     },
     {
       "id": "SC25",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/school/demo-school-a/parent-access/pa-minhanh-me/preview[/…view]",
+      "evidence": [
+        "qa/screenshots/SC25-desktop.png",
+        "qa/screenshots/SC25-mobile.png",
+        "qa/screenshots/SC25-conduct-detail-desktop.png",
+        "qa/screenshots/SC25-timetable-mobile.png",
+        "qa/screenshots/SC25-limited-module-desktop.png",
+        "qa/screenshots/SC25-denied-desktop.png",
+        "qa/screenshots/SC25-revoked-link-desktop.png"
+      ],
+      "notes": "ParentShell in preview mode inside SchoolShell; catch-all preview/[[...view]] renders the same views so every parent nav link works. Gate via parentRepo.open (u-hung -> denied; revoked link -> explanation). No view logging.",
+      "source": "parent"
     },
     {
       "id": "SC26",
@@ -715,39 +725,70 @@
     },
     {
       "id": "TE01",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a",
+      "evidence": [
+        "qa/screenshots/TE01-desktop.png",
+        "qa/screenshots/TE01-mobile.png"
+      ],
+      "notes": "R05 layout: header quote + teacher-board, class hero cards, KPI (40/42 hiện diện, 2 vắng = 1 có phép + 1 không phép, 6 chờ rà soát, thông báo chưa đọc), việc hôm nay, lớp phụ trách (Điểm danh / Thông báo lớp only when the class grants allow), hoạt động gần đây (audit feed, no parent chat), MiniCalendar + lessons of the selected day. 'Thông báo chưa đọc' links to /notifications (owned by another group).",
+      "source": "teacher-class-1"
     },
     {
       "id": "TE02",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a/classes",
+      "evidence": [
+        "qa/screenshots/TE02-desktop.png",
+        "qa/screenshots/TE02-mobile.png"
+      ],
+      "notes": "Live assignments; toggle shows ended assignments (read-only card).",
+      "source": "teacher-class-1"
     },
     {
       "id": "TE03",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a/schedule?week=YYYY-MM-DD",
+      "evidence": [
+        "qa/screenshots/TE03-desktop.png",
+        "qa/screenshots/TE03-mobile.png"
+      ],
+      "notes": "Week grid (lg+) / day list (mobile), prev/this/next week, holiday rows, changed/cancelled markers. 'Điểm danh tiết' -> CL04 ?date&slot=period-N only when canAttend and date <= today.",
+      "source": "teacher-class-1"
     },
     {
       "id": "TE04",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a/tasks",
+      "evidence": [
+        "qa/screenshots/TE04-desktop.png",
+        "qa/screenshots/TE04-mobile.png"
+      ],
+      "notes": "classroomRepo.teacherTasks; search + filter loại/lớp; empty vs filtered-empty.",
+      "source": "teacher-class-1"
     },
     {
       "id": "TE05",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a/announcements",
+      "evidence": [
+        "qa/screenshots/TE05-desktop.png",
+        "qa/screenshots/TE05-mobile.png",
+        "qa/screenshots/TE05-drawer.png"
+      ],
+      "notes": "forTeacher (this school only); read/unread + source filters, pagination, detail Drawer marks read, 'mark all read'.",
+      "source": "teacher-class-1"
     },
     {
       "id": "TE06",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/teacher/demo-school-a/reports",
+      "evidence": [
+        "qa/screenshots/TE06-desktop.png",
+        "qa/screenshots/TE06-mobile.png"
+      ],
+      "notes": "reportsRepo.teacherCatalog; links to /classroom/:s/:y/:c/reports/:type (report pages owned by another group).",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL01",
@@ -762,93 +803,201 @@
     },
     {
       "id": "CL02",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/students",
+      "evidence": [
+        "qa/screenshots/CL02-desktop.png",
+        "qa/screenshots/CL02-mobile.png",
+        "qa/screenshots/CL02-mobile-full.png",
+        "qa/screenshots/CL02-subject-desktop.png",
+        "qa/screenshots/CL02-lan-10a2-desktop.png",
+        "qa/screenshots/CL02-hanh-desktop.png",
+        "qa/screenshots/O11-transfer-validation.png"
+      ],
+      "notes": "R06: ClassHeader full, roster (search, tổ, link status filters; guardian/link columns only with grants), row menu Xem hồ sơ / Đổi tổ (O23 quick) / Đề nghị chuyển lớp (O11, applyNow=false), pagination, 'Thêm học sinh' only with student.edit, students who left (ST25), seating mini preview -> CL14, groups & positions cards -> CL13. Subject scope (u-hung, u-lan in 10A2) = minimal roster, no side panels. Roster table scrolls inside .table-wrap on phones.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL03",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/students/demo-student-a-001",
+      "evidence": [
+        "qa/screenshots/CL03-desktop.png",
+        "qa/screenshots/CL03-subject-desktop.png",
+        "qa/screenshots/CL03-mobile.png"
+      ],
+      "notes": "studentsRepo.profile(classId); subject-minimal hides dob/guardians/links/internal note; homeroom sees guardians, link summary ('Link đã được mở' wording), class history, attendance summary (teacherExtraRepo.studentAttendance). Link to school SC18 only when actor holds student.view.all / parentAccess.manage.all.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL04",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/attendance?date=YYYY-MM-DD&slot=morning|period-N",
+      "evidence": [
+        "qa/screenshots/CL04-desktop.png",
+        "qa/screenshots/CL04-mobile.png",
+        "qa/screenshots/CL04-mobile-full.png",
+        "qa/screenshots/CL04-subject-desktop.png",
+        "qa/screenshots/CL04-hanh-desktop.png",
+        "qa/screenshots/CL04-sunday-desktop.png",
+        "qa/screenshots/CL04-edit-unsaved.png",
+        "qa/screenshots/CL04-saved.png",
+        "qa/screenshots/CL04-publish-confirm.png",
+        "qa/screenshots/O15-edit-published-reason.png",
+        "qa/screenshots/CL04-history-drawer.png",
+        "qa/screenshots/O16-bulk-confirm.png"
+      ],
+      "notes": "Date nav (arrows skip Sunday, DateField, Sunday/holiday/future/no-permission states), slot selector with per-slot permission (teacherExtraRepo.attendanceSlots; subject teacher defaults to own period), count chips always sum to sĩ số (38+2+1+1=42, hiện diện 40), 5 exclusive status buttons (radiogroup, arrow keys), notes, linked conduct indicator, bulk page vs all-filtered with O16 confirm showing exact changed rows, linkConduct checkbox with rule points, Save (useCommand, expectedVersion -> ConflictDialog), separate Publish (blocked while unmarked/dirty), published edit requires reason (O15) and appears in history drawer, network error keeps draft, unsaved guard with 'Lưu rồi tiếp tục', mobile C059 cards + sticky save bar. Right action column sits beside the sheet at >=1536px, below it at 1448 so the 5 status buttons stay on one line. Verified by scripts/qa-teacher-class-1-flows.mjs (attendance, publish, subject).",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL05",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/attendance/weekly?week=YYYY-MM-DD",
+      "evidence": [
+        "qa/screenshots/CL05-desktop.png",
+        "qa/screenshots/CL05-mobile.png",
+        "qa/screenshots/CL05-cell-drawer.png"
+      ],
+      "notes": "Students x Mon–Sat matrix (morning sessions) with abbreviations + legend (holiday / not enrolled / future / edited *), per-student totals, filters, week nav, CSV + real XLSX export, cell -> drawer (note, linked conduct, history) with link to day sheet; day headers link to CL04.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL06",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct",
+      "evidence": [
+        "qa/screenshots/CL06-desktop.png",
+        "qa/screenshots/CL06-desktop-full.png",
+        "qa/screenshots/CL06-mobile.png",
+        "qa/screenshots/CL06-u-hung.png",
+        "qa/screenshots/CL06-u-dung-desktop.png"
+      ],
+      "notes": "Bố cục R08: toggle Điểm danh/Thi đua, bộ chọn tuần, bảng ghi nhận trong tuần (lọc trạng thái, tìm, phân trang), panel học sinh (prev/next + tìm, điểm tạm tính + xếp loại, tab quy định/lịch sử, sửa bản chờ của mình có version), O17/O18, bảng Tổng kết tuần (bản xem trước có nhãn), panel Thao tác theo quyền. Tuần đã chốt: chỉ xem + link điều chỉnh.",
+      "source": "class-conduct"
     },
     {
       "id": "CL07",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct/weekly",
+      "evidence": [
+        "qa/screenshots/CL07-desktop.png",
+        "qa/screenshots/CL07-mobile.png",
+        "qa/screenshots/O19-explain.png"
+      ],
+      "notes": "Bản chính thức (snapshot, phiên bản, nội quy, chốt/công bố bởi/lúc) hoặc bản xem trước; ST15/16/17 banner; O19; CSV/XLSX; tìm/sort/phân trang.",
+      "source": "class-conduct"
     },
     {
       "id": "CL08",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct/review",
+      "evidence": [
+        "qa/screenshots/CL08-desktop.png",
+        "qa/screenshots/CL08-mobile.png",
+        "qa/screenshots/CL08-locked-ST16.png",
+        "qa/screenshots/CL08-school-b-u-hoa.png",
+        "qa/screenshots/O20-lock.png",
+        "qa/screenshots/O20-publish.png"
+      ],
+      "notes": "Checks chặn/cảnh báo, cặp trùng cạnh nhau + Loại bản trùng (lý do), bảng chờ rà soát (bulk duyệt/từ chối, chọn trang/tất cả), xem trước bảng sẽ chốt, O20 Chốt / Chốt và công bố / Công bố, Mở lại (lý do) khi đã chốt chưa công bố.",
+      "source": "class-conduct"
     },
     {
       "id": "CL09",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/publications",
+      "evidence": [
+        "qa/screenshots/CL09-desktop.png",
+        "qa/screenshots/CL09-mobile.png",
+        "qa/screenshots/CL09-after-flow.png"
+      ],
+      "notes": "Danh sách snapshot, lọc trạng thái, tìm, sắp xếp, phân trang.",
+      "source": "class-conduct"
     },
     {
       "id": "CL10",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/publications/:publicationId",
+      "evidence": [
+        "qa/screenshots/CL10-desktop.png",
+        "qa/screenshots/CL10-w4-desktop.png",
+        "qa/screenshots/CL10-mobile.png"
+      ],
+      "notes": "Bảng bất biến, nội quy theo phiên bản, danh sách phiên bản + diff với bản trước, In/lưu PDF (print-only header), CSV/XLSX, Đề nghị điều chỉnh (O21).",
+      "source": "class-conduct"
     },
     {
       "id": "CL11",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/adjustments",
+      "evidence": [
+        "qa/screenshots/CL11-desktop.png",
+        "qa/screenshots/CL11-mobile.png",
+        "qa/screenshots/CL11-approved.png",
+        "qa/screenshots/O21-adjustment.png"
+      ],
+      "notes": "Danh sách trước→sau, lý do, người đề nghị/duyệt; duyệt/từ chối (lỗi FORBIDDEN tự duyệt hiện trong hộp thoại); Công bố lại; giải thích ST18.",
+      "source": "class-conduct"
     },
     {
       "id": "CL12",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/rules",
+      "evidence": [
+        "qa/screenshots/CL12-desktop.png",
+        "qa/screenshots/CL12-mobile.png"
+      ],
+      "notes": "Bản hiệu lực, bảng quy định, xếp loại, bản kế tiếp + diff, ví dụ simulate 100 − 5 + 2 = 97, thời hạn nhập, quy trình. Chỉ xem.",
+      "source": "class-conduct"
     },
     {
       "id": "CL13",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/groups",
+      "evidence": [
+        "qa/screenshots/CL13-desktop.png",
+        "qa/screenshots/CL13-mobile.png",
+        "qa/screenshots/CL13-duplicate-error.png"
+      ],
+      "notes": "4 groups + 'Chưa phân tổ'; HTML5 drag-and-drop AND click/keyboard select -> 'Chuyển vào đây', plus select-based move form; effective date; position editor (unique positions, one leader per group) shows DUPLICATE errors inline; explanation that positions are not accounts.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL14",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/seating",
+      "evidence": [
+        "qa/screenshots/CL14-desktop.png",
+        "qa/screenshots/CL14-mobile.png",
+        "qa/screenshots/CL14-edited.png"
+      ],
+      "notes": "Board + teacher desk frame; select student/seat then target seat (place/swap), aria-labels 'Hàng r, ghế c: tên'; unseated list + auto-fill; clear seat; undo/redo; rows/cols; effective date; note; save = new version with basedOnVersion (CONFLICT -> ConflictDialog); version history; mobile horizontal scroll + 'Vừa màn hình' + list-based alternative; read-only without seating.manage.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL15",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/timetable?week=YYYY-MM-DD",
+      "evidence": [
+        "qa/screenshots/CL15-desktop.png",
+        "qa/screenshots/CL15-mobile.png",
+        "qa/screenshots/O25-lesson-change.png"
+      ],
+      "notes": "Week grid / mobile day list, change/cancel markers with reason, holidays; canEdit -> O25 drawer (live checkLessonChange conflicts, save draft / publish blocked on conflict), changes list with publish/delete-draft confirms. Subject teachers read-only.",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL16",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/classroom/demo-school-a/y-a-2026/c-a-10a1/duties?week=YYYY-MM-DD",
+      "evidence": [
+        "qa/screenshots/CL16-desktop.png",
+        "qa/screenshots/CL16-mobile.png",
+        "qa/screenshots/O26-duty-drawer.png"
+      ],
+      "notes": "Week board by day, add/edit/delete for today+future only, draft/publish, group fills members, 'Phụ huynh thấy gì' preview shows only the selected student's published duties (no classmates' names).",
+      "source": "teacher-class-1"
     },
     {
       "id": "CL17",
@@ -973,87 +1122,176 @@
     },
     {
       "id": "PA01",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/access?t=demo-minhanh-me",
+      "evidence": [
+        "qa/screenshots/PA01-desktop.png",
+        "qa/screenshots/PA01-mobile.png"
+      ],
+      "notes": "Validates via parentRepo.open; writeParentToken then router.replace to /overview (token leaves the address bar; verified in scripts/qa-parent-f06.mjs). Failure -> access-unavailable?reason=… and clears the tab token. No login/registration form. Screenshot taken with read scenario 'slow' to show the 'Đang mở thông tin…' state.",
+      "source": "parent"
     },
     {
       "id": "PA02",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/overview",
+      "evidence": [
+        "qa/screenshots/PA02-desktop.png",
+        "qa/screenshots/PA02-mobile.png",
+        "qa/screenshots/PA02-limited-desktop.png",
+        "qa/screenshots/PA02-limited-mobile.png",
+        "qa/screenshots/PA02-anhoa-desktop.png",
+        "qa/screenshots/PA02-anhoa-mobile.png"
+      ],
+      "notes": "R10 layout at 1448 (no phone frame); 390 single column like the phone mock + shell bottom bar. Cards only for granted modules; container queries so it also fits the narrower SC25 preview. Attendance card shows 'Chưa có dữ liệu công bố tuần này' because week 5 is not yet published (correct per seed). Last update = context.lastPublishedAt.",
+      "source": "parent"
     },
     {
       "id": "PA03",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/attendance",
+      "evidence": [
+        "qa/screenshots/PA03-desktop.png",
+        "qa/screenshots/PA03-mobile.png"
+      ],
+      "notes": "Month calendar with text labels, prev/next limited to repo yearStart..yearEnd, month totals by session, legend, explanation. Missing data = 'Chưa công bố'.",
+      "source": "parent"
     },
     {
       "id": "PA04",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/conduct",
+      "evidence": [
+        "qa/screenshots/PA04-desktop.png",
+        "qa/screenshots/PA04-mobile.png",
+        "qa/screenshots/PA05-limited-module-desktop.png",
+        "qa/screenshots/PA05-limited-module-mobile.png"
+      ],
+      "notes": "Published weeks only (total, grade, adjusted marker); no ranking. Module-not-granted state tested with demo-limited.",
+      "source": "parent"
     },
     {
       "id": "PA05",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/conduct/y-a-2026-w4",
+      "evidence": [
+        "qa/screenshots/PA05-desktop.png",
+        "qa/screenshots/PA05-mobile.png"
+      ],
+      "notes": "Base + shared items = total, rule set name/version, version history (Bản n -> total chain when >1), adjusted callout, print/save PDF (print CSS hides shell chrome, print-only header). Seed has no v2 snapshot, so the adjusted branch is not visible in screenshots.",
+      "source": "parent"
     },
     {
       "id": "PA06",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/timetable",
+      "evidence": [
+        "qa/screenshots/PA06-desktop.png",
+        "qa/screenshots/PA06-mobile.png"
+      ],
+      "notes": "Week grid Mon–Sat, prev/next limited by granted year (parentExtraRepo.grantedYear), 'Tuần này', changed/cancelled lessons with reason + summary callout.",
+      "source": "parent"
     },
     {
       "id": "PA07",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/duties",
+      "evidence": [
+        "qa/screenshots/PA07-desktop.png",
+        "qa/screenshots/PA07-mobile.png"
+      ],
+      "notes": "Own duties only, upcoming/past.",
+      "source": "parent"
     },
     {
       "id": "PA08",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/activities",
+      "evidence": [
+        "qa/screenshots/PA08-desktop.png",
+        "qa/screenshots/PA08-mobile.png"
+      ],
+      "notes": "Activity cards with child's own submission status; no submit/upload.",
+      "source": "parent"
     },
     {
       "id": "PA09",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/activities/act-1",
+      "evidence": [
+        "qa/screenshots/PA09-desktop.png",
+        "qa/screenshots/PA09-mobile.png"
+      ],
+      "notes": "Detail + child's shared, approved evidence; FilePreview modal via parentRepo.file (re-checked on each open/download).",
+      "source": "parent"
     },
     {
       "id": "PA10",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/announcements",
+      "evidence": [
+        "qa/screenshots/PA10-desktop.png",
+        "qa/screenshots/PA10-mobile.png"
+      ],
+      "notes": "Local diacritic-insensitive search over the child's announcements; empty vs no-match states.",
+      "source": "parent"
     },
     {
       "id": "PA11",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/announcements/an-8",
+      "evidence": [
+        "qa/screenshots/PA11-desktop.png",
+        "qa/screenshots/PA11-mobile.png",
+        "qa/screenshots/PA11-other-student-desktop.png",
+        "qa/screenshots/PA11-other-student-mobile.png"
+      ],
+      "notes": "Body blocks, sender, date, allowed attachments (preview/download). Q29: an-9 (other student) -> not-found state with no content (verified in qa-parent-f06.mjs).",
+      "source": "parent"
     },
     {
       "id": "PA12",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/teachers",
+      "evidence": [
+        "qa/screenshots/PA12-desktop.png",
+        "qa/screenshots/PA12-mobile.png",
+        "qa/screenshots/PA12-anhoa-desktop.png",
+        "qa/screenshots/PA12-anhoa-mobile.png"
+      ],
+      "notes": "Homeroom card, subject teachers table (mobile list) with teaching days, contact per school settings (An Hòa hides phone), school contact card; no chat.",
+      "source": "parent"
     },
     {
       "id": "PA13",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/documents",
+      "evidence": [
+        "qa/screenshots/PA13-desktop.png",
+        "qa/screenshots/PA13-mobile.png"
+      ],
+      "notes": "Published conduct reports (-> PA05 print) + shared files with preview/download (re-checked via parentRepo.file).",
+      "source": "parent"
     },
     {
       "id": "PA14",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/binh-minh/access-unavailable?reason=expired|revoked|invalid|suspended|module",
+      "evidence": [
+        "qa/screenshots/PA14-expired-desktop.png",
+        "qa/screenshots/PA14-expired-mobile.png",
+        "qa/screenshots/PA14-revoked-desktop.png",
+        "qa/screenshots/PA14-revoked-mobile.png",
+        "qa/screenshots/PA14-invalid-desktop.png",
+        "qa/screenshots/PA14-invalid-mobile.png",
+        "qa/screenshots/PA14-suspended-desktop.png",
+        "qa/screenshots/PA14-suspended-mobile.png",
+        "qa/screenshots/PA14-module-desktop.png",
+        "qa/screenshots/PA14-module-mobile.png",
+        "qa/screenshots/F06-parent-revoked.png"
+      ],
+      "notes": "Tailored message per reason, no student data, public school contact via announcementsRepo.publicSchool (errors caught), guidance to contact homeroom teacher.",
+      "source": "parent"
     },
     {
       "id": "SY01",
@@ -1560,69 +1798,93 @@
     },
     {
       "id": "C058",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL04-desktop.png"
+      ],
+      "notes": "features/attendance/status.tsx StatusButtons",
+      "source": "teacher-class-1"
     },
     {
       "id": "C059",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL04-mobile-full.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "C060",
-      "status": "not_started",
+      "status": "mock_connected",
       "evidence": [],
-      "notes": ""
+      "notes": "Danh sách quy định theo nhóm trong CL06 (src/features/conduct/record-screen.tsx)",
+      "source": "class-conduct"
     },
     {
       "id": "C061",
-      "status": "not_started",
+      "status": "mock_connected",
       "evidence": [],
-      "notes": ""
+      "notes": "src/features/conduct/record-form.tsx",
+      "source": "class-conduct"
     },
     {
       "id": "C062",
-      "status": "not_started",
+      "status": "mock_connected",
       "evidence": [],
-      "notes": ""
+      "notes": "src/features/conduct/week-table.tsx",
+      "source": "class-conduct"
     },
     {
       "id": "C063",
-      "status": "not_started",
+      "status": "mock_connected",
       "evidence": [],
-      "notes": ""
+      "notes": "src/features/conduct/publish.tsx + review-screen.tsx",
+      "source": "class-conduct"
     },
     {
       "id": "C064",
-      "status": "not_started",
+      "status": "mock_connected",
       "evidence": [],
-      "notes": ""
+      "notes": "src/features/conduct/publications.tsx",
+      "source": "class-conduct"
     },
     {
       "id": "C065",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL13-desktop.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "C066",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL14-desktop.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "C067",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL15-desktop.png",
+        "qa/screenshots/CL15-mobile.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "C068",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL16-desktop.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "C069",
@@ -1756,11 +2018,13 @@
     },
     {
       "id": "O11",
-      "status": "mock_connected",
+      "status": "qa_screenshot",
       "route": "SC16/SC18/SC20",
-      "evidence": [],
-      "notes": "Chuyển lớp cùng năm / ngừng theo học; ngày hiệu lực; lý do; áp dụng ngay nếu có quyền.",
-      "source": "students-families"
+      "evidence": [
+        "qa/screenshots/O11-transfer-validation.png"
+      ],
+      "notes": "TransferDialog (features/class-org/dialogs.tsx) — request only (applyNow=false), same-year targets with capacity from teacherExtraRepo.transferTargets.",
+      "source": "teacher-class-1"
     },
     {
       "id": "O12",
@@ -1797,45 +2061,69 @@
     },
     {
       "id": "O15",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O15-edit-published-reason.png",
+        "qa/screenshots/CL04-history-drawer.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "O16",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O16-bulk-confirm.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "O17",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O17-record-form.png"
+      ],
+      "notes": "requestId sinh 1 lần/lần mở form (NV-10); DateField trong tuần ≤ hôm nay; điểm lấy từ nội quy; cảnh báo chưa lưu.",
+      "source": "class-conduct"
     },
     {
       "id": "O18",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O18-duplicate-hard.png",
+        "qa/screenshots/O18-duplicate-soft.png"
+      ],
+      "notes": "Hard (từ điểm danh) chỉ giải thích + xem bản cũ; soft: giữ bản cũ hoặc 'sự việc khác' bắt buộc ghi chú.",
+      "source": "class-conduct"
     },
     {
       "id": "O19",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O19-explain.png"
+      ],
+      "notes": "",
+      "source": "class-conduct"
     },
     {
       "id": "O20",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O20-lock.png",
+        "qa/screenshots/O20-publish.png"
+      ],
+      "notes": "",
+      "source": "class-conduct"
     },
     {
       "id": "O21",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O21-adjustment.png"
+      ],
+      "notes": "",
+      "source": "class-conduct"
     },
     {
       "id": "O22",
@@ -1849,15 +2137,22 @@
     },
     {
       "id": "O23",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL13-desktop.png",
+        "qa/screenshots/CL13-duplicate-error.png"
+      ],
+      "notes": "Board + quick ChangeGroupDialog in CL02.",
+      "source": "teacher-class-1"
     },
     {
       "id": "O24",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL14-edited.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "O25",
@@ -1865,16 +2160,20 @@
       "route": "/school/demo-school-a/timetable",
       "evidence": [
         "qa/screenshots/O25-lesson-change-drawer.png",
-        "qa/screenshots/O25-lesson-change-drawer-mobile.png"
+        "qa/screenshots/O25-lesson-change-drawer-mobile.png",
+        "qa/screenshots/O25-lesson-change.png"
       ],
       "notes": "",
       "source": "school-ops"
     },
     {
       "id": "O26",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O26-duty-drawer.png"
+      ],
+      "notes": "",
+      "source": "teacher-class-1"
     },
     {
       "id": "O27",
@@ -1896,7 +2195,7 @@
         "qa/screenshots/O28-desktop.png",
         "qa/screenshots/O28-mobile.png"
       ],
-      "notes": "FilePreview in Modal with metadata + download; revoked fallback from FilePreview.",
+      "notes": "FilePreview in Modal with metadata + download; revoked fallback from FilePreview. | Parent file viewer modal (ParentFileViewer), revoked-file fallback.",
       "source": "class-activities"
     },
     {
@@ -2067,33 +2366,51 @@
     },
     {
       "id": "ST14",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL04-subject-desktop.png"
+      ],
+      "notes": "42 'Chưa điểm danh' never counted as present; publish blocked while any unmarked.",
+      "source": "teacher-class-1"
     },
     {
       "id": "ST15",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL08-desktop.png",
+        "qa/screenshots/F03-parent-before-publish.png"
+      ],
+      "notes": "'Chưa công bố' / 'Chưa có dữ liệu công bố' instead of 0.",
+      "source": "class-conduct"
     },
     {
       "id": "ST16",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL08-locked-ST16.png",
+        "qa/screenshots/F03-parent-after-lock.png"
+      ],
+      "notes": "Saved vs published distinguished on CL04/CL05/TE01; locked conduct week surfaced as a warning on CL04.",
+      "source": "class-conduct"
     },
     {
       "id": "ST17",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O19-explain.png",
+        "qa/screenshots/F03-parent-after-publish.png"
+      ],
+      "notes": "",
+      "source": "class-conduct"
     },
     {
       "id": "ST18",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "mock_connected",
+      "evidence": [
+        "qa/screenshots/CL11-approved.png"
+      ],
+      "notes": "Callout + dialog; repository giữ bản cũ published đến khi publishAdjustment.",
+      "source": "class-conduct"
     },
     {
       "id": "ST19",
@@ -2117,9 +2434,14 @@
     },
     {
       "id": "ST22",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "route": "/p/:slug/access-unavailable",
+      "evidence": [
+        "qa/screenshots/PA14-revoked-desktop.png",
+        "qa/screenshots/F06-parent-revoked.png"
+      ],
+      "notes": "F06 verified: scripts/qa-parent-f06.mjs (revoke via SC24 UI as u-lan; open parent tab redirected to reason=revoked; demo-minhanh-bo still works).",
+      "source": "parent"
     },
     {
       "id": "ST23",
@@ -2135,9 +2457,12 @@
     },
     {
       "id": "ST25",
-      "status": "not_started",
-      "evidence": [],
-      "notes": ""
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL02-mobile-full.png"
+      ],
+      "notes": "Students who left 10A1 listed with date/reason; history retained.",
+      "source": "teacher-class-1"
     },
     {
       "id": "ST26",

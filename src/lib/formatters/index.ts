@@ -20,7 +20,8 @@ export function fmtDate(value?: string | null): string {
 /** dd/MM */
 export function fmtDayMonth(value?: string | null): string {
   if (!value) return "—";
-  return new Intl.DateTimeFormat("vi-VN", { timeZone: TZ, day: "2-digit", month: "2-digit" }).format(toDate(value));
+  const d = fmtDate(value);
+  return d === "—" ? d : d.slice(0, 5);
 }
 
 export function fmtTime(value?: string | null): string {

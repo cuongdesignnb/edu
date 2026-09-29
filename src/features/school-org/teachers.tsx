@@ -30,6 +30,7 @@ import { InviteModal } from "./invite-modal";
 import { AssignDrawer, type AssignPrefill } from "./assign-drawer";
 import { PermissionSummary } from "./permission-summary";
 import { useIsWide } from "./common";
+import { useToast } from "@/components/ui/toast";
 
 const ROLE_TONE: Record<string, "info" | "warning" | "purple" | "success" | "neutral"> = {
   "GVCN": "info", "Giáo viên bộ môn": "info", "Ban giám hiệu": "warning", "Giáo vụ": "purple", "Quản trị trường": "success", "Lời mời": "warning", "Chưa phân công": "neutral",
@@ -41,6 +42,7 @@ type StatusTarget = { membershipId: string; name: string; to: "active" | "suspen
 export function TeachersScreen() {
   const { school, can } = useSchool();
   const ctx = useCtx();
+  const toast = useToast();
   const wide = useIsWide();
   const list = useListQuery({ pageSize: 10, sort: "name", dir: "asc" });
   const q = useRepo(["school-teachers", school.id, list.query], (c) => staffRepo.teachers(c, school.id, list.query));
@@ -76,7 +78,7 @@ export function TeachersScreen() {
       const file = `giao-vien-${school.slug}`;
       if (fmt === "csv") downloadCSV(cols, rows, file);
       else await downloadXLSX(cols, rows, file, { title: `Danh sách giáo viên — ${school.name}`, subtitle: `${rows.length} dòng theo bộ lọc hiện tại` });
-    } finally { setExporting(false); }
+    } catch (e) { toast.push({ tone: "error", title: "Không xuất được dữ liệu", detail: e instanceof Error ? e.message : undefined }); } finally { setExporting(false); }
   };
 
   const select = (r: TeacherRow) => { setSelected(r); if (!wide) setPanelOpen(true); };
@@ -225,7 +227,7 @@ function MemberDetailPanel({ membershipId, schoolId, onClose, onAssign, canAssig
               <TabPanel value="perm" className="mt-3">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <p className="text-[15px] font-bold text-ink">Quyền đang được cấp</p>
-                  <Link href={`/school/${schoolId}/teachers/${membershipId}`} className="btn btn-secondary btn-sm"><Pencil className="size-3.5" aria-hidden />Chỉnh sửa</Link>
+                  <Link href={`/school/${schoolId}/teachers/${membershipId}`} className="btn btn-secondary btn-sm">{canAssign ? <><Pencil className="size-3.5" aria-hidden />Chỉnh sửa</> : "Xem hồ sơ"}</Link>
                 </div>
                 <PermissionSummary m={m} compact />
                 {canAssign && m.membership.status === "active" && <Button size="sm" className="mt-3" block icon={<UserCog className="size-4" />} onClick={() => onAssign(membershipId)}>Phân công mới</Button>}

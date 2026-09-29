@@ -1,0 +1,186 @@
+{
+ "screens": {
+  "PA01": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/access?t=demo-minhanh-me",
+   "evidence": [
+    "qa/screenshots/PA01-desktop.png",
+    "qa/screenshots/PA01-mobile.png"
+   ],
+   "notes": "Validates via parentRepo.open; writeParentToken then router.replace to /overview (token leaves the address bar; verified in scripts/qa-parent-f06.mjs). Failure -> access-unavailable?reason=… and clears the tab token. No login/registration form. Screenshot taken with read scenario 'slow' to show the 'Đang mở thông tin…' state."
+  },
+  "PA02": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/overview",
+   "evidence": [
+    "qa/screenshots/PA02-desktop.png",
+    "qa/screenshots/PA02-mobile.png",
+    "qa/screenshots/PA02-limited-desktop.png",
+    "qa/screenshots/PA02-limited-mobile.png",
+    "qa/screenshots/PA02-anhoa-desktop.png",
+    "qa/screenshots/PA02-anhoa-mobile.png"
+   ],
+   "notes": "R10 layout at 1448 (no phone frame); 390 single column like the phone mock + shell bottom bar. Cards only for granted modules; container queries so it also fits the narrower SC25 preview. Attendance card shows 'Chưa có dữ liệu công bố tuần này' because week 5 is not yet published (correct per seed). Last update = context.lastPublishedAt."
+  },
+  "PA03": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/attendance",
+   "evidence": [
+    "qa/screenshots/PA03-desktop.png",
+    "qa/screenshots/PA03-mobile.png"
+   ],
+   "notes": "Month calendar with text labels, prev/next limited to repo yearStart..yearEnd, month totals by session, legend, explanation. Missing data = 'Chưa công bố'."
+  },
+  "PA04": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/conduct",
+   "evidence": [
+    "qa/screenshots/PA04-desktop.png",
+    "qa/screenshots/PA04-mobile.png",
+    "qa/screenshots/PA05-limited-module-desktop.png",
+    "qa/screenshots/PA05-limited-module-mobile.png"
+   ],
+   "notes": "Published weeks only (total, grade, adjusted marker); no ranking. Module-not-granted state tested with demo-limited."
+  },
+  "PA05": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/conduct/y-a-2026-w4",
+   "evidence": [
+    "qa/screenshots/PA05-desktop.png",
+    "qa/screenshots/PA05-mobile.png"
+   ],
+   "notes": "Base + shared items = total, rule set name/version, version history (Bản n -> total chain when >1), adjusted callout, print/save PDF (print CSS hides shell chrome, print-only header). Seed has no v2 snapshot, so the adjusted branch is not visible in screenshots."
+  },
+  "PA06": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/timetable",
+   "evidence": [
+    "qa/screenshots/PA06-desktop.png",
+    "qa/screenshots/PA06-mobile.png"
+   ],
+   "notes": "Week grid Mon–Sat, prev/next limited by granted year (parentExtraRepo.grantedYear), 'Tuần này', changed/cancelled lessons with reason + summary callout."
+  },
+  "PA07": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/duties",
+   "evidence": [
+    "qa/screenshots/PA07-desktop.png",
+    "qa/screenshots/PA07-mobile.png"
+   ],
+   "notes": "Own duties only, upcoming/past."
+  },
+  "PA08": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/activities",
+   "evidence": [
+    "qa/screenshots/PA08-desktop.png",
+    "qa/screenshots/PA08-mobile.png"
+   ],
+   "notes": "Activity cards with child's own submission status; no submit/upload."
+  },
+  "PA09": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/activities/act-1",
+   "evidence": [
+    "qa/screenshots/PA09-desktop.png",
+    "qa/screenshots/PA09-mobile.png"
+   ],
+   "notes": "Detail + child's shared, approved evidence; FilePreview modal via parentRepo.file (re-checked on each open/download)."
+  },
+  "PA10": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/announcements",
+   "evidence": [
+    "qa/screenshots/PA10-desktop.png",
+    "qa/screenshots/PA10-mobile.png"
+   ],
+   "notes": "Local diacritic-insensitive search over the child's announcements; empty vs no-match states."
+  },
+  "PA11": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/announcements/an-8",
+   "evidence": [
+    "qa/screenshots/PA11-desktop.png",
+    "qa/screenshots/PA11-mobile.png",
+    "qa/screenshots/PA11-other-student-desktop.png",
+    "qa/screenshots/PA11-other-student-mobile.png"
+   ],
+   "notes": "Body blocks, sender, date, allowed attachments (preview/download). Q29: an-9 (other student) -> not-found state with no content (verified in qa-parent-f06.mjs)."
+  },
+  "PA12": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/teachers",
+   "evidence": [
+    "qa/screenshots/PA12-desktop.png",
+    "qa/screenshots/PA12-mobile.png",
+    "qa/screenshots/PA12-anhoa-desktop.png",
+    "qa/screenshots/PA12-anhoa-mobile.png"
+   ],
+   "notes": "Homeroom card, subject teachers table (mobile list) with teaching days, contact per school settings (An Hòa hides phone), school contact card; no chat."
+  },
+  "PA13": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/documents",
+   "evidence": [
+    "qa/screenshots/PA13-desktop.png",
+    "qa/screenshots/PA13-mobile.png"
+   ],
+   "notes": "Published conduct reports (-> PA05 print) + shared files with preview/download (re-checked via parentRepo.file)."
+  },
+  "PA14": {
+   "status": "qa_screenshot",
+   "route": "/p/binh-minh/access-unavailable?reason=expired|revoked|invalid|suspended|module",
+   "evidence": [
+    "qa/screenshots/PA14-expired-desktop.png",
+    "qa/screenshots/PA14-expired-mobile.png",
+    "qa/screenshots/PA14-revoked-desktop.png",
+    "qa/screenshots/PA14-revoked-mobile.png",
+    "qa/screenshots/PA14-invalid-desktop.png",
+    "qa/screenshots/PA14-invalid-mobile.png",
+    "qa/screenshots/PA14-suspended-desktop.png",
+    "qa/screenshots/PA14-suspended-mobile.png",
+    "qa/screenshots/PA14-module-desktop.png",
+    "qa/screenshots/PA14-module-mobile.png",
+    "qa/screenshots/F06-parent-revoked.png"
+   ],
+   "notes": "Tailored message per reason, no student data, public school contact via announcementsRepo.publicSchool (errors caught), guidance to contact homeroom teacher."
+  },
+  "SC25": {
+   "status": "qa_screenshot",
+   "route": "/school/demo-school-a/parent-access/pa-minhanh-me/preview[/…view]",
+   "evidence": [
+    "qa/screenshots/SC25-desktop.png",
+    "qa/screenshots/SC25-mobile.png",
+    "qa/screenshots/SC25-conduct-detail-desktop.png",
+    "qa/screenshots/SC25-timetable-mobile.png",
+    "qa/screenshots/SC25-limited-module-desktop.png",
+    "qa/screenshots/SC25-denied-desktop.png",
+    "qa/screenshots/SC25-revoked-link-desktop.png"
+   ],
+   "notes": "ParentShell in preview mode inside SchoolShell; catch-all preview/[[...view]] renders the same views so every parent nav link works. Gate via parentRepo.open (u-hung -> denied; revoked link -> explanation). No view logging."
+  }
+ },
+ "states": {
+  "ST22": {
+   "status": "qa_screenshot",
+   "route": "/p/:slug/access-unavailable",
+   "evidence": [
+    "qa/screenshots/PA14-revoked-desktop.png",
+    "qa/screenshots/F06-parent-revoked.png"
+   ],
+   "notes": "F06 verified: scripts/qa-parent-f06.mjs (revoke via SC24 UI as u-lan; open parent tab redirected to reason=revoked; demo-minhanh-bo still works)."
+  },
+  "ST15": {
+   "status": "mock_connected",
+   "route": "/p/binh-minh/overview",
+   "notes": "'Chưa công bố' / 'Chưa có dữ liệu công bố' instead of 0."
+  }
+ },
+ "overlays": {
+  "O28": {
+   "status": "mock_connected",
+   "route": "/p/binh-minh/documents",
+   "notes": "Parent file viewer modal (ParentFileViewer), revoked-file fallback."
+  }
+ }
+}

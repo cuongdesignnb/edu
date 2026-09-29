@@ -133,7 +133,7 @@ export const parentRepo = {
       const school = db.schools.find((x) => x.id === r.schoolId)!;
       const year = db.years.find((y) => y.id === r.yearId)!;
       const lastPublished = [
-        ...db.snapshots.filter((x) => x.classId === cls?.id && x.status === "published").map((x) => x.publishedAt ?? ""),
+        ...db.snapshots.filter((x) => r.pa.modules.includes("conduct") && x.classId === cls?.id && x.status === "published").map((x) => x.publishedAt ?? ""),
         ...db.attendanceSessions.filter((x) => x.classId === cls?.id && x.status === "published").map((x) => x.publishedAt ?? ""),
       ].sort().pop();
       const rel = db.relationships.find((x) => x.id === r.pa.relationshipId)!;
@@ -180,7 +180,10 @@ export const parentRepo = {
       const records = publishedAttendance(db, r, from, end);
       const days: string[] = [];
       for (let d = from; d <= end; d = addDays(d, 1)) days.push(d);
-      const byDate = new Map(records.map((x) => [x.date, x]));
+      // morning + afternoon on the same day: show the more serious status (never upgrade to present)
+      const sev = { present: 0, late: 1, excused: 2, unexcused: 3, unmarked: -1 } as Record<string, number>;
+      const byDate = new Map<string, (typeof records)[number]>();
+      for (const x of records) { const cur = byDate.get(x.date); if (!cur || sev[x.status] > sev[cur.status]) byDate.set(x.date, x); }
       return {
         month, yearStart: year.startDate.slice(0, 7), yearEnd: (year.endDate < r.today ? year.endDate : r.today).slice(0, 7),
         days: days.map((d) => ({ date: d, weekday: weekdayOf(d), status: byDate.get(d)?.status ?? (d > r.today ? "future" : db.holidays.some((h) => h.schoolId === r.schoolId && h.startDate <= d && h.endDate >= d) ? "holiday" : weekdayOf(d) === 7 ? "weekend" : "not_published"), note: byDate.get(d)?.note })),
@@ -322,7 +325,7 @@ export const parentRepo = {
       const cls = classFor(db, r);
       const f = db.files.find((x) => x.id === fileId && x.schoolId === r.schoolId);
       const ok = f && f.status === "active" && ((f.share === "student_parent" && f.studentId === r.studentId) || (f.share === "class_parents" && (!f.classId || f.classId === cls?.id)));
-      if (!ok) throw new RepoError(f?.status === "revoked" ? "REVOKED" : "NOT_FOUND", "Tệp không được chia sẻ cho học sinh này hoặc đã bị thu hồi.");
+      if (!ok) throw new RepoError("NOT_FOUND", "Tệp không được chia sẻ cho học sinh này hoặc đã bị thu hồi.");
       return { id: f!.id, name: f!.name, mime: f!.mime, size: f!.size, source: f!.source };
     });
   },

@@ -13,7 +13,7 @@ import { PARENT_NAV } from "@/components/layout/nav";
 import { NavIcon } from "@/components/layout/icons";
 import { Brand } from "@/components/layout/brand";
 import { DemoScenarioBanner } from "@/components/ui/guards";
-import { EmptyState, PageSkeleton } from "@/components/ui/states";
+import { DeniedState, EmptyState, PageSkeleton } from "@/components/ui/states";
 import { ButtonLink } from "@/components/ui/button";
 
 interface ParentCtx { key: ParentKey; slug: string; base: string; modules: ParentModule[]; preview: boolean; context: Awaited<ReturnType<typeof parentRepo.context>> }
@@ -42,7 +42,7 @@ export function unavailableReason(e: RepoError | null | undefined): string | nul
 export function useParentRead<T>(key: readonly unknown[], fn: (k: ParentKey, slug: string) => Promise<T>) {
   const p = useParent();
   const router = useRouter();
-  const q = useQuery<T, RepoError>({ queryKey: ["parent", p.preview ? "preview" : "link", p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
+  const q = useQuery<T, RepoError>({ queryKey: ["parent", (p.preview ? `preview:${"preview" in p.key ? p.key.preview.accessId : ""}` : `link:${"token" in p.key ? p.key.token : ""}`), p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
   const reason = unavailableReason(q.error);
   useEffect(() => { if (reason && !p.preview) router.replace(`/p/${p.slug}/access-unavailable?reason=${reason}`); }, [reason, p.preview, p.slug, router]);
   return q;
@@ -66,7 +66,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
   const [token, setToken] = useState<string | null | undefined>(undefined);
   useEffect(() => { setToken(preview ? null : readParentToken(slug)); }, [slug, preview, pathname]);
   const key = useMemo<ParentKey | null>(() => (preview ? preview.key : token ? { token } : null), [preview, token]);
-  const ctxQ = useQuery({ queryKey: ["parent", preview ? "preview" : "link", slug, "context", token], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
+  const ctxQ = useQuery({ queryKey: ["parent", preview ? `preview:${"preview" in preview.key ? preview.key.preview.accessId : ""}` : `link:${token}`, slug, "context"], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
   const reason = unavailableReason(ctxQ.error as RepoError | null);
   useEffect(() => { if (reason && !preview) router.replace(`/p/${slug}/access-unavailable?reason=${reason}`); }, [reason, preview, slug, router]);
   const base = preview?.base ?? `/p/${slug}`;
@@ -75,6 +75,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
   if (token === undefined && !preview) return <PageSkeleton variant="parent" />;
   if (!key) return <NoLink slug={slug} />;
   if (ctxQ.isLoading || (reason && !preview)) return <PageSkeleton variant="parent" />;
+  if ((ctxQ.error as RepoError | null)?.code === "FORBIDDEN") return <div className="p-6"><DeniedState message="Bạn không có quyền xem trước link tra cứu này." /></div>;
   if (!value) return <div className="p-6"><EmptyState title="Không mở được thông tin" description="Đường dẫn không còn hiệu lực hoặc không đúng trường." /></div>;
 
   const nav = PARENT_NAV.filter((n) => !n.module || value.modules.includes(n.module));
@@ -83,7 +84,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
     <Ctx.Provider value={value}>
       <div className={clsx("flex flex-col bg-app", preview ? "min-h-[600px]" : "min-h-dvh")}>
         {!preview && <DemoScenarioBanner compact />}
-        <header className="relative overflow-hidden border-b border-line bg-gradient-to-r from-white via-[#f5f9ff] to-[#eaf3ff]">
+        <header className="no-print relative overflow-hidden border-b border-line bg-gradient-to-r from-white via-[#f5f9ff] to-[#eaf3ff]">
           <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-4 lg:h-[88px]">
             <Brand href={`${base}/overview`} />
             <div className="ml-4 hidden items-center gap-3 md:flex">
@@ -95,7 +96,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
         </header>
         {preview && <div className="flex items-center gap-2 bg-purple-bg px-4 py-2 text-[13px] font-semibold text-purple-text"><Eye className="size-4" aria-hidden />Xem trước nội bộ — đúng phần phụ huynh sẽ thấy qua link này. Không cấp thêm quyền nào.</div>}
         <div className="mx-auto flex w-full max-w-[1400px] flex-1 gap-5 px-3 py-4 sm:px-4 lg:py-6">
-          <aside className="hidden w-[210px] flex-none lg:block" aria-label="Mục thông tin của con">
+          <aside className="no-print hidden w-[210px] flex-none lg:block" aria-label="Mục thông tin của con">
             <nav className="card sticky top-4 p-2">
               <ul className="space-y-1">
                 {nav.map((n) => (

@@ -34,7 +34,7 @@ if (!args.click) {
 } else {
   let i = 0;
   for (const text of String(args.click).split("|")) {
-    const el = page.getByRole("button", { name: text, exact: false }).first();
+    const el = page.getByText(text, { exact: true }).first();
     await el.scrollIntoViewIfNeeded();
     await el.click();
     await page.waitForTimeout(Number(args.after ?? 1500));

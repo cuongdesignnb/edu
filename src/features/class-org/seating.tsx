@@ -7,6 +7,7 @@ import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
+import { ClassOrgNav } from "./org-nav";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ export function SeatingEditor() {
   return (
     <div className="page">
       <ClassHeader title="Sơ đồ lớp" subtitle="Xếp chỗ ngồi theo phiên bản và ngày áp dụng" crumbs={[{ label: "Sơ đồ lớp" }]} />
+      <ClassOrgNav />
       <QueryState query={q} skeleton="detail">{(d) => <Editor key={`${Math.max(0, ...d.history.map((h) => h.version))}-${nonce}`} d={d} onReload={() => { void q.refetch().then(() => setNonce((n) => n + 1)); }} />}</QueryState>
     </div>
   );

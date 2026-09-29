@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
 import { UserCog } from "lucide-react";
-import { activitiesRepo, conductRepo, platformRepo, reportsRepo, sessionRepo, studentsRepo, type RepoError } from "@/lib/repositories";
+import { activitiesRepo, conductRepo, platformRepo, schoolRepo, reportsRepo, sessionRepo, studentsRepo, type RepoError } from "@/lib/repositories";
 import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
 import { setScenario } from "@/lib/demo/scenario";
 import type { Actor } from "@/lib/permissions/can";
@@ -20,6 +20,10 @@ import { QrImage, LinkBox, accessUrl } from "@/features/students/shared";
 import { FileViewerDialog } from "@/features/activities/evidence-dialogs";
 import { ExportFormatDialog, exportReportFile, type ExportFormat } from "@/features/reports/viewer";
 import { ExplainDrawer } from "@/features/conduct/week-table";
+import { InviteAdminDialog } from "@/features/platform/invite-admin-dialog";
+import { RequestSupportDialog } from "@/features/platform/support-request-dialog";
+import { LessonChangeDrawer } from "@/features/school-ops/lesson-change-drawer";
+import { TermDialog } from "@/features/school-org/term-dialog";
 import { Modal } from "@/components/ui/dialog";
 import { PERSONA_NAMES } from "../data";
 
@@ -129,6 +133,23 @@ function O19({ open, close }: { open: boolean; close: () => void }) {
   return <ExplainDrawer row={row} official onClose={close} weekText={`Tuần ${q.data.week.index}`} ruleSet={{ name: rs.name, versionNo: rs.versionNo, baseScore: rs.baseScore, cap: rs.cap, floor: rs.floor, bands: rs.bands }} />;
 }
 
+/** O02 — real InviteAdminDialog for school A (platform). */
+function O02({ open, close }: { open: boolean; close: () => void }) {
+  const q = useRepo(["preview-o02", A], (ctx) => platformRepo.school(ctx, A), { enabled: open });
+  if (!open) return null;
+  if (!q.data) return <Modal open onOpenChange={close} title="Đang tải trường…">{q.error ? <p className="text-sm text-danger-text">{q.error.message}</p> : <Loading />}</Modal>;
+  return <InviteAdminDialog open onClose={close} schoolId={A} schoolName={q.data.school.name} admins={q.data.admins.filter((a) => a.status === "active").map((a) => ({ membershipId: a.membershipId, name: a.name }))} />;
+}
+
+/** O04 — real TermDialog for the first term of 2026–2027. */
+function O04({ open, close }: { open: boolean; close: () => void }) {
+  const q = useRepo(["preview-o04", Y], (ctx) => schoolRepo.yearDetail(ctx, A, Y), { enabled: open });
+  if (!open) return null;
+  const term = q.data?.terms[0];
+  if (!q.data || !term) return <Modal open onOpenChange={close} title="Đang tải năm học…">{q.error ? <p className="text-sm text-danger-text">{q.error.message}</p> : <Loading />}</Modal>;
+  return <TermDialog term={term} year={q.data.year} lockedWeeks={q.data.weeks.filter((w) => w.termId === term.id && w.locked).length} onClose={close} />;
+}
+
 /** O32 — the real unsaved-changes guard: type, then click any link. */
 export function UnsavedGuardDemo() {
   const [v, setV] = useState("");
@@ -166,7 +187,9 @@ const inSchool = (node: ReactNode) => <SchoolContextProvider schoolId={A} loadin
 /** Overlays rendered with the real dialog/drawer built by the owning group. */
 export const REAL_OVERLAYS: Record<string, Real> = {
   O01: { screen: "PL02", need: { kind: "platform", userId: "u-bao" }, hint: "SchoolStatusDialog thật — tạm dừng một trường đang hoạt động (không phải A/B). Xác nhận sẽ đổi dữ liệu demo.", render: (open, close) => <O01 open={open} close={close} /> },
+  O02: { screen: "PL05", need: { kind: "platform", userId: "u-bao" }, hint: "InviteAdminDialog thật cho trường A — lời mời chỉ mô phỏng, không gửi email.", render: (open, close) => <O02 open={open} close={close} /> },
   O03: { screen: "SC09", need: { kind: "staff", userId: "u-hanh" }, hint: "ClassDrawer thật (tạo lớp năm 2026–2027).", render: (open, close) => open ? inSchool(<ClassDrawer target={{ mode: "create", yearId: Y }} onClose={close} />) : null },
+  O04: { screen: "SC06", need: { kind: "staff", userId: "u-hanh" }, hint: "TermDialog thật cho học kỳ I năm 2026–2027 (có kiểm tra tuần đã chốt).", render: (open, close) => open ? inSchool(<O04 open close={close} />) : null },
   O05: { screen: "SC10", need: { kind: "staff", userId: "u-hanh" }, hint: "InviteModal thật — lời mời chỉ mô phỏng, không gửi email.", render: (open, close) => open ? inSchool(<InviteModal open onClose={close} />) : null },
   O06: { screen: "SC12", need: { kind: "staff", userId: "u-hanh" }, hint: "AssignDrawer thật, có xem trước quyền (O07).", render: (open, close) => open ? inSchool(<AssignDrawer prefill={{ kind: "subject", yearId: Y }} onClose={close} />) : null },
   O07: { screen: "SC11", need: { kind: "staff", userId: "u-hanh" }, hint: "Phần “Xem thay đổi quyền” nằm trong AssignDrawer thật — chọn giáo viên, lớp để xem trước.", render: (open, close) => open ? inSchool(<AssignDrawer prefill={{ kind: "homeroom", yearId: Y, classId: "c-a-10a3" }} onClose={close} />) : null },
@@ -177,7 +200,9 @@ export const REAL_OVERLAYS: Record<string, Real> = {
   O13: { screen: "SC24", need: { kind: "any-staff" }, hint: "QrImage + LinkBox thật của nhóm học sinh.", render: (open, close) => <O13 open={open} close={close} /> },
   O14: { screen: "SC24", need: { kind: "staff", userId: "u-hanh" }, hint: "RevokeAccessDialog thật — chọn một link đang hoạt động khác link của bố/mẹ Minh Anh.", render: (open, close) => <O14 open={open} close={close} /> },
   O19: { screen: "CL07", need: { kind: "staff", userId: "u-lan" }, hint: "ExplainDrawer thật — giải trình điểm tuần 4 của Minh Anh từ snapshot đã công bố.", render: (open, close) => <O19 open={open} close={close} /> },
+  O25: { screen: "SC32", need: { kind: "staff", userId: "u-hanh" }, hint: "LessonChangeDrawer thật — đổi tiết 10A1 tiết 2 ngày 06/10/2026, kiểm tra trùng giáo viên/phòng.", render: (open, close) => <LessonChangeDrawer schoolId={A} today="2026-10-05" target={open ? { classId: CLS, className: "10A1", date: "2026-10-06", period: 2 } : null} onClose={close} /> },
   O28: { screen: "CL24", need: { kind: "staff", userId: "u-lan" }, hint: "FileViewerDialog thật với tệp đầu tiên của lớp 10A1.", render: (open, close) => <O28 open={open} close={close} /> },
   O30: { screen: "SC38", need: { kind: "staff", userId: "u-hanh" }, hint: "ExportFormatDialog thật — tạo CSV/XLSX thật từ báo cáo chuyên cần trường A.", render: (open, close) => <O30 open={open} close={close} /> },
+  O34: { screen: "PL08", need: { kind: "platform", userId: "u-bao" }, hint: "RequestSupportDialog thật — nền tảng xin quyền hỗ trợ tạm thời; trường phải cho phép.", render: (open, close) => <RequestSupportDialog open={open} onClose={close} schoolId={A} /> },
   O33: { screen: "AU06", need: { kind: "any-staff" }, hint: "Gửi lệnh lưu hồ sơ thật với kịch bản xung đột một lần → ConflictDialog.", render: (open, close) => <O33 open={open} close={close} /> },
 };

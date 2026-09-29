@@ -92,7 +92,7 @@ function QuickActions({ onCreateClass, onInvite, archived }: { onCreateClass: ()
   return (
     <Card>
       <CardHeader title="Thao tác nhanh" icon={<Zap className="size-6 fill-primary text-primary" />} />
-      <div className={clsx("grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2", cards.length >= 4 ? "lg:grid-cols-4" : cards.length === 3 ? "lg:grid-cols-3" : "")}>
+      <div className={clsx("grid grid-cols-2 gap-3 px-4 pb-4", cards.length >= 4 ? "lg:grid-cols-4" : cards.length === 3 ? "lg:grid-cols-3" : "")}>
         {cards.map((c) => {
           const inner = (
             <>
@@ -101,7 +101,7 @@ function QuickActions({ onCreateClass, onInvite, archived }: { onCreateClass: ()
               <span className="mt-1 block text-[12.5px] leading-snug text-muted">{c.text}</span>
             </>
           );
-          const cls = clsx("flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-transparent px-3 py-4 text-center transition-colors", c.tone);
+          const cls = clsx("flex min-h-[124px] sm:min-h-[150px] flex-col items-center justify-center rounded-xl border border-transparent px-3 py-4 text-center transition-colors", c.tone);
           return c.href ? <Link key={c.key} href={c.href} className={cls}>{inner}</Link> : <button key={c.key} type="button" onClick={c.onClick} className={cls}>{inner}</button>;
         })}
       </div>
@@ -135,12 +135,12 @@ function ClassesNeedingAction({ rows, yearId, onEdit, onAssign, canEdit, canAssi
                       <td className="text-muted">{i + 1}</td>
                       <td><Link href={`/classroom/${school.id}/${yearId}/${r.id}`} className="font-bold text-primary-strong hover:underline">{r.name}</Link></td>
                       <td>{r.gradeName.replace("Khối ", "")}</td>
-                      <td>{r.homeroomName ?? <span className="font-medium text-danger-text">Chưa có</span>}</td>
+                      <td className="whitespace-nowrap">{r.homeroomName ?? <span className="font-medium text-danger-text">Chưa có</span>}</td>
                       <td title={r.tasks.join("\n")}>
                         <span className="flex items-center gap-2"><span className={clsx("size-2 flex-none rounded-full", r.severity === "blocked" ? "bg-danger" : "bg-warning")} aria-hidden /><span className="font-medium text-ink">{r.tasks.length} việc</span></span>
-                        <span className="block max-w-[150px] truncate text-[12px] text-muted">{r.tasks[0]}</span>
+                        <span className="block max-w-[130px] truncate text-[12px] text-muted">{r.tasks[0]}</span>
                       </td>
-                      <td>{r.status === "draft" ? <StatusBadge status="draft" map={classStatus} /> : r.severity === "blocked" ? <Badge tone="danger">Cần xử lý</Badge> : <Badge tone="warning">Cần theo dõi</Badge>}</td>
+                      <td>{r.status === "draft" ? <StatusBadge status="draft" map={classStatus} /> : r.severity === "blocked" ? <Badge tone="danger" className="whitespace-nowrap">Cần xử lý</Badge> : <Badge tone="warning" className="whitespace-nowrap">Theo dõi</Badge>}</td>
                       <td className="center"><ActionMenu label={`Thao tác với lớp ${r.name}`} items={items} /></td>
                     </tr>
                   );

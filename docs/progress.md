@@ -1,15 +1,15 @@
 # Tiến độ triển khai theo ID
 
-> Tự sinh bởi `npm run progress` lúc 2026-09-29T06:37:29.627Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
+> Tự sinh bởi `npm run progress` lúc 2026-09-29T06:42:08.315Z. Nguồn: `qa/status/*.json` (bằng chứng của từng nhóm) + manifest gốc. Mục không có bằng chứng giữ **chưa làm**. Không có mục nào được đánh dấu chỉ vì có tiêu đề.
 
 | Nhóm | Tổng | Đã nối mock trở lên | Đã QA (ảnh) | Đã QA (E2E) |
 |---|---|---|---|---|
-| Màn hình core | 118 | 67 | 67 | 0 |
+| Màn hình core | 118 | 103 | 103 | 0 |
 | Màn hình internal | 7 | 1 | 0 | 0 |
 | Màn hình optional | 3 | 0 | 0 | 0 |
-| Component | 75 | 4 | 4 | 0 |
-| Overlay | 34 | 17 | 14 | 0 |
-| Trạng thái | 28 | 6 | 6 | 0 |
+| Component | 75 | 15 | 10 | 0 |
+| Overlay | 34 | 27 | 25 | 0 |
+| Trạng thái | 28 | 13 | 12 | 0 |
 
 ## Màn hình
 
@@ -60,7 +60,7 @@
 | SC22 | Quan hệ và quyền nhận thông tin | core | `/school/:schoolId/guardians/:guardianId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC22-desktop.png) [ảnh](../qa/screenshots/SC22-mobile.png) | Thẻ quan hệ từng học sinh: xác minh/thu hồi (O10), sửa (O09), cấp link (O12, bị khóa khi chưa xác minh), thu hồi link (O14), lịch sử. |
 | SC23 | Quyền tra cứu phụ huynh | core | `/school/:schoolId/parent-access` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC23-desktop.png) [ảnh](../qa/screenshots/SC23-mobile.png) [ảnh](../qa/screenshots/SC23-u-quan.png) | KPI hoạt động/hết hạn/thu hồi, lọc trạng thái/lớp, tìm, sắp xếp, phân trang, menu chi tiết/xem trước (route SC25 của nhóm khác)/thu hồi/cấp lại; nút Cấp link chọn học sinh. |
 | SC24 | Chi tiết quyền tra cứu | core | `/school/:schoolId/parent-access/:accessId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC24-desktop.png) [ảnh](../qa/screenshots/SC24-mobile.png) [ảnh](../qa/screenshots/SC24-revealed-desktop.png) | Thông tin quyền, mục được xem, link/QR chỉ hiện sau khi bấm (cảnh báo không đăng nhóm chung), in thẻ QR (print-only), link khác của HS, nhật ký đầy đủ. |
-| SC25 | Xem trước trang phụ huynh | core | — | chưa làm | — |  |
+| SC25 | Xem trước trang phụ huynh | core | `/school/demo-school-a/parent-access/pa-minhanh-me/preview[/…view]` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC25-desktop.png) [ảnh](../qa/screenshots/SC25-mobile.png) [ảnh](../qa/screenshots/SC25-conduct-detail-desktop.png) [ảnh](../qa/screenshots/SC25-timetable-mobile.png) [ảnh](../qa/screenshots/SC25-limited-module-desktop.png) [ảnh](../qa/screenshots/SC25-denied-desktop.png) [ảnh](../qa/screenshots/SC25-revoked-link-desktop.png) | ParentShell in preview mode inside SchoolShell; catch-all preview/[[...view]] renders the same views so every parent nav link works. Gate via parentRepo.open (u-hung -> denied; revoked link -> explanation). No view logging. |
 | SC26 | Trung tâm nhập dữ liệu | core | `/school/:schoolId/imports` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC26-desktop.png) [ảnh](../qa/screenshots/SC26-mobile.png) | 4 loại; Học sinh chạy thật, 3 loại còn lại tải mẫu CSV/XLSX + nhãn Mô phỏng; lịch sử nhập tìm/lọc/phân trang. |
 | SC27 | Nhập danh sách bằng file | core | `/school/:schoolId/imports/new` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC27-desktop.png) [ảnh](../qa/screenshots/SC27-mobile.png) [ảnh](../qa/screenshots/SC27-step1-desktop.png) [ảnh](../qa/screenshots/SC27-step1-mobile.png) [ảnh](../qa/screenshots/SC27-step2-desktop.png) [ảnh](../qa/screenshots/SC27-step2-mobile.png) [ảnh](../qa/screenshots/SC27-step3-desktop.png) [ảnh](../qa/screenshots/SC27-step3-mobile.png) [ảnh](../qa/screenshots/SC27-step4-desktop.png) [ảnh](../qa/screenshots/SC27-step4-mobile.png) [ảnh](../qa/screenshots/SC27-step5-desktop.png) [ảnh](../qa/screenshots/SC27-step5-mobile.png) | Tệp → Ghép cột (tự khớp) → Kiểm tra từng dòng → Xem trước (lớp, chế độ, gồm cảnh báo) → Nhập → SC28. |
 | SC28 | Kết quả nhập | core | `/school/:schoolId/imports/:importId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC28-desktop.png) [ảnh](../qa/screenshots/SC28-mobile.png) [ảnh](../qa/screenshots/SC28-after-import-desktop.png) | Số thêm/cập nhật/bỏ qua/lỗi, batch id, bảng dòng lỗi, tải tệp lỗi CSV/XLSX, giải thích nhập lại không nhân đôi. |
@@ -79,28 +79,28 @@
 | SC41 | Cài đặt hiển thị và chia sẻ | core | `/school/demo-school-a/settings` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC41-desktop.png) [ảnh](../qa/screenshots/SC41-mobile.png) | Link days, teacher phone/email, contact hours, report header + preview, legal disclaimer, conflict dialog, dirty guard. |
 | SC42 | Hỗ trợ và ủy quyền hỗ trợ | core | `/school/demo-school-a/support` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC42-desktop.png) [ảnh](../qa/screenshots/SC42-mobile.png) [ảnh](../qa/screenshots/SC42-create-ticket.png) [ảnh](../qa/screenshots/O34-revoke-grant.png) | Tickets list/filter/search + create (PII warning), grants approve/decline/revoke with O34 confirm. Seed has no 'requested' grant for school A so approve/decline buttons not visually captured. |
 | SC43 | Chi tiết hỗ trợ của trường | core | `/school/demo-school-a/support/tk-2` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SC43-desktop.png) [ảnh](../qa/screenshots/SC43-mobile.png) | Ticket info, updates thread, add update, grants of the ticket (revoke). |
-| TE01 | Việc cần làm của giáo viên | core | — | chưa làm | — |  |
-| TE02 | Lớp học của tôi | core | — | chưa làm | — |  |
-| TE03 | Lịch dạy của tôi | core | — | chưa làm | — |  |
-| TE04 | Việc cần xử lý | core | — | chưa làm | — |  |
-| TE05 | Thông báo dành cho giáo viên | core | — | chưa làm | — |  |
-| TE06 | Báo cáo được phép | core | — | chưa làm | — |  |
+| TE01 | Việc cần làm của giáo viên | core | `/teacher/demo-school-a` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE01-desktop.png) [ảnh](../qa/screenshots/TE01-mobile.png) | R05 layout: header quote + teacher-board, class hero cards, KPI (40/42 hiện diện, 2 vắng = 1 có phép + 1 không phép, 6 chờ rà soát, thông báo chưa đọc), việc hôm nay, lớp phụ trách (Điểm danh / Thông báo lớp only when the class grants allow), hoạt động gần đây (audit feed, no parent chat), MiniCalendar + lessons of the selected day. 'Thông báo chưa đọc' links to /notifications (owned by another group). |
+| TE02 | Lớp học của tôi | core | `/teacher/demo-school-a/classes` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE02-desktop.png) [ảnh](../qa/screenshots/TE02-mobile.png) | Live assignments; toggle shows ended assignments (read-only card). |
+| TE03 | Lịch dạy của tôi | core | `/teacher/demo-school-a/schedule?week=YYYY-MM-DD` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE03-desktop.png) [ảnh](../qa/screenshots/TE03-mobile.png) | Week grid (lg+) / day list (mobile), prev/this/next week, holiday rows, changed/cancelled markers. 'Điểm danh tiết' -> CL04 ?date&slot=period-N only when canAttend and date <= today. |
+| TE04 | Việc cần xử lý | core | `/teacher/demo-school-a/tasks` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE04-desktop.png) [ảnh](../qa/screenshots/TE04-mobile.png) | classroomRepo.teacherTasks; search + filter loại/lớp; empty vs filtered-empty. |
+| TE05 | Thông báo dành cho giáo viên | core | `/teacher/demo-school-a/announcements` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE05-desktop.png) [ảnh](../qa/screenshots/TE05-mobile.png) [ảnh](../qa/screenshots/TE05-drawer.png) | forTeacher (this school only); read/unread + source filters, pagination, detail Drawer marks read, 'mark all read'. |
+| TE06 | Báo cáo được phép | core | `/teacher/demo-school-a/reports` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/TE06-desktop.png) [ảnh](../qa/screenshots/TE06-mobile.png) | reportsRepo.teacherCatalog; links to /classroom/:s/:y/:c/reports/:type (report pages owned by another group). |
 | CL01 | Tổng quan lớp | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL01-desktop.png) [ảnh](../qa/screenshots/CL01-mobile.png) | Derived from R05/R06: ClassHeader full, tasks, attendance donut (38/2/1/1/0), today's timetable, groups, activities progress. |
-| CL02 | Học sinh trong lớp | core | — | chưa làm | — |  |
-| CL03 | Hồ sơ học sinh trong phạm vi lớp | core | — | chưa làm | — |  |
-| CL04 | Điểm danh theo ngày/tiết | core | — | chưa làm | — |  |
-| CL05 | Chuyên cần theo tuần | core | — | chưa làm | — |  |
-| CL06 | Ghi nhận thi đua | core | — | chưa làm | — |  |
-| CL07 | Tổng hợp thi đua tuần | core | — | chưa làm | — |  |
-| CL08 | Rà soát và chốt tuần | core | — | chưa làm | — |  |
-| CL09 | Lịch sử kết quả công bố | core | — | chưa làm | — |  |
-| CL10 | Bản kết quả đã công bố | core | — | chưa làm | — |  |
-| CL11 | Điều chỉnh sau chốt | core | — | chưa làm | — |  |
-| CL12 | Nội quy áp dụng tại lớp | core | — | chưa làm | — |  |
-| CL13 | Tổ và chức vụ | core | — | chưa làm | — |  |
-| CL14 | Sơ đồ lớp | core | — | chưa làm | — |  |
-| CL15 | Lịch học của lớp | core | — | chưa làm | — |  |
-| CL16 | Lịch trực nhật | core | — | chưa làm | — |  |
+| CL02 | Học sinh trong lớp | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/students` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL02-desktop.png) [ảnh](../qa/screenshots/CL02-mobile.png) [ảnh](../qa/screenshots/CL02-mobile-full.png) [ảnh](../qa/screenshots/CL02-subject-desktop.png) [ảnh](../qa/screenshots/CL02-lan-10a2-desktop.png) [ảnh](../qa/screenshots/CL02-hanh-desktop.png) [ảnh](../qa/screenshots/O11-transfer-validation.png) | R06: ClassHeader full, roster (search, tổ, link status filters; guardian/link columns only with grants), row menu Xem hồ sơ / Đổi tổ (O23 quick) / Đề nghị chuyển lớp (O11, applyNow=false), pagination, 'Thêm học sinh' only with student.edit, students who left (ST25), seating mini preview -> CL14, groups & positions cards -> CL13. Subject scope (u-hung, u-lan in 10A2) = minimal roster, no side panels. Roster table scrolls inside .table-wrap on phones. |
+| CL03 | Hồ sơ học sinh trong phạm vi lớp | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/students/demo-student-a-001` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL03-desktop.png) [ảnh](../qa/screenshots/CL03-subject-desktop.png) [ảnh](../qa/screenshots/CL03-mobile.png) | studentsRepo.profile(classId); subject-minimal hides dob/guardians/links/internal note; homeroom sees guardians, link summary ('Link đã được mở' wording), class history, attendance summary (teacherExtraRepo.studentAttendance). Link to school SC18 only when actor holds student.view.all / parentAccess.manage.all. |
+| CL04 | Điểm danh theo ngày/tiết | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/attendance?date=YYYY-MM-DD&slot=morning|period-N` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL04-desktop.png) [ảnh](../qa/screenshots/CL04-mobile.png) [ảnh](../qa/screenshots/CL04-mobile-full.png) [ảnh](../qa/screenshots/CL04-subject-desktop.png) [ảnh](../qa/screenshots/CL04-hanh-desktop.png) [ảnh](../qa/screenshots/CL04-sunday-desktop.png) [ảnh](../qa/screenshots/CL04-edit-unsaved.png) [ảnh](../qa/screenshots/CL04-saved.png) [ảnh](../qa/screenshots/CL04-publish-confirm.png) [ảnh](../qa/screenshots/O15-edit-published-reason.png) [ảnh](../qa/screenshots/CL04-history-drawer.png) [ảnh](../qa/screenshots/O16-bulk-confirm.png) | Date nav (arrows skip Sunday, DateField, Sunday/holiday/future/no-permission states), slot selector with per-slot permission (teacherExtraRepo.attendanceSlots; subject teacher defaults to own period), count chips always sum to sĩ số (38+2+1+1=42, hiện diện 40), 5 exclusive status buttons (radiogroup, arrow keys), notes, linked conduct indicator, bulk page vs all-filtered with O16 confirm showing exact changed rows, linkConduct checkbox with rule points, Save (useCommand, expectedVersion -> ConflictDialog), separate Publish (blocked while unmarked/dirty), published edit requires reason (O15) and appears in history drawer, network error keeps draft, unsaved guard with 'Lưu rồi tiếp tục', mobile C059 cards + sticky save bar. Right action column sits beside the sheet at >=1536px, below it at 1448 so the 5 status buttons stay on one line. Verified by scripts/qa-teacher-class-1-flows.mjs (attendance, publish, subject). |
+| CL05 | Chuyên cần theo tuần | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/attendance/weekly?week=YYYY-MM-DD` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL05-desktop.png) [ảnh](../qa/screenshots/CL05-mobile.png) [ảnh](../qa/screenshots/CL05-cell-drawer.png) | Students x Mon–Sat matrix (morning sessions) with abbreviations + legend (holiday / not enrolled / future / edited *), per-student totals, filters, week nav, CSV + real XLSX export, cell -> drawer (note, linked conduct, history) with link to day sheet; day headers link to CL04. |
+| CL06 | Ghi nhận thi đua | core | `/classroom/:schoolId/:yearId/:classId/conduct` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL06-desktop.png) [ảnh](../qa/screenshots/CL06-desktop-full.png) [ảnh](../qa/screenshots/CL06-mobile.png) [ảnh](../qa/screenshots/CL06-u-hung.png) [ảnh](../qa/screenshots/CL06-u-dung-desktop.png) | Bố cục R08: toggle Điểm danh/Thi đua, bộ chọn tuần, bảng ghi nhận trong tuần (lọc trạng thái, tìm, phân trang), panel học sinh (prev/next + tìm, điểm tạm tính + xếp loại, tab quy định/lịch sử, sửa bản chờ của mình có version), O17/O18, bảng Tổng kết tuần (bản xem trước có nhãn), panel Thao tác theo quyền. Tuần đã chốt: chỉ xem + link điều chỉnh. |
+| CL07 | Tổng hợp thi đua tuần | core | `/classroom/:schoolId/:yearId/:classId/conduct/weekly` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL07-desktop.png) [ảnh](../qa/screenshots/CL07-mobile.png) [ảnh](../qa/screenshots/O19-explain.png) | Bản chính thức (snapshot, phiên bản, nội quy, chốt/công bố bởi/lúc) hoặc bản xem trước; ST15/16/17 banner; O19; CSV/XLSX; tìm/sort/phân trang. |
+| CL08 | Rà soát và chốt tuần | core | `/classroom/:schoolId/:yearId/:classId/conduct/review` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL08-desktop.png) [ảnh](../qa/screenshots/CL08-mobile.png) [ảnh](../qa/screenshots/CL08-locked-ST16.png) [ảnh](../qa/screenshots/CL08-school-b-u-hoa.png) [ảnh](../qa/screenshots/O20-lock.png) [ảnh](../qa/screenshots/O20-publish.png) | Checks chặn/cảnh báo, cặp trùng cạnh nhau + Loại bản trùng (lý do), bảng chờ rà soát (bulk duyệt/từ chối, chọn trang/tất cả), xem trước bảng sẽ chốt, O20 Chốt / Chốt và công bố / Công bố, Mở lại (lý do) khi đã chốt chưa công bố. |
+| CL09 | Lịch sử kết quả công bố | core | `/classroom/:schoolId/:yearId/:classId/publications` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL09-desktop.png) [ảnh](../qa/screenshots/CL09-mobile.png) [ảnh](../qa/screenshots/CL09-after-flow.png) | Danh sách snapshot, lọc trạng thái, tìm, sắp xếp, phân trang. |
+| CL10 | Bản kết quả đã công bố | core | `/classroom/:schoolId/:yearId/:classId/publications/:publicationId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL10-desktop.png) [ảnh](../qa/screenshots/CL10-w4-desktop.png) [ảnh](../qa/screenshots/CL10-mobile.png) | Bảng bất biến, nội quy theo phiên bản, danh sách phiên bản + diff với bản trước, In/lưu PDF (print-only header), CSV/XLSX, Đề nghị điều chỉnh (O21). |
+| CL11 | Điều chỉnh sau chốt | core | `/classroom/:schoolId/:yearId/:classId/adjustments` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL11-desktop.png) [ảnh](../qa/screenshots/CL11-mobile.png) [ảnh](../qa/screenshots/CL11-approved.png) [ảnh](../qa/screenshots/O21-adjustment.png) | Danh sách trước→sau, lý do, người đề nghị/duyệt; duyệt/từ chối (lỗi FORBIDDEN tự duyệt hiện trong hộp thoại); Công bố lại; giải thích ST18. |
+| CL12 | Nội quy áp dụng tại lớp | core | `/classroom/:schoolId/:yearId/:classId/rules` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL12-desktop.png) [ảnh](../qa/screenshots/CL12-mobile.png) | Bản hiệu lực, bảng quy định, xếp loại, bản kế tiếp + diff, ví dụ simulate 100 − 5 + 2 = 97, thời hạn nhập, quy trình. Chỉ xem. |
+| CL13 | Tổ và chức vụ | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/groups` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL13-desktop.png) [ảnh](../qa/screenshots/CL13-mobile.png) [ảnh](../qa/screenshots/CL13-duplicate-error.png) | 4 groups + 'Chưa phân tổ'; HTML5 drag-and-drop AND click/keyboard select -> 'Chuyển vào đây', plus select-based move form; effective date; position editor (unique positions, one leader per group) shows DUPLICATE errors inline; explanation that positions are not accounts. |
+| CL14 | Sơ đồ lớp | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/seating` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL14-desktop.png) [ảnh](../qa/screenshots/CL14-mobile.png) [ảnh](../qa/screenshots/CL14-edited.png) | Board + teacher desk frame; select student/seat then target seat (place/swap), aria-labels 'Hàng r, ghế c: tên'; unseated list + auto-fill; clear seat; undo/redo; rows/cols; effective date; note; save = new version with basedOnVersion (CONFLICT -> ConflictDialog); version history; mobile horizontal scroll + 'Vừa màn hình' + list-based alternative; read-only without seating.manage. |
+| CL15 | Lịch học của lớp | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/timetable?week=YYYY-MM-DD` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL15-desktop.png) [ảnh](../qa/screenshots/CL15-mobile.png) [ảnh](../qa/screenshots/O25-lesson-change.png) | Week grid / mobile day list, change/cancel markers with reason, holidays; canEdit -> O25 drawer (live checkLessonChange conflicts, save draft / publish blocked on conflict), changes list with publish/delete-draft confirms. Subject teachers read-only. |
+| CL16 | Lịch trực nhật | core | `/classroom/demo-school-a/y-a-2026/c-a-10a1/duties?week=YYYY-MM-DD` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL16-desktop.png) [ảnh](../qa/screenshots/CL16-mobile.png) [ảnh](../qa/screenshots/O26-duty-drawer.png) | Week board by day, add/edit/delete for today+future only, draft/publish, group fills members, 'Phụ huynh thấy gì' preview shows only the selected student's published duties (no classmates' names). |
 | CL17 | Hoạt động lớp | core | `/classroom/:schoolId/:yearId/:classId/activities` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL17-desktop.png) [ảnh](../qa/screenshots/CL17-desktop-full.png) [ảnh](../qa/screenshots/CL17-mobile.png) [ảnh](../qa/screenshots/CL17-u-hung.png) [ảnh](../qa/screenshots/CL17-u-hanh.png) | R09 layout: section tabs, activity cards (illustration/icon tile, due date red when due soon/overdue, scope Cả lớp/Tổ/N học sinh, status badge, x/y assigned approved + bar + %, row menu), overview KPIs, recent feed, pending evidence table (FileThumb + Duyệt/Yêu cầu bổ sung), upcoming class announcements (only with announcement.class). Search + status filter + pagination. |
 | CL18 | Tạo hoạt động | core | `/classroom/:schoolId/:yearId/:classId/activities/new (edit: /activities/:activityId/edit)` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL18-desktop.png) [ảnh](../qa/screenshots/CL18-mobile.png) [ảnh](../qa/screenshots/CL18-validation-desktop.png) | Title/description/illustration/due date (>= today)/whole class/tổ/students (Combobox multi)/evidence toggle; Lưu nháp vs Giao hoạt động; validation + ErrorSummary; unsaved guard with save; conflict dialog; note no automatic conduct points. Flow tested (scripts/qa-class-activities-flow.mjs). |
 | CL19 | Chi tiết hoạt động | core | `/classroom/:schoolId/:yearId/:classId/activities/:activityId` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL19-desktop.png) [ảnh](../qa/screenshots/CL19-mobile.png) [ảnh](../qa/screenshots/CL19-progress-desktop.png) [ảnh](../qa/screenshots/CL19-evidence-desktop.png) | Tabs Thông tin/Tiến độ/Minh chứng/Lịch sử; per-student table with search/status/tổ filters, sort, paging, bulk status (needs_supplement requires note); record evidence O27; review approve (share toggle)/supplement/reject; O28 viewer; close/reopen/publish draft with confirm. |
@@ -111,20 +111,20 @@
 | CL24 | Tệp lớp | core | `/classroom/:schoolId/:yearId/:classId/files` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL24-desktop.png) [ảnh](../qa/screenshots/CL24-mobile.png) [ảnh](../qa/screenshots/CL24-upload-desktop.png) [ảnh](../qa/screenshots/CL24-upload-mobile.png) [ảnh](../qa/screenshots/CL24-u-hung.png) | List (name/type/size/owner/share/status), filters, paging; upload (local blob, share scope, student when riêng một em, blocks images to Phụ huynh cả lớp); preview/download O28; change share; revoke sharing (→ Nội bộ, confirm); archive/restore (confirm). |
 | CL25 | Báo cáo lớp | core | `/classroom/:schoolId/:yearId/:classId/reports` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL25-desktop.png) [ảnh](../qa/screenshots/CL25-mobile.png) [ảnh](../qa/screenshots/CL25-u-hung.png) | Catalog from activitiesExtraRepo.classReportCatalog (subject teacher: attendance + activities only). |
 | CL26 | Chi tiết báo cáo lớp | core | `/classroom/:schoolId/:yearId/:classId/reports/:reportType` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/CL26-desktop.png) [ảnh](../qa/screenshots/CL26-mobile.png) | Params (week for conduct, date range + quick picks for attendance, student Combobox for student type; ?studentId= deep link) -> reportsRepo.classReport -> shared ReportViewer; exports recorded via reportsRepo.recordExport only when report.export; print uses no-print shell. |
-| PA01 | Mở đường dẫn riêng | core | — | chưa làm | — |  |
-| PA02 | Thông tin của con | core | — | chưa làm | — |  |
-| PA03 | Chuyên cần của con | core | — | chưa làm | — |  |
-| PA04 | Thi đua đã công bố của con | core | — | chưa làm | — |  |
-| PA05 | Chi tiết kỳ thi đua của con | core | — | chưa làm | — |  |
-| PA06 | Lịch học của con | core | — | chưa làm | — |  |
-| PA07 | Nhiệm vụ trực nhật của con | core | — | chưa làm | — |  |
-| PA08 | Hoạt động của con | core | — | chưa làm | — |  |
-| PA09 | Chi tiết hoạt động của con | core | — | chưa làm | — |  |
-| PA10 | Thông báo dành cho gia đình | core | — | chưa làm | — |  |
-| PA11 | Chi tiết thông báo phụ huynh | core | — | chưa làm | — |  |
-| PA12 | Giáo viên phụ trách | core | — | chưa làm | — |  |
-| PA13 | Tài liệu và báo cáo được chia sẻ | core | — | chưa làm | — |  |
-| PA14 | Link không sử dụng được | core | — | chưa làm | — |  |
+| PA01 | Mở đường dẫn riêng | core | `/p/binh-minh/access?t=demo-minhanh-me` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA01-desktop.png) [ảnh](../qa/screenshots/PA01-mobile.png) | Validates via parentRepo.open; writeParentToken then router.replace to /overview (token leaves the address bar; verified in scripts/qa-parent-f06.mjs). Failure -> access-unavailable?reason=… and clears the tab token. No login/registration form. Screenshot taken with read scenario 'slow' to show the 'Đang mở thông tin…' state. |
+| PA02 | Thông tin của con | core | `/p/binh-minh/overview` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA02-desktop.png) [ảnh](../qa/screenshots/PA02-mobile.png) [ảnh](../qa/screenshots/PA02-limited-desktop.png) [ảnh](../qa/screenshots/PA02-limited-mobile.png) [ảnh](../qa/screenshots/PA02-anhoa-desktop.png) [ảnh](../qa/screenshots/PA02-anhoa-mobile.png) | R10 layout at 1448 (no phone frame); 390 single column like the phone mock + shell bottom bar. Cards only for granted modules; container queries so it also fits the narrower SC25 preview. Attendance card shows 'Chưa có dữ liệu công bố tuần này' because week 5 is not yet published (correct per seed). Last update = context.lastPublishedAt. |
+| PA03 | Chuyên cần của con | core | `/p/binh-minh/attendance` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA03-desktop.png) [ảnh](../qa/screenshots/PA03-mobile.png) | Month calendar with text labels, prev/next limited to repo yearStart..yearEnd, month totals by session, legend, explanation. Missing data = 'Chưa công bố'. |
+| PA04 | Thi đua đã công bố của con | core | `/p/binh-minh/conduct` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA04-desktop.png) [ảnh](../qa/screenshots/PA04-mobile.png) [ảnh](../qa/screenshots/PA05-limited-module-desktop.png) [ảnh](../qa/screenshots/PA05-limited-module-mobile.png) | Published weeks only (total, grade, adjusted marker); no ranking. Module-not-granted state tested with demo-limited. |
+| PA05 | Chi tiết kỳ thi đua của con | core | `/p/binh-minh/conduct/y-a-2026-w4` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA05-desktop.png) [ảnh](../qa/screenshots/PA05-mobile.png) | Base + shared items = total, rule set name/version, version history (Bản n -> total chain when >1), adjusted callout, print/save PDF (print CSS hides shell chrome, print-only header). Seed has no v2 snapshot, so the adjusted branch is not visible in screenshots. |
+| PA06 | Lịch học của con | core | `/p/binh-minh/timetable` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA06-desktop.png) [ảnh](../qa/screenshots/PA06-mobile.png) | Week grid Mon–Sat, prev/next limited by granted year (parentExtraRepo.grantedYear), 'Tuần này', changed/cancelled lessons with reason + summary callout. |
+| PA07 | Nhiệm vụ trực nhật của con | core | `/p/binh-minh/duties` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA07-desktop.png) [ảnh](../qa/screenshots/PA07-mobile.png) | Own duties only, upcoming/past. |
+| PA08 | Hoạt động của con | core | `/p/binh-minh/activities` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA08-desktop.png) [ảnh](../qa/screenshots/PA08-mobile.png) | Activity cards with child's own submission status; no submit/upload. |
+| PA09 | Chi tiết hoạt động của con | core | `/p/binh-minh/activities/act-1` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA09-desktop.png) [ảnh](../qa/screenshots/PA09-mobile.png) | Detail + child's shared, approved evidence; FilePreview modal via parentRepo.file (re-checked on each open/download). |
+| PA10 | Thông báo dành cho gia đình | core | `/p/binh-minh/announcements` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA10-desktop.png) [ảnh](../qa/screenshots/PA10-mobile.png) | Local diacritic-insensitive search over the child's announcements; empty vs no-match states. |
+| PA11 | Chi tiết thông báo phụ huynh | core | `/p/binh-minh/announcements/an-8` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA11-desktop.png) [ảnh](../qa/screenshots/PA11-mobile.png) [ảnh](../qa/screenshots/PA11-other-student-desktop.png) [ảnh](../qa/screenshots/PA11-other-student-mobile.png) | Body blocks, sender, date, allowed attachments (preview/download). Q29: an-9 (other student) -> not-found state with no content (verified in qa-parent-f06.mjs). |
+| PA12 | Giáo viên phụ trách | core | `/p/binh-minh/teachers` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA12-desktop.png) [ảnh](../qa/screenshots/PA12-mobile.png) [ảnh](../qa/screenshots/PA12-anhoa-desktop.png) [ảnh](../qa/screenshots/PA12-anhoa-mobile.png) | Homeroom card, subject teachers table (mobile list) with teaching days, contact per school settings (An Hòa hides phone), school contact card; no chat. |
+| PA13 | Tài liệu và báo cáo được chia sẻ | core | `/p/binh-minh/documents` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA13-desktop.png) [ảnh](../qa/screenshots/PA13-mobile.png) | Published conduct reports (-> PA05 print) + shared files with preview/download (re-checked via parentRepo.file). |
+| PA14 | Link không sử dụng được | core | `/p/binh-minh/access-unavailable?reason=expired|revoked|invalid|suspended|module` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/PA14-expired-desktop.png) [ảnh](../qa/screenshots/PA14-expired-mobile.png) [ảnh](../qa/screenshots/PA14-revoked-desktop.png) [ảnh](../qa/screenshots/PA14-revoked-mobile.png) [ảnh](../qa/screenshots/PA14-invalid-desktop.png) [ảnh](../qa/screenshots/PA14-invalid-mobile.png) [ảnh](../qa/screenshots/PA14-suspended-desktop.png) [ảnh](../qa/screenshots/PA14-suspended-mobile.png) [ảnh](../qa/screenshots/PA14-module-desktop.png) [ảnh](../qa/screenshots/PA14-module-mobile.png) [ảnh](../qa/screenshots/F06-parent-revoked.png) | Tailored message per reason, no student data, public school contact via announcementsRepo.publicSchool (errors caught), guidance to contact homeroom teacher. |
 | SY01 | Trang công khai trường | core | `/schools/binh-minh` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SY01-desktop.png) [ảnh](../qa/screenshots/SY01-mobile.png) | PublicShell: nhận diện, liên hệ chính thức, tin công khai (tìm/phân trang), thẻ phụ huynh giải thích link riêng; không có công cụ tra cứu học sinh; trường tạm dừng ẩn tin. |
 | SY02 | Tin công khai của trường | core | `/schools/binh-minh/announcements/an-1` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SY02-desktop.png) [ảnh](../qa/screenshots/SY02-mobile.png) | Chỉ bản công khai (repository trả NOT_FOUND cho tin riêng tư), tệp công khai tải được, quay lại trường. |
 | SY03 | Thông tin quyền riêng tư | core | `/privacy` | đã QA (ảnh chụp) | [ảnh](../qa/screenshots/SY03-desktop.png) [ảnh](../qa/screenshots/SY03-mobile.png) | Bản nháp chờ chủ dự án/pháp chế duyệt; mục lục anchor; liên hệ lấy từ cấu hình nền tảng; không tuyên bố tuân thủ/chứng nhận. |
@@ -205,17 +205,17 @@
 | C055 | ParentAccessCard | chưa làm |   |  |
 | C056 | QrAndLinkDisplay | chưa làm |   |  |
 | C057 | ParentAccessLog | chưa làm |   |  |
-| C058 | AttendanceRow | chưa làm |   |  |
-| C059 | AttendanceMobileCard | chưa làm |   |  |
-| C060 | ConductRulePicker | chưa làm |   |  |
-| C061 | ConductRecordForm | chưa làm |   |  |
-| C062 | WeeklyConductTable | chưa làm |   |  |
-| C063 | ReviewAndPublishPanel | chưa làm |   |  |
-| C064 | PublishedSnapshotAndDiff | chưa làm |   |  |
-| C065 | GroupsAndRolesBoard | chưa làm |   |  |
-| C066 | SeatingMapEditor | chưa làm |   |  |
-| C067 | TimetableGridAndDayList | chưa làm |   |  |
-| C068 | DutyAssignmentBoard | chưa làm |   |  |
+| C058 | AttendanceRow | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-desktop.png) | features/attendance/status.tsx StatusButtons |
+| C059 | AttendanceMobileCard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-mobile-full.png) |  |
+| C060 | ConductRulePicker | đã nối mock |   | Danh sách quy định theo nhóm trong CL06 (src/features/conduct/record-screen.tsx) |
+| C061 | ConductRecordForm | đã nối mock |   | src/features/conduct/record-form.tsx |
+| C062 | WeeklyConductTable | đã nối mock |   | src/features/conduct/week-table.tsx |
+| C063 | ReviewAndPublishPanel | đã nối mock |   | src/features/conduct/publish.tsx + review-screen.tsx |
+| C064 | PublishedSnapshotAndDiff | đã nối mock |   | src/features/conduct/publications.tsx |
+| C065 | GroupsAndRolesBoard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL13-desktop.png) |  |
+| C066 | SeatingMapEditor | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL14-desktop.png) |  |
+| C067 | TimetableGridAndDayList | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL15-desktop.png) [ảnh](../qa/screenshots/CL15-mobile.png) |  |
+| C068 | DutyAssignmentBoard | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL16-desktop.png) |  |
 | C069 | ActivityProgressCard | chưa làm |   |  |
 | C070 | EvidenceReviewPanel | chưa làm |   |  |
 | C071 | AnnouncementComposerAndPreview | đã QA (ảnh chụp) | `src/features/announcements/composer.tsx` [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/C071-composer-preview-mobile.png) | AnnouncementComposer; optional onCancel prop added on lead request |
@@ -238,24 +238,24 @@
 | O08 | Thu hồi thành viên / phân công | chưa làm |   |  |
 | O09 | Thêm / sửa người giám hộ | đã nối mock | `SC18/SC22`  | Thêm/sửa giám hộ; không tự xác minh. |
 | O10 | Xác minh / thu hồi quan hệ | đã nối mock | `SC18/SC22`  | Xác minh (căn cứ bắt buộc) / thu hồi (thu hồi link của quan hệ đó). |
-| O11 | Chuyển lớp / ngừng theo học | đã nối mock | `SC16/SC18/SC20`  | Chuyển lớp cùng năm / ngừng theo học; ngày hiệu lực; lý do; áp dụng ngay nếu có quyền. |
+| O11 | Chuyển lớp / ngừng theo học | đã QA (ảnh chụp) | `SC16/SC18/SC20` [ảnh](../qa/screenshots/O11-transfer-validation.png) | TransferDialog (features/class-org/dialogs.tsx) — request only (applyNow=false), same-year targets with capacity from teacherExtraRepo.transferTargets. |
 | O12 | Cấp đường dẫn riêng | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O12-desktop.png) [ảnh](../qa/screenshots/O12-unverified-desktop.png) [ảnh](../qa/screenshots/O12-mobile.png) | Chỉ chọn được quan hệ đã xác minh; mục mặc định theo chính sách; hạn ≤ hết năm học. |
 | O13 | Kết quả cấp link / in QR | đã QA (ảnh chụp) | `SC18/SC22/SC23` [ảnh](../qa/screenshots/O13-desktop.png) [ảnh](../qa/screenshots/O13-mobile.png) | QR thật (qrcode) mã hóa link demo, sao chép có toast 'Đã sao chép', in thẻ QR. |
 | O14 | Thu hồi / cấp lại link | đã QA (ảnh chụp) | `SC18/SC22/SC23/SC24` [ảnh](../qa/screenshots/O14-desktop.png) | Thu hồi có lý do; cấp lại thu hồi link cũ + tạo link mới; link giám hộ khác không đổi. |
-| O15 | Ghi chú và sửa điểm danh | chưa làm |   |  |
-| O16 | Điểm danh hàng loạt | chưa làm |   |  |
-| O17 | Ghi nhận cộng / trừ | chưa làm |   |  |
-| O18 | Xử lý ghi nhận trùng | chưa làm |   |  |
-| O19 | Xem giải trình điểm | chưa làm |   |  |
-| O20 | Chốt / công bố kết quả | chưa làm |   |  |
-| O21 | Điều chỉnh sau chốt | chưa làm |   |  |
+| O15 | Ghi chú và sửa điểm danh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O15-edit-published-reason.png) [ảnh](../qa/screenshots/CL04-history-drawer.png) |  |
+| O16 | Điểm danh hàng loạt | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O16-bulk-confirm.png) |  |
+| O17 | Ghi nhận cộng / trừ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O17-record-form.png) | requestId sinh 1 lần/lần mở form (NV-10); DateField trong tuần ≤ hôm nay; điểm lấy từ nội quy; cảnh báo chưa lưu. |
+| O18 | Xử lý ghi nhận trùng | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O18-duplicate-hard.png) [ảnh](../qa/screenshots/O18-duplicate-soft.png) | Hard (từ điểm danh) chỉ giải thích + xem bản cũ; soft: giữ bản cũ hoặc 'sự việc khác' bắt buộc ghi chú. |
+| O19 | Xem giải trình điểm | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O19-explain.png) |  |
+| O20 | Chốt / công bố kết quả | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O20-lock.png) [ảnh](../qa/screenshots/O20-publish.png) |  |
+| O21 | Điều chỉnh sau chốt | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O21-adjustment.png) |  |
 | O22 | Thêm quy tắc / ban hành phiên bản | đã QA (ảnh chụp) | `/school/demo-school-a/conduct-rules` [ảnh](../qa/screenshots/O22-publish-ruleset.png) | New version dialog + publish confirm |
-| O23 | Phân tổ / chức vụ | chưa làm |   |  |
-| O24 | Đổi ghế / lưu sơ đồ | chưa làm |   |  |
-| O25 | Đổi tiết / lịch nghỉ | đã QA (ảnh chụp) | `/school/demo-school-a/timetable` [ảnh](../qa/screenshots/O25-lesson-change-drawer.png) [ảnh](../qa/screenshots/O25-lesson-change-drawer-mobile.png) |  |
-| O26 | Phân công trực nhật | chưa làm |   |  |
+| O23 | Phân tổ / chức vụ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL13-desktop.png) [ảnh](../qa/screenshots/CL13-duplicate-error.png) | Board + quick ChangeGroupDialog in CL02. |
+| O24 | Đổi ghế / lưu sơ đồ | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL14-edited.png) |  |
+| O25 | Đổi tiết / lịch nghỉ | đã QA (ảnh chụp) | `/school/demo-school-a/timetable` [ảnh](../qa/screenshots/O25-lesson-change-drawer.png) [ảnh](../qa/screenshots/O25-lesson-change-drawer-mobile.png) [ảnh](../qa/screenshots/O25-lesson-change.png) |  |
+| O26 | Phân công trực nhật | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O26-duty-drawer.png) |  |
 | O27 | Tải / duyệt minh chứng | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O27-desktop.png) [ảnh](../qa/screenshots/O27-mobile.png) [ảnh](../qa/screenshots/O27-validation-desktop.png) [ảnh](../qa/screenshots/O27-discard-mobile.png) [ảnh](../qa/screenshots/review-approve-desktop.png) | Record evidence (student limited to assigned, image/PDF <= 5MB, note, local-only label) + review dialog (approve with share toggle, supplement/reject with reason). |
-| O28 | Xem tệp / ảnh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O28-desktop.png) [ảnh](../qa/screenshots/O28-mobile.png) | FilePreview in Modal with metadata + download; revoked fallback from FilePreview. |
+| O28 | Xem tệp / ảnh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O28-desktop.png) [ảnh](../qa/screenshots/O28-mobile.png) | FilePreview in Modal with metadata + download; revoked fallback from FilePreview. / Parent file viewer modal (ParentFileViewer), revoked-file fallback. |
 | O29 | Công bố / thu hồi thông báo | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/an-1` [ảnh](../qa/screenshots/CL23-desktop.png) [ảnh](../qa/screenshots/C071-composer-filled.png) [ảnh](../qa/screenshots/O29-withdraw.png) |  |
 | O30 | Chọn định dạng xuất | đã QA (ảnh chụp) | `/school/demo-school-a/reports/attendance` [ảnh](../qa/screenshots/O30-export-format.png) |  |
 | O31 | Lưu trữ / xóa dữ liệu nháp | đã QA (ảnh chụp) | `/school/demo-school-a/announcements/an-4` [ảnh](../qa/screenshots/CL23-desktop.png) [ảnh](../qa/screenshots/O31-delete-announcement-draft.png) [ảnh](../qa/screenshots/O31-delete-ruleset-draft.png) |  |
@@ -280,18 +280,18 @@
 | ST11 | Hết phiên nhân sự demo | đã QA (ảnh chụp) | `/account/security` [ảnh](../qa/screenshots/ST11-session-expired.png) [ảnh](../qa/screenshots/ST11-login-after-expire.png) | expire() → RequireStaffSession hiển thị 'Phiên demo đã hết'; /login có callout phiên trước đã hết. |
 | ST12 | Lời mời hết hạn / thu hồi | đã QA (ảnh chụp) | `/invitations/inv-a-loan` [ảnh](../qa/screenshots/ST12-expired-desktop.png) [ảnh](../qa/screenshots/ST12-expired-mobile.png) [ảnh](../qa/screenshots/ST12-revoked-desktop.png) [ảnh](../qa/screenshots/ST12-revoked-mobile.png) | Không cho chấp nhận, nêu người mời để liên hệ. |
 | ST13 | Trường tạm dừng | đã QA (ảnh chụp) | `/school-suspended?school=tran-phu` [ảnh](../qa/screenshots/SY06-desktop.png) [ảnh](../qa/screenshots/SY06-mobile.png) [ảnh](../qa/screenshots/ST13-choose-desktop.png) | Không nút ghi dữ liệu; dữ liệu không bị xóa. |
-| ST14 | Chưa điểm danh | chưa làm |   |  |
-| ST15 | Chưa công bố | chưa làm |   |  |
-| ST16 | Đã chốt chưa công bố | chưa làm |   |  |
-| ST17 | Đã công bố | chưa làm |   |  |
-| ST18 | Đang điều chỉnh | chưa làm |   |  |
+| ST14 | Chưa điểm danh | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL04-subject-desktop.png) | 42 'Chưa điểm danh' never counted as present; publish blocked while any unmarked. |
+| ST15 | Chưa công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL08-desktop.png) [ảnh](../qa/screenshots/F03-parent-before-publish.png) | 'Chưa công bố' / 'Chưa có dữ liệu công bố' instead of 0. |
+| ST16 | Đã chốt chưa công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL08-locked-ST16.png) [ảnh](../qa/screenshots/F03-parent-after-lock.png) | Saved vs published distinguished on CL04/CL05/TE01; locked conduct week surfaced as a warning on CL04. |
+| ST17 | Đã công bố | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/O19-explain.png) [ảnh](../qa/screenshots/F03-parent-after-publish.png) |  |
+| ST18 | Đang điều chỉnh | đã nối mock |  [ảnh](../qa/screenshots/CL11-approved.png) | Callout + dialog; repository giữ bản cũ published đến khi publishAdjustment. |
 | ST19 | Bị thu hồi công bố | chưa làm |   |  |
 | ST20 | Xung đột phiên bản | đã dựng | `settings/policy/rules/composer`  | ConflictDialog on CONFLICT |
 | ST21 | Trùng sự kiện | chưa làm |   |  |
-| ST22 | Link tra cứu hết hạn / thu hồi / không hợp lệ | chưa làm |   |  |
+| ST22 | Link tra cứu hết hạn / thu hồi / không hợp lệ | đã QA (ảnh chụp) | `/p/:slug/access-unavailable` [ảnh](../qa/screenshots/PA14-revoked-desktop.png) [ảnh](../qa/screenshots/F06-parent-revoked.png) | F06 verified: scripts/qa-parent-f06.mjs (revoke via SC24 UI as u-lan; open parent tab redirected to reason=revoked; demo-minhanh-bo still works). |
 | ST23 | Tệp lỗi / không hỗ trợ / bị thu hồi | chưa làm |   |  |
 | ST24 | Năm học lưu trữ | chưa làm |   |  |
-| ST25 | Học sinh chuyển lớp / nghỉ học | chưa làm |   |  |
+| ST25 | Học sinh chuyển lớp / nghỉ học | đã QA (ảnh chụp) |  [ảnh](../qa/screenshots/CL02-mobile-full.png) | Students who left 10A1 listed with date/reason; history retained. |
 | ST26 | Giáo viên bị thu hồi trong tab đang mở | chưa làm |   |  |
 | ST27 | Thao tác cần xác nhận | đã QA (ảnh chụp) | `many` [ảnh](../qa/screenshots/O29-withdraw.png) |  |
 | ST28 | 404 và lỗi toàn trang | đã QA (ảnh chụp) | `/khong-ton-tai-demo` [ảnh](../qa/screenshots/SY08-desktop.png) [ảnh](../qa/screenshots/SY08-mobile.png) | not-found chụp được; error.tsx/global-error.tsx dựng xong, chưa chụp. |

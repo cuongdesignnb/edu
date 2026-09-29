@@ -44,7 +44,7 @@ export default function Page({ params }: { params: Promise<{ schoolId: string }>
 
 - Trang là client component; tham số route qua `use(params)`; query string qua `useSearchParams()` (bọc Suspense nếu Next yêu cầu).
 - Đọc dữ liệu **chỉ** qua `useRepo(key, fn)`; ghi **chỉ** qua `useCommand(fn, { success })`. `useCommand` đã chống bấm 2 lần, chỉ toast thành công sau khi ghi xong, lỗi mạng mô phỏng không báo thành công. Trả về `undefined` nếu lỗi → giữ nguyên form.
-- Lỗi `VALIDATION` có `error.fieldErrors` → hiển thị đúng field + `ErrorSummary`. Lỗi `CONFLICT` → `ConflictDialog`. Lỗi `DUPLICATE` → hộp thoại xử lý trùng (O18). Các lỗi khác đã toast tự động.
+- Lỗi `VALIDATION` có `error.fieldErrors` → hiển thị đúng field + `ErrorSummary`. Lỗi `CONFLICT` → `ConflictDialog`. Lỗi `DUPLICATE` → hộp thoại xử lý trùng (O18). Các lỗi khác đã toast tự động. Lưu ý: `useCommand` **không** toast `VALIDATION`/`DUPLICATE`/`CONFLICT` — mỗi màn hình phải tự hiển thị ba loại này (lỗi field, hộp thoại trùng, `ConflictDialog`).
 - Trong class workspace: `const { schoolId, yearId, classId, base, header, can, readOnly } = useClassroom();` và đặt `<ClassHeader variant="compact" title="…" />` ở đầu trang (đã gồm breadcrumb + tab lớp). `variant="full"` chỉ cho Tổng quan lớp / Học sinh (bố cục R06).
 - Trong school: `const { school, yearId, can } = useSchool();`. Nút/menu chỉ hiện khi `can(action)`; repository vẫn chặn nếu gọi trực tiếp.
 - Phụ huynh: `const q = useParentRead([...], (key, slug) => parentRepo.xxx(key, slug, …)); useParentView("module");`. Module chưa cấp → lỗi FORBIDDEN "module" → hiển thị “Mục này chưa được nhà trường chia sẻ”.

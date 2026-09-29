@@ -30,11 +30,11 @@ export function ParentAccessView({ slug }: { slug: string }) {
       () => {
         writeParentToken(slug, token);
         setState("done");
-        router.replace(`/p/${slug}/overview`);
+        setTimeout(() => router.replace(`/p/${slug}/overview`), 0);
       },
       (e: RepoError) => {
         writeParentToken(slug, null);
-        router.replace(`/p/${slug}/access-unavailable?reason=${unavailableReason(e) ?? "invalid"}`);
+        setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=${unavailableReason(e) ?? "invalid"}`), 0);
       },
     );
   }, [token, slug, router]);

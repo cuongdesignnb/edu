@@ -8,6 +8,7 @@ import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { addDays, mondayOf, weekdayOf } from "@/lib/demo/clock";
 import { fmtDate, fmtDateLong, fmtDayMonth, weekdayLabel } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
+import { ClassOrgNav } from "./org-nav";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge, PUBLICATION_STATUS } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ export function DutyBoard() {
   return (
     <div className="page">
       <ClassHeader title="Lịch trực nhật" subtitle="Phân công trực nhật theo ngày cho tổ hoặc học sinh; phụ huynh chỉ thấy việc của con khi đã công bố" crumbs={[{ label: "Trực nhật" }]} />
+      <ClassOrgNav />
       <QueryState query={q} skeleton="cards">
         {(d) => {
           const editable = d.canEdit && !readOnly;

@@ -210,3 +210,17 @@ describe("F08 / Q19 — transfer keeps history", () => {
     expect(getDB().snapshots.find((s) => s.id === `snap-${CLASS_A_10A2}-w4-v1`)!.rows.some((x) => x.studentId === sid)).toBe(true);
   });
 });
+
+describe("F04 — school B policy: only school leaders publish", () => {
+  it("homeroom at B can lock but not publish; principal publishes", async () => {
+    const hoa = makeCtx({ kind: "staff", userId: "u-hoa" });
+    const loc = makeCtx({ kind: "staff", userId: "u-loc" });
+    const W = `${YEAR_B}-w5`;
+    const pending = (await conductRepo.records(hoa, SCHOOL_B, YEAR_B, CLASS_B_10A1, W)).records.filter((r) => r.status === "pending_review").map((r) => r.id);
+    if (pending.length) await conductRepo.review(hoa, SCHOOL_B, YEAR_B, CLASS_B_10A1, { recordIds: pending, decision: "approve" });
+    expect(await code(conductRepo.lock(hoa, SCHOOL_B, YEAR_B, CLASS_B_10A1, W, true))).toBe("FORBIDDEN");
+    await conductRepo.lock(hoa, SCHOOL_B, YEAR_B, CLASS_B_10A1, W, false);
+    expect(await code(conductRepo.publish(hoa, SCHOOL_B, YEAR_B, CLASS_B_10A1, W))).toBe("FORBIDDEN");
+    expect(await code(conductRepo.publish(loc, SCHOOL_B, YEAR_B, CLASS_B_10A1, W))).toBe("OK");
+  });
+});

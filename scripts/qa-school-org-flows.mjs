@@ -5,7 +5,7 @@ const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, ...
 const base = process.env.BASE ?? "http://localhost:3000";
 const S = "/school/demo-school-a";
 const browser = await chromium.launch({ channel: "msedge" });
-const ctx = await browser.newContext({ viewport: { width: 1448, height: 1086 }, locale: "vi-VN", timezoneId: "Asia/Ho_Chi_Minh", reducedMotion: "reduce" });
+const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1448, height: 1086 }, locale: "vi-VN", timezoneId: "Asia/Ho_Chi_Minh", reducedMotion: "reduce" });
 const as = String(args.as ?? "u-hanh");
 await ctx.addInitScript((v) => { sessionStorage.setItem("edumanage-demo-session", v); localStorage.setItem("edumanage-demo-session-last", v); }, JSON.stringify({ actor: { kind: "staff", userId: as }, startedAt: "2026-10-05T08:00:00+07:00", via: "demo" }));
 const page = await ctx.newPage();
@@ -168,6 +168,17 @@ await step("SC02-save-profile", async () => {
   await page.getByLabel("Giới thiệu ngắn").fill("Trường THPT Bình Minh đồng hành cùng học sinh.");
   await page.getByRole("button", { name: "Lưu thông tin" }).click();
   return { htmlBlocked, toast: await toast() };
+});
+
+await step("SC10-export-csv", async () => {
+  await go(`${S}/teachers`);
+  await page.getByRole("button", { name: "Xuất dữ liệu" }).click();
+  const [dl] = await Promise.all([page.waitForEvent("download"), page.getByRole("menuitem", { name: /CSV/ }).click()]);
+  const path = await dl.path();
+  const fs = await import("node:fs");
+  const txt = fs.readFileSync(path, "utf8");
+  const lines = txt.split(/\r?\n/);
+  return { file: dl.suggestedFilename(), lines: lines.length, header: lines[0] };
 });
 
 console.log(JSON.stringify({ consoleErrors: errors.slice(0, 8) }));

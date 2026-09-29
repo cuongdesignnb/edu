@@ -1,0 +1,176 @@
+{
+  "screens": {
+    "CL06": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct",
+      "evidence": [
+        "qa/screenshots/CL06-desktop.png",
+        "qa/screenshots/CL06-desktop-full.png",
+        "qa/screenshots/CL06-mobile.png",
+        "qa/screenshots/CL06-u-hung.png",
+        "qa/screenshots/CL06-u-dung-desktop.png"
+      ],
+      "notes": "Bố cục R08: toggle Điểm danh/Thi đua, bộ chọn tuần, bảng ghi nhận trong tuần (lọc trạng thái, tìm, phân trang), panel học sinh (prev/next + tìm, điểm tạm tính + xếp loại, tab quy định/lịch sử, sửa bản chờ của mình có version), O17/O18, bảng Tổng kết tuần (bản xem trước có nhãn), panel Thao tác theo quyền. Tuần đã chốt: chỉ xem + link điều chỉnh."
+    },
+    "CL07": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct/weekly",
+      "evidence": [
+        "qa/screenshots/CL07-desktop.png",
+        "qa/screenshots/CL07-mobile.png",
+        "qa/screenshots/O19-explain.png"
+      ],
+      "notes": "Bản chính thức (snapshot, phiên bản, nội quy, chốt/công bố bởi/lúc) hoặc bản xem trước; ST15/16/17 banner; O19; CSV/XLSX; tìm/sort/phân trang."
+    },
+    "CL08": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/conduct/review",
+      "evidence": [
+        "qa/screenshots/CL08-desktop.png",
+        "qa/screenshots/CL08-mobile.png",
+        "qa/screenshots/CL08-locked-ST16.png",
+        "qa/screenshots/CL08-school-b-u-hoa.png",
+        "qa/screenshots/O20-lock.png",
+        "qa/screenshots/O20-publish.png"
+      ],
+      "notes": "Checks chặn/cảnh báo, cặp trùng cạnh nhau + Loại bản trùng (lý do), bảng chờ rà soát (bulk duyệt/từ chối, chọn trang/tất cả), xem trước bảng sẽ chốt, O20 Chốt / Chốt và công bố / Công bố, Mở lại (lý do) khi đã chốt chưa công bố."
+    },
+    "CL09": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/publications",
+      "evidence": [
+        "qa/screenshots/CL09-desktop.png",
+        "qa/screenshots/CL09-mobile.png",
+        "qa/screenshots/CL09-after-flow.png"
+      ],
+      "notes": "Danh sách snapshot, lọc trạng thái, tìm, sắp xếp, phân trang."
+    },
+    "CL10": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/publications/:publicationId",
+      "evidence": [
+        "qa/screenshots/CL10-desktop.png",
+        "qa/screenshots/CL10-w4-desktop.png",
+        "qa/screenshots/CL10-mobile.png"
+      ],
+      "notes": "Bảng bất biến, nội quy theo phiên bản, danh sách phiên bản + diff với bản trước, In/lưu PDF (print-only header), CSV/XLSX, Đề nghị điều chỉnh (O21)."
+    },
+    "CL11": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/adjustments",
+      "evidence": [
+        "qa/screenshots/CL11-desktop.png",
+        "qa/screenshots/CL11-mobile.png",
+        "qa/screenshots/CL11-approved.png",
+        "qa/screenshots/O21-adjustment.png"
+      ],
+      "notes": "Danh sách trước→sau, lý do, người đề nghị/duyệt; duyệt/từ chối (lỗi FORBIDDEN tự duyệt hiện trong hộp thoại); Công bố lại; giải thích ST18."
+    },
+    "CL12": {
+      "status": "qa_screenshot",
+      "route": "/classroom/:schoolId/:yearId/:classId/rules",
+      "evidence": [
+        "qa/screenshots/CL12-desktop.png",
+        "qa/screenshots/CL12-mobile.png"
+      ],
+      "notes": "Bản hiệu lực, bảng quy định, xếp loại, bản kế tiếp + diff, ví dụ simulate 100 − 5 + 2 = 97, thời hạn nhập, quy trình. Chỉ xem."
+    }
+  },
+  "overlays": {
+    "O17": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O17-record-form.png"
+      ],
+      "notes": "requestId sinh 1 lần/lần mở form (NV-10); DateField trong tuần ≤ hôm nay; điểm lấy từ nội quy; cảnh báo chưa lưu."
+    },
+    "O18": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O18-duplicate-hard.png",
+        "qa/screenshots/O18-duplicate-soft.png"
+      ],
+      "notes": "Hard (từ điểm danh) chỉ giải thích + xem bản cũ; soft: giữ bản cũ hoặc 'sự việc khác' bắt buộc ghi chú."
+    },
+    "O19": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O19-explain.png"
+      ]
+    },
+    "O20": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O20-lock.png",
+        "qa/screenshots/O20-publish.png"
+      ]
+    },
+    "O21": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O21-adjustment.png"
+      ]
+    }
+  },
+  "states": {
+    "ST15": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL08-desktop.png",
+        "qa/screenshots/F03-parent-before-publish.png"
+      ]
+    },
+    "ST16": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/CL08-locked-ST16.png",
+        "qa/screenshots/F03-parent-after-lock.png"
+      ]
+    },
+    "ST17": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "qa/screenshots/O19-explain.png",
+        "qa/screenshots/F03-parent-after-publish.png"
+      ]
+    },
+    "ST18": {
+      "status": "mock_connected",
+      "evidence": [
+        "qa/screenshots/CL11-approved.png"
+      ],
+      "notes": "Callout + dialog; repository giữ bản cũ published đến khi publishAdjustment."
+    }
+  },
+  "components": {
+    "C060": {
+      "status": "mock_connected",
+      "notes": "Danh sách quy định theo nhóm trong CL06 (src/features/conduct/record-screen.tsx)"
+    },
+    "C061": {
+      "status": "mock_connected",
+      "notes": "src/features/conduct/record-form.tsx"
+    },
+    "C062": {
+      "status": "mock_connected",
+      "notes": "src/features/conduct/week-table.tsx"
+    },
+    "C063": {
+      "status": "mock_connected",
+      "notes": "src/features/conduct/publish.tsx + review-screen.tsx"
+    },
+    "C064": {
+      "status": "mock_connected",
+      "notes": "src/features/conduct/publications.tsx"
+    }
+  },
+  "flows": {
+    "F03-F05": {
+      "status": "qa_screenshot",
+      "evidence": [
+        "scripts/qa-class-conduct-flow.mjs"
+      ],
+      "notes": "Chạy thành công: 97 sau công bố, phụ huynh không thấy trước công bố/sau chốt, điều chỉnh → bản 2 = 102, bản 1 'Đã thay bằng bản mới', phụ huynh thấy 102 'Đã điều chỉnh'."
+    }
+  }
+}

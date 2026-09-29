@@ -79,7 +79,7 @@ export function SectionTitle({ children, className, action }: { children: ReactN
 export function CompletenessSteps({ steps }: { steps: { label: string; done: boolean; detail?: string; href?: string }[] }) {
   const current = steps.findIndex((s) => !s.done);
   return (
-    <ol className="flex w-full max-w-full items-stretch gap-2 overflow-x-auto pb-1" aria-label="Tiến độ thiết lập năm học">
+    <ol className="relative flex w-full max-w-full items-stretch gap-2 overflow-x-auto pb-1" aria-label="Tiến độ thiết lập năm học">
       {steps.map((s, i) => {
         const active = i === current;
         const inner = (

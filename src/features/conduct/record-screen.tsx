@@ -146,7 +146,7 @@ function WeekRecords({ d, onPick }: { d: RecordsData; onPick: (studentId: string
         </div>
       </div>
       <DataTable rows={items} columns={cols} rowKey={(r) => r.id} caption="Ghi nhận trong tuần" minWidth={620} dense
-        empty={d.records.length === 0 ? <EmptyState compact title="Chưa có ghi nhận trong tuần" description="Chọn học sinh ở bảng bên phải rồi bấm “Ghi nhận” theo quy định." /> : <EmptyFiltered onReset={() => { setQ(""); setStatus(""); }} what="ghi nhận" />} />
+        empty={d.records.length === 0 ? <EmptyState compact title="Chưa có ghi nhận trong tuần" description={d.canRecord ? "Chọn học sinh ở bảng bên phải rồi bấm “Ghi nhận” theo quy định." : "Ghi nhận đã duyệt của tuần sẽ hiện ở đây."} /> : <EmptyFiltered onReset={() => { setQ(""); setStatus(""); }} what="ghi nhận" />} />
       <Pagination page={cur} pageCount={pageCount} total={filtered.length} pageSize={pageSize} onPage={setPage} what="ghi nhận" />
     </Card>
   );

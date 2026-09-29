@@ -109,7 +109,7 @@ function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
                   {items.map((a) => {
                     const esc = escalation(a.key);
                     return <Checkbox key={a.key} label={a.label} checked={sel.has(a.key)} disabled={!d.canEdit || esc}
-                      description={esc ? "Bạn không có quyền này nên không thể thêm" : undefined}
+                      description={d.canEdit && esc ? "Bạn không có quyền này nên không thể thêm" : undefined}
                       onChange={(on) => setSel((s) => { const n = new Set(s); if (on) n.add(a.key); else n.delete(a.key); return n; })} />;
                   })}
                 </div>

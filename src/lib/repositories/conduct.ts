@@ -73,6 +73,20 @@ function makeSnapshot(db: DemoDB, ctx: Ctx, classId: ID, weekId: ID, ruleSet: Ru
   };
 }
 
+/** Lock/publish follow the school's publication policy: "school_leader" means only school leadership (publication.oversee) may do it. */
+function policyCan(db: DemoDB, ctx: Ctx, action: "conduct.lock" | "conduct.publish", schoolId: ID, classId: ID) {
+  const p = db.policies.find((x) => x.schoolId === schoolId);
+  const by = action === "conduct.lock" ? p?.lockBy : p?.publishBy;
+  if (by === "school_leader") return allowed(db, ctx, "publication.oversee", { schoolId }) && allowed(db, ctx, "class.view", { schoolId, classId });
+  return allowed(db, ctx, action, { schoolId, classId });
+}
+function requirePolicy(db: DemoDB, ctx: Ctx, action: "conduct.lock" | "conduct.publish", schoolId: ID, classId: ID) {
+  if (policyCan(db, ctx, action, schoolId, classId)) return;
+  const p = db.policies.find((x) => x.schoolId === schoolId);
+  const leader = (action === "conduct.lock" ? p?.lockBy : p?.publishBy) === "school_leader";
+  throw new RepoError("FORBIDDEN", leader ? "Theo quy trình của trường, bước này do lãnh đạo nhà trường thực hiện." : undefined);
+}
+
 export const conductRepo = {
   /* ------------------------------ rule sets (school) ------------------------------ */
   async ruleSets(ctx: Ctx, schoolId: ID) {
@@ -324,7 +338,7 @@ export const conductRepo = {
         rows: rows.slice().sort((a, b) => nameCompare(a.studentName, b.studentName)),
         preview: preview.slice().sort((a, b) => nameCompare(a.studentName, b.studentName)),
         checks: { pending: checks.pending.length, duplicates: Math.ceil(checks.dups.size / 2), blocking: checks.blocking, warnings: checks.warnings },
-        perms: { lock: allowed(db, ctx, "conduct.lock", { schoolId, classId }), publish: allowed(db, ctx, "conduct.publish", { schoolId, classId }), review: allowed(db, ctx, "conduct.review", { schoolId, classId }) },
+        perms: { lock: policyCan(db, ctx, "conduct.lock", schoolId, classId), publish: policyCan(db, ctx, "conduct.publish", schoolId, classId), review: allowed(db, ctx, "conduct.review", { schoolId, classId }) },
         policy: db.policies.find((p) => p.schoolId === schoolId),
       };
     });
@@ -334,8 +348,8 @@ export const conductRepo = {
   async lock(ctx: Ctx, schoolId: ID, yearId: ID, classId: ID, weekId: ID, alsoPublish: boolean) {
     return write((db) => {
       classGuard(db, ctx, schoolId, yearId, classId);
-      requireAction(db, ctx, "conduct.lock", { schoolId, classId });
-      if (alsoPublish) requireAction(db, ctx, "conduct.publish", { schoolId, classId });
+      requirePolicy(db, ctx, "conduct.lock", schoolId, classId);
+      if (alsoPublish) requirePolicy(db, ctx, "conduct.publish", schoolId, classId);
       const w = findOr404(db.weeks.find((x) => x.id === weekId), "tuần");
       if (w.startDate > ctx.today) throw new RepoError("VALIDATION", "Tuần chưa bắt đầu.");
       const p = periodOf(db, classId, weekId);
@@ -356,7 +370,7 @@ export const conductRepo = {
   async reopen(ctx: Ctx, schoolId: ID, yearId: ID, classId: ID, weekId: ID, reason: string) {
     return write((db) => {
       classGuard(db, ctx, schoolId, yearId, classId);
-      requireAction(db, ctx, "conduct.lock", { schoolId, classId });
+      requirePolicy(db, ctx, "conduct.lock", schoolId, classId);
       const p = periodOf(db, classId, weekId);
       if (p.status !== "locked") throw new RepoError("VALIDATION", p.status === "published" ? "Đã công bố — dùng điều chỉnh sau chốt." : "Tuần chưa chốt.");
       if (reason.trim().length < 5) validation({ reason: "Ghi lý do mở lại" });
@@ -372,7 +386,7 @@ export const conductRepo = {
   async publish(ctx: Ctx, schoolId: ID, yearId: ID, classId: ID, weekId: ID) {
     return write((db) => {
       classGuard(db, ctx, schoolId, yearId, classId);
-      requireAction(db, ctx, "conduct.publish", { schoolId, classId });
+      requirePolicy(db, ctx, "conduct.publish", schoolId, classId);
       const p = periodOf(db, classId, weekId);
       if (p.status !== "locked") throw new RepoError("VALIDATION", p.status === "published" ? "Đã công bố." : "Cần chốt trước khi công bố.");
       const snap = findOr404(db.snapshots.find((s) => s.id === p.currentSnapshotId), "bản chốt");

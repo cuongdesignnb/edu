@@ -135,14 +135,14 @@ function AssignTrigger() {
   const [open, setOpen] = useState(false);
   return (
     <SchoolContextProvider schoolId={A} loading={<Loading />}>
-      {() => <><Button size="sm" variant="secondary" onClick={() => setOpen(true)}>Mở AssignDrawer (phân công + xem trước quyền)</Button>{open && <AssignDrawer prefill={{ kind: "subject", yearId: Y }} onClose={() => setOpen(false)} />}</>}
+      {() => <><Button size="sm" variant="secondary" onClick={() => setOpen(true)}>Mở drawer phân công</Button>{open && <AssignDrawer prefill={{ kind: "subject", yearId: Y }} onClose={() => setOpen(false)} />}</>}
     </SchoolContextProvider>
   );
 }
 
 function TransferTrigger() {
   const [open, setOpen] = useState(false);
-  return <><Button size="sm" variant="secondary" onClick={() => setOpen(true)}>Mở hộp thoại chuyển lớp / ngừng theo học</Button><TransferDialog open={open} onOpenChange={setOpen} schoolId={A} canDecide /></>;
+  return <><Button size="sm" variant="secondary" onClick={() => setOpen(true)}>Mở hộp thoại chuyển lớp</Button><TransferDialog open={open} onOpenChange={setOpen} schoolId={A} canDecide /></>;
 }
 
 const staff = (u: string) => ({ kind: "staff" as const, userId: u });
