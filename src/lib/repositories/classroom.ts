@@ -59,6 +59,19 @@ export const classroomRepo = {
         homeroom: hr ? { name: staffName(hr), phone: hr.workPhone, email: hr.email, tone: hr.avatarTone } : null,
         size: roster.length, male: roster.filter((s) => s.gender === "Nam").length, female: roster.filter((s) => s.gender === "Nữ").length,
         myDuties, viaSchoolRole: myDuties.length === 0, actions: [...acts],
+        summary: (() => {
+          const week = weekOfDate(db, c.yearId, ref);
+          const period = week ? db.conductPeriods.find((p) => p.classId === classId && p.weekId === week.id) : undefined;
+          const lastPub = db.snapshots.filter((x) => x.classId === classId && x.status === "published").map((x) => x.publishedAt ?? "").sort().pop();
+          const seeLinks = acts.has("parentAccess.issue") || allowed(db, ctx, "parentAccess.manage.all", { schoolId });
+          const ids = new Set(roster.map((s) => s.id));
+          const active = seeLinks ? db.parentAccesses.filter((p) => ids.has(p.studentId) && accessStatus(p, ctx.now) === "active") : [];
+          return {
+            weekIndex: week?.index, weekStatus: period?.status ?? "open", lastPublishedAt: lastPub,
+            links: seeLinks ? { studentsWithLink: new Set(active.map((p) => p.studentId)).size, opened: new Set(active.filter((p) => db.parentAccessLogs.some((l) => l.accessId === p.id && (l.event === "opened" || l.event === "viewed"))).map((p) => p.studentId)).size } : null,
+            pending: db.conductRecords.filter((r) => r.classId === classId && r.status === "pending_review").length,
+          };
+        })(),
         tabs: TAB_ACTIONS.filter((t) => t.any.some((a) => acts.has(a))).map((t) => ({ key: t.key, label: t.label, path: t.path })),
         readOnly: year.status === "archived" || c.status === "archived",
       };
