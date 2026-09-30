@@ -1260,6 +1260,7 @@ async function activateFixtureClass(f){
   const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Chủ nhiệm thông báo kiểm thử',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
   const cls=await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`);assert.equal(cls.statusCode,200,cls.body);
   const active=await f.post(`classes/${f.classId}/activate`,{expectedVersion:cls.json().data.version});assert.equal(active.statusCode,200,active.body);
+  return {email};
 }
 
 test('B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads',async()=>{
@@ -1347,4 +1348,66 @@ test('B5 announcement attachments remain private to one child, obey link downloa
     const archived=await f.post(`files/${file.id}/archive`,{expectedVersion:file.version,reason:'Lưu trữ tài liệu thông báo'});assert.equal(archived.statusCode,200,archived.body);const afterArchive=await parentGet(`announcements/${a.rootId}`,currentCtx);assert.equal(afterArchive.statusCode,200,afterArchive.body);assert.equal(afterArchive.json().data.documents.length,0);assert.equal((await parentGet(`documents/${doc.id}/download`,currentCtx)).statusCode,404);
     const current=await f.get(),withdrawn=await f.post(`${f.path}/${a.id}/withdraw`,{expectedVersion:current.version,reason:'Thu hồi thông báo riêng'});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal((await parentGet(`announcements/${a.rootId}`,currentCtx)).statusCode,404);
   }finally{await worker.close();}
+});
+
+async function settingsFixture(csrf){
+  const adminCookie=jar.get('edu_staff');
+  const get=async()=>{const r=await request('GET',`/api/v1/schools/${schoolA}/settings`);assert.equal(r.statusCode,200,r.body);return r.json().data;},original=await get();
+  const patch=(expectedVersion,body)=>request('PATCH',`/api/v1/schools/${schoolA}/settings`,{expectedVersion,...body},csrf,{'idempotency-key':crypto.randomUUID()});
+  const restore=async()=>{jar.set('edu_staff',adminCookie);const values={...original};delete values.version;delete values.academicResultsEnabled;const r=await patch((await get()).version,values);assert.equal(r.statusCode,200,r.body);};
+  return {get,patch,restore,original};
+}
+
+test('B5 school settings persist with version guards, affect only new link expiry and suppress work contacts without changing old link permissions',async()=>{
+  const csrf=await login('admin-a@example.invalid'),settings=await settingsFixture(csrf),f=await conductFixture(csrf),base=`classes/${f.classId}`;
+  try{
+    const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:await schoolToday(),endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201,assignment.body);
+    const relation=await parentRelationship(csrf,f.post,f.enrollments[0].studentId),linkBody={studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview','teachers'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'};
+    const old=await f.post('parent-access',linkBody);assert.equal(old.statusCode,201,old.body);const oldExpiry=old.json().data.access.expiresAt,ctx=await parentExchange(old.json().data.link);
+    const contact=await parentGet('teachers',ctx);assert.equal(contact.statusCode,200,contact.body);assert.equal(contact.json().data.length,1);assert.ok(contact.json().data[0].workPhone);
+    const oldRole=(await db.transaction(tx=>tx.query('SELECT status FROM app.roles WHERE school_id=$1 AND id=$2',[schoolA,seedId('role:A:SUBJECT_TEACHER')]),{schoolId:schoolA})).rows[0].status;
+    try{await db.transaction(tx=>tx.query("UPDATE app.roles SET status='ARCHIVED' WHERE school_id=$1 AND id=$2",[schoolA,seedId('role:A:SUBJECT_TEACHER')]),{schoolId:schoolA});assert.equal((await parentGet('teachers',ctx)).json().data.length,0);}
+    finally{await db.transaction(tx=>tx.query('UPDATE app.roles SET status=$3 WHERE school_id=$1 AND id=$2',[schoolA,seedId('role:A:SUBJECT_TEACHER'),oldRole]),{schoolId:schoolA});}
+    const concurrent=await Promise.all([settings.patch(settings.original.version,{parentLinkTtlDays:7,shareTeacherPhone:false,shareTeacherEmail:false,reportHeader:'Báo cáo lớp giữ tiếng Việt'}),settings.patch(settings.original.version,{parentLinkTtlDays:7,shareTeacherPhone:false,shareTeacherEmail:false,reportHeader:'Báo cáo trường giữ tiếng Việt'})]);assert.deepEqual(concurrent.map(r=>r.statusCode).sort(),[200,409]);
+    let latest=await settings.get();assert.equal(latest.parentLinkTtlDays,7);assert.equal(latest.academicResultsEnabled,'OFF');const hours=await settings.patch(latest.version,{contactHours:'07:00–17:00, Thứ Hai đến Thứ Sáu'});assert.equal(hours.statusCode,200,hours.body);latest=hours.json().data;
+    const oldDetail=await request('GET',`/api/v1/schools/${schoolA}/parent-access/${old.json().data.access.id}`);assert.equal(oldDetail.statusCode,200,oldDetail.body);assert.equal(oldDetail.json().data.expiresAt,oldExpiry);assert.deepEqual(oldDetail.json().data.allowedSections,linkBody.allowedSections);
+    const suppressed=await parentGet('teachers',ctx);assert.equal(suppressed.statusCode,200,suppressed.body);assert.equal(Object.hasOwn(suppressed.json().data[0],'workPhone'),false);assert.equal(Object.hasOwn(suppressed.json().data[0],'workEmail'),false);
+    const recent=await f.post('parent-access',linkBody);assert.equal(recent.statusCode,201,recent.body);const expiry=new Date(recent.json().data.access.expiresAt).getTime();assert.ok(expiry>Date.now()+6*86400000&&expiry<Date.now()+8*86400000);assert.ok(expiry<new Date(oldExpiry).getTime());
+    assert.equal((await settings.patch(latest.version,{parentLinkTtlDays:181})).statusCode,422);assert.equal((await settings.patch(latest.version,{timezone:'Asia/Not_A_Zone'})).statusCode,422);assert.equal((await settings.patch(latest.version,{timezone:'UTC'})).statusCode,409);
+    const audit=await request('GET',`/api/v1/schools/${schoolA}/audit?targetId=${schoolA}&limit=1`);assert.equal(audit.statusCode,200,audit.body);assert.equal(audit.json().data.length,1);assert.equal(audit.json().data[0].targetType,'school-settings');assert.equal(Object.hasOwn(audit.json().data[0],'actorId'),false);assert.equal(Object.hasOwn(audit.json().data[0],'after'),false);assert.ok(audit.json().page.hasMore);
+    const cursor=audit.json().page.nextCursor;assert.equal((await request('GET',`/api/v1/schools/${schoolB}/audit?targetId=${schoolA}&limit=1&cursor=${encodeURIComponent(cursor)}`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/audit?targetId=${f.classId}&limit=1&cursor=${encodeURIComponent(cursor)}`)).statusCode,422);
+    const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');await login('teacher-b@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/settings`)).statusCode,403);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/audit`)).statusCode,403);jar.set('edu_staff',adminCookie);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/students`)).statusCode,200);
+  }finally{await settings.restore();}
+});
+
+test('B5 disabling homeroom publication takes effect inside existing sessions and restores only after an explicit setting change',async()=>{
+  const csrf=await login('admin-a@example.invalid'),settings=await settingsFixture(csrf),f=await conductFixture(csrf),homeroom=await activateFixtureClass(f),path=`classes/${f.classId}/announcements`;
+  try{
+    const created=await f.post(path,{yearId:seedId('year:A'),title:'Kiểm quyền công bố cấu hình',sanitizedHtml:'<p>GVCN phải còn quyền công bố</p>',targets:[{kind:'CLASS',id:f.classId}]});assert.equal(created.statusCode,201,created.body);const a=created.json().data;
+    const disabled=await settings.patch(settings.original.version,{homeroomMayPublish:false});assert.equal(disabled.statusCode,200,disabled.body);
+    const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');const teacherCsrf=await login(homeroom.email),teacherCookie=jar.get('edu_staff');
+    const publish=()=>request('POST',`/api/v1/schools/${schoolA}/${path}/${a.id}/publish`,{expectedSourceVersion:a.dataVersion},teacherCsrf,{'idempotency-key':crypto.randomUUID()});
+    const denied=await publish();assert.equal(denied.statusCode,404,denied.body);jar.set('edu_staff',adminCookie);
+    const enabled=await settings.patch(disabled.json().data.version,{homeroomMayPublish:true});assert.equal(enabled.statusCode,200,enabled.body);jar.set('edu_staff',teacherCookie);
+    const accepted=await publish();assert.equal(accepted.statusCode,200,accepted.body);jar.set('edu_staff',adminCookie);
+  }finally{await settings.restore();}
+});
+
+test('B3 configured second approval rejects self approval in API and SQL, while a different scoped approver permits atomic adjustment',async()=>{
+  const csrf=await login('admin-a@example.invalid'),settings=await settingsFixture(csrf),f=await conductFixture(csrf),base=`classes/${f.classId}`,records=`${base}/conduct-records`,periods=`${base}/conduct-periods`,adjustments=`${base}/adjustments`;
+  try{
+    const event=await f.post(records,{periodId:f.period.id,enrollmentId:f.enrollments[0].id,ruleId:f.fixed,publicReason:'Nguồn cho duyệt hai người',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'MANUAL',clientEventId:crypto.randomUUID()});assert.equal(event.statusCode,201,event.body);const fact=event.json().data;
+    const approved=await f.post(`${records}/${fact.id}/approve`,{expectedVersion:fact.version});assert.equal(approved.statusCode,200,approved.body);const summary=(await request('GET',`/api/v1/schools/${schoolA}/${periods}/${f.period.id}/summary`)).json().data;
+    const pub=await f.post(`${periods}/${f.period.id}/lock-and-publish`,{expectedSourceVersion:summary.period.dataVersion});assert.equal(pub.statusCode,200,pub.body);
+    const proposal=await f.post(adjustments,{periodId:f.period.id,baselinePublicationId:pub.json().data.id,reason:'Xác minh qua người duyệt độc lập',proposedChanges:[{recordId:fact.id,action:'EXCLUDE'}]});assert.equal(proposal.statusCode,201,proposal.body);const a=proposal.json().data;
+    const setting=await settings.patch(settings.original.version,{requireSecondApprovalForAdjustment:true});assert.equal(setting.statusCode,200,setting.body);
+    const self=await f.post(`${adjustments}/${a.id}/approve`,{expectedVersion:a.version});assert.equal(self.statusCode,422,self.body);assert.equal(self.json().code,'SECOND_APPROVER_REQUIRED');
+    await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.adjustment_requests SET status='APPROVED',decided_by=requested_by WHERE school_id=$1 AND id=$2",[schoolA,a.id]),{schoolId:schoolA}),e=>e.code==='23514');
+    const role=await f.post('roles',{code:`second-${crypto.randomUUID()}`,label:'Người duyệt độc lập',permissions:[{action:'conduct.adjust.approve',scopes:['CLASS']}]});assert.equal(role.statusCode,201,role.body);
+    const grant=await f.post('grants',{memberId:seedId('member:A:teacher-b'),roleId:role.json().data.id,scopeType:'CLASS',classId:f.classId,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(grant.statusCode,201,grant.body);
+    const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');const otherCsrf=await login('teacher-b@example.invalid');const other=await request('POST',`/api/v1/schools/${schoolA}/${adjustments}/${a.id}/approve`,{expectedVersion:a.version},otherCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(other.statusCode,200,other.body);jar.set('edu_staff',adminCookie);
+    const applied=await f.post(`${adjustments}/${a.id}/apply-and-publish`,{expectedSourceVersion:summary.period.dataVersion,expectedPublicationId:pub.json().data.id});assert.equal(applied.statusCode,200,applied.body);assert.notEqual(applied.json().data.id,pub.json().data.id);
+    const final=await request('GET',`/api/v1/schools/${schoolA}/${records}?periodId=${f.period.id}`);assert.equal(final.statusCode,200,final.body);assert.equal(final.json().data.find(r=>r.id===fact.id).status,'EXCLUDED');
+  }finally{await settings.restore();}
 });

@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 20 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 21 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence and announcement revisions/scheduling tested; remaining domains and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence, announcements, school settings and school audit tested; remaining domains and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -252,3 +252,19 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - Public announcement attachment download is unavailable in the supplied contract;
   public metadata explicitly returns downloadAllowed=false. Browser workflows,
   notification/report/support modules and deployment acceptance are still pending.
+
+## School settings/audit checkpoint — actual PostgreSQL execution
+
+- Migration 021 applied/replayed; API coverage now 220/264; UI still unconnected.
+- qa/backend/settings-integration.log: 60/60 exit0; settings-unit-contract.log:
+  12/12 exit0. Build/typecheck/lint exit0. First attempt 59/60 retained separately;
+  its failure was a fixture URL using /apply instead of /apply-and-publish.
+- Real concurrent setting writes produce one success and one version conflict.
+  A seven-day cap affects new parent links while old expiry/sections stay unchanged.
+  School display flags suppress work contacts; an archived role no longer projects
+  a teacher. Grant publication flags take effect in an existing teacher session.
+- Optional second-person approval rejects self approval in API and PostgreSQL;
+  a different scoped approver permits a checked, atomic replacement publication.
+- School audit returns scoped, sanitized real events, rejects cross-school reads
+  and changed-filter cursors, and denies a subject teacher's school-wide access.
+- Reports/exports, dashboard, notifications, platform/support and B6/B7 remain pending.

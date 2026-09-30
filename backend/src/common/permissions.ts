@@ -47,11 +47,13 @@ export class Permissions {
     return (await tx.query<Grant>(`SELECT g.id,g.version,g.role_id,r.code AS role_code,r.label,g.scope_type,g.class_id,g.subject_id,g.valid_from,g.valid_until,
       array_agg(DISTINCT p.action_code) AS actions, a.id AS assignment_id,a.starts_on,a.ends_on
       FROM app.memberships m JOIN app.role_grants g ON g.school_id=m.school_id AND g.member_id=m.id
+      JOIN platform.schools config ON config.id=m.school_id
       JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
       JOIN app.role_permissions p ON p.school_id=r.school_id AND p.role_id=r.id AND g.scope_type=ANY(p.allowed_scopes)
       LEFT JOIN app.teaching_assignments a ON a.school_id=g.school_id AND a.role_grant_id=g.id AND a.revoked_at IS NULL
       WHERE m.user_id=$1 AND m.school_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL
       AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+      AND NOT(r.code='HOMEROOM' AND coalesce(config.settings->>'homeroomMayPublish','true')='false' AND p.action_code LIKE '%.publish')
       GROUP BY g.id,r.code,r.label,a.id`, [userId,schoolId])).rows;
   }
   async require(tx: Transaction, principal: Pick<Principal,'userId'>, actions: string, scope: Scope) {

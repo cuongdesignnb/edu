@@ -88,10 +88,14 @@ export class ParentService {
   }
   private async teachers(p:ParentPrincipal){
     this.allow(p,'teachers');return this.db.transaction(async tx=>{
-      const rows=(await tx.query<Row>(`SELECT DISTINCT m.work_display_name,m.share_work_contact,m.work_email,m.work_phone,a.kind,s.name AS subject_name FROM app.enrollments e
+      const rows=(await tx.query<Row>(`SELECT DISTINCT m.work_display_name,m.share_work_contact,
+        CASE WHEN coalesce(sc.settings->>'shareTeacherEmail','true')='true' THEN m.work_email END AS work_email,
+        CASE WHEN coalesce(sc.settings->>'shareTeacherPhone','true')='true' THEN m.work_phone END AS work_phone,a.kind,s.name AS subject_name FROM app.enrollments e
         JOIN platform.schools sc ON sc.id=e.school_id JOIN app.teaching_assignments a ON a.school_id=e.school_id AND a.class_id=e.class_id AND a.year_id=e.year_id
         JOIN app.memberships m ON m.school_id=a.school_id AND m.id=a.member_id AND m.status='ACTIVE' AND m.ended_at IS NULL
+        JOIN identity.users teacher_user ON teacher_user.id=m.user_id AND teacher_user.status='ACTIVE'
         JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+        JOIN app.roles role ON role.school_id=g.school_id AND role.id=g.role_id AND role.status='ACTIVE'
         LEFT JOIN app.subjects s ON s.school_id=a.school_id AND s.id=a.subject_id WHERE e.school_id=$1 AND e.student_id=$2 AND e.year_id=$3 AND e.status<>'CANCELLED'
         AND e.starts_on<=(now() AT TIME ZONE sc.timezone)::date AND (e.ends_on IS NULL OR e.ends_on>(now() AT TIME ZONE sc.timezone)::date)
         AND a.revoked_at IS NULL AND a.starts_on<=(now() AT TIME ZONE sc.timezone)::date AND (a.ends_on IS NULL OR a.ends_on>(now() AT TIME ZONE sc.timezone)::date) ORDER BY m.work_display_name,a.kind`,[p.schoolId,p.studentId,p.yearId])).rows;

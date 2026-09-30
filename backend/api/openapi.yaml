@@ -33462,6 +33462,17 @@ components:
           type: string
           enum:
             - OFF
+        reportHeader:
+          type: string
+          minLength: 1
+          maxLength: 200
+        shareTeacherPhone:
+          type: boolean
+        shareTeacherEmail:
+          type: boolean
+        contactHours:
+          type: string
+          maxLength: 120
       required:
         - version
         - timezone
@@ -33511,6 +33522,17 @@ components:
         expectedVersion:
           type: integer
           minimum: 1
+        reportHeader:
+          type: string
+          minLength: 1
+          maxLength: 200
+        shareTeacherPhone:
+          type: boolean
+        shareTeacherEmail:
+          type: boolean
+        contactHours:
+          type: string
+          maxLength: 120
       required:
         - expectedVersion
       additionalProperties: false

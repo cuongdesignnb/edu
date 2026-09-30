@@ -68,9 +68,11 @@ export class AdjustmentsService {
       await this.changes(tx,c,p,adjustment.proposed_changes,'conduct.adjust.approve');
       if(op==='approveAdjustment'){
         version(adjustment,c.body.expectedVersion);if(adjustment.status!=='SUBMITTED')throw new Problem(409,'INVALID_STATE');
+        if(adjustment.requested_by===c.principal!.userId&&await one(tx,"SELECT id FROM platform.schools WHERE id=$1 AND settings->>'requireSecondApprovalForAdjustment'='true'",[schoolId]))throw new Problem(422,'SECOND_APPROVER_REQUIRED');
         const saved=await one<Row>(tx,"UPDATE app.adjustment_requests SET status='APPROVED',decided_by=$3,decided_at=now() WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,adjustment.id,c.principal!.userId]);await audit(tx,c,'adjustment',String(adjustment.id),{status:'APPROVED'});return {data:adjustmentDto(saved!)};
       }
       if(adjustment.status!=='APPROVED')throw new Problem(409,'ADJUSTMENT_NOT_APPROVED');
+      if(adjustment.requested_by===adjustment.decided_by&&await one(tx,"SELECT id FROM platform.schools WHERE id=$1 AND settings->>'requireSecondApprovalForAdjustment'='true'",[schoolId]))throw new Problem(422,'SECOND_APPROVER_REQUIRED');
       if(c.body.expectedSourceVersion!==p.data_version)throw new Problem(409,'STALE_SOURCE',undefined,Number(p.data_version));
       if(Object.hasOwn(c.body,'expectedPublicationId')&&c.body.expectedPublicationId!==pub.id)throw new Problem(409,'PUBLICATION_CONFLICT');
       await tx.query("SELECT set_config('app.adjustment_id',$1,true)",[adjustment.id]);

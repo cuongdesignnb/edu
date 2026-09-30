@@ -20,6 +20,10 @@ function normalize(node) {
   for (const value of Object.values(node)) normalize(value);
 }
 normalize(spec);
+// ADR-021: preserve the existing school display/sharing settings form.
+for(const name of ['Settings','SettingsPatch'])Object.assign(spec.components.schemas[name].properties,{
+  reportHeader:{type:'string',minLength:1,maxLength:200},shareTeacherPhone:{type:'boolean'},shareTeacherEmail:{type:'boolean'},contactHours:{type:'string',maxLength:120}
+});
 // ADR-004: expose lifecycle metadata needed by the existing assignment UI.
 spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
 spec.components.schemas.AssignmentCreate.properties.reason={type:'string',minLength:5,maxLength:4000};

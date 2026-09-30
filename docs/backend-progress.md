@@ -238,9 +238,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getExport | SC39 | NOT_STARTED |  |
 | downloadExport | SC39, CL26 | NOT_STARTED |  |
 | cancelExport | SC39 | NOT_STARTED |  |
-| listSchoolAudit | SC40 | NOT_STARTED |  |
-| getSchoolSettings | SC31, SC41 | NOT_STARTED |  |
-| updateSchoolSettings | SC31, SC41 | NOT_STARTED |  |
+| listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
+| getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
+| updateSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
 | listSchoolTickets | SC42 | NOT_STARTED |  |
 | createTicket | SC42 | NOT_STARTED |  |
 | getSchoolTicket | SC43 | NOT_STARTED |  |
@@ -322,7 +322,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC28 | core | TESTED | NOT_STARTED |  |
 | SC29 | core | TESTED | NOT_STARTED |  |
 | SC30 | core | TESTED | NOT_STARTED |  |
-| SC31 | core | PARTIAL | NOT_STARTED |  |
+| SC31 | core | TESTED | NOT_STARTED |  |
 | SC32 | core | TESTED | NOT_STARTED |  |
 | SC33 | core | TESTED | NOT_STARTED |  |
 | SC34 | core | TESTED | NOT_STARTED |  |
@@ -331,8 +331,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC37 | core | PARTIAL | NOT_STARTED |  |
 | SC38 | core | PARTIAL | NOT_STARTED |  |
 | SC39 | core | PARTIAL | NOT_STARTED |  |
-| SC40 | core | PARTIAL | NOT_STARTED |  |
-| SC41 | core | PARTIAL | NOT_STARTED |  |
+| SC40 | core | TESTED | NOT_STARTED |  |
+| SC41 | core | TESTED | NOT_STARTED |  |
 | SC42 | core | PARTIAL | NOT_STARTED |  |
 | SC43 | core | PARTIAL | NOT_STARTED |  |
 | TE01 | core | PARTIAL | NOT_STARTED |  |
