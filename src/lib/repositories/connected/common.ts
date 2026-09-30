@@ -1,9 +1,13 @@
 import {RepoError,isRepoError} from '../errors';
 import {captureStaffAccess} from '../../api/client';
+import type {Ctx} from '../core';
+
+export function assertStaffCtx(ctx:Ctx|undefined){ctx?.staffOwner?.assertCurrent();}
 
 /** Keep a composite result within one staff identity/scope, including its error callback. */
 export function withStaffAccess<T extends Record<string,(...args:never[])=>Promise<unknown>>>(repository:T):T{
   return Object.fromEntries(Object.entries(repository).map(([name,method])=>[name,async(...args:never[])=>{
+    assertStaffCtx(args[0] as Ctx|undefined);
     const access=captureStaffAccess();
     try{const value=await method.apply(repository,args);access.assertCurrent();return value;}
     catch(error){access.assertCurrent();throw error;}

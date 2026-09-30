@@ -7,6 +7,12 @@ beforeEach(()=>{authenticationChanged();setStaffCsrf('memory-only-csrf');});
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 
 describe('connected HTTP transport',()=>{
+  it('does not reuse or install an old bootstrap CSRF after identity change',async()=>{
+    const gate=Promise.withResolvers<Response>(),begun=Promise.withResolvers<void>();let bootstrapCalls=0;
+    const fetcher=vi.fn().mockImplementation((url:string)=>{if(url==='/api/v1/auth/csrf'){bootstrapCalls++;if(bootstrapCalls===1){begun.resolve();return gate.promise;}return Promise.resolve(envelope({csrfToken:'new-bootstrap'}));}return Promise.resolve(envelope({accepted:true}));});vi.stubGlobal('fetch',fetcher);
+    const old=http('forgotPassword',{body:{email:'prior@example.invalid'}});await begun.promise;authenticationChanged();await http('forgotPassword',{body:{email:'current@example.invalid'}});gate.resolve(envelope({csrfToken:'old-bootstrap'}));await expect(old).rejects.toMatchObject({code:'NO_SESSION'});
+    await http('forgotPassword',{body:{email:'current2@example.invalid'}});const writes=fetcher.mock.calls.filter(([,init])=>init.method==='POST');expect(writes).toHaveLength(2);expect(writes.every(([,init])=>init.headers['X-CSRF-Token']==='new-bootstrap')).toBe(true);expect(bootstrapCalls).toBe(2);
+  });
   it('reads relative API URLs with cookie credentials, no-store and server query filters',async()=>{
     const fetcher=vi.fn().mockResolvedValue(envelope([{id:'actual-api-row'}]));vi.stubGlobal('fetch',fetcher);
     const result=await http('listClasss',{params:{schoolId},query:{q:'Lớp 10',yearId:schoolId,limit:25}});

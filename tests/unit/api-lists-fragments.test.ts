@@ -1,12 +1,29 @@
 import {describe,it,expect,vi,afterEach} from 'vitest';
 import {apiList,apiPage} from '@/lib/api/lists';
-import {authenticationChanged} from '@/lib/api/client';
+import {authenticationChanged,authorizationChanged,setStaffCsrf,http} from '@/lib/api/client';
 import {invitationCredential,consumeInvitation,resetCredential,consumeResetCredential} from '@/lib/api/fragments';
 
 const schoolId='00000000-0000-4000-8000-000000000001';
 function page(data:unknown[],total:number,nextCursor:string|null){return new Response(JSON.stringify({data,requestId:'fixture',page:{total,nextCursor,hasMore:nextCursor!==null,limit:10}}));}
-afterEach(()=>vi.unstubAllGlobals());
+afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 describe('server keysets and one-use link fragments',()=>{
+  it('reuses only an opaque cursor for subsequent pages and always fetches row data again',async()=>{
+    const fetcher=vi.fn().mockResolvedValueOnce(page([{id:'first'}],30,'page-2')).mockResolvedValueOnce(page([{id:'second'}],30,'page-3')).mockResolvedValueOnce(page([{id:'updated-second'}],30,'page-3'));vi.stubGlobal('fetch',fetcher);
+    const options={params:{schoolId}},map=(row:{id?:string|null})=>({id:row.id!});await apiPage('listClasss',options,{page:1,pageSize:10},map);await apiPage('listClasss',options,{page:2,pageSize:10},map);const result=await apiPage('listClasss',options,{page:2,pageSize:10},map);
+    expect(result.items).toEqual([{id:'updated-second'}]);expect(fetcher).toHaveBeenCalledTimes(3);expect(fetcher.mock.calls[1][0]).toContain('cursor=page-2');expect(fetcher.mock.calls[2][0]).toContain('cursor=page-2');
+  });
+  it('separates filters and clears opaque keysets after current permission changes',async()=>{
+    const fetcher=vi.fn().mockImplementation((url:string)=>Promise.resolve(url.includes('cursor=')?page([{id:'second'}],20,null):page([{id:'first'}],20,'page-2')));vi.stubGlobal('fetch',fetcher);
+    const options={params:{schoolId},query:{q:'one'}},map=(row:{id?:string|null})=>({id:row.id!});await apiPage('listClasss',options,{page:1,pageSize:10},map);await apiPage('listClasss',{...options,query:{q:'two'}},{page:2,pageSize:10},map);expect(fetcher.mock.calls[1][0]).not.toContain('cursor=');authorizationChanged();await apiPage('listClasss',options,{page:2,pageSize:10},map);expect(fetcher.mock.calls[3][0]).not.toContain('cursor=');
+  });
+  it('clears keysets after a confirmed staff save',async()=>{
+    const fetcher=vi.fn().mockImplementation((url:string,init:RequestInit)=>{if(init.method==='POST')return Promise.resolve(new Response(JSON.stringify({data:{id:'saved'},requestId:'ack'})));return Promise.resolve(url.includes('cursor=')?page([{id:'second'}],20,null):page([{id:'first'}],20,'page-2'));});vi.stubGlobal('fetch',fetcher);setStaffCsrf('current-csrf');
+    const options={params:{schoolId}},map=(row:{id?:string|null})=>({id:row.id!});await apiPage('listClasss',options,{page:1,pageSize:10},map);await http('createClass',{params:{schoolId},body:{code:'ACK',name:'Lớp API',yearId:schoolId,gradeLevelId:schoolId,capacity:40}});await apiPage('listClasss',options,{page:2,pageSize:10},map);expect(fetcher.mock.calls[2][0]).not.toContain('cursor=');expect(fetcher.mock.calls[3][0]).toContain('cursor=page-2');
+  });
+  it('rebases a cached page when the full SQL total has shrunk to an earlier page',async()=>{
+    const fetcher=vi.fn().mockResolvedValueOnce(page([{id:'first'}],20,'page-2')).mockResolvedValueOnce(page([],0,null)).mockResolvedValueOnce(page([],0,null));vi.stubGlobal('fetch',fetcher);
+    const options={params:{schoolId}},map=(row:{id?:string|null})=>({id:row.id!});await apiPage('listClasss',options,{page:1,pageSize:10},map);const result=await apiPage('listClasss',options,{page:2,pageSize:10},map);expect(result).toMatchObject({items:[],total:0,page:1,pageCount:1});expect(fetcher.mock.calls[2][0]).not.toContain('cursor=');
+  });
   it('advances the server cursor without downloading or filtering the full tenant',async()=>{
     const fetcher=vi.fn().mockResolvedValueOnce(page([{id:'first',name:'Trang 1'}],21,'signed-server-cursor')).mockResolvedValueOnce(page([{id:'second',name:'Trang 2'}],21,'next-server-cursor'));vi.stubGlobal('fetch',fetcher);
     const result=await apiPage('listClasss',{params:{schoolId},query:{q:'Lớp 10',yearId:schoolId}},{page:2,pageSize:10},row=>({id:row.id!,name:row.name}));

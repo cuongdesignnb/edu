@@ -13,16 +13,18 @@ let staffCsrf:string|null=null,bootstrapCsrf:string|null=null,bootstrapPending:P
 let authEpoch=0,accessEpoch=0;
 const authListeners=new Set<()=>void>();
 const accessListeners=new Set<()=>void>();
+const mutationListeners=new Set<()=>void>();
 const retries=new Map<string,{key:string;at:number}>();
 const blobs=new WeakMap<Blob,string>();
 
 /** Session/CSRF values are memory-only. Authentication itself is an HttpOnly cookie. */
 export function setStaffCsrf(value:string|null){staffCsrf=value;}
-export function authenticationChanged(){authEpoch++;accessEpoch++;staffCsrf=null;bootstrapCsrf=null;retries.clear();authListeners.forEach(fn=>fn());accessListeners.forEach(fn=>fn());}
+export function authenticationChanged(){authEpoch++;accessEpoch++;staffCsrf=null;bootstrapCsrf=null;bootstrapPending=null;retries.clear();authListeners.forEach(fn=>fn());accessListeners.forEach(fn=>fn());}
 export function onAuthenticationChanged(fn:()=>void){authListeners.add(fn);return()=>{authListeners.delete(fn);};}
 /** Permission changes invalidate private reads, while uncertain command keys stay bound to the same identity. */
 export function authorizationChanged(){accessEpoch++;accessListeners.forEach(fn=>fn());}
 export function onStaffAccessChanged(fn:()=>void){accessListeners.add(fn);return()=>{accessListeners.delete(fn);};}
+export function onStaffMutationAcknowledged(fn:()=>void){mutationListeners.add(fn);return()=>{mutationListeners.delete(fn);};}
 export function staffAccessRevision(){return accessEpoch;}
 function assertStaffAccess(epoch:number,identity:number){
   if(identity!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi. Vui lòng tải lại dữ liệu trước khi tiếp tục.');
@@ -58,9 +60,11 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
 }
 async function csrfBootstrap(){
   if(bootstrapCsrf)return bootstrapCsrf;
-  if(!bootstrapPending)bootstrapPending=(async()=>{
-    const response=await http('getCsrf',{});const token=response.data.csrfToken;if(typeof token!=='string')throw new RepoError('READ_ERROR','Phản hồi bảo vệ phiên không hợp lệ.');bootstrapCsrf=token;return token;
-  })().finally(()=>{bootstrapPending=null;});return bootstrapPending;
+  if(!bootstrapPending){const identity=authEpoch;
+    const work=(async()=>{
+      const response=await http('getCsrf',{});if(identity!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi trong lúc chuẩn bị yêu cầu.');const token=response.data.csrfToken;if(typeof token!=='string')throw new RepoError('READ_ERROR','Phản hồi bảo vệ phiên không hợp lệ.');bootstrapCsrf=token;return token;
+    })().finally(()=>{if(bootstrapPending===work)bootstrapPending=null;});bootstrapPending=work;
+  }return bootstrapPending;
 }
 async function sessionCsrf(){
   if(staffCsrf)return staffCsrf;
@@ -108,12 +112,12 @@ export async function http<K extends OperationId>(id:K,options:ApiOptions<K>={})
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(!result||typeof result!=='object'||!Object.hasOwn(result,'data')||typeof result.requestId!=='string')throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Phản hồi API không đúng hợp đồng.');
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
-  if(hash)retries.delete(hash);return result;
+  if(hash)retries.delete(hash);if(hash&&apiOperations[id].auth==='staff')mutationListeners.forEach(fn=>fn());return result;
 }
 export async function download<K extends OperationId>(id:K,options:ApiOptions<K>={}):Promise<{blob:Blob;filename:string}>{
   const {response,hash,epoch,identity}=await send(id,options),disposition=response.headers.get('content-disposition')??'';let filename='download';
   const encoded=/filename\*=UTF-8''([^;]+)/i.exec(disposition);if(encoded)try{filename=decodeURIComponent(encoded[1]).replace(/[\x00-\x1f\x7f<>:"/\\|?*]/g,'_');}catch{/* Safe filename remains. */}
   let blob:Blob;try{blob=await response.blob();}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Tệp chưa được tải đầy đủ. Vui lòng thử lại.');}
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
-  if(hash)retries.delete(hash);return {blob,filename};
+  if(hash)retries.delete(hash);if(hash&&apiOperations[id].auth==='staff')mutationListeners.forEach(fn=>fn());return {blob,filename};
 }

@@ -1,11 +1,20 @@
-import {afterEach,describe,expect,it} from 'vitest';
-import {authenticationChanged,authorizationChanged} from '@/lib/api/client';
+import {afterEach,describe,expect,it,vi} from 'vitest';
+import {authenticationChanged,authorizationChanged,captureStaffAccess} from '@/lib/api/client';
 import {withStaffAccess} from '@/lib/repositories/connected/common';
 import {RepoError} from '@/lib/repositories/errors';
+import type {Ctx} from '@/lib/repositories/core';
 
 afterEach(()=>authenticationChanged());
 
 describe('staff composite ownership',()=>{
+  it('refuses a prior-login form callback before invoking its command',async()=>{
+    const command=vi.fn().mockResolvedValue({saved:true}),repo=withStaffAccess({async save(_ctx:Ctx){return command();}}),ctx={staffOwner:captureStaffAccess()} as Ctx;
+    authenticationChanged();await expect(repo.save(ctx)).rejects.toMatchObject({code:'NO_SESSION'});expect(command).not.toHaveBeenCalled();
+  });
+  it('refuses a prior-scope callback and requires a newly captured current context',async()=>{
+    const command=vi.fn().mockResolvedValue({saved:true}),repo=withStaffAccess({async save(_ctx:Ctx){return command();}}),ctx={staffOwner:captureStaffAccess()} as Ctx;
+    authorizationChanged();await expect(repo.save(ctx)).rejects.toMatchObject({code:'FORBIDDEN',details:{scopeChanged:true}});expect(command).not.toHaveBeenCalled();expect(await repo.save({...ctx,staffOwner:captureStaffAccess()})).toEqual({saved:true});
+  });
   it('drops already read private data when later components use a changed scope',async()=>{
     const firstRead={privateName:'Synthetic prior-scope name'};
     const gate=Promise.withResolvers<void>();

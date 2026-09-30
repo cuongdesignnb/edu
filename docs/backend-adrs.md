@@ -688,3 +688,36 @@ retained. Fresh retained synthetic-school fixtures preserve the existing timezon
 lock and avoid unrelated historical choice limits. Native runtime is 276
 operations/333 schemas. These adapter
 candidates remain unactivated; browser and final Docker acceptance are pending.
+
+## ADR-040 — Retained form owners and bounded opaque keyset reuse
+
+makeStaffCtx captures the current memory-only cookie-session actor, server time,
+school date and staff access owner. The future native hooks must capture it during
+render/query setup and retain that same context for callbacks. withStaffAccess
+checks the originating owner before invoking a method, so an old form cannot
+submit through the new login/current permission scope. Session profile, session
+and notification methods enforce the same initial context, and notification
+multi-command batches check between acknowledged steps. Intentional auth/public
+flows remain separate; no actor/role from this context becomes server authority.
+
+Late bootstrap CSRF completion is identity-bound. Authentication clears the old
+pending bootstrap, an obsolete response cannot install its token or send the
+waiting write, and its finalizer cannot clear a replacement bootstrap promise.
+
+Numbered UI keyset walks cache only opaque server cursors, scoped to access
+revision, operation, params, filters, page size and selected support grant. The
+memory cache is bounded to 32 queries × 64 cursors, contains no row payload, and
+is cleared on identity/permission change or validated staff mutation ACK. Reads
+always fetch actual rows again. Changed totals can rebase once to page one; bad
+responses/cursors remain visible errors. Parent/public pagination is excluded
+from staff ownership/cache, pending its independent portal context binding.
+
+This improves repeat navigation; the first deep jump still walks keysets. It is
+not evidence of B7 performance or a solution for bulk filtered IDs. Native hooks
+and facade activation must install captured contexts and cache/query purging;
+the legacy hooks are not certified by this helper checkpoint.
+
+Actual frontend unit evidence is 79/79, zero skipped, in
+qa/backend/b6-context-keysets-frontend-unit-final.log; TypeScript and scoped lint
+exit0. Backend is unchanged from the prior 97/97 integration and 31-migration
+checkpoint. No additional backend or browser run is claimed.

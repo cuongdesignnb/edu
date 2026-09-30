@@ -6,7 +6,7 @@ import { newId } from "@/lib/demo/ids";
 import { RepoError } from "./errors";
 import { commit, getDB, initStore } from "./store";
 
-export interface Ctx { actor: Actor; today: string; now: string }
+export interface Ctx { actor: Actor; today: string; now: string; staffOwner?:{epoch:number;assertCurrent:()=>void} }
 
 export function makeCtx(actor: Actor): Ctx {
   return { actor, today: demoToday(), now: demoNowISO() };

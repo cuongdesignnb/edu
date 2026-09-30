@@ -1,7 +1,18 @@
-import {http,captureStaffAccess,type ApiOptions,type ApiEnvelope} from './client';
-import type {ApiData,ApiItem,ApiListId} from './generated';
+import {http,captureStaffAccess,onStaffAccessChanged,onStaffMutationAcknowledged,type ApiOptions,type ApiEnvelope} from './client';
+import {apiOperations,type ApiData,type ApiItem,type ApiListId} from './generated';
 import type {ListQuery,Page} from '../repositories/core';
 import {RepoError} from '../repositories/errors';
+
+// Opaque keysets only: never cache row payloads, tokens, CSRF or parent contexts.
+const cursorPages=new Map<string,Map<number,string>>();
+onStaffAccessChanged(()=>cursorPages.clear());onStaffMutationAcknowledged(()=>cursorPages.clear());
+function cursorKey<K extends ApiListId>(id:K,options:ApiOptions<K>,size:number,epoch:number){
+  const entries=(value:Record<string,unknown>|undefined)=>Object.entries(value??{}).filter(([key,v])=>v!==undefined&&key!=='cursor'&&key!=='limit').sort(([a],[b])=>a.localeCompare(b));
+  return JSON.stringify([epoch,id,size,entries(options.params),entries(options.query),options.supportAccessId??null]);
+}
+function remember(cursors:Map<number,string>,page:number,cursor:string){
+  cursors.set(page,cursor);if(cursors.size>64)cursors.delete(cursors.keys().next().value!);
+}
 
 function rows<K extends ApiListId>(result:ApiEnvelope<ApiData<K>>):Array<ApiItem<K>>{
   if(!Array.isArray(result.data))throw new RepoError('READ_ERROR','Danh sách API không đúng hợp đồng.');
@@ -13,12 +24,12 @@ function rows<K extends ApiListId>(result:ApiEnvelope<ApiData<K>>):Array<ApiItem
 }
 /** Lists are already scoped and filtered in SQL. Never filter an unscoped tenant dataset here. */
 export async function apiList<K extends ApiListId>(id:K,options:ApiOptions<K>={},maximum=1000):Promise<Array<ApiItem<K>>>{
-  const access=captureStaffAccess();
+  const access=apiOperations[id].auth==='staff'?captureStaffAccess():undefined;
   const items:Array<ApiItem<K>>=[];let cursor:string|undefined;const visited=new Set<string>();
   do{
-    access.assertCurrent();
+    access?.assertCurrent();
     const result=await http(id,{...options,query:{...options.query,limit:100,cursor}}),batch=rows(result);
-    access.assertCurrent();
+    access?.assertCurrent();
     if((result.page?.total??0)>maximum||items.length+batch.length>maximum)throw new RepoError('VALIDATION','Danh sách vượt giới hạn đọc. Hãy thu hẹp bộ lọc.',{details:{maximum}});
     items.push(...batch);
     if(!result.page?.hasMore)return items;
@@ -29,21 +40,30 @@ export async function apiList<K extends ApiListId>(id:K,options:ApiOptions<K>={}
 }
 /** Numbered UI pages advance server keysets; the server applies every filter and sort. */
 export async function apiPage<K extends ApiListId,T extends {id:string}>(id:K,options:ApiOptions<K>,q:ListQuery,map:(item:ApiItem<K>)=>T):Promise<Page<T>>{
-  const access=captureStaffAccess();
+  const access=apiOperations[id].auth==='staff'?captureStaffAccess():undefined;
   const pageSize=q.pageSize??10,target=q.page??1;
   if(!Number.isInteger(pageSize)||pageSize<1||pageSize>100||!Number.isInteger(target)||target<1||target>1000)throw new RepoError('VALIDATION','Trang dữ liệu không hợp lệ.');
-  let cursor:string|undefined,page=1;
+  const key=access?cursorKey(id,options,pageSize,access.epoch):undefined;
+  let cursors=key?cursorPages.get(key):undefined;if(key&&!cursors){cursors=new Map();cursorPages.set(key,cursors);if(cursorPages.size>32)cursorPages.delete(cursorPages.keys().next().value!);}
+  let cursor:string|undefined,page=1,restarted=false;
+  if(cursors)for(const [candidate,value]of cursors)if(candidate<=target&&candidate>page){page=candidate;cursor=value;}
   const visited=new Set<string>();
-  while(true){
-    access.assertCurrent();
+  if(cursor)visited.add(cursor);
+  try{while(true){
+    access?.assertCurrent();
     const result=await http(id,{...options,query:{...options.query,limit:pageSize,cursor}}),batch=rows(result);
-    access.assertCurrent();
+    access?.assertCurrent();
     const total=result.page?.total;
     if(!result.page||typeof total!=='number')throw new RepoError('READ_ERROR','API chưa trả tổng số kết quả của danh sách.');
+    if(page>Math.max(1,Math.ceil(total/pageSize))||page>1&&!batch.length){
+      if(restarted)throw new RepoError('READ_ERROR','Danh sách đã thay đổi. Hãy tải lại trang.');
+      restarted=true;cursors?.clear();page=1;cursor=undefined;visited.clear();continue;
+    }
+    if(result.page.hasMore){const next=result.page.nextCursor;if(!next||visited.has(next))throw new RepoError('READ_ERROR','Con trỏ trang không hợp lệ.');if(cursors)remember(cursors,page+1,next);}
     if(page===target||!result.page.hasMore){
       const items=batch.map(map),allIds=result.page.total!<=items.length?items.map(x=>x.id):[];
       return {items,total,page,pageSize,pageCount:Math.max(1,Math.ceil(total/pageSize)),allIds};
     }
     cursor=result.page.nextCursor??undefined;if(!cursor||visited.has(cursor))throw new RepoError('READ_ERROR','Con trỏ trang không hợp lệ.');visited.add(cursor);page++;
-  }
+  }}catch(error){if(key)cursorPages.delete(key);throw error;}
 }

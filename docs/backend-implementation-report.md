@@ -1,5 +1,11 @@
 # Backend implementation evidence
 
+## B6 retained form owner and keyset helper checkpoint
+
+- Actual frontend checks: **79/79**, zero skipped, in `qa/backend/b6-context-keysets-frontend-unit-final.log`; frontend TypeScript/scoped lint exit0. Native UI context captures actual session/server time with an owner retained by callbacks. Old login/scope callbacks fail before submitting; notification batches stop between steps after a scope change. Late bootstrap CSRF cannot install an obsolete token or send an old waiting command.
+- Opaque cursor reuse is bounded in memory and keyed by native scope/filter/params/size/support grant. No rows are cached; every display fetches actual API data. Confirmed staff saves and identity/permission changes invalidate cursors. First deep jumps, bulk selected IDs and release performance remain pending. Parent/public pagination is independent of staff changes and still needs portal-specific ownership when connected.
+- Backend code is unchanged from **97/97**, 31 verified migrations, **15/15** contract/unit and runtime **276/333**. There was no new backend run for this frontend-only checkpoint. Adapter count remains **69**, unactivated. Native hooks/facade, remaining repositories, 118 core browser tests and all outstanding B7 deployment/drill/load gates are still required. Production is not deployed.
+
 ## B6 school support and operational evidence checkpoint
 
 - Actual PostgreSQL execution is **97/97**, exit0, zero skipped, in `qa/backend/b6-school-operations-integration-final.log`. All **31 migrations** and checksums/replay were verified. Image: `sha256:74aa8f590780b7e8da7a863744bc6c447d317ff6b568ab8bbbe7c81781856bb1`. Frontend unit **69/69**, backend contract/unit **15/15**, TypeScript and scoped lint exit0. The first **94/97** run is retained; failures were an outdated actor-ID assertion, a fixture reaching the explicit history-choice limit, and an attempted fixture timezone change correctly denied after years existed. Fresh retained synthetic schools fixed fixture setup; no history or volume was deleted.
