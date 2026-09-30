@@ -14,6 +14,7 @@ import { InvitationsService } from './modules/identity/invitations.service';
 import { StaffService } from './modules/staff/staff.service';
 import { TransitionsService } from './modules/students/transitions.service';
 import { FilesService } from './modules/files/files.service';
+import { ImportsService } from './modules/imports/imports.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -30,6 +31,7 @@ export async function createApplication() {
   registerHandlers(server,app.get(StaffService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(TransitionsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(FilesService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(ImportsService).handlers(),app.get(IdentityService));
   app.enableShutdownHooks();
   await app.init();
   return app;

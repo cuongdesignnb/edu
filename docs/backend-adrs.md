@@ -89,3 +89,22 @@ private LOCAL_FILE messages and clears encrypted token payloads after delivery;
 used, expired or revoked tokens are cancelled before delivery. SMTP driver code
 exists but SMTP fault/delivery testing remains pending and no Internet mail has
 been sent by these local tests.
+## ADR-009 — Import previews and resumable application
+
+The handoff ImportJob DTO omitted year/class and parsed column metadata needed
+by its mapping workflow. The implementation contract adds optional yearId,
+classId and columns, plus optional decision/matchedId on ImportRow. Original
+handoff files remain unchanged. Source and normalized rows are stored separately.
+
+Preview hashes bind file/mapping/context and table versions. The current policy
+conservatively invalidates previews on any change to the relevant tenant tables.
+Worker writes are recorded in result_metadata so resuming a chunk recognizes its
+own changes while detecting intervening edits. Small batches are atomic; batches
+over 500 use 100-row transactions, retain applied rows and expose processed counts
+when FAILED/CANCELLED. Exact file/mapping/canonical source keys prevent duplicates.
+
+Staff imports create invitations with a school work profile, then apply that
+profile on accepting a new membership; they never reset existing identity
+credentials. Student updates require a stable existing code in the selected
+class/year, while family changes stay in the verified relationship workflow.
+Imported timetable versions remain DRAFT until B5 validation/publication.

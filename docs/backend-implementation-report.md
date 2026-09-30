@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 6 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; support access integration remains pending |
-| B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers and rollover implemented; file/import pipeline and broader contract coverage remain pending |
+| B1 | PARTIAL | 8 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
+| B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | NOT_STARTED | Attendance/conduct/publication workflows pending |
 | B4 | NOT_STARTED | Parent session/projection workflows pending |
-| B5 | NOT_STARTED | Remaining domain services/jobs/files pending |
+| B5 | PARTIAL | Private file processing, mail/outbox worker and timetable import drafts tested; remaining domain services, publication and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -102,3 +102,34 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
   ExcelJS extension-formatting path using patched UUID. Audit: zero reported
   production dependency vulnerabilities at this checkpoint (not a security audit
   of the application or a guarantee of virus scanning).
+
+## Import checkpoint — actual execution
+
+- Migration 008 applied; replay/checksum checks pass. Private CSV/XLSX files are
+  parsed on the server into source rows, then mapped and validated before an
+  explicit ADD_ONLY or UPSERT_VERIFIED_CODE commit. Import DTOs expose columns,
+  year/class context and per-row ADD/UPDATE/SKIP decisions for the existing UI.
+- Preview hash includes file hash, mapping, year/class, normalized row decisions
+  and existing table versions. A changed class produces HTTP409 STALE_PREVIEW.
+  Every worker transaction checks current school/user permissions and lease.
+- Students with matching names remain separate; same guardian phone creates
+  separate UNVERIFIED contacts with can_receive_info=false. Updates require an
+  existing stable student code in the selected class/year. Imports do not move
+  students or replace family relationships. Invalid dates/rows are retained;
+  downloadable CSV errors protect formula prefixes.
+- Class import creates DRAFT classes. Staff import queues encrypted invitations
+  and stores the school work profile; identity is created only after invitation
+  acceptance. Timetable import validates assignments/slots and creates DRAFT
+  versions; materialization and publication are still pending B5 work.
+- <=500 rows commit in one transaction. Larger imports use 100-row transactions.
+  A 501-row fault-injection test commits 100, reports FAILED with processed=100,
+  then resumes to 501 distinct results without duplicates. This is a transaction
+  interruption test; process-kill/restart operational testing is NOT_RUN.
+- `qa/backend/imports-integration.log`: 26/26 integration tests executed, exit0.
+  `qa/backend/imports-unit-contract.log`: 8/8 executed. TypeScript build and
+  backend ESLint10 completed exit0. The first import run exposed a missing audit
+  request_id, repaired and rerun. Retained test data also exposed assumptions
+  about queue order and a single admin; tests now isolate those conditions.
+- 105/264 API operations are implemented. Frontend connected: NO. Parent HTTP
+  portal, attendance/conduct publications, browser E2E, final local deployment,
+  restart/backup-restore and performance measurements remain NOT_RUN.

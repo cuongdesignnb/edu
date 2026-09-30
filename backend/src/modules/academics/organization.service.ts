@@ -46,6 +46,7 @@ export class OrganizationService {
       return listResource(tx,r,schoolId,c.query,classes&&!classes.all?{sql:'t.id=ANY($1::uuid[])',values:[classes.classIds]}:undefined,c.principal!.userId);
     },{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
+      await tx.query('SELECT app.lock_school()');
       await this.validate(tx,c,entry.kind,id);
       if(entry.mode==='status'&&entry.status==='ACTIVE'&&entry.kind==='class'){
         const assigned=(await tx.query(`SELECT a.id FROM app.teaching_assignments a JOIN platform.schools s ON s.id=a.school_id WHERE a.school_id=$1 AND a.class_id=$2
@@ -109,6 +110,7 @@ export class OrganizationService {
     const authorize=(tx:Transaction)=>this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId});
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return listResource(tx,r,schoolId,c.query,undefined,c.principal!.userId);},{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
+      await tx.query('SELECT app.lock_school()');
       for(const field of ['capacity','sortOrder'])if(Object.hasOwn(c.body,field)&&!r.writeFields.includes(field))validation(field,'Trường dữ liệu không thuộc danh mục này');
       const data=c.operation.method==='POST'?await insertResource(tx,r,schoolId,c.body):await updateResource(tx,r,schoolId,id!,c.body,
         c.body.status?{status:c.body.status}:{});

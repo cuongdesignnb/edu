@@ -223,14 +223,14 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | publishClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
 | scheduleClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
 | withdrawClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| listImports | SC26 | NOT_STARTED |  |
-| createImport | SC27 | NOT_STARTED |  |
-| getImport | SC28 | NOT_STARTED |  |
-| validateImport | SC27 | NOT_STARTED |  |
-| listImportRows | SC27, SC28 | NOT_STARTED |  |
-| commitImport | SC27 | NOT_STARTED |  |
-| cancelImport | SC28 | NOT_STARTED |  |
-| downloadImportErrors | SC28 | NOT_STARTED |  |
+| listImports | SC26 | TESTED | qa/backend/imports-integration.log |
+| createImport | SC27 | TESTED | qa/backend/imports-integration.log |
+| getImport | SC28 | TESTED | qa/backend/imports-integration.log |
+| validateImport | SC27 | TESTED | qa/backend/imports-integration.log |
+| listImportRows | SC27, SC28 | TESTED | qa/backend/imports-integration.log |
+| commitImport | SC27 | TESTED | qa/backend/imports-integration.log |
+| cancelImport | SC28 | TESTED | qa/backend/imports-integration.log |
+| downloadImportErrors | SC28 | TESTED | qa/backend/imports-integration.log |
 | getSchoolReport | SC37, SC38, TE06 | NOT_STARTED |  |
 | getClassReport | CL25, CL26 | NOT_STARTED |  |
 | listExports | SC39 | NOT_STARTED |  |
@@ -317,9 +317,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC23 | core | PARTIAL | NOT_STARTED |  |
 | SC24 | core | PARTIAL | NOT_STARTED |  |
 | SC25 | core | PARTIAL | NOT_STARTED |  |
-| SC26 | core | PARTIAL | NOT_STARTED |  |
-| SC27 | core | PARTIAL | NOT_STARTED |  |
-| SC28 | core | PARTIAL | NOT_STARTED |  |
+| SC26 | core | TESTED | NOT_STARTED |  |
+| SC27 | core | TESTED | NOT_STARTED |  |
+| SC28 | core | TESTED | NOT_STARTED |  |
 | SC29 | core | PARTIAL | NOT_STARTED |  |
 | SC30 | core | PARTIAL | NOT_STARTED |  |
 | SC31 | core | PARTIAL | NOT_STARTED |  |

@@ -6562,6 +6562,20 @@
             "processed"
           ],
           "additionalProperties": false
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -6687,6 +6701,18 @@
           "type": "object",
           "properties": {},
           "additionalProperties": true
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "ADD",
+            "UPDATE",
+            "SKIP"
+          ]
+        },
+        "matchedId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [

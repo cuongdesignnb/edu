@@ -18,6 +18,13 @@ import { InvitationsService } from '../../dist/modules/identity/invitations.serv
 import { WorkerRunner } from '../../dist/workers/runner.js';
 import sharp from 'sharp';
 import ExcelJS from 'exceljs';
+import { ImportWorker } from '../../dist/modules/imports/import-worker.js';
+import { ImportsService } from '../../dist/modules/imports/imports.service.js';
+import { FilesService } from '../../dist/modules/files/files.service.js';
+import { Commands } from '../../dist/common/commands.js';
+import { IdentityService } from '../../dist/modules/identity/identity.service.js';
+import { Problem } from '../../dist/common/problem.js';
+import { StaffService } from '../../dist/modules/staff/staff.service.js';
 
 let app,server,db,policy;
 const password=crypto.randomBytes(24).toString('base64url');
@@ -46,7 +53,9 @@ before(async()=>{
   const fixturePool=new Pool(databaseConfig('migrator'));
   try{await fixturePool.query('UPDATE identity.users SET password_hash=$1 WHERE id=ANY($2)',[
     await hashPassword(password),['operator','admin-a','admin-b','teacher-a','teacher-b','multi'].map(name=>seedId(`user:${name}`)),
-  ]);await fixturePool.query('DELETE FROM identity.rate_limit_buckets');}finally{await fixturePool.end();}
+  ]);await fixturePool.query("SELECT set_config('app.school_id',$1,false)",[schoolA]);
+    await fixturePool.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,seedId('grant:A:admin-a:admin')]);
+    await fixturePool.query('DELETE FROM identity.rate_limit_buckets');}finally{await fixturePool.end();}
   app=await createApplication();server=app.getHttpAdapter().getInstance();await server.ready();
   db=app.get(Database);policy=app.get(Permissions);
 });
@@ -290,8 +299,14 @@ test('B2 staff delegation stays within the ceiling, custom class scope and immed
   const ownGrant=await db.transaction(tx=>tx.query('SELECT id,version FROM app.role_grants WHERE school_id=$1 AND id=$2',
     [schoolA,seedId('grant:A:admin-a:admin')]),{schoolId:schoolA});
   assert.ok(ownGrant.rows[0]);
-  const last=await post(`grants/${ownGrant.rows[0].id}/revoke`,{expectedVersion:ownGrant.rows[0].version,reason:'Không được bỏ quản trị cuối'});
-  assert.equal(last.statusCode,409);assert.equal(last.json().code,'LAST_ADMIN_REQUIRED');
+  // Retained runs can contain other accepted synthetic admins. Exercise the
+  // actual last-admin SQL guard in an isolated transaction and roll it back.
+  await db.transaction(async tx=>{
+    await tx.query(`UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id<>$2
+      AND role_id=$3 AND revoked_at IS NULL`,[schoolA,ownGrant.rows[0].id,seedId('role:A:SCHOOL_ADMIN')]);
+    await assert.rejects(app.get(StaffService).lastAdmin(tx,schoolA,undefined,ownGrant.rows[0].id),error=>error.code==='LAST_ADMIN_REQUIRED');
+    throw new Error('ROLLBACK_TEST');
+  },{schoolId:schoolA}).catch(error=>assert.equal(error.message,'ROLLBACK_TEST'));
   const cls=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`staff-${crypto.randomUUID()}`,name:'Lớp phân công giả',capacity:8});
   assert.equal(cls.statusCode,201);
   const assignmentBody={classId:cls.json().data.id,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'};
@@ -414,6 +429,7 @@ test('B2/B5 uploads remain private until worker processing, leases serialize and
     const [j1,j2]=await Promise.all([worker1.claim(schoolA),worker2.claim(schoolA)]);assert.ok(j1);assert.ok(j2);assert.notEqual(j1.id,j2.id);
     await assert.rejects(worker2.db.transaction(tx=>worker2.guard(tx,j1),{schoolId:schoolA}),error=>error.code==='JOB_LEASE_LOST');
     await Promise.all([worker1.run(j1),worker2.run(j2)]);
+    await drainSchool(worker1);
     file=(await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}`)).json().data;
     assert.equal(file.status,'READY');assert.equal(file.scanStatus,'NOT_SCANNED');assert.equal(file.contentType,'image/png');
     const download=await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`);assert.equal(download.statusCode,200);
@@ -452,4 +468,129 @@ test('B2/B5 uploads remain private until worker processing, leases serialize and
     const archived=await request('POST',`/api/v1/schools/${schoolA}/files/${file.id}/archive`,{expectedVersion:file.version,reason:'Lưu trữ tệp kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(archived.statusCode,200);
     assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`)).statusCode,409);
   }finally{await Promise.all([worker1.close(),worker2.close()]);}
+});
+
+async function drainSchool(worker){for(let i=0;i<100;i++){const job=await worker.claim(schoolA);if(!job)return;await worker.run(job);}throw new Error('Test queue did not drain');}
+async function importCsv(csrf,worker,text,kind,classId){
+  const form=new FormData();form.append('purpose','IMPORT');form.append('file',new Blob([text],{type:'text/csv'}),'import.csv');
+  const prepared=new Request(origin,{method:'POST',body:form});
+  const upload=await server.inject({method:'POST',url:`/api/v1/schools/${schoolA}/files`,headers:{origin,cookie:cookies(),'x-csrf-token':csrf,'idempotency-key':crypto.randomUUID(),'content-type':prepared.headers.get('content-type')},payload:Buffer.from(await prepared.arrayBuffer())});
+  assert.equal(upload.statusCode,200,upload.body);await drainSchool(worker);
+  const created=await request('POST',`/api/v1/schools/${schoolA}/imports`,{kind,fileId:upload.json().data.id,yearId:seedId('year:A'),...(classId?{classId}:{})},csrf,{'idempotency-key':crypto.randomUUID()});
+  assert.equal(created.statusCode,201,created.body);await drainSchool(worker);
+  const job=(await request('GET',`/api/v1/schools/${schoolA}/imports/${created.json().data.id}`)).json().data;
+  assert.equal(job.status,'UPLOADED');assert.ok(job.columns.length);return job;
+}
+async function validateCsv(csrf,worker,job,mapping,mode='ADD_ONLY'){
+  const response=await request('POST',`/api/v1/schools/${schoolA}/imports/${job.id}/validate`,{expectedVersion:job.version,mapping,mode},csrf,{'idempotency-key':crypto.randomUUID()});
+  assert.equal(response.statusCode,202,response.body);await drainSchool(worker);
+  const current=(await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`)).json().data;
+  assert.equal(current.status,'READY',JSON.stringify(current));assert.ok(current.previewHash);return current;
+}
+async function commitCsv(csrf,worker,job){
+  const key=crypto.randomUUID(),body={expectedVersion:job.version,previewHash:job.previewHash};
+  const first=await request('POST',`/api/v1/schools/${schoolA}/imports/${job.id}/commit`,body,csrf,{'idempotency-key':key});assert.equal(first.statusCode,202,first.body);
+  const replay=await request('POST',`/api/v1/schools/${schoolA}/imports/${job.id}/commit`,body,csrf,{'idempotency-key':key});assert.equal(replay.statusCode,202);assert.deepEqual(replay.json().data,first.json().data);
+  await drainSchool(worker);return (await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`)).json().data;
+}
+const studentMapping=['studentCode','fullName','dateOfBirth','guardianName','guardianPhone'].map(name=>({sourceColumn:name,targetField:name}));
+test('B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely',async()=>{
+  const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner(),prefix=crypto.randomUUID();
+  try{
+    const cls=await request('POST',`/api/v1/schools/${schoolA}/classes`,{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`im-${prefix}`,name:'Lớp import giả',capacity:4},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(cls.statusCode,201);let target=cls.json().data;
+    const text=`studentCode,fullName,dateOfBirth,guardianName,guardianPhone\n${prefix}-1,Cùng tên giả,30/09/2011,Cùng liên hệ giả,0912222222\n${prefix}-2,Cùng tên giả,2011-09-30,Cùng liên hệ giả,0912222222\n`;
+    let job=await importCsv(csrf,worker,text,'STUDENTS',target.id);job=await validateCsv(csrf,worker,job,studentMapping);
+    assert.deepEqual(job.summary,{added:2,updated:0,skipped:0,invalid:0,processed:0});
+    const edited=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${target.id}`,{expectedVersion:target.version,name:'Đổi sau preview'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200);target=edited.json().data;
+    const stale=await request('POST',`/api/v1/schools/${schoolA}/imports/${job.id}/commit`,{expectedVersion:job.version,previewHash:job.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'STALE_PREVIEW');
+    job=await validateCsv(csrf,worker,job,studentMapping);job=await commitCsv(csrf,worker,job);assert.equal(job.status,'COMPLETED');assert.equal(job.summary.processed,2);
+    const saved=await db.transaction(tx=>tx.query(`SELECT s.id,s.date_of_birth,g.id AS guardian_id,r.status,r.can_receive_info FROM app.students s
+      JOIN app.guardian_relationships r ON r.school_id=s.school_id AND r.student_id=s.id JOIN app.guardians g ON g.school_id=r.school_id AND g.id=r.guardian_id
+      WHERE s.school_id=$1 AND s.student_code=ANY($2)`,[schoolA,[`${prefix}-1`,`${prefix}-2`]]),{schoolId:schoolA});
+    assert.equal(saved.rowCount,2);assert.notEqual(saved.rows[0].id,saved.rows[1].id);assert.notEqual(saved.rows[0].guardian_id,saved.rows[1].guardian_id);
+    for(const row of saved.rows){assert.equal(row.date_of_birth,'2011-09-30');assert.equal(row.status,'UNVERIFIED');assert.equal(row.can_receive_info,false);}
+    let duplicate=await importCsv(csrf,worker,text,'STUDENTS',target.id);duplicate=await validateCsv(csrf,worker,duplicate,studentMapping);assert.equal(duplicate.summary.skipped,2);
+    duplicate=await commitCsv(csrf,worker,duplicate);assert.equal(duplicate.status,'COMPLETED');assert.equal(duplicate.summary.added,0);
+    let invalid=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth,guardianName,guardianPhone\n,=cmd,31/02/2011,,\nBAD-${prefix},Ngày sinh lỗi giả,31/02/2011,,\nVALID-${prefix},Chưa được nhập vì batch lỗi,2011-01-01,,\n`,'STUDENTS',target.id);
+    invalid=await validateCsv(csrf,worker,invalid,studentMapping);assert.equal(invalid.summary.invalid,2);assert.equal(invalid.summary.added,1);
+    const rows=await request('GET',`/api/v1/schools/${schoolA}/imports/${invalid.id}/rows?limit=1`);assert.equal(rows.statusCode,200);assert.equal(rows.json().data[0].status,'INVALID');assert.equal(rows.json().data[0].errors[0].field,'studentCode');
+    const errors=await request('GET',`/api/v1/schools/${schoolA}/imports/${invalid.id}/errors-file`);assert.equal(errors.statusCode,200);assert.match(errors.body,/'=cmd/);
+    const blocked=await request('POST',`/api/v1/schools/${schoolA}/imports/${invalid.id}/commit`,{expectedVersion:invalid.version,previewHash:invalid.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(blocked.statusCode,422);
+    assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.students WHERE school_id=$1 AND student_code=$2',[schoolA,`VALID-${prefix}`]),{schoolId:schoolA})).rowCount,0);
+    const cancelled=await request('POST',`/api/v1/schools/${schoolA}/imports/${invalid.id}/cancel`,{expectedVersion:invalid.version,reason:'Huỷ import lỗi kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(cancelled.statusCode,200);assert.equal(cancelled.json().data.status,'CANCELLED');
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/imports?limit=1`)).statusCode,200);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolB}/imports/${job.id}`)).statusCode,404);
+  }finally{await worker.close();}
+});
+
+test('B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries',async()=>{
+  const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner();
+  try{
+    const mapping=['weekday','slot','startsAt','endsAt','subjectCode','staffCode'].map(name=>({sourceColumn:name,targetField:name}));
+    const text='weekday,slot,startsAt,endsAt,subjectCode,staffCode\n2,1,07:00,07:45,MATH,TEST-teacher-b\n';
+    let job=await importCsv(csrf,worker,text,'TIMETABLE',classA);job=await validateCsv(csrf,worker,job,mapping);assert.equal(job.summary.invalid,0);
+    job=await commitCsv(csrf,worker,job);assert.equal(job.status,'COMPLETED');
+    // A previous retained test run may already have applied this exact source.
+    if(job.summary.added){
+      const result=await db.transaction(tx=>tx.query('SELECT t.id,t.status,e.weekday,e.starts_at_local FROM app.import_rows r JOIN app.timetable_entries e ON e.school_id=r.school_id AND e.id=r.result_id JOIN app.timetable_versions t ON t.school_id=e.school_id AND t.id=e.timetable_id WHERE r.school_id=$1 AND r.import_id=$2',[schoolA,job.id]),{schoolId:schoolA});
+      assert.equal(result.rowCount,1);assert.equal(result.rows[0].status,'DRAFT');assert.equal(result.rows[0].weekday,2);
+    }else assert.equal(job.summary.skipped,1);
+    let retry=await importCsv(csrf,worker,text,'TIMETABLE',classA);retry=await validateCsv(csrf,worker,retry,mapping);retry=await commitCsv(csrf,worker,retry);assert.equal(retry.status,'COMPLETED');assert.equal(retry.summary.skipped,1);
+    let invalid=await importCsv(csrf,worker,'weekday,slot,startsAt,endsAt,subjectCode,staffCode\n3,1,07:00,07:45,MATH,TEST-teacher-b\n3,2,07:30,08:15,MATH,TEST-teacher-b\n','TIMETABLE',classA);
+    invalid=await validateCsv(csrf,worker,invalid,mapping);assert.equal(invalid.summary.invalid,1);
+  }finally{await worker.close();}
+});
+
+test('B2 imports update only verified codes, create class drafts and staff invitations with work profiles',async()=>{
+  const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner(),prefix=crypto.randomUUID();
+  try{
+    let classes=await importCsv(csrf,worker,`code,name,gradeCode,capacity\nC-${prefix},Lớp mới import giả,10,10\n`,'CLASSES');
+    classes=await validateCsv(csrf,worker,classes,['code','name','gradeCode','capacity'].map(name=>({sourceColumn:name,targetField:name})));
+    classes=await commitCsv(csrf,worker,classes);assert.equal(classes.status,'COMPLETED');
+    const cls=(await db.transaction(tx=>tx.query('SELECT id,status FROM app.classes WHERE school_id=$1 AND year_id=$2 AND code=$3',[schoolA,seedId('year:A'),`C-${prefix}`]),{schoolId:schoolA})).rows[0];assert.equal(cls.status,'DRAFT');
+    let students=await importCsv(csrf,worker,`studentCode,fullName\nS-${prefix},Họ tên trước giả\n`,'STUDENTS',cls.id);
+    const mapping=['studentCode','fullName'].map(name=>({sourceColumn:name,targetField:name}));students=await validateCsv(csrf,worker,students,mapping);students=await commitCsv(csrf,worker,students);assert.equal(students.status,'COMPLETED');
+    let update=await importCsv(csrf,worker,`studentCode,fullName\nS-${prefix},Họ tên sau giả\n`,'STUDENTS',cls.id);update=await validateCsv(csrf,worker,update,mapping,'UPSERT_VERIFIED_CODE');assert.equal(update.summary.updated,1);
+    update=await commitCsv(csrf,worker,update);assert.equal(update.status,'COMPLETED');assert.equal(update.summary.updated,1);
+    const student=(await db.transaction(tx=>tx.query('SELECT full_name FROM app.students WHERE school_id=$1 AND student_code=$2',[schoolA,`S-${prefix}`]),{schoolId:schoolA})).rows[0];assert.equal(student.full_name,'Họ tên sau giả');
+    const email=`import-${prefix}@example.invalid`;
+    const roleCode=`import-role-${prefix}`;
+    const role=await request('POST',`/api/v1/schools/${schoolA}/roles`,{code:roleCode,label:'Nhân sự import kiểm thử',permissions:[{action:'school.read',scopes:['SCHOOL']}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(role.statusCode,201);
+    let staff=await importCsv(csrf,worker,`email,staffCode,workDisplayName,roleCode\n${email},T-${prefix},Nhân sự import giả,${roleCode}\n`,'STAFF');
+    staff=await validateCsv(csrf,worker,staff,['email','staffCode','workDisplayName','roleCode'].map(name=>({sourceColumn:name,targetField:name})));assert.equal(staff.summary.invalid,0);
+    staff=await commitCsv(csrf,worker,staff);assert.equal(staff.status,'COMPLETED');
+    assert.equal((await db.app.query('SELECT id FROM identity.users WHERE email_normalized=$1',[email])).rowCount,0);
+    const invitation=(await db.transaction(tx=>tx.query('SELECT id,work_profile,status FROM app.staff_invitations WHERE school_id=$1 AND email_normalized=$2',[schoolA,email]),{schoolId:schoolA})).rows[0];assert.equal(invitation.status,'PENDING');assert.equal(invitation.work_profile.staffCode,`T-${prefix}`);
+    const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.id}`])).rows[0].encrypted_payload;
+    const token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token');
+    const anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+    const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Danh tính import giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
+    const member=(await db.transaction(tx=>tx.query('SELECT m.staff_code,m.work_display_name FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,email]),{schoolId:schoolA})).rows[0];assert.equal(member.staff_code,`T-${prefix}`);assert.equal(member.work_display_name,'Nhân sự import giả');
+  }finally{await worker.close();}
+});
+
+test('B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority',async()=>{
+  const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner(),prefix=crypto.randomUUID();
+  try{
+    const text='code,name,gradeCode,capacity\n'+Array.from({length:501},(_,i)=>`R-${prefix}-${i},Lớp resume giả,10,10`).join('\n')+'\n';
+    let job=await importCsv(csrf,worker,text,'CLASSES');job=await validateCsv(csrf,worker,job,['code','name','gradeCode','capacity'].map(name=>({sourceColumn:name,targetField:name})));assert.equal(job.summary.invalid,0);
+    const started=await request('POST',`/api/v1/schools/${schoolA}/imports/${job.id}/commit`,{expectedVersion:job.version,previewHash:job.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(started.statusCode,202);
+    const wp=new Permissions(worker.db),wc=new Commands(worker.db),wf=new FilesService(worker.db,wp,wc),wi=new ImportsService(worker.db,wp,wc,wf);
+    const importer=new ImportWorker(worker.db,wp,wi,new InvitationsService(worker.db,new IdentityService(worker.db),wp));
+    let guarded=0;worker.register('COMMIT_IMPORT',async(event,guard)=>importer.run('COMMIT_IMPORT',event.school_id,String(event.payload.importId),async tx=>{
+      await guard(tx);if(++guarded===103)throw new Problem(409,'TEST_INTERRUPTION');
+    }));
+    const event=await worker.claim(schoolA);assert.equal(event.kind,'COMMIT_IMPORT');await worker.run(event);
+    let partial=(await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`)).json().data;assert.equal(partial.status,'FAILED');assert.equal(partial.summary.processed,100);
+    await db.transaction(tx=>tx.query("UPDATE app.outbox_events SET run_after=now() WHERE school_id=$1 AND id=$2",[schoolA,event.id]),{schoolId:schoolA});
+    worker.register('COMMIT_IMPORT',(event,guard)=>importer.run('COMMIT_IMPORT',event.school_id,String(event.payload.importId),guard));await drainSchool(worker);
+    partial=(await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`)).json().data;assert.equal(partial.status,'COMPLETED');assert.equal(partial.summary.processed,501);
+    const count=await db.transaction(tx=>tx.query('SELECT count(*)::int AS n,count(DISTINCT result_id)::int AS distinct_n FROM app.import_rows WHERE school_id=$1 AND import_id=$2 AND status=\'APPLIED\'',[schoolA,job.id]),{schoolId:schoolA});assert.deepEqual(count.rows[0],{n:501,distinct_n:501});
+    let revoked=await importCsv(csrf,worker,`code,name,gradeCode,capacity\nREVOKE-${prefix},Không được áp dụng,10,10\n`,'CLASSES');revoked=await validateCsv(csrf,worker,revoked,['code','name','gradeCode','capacity'].map(name=>({sourceColumn:name,targetField:name})));
+    const queued=await request('POST',`/api/v1/schools/${schoolA}/imports/${revoked.id}/commit`,{expectedVersion:revoked.version,previewHash:revoked.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(queued.statusCode,202);
+    try{await db.app.query("UPDATE platform.schools SET status='SUSPENDED' WHERE id=$1",[schoolA]);await drainSchool(worker);}
+    finally{await db.app.query("UPDATE platform.schools SET status='ACTIVE' WHERE id=$1",[schoolA]);}
+    const failed=(await request('GET',`/api/v1/schools/${schoolA}/imports/${revoked.id}`)).json().data;assert.equal(failed.status,'FAILED');assert.equal(failed.summary.processed,0);
+    assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.classes WHERE school_id=$1 AND code=$2',[schoolA,`REVOKE-${prefix}`]),{schoolId:schoolA})).rowCount,0);
+  }finally{await worker.close();}
 });

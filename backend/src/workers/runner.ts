@@ -9,6 +9,10 @@ import { Problem } from '../common/problem';
 import { Permissions } from '../common/permissions';
 import { Commands } from '../common/commands';
 import { FilesService } from '../modules/files/files.service';
+import { ImportsService } from '../modules/imports/imports.service';
+import { ImportWorker } from '../modules/imports/import-worker';
+import { InvitationsService } from '../modules/identity/invitations.service';
+import { IdentityService } from '../modules/identity/identity.service';
 
 interface Job extends Row {id:string;school_id:string;kind:string;payload:Record<string,unknown>;attempts:number}
 interface Mail extends Row {id:string;school_id:string|null;template_key:string;encrypted_payload:string;attempts:number}
@@ -17,8 +21,11 @@ export class WorkerRunner {
   readonly owner=crypto.randomUUID();
   private readonly handlers=new Map<string,JobHandler>();
   constructor(readonly db=new Database('worker')){
-    const files=new FilesService(db,new Permissions(db),new Commands(db));
+    const policy=new Permissions(db),commands=new Commands(db),files=new FilesService(db,policy,commands);
     this.register('PROCESS_FILE',(job,guard)=>files.processFile(job.school_id,String(job.payload.fileId),String(job.payload.userId),guard));
+    const imports=new ImportsService(db,policy,commands,files);
+    const importer=new ImportWorker(db,policy,imports,new InvitationsService(db,new IdentityService(db),policy));
+    for(const kind of ['PARSE_IMPORT','VALIDATE_IMPORT','COMMIT_IMPORT'])this.register(kind,(job,guard)=>importer.run(kind,job.school_id,String(job.payload.importId),guard));
   }
   register(kind:string,handler:JobHandler){this.handlers.set(kind,handler);}
   async claim(schoolId:string):Promise<Job|undefined>{

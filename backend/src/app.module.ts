@@ -9,6 +9,7 @@ import { InvitationsService } from './modules/identity/invitations.service';
 import { StaffService } from './modules/staff/staff.service';
 import { TransitionsService } from './modules/students/transitions.service';
 import { FilesService } from './modules/files/files.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService];
+import { ImportsService } from './modules/imports/imports.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService];
 @Module({providers:services,exports:services})
 export class AppModule {}

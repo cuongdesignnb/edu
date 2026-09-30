@@ -7,10 +7,12 @@ import { hashToken,randomToken,hashPassword,encryptMail } from '../../common/sec
 import { Problem,validation } from '../../common/problem';
 import type { RequestContext,Handler } from '../../api.router';
 
-interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null}
+export interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null}
+export interface WorkProfile {staffCode?:string;workDisplayName?:string;workPhone?:string;department?:string}
 interface InvitationRow {
   id:string;school_id:string;email_normalized:string;proposed_assignments:Proposal[];status:string;
   expires_at:Date;invited_by:string;accepted_user_id:string|null;version:number;created_at:Date;updated_at:Date;
+  work_profile:WorkProfile;
 }
 export function invitationDto(invitation:InvitationRow,schoolName?:string,deliveryState?:string){
   return {id:invitation.id,version:invitation.version,createdAt:iso(invitation.created_at),updatedAt:iso(invitation.updated_at),
@@ -66,10 +68,13 @@ export class InvitationsService {
           VALUES($1,$2,$3,'ACTIVE',now()) RETURNING *`,[invitation.email_normalized,String(c.body.displayName).trim(),newHash]);
       }
       // Existing identities retain all passwords and memberships at other schools.
-      const member=(await tx.query<{id:string;status:string}>(`INSERT INTO app.memberships(school_id,user_id,work_display_name,status,joined_at)
-        VALUES($1,$2,$3,'ACTIVE',now()) ON CONFLICT(school_id,user_id) DO UPDATE SET
-        work_display_name=app.memberships.work_display_name RETURNING id,status`,[school.id,user!.id,user!.display_name])).rows[0]!;
+      const profile=invitation.work_profile;
+      const member=(await tx.query<{id:string;status:string;staff_code:string|null}>(`INSERT INTO app.memberships(school_id,user_id,work_display_name,staff_code,work_phone,department,status,joined_at)
+        VALUES($1,$2,$3,$4,$5,$6,'ACTIVE',now()) ON CONFLICT(school_id,user_id) DO UPDATE SET
+        work_display_name=app.memberships.work_display_name RETURNING id,status,staff_code`,[school.id,user!.id,profile.workDisplayName??user!.display_name,
+          profile.staffCode??null,profile.workPhone??null,profile.department??null])).rows[0]!;
       if(member.status!=='ACTIVE')throw new Problem(409,'MEMBERSHIP_REACTIVATION_REQUIRED');
+      if(profile.staffCode&&member.staff_code!==profile.staffCode)throw new Problem(409,'STAFF_CODE_CONFLICT');
       const inviterGrants=await this.permissions.grants(tx,invitation.invited_by,school.id);
       const platformAdmin=(await tx.query(`SELECT g.id FROM platform.operator_grants g JOIN identity.users u ON u.id=g.user_id
         WHERE g.user_id=$1 AND u.status='ACTIVE' AND g.action_code='platform.admins.manage' AND g.revoked_at IS NULL
@@ -107,10 +112,10 @@ export class InvitationsService {
       return {id:invitation.id,status:'ACCEPTED'};
     },{schoolId:school.id});
   }
-  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal){
+  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal,profile:WorkProfile={}){
     const token=randomToken(),id=crypto.randomUUID();
-    const invitation=await one<InvitationRow>(tx,`INSERT INTO app.staff_invitations(id,school_id,email_normalized,token_hash,proposed_assignments,expires_at,invited_by)
-      VALUES($1,$2,$3,$4,$5,now()+interval '48 hours',$6) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify([proposal]),inviterId]);
+    const invitation=await one<InvitationRow>(tx,`INSERT INTO app.staff_invitations(id,school_id,email_normalized,token_hash,proposed_assignments,expires_at,invited_by,work_profile)
+      VALUES($1,$2,$3,$4,$5,now()+interval '48 hours',$6,$7) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify([proposal]),inviterId,profile]);
     const school=await one<{slug:string}>(tx,'SELECT slug FROM platform.schools WHERE id=$1',[schoolId]);
     await tx.query(`INSERT INTO identity.mail_outbox(school_id,template_key,encrypted_payload,dedupe_key)
       VALUES($1,'STAFF_INVITATION',$2,$3)`,[schoolId,encryptMail({email:email.trim().toLowerCase(),schoolSlug:school!.slug,

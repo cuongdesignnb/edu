@@ -2297,8 +2297,10 @@
         "SC26"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "createImport",
@@ -2306,8 +2308,10 @@
         "SC27"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "getImport",
@@ -2315,8 +2319,10 @@
         "SC28"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "validateImport",
@@ -2324,8 +2330,10 @@
         "SC27"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "listImportRows",
@@ -2334,8 +2342,10 @@
         "SC28"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "commitImport",
@@ -2343,8 +2353,10 @@
         "SC27"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "cancelImport",
@@ -2352,8 +2364,10 @@
         "SC28"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "downloadImportErrors",
@@ -2361,8 +2375,10 @@
         "SC28"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/imports-integration.log"
+      ]
     },
     {
       "operationId": "getSchoolReport",
@@ -3331,7 +3347,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC27",
@@ -3346,7 +3362,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC28",
@@ -3360,7 +3376,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC29",

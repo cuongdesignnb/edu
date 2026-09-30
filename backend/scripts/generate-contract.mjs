@@ -27,6 +27,11 @@ spec.components.schemas.GrantView.properties.revokedAt = { type:'string',format:
 spec.paths['/schools/{schoolId}/guardians'].post.parameters.push({name:'classId',in:'query',required:false,schema:{type:'string',format:'uuid'}});
 spec.components.schemas.File.properties.scanStatus={type:'string',enum:['NOT_SCANNED','SCANNED','GENERATED']};
 spec.components.schemas.File.properties.rejectionCode={type:'string',nullable:true};
+spec.components.schemas.ImportJob.properties.yearId={type:'string',format:'uuid'};
+spec.components.schemas.ImportJob.properties.classId={type:'string',format:'uuid'};
+spec.components.schemas.ImportJob.properties.columns={type:'array',items:{type:'string'}};
+spec.components.schemas.ImportRow.properties.decision={type:'string',enum:['ADD','UPDATE','SKIP']};
+spec.components.schemas.ImportRow.properties.matchedId={type:'string',format:'uuid'};
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
