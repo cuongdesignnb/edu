@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 36,
+  "candidateCount": 38,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -2294,7 +2294,17 @@
         "fromYearId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "rolloverPreview",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2309,7 +2319,17 @@
         "decisions: { studentId: ID; action: \"promote\" | \"retain\" | \"leave\"; targetClassId?: ID }[]"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "rolloverApply",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",

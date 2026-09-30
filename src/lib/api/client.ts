@@ -19,6 +19,8 @@ const blobs=new WeakMap<Blob,string>();
 export function setStaffCsrf(value:string|null){staffCsrf=value;}
 export function authenticationChanged(){authEpoch++;staffCsrf=null;bootstrapCsrf=null;retries.clear();authListeners.forEach(fn=>fn());}
 export function onAuthenticationChanged(fn:()=>void){authListeners.add(fn);return()=>{authListeners.delete(fn);};}
+/** Bind a composite read/command to the same authenticated identity throughout. */
+export function captureStaffAccess(){const epoch=authEpoch;return {epoch,assertCurrent(){if(epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi. Vui lòng tải lại dữ liệu trước khi tiếp tục.');}};}
 function canonical(value:unknown):string{
   if(value===null||typeof value!=='object')return JSON.stringify(value);
   if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';

@@ -81,8 +81,8 @@ beforeEach(async()=>{
   await pool.query('DELETE FROM identity.rate_limit_buckets');
 });
 
-test('B5 all 264 supplied operation IDs have registered real handlers',async()=>{
-  assert.equal(operations.length,264);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+test('B5 all 264 supplied operations and the explicit SC07 preview extension have registered real handlers',async()=>{
+  assert.equal(operations.length,265);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -1875,5 +1875,38 @@ test('B6 purpose-bound form pickers use current write authority, exclude contact
     const subjects=await request('GET',`${base}/dictionaries/subjects?purpose=assignment-picker&limit=2`);assert.equal(subjects.statusCode,200,subjects.body);for(const subject of subjects.json().data)assert.ok(!['CHAOCO','SHL'].includes(subject.code.toUpperCase()));
     assert.equal((await request('GET',`${base}/dictionaries/subjects?purpose=class-picker`)).statusCode,422);assert.equal((await request('GET',`${base}/members?purpose=wrong-purpose`)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/members?purpose=assignment-picker`)).statusCode,404);
     jar.set('edu_staff',adminCookie);const revoked=await post(`grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Thu hồi quyền bộ chọn kiểm thử'});assert.equal(revoked.statusCode,200,revoked.body);jar.delete('edu_staff');await login(email);assert.equal((await request('GET',`${base}/members?purpose=assignment-picker`)).statusCode,403);
+  }finally{jar.set('edu_staff',adminCookie);}
+});
+
+test('B6 rollover preview uses exact end-year enrollment, minimal workflow authority and immediate revocation',async()=>{
+  const csrf=await login('admin-a@example.invalid'),base=`/api/v1/schools/${schoolA}`,prefix=crypto.randomUUID(),post=(suffix,body)=>request('POST',`${base}/${suffix}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const createYear=async()=>{const r=await post('academic-years',{code:`ROLL-${crypto.randomUUID()}`,name:'Năm chuyển tiếp giả',...await unusedYearRange(schoolA)});assert.equal(r.statusCode,201,r.body);return r.json().data;};
+  const source=await createYear(),target=await createYear(),archivedYear=await createYear();
+  const createClass=async(yearId)=>{const r=await post('classes',{yearId,gradeLevelId:seedId('grade:A'),code:`ROLL-${crypto.randomUUID()}`,name:'Lớp chuyển năm giả',capacity:10});assert.equal(r.statusCode,201,r.body);return r.json().data;};
+  const from=await createClass(source.id),other=await createClass(source.id),to=await createClass(target.id),archived=await createClass(target.id);
+  const archivedClass=await post(`classes/${archived.id}/archive`,{expectedVersion:archived.version,reason:'Lưu trữ lớp đích kiểm thử'});assert.equal(archivedClass.statusCode,200,archivedClass.body);
+  assert.equal((await post(`academic-years/${archivedYear.id}/archive`,{expectedVersion:archivedYear.version,reason:'Lưu trữ năm đích kiểm thử'})).statusCode,200);
+  const createStudent=async(cls,startsOn)=>{const r=await post('students',{studentCode:`ROLL-${crypto.randomUUID()}`,fullName:`Học sinh cuối năm giả ${crypto.randomUUID()}`,dateOfBirth:'2010-01-01',preferredName:'Nhãn hồ sơ riêng',initialClassId:cls.id,startsOn});assert.equal(r.statusCode,201,r.body);return r.json().data;};
+  const staying=await createStudent(from,source.startsOn),moved=await createStudent(from,source.startsOn),existing=await createStudent(to,target.startsOn);
+  const enrollment=(await request('GET',`${base}/students/${moved.id}/enrollments`)).json().data[0],effectiveOn=source.startsOn.slice(0,4)+'-10-01';
+  const transfer=await post('transfers',{studentId:moved.id,fromEnrollmentId:enrollment.id,toClassId:other.id,effectiveOn,reason:'Chuyển lớp trước cuối năm giả'});assert.equal(transfer.statusCode,201,transfer.body);
+  const applied=await post(`transfers/${transfer.json().data.id}/approve`,{expectedVersion:transfer.json().data.version});assert.equal(applied.statusCode,200,applied.body);
+  const role=await post('roles',{code:`roll-role-${prefix}`,label:'Chỉ chuyển năm giả',permissions:[{action:'year.manage',scopes:['SCHOOL']}]});assert.equal(role.statusCode,201,role.body);
+  const email=`rollover-${prefix}@example.invalid`,invitation=await post('invitations',{email,roleId:role.json().data.id,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(invitation.statusCode,201,invitation.body);
+  const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0].encrypted_payload,token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token'),anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Người chuẩn bị năm học giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
+  const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');await login(email);const readerCookie=jar.get('edu_staff');
+  try{
+    for(const suffix of ['students','classes','members','academic-years'])assert.equal((await request('GET',`${base}/${suffix}`)).statusCode,403,suffix);
+    const read=await request('GET',`${base}/academic-years/${source.id}/rollover-preview`);assert.equal(read.statusCode,200,read.body);const data=read.json().data;
+    assert.equal(data.source.id,source.id);assert.equal(data.referenceDate,source.endsOn.slice(0,4)+'-05-31');assert.equal(Object.hasOwn(data.source,'studentCount'),false);
+    assert.deepEqual(data.sourceClasses.find(c=>c.id===from.id).students.map(s=>s.id),[staying.id]);assert.deepEqual(data.sourceClasses.find(c=>c.id===other.id).students.map(s=>s.id),[moved.id]);
+    for(const cls of data.sourceClasses)for(const s of cls.students)assert.deepEqual(Object.keys(s).sort(),['fullName','id','status','studentCode']);
+    assert.equal(data.targets.some(t=>t.year.id===archivedYear.id),false);const receiving=data.targets.find(t=>t.year.id===target.id);assert.ok(receiving);assert.equal(receiving.classes.some(c=>c.id===archived.id),false);assert.equal(receiving.classes.find(c=>c.id===to.id).studentCount,1);assert.equal(data.sourceClasses.some(c=>c.students.some(s=>s.id===existing.id)),false);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolB}/academic-years/${seedId('year:B')}/rollover-preview`)).statusCode,404);
+    const own=(await request('GET','/api/v1/me/context')).json().data.memberships.find(m=>m.schoolId===schoolA).grants[0];jar.set('edu_staff',adminCookie);
+    const revoked=await post(`grants/${own.id}/revoke`,{expectedVersion:own.version,reason:'Kết thúc quyền chuyển năm giả'});assert.equal(revoked.statusCode,200,revoked.body);jar.set('edu_staff',readerCookie);
+    assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
+    jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
   }finally{jar.set('edu_staff',adminCookie);}
 });

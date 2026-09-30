@@ -851,7 +851,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization"
       ]
     },
     {
@@ -874,7 +875,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization"
       ]
     },
     {
@@ -886,7 +888,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization"
       ]
     },
     {
@@ -3106,6 +3109,17 @@
       "evidence": [
         "qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending"
       ]
+    },
+    {
+      "operationId": "getRolloverPreview",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization"
+      ]
     }
   ],
   "screens": [
@@ -3466,7 +3480,8 @@
         "createRollover",
         "getRollover",
         "validateRollover",
-        "commitRollover"
+        "commitRollover",
+        "getRolloverPreview"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

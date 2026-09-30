@@ -72,10 +72,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage; qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries |
 | createDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | updateDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
-| createRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
 | getRollover | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| commitRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
+| commitRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
 | listMembers | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries |
 | getMember | SC11 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | updateMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
@@ -268,6 +268,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | downloadParentDocument | PA13 | TESTED | qa/backend/parent-integration.log |
 | getPublicSchool | SY01 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | getPublicAnnouncement | SY02 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| getRolloverPreview | SC07 | TESTED | qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

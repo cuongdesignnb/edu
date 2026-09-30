@@ -7,6 +7,7 @@ import { hashToken } from '../../common/security';
 import { Problem,validation,notFound } from '../../common/problem';
 import { StaffService } from '../staff/staff.service';
 import { placeEnrollment,checkCapacity } from './enrollment';
+import { rolloverPreview } from './rollover-preview';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -19,7 +20,7 @@ export class TransitionsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly staff:StaffService){}
   handlers():Record<string,Handler>{
     return Object.fromEntries(['listTransfers','createTransfer','approveTransfer','rejectTransfer','listHandovers','createHandover','approveHandover',
-      'createRollover','getRollover','validateRollover','commitRollover'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));
+      'getRolloverPreview','createRollover','getRollover','validateRollover','commitRollover'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async handle(c:RequestContext):Promise<Result>{
@@ -35,6 +36,7 @@ export class TransitionsService {
       return this.policy.require(tx,c.principal!,c.operation.permission,{schoolId});
     };
     const work=async(tx:Transaction):Promise<Result>=>{
+      if(op==='getRolloverPreview')return {data:await rolloverPreview(tx,schoolId,c.params.yearId!)};
       if(op==='listTransfers')return listResource(tx,transfer,schoolId,c.query,undefined,c.principal!.userId);
       if(op==='listHandovers')return listResource(tx,handover,schoolId,c.query,undefined,c.principal!.userId);
       if(op==='getRollover')return {data:this.rolloverDto(await getResource(tx,rollover,schoolId,c.params.rolloverId!))};
@@ -112,7 +114,7 @@ export class TransitionsService {
       const row=await one<Row>(tx,"UPDATE app.rollover_batches SET status='APPLIED',applied_at=now() WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,batch.id]);
       await audit(tx,c,'rollover',String(batch.id),{status:'APPLIED',count:preview.plan.length});return {data:this.rolloverDto(row!)};
     };
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,readOnly:true});
     return this.commands.execute(c,authorize,work);
   }
   private async validateTransfer(tx:Transaction,schoolId:string,from:Row,studentId:unknown,toClassId:unknown,date:string){

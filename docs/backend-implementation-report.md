@@ -31,6 +31,13 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
 
+## B6 rollover acknowledgement checkpoint
+
+- The latest PostgreSQL suite is **89/89**, exit0, zero skipped, in qa/backend/b6-rollover-integration.log. All 30 migrations were checksum/replay verified. Runner build, backend/frontend TypeScript and scoped lint exit0; 12 backend unit/contract and **38 frontend unit checks** completed with exit0.
+- The runtime contract preserves the supplied 264 operations and adds one explicit SC07 GET: getRolloverPreview, now **265 operations / 310 schemas**. Current SCHOOL year.manage reads a minimal, bounded end-year projection without obtaining ordinary student/class/member directory rights. Exact year-end enrollment after transfer, eligible target counts/archive exclusions, redaction, foreign school/subject denial and immediate revocation are tested on PostgreSQL.
+- The browser candidate retains each acknowledged create/validate/commit stage and its key through uncertain responses, verifies the returned plan and reports success only after APPLIED. Stale preview stops first; manual retry revalidates the known version. Authentication change blocks later stages and clears private memory. Unit evidence does not certify page-reload recovery, real network fault injection or browser E2E.
+- There are **38 candidate methods**, including **24 of 25 school methods**; the school overview remains to be connected. All **231 legacy methods and 118 core screens remain unactivated/unaccepted**. Root deploy merge, final URL, restart, backup/restore and performance acceptance remain NOT_RUN. No production deployment.
+
 ## B6 purpose-bound form pickers checkpoint
 
 - The latest actual PostgreSQL run is **88/88**, exit0, zero skipped, in qa/backend/b6-form-pickers-integration-final.log. All 30 migration checksums/replay were verified. The earlier 88/88 log predates the additional onDate boundary assertions; the final run includes them. Docker runner build, backend TypeScript/lint, 12 backend unit/contract and 31 frontend unit checks completed with exit0.

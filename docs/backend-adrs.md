@@ -447,3 +447,39 @@ Executed evidence: qa/backend/b6-form-pickers-integration-final.log contains
 school, immediate revocation and onDate boundary/invalid-date checks. Backend
 unit/contract checks are 12/12. Frontend unit checks are 31/31, with typecheck/lint
 exit0. The 36 candidate methods remain unactivated and are not browser acceptance.
+
+## ADR-033 — bounded rollover preview and acknowledged command stages
+
+The supplied 264 operations contain create/validate/commit rollover commands but
+no end-year workflow reader. getRolloverPreview is an explicit additional GET at
+/schools/{schoolId}/academic-years/{yearId}/rollover-preview, under current SCHOOL
+year.manage, matching the write contract. This does not grant directory reads.
+One repeatable-read transaction selects the exact non-cancelled source enrollment
+ending with the source year, minimal student ID/code/name/status and class/grade
+labels. It excludes birth dates, preferred names, family/contact fields and private
+notes. Eligible target years/classes exclude archives. Their enrollment counts
+use each target's actual first day. Unknown grade level is null. All source class
+statuses are included, matching the native plan validator, rather than silently
+omitting students enrolled in draft classes. Bounds return PREVIEW_TOO_LARGE;
+they never truncate a roster and present it as complete.
+
+The supplied handoff remains unchanged. Runtime OpenAPI explicitly contains 265
+operations and 310 schemas; progress tracks the new SC07 operation separately.
+No production rollout or permissions bypass accompanies the extension.
+
+The browser candidate retains the acknowledged batch ID/version and independent
+create/validate/commit keys in memory. An uncertain response retries only that
+stage when the user retries. STALE_PREVIEW is returned first; a later user retry
+revalidates the acknowledged version without fetching/overwriting a new version.
+Success requires APPLIED and a matching returned plan. Counts are derived from
+that committed plan. Authentication changes clear private preview/flow memory
+and stop subsequent stages. This is not durable recovery across page reloads or
+completed browser acceptance; those remain separate work.
+
+Executed evidence: qa/backend/b6-rollover-integration.log contains 89/89 checks,
+exit0 and zero skipped, including exact end-year membership after transfer,
+target counts/archive exclusions, write-only role redaction, cross-school denial,
+subject denial and immediate revocation. Backend unit/contract is 12/12; frontend
+unit is 38/38 including seven rollover checks for uncertain acknowledgements,
+stale preview, changed authentication and substituted plans. Typecheck/lint and
+Docker runner build completed with exit0.

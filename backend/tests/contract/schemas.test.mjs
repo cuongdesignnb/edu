@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
-test('all operation IDs are unique',()=>assert.equal(new Set(operations.map(op=>op.id)).size,264));
+test('all operation IDs are unique, including the explicit rollover preview extension',()=>{
+  assert.equal(operations.length,265);assert.equal(new Set(operations.map(op=>op.id)).size,265);
+  assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
+});
 test('login rejects spoofed role, school and unknown fields',()=>{
   for(const field of ['actorId','role','schoolId'])assert.throws(()=>validateSchema('LoginRequest',{
     email:'test@example.invalid',password:'anything',[field]:'spoofed',

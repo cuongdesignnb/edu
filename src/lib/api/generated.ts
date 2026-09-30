@@ -304,6 +304,12 @@ export interface ApiSchemas {
   "ParentDutyBatch": { "items": Array<ApiSchemas["ParentDuty"]>; };
   "GroupDutyAssignment": { "id"?: string; "groupId": string; "dutyDate": string; "task": string; "status"?: "ASSIGNED" | "DONE" | "CANCELLED"; };
   "SupportAccessRevoke": { "expectedVersion": number; "reason": string; "decision"?: "REVOKE" | "REJECT"; };
+  "RolloverPreviewStudent": { "id": string; "studentCode": string; "fullName": string; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; };
+  "RolloverPreviewSourceClass": { "id": string; "name": string; "gradeLevel": (number) | null; "students": Array<ApiSchemas["RolloverPreviewStudent"]>; };
+  "RolloverPreviewTargetClass": { "id": string; "name": string; "gradeLevelId": string; "studentCount": number; };
+  "RolloverPreviewTarget": { "year": ApiSchemas["Year"]; "classes": Array<ApiSchemas["RolloverPreviewTargetClass"]>; };
+  "RolloverPreview": { "source": ApiSchemas["Year"]; "referenceDate": string; "sourceClasses": Array<ApiSchemas["RolloverPreviewSourceClass"]>; "targets": Array<ApiSchemas["RolloverPreviewTarget"]>; "grades": Array<ApiSchemas["DictionaryItem"]>; };
+  "RolloverPreviewResponse": { "data": ApiSchemas["RolloverPreview"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -2682,6 +2688,15 @@ export const apiOperations = {
     "response": "ParentAnnouncement",
     "list": false,
     "permission": "public"
+  },
+  "getRolloverPreview": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/rollover-preview",
+    "auth": "staff",
+    "request": null,
+    "response": "RolloverPreview",
+    "list": false,
+    "permission": "year.manage"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

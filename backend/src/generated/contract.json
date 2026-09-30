@@ -11562,6 +11562,173 @@
         "reason"
       ],
       "additionalProperties": false
+    },
+    "RolloverPreviewStudent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "studentCode": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "LEFT",
+            "GRADUATED",
+            "ARCHIVED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "studentCode",
+        "fullName",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "RolloverPreviewSourceClass": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "gradeLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "nullable": true
+        },
+        "students": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/RolloverPreviewStudent"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "gradeLevel",
+        "students"
+      ],
+      "additionalProperties": false
+    },
+    "RolloverPreviewTargetClass": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "gradeLevelId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "studentCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "gradeLevelId",
+        "studentCount"
+      ],
+      "additionalProperties": false
+    },
+    "RolloverPreviewTarget": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "$ref": "#/components/schemas/Year"
+        },
+        "classes": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/components/schemas/RolloverPreviewTargetClass"
+          }
+        }
+      },
+      "required": [
+        "year",
+        "classes"
+      ],
+      "additionalProperties": false
+    },
+    "RolloverPreview": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/components/schemas/Year"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "sourceClasses": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/components/schemas/RolloverPreviewSourceClass"
+          }
+        },
+        "targets": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/components/schemas/RolloverPreviewTarget"
+          }
+        },
+        "grades": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/components/schemas/DictionaryItem"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "referenceDate",
+        "sourceClasses",
+        "targets",
+        "grades"
+      ],
+      "additionalProperties": false
+    },
+    "RolloverPreviewResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/RolloverPreview"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -55122,6 +55289,148 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ParentAnnouncementResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getRolloverPreview",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/rollover-preview",
+      "title": "Danh sách cuối năm để chuẩn bị xếp lớp",
+      "tag": "School",
+      "permission": "year.manage",
+      "scope": "school",
+      "request": null,
+      "response": "RolloverPreview",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC07"
+      ],
+      "description": "Minimal end-year roster under current school year.manage; no family/contact fields.",
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolloverPreviewResponse"
               }
             }
           }

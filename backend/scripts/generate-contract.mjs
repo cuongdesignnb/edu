@@ -168,6 +168,22 @@ const supportReadIds=['getSchoolProfile','getSchoolSettings','listClasss','getCl
 for(const id of supportReadIds){const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);if(!op)throw new Error(`Support metadata operation missing: ${id}`);op.parameters.push({name:'X-Support-Access',in:'header',schema:{type:'string',format:'uuid'},description:'Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked.'});}
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
 const operations = JSON.parse(await fs.readFile(path.join(source, 'api/operations.json'), 'utf8'));
+// ADR-033: SC07 needs a bounded end-year roster without borrowing directory read rights.
+const previewPath='/schools/{schoolId}/academic-years/{yearId}/rollover-preview';
+const object=(properties,required=Object.keys(properties))=>({type:'object',properties,required,additionalProperties:false});
+const uuid={type:'string',format:'uuid'},label={type:'string'},count={type:'integer',minimum:0};
+spec.components.schemas.RolloverPreviewStudent=object({id:uuid,studentCode:label,fullName:label,status:structuredClone(spec.components.schemas.Student.properties.status)});
+spec.components.schemas.RolloverPreviewSourceClass=object({id:uuid,name:label,gradeLevel:{type:'integer',minimum:1,maximum:12,nullable:true},students:{type:'array',maxItems:2000,items:{$ref:'#/components/schemas/RolloverPreviewStudent'}}});
+spec.components.schemas.RolloverPreviewTargetClass=object({id:uuid,name:label,gradeLevelId:uuid,studentCount:count});
+spec.components.schemas.RolloverPreviewTarget=object({year:{$ref:'#/components/schemas/Year'},classes:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/RolloverPreviewTargetClass'}}});
+spec.components.schemas.RolloverPreview=object({source:{$ref:'#/components/schemas/Year'},referenceDate:{type:'string',format:'date'},sourceClasses:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/RolloverPreviewSourceClass'}},targets:{type:'array',maxItems:100,items:{$ref:'#/components/schemas/RolloverPreviewTarget'}},grades:{type:'array',maxItems:100,items:{$ref:'#/components/schemas/DictionaryItem'}}});
+spec.components.schemas.RolloverPreviewResponse=object({data:{$ref:'#/components/schemas/RolloverPreview'},requestId:label});
+const previewOperation=structuredClone(spec.paths['/schools/{schoolId}/academic-years/{yearId}'].get);
+previewOperation.parameters=previewOperation.parameters.filter(p=>p.in==='path');
+Object.assign(previewOperation,{operationId:'getRolloverPreview',summary:'Danh sách cuối năm để chuẩn bị xếp lớp',description:'Minimal end-year roster under current school year.manage; no family/contact fields.', 'x-permission':'year.manage','x-frontend-screen-ids':['SC07']});
+previewOperation.responses['200'].content['application/json'].schema={$ref:'#/components/schemas/RolloverPreviewResponse'};
+spec.paths[previewPath]={get:previewOperation};
+operations.push({id:'getRolloverPreview',method:'GET',path:'/api/v1'+previewPath,title:previewOperation.summary,tag:'School',permission:'year.manage',scope:'school',request:null,response:'RolloverPreview',list:false,auth:'staff',async_job:false,frontend_ids:['SC07'],description:previewOperation.description});
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));
@@ -219,7 +235,12 @@ const progress = {
     status: screen.api_operation_ids.length ? 'NOT_STARTED' : 'STATIC_UNVERIFIED', evidence: [] })),
 };
 const progressPath = path.join(root, 'docs/backend-progress.json');
-try { await fs.access(progressPath); } catch { await fs.writeFile(progressPath, JSON.stringify(progress, null, 2) + '\n'); }
+try {
+  const existing=JSON.parse(await fs.readFile(progressPath,'utf8'));
+  for(const operation of progress.operations)if(!existing.operations.some(o=>o.operationId===operation.operationId))existing.operations.push(operation);
+  for(const screen of existing.screens)for(const operation of progress.operations)if(operation.screenIds.includes(screen.screenId)&&!screen.operationIds.includes(operation.operationId))screen.operationIds.push(operation.operationId);
+  await fs.writeFile(progressPath,JSON.stringify(existing,null,2)+'\n');
+} catch(error) {if(error.code!=='ENOENT')throw error;await fs.writeFile(progressPath, JSON.stringify(progress, null, 2) + '\n');}
 const rows = operations.map(op => `| ${op.id} | ${op.frontend_ids.join(', ')} | NOT_STARTED | |`).join('\n');
 try { await fs.access(path.join(root, 'docs/backend-progress.md')); }
 catch { await fs.writeFile(path.join(root, 'docs/backend-progress.md'),

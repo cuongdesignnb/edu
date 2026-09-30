@@ -9,6 +9,7 @@ import {year,term,holiday,week,classRow,classInfo} from './organization-mapping'
 import {uiActions} from '../../api/permissions';
 import {RepoError} from '../errors';
 import {formResult,requiredId,requiredValue} from './common';
+import {readRolloverPreview,applyRollover,type RolloverDecision} from './rollover';
 
 function school(row:ApiSchemas['School']){
   return {id:requiredId(row.id),name:row.name,code:row.code,slug:row.slug,shortName:requiredValue(row.shortName,'shortName'),status:row.status.toLowerCase() as School['status'],level:row.level??null,province:requiredValue(row.province,'province'),address:row.publicAddress??'',publicEmail:row.publicContactEmail??'',publicPhone:row.publicContactPhone??'',website:row.website??undefined,accentColor:requiredValue(row.accentColor,'accentColor'),motto:requiredValue(row.motto,'motto'),publicIntro:requiredValue(row.publicIntro,'publicIntro'),version:row.version,createdAt:row.createdAt,activatedAt:row.activatedAt??undefined,statusReason:row.statusReason??undefined,onboarding:row.onboarding};
@@ -102,4 +103,6 @@ export const connectedSchoolRepo={
     const [years]=await Promise.all([apiList('listYears',{params:{schoolId},query:{status:'ACTIVE'}},100),refreshStaffContext()]),yearId=years[0]?.id;if(!yearId)return null;
     const rows=await apiList('listWeeks',{params:{schoolId},query:{yearId,onDate:date}},1);return rows.length?week(rows[0],schoolId,serverToday(schoolId)):null;
   },
+  async rolloverPreview(_ctx:Ctx,schoolId:ID,fromYearId:ID){return readRolloverPreview(schoolId,fromYearId);},
+  async rolloverApply(_ctx:Ctx,schoolId:ID,fromYearId:ID,toYearId:ID,decisions:RolloverDecision[]){return applyRollover(schoolId,fromYearId,toYearId,decisions);},
 };
