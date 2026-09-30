@@ -985,3 +985,36 @@ Actual checks: 122/122 PostgreSQL integration, zero skipped, 22/22 backend
 contract/unit and 112/112 frontend API unit; TypeScript/scoped lint exit0.
 Runtime is 286 operations/355 schemas and 83 unactivated adapter candidates.
 These checks do not certify native screen activation, browser E2E or B7 drills.
+
+## ADR-048 — Staff query ownership and native provider preparation
+
+Staff transport now combines the caller cancellation signal, the existing request
+deadline and a staff-only access controller. Authentication/access changes replace
+that controller and abort older staff fetches/body reads. Existing epoch checks
+still reject stale responses and command acknowledgements; uncertain same-identity
+command retry keys remain governed by the existing transport. Parent/public
+requests never inherit the staff controller.
+
+The native query bridge partitions staff cache under `staff-api`. An access change
+cancels and removes only that partition. A confirmed mutation first restores the
+current cookie context, then invalidates eligible staff reads. Read-only previews
+do not trigger this path. Refreshes deduplicate; actual failures call the error
+handler and do not create a context or fake readiness. Disposed bridges cannot
+update cache or UI. Parent/public partitions remain separate.
+
+The provider/hook candidates use the memory-only session, school/server clock and
+captured render owner. Private staff layouts must use `StaffPrivateScope` to
+remount owned forms when actor/access changes. Delayed command callbacks retain
+their original context; only explicitly marked authentication workflows permit
+an intentional identity transition. Native reads do not accept static initial or
+previous placeholder data. Confirmed command success has no browser-demo message;
+transport acknowledgement drives refresh. Temporary context refresh failures
+display an error without unmounting an already owned form.
+
+The provider prepares initial cookie restore, nonsecret cross-tab authentication,
+window-focus/visibility refresh and a visible-tab 30-second context refresh.
+It is not mounted in the root yet: the legacy facade and remaining domain/UI
+adaptations must be replaced together. Parent hooks/boundaries are still pending.
+Actual evidence is frontend TypeScript/scoped lint exit0 and 117/117 API unit,
+including five query/transport boundary tests. React mounting, timer/broadcast
+behavior in a browser, dirty-form remounts and core E2E are NOT_RUN.

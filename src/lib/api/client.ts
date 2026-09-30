@@ -11,6 +11,8 @@ export interface ApiOptions<K extends OperationId> {
 interface HttpProblem {code?:string;status?:number;currentVersion?:number;requestId?:string;fieldErrors?:{path:string;message:string}[]}
 let staffCsrf:string|null=null,bootstrapCsrf:string|null=null,bootstrapPending:Promise<string>|null=null;
 let authEpoch=0,accessEpoch=0;
+let staffRequests=new AbortController();
+function abortStaffRequests(){const old=staffRequests;staffRequests=new AbortController();old.abort();}
 const authListeners=new Set<()=>void>();
 const accessListeners=new Set<()=>void>();
 const mutationListeners=new Set<()=>void>();
@@ -19,10 +21,10 @@ const blobs=new WeakMap<Blob,string>();
 
 /** Session/CSRF values are memory-only. Authentication itself is an HttpOnly cookie. */
 export function setStaffCsrf(value:string|null){staffCsrf=value;}
-export function authenticationChanged(){authEpoch++;accessEpoch++;staffCsrf=null;bootstrapCsrf=null;bootstrapPending=null;retries.clear();authListeners.forEach(fn=>fn());accessListeners.forEach(fn=>fn());}
+export function authenticationChanged(){authEpoch++;accessEpoch++;abortStaffRequests();staffCsrf=null;bootstrapCsrf=null;bootstrapPending=null;retries.clear();authListeners.forEach(fn=>fn());accessListeners.forEach(fn=>fn());}
 export function onAuthenticationChanged(fn:()=>void){authListeners.add(fn);return()=>{authListeners.delete(fn);};}
 /** Permission changes invalidate private reads, while uncertain command keys stay bound to the same identity. */
-export function authorizationChanged(){accessEpoch++;accessListeners.forEach(fn=>fn());}
+export function authorizationChanged(){accessEpoch++;abortStaffRequests();accessListeners.forEach(fn=>fn());}
 export function onStaffAccessChanged(fn:()=>void){accessListeners.add(fn);return()=>{accessListeners.delete(fn);};}
 export function onStaffMutationAcknowledged(fn:()=>void){mutationListeners.add(fn);return()=>{mutationListeners.delete(fn);};}
 export function staffAccessRevision(){return accessEpoch;}
@@ -100,7 +102,8 @@ async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{
   }
   if(op.auth==='staff')assertStaffAccess(epoch,identity);
   let response:Response;
-  try{response=await fetch(url,{method:op.method,headers,body,credentials:'include',cache:'no-store',redirect:'error',signal:options.signal??AbortSignal.timeout(options.multipart?120_000:30_000)});}
+  const signals=[AbortSignal.timeout(options.multipart?120_000:30_000)];if(options.signal)signals.push(options.signal);if(op.auth==='staff')signals.push(staffRequests.signal);
+  try{response=await fetch(url,{method:op.method,headers,body,credentials:'include',cache:'no-store',redirect:'error',signal:AbortSignal.any(signals)});}
   catch{if(op.auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(read?'READ_ERROR':'NETWORK',read?'Không kết nối được máy chủ để đọc dữ liệu. Hãy thử lại.':'Không nhận được xác nhận lưu. Giữ nguyên nội dung và thử lại với cùng lệnh.');}
   if(op.auth==='staff')assertStaffAccess(epoch,identity);
   if(!response.ok){

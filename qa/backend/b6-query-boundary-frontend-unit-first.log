@@ -1,0 +1,72 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-context.test.ts (1 test) 5ms
+ ✓ tests/unit/api-client.test.ts (11 tests) 36ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 31ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 24ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 37ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 52ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 42ms
+ ✓ tests/unit/api-member-details.test.ts (5 tests) 19ms
+ ✓ tests/unit/api-platform-adapter.test.ts (12 tests) 45ms
+ ✓ tests/unit/api-school-adapter.test.ts (16 tests) 47ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 35ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 36ms
+ ✓ tests/unit/api-staff-adapter.test.ts (9 tests) 39ms
+ ✓ tests/unit/api-assignment-adapter.test.ts (8 tests) 40ms
+ ❯ tests/unit/api-query-boundary.test.ts (5 tests | 2 failed) 44ms
+   ✓ native staff query boundary > cancels private queries and removes their cache immediately while leaving parent/public partitions intact 8ms
+   × native staff query boundary > reauthorizes before invalidating reads after a confirmed mutation and does not refresh after a read-only preview 26ms
+     → Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.
+   ✓ native staff query boundary > deduplicates refreshes, reports a real refresh error and prevents an unmounted bridge from touching cache or UI 3ms
+   × native staff query boundary > physically aborts staff transport on access change while an independent parent request can finish 4ms
+     → Cannot read properties of undefined (reading 'aborted')
+   ✓ native staff query boundary > combines a caller abort signal with the deadline and retains explicit read errors on cancelled requests 2ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-query-boundary.test.ts > native staff query boundary > reauthorizes before invalidating reads after a confirmed mutation and does not refresh after a read-only preview
+RepoError: Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.
+ ❯ http src/lib/api/client.ts:122:146
+
+ ❯ tests/unit/api-query-boundary.test.ts:23:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/api-query-boundary.test.ts > native staff query boundary > physically aborts staff transport on access change while an independent parent request can finish
+TypeError: Cannot read properties of undefined (reading 'aborted')
+ ❯ tests/unit/api-query-boundary.test.ts:38:261
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+RepoError: Thiếu tham chiếu cho yêu cầu dữ liệu.
+ ❯ src/lib/api/client.ts:85:55
+
+ ❯ urlFor src/lib/api/client.ts:84:63
+ ❯ send src/lib/api/client.ts:92:13
+ ❯ http src/lib/api/client.ts:121:46
+ ❯ tests/unit/api-query-boundary.test.ts:38:118
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+ ❯ node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'VALIDATION', details: undefined, fieldErrors: { schoolSlug: 'Vui lòng chọn đối tượng.' } }
+This error originated in "tests/unit/api-query-boundary.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 15 passed (16)
+      Tests  2 failed | 115 passed (117)
+     Errors  1 error
+   Start at  01:51:48
+   Duration  965ms (transform 1.06s, setup 864ms, collect 3.52s, tests 538ms, environment 3ms, prepare 1.86s)
