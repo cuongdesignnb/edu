@@ -673,3 +673,30 @@ test('B3 a simultaneous attendance edit and publish has one winner and never pub
   if(publish.statusCode===200){assert.equal(actual.status,'LOCKED');assert.equal(actual.records[0].status,'PRESENT');assert.equal(publications.length,1);assert.equal(publications[0].sourceVersion,session.dataVersion);}
   else{assert.equal(actual.status,'OPEN');assert.equal(actual.records[0].status,'EXCUSED');assert.equal(publications.length,0);}
 });
+
+test('B3 rule sets require explicit points, immutable issuance and effective week application',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=crypto.randomUUID();
+  const post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const missing=await post('conduct-rule-sets',{name:'Không có điểm gốc'});assert.equal(missing.statusCode,422);
+  const created=await post('conduct-rule-sets',{name:`Nội quy giả ${prefix}`,basePoints:'75.10',minimumPoints:'0',maximumPoints:'100'});assert.equal(created.statusCode,201,created.body);let ruleSet=created.json().data;
+  const fixedId=crypto.randomUUID(),manualId=crypto.randomUUID();
+  const updated=await request('PATCH',`/api/v1/schools/${schoolA}/conduct-rule-sets/${ruleSet.id}`,{expectedVersion:ruleSet.version,rules:[
+    {id:fixedId,code:'late',label:'Đi muộn',groupName:'Chuyên cần',valueMode:'FIXED',defaultDelta:'-5.10',reasonRequired:true,maxOccurrencesPerDay:1},
+    {id:manualId,code:'manual',label:'Điểm trong giới hạn',groupName:'Điểm khác',valueMode:'MANUAL',defaultDelta:'0',minimumDelta:'-2',maximumDelta:'2',reasonRequired:true},
+  ],thresholds:[{label:'Đạt',minimumScore:'70'},{label:'Cần cố gắng',minimumScore:'0'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(updated.statusCode,200,updated.body);ruleSet=updated.json().data;
+  const simulation=await post('conduct-rule-sets/simulate',{ruleSetId:ruleSet.id,events:[{ruleId:fixedId},{ruleId:manualId,manualDelta:'0.10'}]});assert.equal(simulation.statusCode,200,simulation.body);
+  assert.deepEqual(simulation.json().data,{basePoints:'75.10',bonusPoints:'0.10',penaltyPoints:'-5.10',finalPoints:'70.10',classification:'Đạt',appliedRuleCount:2});
+  const override=await post('conduct-rule-sets/simulate',{ruleSetId:ruleSet.id,events:[{ruleId:fixedId,manualDelta:'0'}]});assert.equal(override.statusCode,422);
+  const outOfBounds=await post('conduct-rule-sets/simulate',{ruleSetId:ruleSet.id,events:[{ruleId:manualId,manualDelta:'2.01'}]});assert.equal(outOfBounds.statusCode,422);
+  const issued=await post(`conduct-rule-sets/${ruleSet.id}/issue`,{expectedVersion:ruleSet.version});assert.equal(issued.statusCode,200,issued.body);ruleSet=issued.json().data;assert.equal(ruleSet.status,'ISSUED');
+  const editIssued=await request('PATCH',`/api/v1/schools/${schoolA}/conduct-rule-sets/${ruleSet.id}`,{expectedVersion:ruleSet.version,basePoints:'100'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(editIssued.statusCode,409);
+  await assert.rejects(db.transaction(tx=>tx.query('UPDATE app.conduct_rules SET default_delta=0 WHERE school_id=$1 AND id=$2',[schoolA,fixedId]),{schoolId:schoolA}),error=>error.code==='23514');
+  const cls=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`RULE-${prefix}`,name:'Lớp nội quy giả',capacity:10});assert.equal(cls.statusCode,201);
+  const apply=await post(`classes/${cls.json().data.id}/rules/apply`,{expectedClassVersion:cls.json().data.version,ruleSetId:ruleSet.id,startsOn:'2026-09-01'});assert.equal(apply.statusCode,200,apply.body);
+  const current=await request('GET',`/api/v1/schools/${schoolA}/classes/${cls.json().data.id}/rules`);assert.equal(current.statusCode,200,current.body);assert.equal(current.json().data.id,ruleSet.id);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets/${ruleSet.id}`)).statusCode,200);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets?limit=1`)).statusCode,200);
+  await login('teacher-a@example.invalid');
+  const knownIssued=await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets/${ruleSet.id}`);assert.equal(knownIssued.statusCode,404);
+  const catalog=await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets`);assert.equal(catalog.statusCode,200,catalog.body);assert.equal(catalog.json().data.some(r=>r.id===ruleSet.id),false);
+  const own=await request('GET',`/api/v1/schools/${schoolA}/classes/${classA}/rules`);assert.equal(own.statusCode,200);assert.equal(own.json().data.id,seedId('ruleset:A'));
+});

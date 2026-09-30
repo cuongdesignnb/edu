@@ -1618,8 +1618,10 @@
         "SC29"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "createRuleSet",
@@ -1628,8 +1630,10 @@
         "SC30"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "getRuleSet",
@@ -1637,8 +1641,10 @@
         "SC30"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "updateRuleSet",
@@ -1646,8 +1652,10 @@
         "SC30"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "issueRuleSet",
@@ -1655,8 +1663,10 @@
         "SC30"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "simulateRules",
@@ -1664,8 +1674,10 @@
         "SC30"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "getClassRules",
@@ -1673,8 +1685,10 @@
         "CL12"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "applyClassRules",
@@ -1682,8 +1696,10 @@
         "CL12"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/rules-integration.log"
+      ]
     },
     {
       "operationId": "listConductPeriods",
@@ -3410,7 +3426,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC30",
@@ -3425,7 +3441,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC31",
@@ -3829,7 +3845,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL13",

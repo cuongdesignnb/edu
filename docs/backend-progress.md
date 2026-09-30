@@ -152,14 +152,14 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getAttendanceSummary | CL05 | TESTED | qa/backend/attendance-integration.log |
 | publishAttendance | CL04 | TESTED | qa/backend/attendance-integration.log |
 | reopenAttendance | CL04 | TESTED | qa/backend/attendance-integration.log |
-| listRuleSets | SC29 | NOT_STARTED |  |
-| createRuleSet | SC29, SC30 | NOT_STARTED |  |
-| getRuleSet | SC30 | NOT_STARTED |  |
-| updateRuleSet | SC30 | NOT_STARTED |  |
-| issueRuleSet | SC30 | NOT_STARTED |  |
-| simulateRules | SC30 | NOT_STARTED |  |
-| getClassRules | CL12 | NOT_STARTED |  |
-| applyClassRules | CL12 | NOT_STARTED |  |
+| listRuleSets | SC29 | TESTED | qa/backend/rules-integration.log |
+| createRuleSet | SC29, SC30 | TESTED | qa/backend/rules-integration.log |
+| getRuleSet | SC30 | TESTED | qa/backend/rules-integration.log |
+| updateRuleSet | SC30 | TESTED | qa/backend/rules-integration.log |
+| issueRuleSet | SC30 | TESTED | qa/backend/rules-integration.log |
+| simulateRules | SC30 | TESTED | qa/backend/rules-integration.log |
+| getClassRules | CL12 | TESTED | qa/backend/rules-integration.log |
+| applyClassRules | CL12 | TESTED | qa/backend/rules-integration.log |
 | listConductPeriods | CL07 | NOT_STARTED |  |
 | createConductPeriod | CL06, CL07 | NOT_STARTED |  |
 | getConductSummary | CL07 | NOT_STARTED |  |
@@ -320,8 +320,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC26 | core | TESTED | NOT_STARTED |  |
 | SC27 | core | TESTED | NOT_STARTED |  |
 | SC28 | core | TESTED | NOT_STARTED |  |
-| SC29 | core | PARTIAL | NOT_STARTED |  |
-| SC30 | core | PARTIAL | NOT_STARTED |  |
+| SC29 | core | TESTED | NOT_STARTED |  |
+| SC30 | core | TESTED | NOT_STARTED |  |
 | SC31 | core | PARTIAL | NOT_STARTED |  |
 | SC32 | core | PARTIAL | NOT_STARTED |  |
 | SC33 | core | PARTIAL | NOT_STARTED |  |
@@ -352,7 +352,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL09 | core | TESTED | NOT_STARTED |  |
 | CL10 | core | TESTED | NOT_STARTED |  |
 | CL11 | core | PARTIAL | NOT_STARTED |  |
-| CL12 | core | PARTIAL | NOT_STARTED |  |
+| CL12 | core | TESTED | NOT_STARTED |  |
 | CL13 | core | PARTIAL | NOT_STARTED |  |
 | CL14 | core | PARTIAL | NOT_STARTED |  |
 | CL15 | core | PARTIAL | NOT_STARTED |  |

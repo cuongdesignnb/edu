@@ -20,9 +20,9 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 8 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
+| B1 | PARTIAL | 9 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
-| B3 | PARTIAL | Attendance and immutable publication lifecycle tested; rules/conduct/review/adjustments pending |
+| B3 | PARTIAL | Attendance, rules/scoring and immutable publication lifecycle tested; conduct/review/adjustments pending |
 | B4 | NOT_STARTED | Parent session/projection workflows pending |
 | B5 | PARTIAL | Private file processing, mail/outbox worker and timetable import drafts tested; remaining domain services, publication and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
@@ -154,3 +154,22 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - 116/264 API operations implemented. Rules, scoring, conduct approval/locking
   and adjustment publication remain pending in B3. Parent HTTP, all frontend
   adapters, final deploy and B7 operational acceptance remain NOT_RUN.
+
+## Rules/scoring checkpoint — actual execution
+
+- Eight rules APIs implemented: create/edit draft, issue, simulation, scoped
+  catalog/detail, current class rules and dated application at a week boundary.
+  Issued rules and thresholds are protected by database immutability triggers.
+- Base points are explicit input; no universal 100-point fallback. Decimal.js
+  computes positive bonuses, negative penalties, clamps and threshold boundaries.
+  Fixed rules reject manual overrides. Manual rules require issued bounds.
+- Applying a new rules version preserves old dated periods and rejects periods
+  whose conduct rule version is already pinned. Teachers' catalog reads include
+  only rules currently applied to their authorized classes, while school roles
+  can author drafts.
+- `qa/backend/rules-integration.log`: 30/30 actual integration tests, exit0.
+  `qa/backend/rules-unit-contract.log`: 10/10 actual tests, including fractional
+  arithmetic and threshold boundaries. TypeScript build and backend lint exit0.
+- 124/264 API operations implemented. The scoring helper is not yet wired to
+  conduct record approval, weekly locking or adjustment publication. Those B3
+  workflows remain pending; parent HTTP, frontend connection and B7 remain pending.

@@ -126,3 +126,18 @@ creation, preserves previous snapshots, and atomically supersedes the previous
 publication. Repeating publication of an unchanged source returns its current
 publication. Parent payloads contain only the individual public attendance
 fields; internal notes remain in the authorized staff snapshot.
+
+## ADR-011 — Decimal points and explicit rule configuration
+
+Base points are required input. Rule calculations use Decimal.js and serialize
+two decimal places within the contract's eight-digit integer range. Bonuses are
+nonnegative, penalties are negative, clamping happens after summation and the
+highest satisfied threshold determines classification. Fixed rules reject a
+manualDelta. Manual rules require explicit bounds; simulation validates those
+bounds but does not create a conduct record.
+
+School roles can author drafts. Class/subject catalog reads resolve current
+authorized classes before selecting applied rule-set IDs. Issued configuration
+is immutable in PostgreSQL; a new dated class rule period preserves its predecessor
+and cannot replace a rule version already pinned to a conduct period. Revisions
+are allocated under the school lock.
