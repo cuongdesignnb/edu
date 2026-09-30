@@ -33,6 +33,22 @@ function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
     invitationStatus:row.kind==='INVITATION'?'pending' as const:undefined,expiresAt:requiredValue(row.expiresAt,'expiresAt'),avatarTone:row.kind==='INVITATION'?'amber':'blue'};
 }
 export const connectedStaffRepo=withStaffAccess({
+  async member(_ctx:Ctx,schoolId:ID,membershipId:ID){
+    const access=captureStaffAccess(),view=(await http('getMemberDetails',{params:{schoolId,memberId:membershipId}})).data;access.assertCurrent();
+    const row=requiredValue(view.member,'member'),membership=staffMembership(row,schoolId),canViewHistory=requiredValue(view.canViewHistory,'canViewHistory');
+    const assignments=requiredValue(view.assignments,'assignments'),choices=requiredValue(view.roleChoices,'roleChoices');
+    const history=canViewHistory?(await apiList('listMemberHistory',{params:{schoolId,memberId:membershipId},query:{sort:'createdAt',dir:'desc'}},2000)).map(event=>({
+      id:requiredId(event.id),schoolId,actorId:requiredValue(event.actorId,'actorId'),actorName:requiredValue(event.actorLabel,'actorLabel'),
+      action:requiredValue(event.action,'action'),entityType:event.targetType,entityId:requiredId(event.targetId),at:event.createdAt,reason:event.reason??null,changes:requiredValue(event.changes,'changes')})):null;
+    access.assertCurrent();return {membership,user:{id:membership.userId,fullName:row.workDisplayName,displayName:row.workDisplayName,
+      email:requiredValue(row.workEmail,'workEmail'),workPhone:requiredValue(row.workPhone,'workPhone'),avatarTone:'blue'},
+      roles:membership.schoolRoleGrants,assignments:assignments===null?null:assignments.map(a=>({...a,schoolId,membershipId:a.memberId,
+        type:a.kind==='HOMEROOM'?'homeroom' as const:'subject' as const,validFrom:a.startsOn,validUntil:a.endsOn,
+        label:a.kind==='HOMEROOM'?`Chủ nhiệm ${a.className}`:`${a.subjectName??''} · ${a.className}`})),
+      otherSchools:requiredValue(view.otherSchools,'otherSchools'),schoolActionCodes:[...new Set(membership.grants.filter(g=>g.scopeType==='SCHOOL').flatMap(g=>g.actions))],
+      history,roleTemplates:choices,referenceDate:requiredValue(view.referenceDate,'referenceDate'),joinedOn:requiredValue(view.joinedOn,'joinedOn'),accessActive:requiredValue(view.accessActive,'accessActive'),
+      canAssign:requiredValue(view.canAssign,'canAssign'),canSuspend:requiredValue(view.canSuspend,'canSuspend'),canRole:requiredValue(view.canRole,'canRole'),canViewHistory,isSelf:requiredValue(view.isSelf,'isSelf')};
+  },
   async teachers(_ctx:Ctx,schoolId:ID,q:ListQuery){
     const access=captureStaffAccess(),summary=(await http('getStaffDirectorySummary',{params:{schoolId}})).data;access.assertCurrent();
     const status=q.filters?.status,statuses:Record<string,string>={active:'ACTIVE',suspended:'SUSPENDED',revoked:'ENDED',invited:'PENDING_INVITATION',invited_member:'INVITED'};

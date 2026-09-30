@@ -29652,6 +29652,196 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/members/{memberId}/details:
+    get:
+      operationId: getMemberDetails
+      tags:
+        - Staff
+      summary: getMemberDetails
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberDetailsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/members/{memberId}/history:
+    get:
+      operationId: listMemberHistory
+      tags:
+        - Audit
+      summary: listMemberHistory
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.read+audit.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditEventPage"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -39572,6 +39762,199 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/StaffDirectorySummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    MemberRoleChoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        label:
+          type: string
+        code:
+          type: string
+        systemRole:
+          type: boolean
+        canDelegate:
+          type: boolean
+        delegationUntil:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - version
+        - label
+        - code
+        - systemRole
+        - canDelegate
+        - delegationUntil
+      additionalProperties: false
+    MemberAssignmentDetails:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        classId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        yearName:
+          type: string
+        memberId:
+          type: string
+          format: uuid
+        roleGrantId:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - HOMEROOM
+            - SUBJECT
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        subjectName:
+          type: string
+          nullable: true
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+        revokedAt:
+          type: string
+          format: date-time
+          nullable: true
+        grantValidFrom:
+          type: string
+          format: date-time
+        grantValidUntil:
+          type: string
+          format: date-time
+          nullable: true
+        grantRevokedAt:
+          type: string
+          format: date-time
+          nullable: true
+        roleLabel:
+          type: string
+        roleStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - ARCHIVED
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+          format: uuid
+          nullable: true
+        createdByName:
+          type: string
+          nullable: true
+        live:
+          type: boolean
+      required:
+        - id
+        - version
+        - classId
+        - className
+        - yearName
+        - memberId
+        - roleGrantId
+        - kind
+        - subjectId
+        - subjectName
+        - startsOn
+        - endsOn
+        - revokedAt
+        - grantValidFrom
+        - grantValidUntil
+        - grantRevokedAt
+        - roleLabel
+        - roleStatus
+        - createdAt
+        - createdBy
+        - createdByName
+        - live
+      additionalProperties: false
+    MemberDetails:
+      type: object
+      properties:
+        member:
+          $ref: "#/components/schemas/Member"
+        referenceDate:
+          type: string
+          format: date
+        joinedOn:
+          type: string
+          format: date
+          nullable: true
+        accessActive:
+          type: boolean
+        otherSchools:
+          type: integer
+          minimum: 0
+        assignments:
+          type: array
+          maxItems: 2000
+          nullable: true
+          items:
+            $ref: "#/components/schemas/MemberAssignmentDetails"
+        roleChoices:
+          type: array
+          maxItems: 1000
+          nullable: true
+          items:
+            $ref: "#/components/schemas/MemberRoleChoice"
+        canAssign:
+          type: boolean
+        canSuspend:
+          type: boolean
+        canRole:
+          type: boolean
+        canViewHistory:
+          type: boolean
+        isSelf:
+          type: boolean
+      required:
+        - member
+        - referenceDate
+        - joinedOn
+        - accessActive
+        - otherSchools
+        - assignments
+        - roleChoices
+        - canAssign
+        - canSuspend
+        - canRole
+        - canViewHistory
+        - isSelf
+      additionalProperties: false
+    MemberDetailsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/MemberDetails"
         requestId:
           type: string
       required:

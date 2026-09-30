@@ -341,6 +341,10 @@ export interface ApiSchemas {
   "StaffDirectoryRowPage": { "data": Array<ApiSchemas["StaffDirectoryRow"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "StaffDirectorySummary": { "kpi": { "total": number; "active": number; "suspended": number; "pendingInvites": (number) | null; }; "departments": Array<string>; "roleLabels": Array<string>; "canInvite": boolean; "canSuspend": boolean; "canAssign": boolean; "canExport": boolean; "canViewInvitations": boolean; };
   "StaffDirectorySummaryResponse": { "data": ApiSchemas["StaffDirectorySummary"]; "requestId": string; };
+  "MemberRoleChoice": { "id": string; "version": number; "label": string; "code": string; "systemRole": boolean; "canDelegate": boolean; "delegationUntil": (string) | null; };
+  "MemberAssignmentDetails": { "id": string; "version": number; "classId": string; "className": string; "yearName": string; "memberId": string; "roleGrantId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "subjectName": (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt": (string) | null; "grantValidFrom": string; "grantValidUntil": (string) | null; "grantRevokedAt": (string) | null; "roleLabel": string; "roleStatus": "ACTIVE" | "ARCHIVED"; "createdAt": string; "createdBy": (string) | null; "createdByName": (string) | null; "live": boolean; };
+  "MemberDetails": { "member": ApiSchemas["Member"]; "referenceDate": string; "joinedOn": (string) | null; "accessActive": boolean; "otherSchools": number; "assignments": (Array<ApiSchemas["MemberAssignmentDetails"]>) | null; "roleChoices": (Array<ApiSchemas["MemberRoleChoice"]>) | null; "canAssign": boolean; "canSuspend": boolean; "canRole": boolean; "canViewHistory": boolean; "isSelf": boolean; };
+  "MemberDetailsResponse": { "data": ApiSchemas["MemberDetails"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -2872,6 +2876,24 @@ export const apiOperations = {
     "response": "StaffDirectorySummary",
     "list": false,
     "permission": "member.read"
+  },
+  "getMemberDetails": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/details",
+    "auth": "staff",
+    "request": null,
+    "response": "MemberDetails",
+    "list": false,
+    "permission": "member.read"
+  },
+  "listMemberHistory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/history",
+    "auth": "staff",
+    "request": null,
+    "response": "AuditEvent",
+    "list": true,
+    "permission": "member.read+audit.read"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

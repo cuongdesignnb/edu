@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Database,one,type Row,type Transaction } from '../../database/database';
-import { listResource,type Resource } from '../../database/resources';
+import { listResource } from '../../database/resources';
+import {auditResource,auditView} from '../../database/audit-view';
 import { Permissions } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,notFound,validation } from '../../common/problem';
 import { schoolSettings,settingsKeys } from './school-settings';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
-const auditResource:Resource={table:`(SELECT e.*,coalesce((SELECT m.work_display_name FROM app.memberships m WHERE m.school_id=e.school_id AND m.user_id=e.actor_user_id),(SELECT u.display_name FROM identity.users u WHERE u.id=e.actor_user_id),e.actor_kind) AS actor_label FROM app.audit_events e)`,fields:{id:'id',actorId:'actor_user_id',actorLabel:'actor_label',action:'action',targetType:'target_type',targetId:'target_id',createdAt:'created_at',reason:'reason',before:'redacted_before',after:'redacted_after'},writeFields:[],search:['action','target_type','actor_label','reason'],filters:{targetId:'target_id',targetType:'target_type',actorId:'actor_user_id',action:'action'}};
-const safeAuditFields=new Set(['status','sourceVersion','publicationId','baselinePublicationId','studentCount','expectedCount','allowDownload','sections','shareWithGuardian','discarded','rootId','count','total','applied','rejected','removed','groupId','enrollmentId','classId','yearId','ruleSetId','revision','effectiveOn','fromAssignmentId','toAssignmentId']);
 @Injectable()
 export class SettingsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
@@ -28,10 +27,7 @@ export class SettingsService {
         if(c.query.from){values.push(c.query.from,school.timezone);predicates.push(`t.created_at>=($${values.length-1}::date::timestamp AT TIME ZONE $${values.length})`);}
         if(c.query.to){values.push(c.query.to,school.timezone);predicates.push(`t.created_at<(($${values.length-1}::date+1)::timestamp AT TIME ZONE $${values.length})`);}
         const result=await listResource(tx,auditResource,schoolId,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},{sql:predicates.join(' AND '),values},c.principal!.userId);
-        result.data=result.data.map(row=>{const before=row.before as Record<string,unknown>,after=row.after as Record<string,unknown>,changes=[];
-          for(const field of new Set([...Object.keys(before),...Object.keys(after)])){if(!safeAuditFields.has(field))continue;const old=before[field],next=after[field];if(old===next)continue;const display=(value:unknown)=>value===undefined||value===null?null:typeof value==='string'||typeof value==='number'||typeof value==='boolean'?String(value):Array.isArray(value)&&value.every(v=>typeof v==='string')?value.join(', '):null;if(display(old)===null&&display(next)===null)continue;changes.push({field,before:display(old),after:display(next)});}
-          const view={...row};delete view.before;delete view.after;if(view.reason===null)delete view.reason;return {...view,changes};
-        });return result;
+        result.data=result.data.map(auditView);return result;
       }
       const school=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${c.operation.method==='GET'?'':' FOR UPDATE'}`,[schoolId]);if(!school)notFound();
       if(c.operation.id==='getSchoolSettings')return {data:schoolSettings(school)};

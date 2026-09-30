@@ -846,3 +846,68 @@ PostgreSQL integration, zero skipped, in the final directory integration log;
 18/18 backend contract/unit and 94/94 frontend API unit. TypeScript/scoped lint
 exit0. Runtime is 281 operations/341 schemas and 75 unactivated candidates.
 No browser download, E2E, final Docker deployment, drill or load PASS is claimed.
+
+## ADR-044 — Member details retain real counts and separate read authority
+
+SC11's other-school indicator is a coarse count in the agreed business UI. A
+missing native read model must not substitute zero or expose another school's
+details. Migration 034 introduces a purpose-bound SQL function accepting the
+current-school member UUID. It checks an active caller identity, membership and
+school, a current School-scoped `member.read` grant and role permission, and
+rejects parent/selected-support contexts. Only `edu_app` has runtime EXECUTE;
+parent and worker execution are denied. It resolves the target within the source
+school, counts all membership states in other schools under their explicit FORCE
+RLS contexts, restores the caller's context on success/error and returns only an
+integer. It never impersonates the target identity or returns foreign metadata.
+
+`getMemberDetails` runs under current `member.read`. Its read-only repeatable-read
+snapshot keeps grants, school-local dates, source state and aggregate authority
+consistent within the request. Work contact nulls remain unknown; global login
+email is not a fallback. Effective grants retain every native action and scope;
+default teacher actions must also pass the assignment's date window. Held school
+grants remain distinct from effective access, including future grants. Assignment
+history is available only with `assignment.read`, otherwise null, with exact
+assignment/grant intervals, revocation, real creator and server-derived activity.
+More than 2,000 assignments fails explicitly rather than silently truncating.
+
+School role choices require `role.manage`. They contain only ID/version/label,
+code/system metadata and current delegation eligibility/expiry, without lending
+the role permission catalog. An action's greatest current grant end is its
+ceiling; the earliest ceiling across all role actions and `role.manage` bounds
+the proposal. Missing authority disables that choice. More than 1,000 choices
+fails explicitly. Actual write commands still recheck all delegation rules.
+
+`listMemberHistory` requires both `member.read` and `audit.read`. Member,
+assignment and grant target predicates apply in SQL before total/keyset queries;
+cursors bind the subject and caller. Only declared paging/sort parameters are
+accepted. It uses the same sanitized audit projection as the school audit.
+The member adapter keeps unavailable history/assignment/choice panels null,
+retains actual count/date/version/contact/grant metadata, checks staff ownership
+between profile/history stages and fails explicitly beyond 2,000 history events.
+It remains unactivated until the native UI accepts these DTOs and unavailable
+states, submits displayed versions/reasons and uses native effective permissions.
+
+## ADR-045 — Personal notification feeds page own memberships
+
+Retained test schools exposed an implementation cap of 100 active memberships:
+an ordinary global notification query failed before checking actual receipts.
+That cap was not a business restriction. Membership discovery now reads only the
+authenticated user's active memberships in active schools through UUID keysets,
+100 at a time. A supplied school filter applies before paging; an unknown or
+invalid school still fails. Mark-as-read can traverse subsequent batches and
+stops at its owned receipt. No RLS policy or parent authority was widened.
+
+Each source-school transaction still rechecks current membership and grants,
+redacts revoked/withdrawn private targets before search/count, and counts all
+matching receipts. For each school the feed queries at most `limit+1` rows and
+keeps only the globally newest `limit+1` candidates after merging. This bounds
+candidate memory without truncating total counts or imposing a school-count
+limit. Existing microsecond/UUID signed cursor and query/caller binding remain.
+Multi-school discovery is a current feed, not an immutable publication snapshot.
+
+Actual ADR-044/045 evidence: 34 verified migrations/checksums/replay, **113/113**
+PostgreSQL integration with zero skipped, **19/19** backend contract/unit and
+**99/99** frontend API unit; TypeScript/scoped lint exit0. Failed iterations and
+their repaired causes are retained in the implementation report. Runtime is
+283 operations/345 schemas and 76 unactivated candidates. These checks do not
+certify frontend activation, E2E, final Docker, restart, backup/restore or load.

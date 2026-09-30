@@ -1,0 +1,54 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-context.test.ts (1 test) 4ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 8ms
+ ✓ tests/unit/api-client.test.ts (11 tests) 35ms
+ ❯ tests/unit/api-member-details.test.ts (5 tests | 1 failed) 28ms
+   ✓ native member details adapter > preserves unavailable panels, actual count, nullable contacts and every native action without inferring authority 9ms
+   ✓ native member details adapter > keeps server assignment activity/dates and minimal role choices while traversing actual audit pages 3ms
+   ✓ native member details adapter > does not replace a newly denied audit read with an empty history 2ms
+   ✓ native member details adapter > does not begin a history read after retained render ownership or profile response ownership changes 1ms
+   × native member details adapter > surfaces missing profile data and oversized history instead of inventing nulls or truncating records 12ms
+     → expected RepoError: Danh sách vượt giới hạn đọc. H… { …(3) } to match object { code: 'READ_ERROR' }
+(4 matching properties omitted from actual)
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 30ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 32ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 33ms
+ ✓ tests/unit/api-staff-adapter.test.ts (9 tests) 34ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 25ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 48ms
+ ✓ tests/unit/api-platform-adapter.test.ts (12 tests) 42ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 45ms
+ ✓ tests/unit/api-school-adapter.test.ts (16 tests) 47ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-member-details.test.ts > native member details adapter > surfaces missing profile data and oversized history instead of inventing nulls or truncating records
+AssertionError: expected RepoError: Danh sách vượt giới hạn đọc. H… { …(3) } to match object { code: 'READ_ERROR' }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "READ_ERROR",
++ RepoError {
++   "code": "VALIDATION",
+  }
+
+ ❯ tests/unit/api-member-details.test.ts:43:5
+     41|     await expect(connectedStaffRepo.member(ctx,schoolId,memberId)).rej…
+     42|     fetcher.mockResolvedValueOnce(envelope({...view,canViewHistory:tru…
+     43|     await expect(connectedStaffRepo.member(ctx,schoolId,memberId)).rej…
+       |     ^
+     44|   });
+     45| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  1 failed | 98 passed (99)
+   Start at  00:20:54
+   Duration  777ms (transform 914ms, setup 613ms, collect 2.59s, tests 410ms, environment 3ms, prepare 1.60s)

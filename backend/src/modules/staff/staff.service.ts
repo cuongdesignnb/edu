@@ -7,6 +7,7 @@ import { permissions as actionAllowlist } from '../../common/contract';
 import { Problem,validation,notFound } from '../../common/problem';
 import { InvitationsService,invitationDto } from '../identity/invitations.service';
 import {staffDirectory,staffDirectorySummary} from './staff-directory';
+import {memberDetails,memberHistory} from './member-details';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -31,7 +32,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -54,6 +55,8 @@ export class StaffService {
         for(const member of result.data)member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);
         return result;
       }
+      if(op==='getMemberDetails')return {data:await memberDetails(tx,c,this.policy,await this.schoolRoleGrants(tx,schoolId,c.params.memberId!))};
+      if(op==='listMemberHistory')return memberHistory(tx,c);
       if(op==='getMember'){
         const member=dto(resource('member'),await getResource(tx,resource('member'),schoolId,c.params.memberId!));
         member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);
@@ -131,7 +134,7 @@ export class StaffService {
       await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='' WHERE dedupe_key=$1 AND status IN ('PENDING','FAILED')",[`invitation:${row.id}`]);
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
     };
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getMemberDetails','listMemberHistory'].includes(op)});
     return this.commands.execute(c,authorize,work);
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}

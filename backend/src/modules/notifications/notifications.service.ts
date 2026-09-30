@@ -33,10 +33,17 @@ const projection=`SELECT n.id,n.version,n.created_at,n.updated_at,n.read_at,n.ki
 export class NotificationsService {
   constructor(private readonly db:Database,private readonly policy:Permissions){}
   handlers():Record<string,Handler>{return {listMyNotifications:c=>this.list(c),readMyNotification:c=>this.read(c)};}
-  private async memberships(c:RequestContext){
-    const rows=await this.db.transaction(tx=>tx.query<Membership>(`SELECT m.id,m.school_id,s.name,s.timezone FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id
-      WHERE m.user_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE' ORDER BY m.school_id LIMIT 101`,[c.principal!.userId]),{userId:c.principal!.userId});
-    if(rows.rows.length>100)throw new Problem(422,'MEMBERSHIP_LIMIT');return rows.rows;
+  private async *memberships(c:RequestContext,schoolId?:string){
+    let after:string|null=null;
+    for(;;){
+      const rows=await this.db.transaction(tx=>tx.query<Membership>(`SELECT m.id,m.school_id,s.name,s.timezone FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id
+        WHERE m.user_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE'
+        AND ($2::uuid IS NULL OR m.school_id=$2) AND ($3::uuid IS NULL OR m.school_id>$3)
+        ORDER BY m.school_id LIMIT 100`,[c.principal!.userId,schoolId??null,after]),{userId:c.principal!.userId});
+      for(const membership of rows.rows)yield membership;
+      if(rows.rows.length<100)return;
+      after=rows.rows.at(-1)!.school_id;
+    }
   }
   private async grants(tx:Transaction,c:RequestContext,m:Membership){
     const today=(await one<{today:string}>(tx,"SELECT to_char(now() AT TIME ZONE $1,'YYYY-MM-DD') AS today",[m.timezone]))!.today;
@@ -48,14 +55,15 @@ export class NotificationsService {
     const limit=Number(query.limit??25);if(!Number.isInteger(limit)||limit<1||limit>100)validation('limit','Chọn từ 1 đến 100 thông báo');
     if(query.q&&query.q.length>100)validation('q','Tối đa 100 ký tự');if(query.kind&&!['task','announcement','system','permission'].includes(query.kind))validation('kind','Loại thông báo không hợp lệ');
     if(query.unread&&!['true','false'].includes(query.unread))validation('unread','Giá trị boolean không hợp lệ');
-    const memberships=await this.memberships(c);if(query.schoolId&&!memberships.some(m=>m.school_id===query.schoolId))notFound();
+    if(query.schoolId&&!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(query.schoolId))notFound();
     const fingerprint=crypto.createHash('sha256').update(canonical({userId:c.principal!.userId,limit,q:query.q??'',schoolId:query.schoolId??'',kind:query.kind??'',unread:query.unread??''})).digest('hex');let cursor:Cursor|undefined;
     if(query.cursor){const [payload,signed]=query.cursor.split('.');if(!payload||!signed||query.cursor.length>1024||!equal(signed,signature(payload)))throw new Problem(422,'INVALID_CURSOR');
       try{cursor=JSON.parse(Buffer.from(payload,'base64url').toString('utf8')) as Cursor;}catch{throw new Problem(422,'INVALID_CURSOR');}
       if(!cursor||cursor.fingerprint!==fingerprint||typeof cursor.at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z$/.test(cursor.at)||typeof cursor.id!=='string'||!/^[0-9a-f-]{36}$/.test(cursor.id))throw new Problem(422,'INVALID_CURSOR');
     }
-    const candidates:{row:Row;membership:Membership}[]=[];let total=0;
-    for(const membership of memberships.filter(m=>!query.schoolId||m.school_id===query.schoolId))await this.db.transaction(async tx=>{
+    const candidates:{row:Row;membership:Membership}[]=[];let total=0,foundMembership=false;
+    const order=(a:{row:Row},b:{row:Row})=>String(b.row.cursor_at).localeCompare(String(a.row.cursor_at))||String(b.row.id).localeCompare(String(a.row.id));
+    for await(const membership of this.memberships(c,query.schoolId)){foundMembership=true;await this.db.transaction(async tx=>{
       const current=await one(tx,"SELECT m.id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id WHERE m.school_id=$1 AND m.id=$2 AND m.user_id=$3 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE'",[membership.school_id,membership.id,c.principal!.userId]);if(!current)return;
       const values:unknown[]=[membership.school_id,membership.id,JSON.stringify(await this.grants(tx,c,membership))],where=['true'];const value=(v:unknown)=>{values.push(v);return '$'+values.length;};
       if(query.kind)where.push('t.kind='+value(query.kind));if(query.unread)where.push(query.unread==='true'?'t.read_at IS NULL':'t.read_at IS NOT NULL');
@@ -64,13 +72,17 @@ export class NotificationsService {
       if(cursor)where.push(`(t.created_at,t.id)<(${value(cursor.at)}::timestamptz,${value(cursor.id)}::uuid)`);
       const rows=(await tx.query<Row>(`SELECT * FROM (${projection}) t WHERE ${where.join(' AND ')} ORDER BY t.created_at DESC,t.id DESC LIMIT ${value(limit+1)}`,values)).rows;
       candidates.push(...rows.map(row=>({row,membership})));
-    },{schoolId:membership.school_id,userId:c.principal!.userId});
-    candidates.sort((a,b)=>String(b.row.cursor_at).localeCompare(String(a.row.cursor_at))||String(b.row.id).localeCompare(String(a.row.id)));const hasMore=candidates.length>limit,selected=candidates.slice(0,limit),last=selected.at(-1)?.row;
+      // Only the globally newest limit+1 rows can affect this page. Keep total
+      // exact while discarding older candidates, rather than capping schools.
+      candidates.sort(order);candidates.splice(limit+1);
+    },{schoolId:membership.school_id,userId:c.principal!.userId});}
+    if(query.schoolId&&!foundMembership)notFound();
+    candidates.sort(order);const hasMore=candidates.length>limit,selected=candidates.slice(0,limit),last=selected.at(-1)?.row;
     const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,at:last.cursor_at,id:last.id})).toString('base64url'):null;
     return {data:selected.map(({row,membership})=>({id:row.id,version:row.version,createdAt:iso(row.created_at as Date),updatedAt:iso(row.updated_at as Date),readAt:row.read_at?iso(row.read_at as Date):null,kind:row.kind,title:row.title,body:row.body,schoolId:membership.school_id,schoolName:membership.name,targetType:row.target_kind,targetId:row.target_id??null,...(row.class_id?{classId:row.class_id}:{}),...(row.year_id?{yearId:row.year_id}:{}),accessible:row.accessible})),page:{limit,total,hasMore,nextCursor:payload?`${payload}.${signature(payload)}`:null}};
   }
   private async read(c:RequestContext):Promise<Result>{
-    for(const m of await this.memberships(c)){
+    for await(const m of this.memberships(c)){
       const result=await this.db.transaction(async tx=>{
         await tx.query('SELECT app.lock_school()');
         const row=await one<Row>(tx,`SELECT n.* FROM app.notifications n JOIN app.memberships m ON m.school_id=n.school_id AND m.id=n.member_id JOIN platform.schools s ON s.id=m.school_id

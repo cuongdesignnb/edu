@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,281);assert.equal(new Set(operations.map(op=>op.id)).size,281);
+  assert.equal(operations.length,283);assert.equal(new Set(operations.map(op=>op.id)).size,283);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
 });
 test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
@@ -46,4 +46,13 @@ test('directory represents invitations without fake memberships and keeps unavai
   const value={id:'da72b470-4b45-4f5f-b89d-179c0cdf454a',version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),kind:'INVITATION',memberId:null,userId:null,status:null,accessActive:false,fullName:'Nhân sự mời',email:'invite@example.invalid',department:null,staffCode:null,expiresAt:new Date().toISOString(),roleLabels:['Lời mời'],dutyLabels:[]};validateSchema('StaffDirectoryRow',value,true);
   for(const field of ['loginEmail','workPhone','token','rolePermissions'])assert.throws(()=>validateSchema('StaffDirectoryRow',{...value,[field]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
   validateSchema('StaffDirectorySummary',{kpi:{total:2,active:1,suspended:1,pendingInvites:null},departments:[],roleLabels:[],canInvite:false,canSuspend:false,canAssign:false,canExport:false,canViewInvitations:false},true);
+});
+test('member profile separates denied panels and exact native authority without exposing other school metadata',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',member={id,userId:id,version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),workDisplayName:'Nhân sự giả',status:'ACTIVE',shareWorkContact:false};
+  const value={member,referenceDate:'2026-10-01',joinedOn:null,accessActive:true,otherSchools:2,assignments:null,roleChoices:null,canAssign:false,canSuspend:false,canRole:false,canViewHistory:false,isSelf:false};
+  validateSchema('MemberDetails',value,true);
+  for(const field of ['otherSchoolIds','otherSchoolNames','loginEmail','history'])assert.throws(()=>validateSchema('MemberDetails',{...value,[field]:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  assert.equal(operations.find(op=>op.id==='listMemberHistory').permission,'member.read+audit.read');
+  const choice={id,version:1,label:'Vai trò',code:'REAL',systemRole:false,canDelegate:false,delegationUntil:null};validateSchema('MemberRoleChoice',choice,true);
+  assert.throws(()=>validateSchema('MemberRoleChoice',{...choice,permissions:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
 });

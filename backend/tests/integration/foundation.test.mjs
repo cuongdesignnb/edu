@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,281);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,283);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2222,7 +2222,7 @@ test('B6 Vietnamese composite keysets preserve given/full-name order, case/diacr
     do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&sort=department&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);departmentRows.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
     assert.equal(new Set(departmentRows.map(r=>r.id)).size,all.length);const firstNull=departmentRows.findIndex(r=>r.department===null);assert.ok(firstNull>=0);assert.ok(departmentRows.slice(firstNull).every(r=>r.department===null));
   }
-  assert.equal((await verifyInstallation(pool)).migrations,33);
+  assert.equal((await verifyInstallation(pool)).migrations,34);
 });
 
 test('B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access',async()=>{
@@ -2231,4 +2231,78 @@ test('B6 locked identities keep their directory lifecycle but have no effective 
   const grants=await db.transaction(tx=>policy.grants(tx,created.user,f.schoolId),{schoolId:f.schoolId});assert.deepEqual(grants,[]);assert.deepEqual((await f.member(created.member)).grants,[]);
   const row=(await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?q=`+encodeURIComponent('Danh tính khóa giả'))).json().data[0];assert.equal(row.status,'ACTIVE');assert.equal(row.accessActive,false);
   const summary=(await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory-summary`)).json().data;assert.equal(summary.kpi.total,4);assert.equal(summary.kpi.active,3);
+});
+
+test('B6 member details return real coarse other-school counts and work contacts without opening another tenant',async()=>{
+  const f=await staffUiFixture(),foreign=await operationalUiSchool(),userId=crypto.randomUUID();
+  await db.app.query("INSERT INTO identity.users(id,email_normalized,display_name,status) VALUES($1,$2,'Danh tính riêng giả','ACTIVE')",[userId,`hidden-profile-${crypto.randomUUID()}@example.invalid`]);
+  const memberId=(await db.transaction(tx=>tx.query("INSERT INTO app.memberships(school_id,user_id,work_display_name,work_email,work_phone,status,joined_at) VALUES($1,$2,'Tên tại trường thật',NULL,NULL,'ACTIVE','2041-01-04T18:00:00Z') RETURNING id",[f.schoolId,userId]),{schoolId:f.schoolId})).rows[0].id;
+  const foreignMember=(await db.transaction(tx=>tx.query("INSERT INTO app.memberships(school_id,user_id,work_display_name,department,status,ended_at) VALUES($1,$2,'Tên trường khác kín','Bộ môn trường khác kín','ENDED',now()) RETURNING id",[foreign,userId]),{schoolId:foreign})).rows[0].id;
+  jar.delete('edu_staff');await login('admin-a@example.invalid');
+  const url=`/api/v1/schools/${f.schoolId}/members/${memberId}/details`,response=await request('GET',url);assert.equal(response.statusCode,200,response.body);const data=response.json().data;
+  assert.equal(data.otherSchools,1);assert.equal(data.member.workDisplayName,'Tên tại trường thật');assert.equal(data.member.workEmail,null);assert.equal(data.member.workPhone,null);assert.equal(data.joinedOn,'2041-01-05');assert.equal(data.accessActive,true);assert.deepEqual(data.assignments,[]);assert.equal(data.isSelf,false);assert.equal(data.canViewHistory,true);
+  for(const hidden of [foreign,foreignMember,'Tên trường khác kín','Bộ môn trường khác kín','hidden-profile-','otherSchoolIds','otherSchoolNames'])assert.equal(response.body.includes(hidden),false,hidden);
+  assert.equal((await request('GET',url.replace(memberId,foreignMember))).statusCode,404);
+  await db.transaction(async tx=>{const before=(await tx.query("SELECT current_setting('app.school_id') AS id")).rows[0].id;assert.equal((await tx.query('SELECT app.member_other_school_count($1) AS count',[memberId])).rows[0].count,1);assert.equal((await tx.query("SELECT current_setting('app.school_id') AS id")).rows[0].id,before);assert.equal((await tx.query('SELECT id FROM app.memberships WHERE id=$1',[foreignMember])).rowCount,0);},{schoolId:f.schoolId,userId:seedId('user:admin-a')});
+  assert.equal((await db.app.query("SELECT coalesce(current_setting('app.school_id',true),'') AS id")).rows[0].id,'');
+});
+
+test('B6 member aggregate checks current school authority, target membership and SQL role before returning any count',async()=>{
+  const f=await staffUiFixture(),reader=await f.role([{action:'member.read',scopes:['SCHOOL']}]),grant=await f.grant(f.target,reader.id),actor=seedId('user:teacher-a');
+  const invoke=context=>db.transaction(tx=>tx.query('SELECT app.member_other_school_count($1)',[f.other]),context);
+  for(const context of [{},{schoolId:f.schoolId},{schoolId:f.schoolId,userId:seedId('user:teacher-b')},{schoolId:schoolB,userId:actor},
+    {schoolId:f.schoolId,userId:actor,parentSessionId:crypto.randomUUID()}])await assert.rejects(invoke(context),error=>error.code==='42501');
+  await assert.rejects(db.parent.query('SELECT app.member_other_school_count($1)',[f.other]),error=>error.code==='42501');
+  const worker=new Pool(databaseConfig('worker'));try{await assert.rejects(worker.query('SELECT app.member_other_school_count($1)',[f.other]),error=>error.code==='42501');}finally{await worker.end();}
+  const selected={grantId:crypto.randomUUID(),operatorId:actor,schoolId:f.schoolId,classId:null,allowedActions:['member.read']};await assert.rejects(runSupportRead(selected,()=>invoke({schoolId:f.schoolId,userId:actor})),error=>error.code==='42501');
+  await assert.rejects(db.transaction(tx=>tx.query('SELECT app.member_other_school_count($1)',[seedId('member:teacher-b:school-b')]),{schoolId:f.schoolId,userId:actor}),error=>error.code==='42501');
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const url=`/api/v1/schools/${f.schoolId}/members/${f.other}/details`,view=await request('GET',url);assert.equal(view.statusCode,200,view.body);assert.equal(view.json().data.assignments,null);assert.equal(view.json().data.roleChoices,null);assert.equal(view.json().data.canViewHistory,false);assert.equal(view.json().data.canAssign,false);assert.equal(view.json().data.canRole,false);assert.equal((await request('GET',url.replace('/details','/history'))).statusCode,403);
+  for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,grant.id]),{schoolId:f.schoolId});await assert.rejects(invoke({schoolId:f.schoolId,userId:actor}),error=>error.code==='42501');assert.equal((await request('GET',url)).statusCode,403);}
+});
+
+test('B6 member effective permissions and assignment history follow native grant time, membership, identity and assignment dates',async()=>{
+  const f=await staffUiFixture(),role=await f.role([{action:'school.read',scopes:['SCHOOL']}]),current=await f.grant(f.target,role.id),future=await f.grant(f.target,role.id,{validFrom:new Date(Date.now()+3600000).toISOString(),validUntil:new Date(Date.now()+86400000).toISOString()});
+  const tomorrow=new Date(f.today+'T00:00:00Z');tomorrow.setUTCDate(tomorrow.getUTCDate()+1);const next=tomorrow.toISOString().slice(0,10);
+  const a=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'HOMEROOM',startsOn:f.today,endsOn:next});assert.equal(a.statusCode,201,a.body);
+  const b=await f.post('assignments',{classId:f.classId,memberId:f.other,kind:'HOMEROOM',startsOn:next,endsOn:f.endsOn});assert.equal(b.statusCode,201,b.body);
+  const get=async id=>{const response=await request('GET',`/api/v1/schools/${f.schoolId}/members/${id}/details`);assert.equal(response.statusCode,200,response.body);return response.json().data;};
+  const active=await get(f.target);assert.ok(active.member.grants.some(g=>g.id===current.id));assert.ok(!active.member.grants.some(g=>g.id===future.id));assert.ok(active.member.schoolRoleGrants.some(g=>g.id===future.id));assert.equal(active.assignments[0].live,true);assert.equal(active.assignments[0].createdBy,seedId('user:admin-a'));assert.equal(active.assignments[0].createdByName,'Quản trị UI giả');assert.equal(active.assignments[0].className,'Lớp phân quyền giả');
+  const nextDuty=await get(f.other);assert.equal(nextDuty.assignments[0].live,false);assert.ok(!nextDuty.member.grants.some(g=>g.roleCode==='HOMEROOM'));
+  const revoked=await f.post(`assignments/${a.json().data.id}/revoke`,{expectedVersion:a.json().data.version,reason:'Thu hồi phân công kiểm thử'});assert.equal(revoked.statusCode,200,revoked.body);const history=await get(f.target);assert.equal(history.assignments[0].live,false);assert.ok(history.assignments[0].revokedAt);assert.ok(history.assignments[0].grantRevokedAt);
+  await db.transaction(tx=>tx.query("UPDATE identity.users SET status='LOCKED' WHERE id=$1",[seedId('user:teacher-a')]),{schoolId:f.schoolId});try{const locked=await get(f.target);assert.equal(locked.member.status,'ACTIVE');assert.equal(locked.accessActive,false);assert.deepEqual(locked.member.grants,[]);assert.equal(locked.member.schoolRoleGrants.length,2);}finally{await db.app.query("UPDATE identity.users SET status='ACTIVE' WHERE id=$1",[seedId('user:teacher-a')]);}
+});
+
+test('B6 member role choices respect action-specific delegation expiry without borrowing a role catalog',async()=>{
+  const f=await staffUiFixture(),schoolRead=await f.role([{action:'school.read',scopes:['SCHOOL']}]),reader=await f.role([{action:'member.read',scopes:['SCHOOL']}]),manager=await f.role([{action:'role.manage',scopes:['SCHOOL']}]);
+  const short=new Date(Date.now()+1800000).toISOString(),long=new Date(Date.now()+3600000).toISOString();await f.grant(f.target,reader.id);const readGrant=await f.grant(f.target,schoolRead.id,{validUntil:long});await f.grant(f.target,manager.id,{validUntil:short});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const url=`/api/v1/schools/${f.schoolId}/members/${f.other}/details`,response=await request('GET',url);assert.equal(response.statusCode,200,response.body);const data=response.json().data,choice=data.roleChoices.find(r=>r.id===schoolRead.id);
+  assert.equal(data.canRole,true);assert.equal(choice.canDelegate,true);assert.equal(choice.delegationUntil,short);assert.equal(data.roleChoices.find(r=>r.id===f.adminRole).canDelegate,false);assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/roles`)).statusCode,403);for(const row of data.roleChoices){assert.ok(!Object.hasOwn(row,'permissions'));assert.ok(!Object.hasOwn(row,'actions'));}
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,readGrant.id]),{schoolId:f.schoolId});const changed=await request('GET',url);assert.equal(changed.statusCode,200,changed.body);assert.equal(changed.json().data.roleChoices.find(r=>r.id===schoolRead.id).canDelegate,false);
+});
+
+test('B6 member history filters member, assignment and grant events before counting/keysets, with independent audit authority',async()=>{
+  const f=await staffUiFixture(),reader=await f.role([{action:'member.read',scopes:['SCHOOL']}]),auditor=await f.role([{action:'audit.read',scopes:['SCHOOL']}]);await f.grant(f.target,reader.id);const auditGrant=await f.grant(f.target,auditor.id);
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:f.other,kind:'HOMEROOM',startsOn:f.today,endsOn:f.endsOn});assert.equal(assignment.statusCode,201,assignment.body);const a=assignment.json().data,ids=[];
+  await db.transaction(async tx=>{for(const [type,target]of [['member',f.other],['assignment',a.id],['grant',a.roleGrantId],['member',f.target],['student',f.other]]){const id=crypto.randomUUID();ids.push(id);await tx.query("INSERT INTO app.audit_events(id,school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,reason,redacted_before,redacted_after,created_at) VALUES($1,$2,$3,'STAFF','PROFILE-HISTORY',$4,$5,$6,'Lý do thật',$7,$8,'2041-01-04T18:00:00.123456Z')",[id,f.schoolId,seedId('user:admin-a'),type,target,crypto.randomUUID(),{status:'ACTIVE'},{status:'SUSPENDED',privateUnknown:'hidden-profile-history'}]);}},{schoolId:f.schoolId});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const url=`/api/v1/schools/${f.schoolId}/members/${f.other}/history`,out=[];let cursor,total;
+  do{const response=await request('GET',url+'?limit=1&sort=createdAt&dir=desc'+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);total??=response.json().page.total;assert.equal(response.json().page.total,total);assert.equal(response.body.includes('hidden-profile-history'),false);out.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
+  assert.equal(total,4);assert.equal(new Set(out.map(e=>e.id)).size,total);for(const id of ids.slice(0,3))assert.ok(out.some(e=>e.id===id));for(const id of ids.slice(3))assert.ok(!out.some(e=>e.id===id));assert.deepEqual(out.find(e=>e.id===ids[0]).changes,[{field:'status',before:'ACTIVE',after:'SUSPENDED'}]);
+  const first=await request('GET',url+'?limit=1');assert.equal((await request('GET',url.replace(f.other,f.target)+'?limit=1&cursor='+encodeURIComponent(first.json().page.nextCursor))).statusCode,422);assert.equal((await request('GET',url+'?targetId='+f.target)).statusCode,422);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,auditGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);const profile=await request('GET',url.replace('/history','/details'));assert.equal(profile.statusCode,200,profile.body);assert.equal(profile.json().data.canViewHistory,false);
+});
+
+test('B6 personal notifications traverse more than 100 real own memberships without truncating global totals or opaque pages',async()=>{
+  const userId=seedId('user:admin-a'),memberships=()=>db.transaction(tx=>tx.query("SELECT m.id,m.school_id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id WHERE m.user_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE' ORDER BY m.school_id",[userId]),{userId});
+  let all=(await memberships()).rows;while(all.length<=100){await operationalUiSchool();all=(await memberships()).rows;}
+  assert.ok(all.length>100);const prefix=`MANY-SCHOOLS-${crypto.randomUUID()}`,ids=[],last=all.at(-1);
+  for(const [m,count]of [[all[0],2],[last,3]])await db.transaction(async tx=>{
+    const role=(await tx.query("INSERT INTO app.roles(school_id,code,label) VALUES($1,$2,'Đọc thông báo kiểm thử giả') RETURNING id",[m.school_id,`notice-${crypto.randomUUID()}`])).rows[0].id;
+    await tx.query("INSERT INTO app.role_permissions(school_id,role_id,action_code,allowed_scopes) VALUES($1,$2,'school.read',ARRAY['SCHOOL'])",[m.school_id,role]);
+    await tx.query("INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,granted_by) VALUES($1,$2,$3,'SCHOOL',$4)",[m.school_id,m.id,role,userId]);
+    for(let i=0;i<count;i++){const id=crypto.randomUUID();ids.push(id);await tx.query("INSERT INTO app.notifications(id,school_id,member_id,kind,title,target_kind,required_action,source_key,created_at) VALUES($1::uuid,$2,$3,'permission',$4,'none','school.read',$1::uuid::text,'2041-01-04T18:00:00.123456Z')",[id,m.school_id,m.id,prefix]);}
+  },{schoolId:m.school_id});
+  jar.delete('edu_staff');const csrf=await login('admin-a@example.invalid'),url=`/api/v1/me/notifications?kind=permission&q=${encodeURIComponent(prefix)}&limit=2`,out=[];let cursor;
+  do{const response=await request('GET',url+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,5);out.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
+  assert.deepEqual(out.map(n=>n.id),[...ids].sort().reverse());assert.ok(out.every(n=>n.accessible));const lastId=ids.at(-1),mark=await request('POST',`/api/v1/me/notifications/${lastId}/read`,undefined,csrf);assert.equal(mark.statusCode,200,mark.body);
+  const filtered=await request('GET',url+`&schoolId=${last.school_id}&unread=true`);assert.equal(filtered.statusCode,200,filtered.body);assert.equal(filtered.json().page.total,2);assert.ok(filtered.json().data.every(n=>n.schoolId===last.school_id));assert.equal((await request('GET',url+'&schoolId=invalid')).statusCode,404);
 });

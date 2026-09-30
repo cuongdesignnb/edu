@@ -210,7 +210,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending"
+        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending",
+        "qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS."
       ]
     },
     {
@@ -222,7 +223,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending"
+        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending",
+        "qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS."
       ]
     },
     {
@@ -2798,7 +2800,8 @@
       "status": "TESTED",
       "evidence": [
         "qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending",
-        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending.",
+        "qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS."
       ]
     },
     {
@@ -3331,6 +3334,28 @@
       "evidence": [
         "ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated"
       ]
+    },
+    {
+      "operationId": "getMemberDetails",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS."
+      ]
+    },
+    {
+      "operationId": "listMemberHistory",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS."
+      ]
     }
   ],
   "screens": [
@@ -3774,7 +3799,9 @@
         "listAssignments",
         "revokeAssignment",
         "replaceMemberSchoolRoles",
-        "endMember"
+        "endMember",
+        "getMemberDetails",
+        "listMemberHistory"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

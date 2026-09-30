@@ -277,6 +277,18 @@ const staffList=spec.paths['/schools/{schoolId}/staff-directory'].get;
 staffList.parameters=staffList.parameters.filter(p=>!['purpose','status'].includes(p.name));
 staffList.parameters.push({name:'status',in:'query',schema:{type:'string',enum:['ACTIVE','SUSPENDED','ENDED','INVITED','PENDING_INVITATION']}},{name:'purpose',in:'query',schema:{type:'string',enum:['export']}},...['department','role'].map(name=>({name,in:'query',schema:{type:'string',maxLength:200}})));
 extendOperation('getMember','getStaffDirectorySummary','/schools/{schoolId}/staff-directory-summary','member.read','StaffDirectorySummary',false,['SC10']);
+// ADR-044: member details keep assignment, role management and audit authority independent.
+spec.components.schemas.MemberRoleChoice=object({id:uuid,version:{type:'integer',minimum:1},label,code:label,systemRole:{type:'boolean'},canDelegate:{type:'boolean'},delegationUntil:{...timestamp,nullable:true}});
+spec.components.schemas.MemberAssignmentDetails=object({id:uuid,version:{type:'integer',minimum:1},classId:uuid,className:label,yearName:label,memberId:uuid,roleGrantId:uuid,
+  kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectId:{...uuid,nullable:true},subjectName:{type:'string',nullable:true},startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date',nullable:true},revokedAt:{...timestamp,nullable:true},
+  grantValidFrom:timestamp,grantValidUntil:{...timestamp,nullable:true},grantRevokedAt:{...timestamp,nullable:true},roleLabel:label,roleStatus:{type:'string',enum:['ACTIVE','ARCHIVED']},createdAt:timestamp,createdBy:{...uuid,nullable:true},createdByName:{type:'string',nullable:true},live:{type:'boolean'}});
+spec.components.schemas.MemberDetails=object({member:{$ref:'#/components/schemas/Member'},referenceDate:{type:'string',format:'date'},joinedOn:{type:'string',format:'date',nullable:true},accessActive:{type:'boolean'},otherSchools:count,
+  assignments:{type:'array',maxItems:2000,nullable:true,items:{$ref:'#/components/schemas/MemberAssignmentDetails'}},roleChoices:{type:'array',maxItems:1000,nullable:true,items:{$ref:'#/components/schemas/MemberRoleChoice'}},
+  canAssign:{type:'boolean'},canSuspend:{type:'boolean'},canRole:{type:'boolean'},canViewHistory:{type:'boolean'},isSelf:{type:'boolean'}});
+spec.components.schemas.MemberDetailsResponse=object({data:{$ref:'#/components/schemas/MemberDetails'},requestId:label});
+extendOperation('getMember','getMemberDetails','/schools/{schoolId}/members/{memberId}/details','member.read','MemberDetails',false,['SC11']);
+extendOperation('listSchoolAudit','listMemberHistory','/schools/{schoolId}/members/{memberId}/history','member.read+audit.read','AuditEvent',true,['SC11']);
+spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters=spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters.filter(p=>p.in==='path'||['limit','cursor','sort','dir'].includes(p.name));
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));
