@@ -25,7 +25,7 @@ export class StaffService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
-    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId});
+    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
     const work=async(tx:Transaction):Promise<Result>=>{
       if(c.operation.method!=='GET')await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
       if(op==='listMembers'){
@@ -54,7 +54,7 @@ export class StaffService {
       }
       if(op==='getRole')return {data:await this.role(tx,schoolId,c.params.roleId!)};
       if(op==='createRole'||op==='updateRole')return {data:await this.saveRole(tx,c),status:op==='createRole'?201:200};
-      if(op==='listAssignments')return listResource(tx,assignmentResource,schoolId,c.query,undefined,c.principal!.userId);
+      if(op==='listAssignments')return listResource(tx,assignmentResource,schoolId,c.query,c.principal!.support?.classId?{sql:'t.class_id=$1',values:[c.principal!.support.classId]}:undefined,c.principal!.userId);
       if(op==='createAssignment'){
         const data=await this.createAssignment(tx,c,c.body);await audit(tx,c,'assignment',String(data.id));return {data,status:201};
       }

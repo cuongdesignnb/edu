@@ -42,56 +42,56 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
-| getSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | updateSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | createYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | updateYear | SC03, SC04, SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listTerms | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listTerms | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| getTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | updateTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listWeeks | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listWeeks | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| getWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getWeek | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | updateWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listCalendarEvents | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | createCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | getCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | updateCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | createClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | activateYear | SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | archiveYear | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | activateClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | archiveClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | publishCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | updateDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | createRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getRollover | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | commitRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| listMembers | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listMembers | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
+| getMember | SC11 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | updateMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | suspendMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | reactivateMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listInvitations | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | inviteStaff | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeInvitation | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listRoles | SC13 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| getRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listRoles | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
+| getRole | SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createRole | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | updateRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | previewGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| listAssignments | SC11, SC12 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listAssignments | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createAssignment | SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeAssignment | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | listHandovers | SC15 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
@@ -223,9 +223,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | publishClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | scheduleClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | withdrawClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
-| listImports | SC26 | TESTED | qa/backend/imports-integration.log |
+| listImports | SC26 | TESTED | qa/backend/imports-integration.log; qa/backend/support-read-integration.log |
 | createImport | SC27 | TESTED | qa/backend/imports-integration.log |
-| getImport | SC28 | TESTED | qa/backend/imports-integration.log |
+| getImport | SC28 | TESTED | qa/backend/imports-integration.log; qa/backend/support-read-integration.log |
 | validateImport | SC27 | TESTED | qa/backend/imports-integration.log |
 | listImportRows | SC27, SC28 | TESTED | qa/backend/imports-integration.log |
 | commitImport | SC27 | TESTED | qa/backend/imports-integration.log |
@@ -239,7 +239,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | downloadExport | SC39, CL26 | NOT_STARTED |  |
 | cancelExport | SC39 | NOT_STARTED |  |
 | listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
-| getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
+| getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending; qa/backend/support-read-integration.log |
 | updateSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
 | listSchoolTickets | SC42 | TESTED | qa/backend/support-integration.log |
 | createTicket | SC42 | TESTED | qa/backend/support-integration.log |
@@ -247,9 +247,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listSchoolMessages | SC43 | TESTED | qa/backend/support-integration.log |
 | postSchoolMessage | SC43 | TESTED | qa/backend/support-integration.log |
 | listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log |
-| createSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log |
-| approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log |
-| revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log |
+| createSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
+| approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
+| revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
 | exchangeParentLink | PA01 | TESTED | qa/backend/parent-integration.log |
 | getParentContext | PA01, PA14 | TESTED | qa/backend/parent-integration.log |
 | endParentSession | PA14 | TESTED | qa/backend/parent-integration.log |
@@ -303,8 +303,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC09 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC10 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC11 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC12 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC13 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC12 | core | TESTED | NOT_STARTED |  |
+| SC13 | core | TESTED | NOT_STARTED |  |
 | SC14 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC15 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC16 | core | IMPLEMENTED | NOT_STARTED |  |

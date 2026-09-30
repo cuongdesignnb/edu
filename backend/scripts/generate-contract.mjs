@@ -149,6 +149,9 @@ for(const id of ['listPlatformTickets','listSchoolTickets','listPlatformSupportA
   const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id),names=id.includes('SupportAccess')?['status','ticketId','operatorId','schoolId']:['status','priority','assigneeId','schoolId'];
   for(const name of names)if(!op.parameters.some(p=>p.name===name))op.parameters.push({name,in:'query',schema:{type:'string',...(name.endsWith('Id')?{format:'uuid'}:{})}});
 }
+// ADR-026: a selected support grant is explicit and applies only to metadata GETs.
+const supportReadIds=['getSchoolProfile','getSchoolSettings','listClasss','getClass','listAssignments','listYears','getYear','listTerms','getTerm','listWeeks','getWeek','listDictionary','listMembers','getMember','listRoles','getRole','listImports','getImport'];
+for(const id of supportReadIds){const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);if(!op)throw new Error(`Support metadata operation missing: ${id}`);op.parameters.push({name:'X-Support-Access',in:'header',schema:{type:'string',format:'uuid'},description:'Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked.'});}
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
 await fs.writeFile(path.join(root, 'backend/api/openapi.yaml'), YAML.stringify(spec, { aliasDuplicateObjects: false }));

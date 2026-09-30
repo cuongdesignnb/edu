@@ -16537,6 +16537,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -16859,6 +16868,15 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -17167,6 +17185,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -17509,6 +17536,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -17815,6 +17851,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -18156,6 +18201,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -18462,6 +18516,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -19445,6 +19508,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -19749,6 +19821,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -20952,6 +21033,15 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -22128,6 +22218,15 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -22270,6 +22369,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -23438,6 +23546,15 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -23580,6 +23697,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -24590,6 +24716,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -47074,6 +47209,15 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -47378,6 +47522,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {
@@ -49679,6 +49832,15 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "X-Support-Access",
+          "in": "header",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked."
         }
       ],
       "responses": {

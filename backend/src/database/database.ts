@@ -1,6 +1,8 @@
 import { Injectable,Optional,Inject, type OnApplicationShutdown } from '@nestjs/common';
 import { Pool, type PoolClient, type QueryResultRow, types } from 'pg';
 import { databaseConfig } from '../common/config';
+import { currentSupportRead } from '../common/support-context';
+import { Problem } from '../common/problem';
 types.setTypeParser(1082, value => value);
 types.setTypeParser(1700, value => value);
 export type Row = Record<string, unknown>;
@@ -21,14 +23,16 @@ export class Database implements OnApplicationShutdown {
   async transaction<T>(fn: (tx: Transaction) => Promise<T>, context: {
     schoolId?: string; userId?: string; parentSessionId?: string; parent?: boolean;readOnly?:boolean;
   } = {}): Promise<T> {
+    const support=currentSupportRead();
+    if(support&&(context.parent||context.schoolId&&context.schoolId!==support.schoolId))throw new Problem(404,'RESOURCE_NOT_FOUND');
     const connection = await (context.parent ? this.parent : this.app).connect();
     let destroyed = false;
     try {
-      await connection.query(context.readOnly?'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY':'BEGIN');
+      await connection.query(context.readOnly||support?'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY':'BEGIN');
       // Empty values override any accidentally retained session setting as well.
       await connection.query(`SELECT set_config('app.school_id',$1,true),
-        set_config('app.authenticated_user_id',$2,true),set_config('app.parent_session_id',$3,true),set_config('app.adjustment_id','',true)`,
-      [context.schoolId ?? '', context.userId ?? '', context.parentSessionId ?? '']);
+        set_config('app.authenticated_user_id',$2,true),set_config('app.parent_session_id',$3,true),set_config('app.adjustment_id','',true),set_config('app.support_access_id',$4,true)`,
+      [support?.schoolId??context.schoolId??'',support?.operatorId??context.userId??'',context.parentSessionId??'',support?.grantId??'']);
       const value = await fn(connection);
       await connection.query('COMMIT');
       return value;

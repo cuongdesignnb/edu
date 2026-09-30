@@ -446,9 +446,10 @@
         "SC02"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -473,7 +474,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -501,7 +503,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -524,9 +527,10 @@
         "SC06"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -548,9 +552,10 @@
         "SC06"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -572,9 +577,10 @@
         "SC06"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -596,9 +602,10 @@
         "SC06"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -666,7 +673,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -690,7 +698,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -766,9 +775,10 @@
         "SC08"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -849,7 +859,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -858,9 +869,10 @@
         "SC11"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -938,9 +950,10 @@
         "SC13"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -949,9 +962,10 @@
         "SC14"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -1023,9 +1037,10 @@
         "SC12"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2547,7 +2562,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/imports-integration.log"
+        "qa/backend/imports-integration.log",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2569,7 +2585,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/imports-integration.log"
+        "qa/backend/imports-integration.log",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2717,7 +2734,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending"
+        "qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2808,7 +2826,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2819,7 +2838,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -2830,7 +2850,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/support-read-integration.log"
       ]
     },
     {
@@ -3473,7 +3494,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "IMPLEMENTED"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC13",
@@ -3485,7 +3506,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "IMPLEMENTED"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC14",

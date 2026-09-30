@@ -3549,6 +3549,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -3755,6 +3762,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -3953,6 +3967,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -4173,6 +4194,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -4369,6 +4397,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -4588,6 +4623,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -4784,6 +4826,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -5413,6 +5462,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -5607,6 +5663,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -6387,6 +6450,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -7147,6 +7217,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -7237,6 +7314,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -7990,6 +8074,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -8184,6 +8275,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -8733,6 +8831,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -23233,6 +23338,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -23427,6 +23539,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công
@@ -24906,6 +25025,13 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: X-Support-Access
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Explicit school-approved read-only support grant; current operator,
+            scope and expiry are rechecked.
       responses:
         "200":
           description: Thành công

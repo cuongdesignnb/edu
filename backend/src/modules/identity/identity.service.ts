@@ -5,6 +5,7 @@ import { Database, one, iso, type Transaction } from '../../database/database';
 import { runtimeConfig } from '../../common/config';
 import { Problem } from '../../common/problem';
 import { hashToken, randomToken, csrfFor, setCookie, hashPassword, verifyPassword, encryptMail } from '../../common/security';
+import type { SupportReadContext } from '../../common/support-context';
 
 export interface UserRow {
   id: string; email_normalized: string; display_name: string; status: string;
@@ -12,6 +13,7 @@ export interface UserRow {
 }
 export interface Principal {
   sessionId: string; userId: string; csrfHash: string; tokenHash: string; user: UserRow;
+  support?:SupportReadContext;
 }
 export function userDto(user: UserRow) {
   return { id: user.id, email: user.email_normalized, displayName: user.display_name,

@@ -20,7 +20,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 25 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support request/consent transitions tested, selected-grant read integration remains pending |
+| B1 | PARTIAL | 26 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
@@ -30,6 +30,14 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## Selected support read checks
+
+- Migration 026 applied and checksum replay verified. Actual suite: 74/74 PostgreSQL integration tests, exit0 in qa/backend/support-read-integration.log; 12/12 unit/contract tests, typecheck and lint exit0. The first attempt is retained: 71/72, with the failing fixture using a nonexistent import error-download URL.
+- An explicit X-Support-Access UUID selects only the approved metadata GET allowlist and that grant's school/class/action/time. It does not combine ordinary school roles or global operator privileges. Real read transactions use REPEATABLE READ READ ONLY; an attempted SQL write returns 25006. Tenant and support settings clear after each transaction.
+- Class-restricted queries, foreign school/class, student/guardian/parent routes, import rows/downloads and all mutations are denied. Suspended-school consent permits only approved metadata. Current operator revocation, consent revocation and elapsed expiry deny the next request in the same session.
+- Every selected read is audited before returning data with actual SUPPORT operator, typed consent ID, request ID and status. Audit failure prevents delivery. A user holding both platform support and school-admin rights cannot self-approve in HTTP or SQL, and cannot extend an explicitly selected class grant with ordinary admin rights.
+- Native keyset pagination was also exercised across non-null to null and null-to-null sort boundaries with three persisted platform schools. API coverage remains 257/264; reports/exports, B6 and B7 remain incomplete.
 
 ## Support queue and consent workflow checks
 

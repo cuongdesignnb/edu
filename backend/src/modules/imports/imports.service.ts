@@ -46,6 +46,7 @@ export class ImportsService {
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
     const authorize=async(tx:Transaction)=>{
+      if(c.principal!.support&&['listImports','getImport'].includes(op))return this.policy.require(tx,c.principal!,'import.read',{schoolId});
       if(op==='listImports')return this.authorize(tx,schoolId,c.principal!.userId,'');
       const row=op==='createImport'?c.body:await this.job(tx,schoolId,c.params.importId!);
       await this.authorize(tx,schoolId,c.principal!.userId,String(row.kind),(row.class_id??row.classId) as string|undefined);
