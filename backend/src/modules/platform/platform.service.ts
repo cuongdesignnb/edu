@@ -13,7 +13,7 @@ import type { Handler,RequestContext,Result } from '../../api.router';
 @Injectable()
 export class PlatformService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async school(tx:Transaction,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${lock?' FOR UPDATE':''}`,[id]);if(!row)notFound();return row;}
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async inviteAdmin(tx:Transaction,c:RequestContext,schoolId:string,input:Record<string,unknown>){
@@ -46,6 +46,9 @@ export class PlatformService {
     const authorize=async(tx:Transaction)=>{await this.policy.platform(c.principal!,c.operation.permission,tx);if(op==='createSchool'&&c.body.firstAdmin)await this.policy.platform(c.principal!,'platform.admins.manage',tx);if(schoolId)await this.school(tx,schoolId);};
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='getPlatformOverview')return this.overview(tx,c);
+      if(op==='getPlatformAuditOptions'){
+        const actors=(await tx.query<{id:string;name:string}>("SELECT DISTINCT e.actor_id AS id,coalesce(u.display_name,'Hệ thống') AS name FROM platform.audit_events e LEFT JOIN identity.users u ON u.id=e.actor_id WHERE e.actor_id IS NOT NULL ORDER BY name,id LIMIT 1001")).rows;if(actors.length>1000)throw new Problem(422,'AUDIT_CHOICE_LIMIT');return {data:{actors}};
+      }
       if(op==='getPlatformSchoolOptions'){
         const provinces=(await tx.query<{province:string}>("SELECT DISTINCT province FROM platform.schools WHERE province IS NOT NULL AND province<>'' ORDER BY province LIMIT 201")).rows;
         if(provinces.length>200)throw new Problem(422,'CHOICE_LIMIT');return {data:{provinces:provinces.map(p=>p.province)}};
@@ -57,7 +60,13 @@ export class PlatformService {
         return listResource(tx,schoolListResource,null,c.query,undefined,c.principal!.userId);
       }
       if(op==='getPlatformSchool')return {data:await schoolView(tx,await this.school(tx,schoolId!))};
-      if(op==='listPlatformAudit'){const result=await listResource(tx,platformAuditResource,null,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);return {...result,data:result.data.map(auditView)};}
+      if(op==='listPlatformAudit'){
+        if(c.query.from&&c.query.to&&c.query.from>c.query.to)validation('to','Ngày kết thúc không được trước ngày bắt đầu');
+        const predicates:string[]=[],values:unknown[]=[];
+        if(c.query.from){values.push(c.query.from);predicates.push(`t.created_at>=($${values.length}::date::timestamp AT TIME ZONE 'Asia/Ho_Chi_Minh')`);}
+        if(c.query.to){values.push(c.query.to);predicates.push(`t.created_at<(($${values.length}::date+1)::timestamp AT TIME ZONE 'Asia/Ho_Chi_Minh')`);}
+        const result=await listResource(tx,platformAuditResource,null,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},{sql:predicates.join(' AND '),values},c.principal!.userId);return {...result,data:result.data.map(auditView)};
+      }
       if(op==='listOperations'){
         const result=await listResource(tx,operationResource,null,{...c.query,sort:c.query.sort??'id'},undefined,c.principal!.userId),safe=new Set(['durationMs','schemaRevision','migrations','rows','files','byteSize','checksum','errorCode','readers','writers','p95ReadMs','p95WriteMs','errorRate']);
         result.data=result.data.map(item=>{if(item.startedAt===null)delete item.startedAt;if(item.finishedAt===null)delete item.finishedAt;item.summary=Object.fromEntries(Object.entries(item.summary as Record<string,unknown>).filter(([key,value])=>safe.has(key)&&(value===null||['string','number','boolean'].includes(typeof value))));return item;});return result;

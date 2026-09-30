@@ -6,12 +6,13 @@ import { Permissions,grantAllows,coversDelegatedExpiry,type Grant } from '../../
 import { Problem,notFound,validation } from '../../common/problem';
 import { platformAudit } from '../platform/platform-data';
 import { ticketResource,messageResource,supportResource,supportActions,operatorSql,supportRow,supportText } from './support-data';
+import {platformSupportOptions} from './support-options';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class SupportService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listPlatformTickets','getPlatformTicket','updatePlatformTicket','listPlatformTicketMessages','postPlatformTicketMessage','listPlatformSupportAccess','listSchoolTickets','createTicket','getSchoolTicket','listSchoolMessages','postSchoolMessage','listSchoolSupportAccess','createSupportAccess','approveSupportAccess','revokeSupportAccess'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformSupportOptions','requestPlatformSupportAccess','relinquishPlatformSupportAccess','listPlatformTickets','getPlatformTicket','updatePlatformTicket','listPlatformTicketMessages','postPlatformTicketMessage','listPlatformSupportAccess','listSchoolTickets','createTicket','getSchoolTicket','listSchoolMessages','postSchoolMessage','listSchoolSupportAccess','createSupportAccess','approveSupportAccess','revokeSupportAccess'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private platform(c:RequestContext){return c.operation.path.startsWith('/api/v1/platform/');}
   private async schoolAuthority(tx:Transaction,c:RequestContext,action:string):Promise<Grant[]>{
     const schoolId=c.params.schoolId!,member=await one(tx,"SELECT m.id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id WHERE m.school_id=$1 AND m.user_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL",[schoolId,c.principal!.userId]);if(!member)notFound();
@@ -43,22 +44,31 @@ export class SupportService {
     for(const action of row.allowed_actions as string[]){const required=action==='import.read'?'import.manage':action;if(!grants.some(g=>grantAllows(g,required,scope,school.today)&&coversDelegatedExpiry(g,from,until)))throw new Problem(403,'DELEGATION_CEILING');}
     if(c.principal!.userId===row.operator_id)throw new Problem(403,'SELF_SUPPORT_APPROVAL_FORBIDDEN');
   }
-  private async log(tx:Transaction,c:RequestContext,type:string,id:string,schoolId:string,status:string){
-    const actor={...c,params:{...c.params,schoolId}};await platformAudit(tx,actor,type,id,{status});if(!this.platform(c))await audit(tx,actor,type,id,{status});
+  private async log(tx:Transaction,c:RequestContext,type:string,id:string,schoolId:string,status:string,reason?:string){
+    const actor={...c,params:{...c.params,schoolId}},metadata={status,...(reason?{reason}:{})};await platformAudit(tx,actor,type,id,metadata);if(!this.platform(c))await audit(tx,actor,type,id,metadata);
   }
   private async handle(c:RequestContext):Promise<Result>{
-    const op=c.operation.id,global=this.platform(c),schoolId=global?null:c.params.schoolId!,authorize=(tx:Transaction)=>this.authorize(tx,c);
+    const op=c.operation.id,global=this.platform(c),schoolId=global&&op!=='requestPlatformSupportAccess'?null:c.params.schoolId!,authorize=(tx:Transaction)=>this.authorize(tx,c);
     const work=async(tx:Transaction):Promise<Result>=>{
+      if(op==='getPlatformSupportOptions')return {data:await platformSupportOptions(tx,c.query.schoolId)};
+      if(op==='relinquishPlatformSupportAccess'){
+        const row=await one<Row>(tx,'SELECT * FROM platform.support_access WHERE id=$1 AND operator_id=$2 FOR UPDATE',[c.params.supportAccessId,c.principal!.userId]);if(!row)notFound();this.version(row,c.body.expectedVersion);
+        if(!['REQUESTED','APPROVED'].includes(String(row.status))||new Date(row.valid_until as Date).getTime()<=Date.now())throw new Problem(409,'SUPPORT_ACCESS_UNAVAILABLE');
+        const reason=this.text(c.body.reason,'reason',3);await tx.query("UPDATE platform.support_access SET status='REVOKED',revoked_at=now() WHERE id=$1",[row.id]);await this.log(tx,c,'support-access',String(row.id),String(row.school_id),'REVOKED',reason);
+        return {data:await supportRow(tx,String(row.school_id),String(row.id))};
+      }
       if(['listPlatformTickets','listSchoolTickets'].includes(op))return listResource(tx,ticketResource,schoolId,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);
       if(['listPlatformSupportAccess','listSchoolSupportAccess'].includes(op))return listResource(tx,supportResource,schoolId,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);
-      if(op==='createSupportAccess'){
+      if(['createSupportAccess','requestPlatformSupportAccess'].includes(op)){
+        const platformRequest=op==='requestPlatformSupportAccess',operatorId=platformRequest?c.principal!.userId:c.body.operatorId;
+        const school=await one<Row>(tx,'SELECT status FROM platform.schools WHERE id=$1',[schoolId]);if(!school||school.status==='ARCHIVED')notFound();
         const ticket=await one<Row>(tx,'SELECT * FROM platform.support_tickets WHERE school_id=$1 AND id=$2',[schoolId,c.body.ticketId]);if(!ticket)notFound();if(['RESOLVED','CLOSED'].includes(String(ticket.status)))throw new Problem(409,'TICKET_CLOSED');
-        if(!await one(tx,`${operatorSql} AND u.id=$1`,[c.body.operatorId]))validation('operatorId','Operator không còn quyền hỗ trợ');
-        const actions=c.body.allowedActions as string[],from=new Date(String(c.body.validFrom)),until=new Date(String(c.body.validUntil));
+        if(!await one(tx,`${operatorSql} AND u.id=$1`,[operatorId]))validation('operatorId','Operator không còn quyền hỗ trợ');
+        const actions=c.body.allowedActions as string[],from=platformRequest?new Date():new Date(String(c.body.validFrom)),until=platformRequest?new Date(from.getTime()+Number(c.body.durationDays)*86400000):new Date(String(c.body.validUntil));
         if(!actions.length||new Set(actions).size!==actions.length||actions.some(a=>!(supportActions as readonly string[]).includes(a)))validation('allowedActions','Chỉ chọn phạm vi hỗ trợ đọc được cho phép');
         if(c.body.classId){if(actions.some(a=>!['class.read','assignment.read'].includes(a)))validation('allowedActions','Phạm vi lớp chỉ gồm cấu trúc và phân công lớp');if(!await one(tx,'SELECT id FROM app.classes WHERE school_id=$1 AND id=$2',[schoolId,c.body.classId]))notFound();}
         if(!Number.isFinite(from.getTime())||!Number.isFinite(until.getTime())||until<=from||until.getTime()<=Date.now()||until.getTime()-from.getTime()>14*86400000)validation('validUntil','Thời gian hỗ trợ cần còn hạn và không quá 14 ngày');
-        const reason=this.text(c.body.reason,'reason',5),row=(await one<Row>(tx,"INSERT INTO platform.support_access(school_id,ticket_id,operator_id,class_id,allowed_actions,reason,valid_from,valid_until,requested_by_user_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",[schoolId,ticket.id,c.body.operatorId,c.body.classId??null,actions,reason,from,until,c.principal!.userId]))!;await this.log(tx,c,'support-access',String(row.id),schoolId!,'REQUESTED');return {data:await supportRow(tx,schoolId!,String(row.id)),status:201};
+        const reason=this.text(c.body.reason,'reason',5),row=(await one<Row>(tx,"INSERT INTO platform.support_access(school_id,ticket_id,operator_id,class_id,allowed_actions,reason,valid_from,valid_until,requested_by_user_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",[schoolId,ticket.id,operatorId,c.body.classId??null,actions,reason,from,until,c.principal!.userId]))!;await this.log(tx,c,'support-access',String(row.id),schoolId!,'REQUESTED');return {data:await supportRow(tx,schoolId!,String(row.id)),status:201};
       }
       if(['approveSupportAccess','revokeSupportAccess'].includes(op)){
         const row=await this.grant(tx,c);this.version(row,c.body.expectedVersion);
@@ -74,6 +84,10 @@ export class SupportService {
       if(['listPlatformTicketMessages','listSchoolMessages'].includes(op))return listResource(tx,messageResource,global?null:schoolId,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'asc'},{sql:'t.ticket_id=$1',values:[ticket.id]},c.principal!.userId);
       if(op==='updatePlatformTicket'){
         this.version(ticket,c.body.expectedVersion);if(c.body.assigneeId&&!await one(tx,`${operatorSql} AND u.id=$1`,[c.body.assigneeId]))validation('assigneeId','Người phụ trách không có quyền hỗ trợ');
+        const message=c.body.message!==undefined?this.text(c.body.message,'message',3):undefined;
+        if(message&&['RESOLVED','CLOSED'].includes(String(ticket.status)))throw new Problem(409,'TICKET_CLOSED');
+        if(!message&&!Object.hasOwn(c.body,'status')&&!Object.hasOwn(c.body,'assigneeId'))validation('body','Nhập nội dung cập nhật hoặc thay đổi trạng thái/người xử lý');
+        if(message){const saved=(await one<Row>(tx,'INSERT INTO platform.support_messages(ticket_id,author_id,body,side) VALUES($1,$2,$3,\'PLATFORM\') RETURNING id',[ticket.id,c.principal!.userId,message]))!;await this.log(tx,c,'support-message',String(saved.id),String(ticket.school_id),'POSTED');}
         const row=(await one<Row>(tx,'UPDATE platform.support_tickets SET status=$2,assignee_id=$3 WHERE id=$1 RETURNING *',[ticket.id,c.body.status??ticket.status,Object.hasOwn(c.body,'assigneeId')?c.body.assigneeId:ticket.assignee_id]))!;await this.log(tx,c,'ticket',String(row.id),String(row.school_id),String(row.status));return {data:await this.ticketView(tx,row)};
       }
       if(['postPlatformTicketMessage','postSchoolMessage'].includes(op)){

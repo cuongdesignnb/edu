@@ -2,13 +2,15 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {connectedPlatformRepo,connectedPlatformExtraRepo} from '@/lib/repositories/connected/platform';
 import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
 import type {Ctx} from '@/lib/repositories/core';
+import {refreshStaffContext} from '@/lib/api/session';
+vi.mock('@/lib/api/session',()=>({refreshStaffContext:vi.fn().mockResolvedValue({platformActions:['platform.schools.read']}),serverNowISO:()=> '2026-09-30T00:00:00Z'}));
 
 const ctx={} as Ctx,id='00000000-0000-4000-8000-000000000001';
 const steps=Object.fromEntries(['profileDone','adminAssigned','yearCreated','classesCreated','teachersInvited','studentsImported','homeroomAssigned','rulesPublished'].map(k=>[k,k==='profileDone']));
 const school={id,name:'Trường API',code:'API',slug:'truong-api',shortName:'API',province:'Tỉnh API',level:null,status:'DRAFT',timezone:'Asia/Ho_Chi_Minh',accentColor:'#123456',motto:'',publicIntro:'',createdAt:'2026-09-30T00:00:00Z',updatedAt:'2026-09-30T00:00:00Z',version:3,classCount:4,staffCount:8,adminNames:[],onboarding:steps};
 const input={name:'Trường API',shortName:'API',code:'API',slug:'truong-api',level:'THPT' as const,province:'Tỉnh API',address:'',publicEmail:'',publicPhone:'',adminName:'Người quản trị',adminEmail:'admin@example.invalid',asDraft:false};
 const envelope=(data:unknown,page?:unknown)=>new Response(JSON.stringify({data,requestId:'platform-adapter',...(page?{page}:{})}));
-beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');});
+beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(refreshStaffContext).mockResolvedValue({platformActions:['platform.schools.read']} as Awaited<ReturnType<typeof refreshStaffContext>>);});
 afterEach(()=>{authenticationChanged();vi.unstubAllGlobals();});
 
 describe('platform school adapter candidates',()=>{
@@ -48,5 +50,27 @@ describe('platform school adapter candidates',()=>{
   it('reads native identity availability and keeps unconfigured settings editable',async()=>{
     const fetcher=vi.fn().mockResolvedValueOnce(envelope({codeTaken:true,slugTaken:false})).mockResolvedValueOnce(envelope({brandName:'API',supportEmail:null,publicSupportPhone:null,footerNote:'',version:4}));vi.stubGlobal('fetch',fetcher);
     expect(await connectedPlatformExtraRepo.checkSchoolIdentity(ctx,'API','new-slug')).toEqual({codeTaken:true,slugTaken:false});expect(fetcher.mock.calls[0][0]).toBe('/api/v1/platform/school-identity?code=API&slug=new-slug');expect(await connectedPlatformRepo.settings(ctx)).toMatchObject({supportEmail:'',supportPhone:'',version:4});
+  });
+  it('shows current native message counts and never creates an empty history on queue rows',async()=>{
+    const ticket={id,version:5,schoolId:id,subject:'Yêu cầu API',description:'Nội dung API',status:'WAITING_SCHOOL',priority:'HIGH',requesterId:id,requesterName:'Người gửi API',schoolName:'Trường API',schoolStatus:'SUSPENDED',createdAt:'2026-09-30T00:00:00Z',updatedAt:'2026-09-30T00:00:00Z',messageCount:12};
+    const fetcher=vi.fn().mockResolvedValue(envelope([ticket],{limit:10,nextCursor:null,hasMore:false,total:1}));vi.stubGlobal('fetch',fetcher);
+    const page=await connectedPlatformRepo.tickets(ctx,{pageSize:10,filters:{status:'waiting_school',priority:'high'}});expect(page.items[0]).toMatchObject({messageCount:12,schoolStatus:'suspended',status:'waiting_school',version:5});expect(page.items[0]).not.toHaveProperty('updates');expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toContain('status=WAITING_SCHOOL&priority=HIGH');
+  });
+  it('saves message and status in one acknowledged PATCH with the original version on retry',async()=>{
+    const ticket={id,version:6,schoolId:id,subject:'Yêu cầu API',description:'Nội dung API',status:'RESOLVED',priority:'HIGH',requesterId:id,requesterName:'Người gửi API',schoolName:'Trường API',schoolStatus:'ACTIVE',createdAt:'2026-09-30T00:00:00Z',updatedAt:'2026-09-30T00:00:00Z',messageCount:13};
+    const fetcher=vi.fn().mockRejectedValueOnce(new Error('lost response')).mockResolvedValueOnce(envelope(ticket));vi.stubGlobal('fetch',fetcher);const command={version:5,status:'resolved' as const,text:'Hoàn tất API'};
+    await expect(connectedPlatformRepo.updateTicket(ctx,id,command)).rejects.toMatchObject({code:'NETWORK'});expect((await connectedPlatformRepo.updateTicket(ctx,id,command)).version).toBe(6);
+    expect(fetcher.mock.calls[0][1].method).toBe('PATCH');expect(JSON.parse(fetcher.mock.calls[0][1].body)).toEqual({expectedVersion:5,status:'RESOLVED',message:'Hoàn tất API'});expect(fetcher.mock.calls[0][1].body).toBe(fetcher.mock.calls[1][1].body);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);
+  });
+  it('requests only the chosen read actions with stable server duration and trusts native effective state',async()=>{
+    const grant={id,version:1,schoolId:id,ticketId:id,operatorId:id,allowedActions:['class.read','assignment.read'],reason:'Hỗ trợ API',validFrom:'2026-09-30T00:00:00Z',validUntil:'2026-10-07T00:00:00Z',status:'APPROVED',viewStatus:'inactive',effective:false,operatorName:'Operator API',schoolName:'Trường API'};
+    const fetcher=vi.fn().mockRejectedValueOnce(new Error('lost response')).mockResolvedValueOnce(envelope(grant));vi.stubGlobal('fetch',fetcher);const command={schoolId:id,ticketId:id,scopes:['class_structure' as const],reason:'Hỗ trợ API',days:7};
+    await expect(connectedPlatformRepo.requestSupportGrant(ctx,command)).rejects.toMatchObject({code:'NETWORK'});const result=await connectedPlatformRepo.requestSupportGrant(ctx,command);expect(result).toMatchObject({status:'inactive',canonicalStatus:'APPROVED',effective:false,scopes:['class_structure']});
+    expect(JSON.parse(fetcher.mock.calls[0][1].body)).toEqual({ticketId:id,allowedActions:['class.read','assignment.read'],reason:'Hỗ trợ API',durationDays:7});expect(fetcher.mock.calls[0][1].body).toBe(fetcher.mock.calls[1][1].body);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);
+    await expect(connectedPlatformRepo.requestSupportGrant(ctx,{...command,ticketId:undefined})).rejects.toMatchObject({code:'VALIDATION',fieldErrors:{ticketId:expect.any(String)}});
+  });
+  it('retains unavailable platform school panels as null without borrowing admin/support/audit reads',async()=>{
+    const fetcher=vi.fn().mockResolvedValue(envelope(school));vi.stubGlobal('fetch',fetcher);const result=await connectedPlatformRepo.school(ctx,id);
+    expect(result).toMatchObject({admins:null,invitations:null,history:null,tickets:null,activeGrants:null});expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toBe(`/api/v1/platform/schools/${id}`);
   });
 });

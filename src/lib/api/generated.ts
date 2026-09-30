@@ -163,17 +163,17 @@ export interface ApiSchemas {
   "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; };
   "Report": { "reportType": string; "metrics": Array<ApiSchemas["Metric"]>; "asOf": string; "rows": Array<{ "studentId"?: (string) | null; "classId"?: (string) | null; "label": string; "values": { [key: string]: unknown; }; }>; "dataSource": "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "title"?: string; "schoolName"?: string; "yearName"?: string; "scopeLabel"?: string; "from"?: string; "to"?: string; "columns"?: Array<{ "key": string; "label": string; }>; "publicationIds"?: Array<string>; "notes"?: Array<string>; };
   "Notification": { "yearId"?: string; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "title": string; "kind": string; "schoolId": (string) | null; "targetType": string; "targetId": (string) | null; "readAt"?: (string) | null; "body"?: string; "schoolName"?: string; "classId"?: string; "accessible"?: boolean; };
-  "AuditEvent": { "id": (string) | null; "actorLabel": string; "action": string; "targetType": string; "targetId"?: (string) | null; "createdAt": string; "reason"?: string; "changes": Array<{ "field": string; "before": (string) | null; "after": (string) | null; }>; };
+  "AuditEvent": { "id": (string) | null; "actorLabel": string; "action": string; "targetType": string; "targetId"?: (string) | null; "createdAt": string; "reason"?: string; "changes": Array<{ "field": string; "before": (string) | null; "after": (string) | null; }>; "actorId"?: (string) | null; };
   "Settings": { "version": number; "schoolName"?: string; "timezone": string; "parentLinkTtlDays": number; "parentSectionsDefault": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "homeroomMayPublish": boolean; "requireSecondApprovalForAdjustment": boolean; "attendanceGranularity": "DAILY" | "LESSON"; "academicResultsEnabled": "OFF"; "reportHeader"?: string; "shareTeacherPhone"?: boolean; "shareTeacherEmail"?: boolean; "contactHours"?: string; };
   "SettingsPatch": { "schoolName"?: string; "timezone"?: string; "parentLinkTtlDays"?: number; "parentSectionsDefault"?: Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "homeroomMayPublish"?: boolean; "requireSecondApprovalForAdjustment"?: boolean; "attendanceGranularity"?: "DAILY" | "LESSON"; "expectedVersion": number; "reportHeader"?: string; "shareTeacherPhone"?: boolean; "shareTeacherEmail"?: boolean; "contactHours"?: string; };
   "PlatformSettings": { "version": number; "brandName": string; "supportEmail": (string) | null; "publicSupportPhone"?: (string) | null; "footerNote"?: string; };
   "PlatformSettingsPatch": { "expectedVersion": number; "brandName"?: string; "supportEmail"?: (string) | null; "publicSupportPhone"?: (string) | null; "footerNote"?: string; };
-  "SupportTicket": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "schoolId": (string) | null; "subject": string; "description": string; "status": "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "WAITING_SCHOOL"; "priority": "NORMAL" | "HIGH" | "LOW"; "assigneeId"?: (string) | null; "schoolName"?: string; "requesterName"?: string; "assigneeName"?: (string) | null; "operatorChoices"?: Array<{ "id": string; "name": string; }>; };
+  "SupportTicket": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "schoolId": (string) | null; "subject": string; "description": string; "status": "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "WAITING_SCHOOL"; "priority": "NORMAL" | "HIGH" | "LOW"; "assigneeId"?: (string) | null; "schoolName"?: string; "requesterName"?: string; "assigneeName"?: (string) | null; "operatorChoices"?: Array<{ "id": string; "name": string; }>; "requesterId"?: string; "schoolStatus"?: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "messageCount"?: number; };
   "TicketCreate": { "subject": string; "description": string; "priority": "NORMAL" | "HIGH" | "LOW"; };
-  "SupportTicketPatch": { "expectedVersion": number; "status"?: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "WAITING_SCHOOL"; "assigneeId"?: (string) | null; };
-  "SupportMessage": { "id": (string) | null; "authorLabel": string; "body": string; "createdAt": string; "side"?: "SCHOOL" | "PLATFORM" | "UNKNOWN"; };
+  "SupportTicketPatch": { "expectedVersion": number; "status"?: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED" | "WAITING_SCHOOL"; "assigneeId"?: (string) | null; "message"?: string; };
+  "SupportMessage": { "id": (string) | null; "authorLabel": string; "body": string; "createdAt": string; "side"?: "SCHOOL" | "PLATFORM" | "UNKNOWN"; "authorId"?: (string) | null; };
   "MessageCreate": { "body": string; };
-  "SupportAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "schoolId": (string) | null; "ticketId": (string) | null; "operatorId": (string) | null; "classId"?: (string) | null; "allowedActions": Array<string>; "reason": string; "status": "REQUESTED" | "APPROVED" | "REVOKED" | "REJECTED"; "validFrom": string; "validUntil": string; "requestedById"?: string; "approvedById"?: string; "operatorName"?: string; "approverName"?: (string) | null; "requesterName"?: (string) | null; "schoolName"?: string; "effective"?: boolean; "revokedAt"?: (string) | null; };
+  "SupportAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "schoolId": (string) | null; "ticketId": (string) | null; "operatorId": (string) | null; "classId"?: (string) | null; "allowedActions": Array<string>; "reason": string; "status": "REQUESTED" | "APPROVED" | "REVOKED" | "REJECTED"; "validFrom": string; "validUntil": string; "requestedById"?: string; "approvedById"?: string; "operatorName"?: string; "approverName"?: (string) | null; "requesterName"?: (string) | null; "schoolName"?: string; "effective"?: boolean; "revokedAt"?: (string) | null; "viewStatus"?: "requested" | "active" | "expired" | "revoked" | "declined" | "inactive"; };
   "SupportAccessCreate": { "ticketId": string; "operatorId": string; "classId"?: string; "allowedActions": Array<string>; "reason": string; "validFrom": string; "validUntil": string; };
   "OperationRun": { "id": (string) | null; "kind": string; "status": "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED"; "startedAt"?: string; "finishedAt"?: string; "summary"?: { [key: string]: unknown; }; };
   "PublicSchool": { "name": string; "slug": string; "publicAddress"?: string; "publicContactEmail"?: string; "publicContactPhone"?: string; "announcements": Array<ApiSchemas["ParentAnnouncement"]>; };
@@ -321,6 +321,11 @@ export interface ApiSchemas {
   "PlatformSchoolIdentity": { "codeTaken": boolean; "slugTaken": boolean; };
   "PlatformSchoolOptionsResponse": { "data": ApiSchemas["PlatformSchoolOptions"]; "requestId": string; };
   "PlatformSchoolIdentityResponse": { "data": ApiSchemas["PlatformSchoolIdentity"]; "requestId": string; };
+  "PlatformSupportOptions": { "operators": Array<{ "id": string; "name": string; }>; "schools": Array<{ "id": string; "name": string; "status": "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; }>; "tickets": Array<{ "id": string; "schoolId": string; "title": string; }>; "queue": { "total": number; "open": number; "inProgress": number; "waitingSchool": number; "resolved": number; "high": number; }; "grants": { "total": number; "requested": number; "active": number; "expired": number; "revoked": number; "declined": number; "inactive": number; }; };
+  "PlatformSupportAccessRequest": { "ticketId": string; "classId"?: string; "allowedActions": Array<string>; "reason": string; "durationDays": number; };
+  "PlatformAuditOptions": { "actors": Array<{ "id": string; "name": string; }>; };
+  "PlatformSupportOptionsResponse": { "data": ApiSchemas["PlatformSupportOptions"]; "requestId": string; };
+  "PlatformAuditOptionsResponse": { "data": ApiSchemas["PlatformAuditOptions"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -2744,6 +2749,42 @@ export const apiOperations = {
     "response": "Invitation",
     "list": false,
     "permission": "platform.admins.manage"
+  },
+  "getPlatformSupportOptions": {
+    "method": "GET",
+    "path": "/api/v1/platform/support-options",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformSupportOptions",
+    "list": false,
+    "permission": "platform.support"
+  },
+  "requestPlatformSupportAccess": {
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/support-access",
+    "auth": "staff",
+    "request": "PlatformSupportAccessRequest",
+    "response": "SupportAccess",
+    "list": false,
+    "permission": "platform.support"
+  },
+  "relinquishPlatformSupportAccess": {
+    "method": "POST",
+    "path": "/api/v1/platform/support-access/{supportAccessId}/relinquish",
+    "auth": "staff",
+    "request": "ReasonCommand",
+    "response": "SupportAccess",
+    "list": false,
+    "permission": "platform.support"
+  },
+  "getPlatformAuditOptions": {
+    "method": "GET",
+    "path": "/api/v1/platform/audit-options",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformAuditOptions",
+    "list": false,
+    "permission": "platform.audit"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

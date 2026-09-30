@@ -580,3 +580,44 @@ Executed evidence: b6-platform-wizard-integration-final.log is 92/92, zero skipp
 Runtime is 269 operations/321 schemas. Ten added adapter candidates are unactivated.
 The literal-wildcard test attempt ran no files, exited1 and is separately retained.
 These results do not certify browser workflows, mail SMTP delivery or B7 drills.
+
+## ADR-037 — support projections and commands preserve current independent authority
+
+getPlatformSupportOptions uses current platform.support for minimal non-archived
+school labels, open ticket IDs/titles and active support-operator IDs/names. SQL
+computes full queue/grant totals before preview bounds; excessive choices fail
+explicitly. No pupil, family or directory contacts are returned. An optional
+school filter applies to every school/ticket/count query. Consent canonical
+status is unchanged; viewStatus is an explicit server projection of current
+expiry, effective operator/school authority and approval/revocation state.
+List filters use that SQL state before keysets, rather than a browser tenant list.
+
+requestPlatformSupportAccess binds a same-school open ticket to the authenticated
+operator, an existing read-only action allowlist and 1–14 server-computed days.
+The request has no operator ID or browser-generated timestamps. This supports
+byte-identical uncertain retries and never approves access. School consent and
+all selected-read checks remain independent. Non-archived setup/suspended schools
+can request metadata support, matching the existing consent/handover exception.
+relinquishPlatformSupportAccess changes only an owned, unexpired requested/approved
+grant with a displayed version and reason. It cannot revoke another operator's
+grant, approve it or extend it. Replay still requires current platform.support.
+
+SupportTicketPatch.message joins status/assignee changes in one transaction and
+idempotent acknowledgement. Invalid text/assignee rolls back both; a closed source
+rejects messages. Native message counts, requester IDs, school state and message
+author IDs let UI retain actual metadata without fabricated empty histories or
+actors. Unknown historical message side remains UNKNOWN. Operational reasons
+validated against personal-number disclosure are available only in authorized
+audit projections; request console logs still omit bodies and secrets.
+
+getPlatformAuditOptions returns bounded actual historical actor choices under
+platform.audit. Actor and date filters execute before pagination; date endpoints
+are whole inclusive days in Asia/Ho_Chi_Minh. Response diffs omit unknown/private
+fields and do not invent previous values. None of these additions grants access
+to ordinary school pupil data. Supplied handoff files are unchanged.
+
+Executed evidence: b6-support-ui-integration-final.log is 94/94, zero skipped,
+30 migration checksums/replay verified; contract/unit 14/14 and frontend unit 62/62.
+The earlier 93/94 fixture failure is retained. Runtime is 273 operations/326 schemas;
+62 adapter candidates remain unactivated. Browser, final deployment and B7 drills
+are not certified by these checks.

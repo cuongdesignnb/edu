@@ -338,7 +338,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -349,7 +350,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -360,7 +362,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -393,7 +396,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -404,7 +408,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/platform-integration.log"
+        "qa/backend/platform-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -2875,7 +2880,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
     },
     {
@@ -3170,6 +3176,54 @@
       "evidence": [
         "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
       ]
+    },
+    {
+      "operationId": "getPlatformSupportOptions",
+      "screenIds": [
+        "PL04",
+        "PL06",
+        "PL07",
+        "PL08"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
+      ]
+    },
+    {
+      "operationId": "requestPlatformSupportAccess",
+      "screenIds": [
+        "PL07",
+        "PL08"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
+      ]
+    },
+    {
+      "operationId": "relinquishPlatformSupportAccess",
+      "screenIds": [
+        "PL08"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
+      ]
+    },
+    {
+      "operationId": "getPlatformAuditOptions",
+      "screenIds": [
+        "PL09"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
+      ]
     }
   ],
   "screens": [
@@ -3338,7 +3392,8 @@
         "getPlatformSchool",
         "updatePlatformSchool",
         "setSchoolStatus",
-        "listSchoolAdminInvitations"
+        "listSchoolAdminInvitations",
+        "getPlatformSupportOptions"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3364,7 +3419,8 @@
       "screenId": "PL06",
       "scope": "core",
       "operationIds": [
-        "listPlatformTickets"
+        "listPlatformTickets",
+        "getPlatformSupportOptions"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3378,7 +3434,9 @@
         "getPlatformTicket",
         "updatePlatformTicket",
         "listPlatformTicketMessages",
-        "postPlatformTicketMessage"
+        "postPlatformTicketMessage",
+        "getPlatformSupportOptions",
+        "requestPlatformSupportAccess"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3389,7 +3447,10 @@
       "screenId": "PL08",
       "scope": "core",
       "operationIds": [
-        "listPlatformSupportAccess"
+        "listPlatformSupportAccess",
+        "getPlatformSupportOptions",
+        "requestPlatformSupportAccess",
+        "relinquishPlatformSupportAccess"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3400,7 +3461,8 @@
       "screenId": "PL09",
       "scope": "core",
       "operationIds": [
-        "listPlatformAudit"
+        "listPlatformAudit",
+        "getPlatformAuditOptions"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

@@ -2383,7 +2383,6 @@ paths:
           schema:
             type: string
             format: uuid
-            nullable: true
         - name: limit
           in: query
           schema:
@@ -3109,6 +3108,21 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: viewStatus
+          in: query
+          schema:
+            type: string
+            enum:
+              - requested
+              - active
+              - expired
+              - revoked
+              - declined
+              - inactive
+        - name: effective
+          in: query
+          schema:
+            type: boolean
       responses:
         "200":
           description: Thành công
@@ -3215,6 +3229,21 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: actorId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: Thành công
@@ -25974,6 +26003,21 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: viewStatus
+          in: query
+          schema:
+            type: string
+            enum:
+              - requested
+              - active
+              - expired
+              - revoked
+              - declined
+              - inactive
+        - name: effective
+          in: query
+          schema:
+            type: boolean
       responses:
         "200":
           description: Thành công
@@ -28442,14 +28486,12 @@ paths:
           schema:
             type: string
             format: uuid
-            nullable: true
         - name: invitationId
           in: path
           required: true
           schema:
             type: string
             format: uuid
-            nullable: true
       requestBody:
         required: true
         content:
@@ -28463,6 +28505,347 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InvitationResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /platform/support-options:
+    get:
+      operationId: getPlatformSupportOptions
+      tags:
+        - Platform
+      summary: getPlatformSupportOptions
+      description: Platform operational metadata under current native authority; no
+        pupil data.
+      x-permission: platform.support
+      x-scope: school
+      x-frontend-screen-ids:
+        - PL04
+        - PL06
+        - PL07
+        - PL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformSupportOptionsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /platform/schools/{schoolId}/support-access:
+    post:
+      operationId: requestPlatformSupportAccess
+      tags:
+        - Support
+      summary: requestPlatformSupportAccess
+      description: Platform operational metadata under current native authority; no
+        pupil data.
+      x-permission: platform.support
+      x-scope: school
+      x-frontend-screen-ids:
+        - PL07
+        - PL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformSupportAccessRequest"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportAccessResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /platform/support-access/{supportAccessId}/relinquish:
+    post:
+      operationId: relinquishPlatformSupportAccess
+      tags:
+        - Support
+      summary: relinquishPlatformSupportAccess
+      description: Platform operational metadata under current native authority; no
+        pupil data.
+      x-permission: platform.support
+      x-scope: school
+      x-frontend-screen-ids:
+        - PL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: supportAccessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportAccessResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /platform/audit-options:
+    get:
+      operationId: getPlatformAuditOptions
+      tags:
+        - Platform
+      summary: getPlatformAuditOptions
+      description: Platform operational metadata under current native authority; no
+        pupil data.
+      x-permission: platform.audit
+      x-scope: school
+      x-frontend-screen-ids:
+        - PL09
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters: []
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformAuditOptionsResponse"
         "400":
           description: Sai cú pháp hoặc Content-Type.
           content:
@@ -34912,6 +35295,10 @@ components:
               - before
               - after
             additionalProperties: false
+        actorId:
+          type: string
+          format: uuid
+          nullable: true
       required:
         - id
         - actorLabel
@@ -35154,6 +35541,19 @@ components:
               - id
               - name
             additionalProperties: false
+        requesterId:
+          type: string
+          format: uuid
+        schoolStatus:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+            - SUSPENDED
+            - ARCHIVED
+        messageCount:
+          type: integer
+          minimum: 0
       required:
         - id
         - version
@@ -35204,6 +35604,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        message:
+          type: string
+          minLength: 3
+          maxLength: 2000
       required:
         - expectedVersion
       additionalProperties: false
@@ -35230,6 +35634,10 @@ components:
             - SCHOOL
             - PLATFORM
             - UNKNOWN
+        authorId:
+          type: string
+          format: uuid
+          nullable: true
       required:
         - id
         - authorLabel
@@ -35320,6 +35728,15 @@ components:
           type: string
           format: date-time
           nullable: true
+        viewStatus:
+          type: string
+          enum:
+            - requested
+            - active
+            - expired
+            - revoked
+            - declined
+            - inactive
       required:
         - id
         - version
@@ -37639,6 +38056,206 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/PlatformSchoolIdentity"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PlatformSupportOptions:
+      type: object
+      properties:
+        operators:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+        schools:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              status:
+                type: string
+                enum:
+                  - DRAFT
+                  - ACTIVE
+                  - SUSPENDED
+                  - ARCHIVED
+            required:
+              - id
+              - name
+              - status
+            additionalProperties: false
+        tickets:
+          type: array
+          maxItems: 2000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              schoolId:
+                type: string
+                format: uuid
+              title:
+                type: string
+            required:
+              - id
+              - schoolId
+              - title
+            additionalProperties: false
+        queue:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            open:
+              type: integer
+              minimum: 0
+            inProgress:
+              type: integer
+              minimum: 0
+            waitingSchool:
+              type: integer
+              minimum: 0
+            resolved:
+              type: integer
+              minimum: 0
+            high:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - open
+            - inProgress
+            - waitingSchool
+            - resolved
+            - high
+          additionalProperties: false
+        grants:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            requested:
+              type: integer
+              minimum: 0
+            active:
+              type: integer
+              minimum: 0
+            expired:
+              type: integer
+              minimum: 0
+            revoked:
+              type: integer
+              minimum: 0
+            declined:
+              type: integer
+              minimum: 0
+            inactive:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - requested
+            - active
+            - expired
+            - revoked
+            - declined
+            - inactive
+          additionalProperties: false
+      required:
+        - operators
+        - schools
+        - tickets
+        - queue
+        - grants
+      additionalProperties: false
+    PlatformSupportAccessRequest:
+      type: object
+      properties:
+        ticketId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        allowedActions:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 9
+        reason:
+          type: string
+          maxLength: 4000
+        durationDays:
+          type: integer
+          minimum: 1
+          maximum: 14
+      required:
+        - ticketId
+        - allowedActions
+        - reason
+        - durationDays
+      additionalProperties: false
+    PlatformAuditOptions:
+      type: object
+      properties:
+        actors:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+      required:
+        - actors
+      additionalProperties: false
+    PlatformSupportOptionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PlatformSupportOptions"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PlatformAuditOptionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PlatformAuditOptions"
         requestId:
           type: string
       required:

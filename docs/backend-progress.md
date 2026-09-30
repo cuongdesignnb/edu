@@ -31,13 +31,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listSchoolAdmins | PL05 | TESTED | qa/backend/platform-integration.log |
 | inviteSchoolAdmin | PL03, PL05 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 | revokeSchoolAdmin | PL05 | TESTED | qa/backend/platform-integration.log |
-| listPlatformTickets | PL06 | TESTED | qa/backend/support-integration.log |
-| getPlatformTicket | PL07 | TESTED | qa/backend/support-integration.log |
-| updatePlatformTicket | PL07 | TESTED | qa/backend/support-integration.log |
+| listPlatformTickets | PL06 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| getPlatformTicket | PL07 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| updatePlatformTicket | PL07 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | listPlatformTicketMessages | PL07 | TESTED | qa/backend/support-integration.log |
 | postPlatformTicketMessage | PL07 | TESTED | qa/backend/support-integration.log |
-| listPlatformSupportAccess | PL08 | TESTED | qa/backend/support-integration.log |
-| listPlatformAudit | PL09 | TESTED | qa/backend/platform-integration.log |
+| listPlatformSupportAccess | PL08 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| listPlatformAudit | PL09 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | listOperations | PL10 | TESTED | qa/backend/platform-integration.log |
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
@@ -246,7 +246,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getSchoolTicket | SC43 | TESTED | qa/backend/support-integration.log |
 | listSchoolMessages | SC43 | TESTED | qa/backend/support-integration.log |
 | postSchoolMessage | SC43 | TESTED | qa/backend/support-integration.log |
-| listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log |
+| listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | createSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
 | approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
 | revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
@@ -273,6 +273,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | checkPlatformSchoolIdentity | PL03 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 | listSchoolAdminInvitations | PL04, PL05 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 | revokePlatformAdminInvitation | PL05 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
+| getPlatformSupportOptions | PL04, PL06, PL07, PL08 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| requestPlatformSupportAccess | PL07, PL08 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| relinquishPlatformSupportAccess | PL08 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| getPlatformAuditOptions | PL09 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

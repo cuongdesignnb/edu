@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,269);assert.equal(new Set(operations.map(op=>op.id)).size,269);
+  assert.equal(operations.length,273);assert.equal(new Set(operations.map(op=>op.id)).size,273);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
 });
 test('login rejects spoofed role, school and unknown fields',()=>{

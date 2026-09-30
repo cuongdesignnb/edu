@@ -208,18 +208,40 @@ operations.find(op=>op.id==='inviteSchoolAdmin').request='PlatformAdminInviteReq
 spec.components.schemas.PlatformSchoolOptions=object({provinces:{type:'array',maxItems:200,items:label}});
 spec.components.schemas.PlatformSchoolIdentity=object({codeTaken:{type:'boolean'},slugTaken:{type:'boolean'}});
 for(const name of ['PlatformSchoolOptions','PlatformSchoolIdentity'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
-function extendOperation(templateId,id,path,permission,response,list,screenIds,parameters){
+function extendOperation(templateId,id,path,permission,response,list,screenIds,parameters,request){
   const template=operations.find(op=>op.id===templateId),operation=structuredClone(spec.paths[template.path.replace(/^\/api\/v1/,'')][template.method.toLowerCase()]);
   Object.assign(operation,{operationId:id,summary:id,description:'Platform operational metadata under current native authority; no pupil data.','x-permission':permission,'x-frontend-screen-ids':screenIds});
-  operation.parameters=parameters??operation.parameters.filter(p=>p.in!=='header');
-  operation.responses[template.method==='POST'?'200':'200'].content['application/json'].schema={$ref:'#/components/schemas/'+response+(list?'Page':'Response')};
+  operation.parameters=parameters??[...Array.from(path.matchAll(/\{([^}]+)\}/g),match=>({name:match[1],in:'path',required:true,schema:uuid})),...operation.parameters.filter(p=>p.in!=='header'&&p.in!=='path')];
+  for(const [status,result]of Object.entries(operation.responses))if(/^2\d\d$/.test(status)&&result.content?.['application/json'])result.content['application/json'].schema={$ref:'#/components/schemas/'+response+(list?'Page':'Response')};
+  if(request)operation.requestBody.content['application/json'].schema={$ref:'#/components/schemas/'+request};
   spec.paths[path]??={};spec.paths[path][template.method.toLowerCase()]=operation;
-  operations.push({...template,id,path:'/api/v1'+path,title:operation.summary,tag:'Platform',permission,response,list,frontend_ids:screenIds,description:operation.description});
+  operations.push({...template,id,path:'/api/v1'+path,title:operation.summary,tag:'Platform',scope:path.includes('{schoolId}')?'school':'platform',permission,response,list,request:request??template.request,frontend_ids:screenIds,description:operation.description});
 }
 extendOperation('getPlatformSchool','getPlatformSchoolOptions','/platform/school-options','platform.schools.read','PlatformSchoolOptions',false,['PL02','PL03'],[]);
 extendOperation('getPlatformSchool','checkPlatformSchoolIdentity','/platform/school-identity','platform.schools.manage','PlatformSchoolIdentity',false,['PL03'],['code','slug'].map(name=>({name,in:'query',schema:{type:'string',maxLength:name==='code'?16:40}})));
 extendOperation('listInvitations','listSchoolAdminInvitations','/platform/schools/{schoolId}/admin-invitations','platform.admins.manage','Invitation',true,['PL04','PL05']);
 extendOperation('revokeInvitation','revokePlatformAdminInvitation','/platform/schools/{schoolId}/admin-invitations/{invitationId}/revoke','platform.admins.manage','Invitation',false,['PL05']);
+// ADR-037: purpose-bound support choices/counts, atomic ticket updates and own-grant return.
+Object.assign(spec.components.schemas.SupportTicket.properties,{requesterId:uuid,schoolStatus:structuredClone(spec.components.schemas.School.properties.status),messageCount:count});
+spec.components.schemas.SupportMessage.properties.authorId={...uuid,nullable:true};
+spec.components.schemas.AuditEvent.properties.actorId={...uuid,nullable:true};
+spec.components.schemas.SupportTicketPatch.properties.message={type:'string',minLength:3,maxLength:2000};
+const supportViews=['requested','active','expired','revoked','declined','inactive'];
+spec.components.schemas.SupportAccess.properties.viewStatus={type:'string',enum:supportViews};
+for(const id of ['listPlatformSupportAccess','listSchoolSupportAccess']){
+  const operation=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
+  operation.parameters.push({name:'viewStatus',in:'query',schema:{type:'string',enum:supportViews}},{name:'effective',in:'query',schema:{type:'boolean'}});
+}
+spec.components.schemas.PlatformSupportOptions=object({operators:{type:'array',maxItems:100,items:object({id:uuid,name:label})},schools:{type:'array',maxItems:1000,items:object({id:uuid,name:label,status:structuredClone(spec.components.schemas.School.properties.status)})},tickets:{type:'array',maxItems:2000,items:object({id:uuid,schoolId:uuid,title:label})},queue:object(Object.fromEntries(['total','open','inProgress','waitingSchool','resolved','high'].map(name=>[name,count]))),grants:object(Object.fromEntries(['total',...supportViews].map(name=>[name,count])))});
+spec.components.schemas.PlatformSupportAccessRequest=object({ticketId:uuid,classId:uuid,allowedActions:structuredClone(spec.components.schemas.SupportAccessCreate.properties.allowedActions),reason:structuredClone(spec.components.schemas.SupportAccessCreate.properties.reason),durationDays:{type:'integer',minimum:1,maximum:14}},['ticketId','allowedActions','reason','durationDays']);
+spec.components.schemas.PlatformAuditOptions=object({actors:{type:'array',maxItems:1000,items:object({id:uuid,name:label})}});
+for(const name of ['PlatformSupportOptions','PlatformAuditOptions'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+extendOperation('getPlatformSchool','getPlatformSupportOptions','/platform/support-options','platform.support','PlatformSupportOptions',false,['PL04','PL06','PL07','PL08'],[{name:'schoolId',in:'query',schema:uuid}]);
+extendOperation('createSupportAccess','requestPlatformSupportAccess','/platform/schools/{schoolId}/support-access','platform.support','SupportAccess',false,['PL07','PL08'],undefined,'PlatformSupportAccessRequest');
+extendOperation('revokeSupportAccess','relinquishPlatformSupportAccess','/platform/support-access/{supportAccessId}/relinquish','platform.support','SupportAccess',false,['PL08'],undefined,'ReasonCommand');
+extendOperation('getPlatformSchool','getPlatformAuditOptions','/platform/audit-options','platform.audit','PlatformAuditOptions',false,['PL09'],[]);
+const platformAudit=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId==='listPlatformAudit');
+platformAudit.parameters.push({name:'actorId',in:'query',schema:uuid},...['from','to'].map(name=>({name,in:'query',schema:{type:'string',format:'date'}})));
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

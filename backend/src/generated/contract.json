@@ -8442,6 +8442,11 @@
             ],
             "additionalProperties": false
           }
+        },
+        "actorId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -8762,6 +8767,23 @@
             ],
             "additionalProperties": false
           }
+        },
+        "requesterId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "schoolStatus": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "SUSPENDED",
+            "ARCHIVED"
+          ]
+        },
+        "messageCount": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -8826,6 +8848,11 @@
           "type": "string",
           "format": "uuid",
           "nullable": true
+        },
+        "message": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2000
         }
       },
       "required": [
@@ -8861,6 +8888,11 @@
             "PLATFORM",
             "UNKNOWN"
           ]
+        },
+        "authorId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -8981,6 +9013,17 @@
           "type": "string",
           "format": "date-time",
           "nullable": true
+        },
+        "viewStatus": {
+          "type": "string",
+          "enum": [
+            "requested",
+            "active",
+            "expired",
+            "revoked",
+            "declined",
+            "inactive"
+          ]
         }
       },
       "required": [
@@ -12267,6 +12310,277 @@
       "properties": {
         "data": {
           "$ref": "#/components/schemas/PlatformSchoolIdentity"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformSupportOptions": {
+      "type": "object",
+      "properties": {
+        "operators": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "schools": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "ACTIVE",
+                  "SUSPENDED",
+                  "ARCHIVED"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "tickets": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "schoolId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "schoolId",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "queue": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "open": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inProgress": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "waitingSchool": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resolved": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "high": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "total",
+            "open",
+            "inProgress",
+            "waitingSchool",
+            "resolved",
+            "high"
+          ],
+          "additionalProperties": false
+        },
+        "grants": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requested": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "active": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expired": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "revoked": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "declined": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inactive": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "total",
+            "requested",
+            "active",
+            "expired",
+            "revoked",
+            "declined",
+            "inactive"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "operators",
+        "schools",
+        "tickets",
+        "queue",
+        "grants"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformSupportAccessRequest": {
+      "type": "object",
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "allowedActions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "maxItems": 9
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "durationDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        }
+      },
+      "required": [
+        "ticketId",
+        "allowedActions",
+        "reason",
+        "durationDays"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformAuditOptions": {
+      "type": "object",
+      "properties": {
+        "actors": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "actors"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformSupportOptionsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/PlatformSupportOptions"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformAuditOptionsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/PlatformAuditOptions"
         },
         "requestId": {
           "type": "string"
@@ -16988,6 +17302,28 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        {
+          "name": "viewStatus",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "active",
+              "expired",
+              "revoked",
+              "declined",
+              "inactive"
+            ]
+          }
+        },
+        {
+          "name": "effective",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
         }
       ],
       "responses": {
@@ -17157,6 +17493,30 @@
           "schema": {
             "type": "string",
             "format": "uuid"
+          }
+        },
+        {
+          "name": "actorId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "from",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "to",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
           }
         }
       ],
@@ -52480,6 +52840,28 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        {
+          "name": "viewStatus",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "requested",
+              "active",
+              "expired",
+              "revoked",
+              "declined",
+              "inactive"
+            ]
+          }
+        },
+        {
+          "name": "effective",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
         }
       ],
       "responses": {
@@ -56082,7 +56464,7 @@
       "title": "getPlatformSchoolOptions",
       "tag": "Platform",
       "permission": "platform.schools.read",
-      "scope": "school",
+      "scope": "platform",
       "request": null,
       "response": "PlatformSchoolOptions",
       "list": false,
@@ -56204,7 +56586,7 @@
       "title": "checkPlatformSchoolIdentity",
       "tag": "Platform",
       "permission": "platform.schools.manage",
-      "scope": "school",
+      "scope": "platform",
       "request": null,
       "response": "PlatformSchoolIdentity",
       "list": false,
@@ -56360,8 +56742,7 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           }
         },
         {
@@ -56518,8 +56899,7 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           }
         },
         {
@@ -56528,8 +56908,7 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           }
         }
       ],
@@ -56550,6 +56929,543 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/InvitationResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getPlatformSupportOptions",
+      "method": "GET",
+      "path": "/api/v1/platform/support-options",
+      "title": "getPlatformSupportOptions",
+      "tag": "Platform",
+      "permission": "platform.support",
+      "scope": "platform",
+      "request": null,
+      "response": "PlatformSupportOptions",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "PL04",
+        "PL06",
+        "PL07",
+        "PL08"
+      ],
+      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformSupportOptionsResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "requestPlatformSupportAccess",
+      "method": "POST",
+      "path": "/api/v1/platform/schools/{schoolId}/support-access",
+      "title": "requestPlatformSupportAccess",
+      "tag": "Platform",
+      "permission": "platform.support",
+      "scope": "school",
+      "request": "PlatformSupportAccessRequest",
+      "response": "SupportAccess",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "PL07",
+        "PL08"
+      ],
+      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PlatformSupportAccessRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportAccessResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "relinquishPlatformSupportAccess",
+      "method": "POST",
+      "path": "/api/v1/platform/support-access/{supportAccessId}/relinquish",
+      "title": "relinquishPlatformSupportAccess",
+      "tag": "Platform",
+      "permission": "platform.support",
+      "scope": "platform",
+      "request": "ReasonCommand",
+      "response": "SupportAccess",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "PL08"
+      ],
+      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "parameters": [
+        {
+          "name": "supportAccessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReasonCommand"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportAccessResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getPlatformAuditOptions",
+      "method": "GET",
+      "path": "/api/v1/platform/audit-options",
+      "title": "getPlatformAuditOptions",
+      "tag": "Platform",
+      "permission": "platform.audit",
+      "scope": "platform",
+      "request": null,
+      "response": "PlatformAuditOptions",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "PL09"
+      ],
+      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformAuditOptionsResponse"
               }
             }
           }

@@ -1,11 +1,13 @@
-import type {ID,School,SchoolStatus,PlatformSettings} from '../../model/types';
+import type {ID,School,SchoolStatus,PlatformSettings,SupportScope} from '../../model/types';
 import type {Ctx,ListQuery} from '../core';
 import type {ApiSchemas} from '../../api/generated';
 import {http} from '../../api/client';
-import {apiPage} from '../../api/lists';
+import {apiPage,apiList} from '../../api/lists';
+import {refreshStaffContext,serverNowISO} from '../../api/session';
 import {RepoError} from '../errors';
 import {mapSchool} from './school';
-import {formResult,requiredValue,withStaffAccess,displayedVersion,commandReason} from './common';
+import {formResult,requiredId,requiredValue,withStaffAccess,displayedVersion,commandReason} from './common';
+import {supportActions,supportGrant,supportTicket,supportMessage,platformAudit} from './platform-mapping';
 
 function row(value:ApiSchemas['School']){
   const school=mapSchool(value),onboarding=requiredValue(school.onboarding,'onboarding');
@@ -19,6 +21,11 @@ function settings(value:ApiSchemas['PlatformSettings']){
 const profileFields={expectedVersion:'version',publicAddress:'address',publicContactEmail:'publicEmail',publicContactPhone:'publicPhone','firstAdmin.email':'adminEmail','firstAdmin.workDisplayName':'adminName','firstAdmin.validUntil':'adminEmail',expiresInDays:'days'};
 
 export const connectedPlatformRepo=withStaffAccess({
+  async overview(_ctx:Ctx){
+    const context=await refreshStaffContext(),dashboard=(await http('getPlatformOverview')).data,metric=(key:string)=>{const value=dashboard.metrics.find(m=>m.key===key);if(!value||typeof value.value!=='number')throw new RepoError('READ_ERROR',`Tổng quan thiếu chỉ số ${key}.`);return value.value;};
+    const recent=context.platformActions.includes('platform.audit')?(await http('listPlatformAudit',{query:{limit:6,sort:'createdAt',dir:'desc'}})).data.map(platformAudit):null;
+    return {totalSchools:metric('total'),activeSchools:metric('active'),suspendedSchools:metric('suspended'),draftSchools:metric('draft'),activeStaff:metric('staff'),linkOpens30d:metric('opens'),openTickets:metric('tickets'),recent,asOf:dashboard.asOf};
+  },
   async listSchools(_ctx:Ctx,q:ListQuery){
     const [page,options]=await Promise.all([apiPage('listPlatformSchools',{query:{q:q.q,status:q.filters?.status?.toUpperCase(),province:q.filters?.province,sort:q.sort??'name',dir:q.dir}},q,row),http('getPlatformSchoolOptions')]);return {...page,provinces:options.data.provinces};
   },
@@ -29,6 +36,11 @@ export const connectedPlatformRepo=withStaffAccess({
     const firstAdmin=input.adminEmail.trim()?{email:input.adminEmail.trim(),workDisplayName:input.adminName.trim(),roleId:null}:undefined;
     const result=await formResult(http('createSchool',{body:{name:input.name.trim(),shortName:input.shortName.trim()||input.name.trim(),code:input.code,slug:input.slug,level:input.level,province:input.province,publicAddress:input.address||null,publicContactEmail:input.publicEmail||null,publicContactPhone:input.publicPhone||null,...(firstAdmin?{firstAdmin}:{})}}),profileFields);
     return mapSchool(result.data);
+  },
+  async school(_ctx:Ctx,schoolId:ID){
+    const context=await refreshStaffContext(),actions=new Set(context.platformActions);
+    const [profile,admins,invitations,history,support]=await Promise.all([http('getPlatformSchool',{params:{schoolId}}),actions.has('platform.admins.manage')?apiList('listSchoolAdmins',{params:{schoolId}},1000):null,actions.has('platform.admins.manage')?apiList('listSchoolAdminInvitations',{params:{schoolId}},1000):null,actions.has('platform.audit')?apiList('listPlatformAudit',{query:{schoolId,sort:'createdAt',dir:'desc'}},2000):null,actions.has('platform.support')?http('getPlatformSupportOptions',{query:{schoolId}}):null]);
+    const now=serverNowISO();return {school:mapSchool(profile.data),row:row(profile.data),admins:admins?.map(member=>{const grants=requiredValue(member.grants,'grants'),active=member.status==='ACTIVE'&&grants.some(g=>g.scopeType==='SCHOOL'&&g.roleCode==='SCHOOL_ADMIN');return {membershipId:requiredId(member.id),userId:requiredId(member.userId),version:member.version,name:member.workDisplayName,email:requiredValue(member.loginEmail,'loginEmail'),status:active?'active' as const:member.status==='SUSPENDED'?'suspended' as const:'revoked' as const,since:grants.map(g=>g.validFrom).sort()[0]};})??null,invitations:invitations?.map(invitation=>({id:requiredId(invitation.id),schoolId,email:invitation.email,fullName:requiredValue(invitation.workDisplayName,'workDisplayName'),version:invitation.version,createdAt:invitation.createdAt,updatedAt:invitation.updatedAt,expiresAt:invitation.expiresAt,status:invitation.status==='PENDING'&&invitation.expiresAt<=now?'expired' as const:invitation.status.toLowerCase() as 'pending'|'accepted'|'declined'|'revoked'}))??null,history:history?.map(platformAudit)??null,tickets:support?.data.queue.total??null,activeGrants:support?.data.grants.active??null};
   },
   async updateSchoolOps(_ctx:Ctx,schoolId:ID,patch:Partial<Pick<School,'name'|'shortName'|'province'|'address'|'publicEmail'|'publicPhone'>>&{version:number}){
     const result=await formResult(http('updatePlatformSchool',{params:{schoolId},body:{expectedVersion:displayedVersion(patch.version),...(patch.name!==undefined?{name:patch.name}:{}),...(patch.shortName!==undefined?{shortName:patch.shortName}:{}),...(patch.province!==undefined?{province:patch.province}:{}),...(patch.address!==undefined?{publicAddress:patch.address||null}:{}),...(patch.publicEmail!==undefined?{publicContactEmail:patch.publicEmail||null}:{}),...(patch.publicPhone!==undefined?{publicContactPhone:patch.publicPhone||null}:{})}}),profileFields);return mapSchool(result.data);
@@ -46,6 +58,24 @@ export const connectedPlatformRepo=withStaffAccess({
   async revokeInvitation(_ctx:Ctx,inviteId:ID,schoolId:ID,expectedVersion?:number,reason?:string){
     return (await http('revokePlatformAdminInvitation',{params:{schoolId,invitationId:inviteId},body:{expectedVersion:displayedVersion(expectedVersion),reason:commandReason(reason)}})).data;
   },
+  async tickets(_ctx:Ctx,q:ListQuery){return apiPage('listPlatformTickets',{query:{q:q.q,status:q.filters?.status?.toUpperCase(),priority:q.filters?.priority?.toUpperCase(),schoolId:q.filters?.schoolId,sort:q.sort??'createdAt',dir:q.dir??'desc'}},q,supportTicket);},
+  async ticket(_ctx:Ctx,ticketId:ID){
+    const [value,messages,grants]=await Promise.all([http('getPlatformTicket',{params:{ticketId}}),apiList('listPlatformTicketMessages',{params:{ticketId},query:{sort:'createdAt',dir:'asc'}},2000),apiList('listPlatformSupportAccess',{query:{ticketId}},1000)]);
+    const ticket=supportTicket(value.data),updates=messages.map(supportMessage),people:Record<string,string>={[ticket.createdBy]:ticket.createdByName};if(ticket.assigneeUserId&&ticket.assigneeName)people[ticket.assigneeUserId]=ticket.assigneeName;for(const update of updates)if(update.by)people[update.by]=update.byName;
+    return {ticket:{...ticket,updates},school:{id:ticket.schoolId,name:ticket.schoolName,status:ticket.schoolStatus},grants:grants.map(supportGrant),people,operators:requiredValue(value.data.operatorChoices,'operatorChoices')};
+  },
+  async updateTicket(_ctx:Ctx,ticketId:ID,input:{text?:string;status?:'open'|'in_progress'|'waiting_school'|'resolved'|'closed';assigneeUserId?:ID;version?:number}){
+    const status=input.status?.toUpperCase() as ApiSchemas['SupportTicketPatch']['status'];
+    const value=await formResult(http('updatePlatformTicket',{params:{ticketId},body:{expectedVersion:displayedVersion(input.version),...(status?{status}:{}),...(input.text!==undefined?{message:input.text.trim()}:{}),...(input.assigneeUserId!==undefined?{assigneeId:input.assigneeUserId}:{})}}),{expectedVersion:'version',message:'text',assigneeId:'assigneeUserId'});return supportTicket(value.data);
+  },
+  async supportGrants(_ctx:Ctx,q:ListQuery={}){return apiPage('listPlatformSupportAccess',{query:{q:q.q,schoolId:q.filters?.schoolId,viewStatus:q.filters?.status,sort:q.sort??'createdAt',dir:q.dir??'desc'}},q,supportGrant);},
+  async requestSupportGrant(_ctx:Ctx,input:{schoolId:ID;ticketId?:ID;scopes:SupportScope[];reason:string;days:number}){
+    if(!input.ticketId)throw new RepoError('VALIDATION',undefined,{fieldErrors:{ticketId:'Chọn yêu cầu hỗ trợ của đúng trường.'}});
+    return supportGrant((await formResult(http('requestPlatformSupportAccess',{params:{schoolId:input.schoolId},body:{ticketId:input.ticketId,allowedActions:supportActions(input.scopes),reason:input.reason.trim(),durationDays:input.days}}),{allowedActions:'scopes',durationDays:'days'})).data);
+  },
+  async audit(_ctx:Ctx,q:ListQuery){
+    const [page,options]=await Promise.all([apiPage('listPlatformAudit',{query:{q:q.q,actorId:q.filters?.actor,from:q.filters?.from,to:q.filters?.to,sort:q.sort??'createdAt',dir:q.dir??'desc'}},q,platformAudit),http('getPlatformAuditOptions')]);return {...page,actors:options.data.actors};
+  },
   async settings(_ctx:Ctx){return settings((await http('getPlatformSettings')).data);},
   async saveSettings(_ctx:Ctx,patch:Omit<PlatformSettings,'version'|'dateFormat'|'timezone'>&{version:number}){
     return settings((await formResult(http('updatePlatformSettings',{body:{expectedVersion:displayedVersion(patch.version),brandName:patch.brandName.trim(),supportEmail:patch.supportEmail.trim()||null,publicSupportPhone:patch.supportPhone.trim()||null,footerNote:patch.footerNote.trim()}}),{expectedVersion:'version',publicSupportPhone:'supportPhone'})).data);
@@ -54,4 +84,9 @@ export const connectedPlatformRepo=withStaffAccess({
 
 export const connectedPlatformExtraRepo=withStaffAccess({
   async checkSchoolIdentity(_ctx:Ctx,code:string,slug:string){return (await http('checkPlatformSchoolIdentity',{query:{code,slug}})).data;},
+  async operators(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.operators;},
+  async ticketStats(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.queue;},
+  async supportTargets(_ctx:Ctx,schoolId?:ID){const value=(await http('getPlatformSupportOptions',{query:{schoolId}})).data;return {schools:value.schools,tickets:value.tickets};},
+  async assignTicket(_ctx:Ctx,ticketId:ID,assigneeUserId:ID,expectedVersion?:number){return supportTicket((await http('updatePlatformTicket',{params:{ticketId},body:{expectedVersion:displayedVersion(expectedVersion),assigneeId:assigneeUserId}})).data);},
+  async relinquishGrant(_ctx:Ctx,grantId:ID,reason:string,expectedVersion?:number){return supportGrant((await http('relinquishPlatformSupportAccess',{params:{supportAccessId:grantId},body:{expectedVersion:displayedVersion(expectedVersion),reason:commandReason(reason)}})).data);},
 });
