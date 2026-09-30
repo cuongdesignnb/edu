@@ -13,3 +13,6 @@ export async function formResult<T>(work:Promise<T>,names:Record<string,string>)
 export function requiredId(value:string|null|undefined):string{
   if(!value)throw new RepoError('READ_ERROR','Phản hồi API thiếu mã đối tượng.');return value;
 }
+export function requiredValue<T>(value:T|undefined,field:string):T{
+  if(value===undefined)throw new RepoError('READ_ERROR',`Phản hồi API thiếu trường ${field}.`);return value;
+}

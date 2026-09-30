@@ -348,3 +348,27 @@ otherwise valid cookie. Link fragments are removed from history, kept in page
 memory, and consumed after acknowledgement; reset-token presence is not described
 as server validation. Candidate adapters and their unit checks remain separate
 from facade activation and actual browser acceptance.
+
+## ADR-029 — persist existing organization display fields
+
+Existing school/class/dictionary/calendar forms contain website, subject color,
+grade level, room capacity, class room and motto, and term opening date. Migration
+029 adds these fields with tenant composite references and bounded values. Only
+numeric legacy grade codes are backfilled; an opaque code keeps an unknown level.
+The subject color default is an existing product display default, not fixture data.
+School websites accept HTTP/HTTPS only, without embedded credentials.
+
+Profile reads use an explicit field allowlist. Both school and platform profile
+commands persist supplied display fields with the original optimistic version.
+Room references must belong to the current school and be active. Clearing a room
+is explicit null. Term opening dates must fall in the half-open term interval.
+Dictionary GET calculates historical in-use metadata inside the tenant SQL scope;
+it does not expose private source records. Dictionary kind-inapplicable fields
+return 422 rather than disappearing silently.
+
+Connected adapter candidates preserve the corresponding form names, expose
+unconfigured values honestly, reject absent required response metadata and require
+the version displayed by the form for dictionary edits. No latest-version fetch
+or mock fallback is used. Executed evidence: 84/84 PostgreSQL checks, 12 backend
+unit/contract checks, 22 frontend unit checks, typecheck/lint exit0. Browser
+activation and full workflow acceptance remain separate outstanding work.

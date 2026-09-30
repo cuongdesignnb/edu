@@ -1,5 +1,5 @@
 {
-  "sha256": "f48fc39ccba0bdce605097c8b2b55e4bf6a5b8d6b88ed72012d0dd8500460519",
+  "sha256": "cd118cf161c74a6d4f38c246bc41bca2c390ac131ef568f51df39d1628d070a5",
   "schemas": {
     "Error": {
       "type": "object",
@@ -639,6 +639,11 @@
     "School": {
       "type": "object",
       "properties": {
+        "website": {
+          "type": "string",
+          "maxLength": 2048,
+          "nullable": true
+        },
         "id": {
           "type": "string",
           "format": "uuid",
@@ -795,6 +800,11 @@
     "SchoolCreate": {
       "type": "object",
       "properties": {
+        "website": {
+          "type": "string",
+          "maxLength": 2048,
+          "nullable": true
+        },
         "code": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{1,64}$"
@@ -866,6 +876,11 @@
     "SchoolPatch": {
       "type": "object",
       "properties": {
+        "website": {
+          "type": "string",
+          "maxLength": 2048,
+          "nullable": true
+        },
         "expectedVersion": {
           "type": "integer",
           "minimum": 1
@@ -1773,6 +1788,11 @@
     "Term": {
       "type": "object",
       "properties": {
+        "openingDate": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
         "id": {
           "type": "string",
           "format": "uuid",
@@ -1829,6 +1849,11 @@
     "TermCreate": {
       "type": "object",
       "properties": {
+        "openingDate": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
         "yearId": {
           "type": "string",
           "format": "uuid"
@@ -1863,6 +1888,11 @@
     "TermPatch": {
       "type": "object",
       "properties": {
+        "openingDate": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
         "expectedVersion": {
           "type": "integer",
           "minimum": 1
@@ -2015,6 +2045,19 @@
     "DictionaryItem": {
       "type": "object",
       "properties": {
+        "inUse": {
+          "type": "boolean"
+        },
+        "gradeLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "nullable": true
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
         "id": {
           "type": "string",
           "format": "uuid",
@@ -2053,7 +2096,9 @@
         },
         "capacity": {
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "maximum": 1000,
+          "nullable": true
         }
       },
       "required": [
@@ -2070,6 +2115,15 @@
     "DictionaryCreate": {
       "type": "object",
       "properties": {
+        "gradeLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
         "code": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]{1,64}$"
@@ -2096,6 +2150,19 @@
     "DictionaryItemPatch": {
       "type": "object",
       "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "gradeLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
         "expectedVersion": {
           "type": "integer",
           "minimum": 1
@@ -2270,6 +2337,15 @@
     "Class": {
       "type": "object",
       "properties": {
+        "roomId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300,
+          "nullable": true
+        },
         "id": {
           "type": "string",
           "format": "uuid",
@@ -2379,6 +2455,16 @@
     "ClassCreate": {
       "type": "object",
       "properties": {
+        "roomId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300,
+          "nullable": true
+        },
         "yearId": {
           "type": "string",
           "format": "uuid"
@@ -2414,6 +2500,20 @@
     "ClassPatch": {
       "type": "object",
       "properties": {
+        "gradeLevelId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "roomId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300,
+          "nullable": true
+        },
         "expectedVersion": {
           "type": "integer",
           "minimum": 1

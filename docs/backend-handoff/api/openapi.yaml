@@ -26348,6 +26348,10 @@ components:
     School:
       type: object
       properties:
+        website:
+          type: string
+          maxLength: 2048
+          nullable: true
         id: *id001
         version: *id003
         createdAt: *id004
@@ -26392,6 +26396,10 @@ components:
     SchoolCreate:
       type: object
       properties:
+        website:
+          type: string
+          maxLength: 2048
+          nullable: true
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -26422,6 +26430,10 @@ components:
     SchoolPatch:
       type: object
       properties:
+        website:
+          type: string
+          maxLength: 2048
+          nullable: true
         expectedVersion: *id003
         name:
           type: string
@@ -26925,6 +26937,10 @@ components:
     Term:
       type: object
       properties:
+        openingDate:
+          type: string
+          format: date
+          nullable: true
         id: *id001
         version: *id003
         createdAt: *id004
@@ -26948,6 +26964,10 @@ components:
     TermCreate:
       type: object
       properties:
+        openingDate:
+          type: string
+          format: date
+          nullable: true
         yearId:
           type: string
           format: uuid
@@ -26974,6 +26994,10 @@ components:
     TermPatch:
       type: object
       properties:
+        openingDate:
+          type: string
+          format: date
+          nullable: true
         expectedVersion: *id003
         name:
           type: string
@@ -27067,6 +27091,16 @@ components:
     DictionaryItem:
       type: object
       properties:
+        inUse:
+          type: boolean
+        gradeLevel:
+          type: integer
+          minimum: 1
+          maximum: 12
+          nullable: true
+        color:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
         id: *id001
         version: *id003
         createdAt: *id004
@@ -27083,6 +27117,8 @@ components:
         capacity:
           type: integer
           minimum: 1
+          maximum: 1000
+          nullable: true
       required:
       - id
       - version
@@ -27095,6 +27131,13 @@ components:
     DictionaryCreate:
       type: object
       properties:
+        gradeLevel:
+          type: integer
+          minimum: 1
+          maximum: 12
+        color:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -27114,6 +27157,16 @@ components:
     DictionaryItemPatch:
       type: object
       properties:
+        code:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        gradeLevel:
+          type: integer
+          minimum: 1
+          maximum: 12
+        color:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
         expectedVersion: *id003
         name:
           type: string
@@ -27220,6 +27273,13 @@ components:
     Class:
       type: object
       properties:
+        roomId:
+          type: string
+          format: uuid
+        motto:
+          type: string
+          maxLength: 300
+          nullable: true
         id: *id001
         version: *id003
         createdAt: *id004
@@ -27256,6 +27316,14 @@ components:
     ClassCreate:
       type: object
       properties:
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        motto:
+          type: string
+          maxLength: 300
+          nullable: true
         yearId:
           type: string
           format: uuid
@@ -27283,6 +27351,17 @@ components:
     ClassPatch:
       type: object
       properties:
+        gradeLevelId:
+          type: string
+          format: uuid
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        motto:
+          type: string
+          maxLength: 300
+          nullable: true
         expectedVersion: *id003
         name:
           type: string

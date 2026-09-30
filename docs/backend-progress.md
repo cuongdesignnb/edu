@@ -42,16 +42,16 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
-| getSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| updateSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
+| updateSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | createYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | updateYear | SC03, SC04, SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listTerms | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| createTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | getTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| updateTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | listWeeks | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | getWeek | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
@@ -63,15 +63,15 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
 | createClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
-| updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | activateYear | SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | archiveYear | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | activateClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | archiveClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | publishCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| createDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| updateDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
+| createDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
+| updateDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | createRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getRollover | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
@@ -293,13 +293,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL10 | core | TESTED | NOT_STARTED |  |
 | PL11 | core | TESTED | NOT_STARTED |  |
 | SC01 | core | TESTED | NOT_STARTED |  |
-| SC02 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC02 | core | TESTED | NOT_STARTED |  |
 | SC03 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC04 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC05 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC06 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC07 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC08 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC08 | core | TESTED | NOT_STARTED |  |
 | SC09 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC10 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC11 | core | IMPLEMENTED | NOT_STARTED |  |

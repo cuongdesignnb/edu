@@ -1741,3 +1741,30 @@ test('B5 conduct/activity/progress/link reports use actual pinned scores, explic
   const relation=await parentRelationship(f.csrf,f.post,f.enrollments[0].studentId),link=await f.post('parent-access',{studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(link.statusCode,201,link.body);await parentExchange(link.json().data.link);
   const links=await request('GET',`${f.base}/reports/parent-access?${range}`);assert.equal(links.statusCode,200,links.body);assert.equal(links.json().data.rows[0].values.links,1);assert.equal(links.json().data.rows[0].values.active,1);assert.equal(links.json().data.rows[0].values.opened,1);for(const key of ['tokenHash','phone','guardianId','relationshipId','ipDailyHash','deviceSummary'])assert.equal(links.body.includes(key),false);
 });
+
+test('B6 organization display fields persist with versions and tenant-safe references instead of being silently ignored',async()=>{
+  jar.delete('edu_staff');let csrf=await login('admin-a@example.invalid');const base=`/api/v1/schools/${schoolA}`;
+  const command=(method,path,body)=>request(method,`${base}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  let profile=(await request('GET',`${base}/profile`)).json().data;
+  const original={shortName:profile.shortName,website:profile.website??null,accentColor:profile.accentColor,motto:profile.motto,publicIntro:profile.publicIntro};
+  try{
+    const saved=await command('PATCH','profile',{expectedVersion:profile.version,shortName:'Tên ngắn từ form',website:'https://example.invalid/edu',accentColor:'#123abc',motto:'Khẩu hiệu thật từ form',publicIntro:'Giới thiệu được lưu'});assert.equal(saved.statusCode,200,saved.body);profile=saved.json().data;assert.equal(profile.website,'https://example.invalid/edu');assert.equal(profile.shortName,'Tên ngắn từ form');assert.equal(profile.accentColor,'#123abc');
+    const reread=await request('GET',`${base}/profile`);assert.deepEqual(reread.json().data,profile);
+    const invalid=await command('PATCH','profile',{expectedVersion:profile.version,shortName:'Không được lưu',website:'javascript:alert(1)'});assert.equal(invalid.statusCode,422);assert.equal((await request('GET',`${base}/profile`)).json().data.version,profile.version);
+  }finally{profile=(await request('GET',`${base}/profile`)).json().data;assert.equal((await command('PATCH','profile',{expectedVersion:profile.version,...original})).statusCode,200);}
+  const code='M_'+crypto.randomUUID().replaceAll('-','').slice(0,10);
+  const subject=await command('POST','dictionaries/subjects',{code,name:'Môn có màu kiểm thử',color:'#aabbcc'});assert.equal(subject.statusCode,201,subject.body);assert.equal(subject.json().data.color,'#aabbcc');
+  const grade=await command('POST','dictionaries/grades',{code,name:'Khối kiểm thử',gradeLevel:6});assert.equal(grade.statusCode,201,grade.body);assert.equal(grade.json().data.gradeLevel,6);
+  const wrong=await command('POST','dictionaries/rooms',{code:code+'X',name:'Sai kiểu danh mục',color:'#aabbcc'});assert.equal(wrong.statusCode,422);
+  const room=await command('POST','dictionaries/rooms',{code,name:'Phòng kiểm thử',capacity:45});assert.equal(room.statusCode,201,room.body);
+  const renamed=await command('PATCH',`dictionaries/subjects/${subject.json().data.id}`,{expectedVersion:subject.json().data.version,code:code+'R',color:'#112233'});assert.equal(renamed.statusCode,200,renamed.body);assert.equal(renamed.json().data.code,code+'R');assert.equal(renamed.json().data.color,'#112233');
+  const before=(await request('GET',`${base}/classes/${classA}`)).json().data;
+  jar.delete('edu_staff');const bCsrf=await login('admin-b@example.invalid',resetPassword),foreign=await request('POST',`/api/v1/schools/${schoolB}/dictionaries/rooms`,{code,name:'Phòng trường B',capacity:45},bCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(foreign.statusCode,201,foreign.body);
+  jar.delete('edu_staff');csrf=await login('admin-a@example.invalid');const outside=await command('PATCH',`classes/${classA}`,{expectedVersion:before.version,roomId:foreign.json().data.id,motto:'Không được lưu ngoài trường'});assert.equal(outside.statusCode,404);assert.equal((await request('GET',`${base}/classes/${classA}`)).json().data.version,before.version);
+  const updated=await command('PATCH',`classes/${classA}`,{expectedVersion:before.version,roomId:room.json().data.id,motto:'Lớp có khẩu hiệu'});assert.equal(updated.statusCode,200,updated.body);assert.equal(updated.json().data.roomId,room.json().data.id);assert.equal(updated.json().data.motto,'Lớp có khẩu hiệu');
+  const used=await request('GET',`${base}/dictionaries/rooms?q=${code}`);assert.equal(used.statusCode,200,used.body);assert.equal(used.json().data.find(r=>r.id===room.json().data.id).inUse,true);
+  const cleared=await command('PATCH',`classes/${classA}`,{expectedVersion:updated.json().data.version,roomId:null,motto:null});assert.equal(cleared.statusCode,200,cleared.body);assert.equal(Object.hasOwn(cleared.json().data,'roomId'),false);assert.equal(cleared.json().data.motto,null);
+  const termId=seedId('term:A'),term=(await request('GET',`${base}/terms/${termId}`)).json().data;
+  const opening=await command('PATCH',`terms/${termId}`,{expectedVersion:term.version,openingDate:'2026-09-05'});assert.equal(opening.statusCode,200,opening.body);assert.equal(opening.json().data.openingDate,'2026-09-05');
+  assert.equal((await command('PATCH',`terms/${termId}`,{expectedVersion:opening.json().data.version,openingDate:'2027-02-01'})).statusCode,422);
+});

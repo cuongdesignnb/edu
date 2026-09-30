@@ -5,6 +5,7 @@ import { Commands } from '../../common/commands';
 import { Permissions,grantDto,coversDelegatedExpiry } from '../../common/permissions';
 import { roleTemplates } from '../../common/contract';
 import { Problem,notFound,validation } from '../../common/problem';
+import {validateSchoolWebsite} from '../../common/school-website';
 import { InvitationsService } from '../identity/invitations.service';
 import { schoolResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,type OperationalCounts } from './platform-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
@@ -52,6 +53,7 @@ export class PlatformService {
         const saved=(await one<Row>(tx,'UPDATE platform.settings SET value=$2 WHERE id=$1 RETURNING *',[settings.id,value]))!;await platformAudit(tx,c,'platform-settings',String(settings.id),value);return {data:platformSettings(saved)};
       }
       if(op==='createSchool'){
+        validateSchoolWebsite(c.body.website);
         const timezone=String(c.body.timezone??'Asia/Ho_Chi_Minh');if(!await one(tx,'SELECT name FROM pg_timezone_names WHERE name=$1',[timezone]))validation('timezone','Múi giờ IANA không hợp lệ');
         const body={...c.body,timezone,shortName:c.body.shortName??c.body.name},fields=Object.keys(schoolWriteColumns).filter(k=>Object.hasOwn(body,k)),values=fields.map(k=>body[k as keyof typeof body]);
         const created=(await one<Row>(tx,`INSERT INTO platform.schools(${fields.map(k=>schoolWriteColumns[k]).join(',')}) VALUES(${values.map((_,i)=>'$'+(i+1)).join(',')}) RETURNING *`,values))!;
@@ -59,6 +61,7 @@ export class PlatformService {
       }
       const school=await this.school(tx,schoolId!,c.operation.method!=='GET');
       if(op==='updatePlatformSchool'){
+        validateSchoolWebsite(c.body.website);
         this.version(school,c.body.expectedVersion);const fields=Object.keys(schoolWriteColumns).filter(k=>!['code','slug','timezone'].includes(k)&&Object.hasOwn(c.body,k));if(!fields.length)validation('body','Chọn thông tin cần cập nhật');
         const values=[schoolId,...fields.map(k=>c.body[k])],saved=(await one<Row>(tx,`UPDATE platform.schools SET ${fields.map((k,i)=>`${schoolWriteColumns[k]}=$${i+2}`).join(',')} WHERE id=$1 RETURNING *`,values))!;
         await platformAudit(tx,c,'school',schoolId!,Object.fromEntries(fields.filter(k=>['name','shortName','province','level'].includes(k)).map(k=>[k,c.body[k]])));return {data:await schoolView(tx,saved)};

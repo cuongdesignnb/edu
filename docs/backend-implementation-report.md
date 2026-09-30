@@ -20,16 +20,24 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 28 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
+| B1 | PARTIAL | 29 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
 | B5 | PARTIAL | All 264 supplied API operations registered; reports/export/domain workflows tested; remaining UI-specific gaps and broader acceptance pending |
-| B6 | PARTIAL | Generated client, transport, memory-only cookie session, permission hints, keyset helpers and session/auth adapter candidates implemented; repository facade and screens still use the previous adapter, browser acceptance pending |
+| B6 | PARTIAL | Generated client, transport, memory-only cookie session, permission hints, keyset helpers and session/auth/school adapter candidates implemented; repository facade and screens still use the previous adapter, browser acceptance pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## B6 organization forms checkpoint
+
+- Migration 029 applied and checksum replay verified. The latest real PostgreSQL suite is **84/84**, exit0, zero skipped, in qa/backend/b6-organization-integration-final.log. The retained earlier 84/84 log predates the dictionary usage flag assertion; the final run includes that assertion.
+- School public website/display/contact fields, subject color and editable code, grade level, room capacity, class room/motto and term opening date now persist instead of being silently ignored. Invalid website schemes and out-of-term opening dates return 422. A foreign school's room returns 404 without changing the class version; room clearing is also verified.
+- Dictionary GET computes a tenant-scoped historical usage boolean in SQL. It returns no names, counts or family data. Adapter candidates reject missing usage metadata or missing required profile/settings fields. They require the form's read version before edits and never fetch a new version to overwrite another writer.
+- Backend build/typecheck/lint and 12 backend unit/contract checks exit0. Frontend TypeScript, scoped lint and 22 unit checks across transport/session/keysets/fragments/school adapter exit0. The five added school checks use explicit synthetic fetch responses and are **not browser E2E**.
+- Candidate coverage is 21 methods including extensions. All 231 legacy methods and 118 core screen acceptance remain pending facade activation. Creating a year with its terms/weeks/holidays and optional draft rule copy is still being aligned atomically; local final Docker, restart, restore and load drills remain NOT_RUN.
 
 ## B6 transport and identity-context checkpoint
 
@@ -47,7 +55,7 @@ No real student data used. Production not deployed.
 - Actual report cases cover attendance denominators/unmarked, pinned CSV after live edits, published replacement/withdraw, decimal locked scores and actual classification labels, explicit activity targets, class progress and link-open counts without identifying the opener. Subject reports deny school/family/class-conduct/export access. Unknown filters and foreign references fail closed.
 - Jobs are immutable source snapshots with hash, scoped current authorization, requester-only metadata/download, literal streamed CSV/XLSX, private generated PDF, cancellation, expiry, revocation through both export and generic file URLs, and completed-job replay with one retained file. The replay simulates acknowledgement loss; process-kill testing remains NOT_RUN.
 - PDFKit 0.20.2 / @types/pdfkit 0.17.6 are pinned; installation audit returned zero vulnerabilities. Noto Sans is pinned to official source revision/checksum with OFL 1.1 included. The first visual review found footer-only pages; the repaired latest PDF has three populated A4 pages, correct Vietnamese text, embedded fonts and footers, and all three PNGs were inspected. Evidence: qa/backend/report-output/pdf-layout-check.json. Poppler pdffonts was unavailable; embedded font checks used pypdf instead.
-- Frontend adapter inventory finds 231 methods across 22 repository objects; these still use browser demo implementations. B6 remains NOT_STARTED. Physical expiry/orphan cleanup, broader browser acceptance, final local stack, restart, backup/restore, SMTP/process-kill and load drills remain unfinished. Port 18763 is not yet serving the completed application; production remains undeployed.
+- Frontend adapter inventory finds 231 methods across 22 repository objects; these still use browser demo implementations. B6 is PARTIAL with unactivated candidates. Physical expiry/orphan cleanup, broader browser acceptance, final local stack, restart, backup/restore, SMTP/process-kill and load drills remain unfinished. Port 18763 is not yet serving the completed application; production remains undeployed.
 
 ## Selected support read checks
 

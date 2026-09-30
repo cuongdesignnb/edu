@@ -5,6 +5,7 @@ import { Permissions } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation } from '../../common/problem';
 import { checkCapacity } from '../students/enrollment';
+import { validateSchoolWebsite } from '../../common/school-website';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const registry:Record<string,{kind:string;mode:'list'|'get'|'create'|'update'|'status';id?:string;status?:string}>={};
@@ -78,6 +79,7 @@ export class OrganizationService {
     }
     if(kind==='class'){
       if(body.gradeLevelId)await getResource(tx,resource('grade'),schoolId,String(body.gradeLevelId));
+      if(body.roomId){const room=await getResource(tx,resource('room'),schoolId,String(body.roomId));if(room.status!=='ACTIVE')validation('roomId','Phòng đã ngừng sử dụng');}
       if(current&&body.capacity!==undefined){
         const year=await getResource(tx,resource('year'),schoolId,String(current.year_id));
         await checkCapacity(tx,schoolId,{...current,capacity:body.capacity},String(year.starts_on),String(year.ends_on),0);
@@ -107,10 +109,15 @@ export class OrganizationService {
     if(!kind)throw new Problem(404,'RESOURCE_NOT_FOUND');
     const r=resource(kind),schoolId=c.params.schoolId!,id=c.params.itemId;
     const authorize=(tx:Transaction)=>this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId});
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return listResource(tx,r,schoolId,c.query,undefined,c.principal!.userId);},{schoolId});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);
+      const use=kind==='grade'?`EXISTS(SELECT 1 FROM app.classes c WHERE c.school_id=d.school_id AND c.grade_level_id=d.id)`:
+        kind==='subject'?`EXISTS(SELECT 1 FROM app.teaching_assignments a WHERE a.school_id=d.school_id AND a.subject_id=d.id) OR EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=d.school_id AND l.subject_id=d.id)`:
+        `EXISTS(SELECT 1 FROM app.classes c WHERE c.school_id=d.school_id AND c.room_id=d.id) OR EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=d.school_id AND l.room_id=d.id)`;
+      return listResource(tx,{...r,table:`(SELECT d.*,(${use}) AS in_use FROM ${r.table} d)`,fields:{...r.fields,inUse:'in_use'}},schoolId,c.query,undefined,c.principal!.userId);
+    },{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
       await tx.query('SELECT app.lock_school()');
-      for(const field of ['capacity','sortOrder'])if(Object.hasOwn(c.body,field)&&!r.writeFields.includes(field))validation(field,'Trường dữ liệu không thuộc danh mục này');
+      for(const field of ['capacity','sortOrder','gradeLevel','color'])if(Object.hasOwn(c.body,field)&&!r.writeFields.includes(field))validation(field,'Trường dữ liệu không thuộc danh mục này');
       const data=c.operation.method==='POST'?await insertResource(tx,r,schoolId,c.body):await updateResource(tx,r,schoolId,id!,c.body,
         c.body.status?{status:c.body.status}:{});
       await audit(tx,c,r.table,String(data.id),{version:data.version,status:data.status});
@@ -120,17 +127,18 @@ export class OrganizationService {
   private async profile(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!;
     const fields={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',code:'code',slug:'slug',name:'name',status:'status',timezone:'timezone',
-      publicContactEmail:'public_contact_email',publicContactPhone:'public_contact_phone',publicAddress:'public_address'};
-    const r={table:'platform.schools',fields,writeFields:['name','publicContactEmail','publicContactPhone','publicAddress'],search:[],filters:{}};
+      publicContactEmail:'public_contact_email',publicContactPhone:'public_contact_phone',publicAddress:'public_address',shortName:'short_name',province:'province',level:'level',accentColor:'accent_color',motto:'motto',publicIntro:'public_intro',website:'public_website'};
+    const r={table:'platform.schools',fields,writeFields:['name','publicContactEmail','publicContactPhone','publicAddress','shortName','province','level','accentColor','motto','publicIntro','website'],search:[],filters:{}};
     const authorize=(tx:Transaction)=>this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId,allowScopedContext:c.operation.method==='GET'});
     const read=async(tx:Transaction)=>{
-      const row=await one<Row>(tx,'SELECT id,version,created_at,updated_at,code,slug,name,status,timezone,public_contact_email,public_contact_phone,public_address FROM platform.schools WHERE id=$1',[schoolId]);
-      if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;
+      const row=await one<Row>(tx,'SELECT * FROM platform.schools WHERE id=$1',[schoolId]);
+      if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return {...row,short_name:row.short_name??row.name,province:row.province??''};
     };
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return {data:dto(r,await read(tx))};},{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
       const row=await one<Row>(tx,'SELECT version FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
       if(row?.version!==c.body.expectedVersion)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row?.version));
+      validateSchoolWebsite(c.body.website);
       const values:unknown[]=[schoolId],set:string[]=[];
       for(const field of r.writeFields)if(Object.hasOwn(c.body,field)){values.push(c.body[field]);set.push(`${fields[field as keyof typeof fields]}=$${values.length}`);}
       if(set.length)await tx.query(`UPDATE platform.schools SET ${set.join(',')} WHERE id=$1`,values);
