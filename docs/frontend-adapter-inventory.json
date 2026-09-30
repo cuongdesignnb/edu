@@ -1,0 +1,3068 @@
+{
+  "baseline": "14dfad5",
+  "mode": "CONNECTED_ADAPTERS_PENDING",
+  "methodCount": 231,
+  "methods": [
+    {
+      "repository": "activitiesExtraRepo",
+      "method": "classReportCatalog",
+      "file": "src/lib/repositories/activities-extra.ts",
+      "line": 13,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesExtraRepo",
+      "method": "recentFeed",
+      "file": "src/lib/repositories/activities-extra.ts",
+      "line": 40,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "limit = 6"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesExtraRepo",
+      "method": "announcementsPanel",
+      "file": "src/lib/repositories/activities-extra.ts",
+      "line": 79,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "list",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 20,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "opts: { status?: string; q?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "detail",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 42,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "activityId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "formOptions",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 63,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "save",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 76,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { id?: ID; title: string; description: string; illustration: Activity[\"illustration\"]; dueDate: string; assignedStudentIds: ID[]; assignedGroupId?: ID; evidenceRequired: boolean; publish: boolean; version?: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "setActivityStatus",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 108,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "activityId: ID",
+        "status: Activity[\"status\"]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "addEvidence",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 122,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { activityId: ID; studentId: ID; file: { name: string; type: string; size: number; blob: Blob }; note?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "setSubmission",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 145,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { activityId: ID; studentIds: ID[]; status: SubmissionStatus; note?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "reviewEvidence",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 161,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { evidenceIds: ID[]; decision: \"approved\" | \"rejected\" | \"supplement\"; note?: string; shareWithParent: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "evidence",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 183,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "opts: { status?: string; activityId?: ID; q?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "files",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 198,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "opts: { share?: string; status?: string; q?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "uploadFile",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 208,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { file: { name: string; type: string; size: number; blob: Blob }; share: FileShare; studentId?: ID }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "updateFile",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 225,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "fileId: ID",
+        "patch: { share?: FileShare; status?: FileAsset[\"status\"] }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "activitiesRepo",
+      "method": "file",
+      "file": "src/lib/repositories/activities.ts",
+      "line": 238,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "fileId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "schoolList",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 46,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "classList",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 56,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "opts: { status?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "detail",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 66,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "id: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "composeOptions",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 76,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId?: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "estimate",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 90,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "scope: AnnouncementScope",
+        "audience: Announcement[\"audience\"]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "save",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 94,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: ComposeInput"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "withdraw",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 138,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "id: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "deleteDraft",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 151,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "id: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "forTeacher",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 163,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "markTeacherRead",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 176,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "id: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "publicSchool",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 184,
+      "parameters": [
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "announcementsRepo",
+      "method": "publicNews",
+      "file": "src/lib/repositories/announcements.ts",
+      "line": 196,
+      "parameters": [
+        "slug: string",
+        "id: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "attendanceRepo",
+      "method": "sheet",
+      "file": "src/lib/repositories/attendance.ts",
+      "line": 29,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "date: string",
+        "slot: Slot"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "attendanceRepo",
+      "method": "save",
+      "file": "src/lib/repositories/attendance.ts",
+      "line": 69,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { date: string; slot: Slot; entries: { studentId: ID; status: AttendanceStatus; note?: string }[]; expectedVersion?: number; linkConduct: boolean; reason?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "attendanceRepo",
+      "method": "publish",
+      "file": "src/lib/repositories/attendance.ts",
+      "line": 137,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "date: string",
+        "slot: Slot"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "attendanceRepo",
+      "method": "weekly",
+      "file": "src/lib/repositories/attendance.ts",
+      "line": 154,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekStart?: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "attendanceRepo",
+      "method": "canRecordPeriod",
+      "file": "src/lib/repositories/attendance.ts",
+      "line": 187,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "date: string",
+        "period: number"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "header",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 44,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "overview",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 80,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "roster",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 119,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "opts: { q?: string; groupId?: string; linkStatus?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "groups",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 155,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "setGroup",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 173,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "input: { studentIds: ID[]; groupId: ID | null; effectiveDate: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "setPosition",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 192,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "input: { studentId: ID; position: StudentPositionKey; groupId?: ID; effectiveDate: string; remove?: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "seating",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 217,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "saveSeating",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 238,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "input: { rows: number; cols: number; seats: SeatingPlan[\"seats\"]; effectiveDate: string; basedOnVersion: number; note?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "timetable",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 261,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekStart?: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "checkLessonChange",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 286,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { classId: ID; date: string; period: number; teacherMembershipId?: ID; roomId?: ID }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "saveLessonChange",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 291,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: Omit<LessonChange, \"id\" | \"schoolId\" | \"createdBy\" | \"createdAt\" | \"status\"> & { publish: boolean; force?: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "publishLessonChange",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 308,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "changeId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "deleteDraftChange",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 320,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "changeId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "schoolTimetable",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 330,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "filter: { classId?: ID; membershipId?: ID; roomId?: ID; weekStart: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "duties",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 354,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekStart?: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "saveDuty",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 370,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "input: { id?: ID; date: string; task: string; groupId?: ID; studentIds: ID[]; publish: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "deleteDuty",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 394,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "dutyId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "teacherHome",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 404,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "teacherSchedule",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 448,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "weekStart: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "teacherTasks",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 468,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "teacherClasses",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 477,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "includeEnded = false"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "weekRoster",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 500,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "from: string",
+        "to: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "classroomRepo",
+      "method": "subjectTeachers",
+      "file": "src/lib/repositories/classroom.ts",
+      "line": 507,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "ruleSets",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 90,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "ruleSet",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 103,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ruleSetId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "newRuleSetVersion",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 113,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "fromId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "saveRuleSetDraft",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 127,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ruleSetId: ID",
+        "patch: { name: string; baseScore: number; cap?: number; floor?: number; rules: ConductRule[]; bands: RuleSet[\"bands\"]; effectiveFrom: string; entryDeadlineDays: number; version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "publishRuleSet",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 151,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ruleSetId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "deleteRuleSetDraft",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 171,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ruleSetId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "policy",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 182,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "savePolicy",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 189,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "patch: Omit<PublicationPolicy, \"schoolId\">"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "classRules",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 202,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "weekOptions",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 213,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "records",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 222,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekId: ID",
+        "opts: { studentId?: ID } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "createRecord",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 241,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { studentId: ID; date: string; ruleId: ID; reason: string; requestId: string; confirmDistinct?: boolean; distinctNote?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "updateRecord",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 280,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "recordId: ID",
+        "patch: { ruleId: ID; reason: string; version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "review",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 297,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { recordIds: ID[]; decision: \"approve\" | \"reject\" | \"void\"; note?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "weekSummary",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 319,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "lock",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 345,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekId: ID",
+        "alsoPublish: boolean"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "reopen",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 368,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekId: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "publish",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 383,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "weekId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "snapshots",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 398,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "snapshot",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 410,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "snapshotId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "adjustments",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 428,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "requestAdjustment",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 450,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "input: { snapshotId: ID; studentId: ID; kind: AdjustmentRequest[\"kind\"]; recordId?: ID; newPoints?: number; ruleId?: ID; reason: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "decideAdjustment",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 487,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "adjustmentId: ID",
+        "approve: boolean",
+        "note: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "publishAdjustment",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 517,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "adjustmentId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "publicationCenter",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 536,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "weekId?: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "conductRepo",
+      "method": "simulate",
+      "file": "src/lib/repositories/conduct.ts",
+      "line": 564,
+      "parameters": [
+        "ruleSet: Pick<RuleSet, \"baseScore\" | \"cap\" | \"floor\" | \"bands\">",
+        "points: number[]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentExtraRepo",
+      "method": "grantedYear",
+      "file": "src/lib/repositories/parent-extra.ts",
+      "line": 9,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "open",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 108,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "logView",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 115,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "module: ParentModule | \"overview\"",
+        "device: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "context",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 126,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "overview",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 146,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "attendance",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 170,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "month: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "conductList",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 193,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "conductDetail",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 201,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "periodId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "timetable",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 213,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "weekStart: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "duties",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 228,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "activities",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 238,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "activity",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 250,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "activityId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "announcements",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 265,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "q = \"\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "announcement",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 274,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "id: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "teachers",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 287,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "documents",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 307,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "file",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 319,
+      "parameters": [
+        "key: ParentKey",
+        "slug: string",
+        "fileId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "parentRepo",
+      "method": "demoLinks",
+      "file": "src/lib/repositories/parent.ts",
+      "line": 331,
+      "parameters": [],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "operations",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 26,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "Promise<OperationsView>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "checkSchoolIdentity",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 64,
+      "parameters": [
+        "ctx: Ctx",
+        "code: string",
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "operators",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 73,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "ticketStats",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 78,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "assignTicket",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 87,
+      "parameters": [
+        "ctx: Ctx",
+        "ticketId: ID",
+        "assigneeUserId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "relinquishGrant",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 102,
+      "parameters": [
+        "ctx: Ctx",
+        "grantId: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformExtraRepo",
+      "method": "supportTargets",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 119,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "loginHints",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 132,
+      "parameters": [],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "requestPasswordReset",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 136,
+      "parameters": [
+        "email: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "checkResetToken",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 146,
+      "parameters": [
+        "token: string | null"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "completePasswordReset",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 151,
+      "parameters": [
+        "token: string",
+        "password: string",
+        "confirm: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "publicContact",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 161,
+      "parameters": [],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "healthCheck",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 166,
+      "parameters": [],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "authDemoRepo",
+      "method": "schoolStatusBySlug",
+      "file": "src/lib/repositories/platform-extra.ts",
+      "line": 171,
+      "parameters": [
+        "slug: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "overview",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 33,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "listSchools",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 51,
+      "parameters": [
+        "ctx: Ctx",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "school",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 65,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "createSchool",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 91,
+      "parameters": [
+        "ctx: Ctx",
+        "input: { name: string; shortName: string; code: string; slug: string; level: School[\"level\"]; province: string; address: string; publicEmail: string; publicPhone: string; adminName: string; adminEmail: string; asDraft: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "updateSchoolOps",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 120,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "patch: Partial<Pick<School, \"name\" | \"shortName\" | \"province\" | \"address\" | \"publicEmail\" | \"publicPhone\">> & { version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "changeSchoolStatus",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 132,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "status: SchoolStatus",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "inviteSchoolAdmin",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 153,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { fullName: string; email: string; days: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "revokeSchoolAdmin",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 167,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "membershipId: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "revokeInvitation",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 182,
+      "parameters": [
+        "ctx: Ctx",
+        "inviteId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "tickets",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 193,
+      "parameters": [
+        "ctx: Ctx",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "ticket",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 206,
+      "parameters": [
+        "ctx: Ctx",
+        "ticketId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "updateTicket",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 219,
+      "parameters": [
+        "ctx: Ctx",
+        "ticketId: ID",
+        "input: { text?: string; status?: SupportTicket[\"status\"]; assigneeUserId?: ID }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "supportGrants",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 232,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "requestSupportGrant",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 237,
+      "parameters": [
+        "ctx: Ctx",
+        "input: { schoolId: ID; ticketId?: ID; scopes: SupportGrant[\"scopes\"]; reason: string; days: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "audit",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 251,
+      "parameters": [
+        "ctx: Ctx",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "settings",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 265,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "platformRepo",
+      "method": "saveSettings",
+      "file": "src/lib/repositories/platform.ts",
+      "line": 270,
+      "parameters": [
+        "ctx: Ctx",
+        "patch: Omit<PlatformSettings, \"version\" | \"dateFormat\" | \"timezone\"> & { version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "schoolCatalog",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 55,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "school",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 61,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "type: string",
+        "params: Record<string, string | undefined>"
+      ],
+      "returnType": "Promise<ReportData>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "classCatalog",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 162,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "classReport",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 171,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "type: string",
+        "params: Record<string, string | undefined>"
+      ],
+      "returnType": "Promise<ReportData>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "teacherCatalog",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 245,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "exports",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 262,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "recordExport",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 270,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { title: string; reportType: string; format: ExportJob[\"format\"]; params: Record<string, string>; fileName: string; rowCount: number; classId?: ID }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "reportsRepo",
+      "method": "cancelExport",
+      "file": "src/lib/repositories/reports.ts",
+      "line": 282,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "exportId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOpsRepo",
+      "method": "announcementClassStudents",
+      "file": "src/lib/repositories/school-ops-extra.ts",
+      "line": 17,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOpsRepo",
+      "method": "lessonSlot",
+      "file": "src/lib/repositories/school-ops-extra.ts",
+      "line": 25,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "date: string",
+        "period: number"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOpsRepo",
+      "method": "weekLessonChanges",
+      "file": "src/lib/repositories/school-ops-extra.ts",
+      "line": 45,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "weekStart: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOpsRepo",
+      "method": "regenerateExport",
+      "file": "src/lib/repositories/school-ops-extra.ts",
+      "line": 59,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "exportId: ID"
+      ],
+      "returnType": "Promise<{ data: ReportData; params: Record<string, string | undefined>; classYearId?: ID }>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOrgRepo",
+      "method": "staffActivity",
+      "file": "src/lib/repositories/school-org-extra.ts",
+      "line": 11,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "opts: { limit?: number; action?: string } = {}"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolOrgRepo",
+      "method": "handoverClasses",
+      "file": "src/lib/repositories/school-org-extra.ts",
+      "line": 25,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "context",
+      "file": "src/lib/repositories/school.ts",
+      "line": 62,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "overview",
+      "file": "src/lib/repositories/school.ts",
+      "line": 78,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "profile",
+      "file": "src/lib/repositories/school.ts",
+      "line": 134,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "saveProfile",
+      "file": "src/lib/repositories/school.ts",
+      "line": 142,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "patch: Pick<School, \"shortName\" | \"motto\" | \"publicIntro\" | \"publicPhone\" | \"publicEmail\" | \"address\" | \"website\" | \"accentColor\"> & { version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "settings",
+      "file": "src/lib/repositories/school.ts",
+      "line": 160,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "saveSettings",
+      "file": "src/lib/repositories/school.ts",
+      "line": 167,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "patch: Omit<SchoolSettings, \"schoolId\" | \"language\" | \"timezone\">"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "years",
+      "file": "src/lib/repositories/school.ts",
+      "line": 180,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "yearDetail",
+      "file": "src/lib/repositories/school.ts",
+      "line": 192,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "createYear",
+      "file": "src/lib/repositories/school.ts",
+      "line": 211,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { label: string; startDate: string; endDate: string; terms: { name: string; startDate: string; endDate: string; openingDate?: string }[]; holidays: { name: string; startDate: string; endDate: string }[]; copyRules: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "updateTerm",
+      "file": "src/lib/repositories/school.ts",
+      "line": 251,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "termId: ID",
+        "patch: Pick<Term, \"name\" | \"startDate\" | \"endDate\" | \"openingDate\">"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "updateWeekDeadline",
+      "file": "src/lib/repositories/school.ts",
+      "line": 271,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "weekId: ID",
+        "closeDeadline: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "addHoliday",
+      "file": "src/lib/repositories/school.ts",
+      "line": 282,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "h: Omit<Holiday, \"id\" | \"schoolId\" | \"yearId\">"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "removeHoliday",
+      "file": "src/lib/repositories/school.ts",
+      "line": 296,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "holidayId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "setYearStatus",
+      "file": "src/lib/repositories/school.ts",
+      "line": 306,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "status: AcademicYear[\"status\"]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "rolloverPreview",
+      "file": "src/lib/repositories/school.ts",
+      "line": 321,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "fromYearId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "rolloverApply",
+      "file": "src/lib/repositories/school.ts",
+      "line": 340,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "fromYearId: ID",
+        "toYearId: ID",
+        "decisions: { studentId: ID; action: \"promote\" | \"retain\" | \"leave\"; targetClassId?: ID }[]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "dictionaries",
+      "file": "src/lib/repositories/school.ts",
+      "line": 361,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "saveDictionaryItem",
+      "file": "src/lib/repositories/school.ts",
+      "line": 376,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "kind: \"grade\" | \"subject\" | \"room\"",
+        "item: Partial<Grade & Subject & Room> & { name: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "setDictionaryStatus",
+      "file": "src/lib/repositories/school.ts",
+      "line": 404,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "kind: \"grade\" | \"subject\" | \"room\"",
+        "id: ID",
+        "status: \"active\" | \"inactive\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "classes",
+      "file": "src/lib/repositories/school.ts",
+      "line": 416,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "classOptions",
+      "file": "src/lib/repositories/school.ts",
+      "line": 430,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId?: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "formOptions",
+      "file": "src/lib/repositories/school.ts",
+      "line": 438,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "saveClass",
+      "file": "src/lib/repositories/school.ts",
+      "line": 451,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { id?: ID; yearId: ID; gradeId: ID; name: string; capacity: number; roomId?: ID; homeroomMembershipId?: ID; motto?: string; version?: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "setClassStatus",
+      "file": "src/lib/repositories/school.ts",
+      "line": 492,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "status: ClassRoom[\"status\"]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "schoolRepo",
+      "method": "weekOf",
+      "file": "src/lib/repositories/school.ts",
+      "line": 505,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "date: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "searchRepo",
+      "method": "search",
+      "file": "src/lib/repositories/search.ts",
+      "line": 10,
+      "parameters": [
+        "ctx: Ctx",
+        "q: string",
+        "schoolId?: ID"
+      ],
+      "returnType": "Promise<SearchHit[]>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "demoLogin",
+      "file": "src/lib/repositories/session.ts",
+      "line": 25,
+      "parameters": [
+        "email: string",
+        "password: string"
+      ],
+      "returnType": "Promise<{ userId: ID; isPlatform: boolean }>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "me",
+      "file": "src/lib/repositories/session.ts",
+      "line": 35,
+      "parameters": [
+        "ctx: Ctx"
+      ],
+      "returnType": "Promise<Me>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "schoolActions",
+      "file": "src/lib/repositories/session.ts",
+      "line": 58,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "updateProfile",
+      "file": "src/lib/repositories/session.ts",
+      "line": 62,
+      "parameters": [
+        "ctx: Ctx",
+        "patch: { fullName: string; workPhone: string; bio?: string; version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "invitation",
+      "file": "src/lib/repositories/session.ts",
+      "line": 79,
+      "parameters": [
+        "ctx: Ctx",
+        "inviteId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "respondInvitation",
+      "file": "src/lib/repositories/session.ts",
+      "line": 91,
+      "parameters": [
+        "ctx: Ctx",
+        "inviteId: ID",
+        "accept: boolean",
+        "fullName?: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "notifications",
+      "file": "src/lib/repositories/session.ts",
+      "line": 115,
+      "parameters": [
+        "ctx: Ctx",
+        "opts: { unreadOnly?: boolean; schoolId?: ID } = {}"
+      ],
+      "returnType": "Promise<(StaffNotification & { schoolName: string; accessible: boolean })[]>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "markNotificationsRead",
+      "file": "src/lib/repositories/session.ts",
+      "line": 132,
+      "parameters": [
+        "ctx: Ctx",
+        "ids: ID[] | \"all\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "teachers",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 21,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "invitations",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 55,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "member",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 62,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "membershipId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "invite",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 84,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { fullName: string; email: string; proposedDuty: string; roleTemplateIds: ID[]; days: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "revokeInvitation",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 108,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "inviteId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "setMembershipStatus",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 119,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "membershipId: ID",
+        "status: Membership[\"status\"]",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "setMemberRoles",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 142,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "membershipId: ID",
+        "roleTemplateIds: ID[]",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "assignmentMatrix",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 163,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId?: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "previewAssignment",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 192,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "assign",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 207,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID; validFrom: string; validTo?: string; reason?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "revokeAssignment",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 243,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "assignmentId: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "handoverPreview",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 262,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "handover",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 282,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { classId: ID; toMembershipId: ID; effectiveDate: string; note: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "roles",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 310,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "role",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 321,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "roleId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "staffRepo",
+      "method": "saveRole",
+      "file": "src/lib/repositories/staff.ts",
+      "line": 336,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "roleId: ID",
+        "actions: ActionKey[]",
+        "version: number",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "issueContext",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 26,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "issueCandidates",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 44,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "studentId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "studentOptions",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 62,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "exportStudents",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 75,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ids: ID[]"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "importKinds",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 92,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "Promise<ImportKindInfo[]>",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "guardianSummary",
+      "file": "src/lib/repositories/students-extra.ts",
+      "line": 135,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "list",
+      "file": "src/lib/repositories/students.ts",
+      "line": 81,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "profile",
+      "file": "src/lib/repositories/students.ts",
+      "line": 93,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "studentId: ID",
+        "classId?: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "create",
+      "file": "src/lib/repositories/students.ts",
+      "line": 144,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { code?: string; fullName: string; dob: string; gender: Gender; classId: ID; startDate: string; guardian?: { fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string } }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "update",
+      "file": "src/lib/repositories/students.ts",
+      "line": 175,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "studentId: ID",
+        "patch: { fullName: string; dob: string; gender: Gender; internalNote?: string; version: number }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "transfers",
+      "file": "src/lib/repositories/students.ts",
+      "line": 188,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "requestTransfer",
+      "file": "src/lib/repositories/students.ts",
+      "line": 201,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { studentId: ID; kind: \"transfer\" | \"leave\"; toClassId?: ID; effectiveDate: string; reason: string; applyNow: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "decideTransfer",
+      "file": "src/lib/repositories/students.ts",
+      "line": 229,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "transferId: ID",
+        "approve: boolean",
+        "note?: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "guardians",
+      "file": "src/lib/repositories/students.ts",
+      "line": 242,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "guardian",
+      "file": "src/lib/repositories/students.ts",
+      "line": 258,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "guardianId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "saveGuardian",
+      "file": "src/lib/repositories/students.ts",
+      "line": 281,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { studentId: ID; guardianId?: ID; relationshipId?: ID; fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string; email?: string; isPrimaryContact: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "setVerification",
+      "file": "src/lib/repositories/students.ts",
+      "line": 303,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "relationshipId: ID",
+        "status: \"verified\" | \"revoked\"",
+        "note: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "accessList",
+      "file": "src/lib/repositories/students.ts",
+      "line": 324,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "access",
+      "file": "src/lib/repositories/students.ts",
+      "line": 345,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "accessId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "issueAccess",
+      "file": "src/lib/repositories/students.ts",
+      "line": 362,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { relationshipId: ID; modules: ParentModule[]; expiresOn: string; replaceAccessId?: ID; reason?: string }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "revokeAccess",
+      "file": "src/lib/repositories/students.ts",
+      "line": 388,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "accessId: ID",
+        "reason: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "importPreview",
+      "file": "src/lib/repositories/students.ts",
+      "line": 404,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "classId: ID",
+        "rows: ImportRowInput[]",
+        "mode: \"add_only\" | \"add_update\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "importCommit",
+      "file": "src/lib/repositories/students.ts",
+      "line": 416,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { classId: ID; fileName: string; rows: ImportRowInput[]; mode: \"add_only\" | \"add_update\"; includeWarnings: boolean }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "imports",
+      "file": "src/lib/repositories/students.ts",
+      "line": 462,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "importJob",
+      "file": "src/lib/repositories/students.ts",
+      "line": 469,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "importId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "overview",
+      "file": "src/lib/repositories/support.ts",
+      "line": 17,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "ticket",
+      "file": "src/lib/repositories/support.ts",
+      "line": 26,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ticketId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "createTicket",
+      "file": "src/lib/repositories/support.ts",
+      "line": 38,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "input: { title: string; body: string; priority: SupportTicket[\"priority\"] }"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "addUpdate",
+      "file": "src/lib/repositories/support.ts",
+      "line": 51,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "ticketId: ID",
+        "text: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "decideGrant",
+      "file": "src/lib/repositories/support.ts",
+      "line": 62,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "grantId: ID",
+        "decision: \"approve\" | \"decline\" | \"revoke\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "supportRepo",
+      "method": "audit",
+      "file": "src/lib/repositories/support.ts",
+      "line": 82,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "q: ListQuery"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "teacherExtraRepo",
+      "method": "studentAttendance",
+      "file": "src/lib/repositories/teacher-extra.ts",
+      "line": 13,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "studentId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "teacherExtraRepo",
+      "method": "recordHistory",
+      "file": "src/lib/repositories/teacher-extra.ts",
+      "line": 34,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "studentId: ID",
+        "date: string",
+        "slot = \"morning\""
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "teacherExtraRepo",
+      "method": "transferTargets",
+      "file": "src/lib/repositories/teacher-extra.ts",
+      "line": 51,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "teacherExtraRepo",
+      "method": "myClassActions",
+      "file": "src/lib/repositories/teacher-extra.ts",
+      "line": 64,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    },
+    {
+      "repository": "teacherExtraRepo",
+      "method": "attendanceSlots",
+      "file": "src/lib/repositories/teacher-extra.ts",
+      "line": 77,
+      "parameters": [
+        "ctx: Ctx",
+        "schoolId: ID",
+        "yearId: ID",
+        "classId: ID",
+        "date: string"
+      ],
+      "returnType": "inferred",
+      "status": "NOT_STARTED"
+    }
+  ]
+}

@@ -7539,7 +7539,8 @@
             "conduct",
             "activities",
             "class-progress",
-            "parent-access"
+            "parent-access",
+            "student"
           ]
         },
         "format": {
@@ -7569,6 +7570,26 @@
         "expiresAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "requestedBy": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "asOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "lastErrorCode": {
+          "type": "string",
+          "maxLength": 80
         }
       },
       "required": [
@@ -7592,7 +7613,8 @@
             "conduct",
             "activities",
             "class-progress",
-            "parent-access"
+            "parent-access",
+            "student"
           ]
         },
         "format": {
@@ -7625,6 +7647,28 @@
         "to": {
           "type": "string",
           "format": "date"
+        },
+        "gradeId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "weekId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "dataSource": {
+          "type": "string",
+          "enum": [
+            "LIVE_INTERNAL",
+            "PUBLISHED_SNAPSHOT"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "SCHOOL",
+            "CLASS"
+          ]
         }
       },
       "required": [
@@ -7689,6 +7733,58 @@
             "LIVE_INTERNAL",
             "PUBLISHED_SNAPSHOT"
           ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "schoolName": {
+          "type": "string"
+        },
+        "yearName": {
+          "type": "string"
+        },
+        "scopeLabel": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "type": "string",
+          "format": "date"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "key",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "publicationIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -48505,7 +48601,8 @@
               "conduct",
               "activities",
               "class-progress",
-              "parent-access"
+              "parent-access",
+              "student"
             ]
           }
         },
@@ -48550,6 +48647,33 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          }
+        },
+        {
+          "name": "dataSource",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "LIVE_INTERNAL",
+              "PUBLISHED_SNAPSHOT"
+            ]
+          }
+        },
+        {
+          "name": "gradeId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "weekId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -48706,7 +48830,8 @@
               "conduct",
               "activities",
               "class-progress",
-              "parent-access"
+              "parent-access",
+              "student"
             ]
           }
         },
@@ -48751,6 +48876,33 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          }
+        },
+        {
+          "name": "dataSource",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "LIVE_INTERNAL",
+              "PUBLISHED_SNAPSHOT"
+            ]
+          }
+        },
+        {
+          "name": "gradeId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "weekId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -49279,6 +49431,16 @@
             }
           }
         },
+        "410": {
+          "description": "Bản xuất đã hết thời hạn tải.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
         "422": {
           "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
           "content": {
@@ -49415,6 +49577,16 @@
         },
         "409": {
           "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "410": {
+          "description": "Bản xuất đã hết thời hạn tải.",
           "content": {
             "application/problem+json": {
               "schema": {

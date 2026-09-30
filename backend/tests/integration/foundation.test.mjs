@@ -26,6 +26,7 @@ import { IdentityService } from '../../dist/modules/identity/identity.service.js
 import { Problem } from '../../dist/common/problem.js';
 import { StaffService } from '../../dist/modules/staff/staff.service.js';
 import { runSupportRead } from '../../dist/common/support-context.js';
+import {operations} from '../../dist/common/contract.js';
 
 let app,server,db,policy;
 const password=crypto.randomBytes(24).toString('base64url');
@@ -73,6 +74,10 @@ beforeEach(async()=>{
   // assertions still exercise repeated real requests inside their own case.
   assert.equal(process.env.APP_ENV,'test');assert.equal(process.env.DB_NAME,'edumanage_test_local');
   await pool.query('DELETE FROM identity.rate_limit_buckets');
+});
+
+test('B5 all 264 supplied operation IDs have registered real handlers',async()=>{
+  assert.equal(operations.length,264);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -1603,4 +1608,92 @@ test('B5 signed native keysets cross a nullable sort boundary without dropping o
   const path=`/api/v1/platform/schools?q=${encodeURIComponent(prefix)}&sort=level&limit=1`,seen=[];let cursor=null;
   do{const page=await request('GET',path+(cursor?`&cursor=${encodeURIComponent(cursor)}`:''));assert.equal(page.statusCode,200,page.body);assert.equal(page.json().page.total,3);assert.equal(page.json().data.length,1);seen.push(page.json().data[0].id);cursor=page.json().page.nextCursor;assert.ok(seen.length<=3);}while(cursor);
   assert.equal(seen[0],ids[0]);assert.equal(new Set(seen).size,3);assert.deepEqual(new Set(seen),new Set(ids));
+});
+
+async function reportFixture(){
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf);await activateFixtureClass(f);const base=`/api/v1/schools/${schoolA}`,day=(await db.transaction(tx=>tx.query("SELECT (now() AT TIME ZONE timezone)::date AS date FROM platform.schools WHERE id=$1",[schoolA]),{schoolId:schoolA})).rows[0].date;
+  const next=new Date(Date.parse(day)+86400000).toISOString().slice(0,10),created=await f.post(`classes/${f.classId}/attendance`,{date:day,granularity:'DAILY',slot:'MORNING'});assert.equal(created.statusCode,201,created.body);let session=created.json().data;
+  const edited=await request('PATCH',`${base}/classes/${f.classId}/attendance/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:f.enrollments[0].id,expectedVersion:session.records.find(r=>r.enrollmentId===f.enrollments[0].id).version,status:'PRESENT',internalNote:'PRIVATE REPORT INTERNAL NOTE'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200,edited.body);session=edited.json().data;
+  const filters={yearId:seedId('year:A'),classId:f.classId,from:day,to:next},query=new URLSearchParams(filters).toString();return {...f,csrf,base,session,filters,query};
+}
+async function queueReport(f,format='CSV',overrides={},key=crypto.randomUUID()){
+  const r=await request('POST',`${f.base}/exports`,{reportType:'attendance',format,...f.filters,...overrides},f.csrf,{'idempotency-key':key});assert.equal(r.statusCode,202,r.body);return r.json().data;
+}
+test('B5 report SQL uses real scoped counts and immutable CSV export content while live attendance changes',async()=>{
+  const f=await reportFixture(),worker=new WorkerRunner();try{
+    const path=`${f.base}/classes/${f.classId}/reports/attendance?${f.query}`,read=await request('GET',path);assert.equal(read.statusCode,200,read.body);let data=read.json().data;
+    assert.equal(data.dataSource,'LIVE_INTERNAL');assert.equal(data.rows.length,2);assert.equal(data.metrics.find(m=>m.key==='total').value,2);assert.equal(data.metrics.find(m=>m.key==='present').value,1);assert.equal(data.metrics.find(m=>m.key==='unmarked').value,1);assert.equal(read.body.includes('PRIVATE REPORT INTERNAL NOTE'),false);assert.equal(read.body.includes('password'),false);
+    const school=await request('GET',`${f.base}/reports/attendance?${f.query}`);assert.equal(school.statusCode,200,school.body);assert.equal(school.json().data.rows.length,1);assert.equal(school.json().data.rows[0].values.total,2);
+    const key=crypto.randomUUID(),job=await queueReport(f,'CSV',{},key),replay=await queueReport(f,'CSV',{},key);assert.equal(replay.id,job.id);assert.equal(job.status,'QUEUED');assert.equal((await request('GET',`${f.base}/exports/${job.id}/download`)).statusCode,409);
+    const r=f.session.records.find(r=>r.enrollmentId===f.enrollments[0].id),edit=await request('PATCH',`${f.base}/classes/${f.classId}/attendance/${f.session.id}/records`,{expectedVersion:f.session.version,records:[{enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'EXCUSED'}]},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edit.statusCode,200,edit.body);
+    data=(await request('GET',path)).json().data;assert.equal(data.metrics.find(m=>m.key==='present').value,0);assert.equal(data.metrics.find(m=>m.key==='excused').value,1);
+    await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.export_jobs SET report_snapshot='{}' WHERE school_id=$1 AND id=$2",[schoolA,job.id]),{schoolId:schoolA}),e=>e.code==='23514');
+    await drainSchool(worker);const saved=(await request('GET',`${f.base}/exports/${job.id}`)).json().data;assert.equal(saved.status,'COMPLETED');assert.equal(saved.contentHash,job.contentHash);assert.equal(saved.asOf,job.asOf);assert.ok(saved.fileId);
+    const download=await request('GET',`${f.base}/exports/${job.id}/download`);assert.equal(download.statusCode,200,download.body);assert.match(download.headers['content-type'],/text\/csv/);assert.equal(download.headers['cache-control'],'no-store');const parsed=(await import('csv-parse/sync')).parse(download.body,{bom:true,columns:true});assert.equal(parsed.length,2);assert.equal(parsed.reduce((n,r)=>n+Number(r['Có mặt']),0),1);assert.equal(parsed.reduce((n,r)=>n+Number(r['Nghỉ có phép']),0),0);
+    const metadata=await request('GET',`${f.base}/files/${saved.fileId}`);assert.equal(metadata.statusCode,200,metadata.body);assert.equal(metadata.json().data.scanStatus,'GENERATED');assert.equal(metadata.body.includes('objectKey'),false);
+    const listed=await request('GET',`${f.base}/exports?classId=${f.classId}&limit=1`);assert.equal(listed.statusCode,200,listed.body);assert.equal(listed.json().page.total,1);assert.equal(listed.json().data[0].id,job.id);
+    assert.equal((await request('GET',`${f.base}/classes/${f.classId}/reports/attendance?${f.query}&arbitrary=1`)).statusCode,422);assert.equal((await request('GET',`${f.base}/classes/${f.classId}/reports/attendance?${new URLSearchParams({...f.filters,from:f.filters.to}).toString()}`)).statusCode,422);
+  }finally{await worker.close();}
+});
+test('B5 published report exports pin revisions across replacement and withdrawal without exposing drafts',async()=>{
+  const f=await reportFixture(),worker=new WorkerRunner();try{
+    const second=f.session.records.find(r=>r.enrollmentId===f.enrollments[1].id),marked=await request('PATCH',`${f.base}/classes/${f.classId}/attendance/${f.session.id}/records`,{expectedVersion:f.session.version,records:[{enrollmentId:second.enrollmentId,expectedVersion:second.version,status:'EXCUSED'}]},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(marked.statusCode,200,marked.body);f.session=marked.json().data;
+    let pub=await f.post(`classes/${f.classId}/attendance/${f.session.id}/publish`,{expectedSourceVersion:f.session.dataVersion,expectedPublicationId:null});assert.equal(pub.statusCode,200,pub.body);pub=pub.json().data;
+    const path=`${f.base}/classes/${f.classId}/reports/attendance?${f.query}&dataSource=PUBLISHED_SNAPSHOT`,published=await request('GET',path);assert.equal(published.statusCode,200,published.body);assert.deepEqual(published.json().data.publicationIds,[pub.id]);assert.equal(published.json().data.rows.some(r=>r.values.status==='PRESENT'),true);
+    const job=await queueReport(f,'CSV',{dataSource:'PUBLISHED_SNAPSHOT'}),reopened=await f.post(`classes/${f.classId}/attendance/${f.session.id}/reopen`,{expectedVersion:(await request('GET',`${f.base}/classes/${f.classId}/attendance/${f.session.id}`)).json().data.version,reason:'Sửa sau khi ghim bản xuất'});assert.equal(reopened.statusCode,200,reopened.body);let session=reopened.json().data,r=session.records.find(r=>r.enrollmentId===f.enrollments[0].id);
+    const changed=await request('PATCH',`${f.base}/classes/${f.classId}/attendance/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'UNEXCUSED'}]},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(changed.statusCode,200,changed.body);session=changed.json().data;
+    assert.equal((await request('GET',path)).json().data.rows.some(r=>r.values.status==='PRESENT'),true);
+    const replacement=await f.post(`classes/${f.classId}/attendance/${session.id}/publish`,{expectedSourceVersion:session.dataVersion,expectedPublicationId:pub.id});assert.equal(replacement.statusCode,200,replacement.body);
+    assert.equal((await request('GET',path)).json().data.rows.some(r=>r.values.status==='UNEXCUSED'),true);await drainSchool(worker);
+    const pinned=await request('GET',`${f.base}/exports/${job.id}/download`);assert.equal(pinned.statusCode,200,pinned.body);assert.match(pinned.body,/PRESENT/);assert.doesNotMatch(pinned.body,/UNEXCUSED/);
+    const withdrawn=await f.post(`publications/${replacement.json().data.id}/withdraw`,{expectedVersion:replacement.json().data.version,reason:'Thu hồi bản báo cáo công bố'});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal((await request('GET',path)).json().data.rows.length,0);
+    const conduct=await request('GET',`${f.base}/classes/${f.classId}/reports/conduct?yearId=${seedId('year:A')}&weekId=${seedId('week:A:5')}`);assert.equal(conduct.statusCode,200,conduct.body);assert.equal(conduct.json().data.rows.every(r=>r.values.finalPoints===null),true);
+    const personal=await request('GET',`${f.base}/classes/${f.classId}/reports/student?${f.query}&studentId=${f.enrollments[0].studentId}`);assert.equal(personal.statusCode,200,personal.body);assert.equal(personal.json().data.rows.every(r=>r.studentId===f.enrollments[0].studentId),true);assert.equal(personal.body.includes('PRIVATE REPORT INTERNAL NOTE'),false);
+  }finally{await worker.close();}
+});
+test('B5 export XLSX/PDF are actual files with literal formula text, Vietnamese font and private download authorization',async()=>{
+  const f=await reportFixture(),worker=new WorkerRunner();try{
+    await db.transaction(tx=>tx.query('UPDATE app.students SET full_name=$3 WHERE school_id=$1 AND id=$2',[schoolA,f.enrollments[0].studentId,'=HYPERLINK("https://example.invalid","giả")']),{schoolId:schoolA});
+    const xlsx=await queueReport(f,'XLSX'),pdf=await queueReport(f,'PDF');await drainSchool(worker);
+    const x=await request('GET',`${f.base}/exports/${xlsx.id}/download`);assert.equal(x.statusCode,200,x.body);assert.equal(x.rawPayload.subarray(0,2).toString(),'PK');const wb=new ExcelJS.Workbook();await wb.xlsx.load(x.rawPayload);const values=[];wb.worksheets[0].eachRow(row=>{for(const cell of row._cells){assert.notEqual(cell?.type,ExcelJS.ValueType.Formula);if(cell?.value)values.push(String(cell.value));}});assert.ok(values.some(v=>v.startsWith("'=HYPERLINK")));
+    const p=await request('GET',`${f.base}/exports/${pdf.id}/download`);assert.equal(p.statusCode,200,p.body);assert.equal(p.rawPayload.subarray(0,5).toString(),'%PDF-');assert.match(p.rawPayload.toString('latin1'),/FontFile2/);assert.match(p.rawPayload.toString('latin1'),/NotoSans/);assert.equal((p.rawPayload.toString('latin1').match(/\/Type\s*\/Page\b/g)??[]).length,3,'wide table has three panels and no footer-only extra pages');
+    const meta=(await request('GET',`${f.base}/exports/${pdf.id}`)).json().data;assert.equal((await request('POST',`${f.base}/file-links`,{fileId:meta.fileId,studentId:f.enrollments[0].studentId,shareWithGuardian:true},f.csrf,{'idempotency-key':crypto.randomUUID()})).statusCode,422);
+    const auditPath=process.env.REPORT_QA_OUTPUT;if(auditPath){await fs.mkdir(auditPath,{recursive:true});await fs.writeFile(path.join(auditPath,'report-vietnamese.pdf'),p.rawPayload);}
+    const anonymous=await server.inject({method:'GET',url:`${f.base}/exports/${pdf.id}/download`});assert.equal(anonymous.statusCode,401);
+    await login('admin-b@example.invalid',resetPassword);assert.equal((await request('GET',`${f.base}/exports/${pdf.id}/download`)).statusCode,404);
+    await login('teacher-a@example.invalid');assert.equal((await request('GET',`${f.base}/exports/${pdf.id}/download`)).statusCode,404);assert.equal((await request('GET',`${f.base}/files/${meta.fileId}/download`)).statusCode,404);
+  }finally{await worker.close();}
+});
+test('B5 subject reports remain own lesson attendance and scoped activities without school/family/conduct/export access',async()=>{
+  await login('teacher-a@example.invalid');const base=`/api/v1/schools/${schoolA}`,query=`yearId=${seedId('year:A')}&from=2026-09-28&to=2026-09-30`;
+  const own=await request('GET',`${base}/classes/${classB}/reports/attendance?${query}`);assert.equal(own.statusCode,200,own.body);assert.ok(own.json().data.rows.length>0,'authorized own-lesson facts must be present, not an empty successful report');assert.equal(own.body.includes('internalNote'),false);assert.equal(own.json().data.rows.every(r=>r.classId===classB),true);
+  assert.equal((await request('GET',`${base}/reports/attendance?${query}`)).statusCode,403);assert.equal((await request('GET',`${base}/classes/${classB}/reports/conduct?${query}`)).statusCode,404);assert.equal((await request('GET',`${base}/classes/${classB}/reports/parent-access?${query}`)).statusCode,404);
+  assert.equal((await request('GET',`${base}/classes/${classB}/reports/activities?${query}`)).statusCode,200);const csrf=(await request('GET','/api/v1/me/context')).json().data.csrfToken;assert.equal((await request('POST',`${base}/exports`,{reportType:'attendance',format:'CSV',yearId:seedId('year:A'),classId:classB,from:'2026-09-28',to:'2026-09-30'},csrf,{'idempotency-key':crypto.randomUUID()})).statusCode,404);
+});
+test('B5 export workers and all file paths reauthorize revocation, expiry and cancellation, and replay completed work safely',async()=>{
+  const f=await reportFixture(),worker=new WorkerRunner(),grant=seedId('grant:A:admin-a:admin');try{
+    const queued=await queueReport(f);await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});await drainSchool(worker);
+    await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});const failed=await request('GET',`${f.base}/exports/${queued.id}`);assert.equal(failed.statusCode,200,failed.body);assert.equal(failed.json().data.status,'FAILED');assert.equal(failed.json().data.fileId,undefined);assert.ok(failed.json().data.lastErrorCode);
+    const cancel=await queueReport(f),cancelled=await request('POST',`${f.base}/exports/${cancel.id}/cancel`,{expectedVersion:cancel.version,reason:'Hủy bản xuất kiểm thử'},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(cancelled.statusCode,200,cancelled.body);await drainSchool(worker);assert.equal((await request('GET',`${f.base}/exports/${cancel.id}`)).json().data.status,'CANCELLED');
+    const ready=await queueReport(f);await drainSchool(worker);let saved=(await request('GET',`${f.base}/exports/${ready.id}`)).json().data;assert.equal(saved.status,'COMPLETED');const original=saved.fileId;
+    await worker.db.transaction(tx=>tx.query("UPDATE app.outbox_events SET status='PENDING',attempts=0,processed_at=NULL WHERE school_id=$1 AND dedupe_key=$2",[schoolA,`export:${ready.id}`]),{schoolId:schoolA});await drainSchool(worker);saved=(await request('GET',`${f.base}/exports/${ready.id}`)).json().data;assert.equal(saved.fileId,original);assert.equal((await db.transaction(tx=>tx.query('SELECT count(*)::int AS n FROM app.files WHERE school_id=$1 AND id=$2',[schoolA,original]),{schoolId:schoolA})).rows[0].n,1);
+    await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});for(const suffix of [`exports/${ready.id}/download`,`files/${original}/download`])assert.ok([403,404,409].includes((await request('GET',`${f.base}/${suffix}`)).statusCode));
+    await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});await db.transaction(tx=>tx.query("UPDATE app.export_jobs SET expires_at=now()-interval '1 second' WHERE school_id=$1 AND id=$2",[schoolA,ready.id]),{schoolId:schoolA});assert.equal((await request('GET',`${f.base}/exports/${ready.id}`)).json().data.status,'EXPIRED');assert.equal((await request('GET',`${f.base}/exports/${ready.id}/download`)).statusCode,410);assert.equal((await request('GET',`${f.base}/files/${original}/download`)).statusCode,404);
+  }finally{await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});await worker.close();}
+});
+
+test('B5 conduct/activity/progress/link reports use actual pinned scores, explicit participant denominators and anonymous link use',async()=>{
+  const f=await reportFixture(),conductBase=`classes/${f.classId}/conduct-periods/${f.period.id}`,review=await request('GET',`${f.base}/${conductBase}/review`);assert.equal(review.statusCode,200,review.body);
+  const locked=await f.post(`${conductBase}/lock`,{expectedVersion:review.json().data.period.version});assert.equal(locked.statusCode,200,locked.body);
+  const query=`yearId=${seedId('year:A')}&weekId=${seedId('week:A:5')}`,classReport=await request('GET',`${f.base}/classes/${f.classId}/reports/conduct?${query}`);assert.equal(classReport.statusCode,200,classReport.body);assert.equal(classReport.json().data.rows.length,2);assert.equal(classReport.json().data.rows.every(r=>r.values.finalPoints==='80.10'),true);
+  const schoolReport=await request('GET',`${f.base}/reports/conduct?${query}&classId=${f.classId}`);assert.equal(schoolReport.statusCode,200,schoolReport.body);assert.equal(schoolReport.json().data.rows.length,1);assert.equal(schoolReport.json().data.rows[0].values.students,2);assert.equal(schoolReport.json().data.rows[0].values.average,'80.10');assert.equal(schoolReport.json().data.rows[0].values.classifications['Đạt'],2);
+  const published=await f.post(`${conductBase}/publish`,{expectedSourceVersion:locked.json().data.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);assert.deepEqual((await request('GET',`${f.base}/classes/${f.classId}/reports/conduct?${query}&dataSource=PUBLISHED_SNAPSHOT`)).json().data.publicationIds,[published.json().data.id]);
+  const dueAt=new Date(Date.now()+86400000).toISOString(),activityPath=`classes/${f.classId}/activities`,created=await f.post(activityPath,{title:'Hoạt động báo cáo giả',description:'Chỉ một người được giao',dueAt,evidenceRequired:false,enrollmentIds:[f.enrollments[0].id]});assert.equal(created.statusCode,201,created.body);let activity=created.json().data;
+  const assigned=await f.post(`${activityPath}/${activity.id}/assign`,{expectedVersion:activity.version});assert.equal(assigned.statusCode,200,assigned.body);activity=assigned.json().data;
+  const participants=(await request('GET',`${f.base}/${activityPath}/${activity.id}/participants`)).json().data,p=participants[0];assert.equal(participants.length,1);assert.equal((await f.post(`${activityPath}/${activity.id}/participants/${p.id}/status`,{expectedVersion:p.version,status:'APPROVED',reason:'Đã xác minh sản phẩm kiểm thử'})).statusCode,200);
+  const range=`yearId=${seedId('year:A')}&classId=${f.classId}&from=2026-09-01&to=2027-06-01`,activityReport=await request('GET',`${f.base}/reports/activities?${range}`);assert.equal(activityReport.statusCode,200,activityReport.body);assert.equal(activityReport.json().data.rows[0].values.assigned,1);assert.equal(activityReport.json().data.rows[0].values.approved,1);
+  const detailed=await request('GET',`${f.base}/classes/${f.classId}/reports/activities?${range}`);assert.equal(detailed.statusCode,200,detailed.body);assert.equal(detailed.json().data.rows.length,1);assert.equal(detailed.json().data.rows[0].studentId,f.enrollments[0].studentId);
+  const progress=await request('GET',`${f.base}/reports/class-progress?${range}`);assert.equal(progress.statusCode,200,progress.body);assert.equal(progress.json().data.rows[0].values.students,2);assert.equal(progress.json().data.rows[0].values.homeroom,true);
+  const relation=await parentRelationship(f.csrf,f.post,f.enrollments[0].studentId),link=await f.post('parent-access',{studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(link.statusCode,201,link.body);await parentExchange(link.json().data.link);
+  const links=await request('GET',`${f.base}/reports/parent-access?${range}`);assert.equal(links.statusCode,200,links.body);assert.equal(links.json().data.rows[0].values.links,1);assert.equal(links.json().data.rows[0].values.active,1);assert.equal(links.json().data.rows[0].values.opened,1);for(const key of ['tokenHash','phone','guardianId','relationshipId','ipDailyHash','deviceSummary'])assert.equal(links.body.includes(key),false);
 });

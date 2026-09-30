@@ -152,9 +152,7 @@ for(const id of ['listPlatformTickets','listSchoolTickets','listPlatformSupportA
 // ADR-026: a selected support grant is explicit and applies only to metadata GETs.
 const supportReadIds=['getSchoolProfile','getSchoolSettings','listClasss','getClass','listAssignments','listYears','getYear','listTerms','getTerm','listWeeks','getWeek','listDictionary','listMembers','getMember','listRoles','getRole','listImports','getImport'];
 for(const id of supportReadIds){const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);if(!op)throw new Error(`Support metadata operation missing: ${id}`);op.parameters.push({name:'X-Support-Access',in:'header',schema:{type:'string',format:'uuid'},description:'Explicit school-approved read-only support grant; current operator, scope and expiry are rechecked.'});}
-await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
-await fs.writeFile(path.join(root, 'backend/api/openapi.yaml'), YAML.stringify(spec, { aliasDuplicateObjects: false }));
 const operations = JSON.parse(await fs.readFile(path.join(source, 'api/operations.json'), 'utf8'));
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
@@ -167,6 +165,23 @@ for (const role of roles.roles) {
   if (role.code === 'SCHOOL_ADMIN' || role.code === 'SCHOOL_LEADERSHIP') role.actions.push('publication.withdraw');
 }
 const schemas = {};
+// Existing report viewer: individual report, grade/week filters and explicit data source.
+const reportSources={type:'string',enum:['LIVE_INTERNAL','PUBLISHED_SNAPSHOT']};
+for(const name of ['ExportJob','ExportCreate'])spec.components.schemas[name].properties.reportType.enum.push('student');
+Object.assign(spec.components.schemas.ExportCreate.properties,{gradeId:{type:'string',format:'uuid'},weekId:{type:'string',format:'uuid'},dataSource:reportSources,scope:{type:'string',enum:['SCHOOL','CLASS']}});
+Object.assign(spec.components.schemas.ExportJob.properties,{classId:{type:'string',format:'uuid'},requestedBy:{type:'string',format:'uuid'},asOf:{type:'string',format:'date-time'},contentHash:{type:'string',pattern:'^[a-f0-9]{64}$'},lastErrorCode:{type:'string',maxLength:80}});
+Object.assign(spec.components.schemas.Report.properties,{title:{type:'string'},schoolName:{type:'string'},yearName:{type:'string'},scopeLabel:{type:'string'},from:{type:'string',format:'date'},to:{type:'string',format:'date'},columns:{type:'array',items:{type:'object',properties:{key:{type:'string'},label:{type:'string'}},required:['key','label'],additionalProperties:false}},publicationIds:{type:'array',items:{type:'string',format:'uuid'}},notes:{type:'array',items:{type:'string'}}});
+for(const id of ['getSchoolReport','getClassReport']){
+  const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
+  op.parameters.find(p=>p.name==='reportType').schema.enum.push('student');
+  op.parameters.push({name:'dataSource',in:'query',schema:reportSources},{name:'gradeId',in:'query',schema:{type:'string',format:'uuid'}},{name:'weekId',in:'query',schema:{type:'string',format:'uuid'}});
+}
+for(const id of ['getExport','downloadExport']){
+  const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
+  op.responses['410']={description:'Bản xuất đã hết thời hạn tải.',content:{'application/problem+json':{schema:{$ref:'#/components/schemas/Error'}}}};
+}
+await SwaggerParser.validate(structuredClone(spec));
+await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;
 const resolvedOperations = operations.map(op => {
   const actual = spec.paths[op.path.replace(/^\/api\/v1/, '')]?.[op.method.toLowerCase()]

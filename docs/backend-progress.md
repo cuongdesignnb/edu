@@ -231,13 +231,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | commitImport | SC27 | TESTED | qa/backend/imports-integration.log |
 | cancelImport | SC28 | TESTED | qa/backend/imports-integration.log |
 | downloadImportErrors | SC28 | TESTED | qa/backend/imports-integration.log |
-| getSchoolReport | SC37, SC38, TE06 | NOT_STARTED |  |
-| getClassReport | CL25, CL26 | NOT_STARTED |  |
-| listExports | SC39 | NOT_STARTED |  |
-| createExport | SC38, SC39, CL26 | NOT_STARTED |  |
-| getExport | SC39 | NOT_STARTED |  |
-| downloadExport | SC39, CL26 | NOT_STARTED |  |
-| cancelExport | SC39 | NOT_STARTED |  |
+| getSchoolReport | SC37, SC38, TE06 | TESTED | qa/backend/reports-integration.log |
+| getClassReport | CL25, CL26 | TESTED | qa/backend/reports-integration.log |
+| listExports | SC39 | TESTED | qa/backend/reports-integration.log |
+| createExport | SC38, SC39, CL26 | TESTED | qa/backend/reports-integration.log |
+| getExport | SC39 | TESTED | qa/backend/reports-integration.log |
+| downloadExport | SC39, CL26 | TESTED | qa/backend/reports-integration.log |
+| cancelExport | SC39 | TESTED | qa/backend/reports-integration.log |
 | listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
 | getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending; qa/backend/support-read-integration.log |
 | updateSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
@@ -328,9 +328,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC34 | core | TESTED | NOT_STARTED |  |
 | SC35 | core | TESTED | NOT_STARTED |  |
 | SC36 | core | TESTED | NOT_STARTED |  |
-| SC37 | core | PARTIAL | NOT_STARTED |  |
-| SC38 | core | PARTIAL | NOT_STARTED |  |
-| SC39 | core | PARTIAL | NOT_STARTED |  |
+| SC37 | core | TESTED | NOT_STARTED |  |
+| SC38 | core | TESTED | NOT_STARTED |  |
+| SC39 | core | TESTED | NOT_STARTED |  |
 | SC40 | core | TESTED | NOT_STARTED |  |
 | SC41 | core | TESTED | NOT_STARTED |  |
 | SC42 | core | TESTED | NOT_STARTED |  |
@@ -340,7 +340,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | TE03 | core | TESTED | NOT_STARTED |  |
 | TE04 | core | TESTED | NOT_STARTED |  |
 | TE05 | core | TESTED | NOT_STARTED |  |
-| TE06 | core | PARTIAL | NOT_STARTED |  |
+| TE06 | core | TESTED | NOT_STARTED |  |
 | CL01 | core | TESTED | NOT_STARTED |  |
 | CL02 | core | TESTED | NOT_STARTED |  |
 | CL03 | core | TESTED | NOT_STARTED |  |
@@ -365,8 +365,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL22 | core | TESTED | NOT_STARTED |  |
 | CL23 | core | TESTED | NOT_STARTED |  |
 | CL24 | core | TESTED | NOT_STARTED |  |
-| CL25 | core | PARTIAL | NOT_STARTED |  |
-| CL26 | core | PARTIAL | NOT_STARTED |  |
+| CL25 | core | TESTED | NOT_STARTED |  |
+| CL26 | core | TESTED | NOT_STARTED |  |
 | PA01 | core | TESTED | NOT_STARTED |  |
 | PA02 | core | TESTED | NOT_STARTED |  |
 | PA03 | core | TESTED | NOT_STARTED |  |

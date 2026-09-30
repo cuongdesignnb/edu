@@ -20,16 +20,25 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 26 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
+| B1 | PARTIAL | 27 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence, announcements, personal notifications, school settings and audit tested; remaining domains and exports pending |
+| B5 | PARTIAL | All 264 supplied API operations registered; reports/export/domain workflows tested; remaining UI-specific gaps and broader acceptance pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## Reports/export checkpoint
+
+- API implementation coverage is 264/264 supplied operation IDs. All routes are registered in the actual Fastify app. This is implementation coverage, not certification of 264 independent end-to-end workflows or 118 connected core screens.
+- Migration 027 applied/replayed/checksum-verified. qa/backend/reports-integration.log: 81/81 actual PostgreSQL integration checks, exit0; reports-unit-contract.log: 12/12, exit0; build/typecheck/lint exit0. Earlier failures are retained in attempt1–4 logs. They include invalid fixture paths, an unmarked publication fixture, school/detail aggregation, an incorrect new file-purpose value and a missing worker audit request_id; each was repaired and the full suite rerun.
+- Actual report cases cover attendance denominators/unmarked, pinned CSV after live edits, published replacement/withdraw, decimal locked scores and actual classification labels, explicit activity targets, class progress and link-open counts without identifying the opener. Subject reports deny school/family/class-conduct/export access. Unknown filters and foreign references fail closed.
+- Jobs are immutable source snapshots with hash, scoped current authorization, requester-only metadata/download, literal streamed CSV/XLSX, private generated PDF, cancellation, expiry, revocation through both export and generic file URLs, and completed-job replay with one retained file. The replay simulates acknowledgement loss; process-kill testing remains NOT_RUN.
+- PDFKit 0.20.2 / @types/pdfkit 0.17.6 are pinned; installation audit returned zero vulnerabilities. Noto Sans is pinned to official source revision/checksum with OFL 1.1 included. The first visual review found footer-only pages; the repaired latest PDF has three populated A4 pages, correct Vietnamese text, embedded fonts and footers, and all three PNGs were inspected. Evidence: qa/backend/report-output/pdf-layout-check.json. Poppler pdffonts was unavailable; embedded font checks used pypdf instead.
+- Frontend adapter inventory finds 231 methods across 22 repository objects; these still use browser demo implementations. B6 remains NOT_STARTED. Physical expiry/orphan cleanup, broader browser acceptance, final local stack, restart, backup/restore, SMTP/process-kill and load drills remain unfinished. Port 18763 is not yet serving the completed application; production remains undeployed.
 
 ## Selected support read checks
 

@@ -1,0 +1,43 @@
+{
+  "pageCount": 3,
+  "checks": [
+    {
+      "page": 1,
+      "a4": true,
+      "vietnamese": true,
+      "footer": true,
+      "has_table": true
+    },
+    {
+      "page": 2,
+      "a4": true,
+      "vietnamese": true,
+      "footer": true,
+      "has_table": true
+    },
+    {
+      "page": 3,
+      "a4": true,
+      "vietnamese": true,
+      "footer": true,
+      "has_table": true
+    }
+  ],
+  "textAndA4": "PASS",
+  "visual": "PASS",
+  "fonts": [
+    {
+      "name": "/CZZZZZ+NotoSans-Bold",
+      "embeddedTrueType": true,
+      "unicodeMap": true
+    },
+    {
+      "name": "/DZZZZZ+NotoSans-Regular",
+      "embeddedTrueType": true,
+      "unicodeMap": true
+    }
+  ],
+  "noJavascript": true,
+  "verification": "Poppler render and visual inspection of all three latest pages; pypdf and pdfplumber checks",
+  "pdfSha256": "a6a2da7cfff4a52e0e775614961a6afa8f3abc9368a17e7ee7234caf098657f7"
+}

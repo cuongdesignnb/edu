@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import {authorizeExport} from '../reports/reports.service';
 import fs from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import crypto from 'node:crypto';
@@ -36,7 +37,7 @@ export class FilesService {
       if(op==='listClassFiles'){
         const access=row as {grants:Grant[];today:string};
         const full=access.grants.some(g=>grantAllows(g,'file.read',{schoolId,classId:c.params.classId},access.today));
-        const result=await listResource(tx,fileResource,schoolId,c.query,{sql:`${full?'':"t.purpose='CLASS_DOCUMENT' AND "}(t.upload_class_id=$1 OR EXISTS
+        const result=await listResource(tx,fileResource,schoolId,c.query,{sql:`t.purpose<>'GENERATED' AND ${full?'':"t.purpose='CLASS_DOCUMENT' AND "}(t.upload_class_id=$1 OR EXISTS
           (SELECT 1 FROM app.file_links l WHERE l.school_id=t.school_id AND l.file_id=t.id AND l.class_id=$1))`,values:[c.params.classId]},c.principal!.userId);
         for(const file of result.data)file.byteSize=Number(file.byteSize);return result;
       }
@@ -54,7 +55,7 @@ export class FilesService {
         await audit(tx,c,'file',String(file.id),{status:'ARCHIVED'});return {data:fileDto(saved!)};
       }
       if(file.status!=='READY')throw new Problem(409,'FILE_UNAVAILABLE');
-      if(file.purpose==='EVIDENCE')validation('fileId','Minh chứng chỉ được gắn với người được giao qua luồng minh chứng');
+      if(file.purpose==='EVIDENCE'||file.purpose==='GENERATED')validation('fileId','Minh chứng và bản xuất chỉ dùng qua luồng gắn đúng người nhận');
       const link=await one<{id:string}>(tx,`INSERT INTO app.file_links(school_id,file_id,student_id,class_id,activity_id,announcement_id,share_with_guardian)
         VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,[schoolId,file.id,c.body.studentId??null,c.body.classId??null,c.body.activityId??null,c.body.announcementId??null,c.body.shareWithGuardian]);
       await audit(tx,c,'file-link',link!.id,{fileId:file.id,shareWithGuardian:c.body.shareWithGuardian});return {data:{id:link!.id,status:'CREATED'},status:201};
@@ -67,6 +68,10 @@ export class FilesService {
   }
   private async fileScope(tx:Transaction,schoolId:string,fileId:string,userId:string,action:string){
     const file=await one<Row>(tx,'SELECT * FROM app.files WHERE school_id=$1 AND id=$2',[schoolId,fileId]);if(!file)notFound();
+    if(file.purpose==='GENERATED'){
+      const job=await one<Row>(tx,"SELECT * FROM app.export_jobs WHERE school_id=$1 AND file_id=$2 AND status='COMPLETED' AND expires_at>now()",[schoolId,fileId]);
+      if(!job||file.status!=='READY'||!file.expires_at||new Date(file.expires_at as Date).getTime()<=Date.now())notFound();await authorizeExport(tx,this.policy,schoolId,job,userId);return file;
+    }
     // Current role/scope is always checked; uploader ownership alone grants no access.
     if(!['file.read','file.download'].includes(action)||file.uploaded_by===userId){
       await this.policy.require(tx,{userId},action,{schoolId,classId:file.upload_class_id as string|undefined,allowSubject:file.purpose==='CLASS_DOCUMENT'});return file;

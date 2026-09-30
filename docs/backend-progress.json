@@ -2653,8 +2653,10 @@
         "TE06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "getClassReport",
@@ -2663,8 +2665,10 @@
         "CL26"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "listExports",
@@ -2672,8 +2676,10 @@
         "SC39"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "createExport",
@@ -2683,8 +2689,10 @@
         "CL26"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "getExport",
@@ -2692,8 +2700,10 @@
         "SC39"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "downloadExport",
@@ -2702,8 +2712,10 @@
         "CL26"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "cancelExport",
@@ -2711,8 +2723,10 @@
         "SC39"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/reports-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolAudit",
@@ -3832,7 +3846,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC38",
@@ -3844,7 +3858,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC39",
@@ -3859,7 +3873,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC40",
@@ -3981,7 +3995,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL01",
@@ -4336,7 +4350,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL26",
@@ -4349,7 +4363,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA01",

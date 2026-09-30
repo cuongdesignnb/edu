@@ -277,6 +277,46 @@ Requests bind the ticket to the same school, a current operator, optional same-s
 The import_logs scope has a distinct import.read permission for metadata-only support views; it never grants import writes or raw row/download access. Selected-grant request integration is a separate remaining B1 step and is not claimed tested here. Metadata effective flags recheck the current operator identity/action and the grant's own time/state.
 
 Generic resource cursors now sign PostgreSQL native text rather than JavaScript-rounded timestamps/decimals and explicitly place nullable sort values last. The comparator traverses null boundaries and preserves signed user/filter/source binding. Cursor version 2 invalidates older cursors for reload. Evidence: qa/backend/support-integration.log, 70/70 executed, exit0; support-unit-contract.log, 12/12 executed, exit0; build/typecheck/lint exit0. Actual ascending two-message pagination and support protocol transitions passed. Selected-grant reads, mixed operator/admin self-approval, broader null-boundary and expiry/read-audit checks remain pending.
-# Selected support access: explicit metadata-only read context
+## ADR-026 — selected support access: explicit metadata-only read context
 
 The approved platform.support_access record is selected by the optional UUID header X-Support-Access on the metadata GET allowlist. Its school, class, actions and validity form an isolated read context; neither ordinary membership nor other operator grants expand it. Validation rechecks current operator authority and consent for each transaction. The context forces SQL read-only transactions and records a SUPPORT audit against the exact grant before delivery. Requests outside the allowlist fail closed. Migration 026 adds the typed, school-bound audit reference; no applied migration is changed. This implements the supplied support consent model without impersonating a school member or exposing student data.
+
+## ADR-027 — scoped SQL reports and immutable private export jobs
+
+All seven supplied report/export routes have real handlers. The existing individual
+report is represented by the additional `student` report type, requiring a class
+and one enrolled student. Its conduct section uses published projections only;
+attendance and activities are explicitly internal. The existing UI `links` route
+maps to canonical `parent-access` in the HTTP adapter. Grade/week filters and
+export scope SCHOOL/CLASS preserve the current report viewer; all references,
+date intervals (exclusive end), scopes and unknown filters are checked. The
+Report DTO adds real display context, columns, notes and pinned publication IDs.
+
+School summaries aggregate scoped facts in SQL before bounded result rows. Default
+subject grants read only their own dated lesson attendance and authorized activity
+projections; they cannot acquire daily attendance, class conduct, family/link data
+or export rights by borrowing homeroom privileges in another class. Open conduct
+periods have no invented score; locked summaries read immutable READY/PUBLISHED
+snapshots with exact numeric strings and actual configured classification labels.
+
+Export creation commits a bounded report snapshot and hash with a 202 job and
+outbox event. Source/filter/requester fields are immutable through migration 027.
+Worker execution and every download recheck current requester, scopes and grants.
+A changed grant context requires a new export instead of delivering old broader
+content. Revisions are pinned across later edits/publication replacements; retained
+staff exports may describe an older publication, labeled with source/asOf and
+revision, while current published reports omit withdrawn rows. Parent cookies
+never authorize staff exports, and generic file URLs cannot bypass these guards.
+
+Artifacts use the already-defined GENERATED purpose and scan status, private
+atomic storage, a 25 MiB file cap, school quota and 24-hour download expiry.
+CSV/XLSX stream literal cells with formula-injection protection and source context.
+PDFKit 0.20.2 renders A4 with unmodified Noto Sans OFL 1.1 fonts, wide-table panels,
+continuations and page footers. There is no runtime font or remote HTML fetch.
+Expiry prevents access now; physical expiry/orphan maintenance remains a B7 task.
+
+Executed evidence: 81/81 PostgreSQL integration checks, 12/12 unit/contract checks,
+build/typecheck/lint exit0. All 264 supplied operation IDs are registered; this
+route-coverage check is not a claim of 264 independent acceptance flows. The
+three-page Vietnamese PDF was rendered with Poppler and every latest page visually
+inspected; embedded fonts, Unicode text, A4 and footer/page counts were checked.
