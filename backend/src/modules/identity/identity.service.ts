@@ -10,6 +10,7 @@ import type { SupportReadContext } from '../../common/support-context';
 export interface UserRow {
   id: string; email_normalized: string; display_name: string; status: string;
   password_hash: string | null; version: number; created_at: Date; updated_at: Date;
+  self_work_phone: string | null; self_bio: string | null;
 }
 export interface Principal {
   sessionId: string; userId: string; csrfHash: string; tokenHash: string; user: UserRow;
@@ -17,7 +18,8 @@ export interface Principal {
 }
 export function userDto(user: UserRow) {
   return { id: user.id, email: user.email_normalized, displayName: user.display_name,
-    status: user.status, version: user.version, createdAt: iso(user.created_at), updatedAt: iso(user.updated_at) };
+    status: user.status, version: user.version, createdAt: iso(user.created_at), updatedAt: iso(user.updated_at),
+    workPhone: user.self_work_phone, bio: user.self_bio };
 }
 
 @Injectable()
@@ -94,13 +96,15 @@ export class IdentityService {
     if (!result.rowCount) throw new Problem(404, 'RESOURCE_NOT_FOUND');
     return { id, status: 'REVOKED' };
   }
-  async updateProfile(principal: Principal, patch: { expectedVersion: number; displayName?: string }) {
+  async updateProfile(principal: Principal, patch: { expectedVersion: number; displayName?: string; workPhone?:string|null; bio?:string|null }) {
     return this.db.transaction(async tx => {
       const row = await one<UserRow>(tx, 'SELECT * FROM identity.users WHERE id=$1 FOR UPDATE', [principal.userId]);
       if (!row) throw new Problem(401, 'UNAUTHENTICATED');
       if (row.version !== patch.expectedVersion) throw new Problem(409, 'VERSION_CONFLICT', undefined, row.version);
-      const changed = await one<UserRow>(tx, 'UPDATE identity.users SET display_name=$2 WHERE id=$1 RETURNING *',
-        [row.id, patch.displayName?.trim() ?? row.display_name]);
+      const changed = await one<UserRow>(tx, 'UPDATE identity.users SET display_name=$2,self_work_phone=$3,self_bio=$4 WHERE id=$1 RETURNING *',
+        [row.id, patch.displayName?.trim() ?? row.display_name,
+          patch.workPhone===undefined?row.self_work_phone:patch.workPhone?.trim()||null,
+          patch.bio===undefined?row.self_bio:patch.bio?.trim()||null]);
       return userDto(changed!);
     });
   }

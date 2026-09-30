@@ -140,6 +140,27 @@ test('BE06 revoked membership is checked during an existing session and B stays 
   },{schoolId:schoolA}).catch(error=>assert.equal(error.message,'ROLLBACK_TEST'));
   await db.transaction(tx=>policy.require(tx,principal,'school.read',{schoolId:schoolB,allowScopedContext:true}),{schoolId:schoolB});
 });
+test('B6 self context carries only own current duties and separates self-profile from school contacts',async()=>{
+  const csrf=await login('teacher-a@example.invalid');
+  const context=(await request('GET','/api/v1/me/context')).json().data;
+  assert.ok(Number.isFinite(Date.parse(context.serverNow)));
+  const own=context.memberships.find(m=>m.schoolId===schoolA);assert.ok(own);
+  assert.equal(own.schoolSlug,'truong-thu-a');assert.equal(own.teacherWorkspace,true);assert.equal(own.schoolWorkspace,false);
+  assert.ok(own.duties.some(d=>d.classId===classA&&d.kind==='HOMEROOM'));
+  assert.ok(own.duties.some(d=>d.classId===classB&&d.kind==='SUBJECT'));
+  assert.ok(own.duties.every(d=>!Object.hasOwn(d,'studentId')&&!Object.hasOwn(d,'workPhone')));
+  const profile=(await request('GET','/api/v1/me/profile')).json().data;
+  const updated=await request('PATCH','/api/v1/me/profile',{expectedVersion:profile.version,workPhone:'SELF-ONLY-0900000011',bio:'Hồ sơ cá nhân thử'},csrf);
+  assert.equal(updated.statusCode,200,updated.body);assert.equal(updated.json().data.workPhone,'SELF-ONLY-0900000011');assert.equal(updated.json().data.bio,'Hồ sơ cá nhân thử');
+  const workContact=await db.transaction(async tx=>(await tx.query('SELECT work_phone FROM app.memberships WHERE school_id=$1 AND id=$2',[schoolA,own.memberId])).rows[0],{schoolId:schoolA});assert.notEqual(workContact.work_phone,'SELF-ONLY-0900000011');
+  const assignment=seedId('assignment:A:teacher-a:10A1:HOMEROOM');
+  const original=await db.transaction(async tx=>(await tx.query('SELECT ends_on FROM app.teaching_assignments WHERE school_id=$1 AND id=$2',[schoolA,assignment])).rows[0],{schoolId:schoolA});
+  try{await db.transaction(tx=>tx.query('UPDATE app.teaching_assignments SET ends_on=$3 WHERE school_id=$1 AND id=$2',[schoolA,assignment,own.today]),{schoolId:schoolA});
+    const after=(await request('GET','/api/v1/me/context')).json().data.memberships.find(m=>m.schoolId===schoolA);
+    assert.equal(after.duties.some(d=>d.id===assignment),false);assert.equal(after.grants.some(g=>g.classId===classA),false);assert.ok(after.duties.some(d=>d.classId===classB&&d.kind==='SUBJECT'));
+  }finally{await db.transaction(tx=>tx.query('UPDATE app.teaching_assignments SET ends_on=$3 WHERE school_id=$1 AND id=$2',[schoolA,assignment,original.ends_on]),{schoolId:schoolA});}
+});
+
 test('BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting',async()=>{
   jar.clear();
   const denied=await request('POST','/api/v1/auth/login',{email:'admin-a@example.invalid',password});assert.equal(denied.statusCode,403);
@@ -167,6 +188,27 @@ test('BE10 concurrent profile patches serialize with a single version winner',as
     request('PATCH','/api/v1/me/profile',{expectedVersion:current.version,displayName:'Quản trị thử B'},csrf)]);
   assert.deepEqual(results.map(r=>r.statusCode).sort(),[200,409]);
 });
+test('B6 password/session commands use actual cookies, reject bad passwords and revoke every session after change',async()=>{
+  await login('admin-a@example.invalid');
+  const email=`auth-${crypto.randomUUID()}@example.invalid`;
+  const invite=await db.transaction(tx=>app.get(InvitationsService).create(tx,schoolA,seedId('user:admin-a'),email,{roleId:seedId('role:A:REGISTRAR'),scopeType:'SCHOOL',validFrom:new Date().toISOString(),validUntil:'2027-06-01T00:00:00Z'}),{schoolId:schoolA});
+  const mail=decryptMail((await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invite.id}`])).rows[0].encrypted_payload),token=new URLSearchParams(new URL(mail.url).hash.slice(1)).get('token');
+  let csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Nhân sự xác thực giả',newPassword:password},csrf);assert.equal(accepted.statusCode,200,accepted.body);
+  jar.delete('edu_staff');csrf=await login(email);const oldCookie=jar.get('edu_staff');
+  const oldSession=(await request('GET','/api/v1/me/sessions')).json().data.find(s=>s.current);assert.ok(oldSession);
+  jar.delete('edu_staff');csrf=await login(email);
+  const sessions=await request('GET','/api/v1/me/sessions');assert.equal(sessions.statusCode,200);assert.equal(sessions.json().data.length,2);assert.equal(sessions.json().data.filter(s=>s.current).length,1);
+  const bad=await request('POST','/api/v1/auth/password/change',{currentPassword:'wrong-password-fixture',newPassword:resetPassword},csrf);assert.equal(bad.statusCode,401);assert.equal((await request('GET','/api/v1/me/profile')).statusCode,200);
+  const revoked=await request('POST',`/api/v1/me/sessions/${oldSession.id}/revoke`,undefined,csrf);assert.equal(revoked.statusCode,200);assert.equal((await server.inject({method:'GET',url:'/api/v1/me/context',headers:{cookie:`edu_staff=${oldCookie}`}})).statusCode,401);
+  const changed=await request('POST','/api/v1/auth/password/change',{currentPassword:password,newPassword:resetPassword},csrf);assert.equal(changed.statusCode,200,changed.body);assert.equal((await request('GET','/api/v1/me/context')).statusCode,401);
+  jar.delete('edu_staff');await login(email,resetPassword);
+  const declined=await db.transaction(tx=>app.get(InvitationsService).create(tx,schoolA,seedId('user:admin-a'),`decline-${crypto.randomUUID()}@example.invalid`,{roleId:seedId('role:A:REGISTRAR'),scopeType:'SCHOOL',validFrom:new Date().toISOString(),validUntil:'2027-06-01T00:00:00Z'}),{schoolId:schoolA});
+  const declineMail=decryptMail((await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${declined.id}`])).rows[0].encrypted_payload),declineToken=new URLSearchParams(new URL(declineMail.url).hash.slice(1)).get('token');csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const decline=await request('POST','/api/v1/invitations/decline',{schoolSlug:'truong-thu-a',token:declineToken},csrf);assert.equal(decline.statusCode,200);assert.equal(decline.json().data.status,'DECLINED');
+  const consumed=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token:declineToken,displayName:'Không được tạo',newPassword:password},csrf);assert.equal(consumed.statusCode,422);
+});
+
 test('BE21 parent runtime role cannot select raw student rows',async()=>{
   await assert.rejects(db.parent.query('SELECT id FROM app.students'),error=>error.code==='42501');
   assert.equal((await db.parent.query('SELECT id FROM app.parent_publication_items')).rowCount,0);
@@ -263,8 +305,10 @@ test('BE07 existing identity invitation requires its session and preserves passw
   assert.equal(mail.encrypted_payload.includes(token),false);
   await login('teacher-a@example.invalid');let csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
   const wrong=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(wrong.statusCode,403);
+  const wrongInspection=await request('POST','/api/v1/invitations/inspect',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(wrongInspection.statusCode,200);assert.equal(wrongInspection.json().data.signedInAsInvited,false);
   await login('teacher-b@example.invalid');csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
-  const inspect=await request('POST','/api/v1/invitations/inspect',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(inspect.statusCode,200);
+  const inspect=await request('POST','/api/v1/invitations/inspect',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(inspect.statusCode,200,inspect.body);
+  const inspection=inspect.json().data;assert.equal(inspection.schoolId,schoolB);assert.equal(inspection.schoolStatus,'ACTIVE');assert.equal(inspection.requiresLogin,true);assert.equal(inspection.signedInAsInvited,true);assert.ok(inspection.roleLabels.length);assert.equal(Object.hasOwn(inspection,'existingUserId'),false);assert.equal(Object.hasOwn(inspection,'workPhone'),false);assert.equal(Object.hasOwn(inspection,'passwordHash'),false);
   const reset=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-b',token,newPassword:'Rejected-new-password'},csrf);assert.equal(reset.statusCode,422);
   const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(accepted.statusCode,200);
   const replay=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-b',token},csrf);assert.equal(replay.statusCode,200);

@@ -14,5 +14,16 @@ for(const name of (await fs.readdir(directory)).filter(n=>n.endsWith('.ts')).sor
     ts.forEachChild(node,visit);
   };visit(file);
 }
-const file=path.join(root,'docs/frontend-adapter-inventory.json');await fs.writeFile(file,JSON.stringify({baseline:'14dfad5',mode:'CONNECTED_ADAPTERS_PENDING',methodCount:methods.length,methods},null,2)+'\n');
+const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo'};
+for(const name of (await fs.readdir(path.join(directory,'connected'))).filter(n=>n.endsWith('.ts')).sort()){
+  const source=await fs.readFile(path.join(directory,'connected',name),'utf8'),file=ts.createSourceFile(name,source,ts.ScriptTarget.Latest,true);
+  const visit=node=>{
+    if(ts.isVariableDeclaration(node)&&aliases[node.name.getText(file)]&&node.initializer&&ts.isObjectLiteralExpression(node.initializer)){
+      for(const member of node.initializer.properties)if((ts.isMethodDeclaration(member)||ts.isPropertyAssignment(member))&&member.name)candidates.push({repository:aliases[node.name.getText(file)],method:member.name.getText(file),file:`src/lib/repositories/connected/${name}`,status:'IMPLEMENTED',activated:false,evidence:['Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance.']});
+    }
+    ts.forEachChild(node,visit);
+  };visit(file);
+}
+for(const method of methods){const candidate=candidates.find(c=>c.repository===method.repository&&c.method===method.method);if(candidate)method.connectedCandidate=candidate;}
+const file=path.join(root,'docs/frontend-adapter-inventory.json');await fs.writeFile(file,JSON.stringify({baseline:'14dfad5',mode:'CONNECTED_ADAPTERS_PENDING',methodCount:methods.length,candidateCount:candidates.length,methods,extensions:candidates.filter(c=>!methods.some(m=>m.repository===c.repository&&m.method===c.method))},null,2)+'\n');
 console.log(JSON.stringify({methodCount:methods.length,repositories:Object.fromEntries([...new Set(methods.map(m=>m.repository))].map(r=>[r,methods.filter(m=>m.repository===r).length]))}));

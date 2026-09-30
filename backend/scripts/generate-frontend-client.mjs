@@ -20,6 +20,8 @@ const operations=Object.fromEntries(contract.operations.map(o=>[o.id,{method:o.m
 const text='// Generated from the validated backend contract. Do not hand-edit.\n'
   +`export interface ApiSchemas {\n${schemas}\n}\n\nexport const apiOperations = ${JSON.stringify(operations,null,2)} as const;\n`
   +`export type OperationId = keyof typeof apiOperations;\nexport type ApiRequest<K extends OperationId> = (typeof apiOperations)[K]['request'] extends keyof ApiSchemas ? ApiSchemas[(typeof apiOperations)[K]['request']] : never;\n`
-  +`export type ApiData<K extends OperationId> = (typeof apiOperations)[K]['response'] extends keyof ApiSchemas ? ApiSchemas[(typeof apiOperations)[K]['response']] : unknown;\n`;
+  +`export type ApiItem<K extends OperationId> = (typeof apiOperations)[K]['response'] extends keyof ApiSchemas ? ApiSchemas[(typeof apiOperations)[K]['response']] : unknown;\n`
+  +`export type ApiData<K extends OperationId> = (typeof apiOperations)[K]['list'] extends true ? Array<ApiItem<K>> : ApiItem<K>;\n`
+  +`export type ApiListId = { [K in OperationId]: (typeof apiOperations)[K]['list'] extends true ? K : never }[OperationId];\n`;
 await fs.mkdir(path.join(root,'src/lib/api'),{recursive:true});await fs.writeFile(path.join(root,'src/lib/api/generated.ts'),text);
 console.log(`Generated ${contract.operations.length} operations and ${Object.keys(contract.schemas).length} browser DTO types.`);

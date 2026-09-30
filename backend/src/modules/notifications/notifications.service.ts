@@ -26,7 +26,8 @@ const projection=`SELECT n.id,n.version,n.created_at,n.updated_at,n.read_at,n.ki
  (${accessible}) AS accessible,CASE WHEN ${accessible} THEN n.title ELSE 'Phạm vi truy cập đã thay đổi' END AS title,
  CASE WHEN ${accessible} THEN n.body ELSE 'Nội dung gốc nằm ngoài quyền truy cập hiện tại.' END AS body,
  CASE WHEN ${accessible} THEN n.target_kind ELSE 'none' END AS target_kind,
- CASE WHEN ${accessible} THEN n.target_id END AS target_id,CASE WHEN ${accessible} THEN n.class_id END AS class_id
+ CASE WHEN ${accessible} THEN n.target_id END AS target_id,CASE WHEN ${accessible} THEN n.class_id END AS class_id,
+ CASE WHEN ${accessible} THEN (SELECT c.year_id FROM app.classes c WHERE c.school_id=n.school_id AND c.id=n.class_id) END AS year_id
  FROM app.notifications n WHERE n.school_id=$1 AND n.member_id=$2`;
 @Injectable()
 export class NotificationsService {
@@ -66,7 +67,7 @@ export class NotificationsService {
     },{schoolId:membership.school_id,userId:c.principal!.userId});
     candidates.sort((a,b)=>String(b.row.cursor_at).localeCompare(String(a.row.cursor_at))||String(b.row.id).localeCompare(String(a.row.id)));const hasMore=candidates.length>limit,selected=candidates.slice(0,limit),last=selected.at(-1)?.row;
     const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,at:last.cursor_at,id:last.id})).toString('base64url'):null;
-    return {data:selected.map(({row,membership})=>({id:row.id,version:row.version,createdAt:iso(row.created_at as Date),updatedAt:iso(row.updated_at as Date),readAt:row.read_at?iso(row.read_at as Date):null,kind:row.kind,title:row.title,body:row.body,schoolId:membership.school_id,schoolName:membership.name,targetType:row.target_kind,targetId:row.target_id??null,...(row.class_id?{classId:row.class_id}:{}),accessible:row.accessible})),page:{limit,total,hasMore,nextCursor:payload?`${payload}.${signature(payload)}`:null}};
+    return {data:selected.map(({row,membership})=>({id:row.id,version:row.version,createdAt:iso(row.created_at as Date),updatedAt:iso(row.updated_at as Date),readAt:row.read_at?iso(row.read_at as Date):null,kind:row.kind,title:row.title,body:row.body,schoolId:membership.school_id,schoolName:membership.name,targetType:row.target_kind,targetId:row.target_id??null,...(row.class_id?{classId:row.class_id}:{}),...(row.year_id?{yearId:row.year_id}:{}),accessible:row.accessible})),page:{limit,total,hasMore,nextCursor:payload?`${payload}.${signature(payload)}`:null}};
   }
   private async read(c:RequestContext):Promise<Result>{
     for(const m of await this.memberships(c)){

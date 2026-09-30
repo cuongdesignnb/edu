@@ -320,3 +320,31 @@ build/typecheck/lint exit0. All 264 supplied operation IDs are registered; this
 route-coverage check is not a claim of 264 independent acceptance flows. The
 three-page Vietnamese PDF was rendered with Poppler and every latest page visually
 inspected; embedded fonts, Unicode text, A4 and footer/page counts were checked.
+
+## ADR-028 — connected transport and minimal self context
+
+The existing login/profile/workspace forms need server-owned school names/slugs,
+status, department and current own duties. Context now returns these metadata and
+server time, excludes ended default teacher assignments and keeps every grant's
+role code and paired assignment date bounds. Hints do not authorize a request;
+the API still evaluates school/class/subject/time on every read and mutation.
+No student/family dataset or another person's profile is loaded for context.
+
+Migration 028 adds self-profile work phone and biography to identity.users.
+Only self User DTOs expose them. Editing them never modifies a membership's
+published work contacts, and parent teacher projections continue to use the
+per-school sharing policy. Valid invitation-token inspection gives only recipient
+work name, intended role labels, inviter label and school metadata, plus whether
+the existing identity must log in and whether the current cookie matches. It
+does not expose existing identity IDs, global contacts or credentials. Authorized
+notification targets include their year ID for the existing classroom URL; denied
+targets redact this identifier together with class and target IDs.
+
+Browser transport uses relative URLs, HttpOnly cookies, memory-only CSRF/context,
+one logical idempotency key through uncertain acknowledgement, no automatic write
+retry and no mock/data fallback. Authentication changes invalidate in-flight JSON
+and binary bodies. An invalid current password is a form error and preserves the
+otherwise valid cookie. Link fragments are removed from history, kept in page
+memory, and consumed after acknowledgement; reset-token presence is not described
+as server validation. Candidate adapters and their unit checks remain separate
+from facade activation and actual browser acceptance.

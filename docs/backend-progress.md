@@ -11,15 +11,15 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | logout | AU07 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | forgotPassword | AU02 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | resetPassword | AU03 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| changePassword | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
-| getMyContext | AU01, AU05, AU08, SY05, SY06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
-| getMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
-| updateMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
-| listMySessions | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
-| revokeMySession | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
-| inspectInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| changePassword | AU07 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| getMyContext | AU01, AU05, AU08, SY05, SY06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| getMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| updateMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| listMySessions | AU07 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| revokeMySession | AU07 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
+| inspectInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
 | acceptInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| declineInvitation | AU04 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| declineInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-auth-integration.log: 83/83 PostgreSQL checks; migration028; current own context and real identity/session commands |
 | listMyNotifications | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | readMyNotification | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | getPlatformOverview | PL01 | TESTED | qa/backend/platform-integration.log |
@@ -274,10 +274,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | AU01 | core | TESTED | NOT_STARTED |  |
 | AU02 | core | TESTED | NOT_STARTED |  |
 | AU03 | core | TESTED | NOT_STARTED |  |
-| AU04 | core | IMPLEMENTED | NOT_STARTED |  |
+| AU04 | core | TESTED | NOT_STARTED |  |
 | AU05 | core | TESTED | NOT_STARTED |  |
 | AU06 | core | TESTED | NOT_STARTED |  |
-| AU07 | core | IMPLEMENTED | NOT_STARTED |  |
+| AU07 | core | TESTED | NOT_STARTED |  |
 | AU08 | core | TESTED | NOT_STARTED |  |
 | AU09 | core | TESTED | NOT_STARTED |  |
 | AU10 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD. |

@@ -33,10 +33,11 @@ export function grantAllows(grant: Grant, action: string, scope: Scope, today: s
   return !scope.subjectId || grant.subject_id === scope.subjectId;
 }
 export function grantDto(grant: Grant) {
-  return { id: grant.id, version: grant.version, roleId: grant.role_id, roleLabel: grant.label,
+  return { id: grant.id, version: grant.version, roleId: grant.role_id, roleLabel: grant.label,roleCode:grant.role_code,
     actions: grant.actions, scopeType: grant.scope_type,
     ...(grant.class_id ? { classId: grant.class_id } : {}), ...(grant.subject_id ? { subjectId: grant.subject_id } : {}),
-    validFrom: iso(grant.valid_from), validUntil: grant.valid_until ? iso(grant.valid_until) : null };
+    validFrom: iso(grant.valid_from), validUntil: grant.valid_until ? iso(grant.valid_until) : null,
+    ...(grant.assignment_id?{assignmentStartsOn:grant.starts_on,assignmentEndsOn:grant.ends_on}:{}) };
 }
 export function coversDelegatedExpiry(grant:Pick<Grant,'valid_until'>,from:Date,until:Date|null){
   return !grant.valid_until||(from<grant.valid_until&&!!until&&until<=grant.valid_until);
@@ -118,19 +119,30 @@ export class Permissions {
     return {all:false,classIds,grants,today};
   }
   async context(principal: Principal) {
-    const memberships = await this.db.transaction(async tx => (await tx.query<{ school_id: string; school_name: string; id: string; status: string }>(
-      `SELECT m.school_id,s.name AS school_name,m.id,m.status FROM app.memberships m
+    const memberships = await this.db.transaction(async tx => (await tx.query<{ school_id: string; school_name: string; id: string; status: string; slug:string; short_name:string|null; school_status:string; department:string|null; timezone:string; today:string }>(
+      `SELECT m.school_id,s.name AS school_name,m.id,m.status,s.slug,s.short_name,s.status AS school_status,m.department,s.timezone,to_char(now() AT TIME ZONE s.timezone,'YYYY-MM-DD') AS today FROM app.memberships m
         JOIN platform.schools s ON s.id=m.school_id WHERE m.user_id=$1 ORDER BY s.name,s.id`, [principal.userId])).rows,
     { userId: principal.userId });
     const contexts = [];
     for (const membership of memberships) {
-      const grants = await this.db.transaction(tx => this.grants(tx,principal.userId,membership.school_id), { schoolId: membership.school_id });
+      const {grants,duties}=await this.db.transaction(async tx=>{
+        const raw=await this.grants(tx,principal.userId,membership.school_id);
+        const grants=membership.school_status==='ACTIVE'?raw.filter(g=>!['HOMEROOM','SUBJECT_TEACHER'].includes(g.role_code)||!!g.class_id&&g.actions.some(action=>grantAllows(g,action,{schoolId:membership.school_id,classId:g.class_id!,allowSubject:true},membership.today))):[];
+        const ids=grants.filter(g=>g.assignment_id).map(g=>g.assignment_id!);
+        const duties=ids.length?(await tx.query<{id:string;class_id:string;class_name:string;subject_id:string|null;subject_name:string|null;kind:string;starts_on:string;ends_on:string|null}>(`SELECT a.id,a.class_id,c.name AS class_name,a.subject_id,s.name AS subject_name,a.kind,a.starts_on,a.ends_on
+          FROM app.teaching_assignments a JOIN app.classes c ON c.school_id=a.school_id AND c.id=a.class_id
+          LEFT JOIN app.subjects s ON s.school_id=a.school_id AND s.id=a.subject_id WHERE a.school_id=$1 AND a.member_id=$2 AND a.id=ANY($3::uuid[]) AND a.revoked_at IS NULL ORDER BY c.name,a.kind,a.id`,[membership.school_id,membership.id,ids])).rows:[];
+        return {grants,duties};
+      }, { schoolId: membership.school_id,userId:principal.userId,readOnly:true });
       contexts.push({ schoolId: membership.school_id, schoolName: membership.school_name,
-        memberId: membership.id, status: membership.status, grants: grants.map(grantDto) });
+        schoolSlug:membership.slug,schoolShortName:membership.short_name??membership.school_name,schoolStatus:membership.school_status,department:membership.department??'',timezone:membership.timezone,today:membership.today,
+        memberId: membership.id, status: membership.status, grants: grants.map(grantDto),
+        duties:duties.map(d=>({id:d.id,classId:d.class_id,className:d.class_name,subjectId:d.subject_id,subjectName:d.subject_name,kind:d.kind,startsOn:d.starts_on,endsOn:d.ends_on})),
+        schoolWorkspace:grants.some(g=>g.scope_type==='SCHOOL'),teacherWorkspace:grants.some(g=>g.class_id&&g.actions.includes('teacher.self')) });
     }
     const platformActions = (await this.db.app.query<{ action_code: string }>(`SELECT DISTINCT action_code FROM platform.operator_grants
       WHERE user_id=$1 AND revoked_at IS NULL AND valid_from<=now() AND (valid_until IS NULL OR valid_until>now()) ORDER BY action_code`, [principal.userId])).rows.map(row => row.action_code);
     return { user: userDto(principal.user), memberships: contexts, platformActions,
-      csrfToken: csrfFor(principal.sessionId,principal.tokenHash), mode: 'connected' };
+      csrfToken: csrfFor(principal.sessionId,principal.tokenHash), mode: 'connected', serverNow:new Date().toISOString() };
   }
 }

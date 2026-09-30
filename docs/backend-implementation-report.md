@@ -20,16 +20,25 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 27 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
+| B1 | PARTIAL | 28 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
 | B5 | PARTIAL | All 264 supplied API operations registered; reports/export/domain workflows tested; remaining UI-specific gaps and broader acceptance pending |
-| B6 | NOT_STARTED | Connected frontend adapter pending |
+| B6 | PARTIAL | Generated client, transport, memory-only cookie session, permission hints, keyset helpers and session/auth adapter candidates implemented; repository facade and screens still use the previous adapter, browser acceptance pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## B6 transport and identity-context checkpoint
+
+- Migration 028 applied/replayed/checksum-verified. The latest actual PostgreSQL suite is 83/83, exit0 in qa/backend/b6-auth-integration.log. It exercises expired own assignments in context, self-profile separation, invitation recipient/login metadata, two real cookie sessions, invalid current-password rejection without session revocation, session revocation, password change revoking all sessions, and declined invitation rejection.
+- Backend build/typecheck/lint exit0. The earlier 78/82 attempt in b6-context-integration-final.log is retained: requiring roleCode exposed missing fields in grant creation/preview DTOs. Both branches were fixed and the complete 82/82 suite rerun before adding the final identity test.
+- Generated browser types cover all 264 operations and correctly distinguish list items from arrays. The relative same-origin transport uses credentials include/no-store, memory-only CSRF, stable logical mutation keys until a complete acknowledgement, version/field errors, explicit parent view headers and authorization-preserving binary downloads. Responses completing after authentication changes are rejected, including during body streaming.
+- qa/backend/frontend-api-tests.log: 17/17 actual transport/session/keyset/fragment unit checks, exit0. Frontend TypeScript and scoped lint exit0. These are transport unit checks with synthetic fetch responses, not connected browser E2E or proof that all screens work.
+- Session/auth adapter candidates preserve existing business interfaces where possible; invitation/reset credentials are read only from the corresponding URL fragment, removed from history and held in memory. The password-reset form must describe a present link until the server validates it. New-user invitation acceptance requires a password; existing-user acceptance requires the matching cookie identity. Screen wiring is still pending.
+- All 231 legacy repository methods and all 118 core screens remain pending activation/acceptance. Candidate implementation is recorded separately in frontend-adapter-inventory.json. No fallback is implemented in the new transport, but the deployed frontend has not yet switched to it. Final Docker URL, restart, backup/restore, SMTP/process-kill, load testing and production deployment remain NOT_RUN.
 
 ## Reports/export checkpoint
 

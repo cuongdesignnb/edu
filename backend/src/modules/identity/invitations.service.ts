@@ -34,11 +34,16 @@ export class InvitationsService {
     if(!school)throw new Problem(422,'INVITATION_UNAVAILABLE');return school;
   }
   private async inspect(c:RequestContext){
-    const school=await this.scope(c);
+    const school=await this.scope(c),principal=await this.identity.optional(c.request);
     return this.db.transaction(async tx=>{
       const invitation=await this.token(tx,school.id,String(c.body.token));
       if(!['ACTIVE','DRAFT'].includes(school.status))throw new Problem(422,'INVITATION_UNAVAILABLE');
-      return invitationDto(invitation,school.name);
+      const existing=await one<{id:string}>(tx,'SELECT id FROM identity.users WHERE email_normalized=$1',[invitation.email_normalized]);
+      const inviter=await one<{name:string}>(tx,`SELECT coalesce(m.work_display_name,u.display_name) AS name FROM identity.users u LEFT JOIN app.memberships m ON m.user_id=u.id AND m.school_id=$2 WHERE u.id=$1`,[invitation.invited_by,school.id]);
+      const roles=(await tx.query<{label:string;code:string}>(`SELECT label,code FROM app.roles WHERE school_id=$1 AND id=ANY($2::uuid[]) ORDER BY label,id`,[school.id,invitation.proposed_assignments.map(p=>p.roleId)])).rows;
+      return {...invitationDto(invitation,school.name),schoolId:school.id,schoolSlug:String(c.body.schoolSlug),schoolStatus:school.status,
+        workDisplayName:invitation.work_profile?.workDisplayName??'',inviterName:inviter?.name??'',roleLabels:roles.map(r=>r.label),roleCodes:roles.map(r=>r.code),
+        requiresLogin:!!existing,signedInAsInvited:!!existing&&principal?.userId===existing.id};
     },{schoolId:school.id});
   }
   private async token(tx:Transaction,schoolId:string,token:string,lock=false){

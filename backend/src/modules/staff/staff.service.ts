@@ -67,7 +67,7 @@ export class StaffService {
       }
       if(op==='previewGrant'||op==='createGrant'){
         const proposal=await this.validateGrant(tx,c,c.body);
-        if(op==='previewGrant')return {data:{allowed:true,added:[{id:c.body.roleId,version:1,roleId:c.body.roleId,roleLabel:proposal.role.label,
+        if(op==='previewGrant')return {data:{allowed:true,added:[{id:c.body.roleId,version:1,roleId:c.body.roleId,roleLabel:proposal.role.label,roleCode:proposal.role.code,
           actions:proposal.actions,scopeType:c.body.scopeType,...(c.body.classId?{classId:c.body.classId}:{}),...(c.body.subjectId?{subjectId:c.body.subjectId}:{}),
           validFrom:c.body.validFrom,validUntil:c.body.validUntil??null}],removed:[],warnings:['HOMEROOM','SUBJECT_TEACHER'].includes(String(proposal.role.code))?['Phân công tương ứng phải còn hiệu lực để dùng quyền giáo viên.']:[]}};
         const row=(await tx.query<Row>(`INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,class_id,subject_id,valid_from,valid_until,granted_by)
@@ -139,7 +139,7 @@ export class StaffService {
     return {role,actions:roleActions};
   }
   private grantView(row:Row,role:Record<string,unknown>,actions:string[]){return {
-    id:row.id,version:row.version,roleId:row.role_id,roleLabel:role.label,actions,scopeType:row.scope_type,
+    id:row.id,version:row.version,roleId:row.role_id,roleLabel:role.label,roleCode:role.code,actions,scopeType:row.scope_type,
     ...(row.class_id?{classId:row.class_id}:{}),...(row.subject_id?{subjectId:row.subject_id}:{}),
     validFrom:iso(row.valid_from as Date),validUntil:row.valid_until?iso(row.valid_until as Date):null,
     revokedAt:row.revoked_at?iso(row.revoked_at as Date):null,

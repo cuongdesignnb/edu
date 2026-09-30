@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-lists-fragments.test.ts (4 tests) 11ms
+ ✓ tests/unit/api-client.test.ts (7 tests) 27ms
+ ✓ tests/unit/api-session.test.ts (6 tests) 32ms
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  16:43:27
+   Duration  563ms (transform 164ms, setup 137ms, collect 300ms, tests 69ms, environment 1ms, prepare 324ms)
+

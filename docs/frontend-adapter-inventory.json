@@ -2,6 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
+  "candidateCount": 14,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1481,7 +1482,17 @@
         "email: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "authDemoRepo",
+        "method": "requestPasswordReset",
+        "file": "src/lib/repositories/connected/auth.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "authDemoRepo",
@@ -1492,7 +1503,17 @@
         "token: string | null"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "authDemoRepo",
+        "method": "checkResetToken",
+        "file": "src/lib/repositories/connected/auth.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "authDemoRepo",
@@ -1505,7 +1526,17 @@
         "confirm: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "authDemoRepo",
+        "method": "completePasswordReset",
+        "file": "src/lib/repositories/connected/auth.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "authDemoRepo",
@@ -1523,7 +1554,17 @@
       "line": 166,
       "parameters": [],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "authDemoRepo",
+        "method": "healthCheck",
+        "file": "src/lib/repositories/connected/auth.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "authDemoRepo",
@@ -2282,7 +2323,17 @@
         "password: string"
       ],
       "returnType": "Promise<{ userId: ID; isPlatform: boolean }>",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "demoLogin",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2293,7 +2344,17 @@
         "ctx: Ctx"
       ],
       "returnType": "Promise<Me>",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "me",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2305,7 +2366,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "schoolActions",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2317,7 +2388,17 @@
         "patch: { fullName: string; workPhone: string; bio?: string; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "updateProfile",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2329,7 +2410,17 @@
         "inviteId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "invitation",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2343,7 +2434,17 @@
         "fullName?: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "respondInvitation",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2355,7 +2456,17 @@
         "opts: { unreadOnly?: boolean; schoolId?: ID } = {}"
       ],
       "returnType": "Promise<(StaffNotification & { schoolName: string; accessible: boolean })[]>",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "notifications",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "sessionRepo",
@@ -2367,7 +2478,17 @@
         "ids: ID[] | \"all\""
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "sessionRepo",
+        "method": "markNotificationsRead",
+        "file": "src/lib/repositories/connected/session.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3063,6 +3184,28 @@
       ],
       "returnType": "inferred",
       "status": "NOT_STARTED"
+    }
+  ],
+  "extensions": [
+    {
+      "repository": "sessionRepo",
+      "method": "sessions",
+      "file": "src/lib/repositories/connected/session.ts",
+      "status": "IMPLEMENTED",
+      "activated": false,
+      "evidence": [
+        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+      ]
+    },
+    {
+      "repository": "sessionRepo",
+      "method": "revokeSession",
+      "file": "src/lib/repositories/connected/session.ts",
+      "status": "IMPLEMENTED",
+      "activated": false,
+      "evidence": [
+        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+      ]
     }
   ]
 }

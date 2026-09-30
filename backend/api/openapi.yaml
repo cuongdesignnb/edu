@@ -28146,6 +28146,16 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        roleCode:
+          type: string
+        assignmentStartsOn:
+          type: string
+          format: date
+          nullable: true
+        assignmentEndsOn:
+          type: string
+          format: date
+          nullable: true
         actions:
           type: array
           items:
@@ -28178,6 +28188,7 @@ components:
         - version
         - roleId
         - roleLabel
+        - roleCode
         - actions
         - scopeType
         - validFrom
@@ -28203,6 +28214,14 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        workPhone:
+          type: string
+          maxLength: 40
+          nullable: true
+        bio:
+          type: string
+          maxLength: 2000
+          nullable: true
         email:
           type: string
           format: email
@@ -28239,6 +28258,70 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 200
+              schoolSlug:
+                type: string
+              schoolShortName:
+                type: string
+              schoolStatus:
+                type: string
+                enum:
+                  - DRAFT
+                  - ACTIVE
+                  - SUSPENDED
+                  - ARCHIVED
+              department:
+                type: string
+              timezone:
+                type: string
+              today:
+                type: string
+                format: date
+              schoolWorkspace:
+                type: boolean
+              teacherWorkspace:
+                type: boolean
+              duties:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    classId:
+                      type: string
+                      format: uuid
+                    className:
+                      type: string
+                    subjectId:
+                      type: string
+                      format: uuid
+                      nullable: true
+                    subjectName:
+                      type: string
+                      nullable: true
+                    kind:
+                      type: string
+                      enum:
+                        - HOMEROOM
+                        - SUBJECT
+                    startsOn:
+                      type: string
+                      format: date
+                    endsOn:
+                      type: string
+                      format: date
+                      nullable: true
+                  required:
+                    - id
+                    - classId
+                    - className
+                    - subjectId
+                    - subjectName
+                    - kind
+                    - startsOn
+                    - endsOn
+                  additionalProperties: false
               memberId:
                 type: string
                 format: uuid
@@ -28252,6 +28335,15 @@ components:
             required:
               - schoolId
               - schoolName
+              - schoolSlug
+              - schoolShortName
+              - schoolStatus
+              - department
+              - timezone
+              - today
+              - duties
+              - schoolWorkspace
+              - teacherWorkspace
               - memberId
               - status
               - grants
@@ -28266,12 +28358,16 @@ components:
           type: string
           enum:
             - connected
+        serverNow:
+          type: string
+          format: date-time
       required:
         - user
         - memberships
         - platformActions
         - csrfToken
         - mode
+        - serverNow
       additionalProperties: false
     LoginResult:
       type: object
@@ -28354,6 +28450,14 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        workPhone:
+          type: string
+          maxLength: 40
+          nullable: true
+        bio:
+          type: string
+          maxLength: 2000
+          nullable: true
       required:
         - expectedVersion
       additionalProperties: false
@@ -28819,6 +28923,36 @@ components:
     Invitation:
       type: object
       properties:
+        schoolId:
+          type: string
+          format: uuid
+        schoolSlug:
+          type: string
+        schoolStatus:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+            - SUSPENDED
+            - ARCHIVED
+        workDisplayName:
+          type: string
+          maxLength: 200
+        inviterName:
+          type: string
+          maxLength: 200
+        roleLabels:
+          type: array
+          items:
+            type: string
+        roleCodes:
+          type: array
+          items:
+            type: string
+        requiresLogin:
+          type: boolean
+        signedInAsInvited:
+          type: boolean
         id:
           type: string
           format: uuid
@@ -33921,6 +34055,9 @@ components:
     Notification:
       type: object
       properties:
+        yearId:
+          type: string
+          format: uuid
         id:
           type: string
           format: uuid

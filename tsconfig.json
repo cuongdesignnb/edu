@@ -17,5 +17,5 @@
     "paths": { "@/*": ["./src/*"], "@manifests/*": ["./manifests/*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules", "references", "preview"]
+  "exclude": ["node_modules", "references", "preview", "backend"]
 }
