@@ -24,9 +24,9 @@ export interface ApiSchemas {
   "Metric": { "key": string; "label": string; "value": number; "denominator": (number) | null; "unit": string; "asOf": string; };
   "Task": { "id": string; "kind": string; "title": string; "schoolId": (string) | null; "classId"?: (string) | null; "dueAt"?: (string) | null; "targetType": string; "targetId": (string) | null; "yearId"?: string; "className"?: string; "detail"?: string; "status"?: string; "tone"?: "danger" | "warning" | "info" | "neutral"; "lessonId"?: string; };
   "Dashboard": { "metrics": Array<ApiSchemas["Metric"]>; "tasks": Array<ApiSchemas["Task"]>; "asOf": string; "referenceDate"?: string; "yearId"?: string; "schoolOverview"?: ApiSchemas["SchoolOverviewDetails"]; };
-  "Member": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "userId": (string) | null; "staffCode"?: (string) | null; "workDisplayName": string; "workEmail"?: (string) | null; "workPhone"?: (string) | null; "shareWorkContact": boolean; "department"?: (string) | null; "status": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "grants"?: Array<ApiSchemas["GrantView"]>; "homeroomOf"?: Array<string>; "loginEmail"?: string; };
+  "Member": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "userId": (string) | null; "staffCode"?: (string) | null; "workDisplayName": string; "workEmail"?: (string) | null; "workPhone"?: (string) | null; "shareWorkContact": boolean; "department"?: (string) | null; "status": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "grants"?: Array<ApiSchemas["GrantView"]>; "homeroomOf"?: Array<string>; "loginEmail"?: string; "joinedAt"?: (string) | null; "endedAt"?: (string) | null; "statusReason"?: (string) | null; "schoolRoleGrants"?: Array<ApiSchemas["GrantView"]>; };
   "MemberPatch": { "expectedVersion": number; "workDisplayName"?: string; "workEmail"?: (string) | null; "workPhone"?: (string) | null; "shareWorkContact"?: boolean; "department"?: (string) | null; };
-  "Invitation": { "schoolId"?: string; "schoolSlug"?: string; "schoolStatus"?: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "workDisplayName"?: string; "inviterName"?: string; "roleLabels"?: Array<string>; "roleCodes"?: Array<string>; "requiresLogin"?: boolean; "signedInAsInvited"?: boolean; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "email": string; "expiresAt": string; "status": "PENDING" | "ACCEPTED" | "DECLINED" | "REVOKED"; "deliveryState"?: "QUEUED" | "SENT" | "FAILED" | "LOCAL_FILE"; "schoolName"?: string; };
+  "Invitation": { "schoolId"?: string; "schoolSlug"?: string; "schoolStatus"?: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "workDisplayName"?: string; "inviterName"?: string; "roleLabels"?: Array<string>; "roleCodes"?: Array<string>; "requiresLogin"?: boolean; "signedInAsInvited"?: boolean; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "email": string; "expiresAt": string; "status": "PENDING" | "ACCEPTED" | "DECLINED" | "REVOKED"; "deliveryState"?: "QUEUED" | "SENT" | "FAILED" | "LOCAL_FILE"; "schoolName"?: string; "proposedDuty"?: string; "roleIds"?: Array<string>; };
   "InviteRequest": { "email": string; "roleId": (string) | null; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom": string; "validUntil"?: (string) | null; "workDisplayName"?: string; "reason"?: string; "expiresInDays"?: number; };
   "InviteTokenRequest": { "schoolSlug": string; "token": string; };
   "AcceptInviteRequest": { "schoolSlug": string; "token": string; "displayName"?: string; "newPassword"?: string; };
@@ -333,6 +333,10 @@ export interface ApiSchemas {
   "PlatformOperationService": { "key": "api" | "database" | "parent" | "storage" | "worker" | "mail"; "state": "operational" | "degraded" | "unknown" | "local"; "note": string; "observedAt": (string) | null; };
   "PlatformOperationsOverview": { "checkedAt": string; "services": Array<ApiSchemas["PlatformOperationService"]>; "backups": Array<ApiSchemas["OperationRun"]>; "backupTotal": number; "storageFreeBytes": (number) | null; "mail": { "failed": number; "pending": number; }; "store": { "schema": string; "migratedAt": (string) | null; "migrations": number; "schools": number; "users": number; "auditEvents": number; }; "checklist": { "noAdmin": number; "drafts": number; "expiringAdminInvitations": number; "pendingAdminInvitations": number; "highTickets": number; "unassignedTickets": number; "activeGrants": number; "requestedGrants": number; }; };
   "PlatformOperationsOverviewResponse": { "data": ApiSchemas["PlatformOperationsOverview"]; "requestId": string; };
+  "MemberRolesReplace": { "expectedVersion": number; "roleIds": Array<string>; "validUntil"?: (string) | null; "reason": string; };
+  "MemberSchoolRoles": { "id": string; "version": number; "status": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "schoolRoleGrants": Array<ApiSchemas["GrantView"]>; };
+  "MemberSchoolRolesResponse": { "data": ApiSchemas["MemberSchoolRoles"]; "requestId": string; };
+  "SchoolStaffInvite": { "email": string; "workDisplayName": string; "proposedDuty"?: string; "roleIds": Array<string>; "expiresInDays": number; "validUntil"?: (string) | null; };
 }
 
 export const apiOperations = {
@@ -2819,6 +2823,33 @@ export const apiOperations = {
     "response": "PlatformOperationsOverview",
     "list": false,
     "permission": "platform.operations"
+  },
+  "replaceMemberSchoolRoles": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/school-roles",
+    "auth": "staff",
+    "request": "MemberRolesReplace",
+    "response": "MemberSchoolRoles",
+    "list": false,
+    "permission": "role.manage"
+  },
+  "endMember": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/end",
+    "auth": "staff",
+    "request": "ReasonCommand",
+    "response": "Member",
+    "list": false,
+    "permission": "member.manage"
+  },
+  "inviteSchoolStaff": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/staff-invitations",
+    "auth": "staff",
+    "request": "SchoolStaffInvite",
+    "response": "Invitation",
+    "list": false,
+    "permission": "member.manage"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

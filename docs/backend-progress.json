@@ -925,7 +925,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -958,9 +959,10 @@
         "SC11"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -969,9 +971,10 @@
         "SC10"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -992,9 +995,10 @@
         "SC10"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -1067,7 +1071,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -1080,7 +1085,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
     },
     {
@@ -3268,6 +3274,39 @@
       "evidence": [
         "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
+    },
+    {
+      "operationId": "replaceMemberSchoolRoles",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
+      ]
+    },
+    {
+      "operationId": "endMember",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
+      ]
+    },
+    {
+      "operationId": "inviteSchoolStaff",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
+      ]
     }
   ],
   "screens": [
@@ -3689,7 +3728,8 @@
         "reactivateMember",
         "listInvitations",
         "inviteStaff",
-        "revokeInvitation"
+        "revokeInvitation",
+        "inviteSchoolStaff"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3706,7 +3746,9 @@
         "reactivateMember",
         "revokeGrant",
         "listAssignments",
-        "revokeAssignment"
+        "revokeAssignment",
+        "replaceMemberSchoolRoles",
+        "endMember"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

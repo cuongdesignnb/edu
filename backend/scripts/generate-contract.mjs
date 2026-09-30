@@ -171,7 +171,7 @@ const operations = JSON.parse(await fs.readFile(path.join(source, 'api/operation
 // ADR-033: SC07 needs a bounded end-year roster without borrowing directory read rights.
 const previewPath='/schools/{schoolId}/academic-years/{yearId}/rollover-preview';
 const object=(properties,required=Object.keys(properties))=>({type:'object',properties,required,additionalProperties:false});
-const uuid={type:'string',format:'uuid'},label={type:'string'},count={type:'integer',minimum:0};
+const uuid={type:'string',format:'uuid'},label={type:'string'},count={type:'integer',minimum:0},timestamp={type:'string',format:'date-time'};
 spec.components.schemas.RolloverPreviewStudent=object({id:uuid,studentCode:label,fullName:label,status:structuredClone(spec.components.schemas.Student.properties.status)});
 spec.components.schemas.RolloverPreviewSourceClass=object({id:uuid,name:label,gradeLevel:{type:'integer',minimum:1,maximum:12,nullable:true},students:{type:'array',maxItems:2000,items:{$ref:'#/components/schemas/RolloverPreviewStudent'}}});
 spec.components.schemas.RolloverPreviewTargetClass=object({id:uuid,name:label,gradeLevelId:uuid,studentCount:count});
@@ -256,6 +256,17 @@ spec.components.schemas.PlatformOperationService=object({key:{type:'string',enum
 spec.components.schemas.PlatformOperationsOverview=object({checkedAt:{type:'string',format:'date-time'},services:{type:'array',minItems:6,maxItems:6,items:{$ref:'#/components/schemas/PlatformOperationService'}},backups:{type:'array',maxItems:10,items:{$ref:'#/components/schemas/OperationRun'}},backupTotal:count,storageFreeBytes:{...count,nullable:true},mail:object({failed:count,pending:count}),store:object({schema:label,migratedAt:{type:'string',format:'date-time',nullable:true},migrations:count,schools:count,users:count,auditEvents:count}),checklist:object(Object.fromEntries(['noAdmin','drafts','expiringAdminInvitations','pendingAdminInvitations','highTickets','unassignedTickets','activeGrants','requestedGrants'].map(name=>[name,count])))});
 spec.components.schemas.PlatformOperationsOverviewResponse=object({data:{$ref:'#/components/schemas/PlatformOperationsOverview'},requestId:label});
 extendOperation('getPlatformSchool','getPlatformOperationsOverview','/platform/operations-overview','platform.operations','PlatformOperationsOverview',false,['PL10'],[]);
+// ADR-041: preserve atomic school-role replacement and complete membership ending.
+Object.assign(spec.components.schemas.Member.properties,{joinedAt:{...timestamp,nullable:true},endedAt:{...timestamp,nullable:true},statusReason:{type:'string',maxLength:2000,nullable:true},schoolRoleGrants:{type:'array',items:{$ref:'#/components/schemas/GrantView'}}});
+spec.components.schemas.MemberRolesReplace=object({expectedVersion:{type:'integer',minimum:1},roleIds:{type:'array',maxItems:50,uniqueItems:true,items:uuid},validUntil:{...timestamp,nullable:true},reason:{type:'string',minLength:3,maxLength:2000}},['expectedVersion','roleIds','reason']);
+spec.components.schemas.MemberSchoolRoles=object({id:uuid,version:{type:'integer',minimum:1},status:structuredClone(spec.components.schemas.Member.properties.status),schoolRoleGrants:{type:'array',items:{$ref:'#/components/schemas/GrantView'}}});
+spec.components.schemas.MemberSchoolRolesResponse=object({data:{$ref:'#/components/schemas/MemberSchoolRoles'},requestId:label});
+extendOperation('suspendMember','replaceMemberSchoolRoles','/schools/{schoolId}/members/{memberId}/school-roles','role.manage','MemberSchoolRoles',false,['SC11'],undefined,'MemberRolesReplace');
+extendOperation('suspendMember','endMember','/schools/{schoolId}/members/{memberId}/end','member.manage','Member',false,['SC11']);
+// ADR-042: the existing school invite form supports multiple or no school roles.
+spec.components.schemas.SchoolStaffInvite=object({email:{type:'string',format:'email'},workDisplayName:{type:'string',minLength:3,maxLength:200},proposedDuty:{type:'string',maxLength:300},roleIds:{type:'array',maxItems:50,uniqueItems:true,items:uuid},expiresInDays:{type:'integer',minimum:1,maximum:30},validUntil:{...timestamp,nullable:true}},['email','workDisplayName','roleIds','expiresInDays']);
+Object.assign(spec.components.schemas.Invitation.properties,{proposedDuty:{type:'string',maxLength:300},roleIds:{type:'array',items:uuid}});
+extendOperation('inviteStaff','inviteSchoolStaff','/schools/{schoolId}/staff-invitations','member.manage','Invitation',false,['SC10'],undefined,'SchoolStaffInvite');
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

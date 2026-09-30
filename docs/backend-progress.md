@@ -77,20 +77,20 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
 | commitRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
 | listMembers | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries |
-| getMember | SC11 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
+| getMember | SC11 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | updateMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | suspendMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| reactivateMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listInvitations | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| reactivateMember | SC10, SC11 | TESTED | backend/src/modules; B2 TypeScript build; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
+| listInvitations | SC10 | TESTED | backend/src/modules; B2 TypeScript build; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | inviteStaff | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| revokeInvitation | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| revokeInvitation | SC10 | TESTED | backend/src/modules; B2 TypeScript build; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | listRoles | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | getRole | SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createRole | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | updateRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | previewGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
+| revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | listAssignments | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
 | createAssignment | SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeAssignment | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
@@ -280,6 +280,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getSchoolSupportSummary | O33, O34 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | getSchoolAuditOptions | O35 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | getPlatformOperationsOverview | PL10 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| replaceMemberSchoolRoles | SC11 | TESTED | ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
+| endMember | SC11 | TESTED | ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
+| inviteSchoolStaff | SC10 | TESTED | ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

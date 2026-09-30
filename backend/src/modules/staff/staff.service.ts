@@ -11,7 +11,11 @@ import type { RequestContext,Result,Handler } from '../../api.router';
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const assignmentResource:Resource={table:'app.teaching_assignments',fields:{...meta,classId:'class_id',memberId:'member_id',roleGrantId:'role_grant_id',kind:'kind',subjectId:'subject_id',startsOn:'starts_on',endsOn:'ends_on',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{classId:'class_id',memberId:'member_id'}};
 const roleResource:Resource={table:'app.roles',fields:{...meta,code:'code',label:'label',systemRole:'system_role'},writeFields:[],search:['code','label'],filters:{}};
-const inviteResource:Resource={table:'app.staff_invitations',fields:{...meta,email:'email_normalized',expiresAt:'expires_at',status:'status'},writeFields:[],search:['email_normalized'],filters:{status:'status'}};
+const inviteResource:Resource={table:`(SELECT i.*,coalesce(i.work_profile->>'workDisplayName','') AS work_display_name,
+  coalesce(i.work_profile->>'proposedDuty','') AS proposed_duty,ARRAY(SELECT p->>'roleId' FROM jsonb_array_elements(i.proposed_assignments) p) AS role_ids,
+  coalesce(m.work_display_name,u.display_name,'') AS inviter_name FROM app.staff_invitations i
+  JOIN identity.users u ON u.id=i.invited_by LEFT JOIN app.memberships m ON m.school_id=i.school_id AND m.user_id=i.invited_by)`,
+  fields:{...meta,email:'email_normalized',expiresAt:'expires_at',status:'status',workDisplayName:'work_display_name',proposedDuty:'proposed_duty',roleIds:'role_ids',inviterName:'inviter_name'},writeFields:[],search:['email_normalized','work_display_name'],filters:{status:'status'}};
 const pickerResource:Resource={...resource('member'),table:`(SELECT m.*,
   coalesce((SELECT array_agg(c.name ORDER BY c.name,c.id) FROM app.teaching_assignments a JOIN app.classes c ON c.school_id=a.school_id AND c.id=a.class_id
     JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
@@ -26,7 +30,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['listMembers','getMember','updateMember','suspendMember','reactivateMember','listRoles','getRole','createRole','updateRole',
+    for(const id of ['listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -46,17 +50,27 @@ export class StaffService {
       }
       if(op==='getMember'){
         const member=dto(resource('member'),await getResource(tx,resource('member'),schoolId,c.params.memberId!));
-        member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);return {data:member};
+        member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);
+        member.schoolRoleGrants=await this.schoolRoleGrants(tx,schoolId,c.params.memberId!);return {data:member};
       }
-      if(['updateMember','suspendMember','reactivateMember'].includes(op)){
+      if(op==='replaceMemberSchoolRoles')return {data:await this.replaceSchoolRoles(tx,c)};
+      if(op==='inviteSchoolStaff')return {data:await this.inviteSchoolStaff(tx,c),status:201};
+      if(['updateMember','suspendMember','reactivateMember','endMember'].includes(op)){
         const id=c.params.memberId!,member=await getResource(tx,resource('member'),schoolId,id,true);
-        if(op==='suspendMember'){
+        if(op==='suspendMember'||op==='endMember'){
           if(member.user_id===c.principal!.userId)throw new Problem(422,'SELF_SUSPENSION_FORBIDDEN');
           await this.lastAdmin(tx,schoolId,id);
         }
-        const data=await updateResource(tx,resource('member'),schoolId,id,c.body,
-          op==='suspendMember'?{status:'SUSPENDED'}:op==='reactivateMember'?{status:'ACTIVE',ended_at:null}:{});
+        await updateResource(tx,resource('member'),schoolId,id,c.body,
+          op==='suspendMember'?{status:'SUSPENDED',status_reason:c.body.reason}:op==='reactivateMember'?{status:'ACTIVE',ended_at:null,status_reason:c.body.reason}:
+            op==='endMember'?{status:'ENDED',ended_at:new Date(),status_reason:c.body.reason}:{});
+        if(op==='endMember'){
+          await tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND member_id=$2 AND revoked_at IS NULL',[schoolId,id]);
+          await tx.query('UPDATE app.teaching_assignments SET revoked_at=now() WHERE school_id=$1 AND member_id=$2 AND revoked_at IS NULL',[schoolId,id]);
+        }
+        const data=dto(resource('member'),await getResource(tx,resource('member'),schoolId,id));
         data.grants=(await this.policy.grants(tx,String(member.user_id),schoolId)).map(grantDto);
+        data.schoolRoleGrants=await this.schoolRoleGrants(tx,schoolId,id);
         await audit(tx,c,'member',id,{status:data.status,version:data.version});return {data};
       }
       if(op==='listRoles'){
@@ -101,11 +115,12 @@ export class StaffService {
         if((scopeType==='CLASS'&&role.code!=='HOMEROOM')||(scopeType==='SUBJECT'&&role.code!=='SUBJECT_TEACHER'))validation('roleId','Lời mời phân công cần đúng mẫu giáo viên');
         const data=await this.invitations.create(tx,schoolId,c.principal!.userId,String(c.body.email),{
           roleId:String(c.body.roleId),scopeType,classId:c.body.classId as string|undefined,subjectId:c.body.subjectId as string|undefined,
-          validFrom:String(c.body.validFrom),validUntil:c.body.validUntil as string|null|undefined,reason:c.body.reason as string|undefined});
+          validFrom:String(c.body.validFrom),validUntil:c.body.validUntil as string|null|undefined,reason:c.body.reason as string|undefined},
+        {workDisplayName:c.body.workDisplayName as string|undefined},c.body.expiresInDays as number|undefined);
         await audit(tx,c,'invitation',data.id);return {data,status:201};
       }
       const row=await one<Row>(tx,'SELECT * FROM app.staff_invitations WHERE school_id=$1 AND id=$2 FOR UPDATE',[schoolId,c.params.invitationId]);if(!row)notFound();
-      this.version(row,c.body.expectedVersion);if(row.status!=='PENDING')throw new Problem(409,'INVITATION_UNAVAILABLE');
+      this.version(row,c.body.expectedVersion);if(row.status!=='PENDING'||(row.expires_at as Date).getTime()<=Date.now())throw new Problem(409,'INVITATION_UNAVAILABLE');
       const invitation=(await tx.query('UPDATE app.staff_invitations SET status=$3 WHERE school_id=$1 AND id=$2 RETURNING *',[schoolId,row.id,'REVOKED'])).rows[0];
       await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='' WHERE dedupe_key=$1 AND status IN ('PENDING','FAILED')",[`invitation:${row.id}`]);
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
@@ -114,6 +129,55 @@ export class StaffService {
     return this.commands.execute(c,authorize,work);
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
+  private async schoolRoleGrants(tx:Transaction,schoolId:string,memberId:string){
+    const rows=(await tx.query<Row>(`SELECT g.*,r.label,r.code,
+      ARRAY(SELECT p.action_code FROM app.role_permissions p WHERE p.school_id=g.school_id AND p.role_id=g.role_id AND 'SCHOOL'=ANY(p.allowed_scopes) ORDER BY p.action_code) AS actions
+      FROM app.role_grants g JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id
+      WHERE g.school_id=$1 AND g.member_id=$2 AND g.scope_type='SCHOOL' AND g.revoked_at IS NULL
+      AND (g.valid_until IS NULL OR g.valid_until>now()) ORDER BY g.valid_from,g.id`,[schoolId,memberId])).rows;
+    return rows.map(row=>this.grantView(row,{label:row.label,code:row.code},row.actions as string[]));
+  }
+  private async replaceSchoolRoles(tx:Transaction,c:RequestContext){
+    const schoolId=c.params.schoolId!,id=c.params.memberId!,member=await getResource(tx,resource('member'),schoolId,id,true);
+    this.version(member,c.body.expectedVersion);
+    if(member.user_id===c.principal!.userId)throw new Problem(403,'OWN_ROLES_EDIT_FORBIDDEN');
+    if(!['ACTIVE','SUSPENDED'].includes(String(member.status)))validation('memberId','Thành viên đã kết thúc hoặc chưa nhận lời mời');
+    const roleIds=c.body.roleIds as string[],held=await this.schoolRoleGrants(tx,schoolId,id),from=iso(new Date());
+    // Check the final administrator set before changing any grant. All commands
+    // serialize on the school lock, so two concurrent removals cannot both pass.
+    if(held.some(g=>g.roleCode==='SCHOOL_ADMIN'&&Date.parse(g.validFrom)<=Date.now()&&!roleIds.includes(String(g.roleId))))
+      await this.lastAdmin(tx,schoolId,id);
+    const additions=[];
+    for(const roleId of roleIds){
+      const active=await one<Row>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND id=$2 AND status='ACTIVE'",[schoolId,roleId]);
+      if(!active)validation('roleIds','Chọn mẫu quyền đang hoạt động của trường');
+      if(held.some(g=>g.roleId===roleId))continue; // Never extend a retained grant.
+      const proposal=await this.validateGrant(tx,c,{roleId,scopeType:'SCHOOL',validFrom:from,validUntil:c.body.validUntil??null},true);
+      additions.push({roleId,proposal});
+    }
+    await tx.query("UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND member_id=$2 AND scope_type='SCHOOL' AND revoked_at IS NULL AND NOT(role_id=ANY($3::uuid[]))",[schoolId,id,roleIds]);
+    for(const {roleId} of additions)await tx.query(`INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,valid_from,valid_until,granted_by)
+      VALUES($1,$2,$3,'SCHOOL',$4,$5,$6)`,[schoolId,id,roleId,from,c.body.validUntil??null,c.principal!.userId]);
+    const changed=await one<Row>(tx,'UPDATE app.memberships SET updated_at=now() WHERE school_id=$1 AND id=$2 RETURNING *',[schoolId,id]);
+    const data={id,version:changed!.version,status:changed!.status,schoolRoleGrants:await this.schoolRoleGrants(tx,schoolId,id)};
+    await audit(tx,c,'member',id,{version:data.version,roleIds});return data;
+  }
+  private async inviteSchoolStaff(tx:Transaction,c:RequestContext){
+    const schoolId=c.params.schoolId!,email=String(c.body.email).trim().toLowerCase();
+    const duplicate=await one<{present:boolean}>(tx,`SELECT EXISTS(SELECT 1 FROM identity.users u JOIN app.memberships m ON m.user_id=u.id AND m.school_id=$1
+      WHERE u.email_normalized=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL) OR EXISTS(SELECT 1 FROM app.staff_invitations i WHERE i.school_id=$1 AND i.email_normalized=$2 AND i.status='PENDING' AND i.expires_at>now()) AS present`,[schoolId,email]);
+    if(duplicate?.present)validation('email','Email đã là thành viên hoặc có lời mời đang chờ');
+    const proposals=[],validFrom=iso(new Date());
+    for(const roleId of c.body.roleIds as string[]){
+      const active=await one<Row>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND id=$2 AND status='ACTIVE'",[schoolId,roleId]);
+      if(!active)validation('roleIds','Chọn mẫu quyền đang hoạt động của trường');
+      await this.validateGrant(tx,c,{roleId,scopeType:'SCHOOL',validFrom,validUntil:c.body.validUntil??null},true);
+      proposals.push({roleId,scopeType:'SCHOOL',validFrom,validUntil:c.body.validUntil as string|null|undefined});
+    }
+    const data=await this.invitations.create(tx,schoolId,c.principal!.userId,email,proposals,
+      {workDisplayName:String(c.body.workDisplayName).trim(),proposedDuty:String(c.body.proposedDuty??'').trim()},Number(c.body.expiresInDays),30);
+    await audit(tx,c,'invitation',data.id);return data;
+  }
   private async rolePermissions(tx:Transaction,schoolId:string,roleId:string):Promise<PermissionInput[]>{
     return (await tx.query<{action_code:string;allowed_scopes:string[]}>('SELECT action_code,allowed_scopes FROM app.role_permissions WHERE school_id=$1 AND role_id=$2 ORDER BY action_code',[schoolId,roleId])).rows.map(row=>({action:row.action_code,scopes:row.allowed_scopes}));
   }

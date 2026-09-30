@@ -721,3 +721,76 @@ Actual frontend unit evidence is 79/79, zero skipped, in
 qa/backend/b6-context-keysets-frontend-unit-final.log; TypeScript and scoped lint
 exit0. Backend is unchanged from the prior 97/97 integration and 31-migration
 checkpoint. No additional backend or browser run is claimed.
+
+## ADR-041 — Atomic school-role replacement and membership ending
+
+The existing member form replaces a whole school-role selection. Sequential
+create/revoke calls could leave partial authority or overwrite another editor.
+`replaceMemberSchoolRoles` is one versioned, idempotent transaction under the
+school lock and current `role.manage`. Its purpose-bound `MemberSchoolRoles`
+reply carries only member ID/version/status and school grants; it does not lend
+`member.read`, work contacts, identity metadata or class-assignment visibility.
+Self edits, inactive/foreign roles and removal of the final current administrator
+are denied. A suspended member can have roles prepared without acquiring access;
+ended or unaccepted memberships require their lifecycle workflow first.
+
+Selected current/future school grants retain their IDs and exact expiry; this
+command never renews them. Removed school grants are revoked as history, while
+class/subject grants and assignments stay separate. New grants start at server
+time, with optional explicit `validUntil`; every added action and the command
+authority must cover that interval. The default unbounded interval is rejected
+when the editor's authority expires. Invalid additions roll back the entire set.
+
+Migration 032 adds the last membership lifecycle reason and an invoker trigger
+that advances the member version on school-grant inserts/updates/deletes. Thus
+independent grant commands also invalidate an already-open school-role form.
+Class/subject grant changes do not replace the school-role selection. Existing
+generic update triggers continue to own actual version increments.
+
+`endMember` requires current `member.manage`, a displayed version and a reason.
+It protects self/final-admin membership and revokes all current/future grants
+and teaching assignments atomically, retaining original dates/history and the
+shared identity at other schools. The reply reloads the member after grant
+triggers, so it contains the actual final version. Reactivation does not restore
+grants revoked by ending. Native frontend candidates retain nullable metadata,
+require the displayed version, and never fetch a newer version to force a save.
+
+## ADR-042 — Preserve the school invitation form without synthetic authority
+
+The existing school form permits several school roles or none, descriptive
+proposed duties, and a 1–30 day invitation lifetime. `inviteSchoolStaff` keeps
+that workflow as a dedicated atomic command with unique explicit role IDs.
+The single scoped-grant invitation and platform-admin invitation contracts keep
+their own bounds, including the platform 14-day maximum and 48-hour default.
+The supplied handoff source is preserved; generated runtime contracts document
+these extensions. A proposed duty is text, never an inferred teaching assignment
+or base permission.
+
+All selected roles/profile data and one encrypted mail job are committed
+together. A repeated confirmed request returns one receipt/mail job; invalid
+roles and duplicate current membership/pending invitations fail visibly.
+New grant starts come from server time and optional delegation ends are checked
+against each current action and inviter command authority. Accepting multiple
+roles creates the membership/grants in one transaction. Accepting no roles
+creates an active membership with zero grants; both acceptance and mail delivery
+still require the inviter's current authority. Losing that authority rolls back
+even creation of a new identity. Existing identity credentials remain governed
+by the prior invitation authentication workflow.
+
+Staff invitation list/ACK DTOs return actual display name, role IDs, descriptive
+duty and, for authorized lists, the actual inviter label. No raw invitation token
+is returned to the staff form. Expired invitations remain historical source rows
+and cannot be revoked as currently pending or delivered. The frontend derives
+the expired display from server-aligned time and preserves native policy errors,
+with human messages for final-admin, self-edit and delegation-expiry guards.
+
+These five staff adapters remain candidates. Legacy facade/hooks, member and
+combined directory projections, role screens, assignment/handover workflows and
+browser acceptance still need connection before B6 can be certified.
+
+Actual evidence for ADR-041/042: 32 verified migrations and 103/103 PostgreSQL
+integration, zero skipped, in `qa/backend/b6-staff-integration-complete.log`;
+17/17 backend contract/unit and 88/88 frontend unit in the corresponding staff
+final/complete logs. TypeScript/scoped lint exit0. Runtime is 279 operations and
+337 schemas, with 74 adapter candidates and zero facade activation. This is not
+browser, final deployment, backup/restore, SMTP or performance acceptance.

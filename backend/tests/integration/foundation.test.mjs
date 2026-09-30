@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,276);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,279);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -130,7 +130,8 @@ test('BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection
 test('BE04 bootstrap only exposes the authenticated user memberships without tenant',async()=>{
   const user=seedId('user:teacher-a');
   const rows=await db.transaction(async tx=>(await tx.query('SELECT user_id,school_id FROM app.memberships')).rows,{userId:user});
-  assert.equal(rows.length,1);assert.equal(rows[0].user_id,user);assert.equal(rows[0].school_id,schoolA);
+  assert.ok(rows.length>=1);assert.ok(rows.every(row=>row.user_id===user));assert.ok(rows.some(row=>row.school_id===schoolA));
+  const foreign=await db.transaction(async tx=>(await tx.query('SELECT user_id FROM app.memberships WHERE user_id<>$1',[user])).rows,{userId:user});assert.deepEqual(foreign,[]);
   const noUser=await db.transaction(async tx=>(await tx.query('SELECT id FROM app.memberships')).rows);assert.equal(noUser.length,0);
   const tenant=await db.transaction(async tx=>(await tx.query('SELECT school_id FROM app.memberships')).rows,{schoolId:schoolB,userId:user});
   assert.equal(tenant.every(row=>row.school_id===schoolB),true);
@@ -138,7 +139,9 @@ test('BE04 bootstrap only exposes the authenticated user memberships without ten
 test('BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B',async()=>{
   await login('teacher-a@example.invalid');
   const context=(await request('GET','/api/v1/me/context')).json().data;
-  assert.equal(context.mode,'connected');assert.equal(context.memberships.length,1);
+  assert.equal(context.mode,'connected');assert.equal(context.user.id,seedId('user:teacher-a'));
+  const owned=await db.transaction(async tx=>(await tx.query('SELECT id FROM app.memberships')).rows,{userId:seedId('user:teacher-a')});
+  assert.deepEqual(context.memberships.map(m=>m.memberId).sort(),owned.map(m=>m.id).sort());assert.ok(context.memberships.some(m=>m.schoolId===schoolA));
   const principal={userId:seedId('user:teacher-a')};
   await db.transaction(tx=>policy.require(tx,principal,'seating.manage',{schoolId:schoolA,classId:classA}),{schoolId:schoolA});
   for(const action of ['seating.manage','guardian.read','conduct.publish'])await assert.rejects(db.transaction(
@@ -2057,10 +2060,113 @@ test('B6 operational probes use worker-only cycle evidence, actual backup record
     await assert.rejects(db.transaction(tx=>tx.query('SELECT * FROM platform.operations_school_totals()'),{schoolId:schoolA,userId:seedId('user:teacher-a')}),error=>error.code==='42501');
     await db.transaction(async tx=>{const before=(await tx.query("SELECT current_setting('app.school_id') AS id")).rows[0].id;const counts=(await tx.query('SELECT * FROM platform.operations_school_totals()')).rows[0];assert.ok(counts.active_without_admin>=0);assert.equal((await tx.query("SELECT current_setting('app.school_id') AS id")).rows[0].id,before);},{schoolId:schoolA,userId});
     await worker.processOnce();const heartbeat=(await worker.db.app.query('SELECT last_healthy_at FROM platform.runtime_heartbeats WHERE worker_id=$1',[worker.owner])).rows[0].last_healthy_at;
-    const url='/api/v1/platform/operations-overview',result=await request('GET',url);assert.equal(result.statusCode,200,result.body);const view=result.json().data;assert.equal(view.services.find(s=>s.key==='worker').state,'operational');assert.equal(view.services.find(s=>s.key==='database').state,'operational');assert.equal(view.services.find(s=>s.key==='storage').state,'operational');assert.notEqual(view.services.find(s=>s.key==='mail').state,'operational');assert.equal(view.store.schema,'031-operations-health.sql');assert.equal(view.store.migrations,31);assert.ok(view.storageFreeBytes>0);const backup=view.backups.find(b=>b.id===id);assert.ok(backup);assert.equal(backup.status,'FAILED');assert.equal(backup.createdAt,row.created_at.toISOString());assert.deepEqual(backup.summary,{rows:3,errorCode:'BACKUP_FAILED'});assert.equal(result.body.includes('hidden-artifact-location'),false);assert.equal(result.body.includes('hidden-operation-secret'),false);assert.equal(result.body.includes('hidden-checksum'),false);
+    const url='/api/v1/platform/operations-overview',result=await request('GET',url);assert.equal(result.statusCode,200,result.body);const view=result.json().data;assert.equal(view.services.find(s=>s.key==='worker').state,'operational');assert.equal(view.services.find(s=>s.key==='database').state,'operational');assert.equal(view.services.find(s=>s.key==='storage').state,'operational');assert.notEqual(view.services.find(s=>s.key==='mail').state,'operational');const installed=await verifyInstallation(pool);assert.equal(view.store.schema,installed.schemaRevision);assert.equal(view.store.migrations,installed.migrations);assert.ok(view.storageFreeBytes>0);const backup=view.backups.find(b=>b.id===id);assert.ok(backup);assert.equal(backup.status,'FAILED');assert.equal(backup.createdAt,row.created_at.toISOString());assert.deepEqual(backup.summary,{rows:3,errorCode:'BACKUP_FAILED'});assert.equal(result.body.includes('hidden-artifact-location'),false);assert.equal(result.body.includes('hidden-operation-secret'),false);assert.equal(result.body.includes('hidden-checksum'),false);
     const backupCount=(await db.app.query("SELECT count(*)::int AS n FROM platform.operation_runs WHERE kind='BACKUP'")).rows[0].n;assert.equal(view.backupTotal,backupCount);assert.equal((await request('GET','/api/v1/platform/operations?kind=BACKUP&status=FAILED')).statusCode,200);assert.equal((await request('GET','/api/v1/platform/school-options')).statusCode,403);assert.equal((await request('GET','/api/v1/platform/support-options')).statusCode,403);assert.equal((await request('GET',`/api/v1/platform/schools/${schoolA}/admin-invitations`)).statusCode,403);
     const original=worker.db.app.query;worker.db.app.query=async()=>{throw new Error('Synthetic failed dependency');};try{await assert.rejects(worker.processOnce(),/Synthetic failed dependency/);}finally{worker.db.app.query=original;}assert.equal((await worker.db.app.query('SELECT last_healthy_at FROM platform.runtime_heartbeats WHERE worker_id=$1',[worker.owner])).rows[0].last_healthy_at.toISOString(),heartbeat.toISOString());
     const old=(await worker.db.app.query('SELECT worker_id,last_healthy_at FROM platform.runtime_heartbeats')).rows;try{await worker.db.app.query("UPDATE platform.runtime_heartbeats SET last_healthy_at=now()-interval '120 seconds'");const stale=await request('GET',url);assert.equal(stale.statusCode,200,stale.body);assert.equal(stale.json().data.services.find(s=>s.key==='worker').state,'degraded');}finally{for(const record of old)await worker.db.app.query('UPDATE platform.runtime_heartbeats SET last_healthy_at=$2 WHERE worker_id=$1',[record.worker_id,record.last_healthy_at]);}
     await db.app.query('UPDATE platform.operator_grants SET revoked_at=now() WHERE id=$1',[grantId]);assert.equal((await request('GET',url)).statusCode,403);assert.equal((await request('GET','/api/v1/platform/operations')).statusCode,403);
   }finally{await worker.close();}
+});
+
+async function staffUiFixture(){
+  const schoolId=await operationalUiSchool();jar.delete('edu_staff');let csrf=await login('admin-a@example.invalid');
+  const values=await db.transaction(async tx=>{
+    const today=(await tx.query("SELECT (now() AT TIME ZONE timezone)::date::text AS today FROM platform.schools WHERE id=$1",[schoolId])).rows[0].today,y=Number(today.slice(0,4));
+    const target=(await tx.query('SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2',[schoolId,seedId('user:teacher-a')])).rows[0].id;
+    const other=(await tx.query("INSERT INTO app.memberships(school_id,user_id,work_display_name,status,joined_at) VALUES($1,$2,'Nhân sự đích thứ hai giả','ACTIVE',now()) RETURNING id",[schoolId,seedId('user:teacher-b')])).rows[0].id;
+    const admin=(await tx.query('SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2',[schoolId,seedId('user:admin-a')])).rows[0].id;
+    const year=(await tx.query("INSERT INTO app.academic_years(school_id,code,name,starts_on,ends_on,status) VALUES($1,'STAFF','Năm phân quyền giả',$2,$3,'ACTIVE') RETURNING id",[schoolId,`${y}-01-01`,`${y+1}-01-01`])).rows[0].id;
+    const grade=(await tx.query("INSERT INTO app.grade_levels(school_id,code,name,grade_level) VALUES($1,'10','Khối giả',10) RETURNING id",[schoolId])).rows[0].id;
+    const classId=(await tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) VALUES($1,$2,$3,'STAFF','Lớp phân quyền giả',10,'ACTIVE') RETURNING id",[schoolId,year,grade])).rows[0].id;
+    const adminRole=(await tx.query("SELECT id FROM app.roles WHERE school_id=$1 AND code='SCHOOL_ADMIN'",[schoolId])).rows[0].id;
+    return {target,other,admin,adminRole,classId,today,endsOn:`${y+1}-01-01`};
+  },{schoolId});
+  const post=(path,body,key=crypto.randomUUID())=>request('POST',`/api/v1/schools/${schoolId}/${path}`,body,csrf,{'idempotency-key':key});
+  const member=async id=>{const response=await request('GET',`/api/v1/schools/${schoolId}/members/${id}`);assert.equal(response.statusCode,200,response.body);return response.json().data;};
+  const role=async permissions=>{const response=await post('roles',{code:`staff-${crypto.randomUUID()}`,label:'Vai trò kiểm thử giả',permissions});assert.equal(response.statusCode,201,response.body);return response.json().data;};
+  const grant=async(memberId,roleId,options={})=>{const response=await post('grants',{memberId,roleId,scopeType:'SCHOOL',validFrom:new Date(Date.now()-1000).toISOString(),...options});assert.equal(response.statusCode,201,response.body);return response.json().data;};
+  return {schoolId,...values,post,member,role,grant,setCsrf:value=>{csrf=value;}};
+}
+
+test('B6 atomic school-role replacement retains expiry/class scopes, detects independent grants and rolls back all failures',async()=>{
+  const f=await staffUiFixture(),read=await f.role([{action:'school.read',scopes:['SCHOOL']}]),directory=await f.role([{action:'member.read',scopes:['SCHOOL']}]),classRole=await f.role([{action:'guardian.read',scopes:['CLASS']}]);
+  const classGrant=await f.grant(f.target,classRole.id,{scopeType:'CLASS',classId:f.classId,validUntil:new Date(Date.now()+86400000).toISOString()}),before=await f.member(f.target),until=new Date(Date.now()+86400000).toISOString(),key=crypto.randomUUID();
+  const body={expectedVersion:before.version,roleIds:[read.id,directory.id],reason:'Thay vai trò nguyên tử giả',validUntil:until};
+  const changed=await f.post(`members/${f.target}/school-roles`,body,key);assert.equal(changed.statusCode,200,changed.body);const current=changed.json().data;
+  assert.ok(current.version>before.version);assert.equal(current.schoolRoleGrants.length,2);assert.ok((await f.member(f.target)).grants.some(g=>g.id===classGrant.id));
+  for(const key of ['workPhone','workEmail','department','userId','grants'])assert.equal(key in current,false);
+  const replay=await f.post(`members/${f.target}/school-roles`,body,key);assert.equal(replay.statusCode,200);assert.deepEqual(replay.json().data,current);
+  const kept=await f.post(`members/${f.target}/school-roles`,{...body,expectedVersion:current.version,validUntil:null});assert.equal(kept.statusCode,200,kept.body);
+  assert.deepEqual(kept.json().data.schoolRoleGrants.map(g=>[g.id,g.validUntil]),current.schoolRoleGrants.map(g=>[g.id,g.validUntil]));
+  const latest=kept.json().data,invalid=await f.post(`members/${f.target}/school-roles`,{...body,expectedVersion:latest.version,roleIds:[read.id,seedId('role:B:SCHOOL_ADMIN')]});assert.equal(invalid.statusCode,422,invalid.body);assert.deepEqual((await f.member(f.target)).schoolRoleGrants,latest.schoolRoleGrants);
+  const newRole=await f.role([{action:'year.read',scopes:['SCHOOL']}]);await f.grant(f.target,newRole.id,{validUntil:until});
+  assert.ok((await f.member(f.target)).version>latest.version);const stale=await f.post(`members/${f.target}/school-roles`,{...body,expectedVersion:latest.version,roleIds:[]});assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'VERSION_CONFLICT');
+  assert.equal((await f.member(f.target)).schoolRoleGrants.length,3);
+  const foreign=await f.post(`members/${seedId('member:B:teacher-a')}/school-roles`,{...body,expectedVersion:1});assert.equal(foreign.statusCode,404);
+  const versions=(await db.transaction(tx=>tx.query('SELECT version FROM app.memberships WHERE school_id=$1 AND id=$2',[f.schoolId,f.target]),{schoolId:f.schoolId})).rows[0].version;
+  const schoolGrant=(await f.member(f.target)).schoolRoleGrants.find(g=>g.roleId===newRole.id);const revoked=await f.post(`grants/${schoolGrant.id}/revoke`,{expectedVersion:schoolGrant.version,reason:'Thu hồi grant riêng giả'});assert.equal(revoked.statusCode,200);assert.ok((await f.member(f.target)).version>versions);
+});
+
+test('B6 school-role replacement prevents self edits, last-admin removal, ceiling/expiry breaches and unauthorized cached replay',async()=>{
+  const f=await staffUiFixture(),manager=await f.role([{action:'role.manage',scopes:['SCHOOL']},{action:'member.manage',scopes:['SCHOOL']},{action:'school.read',scopes:['SCHOOL']}]),read=await f.role([{action:'school.read',scopes:['SCHOOL']}]);
+  const managerGrant=await f.grant(f.target,manager.id,{validUntil:new Date(Date.now()+3600000).toISOString()}),admin=await f.member(f.admin),target=await f.member(f.target),other=await f.member(f.other);
+  assert.equal((await f.post(`members/${f.admin}/school-roles`,{expectedVersion:admin.version,roleIds:[],reason:'Không được tự đổi giả'})).statusCode,403);
+  jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));
+  const last=await f.post(`members/${f.admin}/school-roles`,{expectedVersion:admin.version,roleIds:[],reason:'Không được bỏ admin cuối giả'});assert.equal(last.statusCode,409);assert.equal(last.json().code,'LAST_ADMIN_REQUIRED');
+  assert.equal((await f.post(`members/${f.admin}/end`,{expectedVersion:admin.version,reason:'Không được kết thúc admin cuối giả'})).json().code,'LAST_ADMIN_REQUIRED');
+  assert.equal((await f.post(`members/${f.target}/school-roles`,{expectedVersion:target.version,roleIds:[],reason:'Không được tự đổi giả'})).statusCode,403);
+  const ceiling=await f.post(`members/${f.other}/school-roles`,{expectedVersion:other.version,roleIds:[f.adminRole],reason:'Không được vượt trần giả'});assert.equal(ceiling.statusCode,403);
+  const expiry=await f.post(`members/${f.other}/school-roles`,{expectedVersion:other.version,roleIds:[read.id],reason:'Không được cấp vô thời hạn giả'});assert.equal(expiry.statusCode,403);assert.equal(expiry.json().code,'DELEGATION_EXPIRY_CEILING');
+  const key=crypto.randomUUID(),body={expectedVersion:other.version,roleIds:[read.id],reason:'Cấp quyền hữu hạn giả',validUntil:new Date(Date.now()+1800000).toISOString()},ok=await f.post(`members/${f.other}/school-roles`,body,key);assert.equal(ok.statusCode,200,ok.body);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,managerGrant.id]),{schoolId:f.schoolId});
+  assert.equal((await f.post(`members/${f.other}/school-roles`,body,key)).statusCode,403);
+});
+
+test('B6 ending a membership revokes all current/future grants and assignments without deleting history or other schools',async()=>{
+  const f=await staffUiFixture(),read=await f.role([{action:'school.read',scopes:['SCHOOL']}]);await f.grant(f.target,read.id,{validFrom:new Date(Date.now()+86400000).toISOString()});
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'HOMEROOM',startsOn:f.today,endsOn:f.endsOn});assert.equal(assignment.statusCode,201,assignment.body);const row=assignment.json().data,target=await f.member(f.target);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const cookie=cookies();assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/classes/${f.classId}`)).statusCode,200);
+  jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const stale=await f.post(`members/${f.target}/end`,{expectedVersion:target.version-1,reason:'Phiên bản cũ giả'});assert.equal(stale.statusCode,409);
+  const key=crypto.randomUUID(),body={expectedVersion:target.version,reason:'Kết thúc công tác kiểm thử giả'},ended=await f.post(`members/${f.target}/end`,body,key);assert.equal(ended.statusCode,200,ended.body);const data=ended.json().data;assert.equal(data.status,'ENDED');assert.ok(data.endedAt);assert.equal(data.statusReason,body.reason);assert.equal(data.grants.length,0);assert.equal(data.schoolRoleGrants.length,0);assert.ok(data.version>target.version);
+  const dbState=await db.transaction(async tx=>({grants:(await tx.query('SELECT revoked_at FROM app.role_grants WHERE school_id=$1 AND member_id=$2',[f.schoolId,f.target])).rows,assignment:(await tx.query('SELECT revoked_at,starts_on,ends_on FROM app.teaching_assignments WHERE school_id=$1 AND id=$2',[f.schoolId,row.id])).rows[0],otherSchool:(await tx.query('SELECT status FROM app.memberships WHERE school_id=$1 AND id=$2',[schoolA,seedId('member:A:teacher-a')])).rows[0]}),{schoolId:f.schoolId});
+  assert.ok(dbState.grants.every(g=>g.revoked_at));assert.ok(dbState.assignment.revoked_at);assert.equal(dbState.assignment.starts_on,row.startsOn);assert.equal(dbState.assignment.ends_on,row.endsOn);
+  // Cross-school rows are unavailable under this tenant context, not a fake empty history.
+  assert.equal(dbState.otherSchool,undefined);assert.equal((await db.transaction(tx=>tx.query('SELECT status FROM app.memberships WHERE school_id=$1 AND id=$2',[schoolA,seedId('member:A:teacher-a')]),{schoolId:schoolA})).rows[0].status,'ACTIVE');
+  assert.equal((await server.inject({method:'GET',url:`/api/v1/schools/${f.schoolId}/classes/${f.classId}`,headers:{cookie}})).statusCode,404);
+  assert.equal((await f.post(`members/${f.target}/end`,body,key)).statusCode,200);const reopen=await f.post(`members/${f.target}/reactivate`,{expectedVersion:data.version,reason:'Nhận lại thành viên nhưng không phục hồi grant giả'});assert.equal(reopen.statusCode,200,reopen.body);assert.equal(reopen.json().data.grants.length,0);assert.equal(reopen.json().data.schoolRoleGrants.length,0);
+});
+
+test('B6 native school invitations persist all roles/profile, replay once and accept multiple or zero grants atomically',async()=>{
+  const f=await staffUiFixture(),read=await f.role([{action:'school.read',scopes:['SCHOOL']}]),directory=await f.role([{action:'member.read',scopes:['SCHOOL']}]);
+  const body={email:`staff-ui-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Họ tên công tác thật trong fixture',proposedDuty:'Giáo viên chưa phân công lớp',roleIds:[read.id,directory.id],expiresInDays:30},key=crypto.randomUUID(),created=await f.post('staff-invitations',body,key);assert.equal(created.statusCode,201,created.body);const invitation=created.json().data;
+  assert.equal(invitation.workDisplayName,body.workDisplayName);assert.equal(invitation.proposedDuty,body.proposedDuty);assert.deepEqual(invitation.roleIds,body.roleIds);assert.ok(!('token' in invitation)&&!('url' in invitation));assert.ok((Date.parse(invitation.expiresAt)-Date.now())/86400000>29.9);
+  assert.deepEqual((await f.post('staff-invitations',body,key)).json().data,invitation);assert.equal((await f.post('staff-invitations',body)).statusCode,422);
+  const badEmail=`bad-ui-${crypto.randomUUID()}@example.invalid`,bad=await f.post('staff-invitations',{...body,email:badEmail,roleIds:[read.id,seedId('role:B:SCHOOL_ADMIN')]});assert.equal(bad.statusCode,422);
+  assert.equal((await db.transaction(tx=>tx.query('SELECT count(*)::int AS total FROM app.staff_invitations WHERE school_id=$1 AND email_normalized=$2',[f.schoolId,badEmail]),{schoolId:f.schoolId})).rows[0].total,0);
+  const accept=async(invite,email)=>{
+    const mails=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invite.id}`])).rows;assert.equal(mails.length,1);
+    const content=decryptMail(mails[0].encrypted_payload),url=new URL(content.url),fragment=new URLSearchParams(url.hash.slice(1));
+    const bootstrap=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken,response=await request('POST','/api/v1/invitations/accept',{schoolSlug:fragment.get('school'),token:fragment.get('token'),displayName:'Danh tính fixture riêng',newPassword:password},bootstrap);assert.equal(response.statusCode,200,response.body);
+    return (await db.transaction(tx=>tx.query('SELECT m.id,u.display_name,m.work_display_name FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[f.schoolId,email]),{schoolId:f.schoolId})).rows[0];
+  };
+  const member=await accept(invitation,body.email);assert.equal(member.work_display_name,body.workDisplayName);assert.equal(member.display_name,'Danh tính fixture riêng');assert.equal((await db.transaction(tx=>tx.query('SELECT count(*)::int AS total FROM app.role_grants WHERE school_id=$1 AND member_id=$2',[f.schoolId,member.id]),{schoolId:f.schoolId})).rows[0].total,2);
+  const emptyBody={...body,email:`empty-ui-${crypto.randomUUID()}@example.invalid`,roleIds:[],expiresInDays:2},empty=await f.post('staff-invitations',emptyBody);assert.equal(empty.statusCode,201,empty.body);const emptyMember=await accept(empty.json().data,emptyBody.email);assert.equal((await db.transaction(tx=>tx.query('SELECT count(*)::int AS total FROM app.role_grants WHERE school_id=$1 AND member_id=$2',[f.schoolId,emptyMember.id]),{schoolId:f.schoolId})).rows[0].total,0);
+  const listed=await request('GET',`/api/v1/schools/${f.schoolId}/invitations?q=${encodeURIComponent(body.email)}`);assert.equal(listed.statusCode,200,listed.body);assert.equal(listed.json().page.total,1);assert.equal(listed.json().data[0].inviterName,'Quản trị UI giả');assert.equal(listed.json().data[0].workDisplayName,body.workDisplayName);
+});
+
+test('B6 zero-role invitation still rechecks current inviter membership and mail authority before acceptance',async()=>{
+  const f=await staffUiFixture(),body={email:`zero-permission-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Nhân sự chưa phân công giả',roleIds:[],expiresInDays:2},created=await f.post('staff-invitations',body);assert.equal(created.statusCode,201,created.body);
+  const mail=(await db.app.query('SELECT id,encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${created.json().data.id}`])).rows[0],content=decryptMail(mail.encrypted_payload),url=new URL(content.url),fragment=new URLSearchParams(url.hash.slice(1));
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND member_id=$2',[f.schoolId,f.admin]),{schoolId:f.schoolId});
+  const allowed=await db.transaction(tx=>tx.query('SELECT identity.mail_delivery_allowed($1) AS allowed',[mail.id]),{schoolId:f.schoolId});assert.equal(allowed.rows[0].allowed,false);
+  const csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken,response=await request('POST','/api/v1/invitations/accept',{schoolSlug:fragment.get('school'),token:fragment.get('token'),displayName:'Không được tạo danh tính giả',newPassword:password},csrf);assert.equal(response.statusCode,422);assert.equal(response.json().code,'INVITATION_UNAVAILABLE');assert.equal((await db.app.query('SELECT count(*)::int AS total FROM identity.users WHERE email_normalized=$1',[body.email])).rows[0].total,0);
+});
+
+
+test('B6 expired staff invitations cannot be revoked as pending or delivered, and preserve their history',async()=>{
+  const f=await staffUiFixture(),body={email:`expired-staff-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Nhân sự hết hạn giả',roleIds:[],expiresInDays:1},created=await f.post('staff-invitations',body);assert.equal(created.statusCode,201,created.body);const id=created.json().data.id;
+  const expired=(await db.transaction(tx=>tx.query("UPDATE app.staff_invitations SET expires_at=now()-interval '1 second' WHERE school_id=$1 AND id=$2 RETURNING version,status",[f.schoolId,id]),{schoolId:f.schoolId})).rows[0];
+  const response=await f.post(`invitations/${id}/revoke`,{expectedVersion:expired.version,reason:'Không thể thu hồi lời mời hết hạn giả'});assert.equal(response.statusCode,409);assert.equal(response.json().code,'INVITATION_UNAVAILABLE');
+  const persisted=(await db.transaction(tx=>tx.query('SELECT version,status FROM app.staff_invitations WHERE school_id=$1 AND id=$2',[f.schoolId,id]),{schoolId:f.schoolId})).rows[0];assert.deepEqual(persisted,expired);
+  const mail=(await db.app.query('SELECT id,status FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${id}`])).rows[0];assert.equal(mail.status,'PENDING');assert.equal((await db.transaction(tx=>tx.query('SELECT identity.mail_delivery_allowed($1) AS allowed',[mail.id]),{schoolId:f.schoolId})).rows[0].allowed,false);
 });

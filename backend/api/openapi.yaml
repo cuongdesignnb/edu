@@ -29164,6 +29164,285 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/members/{memberId}/school-roles:
+    post:
+      operationId: replaceMemberSchoolRoles
+      tags:
+        - Staff
+      summary: replaceMemberSchoolRoles
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberRolesReplace"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberSchoolRolesResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/members/{memberId}/end:
+    post:
+      operationId: endMember
+      tags:
+        - Staff
+      summary: endMember
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/staff-invitations:
+    post:
+      operationId: inviteSchoolStaff
+      tags:
+        - Staff
+      summary: inviteSchoolStaff
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchoolStaffInvite"
+      responses:
+        "202":
+          description: Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -30054,6 +30333,22 @@ components:
         loginEmail:
           type: string
           format: email
+        joinedAt:
+          type: string
+          format: date-time
+          nullable: true
+        endedAt:
+          type: string
+          format: date-time
+          nullable: true
+        statusReason:
+          type: string
+          maxLength: 2000
+          nullable: true
+        schoolRoleGrants:
+          type: array
+          items:
+            $ref: "#/components/schemas/GrantView"
       required:
         - id
         - version
@@ -30159,6 +30454,14 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        proposedDuty:
+          type: string
+          maxLength: 300
+        roleIds:
+          type: array
+          items:
+            type: string
+            format: uuid
       required:
         - id
         - version
@@ -38805,6 +39108,103 @@ components:
       required:
         - data
         - requestId
+      additionalProperties: false
+    MemberRolesReplace:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        roleIds:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        validUntil:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 2000
+      required:
+        - expectedVersion
+        - roleIds
+        - reason
+      additionalProperties: false
+    MemberSchoolRoles:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        status:
+          type: string
+          enum:
+            - INVITED
+            - ACTIVE
+            - SUSPENDED
+            - ENDED
+        schoolRoleGrants:
+          type: array
+          items:
+            $ref: "#/components/schemas/GrantView"
+      required:
+        - id
+        - version
+        - status
+        - schoolRoleGrants
+      additionalProperties: false
+    MemberSchoolRolesResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/MemberSchoolRoles"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    SchoolStaffInvite:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        workDisplayName:
+          type: string
+          minLength: 3
+          maxLength: 200
+        proposedDuty:
+          type: string
+          maxLength: 300
+        roleIds:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        expiresInDays:
+          type: integer
+          minimum: 1
+          maximum: 30
+        validUntil:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - email
+        - workDisplayName
+        - roleIds
+        - expiresInDays
       additionalProperties: false
   securitySchemes:
     StaffCookie:

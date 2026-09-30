@@ -9,7 +9,7 @@ import { notify } from '../notifications/notify';
 import type { RequestContext,Handler } from '../../api.router';
 
 export interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null;reason?:string}
-export interface WorkProfile {staffCode?:string;workDisplayName?:string;workPhone?:string;department?:string}
+export interface WorkProfile {staffCode?:string;workDisplayName?:string;workPhone?:string;department?:string;proposedDuty?:string}
 interface InvitationRow {
   id:string;school_id:string;email_normalized:string;proposed_assignments:Proposal[];status:string;
   expires_at:Date;invited_by:string;accepted_user_id:string|null;version:number;created_at:Date;updated_at:Date;
@@ -18,7 +18,8 @@ interface InvitationRow {
 export function invitationDto(invitation:InvitationRow,schoolName?:string,deliveryState?:string){
   return {id:invitation.id,version:invitation.version,createdAt:iso(invitation.created_at),updatedAt:iso(invitation.updated_at),
     email:invitation.email_normalized,expiresAt:iso(invitation.expires_at),status:invitation.status,
-    ...(schoolName?{schoolName}:{}),...(deliveryState?{deliveryState}:{})};
+    ...(schoolName?{schoolName}:{}),...(deliveryState?{deliveryState}:{}),workDisplayName:invitation.work_profile?.workDisplayName??'',
+    proposedDuty:invitation.work_profile?.proposedDuty??'',roleIds:invitation.proposed_assignments.map(p=>p.roleId)};
 }
 @Injectable()
 export class InvitationsService {
@@ -123,11 +124,11 @@ export class InvitationsService {
       return {id:invitation.id,status:'ACCEPTED'};
     },{schoolId:school.id});
   }
-  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal,profile:WorkProfile={},expiresInDays=2){
-    if(!Number.isInteger(expiresInDays)||expiresInDays<1||expiresInDays>14)validation('expiresInDays','Thời hạn lời mời từ 1 đến 14 ngày');
+  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal|Proposal[],profile:WorkProfile={},expiresInDays=2,maximumDays=14){
+    if(!Number.isInteger(expiresInDays)||expiresInDays<1||expiresInDays>maximumDays)validation('expiresInDays',`Thời hạn lời mời từ 1 đến ${maximumDays} ngày`);
     const token=randomToken(),id=crypto.randomUUID();
     const invitation=await one<InvitationRow>(tx,`INSERT INTO app.staff_invitations(id,school_id,email_normalized,token_hash,proposed_assignments,expires_at,invited_by,work_profile)
-      VALUES($1,$2,$3,$4,$5,now()+$8*interval '1 day',$6,$7) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify([proposal]),inviterId,profile,expiresInDays]);
+      VALUES($1,$2,$3,$4,$5,now()+$8*interval '1 day',$6,$7) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify(Array.isArray(proposal)?proposal:[proposal]),inviterId,profile,expiresInDays]);
     const school=await one<{slug:string}>(tx,'SELECT slug FROM platform.schools WHERE id=$1',[schoolId]);
     await tx.query(`INSERT INTO identity.mail_outbox(school_id,template_key,encrypted_payload,dedupe_key)
       VALUES($1,'STAFF_INVITATION',$2,$3)`,[schoolId,encryptMail({email:email.trim().toLowerCase(),schoolSlug:school!.slug,

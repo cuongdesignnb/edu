@@ -55,8 +55,16 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
   if(p.code==='DUPLICATE_SOURCE')code='DUPLICATE';
   if(p.code==='INVALID_CREDENTIALS')code='VALIDATION';
   const messages:Partial<Record<RepoErrorCode,string>>={NO_SESSION:'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',REVOKED:'Link tra cứu không còn hiệu lực hoặc đã bị thu hồi.',NETWORK:'Không nhận được xác nhận lưu từ máy chủ. Nội dung của bạn vẫn còn; hãy thử lại.',READ_ERROR:'Không tải được dữ liệu từ máy chủ. Vui lòng thử lại.'};
+  const problemMessages:Record<string,string>={
+    LAST_ADMIN_REQUIRED:'Trường cần còn ít nhất một quản trị đang có hiệu lực. Hãy phân công quản trị khác trước.',
+    OWN_ROLES_EDIT_FORBIDDEN:'Không thể tự thay đổi vai trò của chính mình.',OWN_ROLE_EDIT_FORBIDDEN:'Không thể sửa mẫu quyền mà bạn đang giữ.',
+    SELF_SUSPENSION_FORBIDDEN:'Không thể tự khóa hoặc kết thúc thành viên của chính mình.',
+    DELEGATION_CEILING:'Không thể cấp quyền vượt quá quyền hiện tại của bạn.',DELEGATION_EXPIRY_CEILING:'Thời hạn được cấp phải nằm trong thời hạn quyền hiện tại của bạn.',
+    INVITATION_UNAVAILABLE:'Lời mời đã hết hạn, bị thu hồi, đã được phản hồi hoặc không còn hiệu lực.',
+    MEMBERSHIP_REACTIVATION_REQUIRED:'Thành viên đã bị khóa hoặc kết thúc. Quản trị trường cần mở lại trước khi nhận lời mời.',
+  };
   const fieldErrors=p.fieldErrors?Object.fromEntries(p.fieldErrors.map(e=>[e.path.replace(/^\//,'').replace(/\//g,'.')||'form',e.message])):undefined;
-  return new RepoError(code,p.code==='INVALID_CREDENTIALS'?(id==='changePassword'?'Mật khẩu hiện tại không đúng.':'Email hoặc mật khẩu không đúng.'):status===429?'Bạn đang thao tác quá nhanh. Hãy đợi rồi thử lại.':status===503?'Máy chủ chưa sẵn sàng. Nội dung chưa lưu vẫn được giữ để thử lại.':messages[code],{fieldErrors,details:{httpStatus:status,problemCode:p.code,requestId:p.requestId,currentVersion:p.currentVersion,...(retryAfter?{retryAfter}: {})}});
+  return new RepoError(code,p.code==='INVALID_CREDENTIALS'?(id==='changePassword'?'Mật khẩu hiện tại không đúng.':'Email hoặc mật khẩu không đúng.'):status===429?'Bạn đang thao tác quá nhanh. Hãy đợi rồi thử lại.':status===503?'Máy chủ chưa sẵn sàng. Nội dung chưa lưu vẫn được giữ để thử lại.':problemMessages[p.code??'']??messages[code],{fieldErrors,details:{httpStatus:status,problemCode:p.code,requestId:p.requestId,currentVersion:p.currentVersion,...(retryAfter?{retryAfter}: {})}});
 }
 async function csrfBootstrap(){
   if(bootstrapCsrf)return bootstrapCsrf;

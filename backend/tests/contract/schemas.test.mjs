@@ -2,8 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,276);assert.equal(new Set(operations.map(op=>op.id)).size,276);
+  assert.equal(operations.length,279);assert.equal(new Set(operations.map(op=>op.id)).size,279);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
+});
+test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
+  const value={expectedVersion:4,roleIds:[],reason:'Thay vai trò'};validateSchema('MemberRolesReplace',value);
+  for(const bad of [{roleIds:[],reason:'Thay vai trò'},{...value,actorId:'spoofed'},{...value,scopeType:'CLASS'},
+    {...value,roleIds:['da72b470-4b45-4f5f-b89d-179c0cdf454a','da72b470-4b45-4f5f-b89d-179c0cdf454a']}])assert.throws(()=>validateSchema('MemberRolesReplace',bad),error=>error.status===422);
+  assert.equal(operations.find(op=>op.id==='replaceMemberSchoolRoles').permission,'role.manage');
+  assert.equal(operations.find(op=>op.id==='endMember').permission,'member.manage');
+  validateSchema('MemberSchoolRoles',{id:'da72b470-4b45-4f5f-b89d-179c0cdf454a',version:4,status:'ACTIVE',schoolRoleGrants:[]},true);
+  assert.throws(()=>validateSchema('MemberSchoolRoles',{id:'da72b470-4b45-4f5f-b89d-179c0cdf454a',version:4,status:'ACTIVE',schoolRoleGrants:[],workPhone:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+});
+test('school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations',()=>{
+  const value={email:'test@example.invalid',workDisplayName:'Nhân sự giả',roleIds:[],expiresInDays:30};validateSchema('SchoolStaffInvite',value);
+  for(const bad of [{...value,expiresInDays:31},{...value,expiresInDays:0},{...value,classId:'da72b470-4b45-4f5f-b89d-179c0cdf454a'},{...value,actorId:'spoofed'}])assert.throws(()=>validateSchema('SchoolStaffInvite',bad),error=>error.status===422);
+  assert.throws(()=>validateSchema('PlatformAdminInviteRequest',{email:'test@example.invalid',expiresInDays:30}),error=>error.status===422);
 });
 test('login rejects spoofed role, school and unknown fields',()=>{
   for(const field of ['actorId','role','schoolId'])assert.throws(()=>validateSchema('LoginRequest',{
