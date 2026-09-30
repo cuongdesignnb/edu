@@ -29,3 +29,44 @@ and overview APIs. SUBJECT reads stay minimal and do not acquire class managemen
 Narrative documents call a processed file AVAILABLE, but the canonical DDL and
 OpenAPI use READY. Code/DTOs keep READY and expose “Sẵn sàng” in the existing UI.
 No file can download while QUARANTINED or without current resource permission.
+
+## ADR-004 — Assignment integrity and lifecycle metadata
+
+The handoff enforces one homeroom teacher per class but not the inverse
+teacher/year constraint or exclusive subject teacher. Migration 006 adds a
+derived year_id, a composite class/year FK and two GiST exclusions. A trigger
+derives year_id from the referenced class; callers cannot set a different year.
+Assignment/GrantView DTOs add optional `revokedAt` so the existing UI can show
+revocation and assignment history without inventing status or rewriting dates.
+
+## ADR-005 — Custom scoped role versus teacher assignment
+
+The default HOMEROOM/SUBJECT_TEACHER grants require a matching current teaching
+assignment, including on reads and historical-date commands. A custom delegated
+CLASS role uses its own scope and grant validity; creating a non-teaching reviewer
+does not require fabricating a teaching assignment. It still needs an active
+membership/school, a current unrevoked grant, and the action and object scope in
+that same grant. SUBJECT routes retain their explicit subject policy and minimal
+DTOs. System templates are immutable; a school can create a bounded custom role
+instead, and nobody can edit a role currently held by themselves.
+
+## ADR-006 — Guardian creation within a class scope
+
+`createGuardian` adds optional query `classId`. A homeroom/class manager supplies
+their authorized class; omission requires SCHOOL scope. A newly created contact
+is not visible to another class until a relationship is explicitly created.
+Relationship creation may use a contact already visible in the manager's scope,
+or an unassociated contact created by that same staff identity. Knowing an
+unrelated guardian UUID cannot expand family access by attaching it to a student.
+
+## ADR-007 — Transfer and handover commands
+
+The contract has create/approve/reject for transfers and create/approve for
+handovers, with no submit or apply endpoint. Creation submits the request;
+approval applies its changes atomically and returns APPLIED. Transfer replaces
+only the enrollment interval, retaining older class records and student identity.
+Handover ends the old assignment/grant on its effective date and creates the new
+pair in the same transaction, retaining original record authors. Future dated
+handovers preserve the old teacher's access until the effective date. Open-work
+counts are stored in the handover checklist and audit. No implicit parent links
+or teacher assignments are carried into a rollover.

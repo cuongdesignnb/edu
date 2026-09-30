@@ -9,7 +9,7 @@ export interface Scope {
   date?: string; allowSubject?: boolean; allowScopedContext?: boolean;
 }
 export interface Grant {
-  id: string; version: number; role_id: string; label: string; scope_type: string;
+  id: string; version: number; role_id: string; role_code: string; label: string; scope_type: string;
   class_id: string | null; subject_id: string | null; valid_from: Date; valid_until: Date | null;
   actions: string[]; assignment_id: string | null; starts_on: string | null; ends_on: string | null;
 }
@@ -17,8 +17,13 @@ const scopedContext = new Set(['school.read', 'year.read', 'teacher.self']);
 export function grantAllows(grant: Grant, action: string, scope: Scope, today: string) {
   if (!grant.actions.includes(action)) return false;
   if (grant.scope_type === 'SCHOOL') return true;
-  if (!grant.assignment_id || !grant.starts_on || grant.starts_on > today || (grant.ends_on && grant.ends_on <= today)) return false;
-  if (scope.date && (scope.date < grant.starts_on || (grant.ends_on && scope.date >= grant.ends_on))) return false;
+  // Default teacher grants are inseparable from their assignment. A deliberately
+  // delegated custom CLASS role is usable within its own grant validity without
+  // inventing a teaching assignment. Request handlers still restrict SUBJECT DTOs.
+  if (['HOMEROOM','SUBJECT_TEACHER'].includes(grant.role_code)) {
+    if (!grant.assignment_id || !grant.starts_on || grant.starts_on > today || (grant.ends_on && grant.ends_on <= today)) return false;
+    if (scope.date && (scope.date < grant.starts_on || (grant.ends_on && scope.date >= grant.ends_on))) return false;
+  }
   if (!scope.classId) return !!scope.allowScopedContext && scopedContext.has(action);
   if (grant.class_id !== scope.classId) return false;
   if (grant.scope_type === 'CLASS') return true;
@@ -36,7 +41,7 @@ export function grantDto(grant: Grant) {
 export class Permissions {
   constructor(private readonly db: Database) {}
   async grants(tx: Transaction, userId: string, schoolId: string): Promise<Grant[]> {
-    return (await tx.query<Grant>(`SELECT g.id,g.version,g.role_id,r.label,g.scope_type,g.class_id,g.subject_id,g.valid_from,g.valid_until,
+    return (await tx.query<Grant>(`SELECT g.id,g.version,g.role_id,r.code AS role_code,r.label,g.scope_type,g.class_id,g.subject_id,g.valid_from,g.valid_until,
       array_agg(DISTINCT p.action_code) AS actions, a.id AS assignment_id,a.starts_on,a.ends_on
       FROM app.memberships m JOIN app.role_grants g ON g.school_id=m.school_id AND g.member_id=m.id
       JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
@@ -44,7 +49,7 @@ export class Permissions {
       LEFT JOIN app.teaching_assignments a ON a.school_id=g.school_id AND a.role_grant_id=g.id AND a.revoked_at IS NULL
       WHERE m.user_id=$1 AND m.school_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL
       AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
-      GROUP BY g.id,r.label,a.id`, [userId,schoolId])).rows;
+      GROUP BY g.id,r.code,r.label,a.id`, [userId,schoolId])).rows;
   }
   async require(tx: Transaction, principal: Principal, actions: string, scope: Scope) {
     const school = (await tx.query<{ status: string; timezone: string }>('SELECT status,timezone FROM platform.schools WHERE id=$1', [scope.schoolId])).rows[0];
@@ -67,6 +72,19 @@ export class Permissions {
       WHERE user_id=$1 AND action_code=$2 AND revoked_at IS NULL AND valid_from<=now()
       AND (valid_until IS NULL OR valid_until>now())`, [principal.userId,action])).rows[0];
     if (!row) throw new Problem(403, 'FORBIDDEN');
+  }
+  async collection(tx:Transaction,principal:Principal,action:string,schoolId:string,allowSubject=false) {
+    const membership=(await tx.query(`SELECT m.id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id
+      WHERE m.school_id=$1 AND m.user_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE'`,
+    [schoolId,principal.userId])).rows[0];
+    if(!membership)throw new Problem(404,'RESOURCE_NOT_FOUND');
+    const today=(await tx.query<{today:string}>(`SELECT to_char(now() AT TIME ZONE timezone,'YYYY-MM-DD') AS today FROM platform.schools WHERE id=$1`,[schoolId])).rows[0]!.today;
+    const grants=await this.grants(tx,principal.userId,schoolId);
+    if(grants.some(grant=>grant.scope_type==='SCHOOL'&&grant.actions.includes(action)))return {all:true,classIds:[] as string[],grants,today};
+    const classIds=[...new Set(grants.filter(grant=>grant.class_id&&grantAllows(grant,action,
+      {schoolId,classId:grant.class_id,allowSubject},today)).map(grant=>grant.class_id!))];
+    if(!classIds.length)throw new Problem(403,'FORBIDDEN');
+    return {all:false,classIds,grants,today};
   }
   async context(principal: Principal) {
     const memberships = await this.db.transaction(async tx => (await tx.query<{ school_id: string; school_name: string; id: string; status: string }>(

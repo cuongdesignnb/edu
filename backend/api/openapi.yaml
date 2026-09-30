@@ -10312,6 +10312,12 @@ paths:
             maxLength: 128
           description: Một khóa cho một logical command, retry dùng lại. Không dùng khóa
             khác để lặp cùng sự việc.
+        - name: classId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -27298,6 +27304,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        revokedAt:
+          type: string
+          format: date-time
+          nullable: true
       required:
         - id
         - version
@@ -28670,6 +28680,10 @@ components:
         endsOn:
           type: string
           format: date
+          nullable: true
+        revokedAt:
+          type: string
+          format: date-time
           nullable: true
       required:
         - id

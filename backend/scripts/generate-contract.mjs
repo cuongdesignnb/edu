@@ -20,6 +20,11 @@ function normalize(node) {
   for (const value of Object.values(node)) normalize(value);
 }
 normalize(spec);
+// ADR-004: expose lifecycle metadata needed by the existing assignment UI.
+spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
+spec.components.schemas.GrantView.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
+// ADR-006: scoped creation of a new unassociated guardian contact.
+spec.paths['/schools/{schoolId}/guardians'].post.parameters.push({name:'classId',in:'query',required:false,schema:{type:'string',format:'uuid'}});
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });

@@ -6,7 +6,12 @@ import { AppModule } from './app.module';
 import { Database } from './database/database';
 import { IdentityService } from './modules/identity/identity.service';
 import { Permissions } from './common/permissions';
-import { installRoutes } from './api.router';
+import { installRoutes,registerHandlers } from './api.router';
+import { OrganizationService } from './modules/academics/organization.service';
+import { StudentsService } from './modules/students/students.service';
+import { InvitationsService } from './modules/identity/invitations.service';
+import { StaffService } from './modules/staff/staff.service';
+import { TransitionsService } from './modules/students/transitions.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -16,6 +21,11 @@ export async function createApplication() {
   const server=adapter.getInstance();
   await server.register(cookie);
   installRoutes(server,app.get(Database),app.get(IdentityService),app.get(Permissions));
+  registerHandlers(server,app.get(OrganizationService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(StudentsService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(InvitationsService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(StaffService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(TransitionsService).handlers(),app.get(IdentityService));
   app.enableShutdownHooks();
   await app.init();
   return app;

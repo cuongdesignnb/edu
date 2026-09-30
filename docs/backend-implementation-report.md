@@ -20,8 +20,8 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 5 migrations applied; 10 foundation integration checks passed; invitations/idempotency/domain permission tests still pending |
-| B2 | NOT_STARTED | Organization and student services pending |
+| B1 | PARTIAL | 6 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; support access integration remains pending |
+| B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers and rollover implemented; file/import pipeline and broader contract coverage remain pending |
 | B3 | NOT_STARTED | Attendance/conduct/publication workflows pending |
 | B4 | NOT_STARTED | Parent session/projection workflows pending |
 | B5 | NOT_STARTED | Remaining domain services/jobs/files pending |
@@ -53,3 +53,27 @@ No real student data used. Production not deployed.
 
 Pinned backend dependencies are in `backend/package-lock.json`. Original
 frontend dependencies/lockfile/design are untouched at this checkpoint.
+
+## B2 checkpoint — actual PostgreSQL execution
+
+- Migration 006 successfully applied; subsequent replay was a no-op. Default
+  teacher grants require a current assignment. Custom class delegation has an
+  explicit ADR and current authorization checks on every request/replay.
+- 21/21 integration checks completed at the transition checkpoint. Evidence:
+  `qa/backend/b2-build.log` and `qa/backend/b2-integration.log`. This includes
+  concurrent idempotent creates, signed cursor isolation, minimal subject DTOs,
+  guardian verification, existing/new identity invitation acceptance, encrypted
+  single-use reset, last-admin protection, concurrent assignment exclusion and
+  immediate revocation within existing independent sessions.
+- Transfer approval with two concurrent requests and one remaining target seat:
+  one succeeds, one rejects with capacity error and preserves its old enrollment.
+  Handover retains two dated assignments and denies the old teacher on the next
+  read. Rollover rejects a changed preview and creates one new enrollment on
+  idempotent replay, leaving old-year intervals and parent links unchanged.
+- Scoped guardian creation also passes a negative test: a class teacher cannot
+  attach an unrelated family's known guardian ID to acquire its contact data.
+- Unit/contract checks: 7/7 executed. This is schema validation plus policy unit
+  coverage, not a claim that all 264 API contracts or 118 core screens passed.
+- Frontend connected: NO. Worker mail/import/export processing, parent portal,
+  publications, browser E2E, operational drills and performance: NOT_RUN.
+- Final root deploy/scripts merge and local URL service have not been started.

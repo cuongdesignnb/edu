@@ -9,17 +9,17 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getCsrf | AU01, AU02, AU03, AU04, PA01 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | login | AU01 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | logout | AU07 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
-| forgotPassword | AU02 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
-| resetPassword | AU03 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
+| forgotPassword | AU02 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| resetPassword | AU03 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | changePassword | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
 | getMyContext | AU01, AU05, AU08, SY05, SY06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | getMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | updateMyProfile | AU06 | TESTED | B0-B1 foundation source, build/typecheck/lint exit0; qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs |
 | listMySessions | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
 | revokeMySession | AU07 | IMPLEMENTED | B0-B1 foundation source, build/typecheck/lint exit0 |
-| inspectInvitation | AU04 | NOT_STARTED |  |
-| acceptInvitation | AU04 | NOT_STARTED |  |
-| declineInvitation | AU04 | NOT_STARTED |  |
+| inspectInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| acceptInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| declineInvitation | AU04 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listMyNotifications | AU09, TE05 | NOT_STARTED |  |
 | readMyNotification | AU09, TE05 | NOT_STARTED |  |
 | getPlatformOverview | PL01 | NOT_STARTED |  |
@@ -42,79 +42,79 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getPlatformSettings | PL11 | NOT_STARTED |  |
 | updatePlatformSettings | PL11 | NOT_STARTED |  |
 | getSchoolOverview | SC01 | NOT_STARTED |  |
-| getSchoolProfile | SC02 | NOT_STARTED |  |
-| updateSchoolProfile | SC02 | NOT_STARTED |  |
-| listYears | SC03, SC04, SC05 | NOT_STARTED |  |
-| createYear | SC03, SC04, SC05 | NOT_STARTED |  |
-| getYear | SC03, SC04, SC05 | NOT_STARTED |  |
-| updateYear | SC03, SC04, SC05 | NOT_STARTED |  |
-| listTerms | SC05, SC06 | NOT_STARTED |  |
-| createTerm | SC05, SC06 | NOT_STARTED |  |
-| getTerm | SC05, SC06 | NOT_STARTED |  |
-| updateTerm | SC05, SC06 | NOT_STARTED |  |
-| listWeeks | SC05, SC06 | NOT_STARTED |  |
-| createWeek | SC05, SC06 | NOT_STARTED |  |
-| getWeek | SC05, SC06 | NOT_STARTED |  |
-| updateWeek | SC05, SC06 | NOT_STARTED |  |
-| listCalendarEvents | SC06 | NOT_STARTED |  |
-| createCalendarEvent | SC06 | NOT_STARTED |  |
-| getCalendarEvent | SC06 | NOT_STARTED |  |
-| updateCalendarEvent | SC06 | NOT_STARTED |  |
-| listClasss | SC09 | NOT_STARTED |  |
-| createClass | SC09 | NOT_STARTED |  |
-| getClass | SC09 | NOT_STARTED |  |
-| updateClass | SC09 | NOT_STARTED |  |
-| activateYear | SC05 | NOT_STARTED |  |
-| archiveYear | SC07 | NOT_STARTED |  |
-| activateClass | SC09 | NOT_STARTED |  |
-| archiveClass | SC09 | NOT_STARTED |  |
-| publishCalendarEvent | SC06 | NOT_STARTED |  |
-| listDictionary | SC08 | NOT_STARTED |  |
-| createDictionary | SC08 | NOT_STARTED |  |
-| updateDictionary | SC08 | NOT_STARTED |  |
-| createRollover | SC07 | NOT_STARTED |  |
-| getRollover | SC07 | NOT_STARTED |  |
-| validateRollover | SC07 | NOT_STARTED |  |
-| commitRollover | SC07 | NOT_STARTED |  |
-| listMembers | SC10 | NOT_STARTED |  |
-| getMember | SC11 | NOT_STARTED |  |
-| updateMember | SC11 | NOT_STARTED |  |
-| suspendMember | SC10, SC11 | NOT_STARTED |  |
-| reactivateMember | SC10, SC11 | NOT_STARTED |  |
-| listInvitations | SC10 | NOT_STARTED |  |
-| inviteStaff | SC10 | NOT_STARTED |  |
-| revokeInvitation | SC10 | NOT_STARTED |  |
-| listRoles | SC13 | NOT_STARTED |  |
-| getRole | SC14 | NOT_STARTED |  |
-| createRole | SC13 | NOT_STARTED |  |
-| updateRole | SC14 | NOT_STARTED |  |
-| previewGrant | SC12, SC14 | NOT_STARTED |  |
-| createGrant | SC12, SC14 | NOT_STARTED |  |
-| revokeGrant | SC11, SC14 | NOT_STARTED |  |
-| listAssignments | SC11, SC12 | NOT_STARTED |  |
-| createAssignment | SC12 | NOT_STARTED |  |
-| revokeAssignment | SC11, SC12 | NOT_STARTED |  |
-| listHandovers | SC15 | NOT_STARTED |  |
-| createHandover | SC15 | NOT_STARTED |  |
-| approveHandover | SC15 | NOT_STARTED |  |
-| listStudents | SC16 | NOT_STARTED |  |
-| createStudent | SC17 | NOT_STARTED |  |
-| getStudent | SC18, SC19 | NOT_STARTED |  |
-| updateStudent | SC19 | NOT_STARTED |  |
-| listStudentEnrollments | SC18 | NOT_STARTED |  |
-| createEnrollment | SC17, SC20 | NOT_STARTED |  |
-| listTransfers | SC20 | NOT_STARTED |  |
-| createTransfer | SC20, CL03 | NOT_STARTED |  |
-| approveTransfer | SC20 | NOT_STARTED |  |
-| rejectTransfer | SC20 | NOT_STARTED |  |
-| listGuardians | SC21 | NOT_STARTED |  |
-| createGuardian | SC21, SC18 | NOT_STARTED |  |
-| getGuardian | SC22 | NOT_STARTED |  |
-| updateGuardian | SC22 | NOT_STARTED |  |
-| listRelationships | SC18, SC22 | NOT_STARTED |  |
-| createRelationship | SC18, SC22 | NOT_STARTED |  |
-| verifyRelationship | SC22 | NOT_STARTED |  |
-| revokeRelationship | SC22 | NOT_STARTED |  |
+| getSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| updateYear | SC03, SC04, SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listTerms | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateTerm | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listWeeks | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listCalendarEvents | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| activateYear | SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| archiveYear | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| activateClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| archiveClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| publishCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateDictionary | SC08 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getRollover | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| validateRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| commitRollover | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listMembers | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateMember | SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| suspendMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| reactivateMember | SC10, SC11 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listInvitations | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| inviteStaff | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| revokeInvitation | SC10 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listRoles | SC13 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createRole | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| updateRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| previewGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listAssignments | SC11, SC12 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createAssignment | SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| revokeAssignment | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listHandovers | SC15 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| approveHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listStudents | SC16 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createStudent | SC17 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getStudent | SC18, SC19 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateStudent | SC19 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listStudentEnrollments | SC18 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createEnrollment | SC17, SC20 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listTransfers | SC20 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createTransfer | SC20, CL03 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| approveTransfer | SC20 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| rejectTransfer | SC20 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| listGuardians | SC21 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createGuardian | SC21, SC18 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getGuardian | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateGuardian | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| listRelationships | SC18, SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createRelationship | SC18, SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| verifyRelationship | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| revokeRelationship | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listParentAccess | SC23 | NOT_STARTED |  |
 | issueParentAccess | SC18, SC23 | NOT_STARTED |  |
 | getParentAccess | SC24 | NOT_STARTED |  |
@@ -128,8 +128,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listMyTasks | TE04 | NOT_STARTED |  |
 | listTeacherAnnouncements | TE05 | NOT_STARTED |  |
 | getClassOverview | CL01 | NOT_STARTED |  |
-| listClassStudents | CL02 | NOT_STARTED |  |
-| getClassStudent | CL03 | NOT_STARTED |  |
+| listClassStudents | CL02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| getClassStudent | CL03 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | listGroups | CL13 | NOT_STARTED |  |
 | createGroup | CL13 | NOT_STARTED |  |
 | listPositions | CL13 | NOT_STARTED |  |
@@ -272,9 +272,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|
 | AU01 | core | TESTED | NOT_STARTED |  |
-| AU02 | core | IMPLEMENTED | NOT_STARTED |  |
-| AU03 | core | IMPLEMENTED | NOT_STARTED |  |
-| AU04 | core | PARTIAL | NOT_STARTED |  |
+| AU02 | core | TESTED | NOT_STARTED |  |
+| AU03 | core | TESTED | NOT_STARTED |  |
+| AU04 | core | IMPLEMENTED | NOT_STARTED |  |
 | AU05 | core | TESTED | NOT_STARTED |  |
 | AU06 | core | TESTED | NOT_STARTED |  |
 | AU07 | core | IMPLEMENTED | NOT_STARTED |  |
@@ -294,26 +294,26 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL11 | core | PARTIAL | NOT_STARTED |  |
 | SC01 | core | PARTIAL | NOT_STARTED |  |
 | SC02 | core | PARTIAL | NOT_STARTED |  |
-| SC03 | core | PARTIAL | NOT_STARTED |  |
-| SC04 | core | PARTIAL | NOT_STARTED |  |
-| SC05 | core | PARTIAL | NOT_STARTED |  |
-| SC06 | core | PARTIAL | NOT_STARTED |  |
-| SC07 | core | PARTIAL | NOT_STARTED |  |
-| SC08 | core | PARTIAL | NOT_STARTED |  |
-| SC09 | core | PARTIAL | NOT_STARTED |  |
-| SC10 | core | PARTIAL | NOT_STARTED |  |
-| SC11 | core | PARTIAL | NOT_STARTED |  |
-| SC12 | core | PARTIAL | NOT_STARTED |  |
-| SC13 | core | PARTIAL | NOT_STARTED |  |
-| SC14 | core | PARTIAL | NOT_STARTED |  |
-| SC15 | core | PARTIAL | NOT_STARTED |  |
-| SC16 | core | PARTIAL | NOT_STARTED |  |
-| SC17 | core | PARTIAL | NOT_STARTED |  |
+| SC03 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC04 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC05 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC06 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC07 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC08 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC09 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC10 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC11 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC12 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC13 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC14 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC15 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC16 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC17 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC18 | core | PARTIAL | NOT_STARTED |  |
-| SC19 | core | PARTIAL | NOT_STARTED |  |
-| SC20 | core | PARTIAL | NOT_STARTED |  |
-| SC21 | core | PARTIAL | NOT_STARTED |  |
-| SC22 | core | PARTIAL | NOT_STARTED |  |
+| SC19 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC20 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC21 | core | TESTED | NOT_STARTED |  |
+| SC22 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC23 | core | PARTIAL | NOT_STARTED |  |
 | SC24 | core | PARTIAL | NOT_STARTED |  |
 | SC25 | core | PARTIAL | NOT_STARTED |  |
@@ -342,8 +342,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | TE05 | core | PARTIAL | NOT_STARTED |  |
 | TE06 | core | PARTIAL | NOT_STARTED |  |
 | CL01 | core | PARTIAL | NOT_STARTED |  |
-| CL02 | core | PARTIAL | NOT_STARTED |  |
-| CL03 | core | PARTIAL | NOT_STARTED |  |
+| CL02 | core | TESTED | NOT_STARTED |  |
+| CL03 | core | TESTED | NOT_STARTED |  |
 | CL04 | core | PARTIAL | NOT_STARTED |  |
 | CL05 | core | PARTIAL | NOT_STARTED |  |
 | CL06 | core | PARTIAL | NOT_STARTED |  |

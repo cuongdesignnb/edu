@@ -1,0 +1,34 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-7fb8dcc25ce2 Creating 
+ Container edumanage_backend_test-runner-run-7fb8dcc25ce2 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (346.603443ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (9.279646ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.75797ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (3.383132ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (95.398464ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (50.054925ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (106.595949ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (58.337131ms)
+✔ BE21 parent runtime role cannot select raw student rows (11.762226ms)
+✔ B0 health ready checks actual migrations, database and private storage (12.94589ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (82.316362ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (59.336123ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (105.902342ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (66.334483ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (123.732527ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (93.806166ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (155.991361ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (133.349649ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (365.346624ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (766.214953ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (146.243122ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3196.972957
