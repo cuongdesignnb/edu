@@ -173,3 +173,11 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - 124/264 API operations implemented. The scoring helper is not yet wired to
   conduct record approval, weekly locking or adjustment publication. Those B3
   workflows remain pending; parent HTTP, frontend connection and B7 remain pending.
+# Conduct/adjustment/linkage checkpoint — actual execution
+
+- Migrations 010–012 applied and replayed with checksum validation against the retained private test database. They add conduct source guards, attributed immutable adjustment history and one active conduct fact per attendance record.
+- Twelve conduct and five adjustment operations implemented. Drafts are reviewed before lock; locking creates a complete READY projection. Publication verifies source version, count and projection hash. Adjustment proposals expose server-computed before/after scores without mutating facts; approval and apply are separate commands. Apply preserves excluded facts, appends replacements and supersedes the old current publication atomically.
+- Subject teachers can create/read/edit only their own lesson facts and cannot read whole-class scores or lock/publish. Current assignments are checked for the event date. Source changes block approval/review. Commands authorize after taking the school lock so revocation cannot be bypassed by waiting commands.
+- Attendance optionally creates linked drafts, deduplicates retries and excludes corrected drafts. A locked score returns an explicit warning and remains unchanged while attendance saves.
+- `qa/backend/conduct-sync-integration.log`: 35/35 executed, exit0, including corrections, stale baselines, direct SQL immutability checks and simultaneous conduct create/lock/publish with one source winner. `qa/backend/adjustments-unit-contract.log`: 10/10 executed before the final linkage extension; final contract/lint checks recorded separately.
+- 141/264 API operations implemented. Browser E2E, parent HTTP portal, all frontend adapters, final local Docker deployment, restart/backup-restore and performance remain NOT_RUN. Activity/position source integration awaits the B5 domains. This checkpoint does not mark all B0–B7 accepted.

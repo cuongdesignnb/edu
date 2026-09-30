@@ -18,6 +18,8 @@ import { ImportsService } from './modules/imports/imports.service';
 import { PublicationsService } from './modules/publications/publications.service';
 import { AttendanceService } from './modules/attendance/attendance.service';
 import { RulesService } from './modules/conduct/rules.service';
+import { ConductService } from './modules/conduct/conduct.service';
+import { AdjustmentsService } from './modules/conduct/adjustments.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -38,6 +40,8 @@ export async function createApplication() {
   registerHandlers(server,app.get(PublicationsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(AttendanceService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(RulesService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(ConductService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(AdjustmentsService).handlers(),app.get(IdentityService));
   app.enableShutdownHooks();
   await app.init();
   return app;

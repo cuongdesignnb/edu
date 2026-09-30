@@ -18,6 +18,7 @@ export class Commands {
     if(typeof key!=='string'||key.length<16||key.length>128)throw new Problem(422,'IDEMPOTENCY_KEY_REQUIRED');
     const requestHash=hashToken(canonical({params:c.params,body:c.body,query:c.query}));
     return this.db.transaction(async tx=>{
+      await tx.query('SELECT app.lock_school()');
       await authorize(tx); // Replayed commands must still have current permission.
       const inserted=await tx.query(`INSERT INTO app.idempotency_keys
         (school_id,actor_user_id,operation_id,key_hash,request_hash,expires_at)
@@ -40,7 +41,7 @@ export class Commands {
       [schoolId,c.principal!.userId,c.operation.id,hashToken(key),result.status??200,
         secretResult?{issued:true}:result]);
       return result;
-    },{schoolId});
+    },{schoolId,userId:c.principal!.userId});
   }
 }
 export async function audit(tx:Transaction,c:RequestContext,targetType:string,targetId:string,metadata:Record<string,unknown>={}){

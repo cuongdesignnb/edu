@@ -3,8 +3,9 @@ import { Database,one,iso,type Transaction,type Row } from '../../database/datab
 import { dto,getResource,listResource,resource,type Resource } from '../../database/resources';
 import { Permissions,grantAllows } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
-import { Problem,validation } from '../../common/problem';
+import { Problem,validation,mapError } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
+import { ConductService } from '../conduct/conduct.service';
 import type { RequestContext,Result,Handler } from '../../api.router';
 const r:Resource={table:'app.attendance_sessions',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',classId:'class_id',yearId:'year_id',date:'session_date',granularity:'granularity',lessonId:'lesson_id',status:'status',dataVersion:'data_version',slot:'slot_key'},writeFields:[],search:[],filters:{status:'status',granularity:'granularity',classId:'class_id'}};
 const rr:Resource={table:'app.attendance_records',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',enrollmentId:'enrollment_id',status:'status',lateMinutes:'late_minutes',publicNote:'public_note',internalNote:'internal_note'},writeFields:[],search:[],filters:{}};
@@ -12,7 +13,7 @@ function sessionDto(row:Row){const value=dto(r,row);if(value.granularity==='DAIL
 function recordDto(row:Row){return Object.fromEntries(Object.entries(dto(rr,row)).filter(([,value])=>value!==null));}
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
+  constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService,private readonly conduct:ConductService){}
   handlers():Record<string,Handler>{return Object.fromEntries(['listAttendanceSessions','createAttendanceSession','getAttendanceSession','saveAttendanceRecords','getAttendanceSummary','publishAttendance','reopenAttendance'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async session(tx:Transaction,schoolId:string,classId:string,id:string,lock=false){
     const row=await one<Row>(tx,`SELECT * FROM app.attendance_sessions WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[schoolId,classId,id]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;
@@ -111,6 +112,7 @@ export class AttendanceService {
       }
       if(session.status!=='OPEN')throw new Problem(409,'ATTENDANCE_LOCKED');
       const entries=c.body.records as {enrollmentId:string;expectedVersion:number;status:string;lateMinutes?:number;publicNote?:string;internalNote?:string}[];
+      const conductSync={created:0,excluded:0,blocked:[] as {enrollmentId:string;code:string}[]};
       if(new Set(entries.map(e=>e.enrollmentId)).size!==entries.length)validation('records','Học sinh bị trùng trong request');
       for(const entry of [...entries].sort((a,b)=>a.enrollmentId.localeCompare(b.enrollmentId))){
         const current=await one<Row>(tx,'SELECT * FROM app.attendance_records WHERE school_id=$1 AND session_id=$2 AND enrollment_id=$3 FOR UPDATE',[schoolId,session.id,entry.enrollmentId]);if(!current)validation('enrollmentId','Không thuộc danh sách điểm danh của buổi');
@@ -119,8 +121,12 @@ export class AttendanceService {
         await tx.query(`UPDATE app.attendance_records SET status=$4,late_minutes=$5,public_note=CASE WHEN $6::boolean THEN $7 ELSE public_note END,
           internal_note=CASE WHEN $8::boolean THEN $9 ELSE internal_note END,recorded_by=$10 WHERE school_id=$1 AND session_id=$2 AND enrollment_id=$3`,
         [schoolId,session.id,entry.enrollmentId,entry.status,entry.status==='LATE'?entry.lateMinutes??0:null,Object.hasOwn(entry,'publicNote'),entry.publicNote??null,Object.hasOwn(entry,'internalNote'),entry.internalNote??null,c.principal!.userId]);
+        const source=await one<Row>(tx,'SELECT * FROM app.attendance_records WHERE school_id=$1 AND id=$2',[schoolId,current.id]);
+        await tx.query('SAVEPOINT conduct_sync');
+        try{const synced=await this.conduct.syncAttendance(tx,c,session,source!,c.body.linkConduct===true);conductSync.created+=synced.created;conductSync.excluded+=synced.excluded;await tx.query('RELEASE SAVEPOINT conduct_sync');}
+        catch(error){await tx.query('ROLLBACK TO SAVEPOINT conduct_sync');await tx.query('RELEASE SAVEPOINT conduct_sync');const problem=mapError(error);if(![403,404,409,422].includes(problem.status))throw error;conductSync.blocked.push({enrollmentId:entry.enrollmentId,code:problem.code});}
       }
-      await audit(tx,c,'attendance',String(session.id),{changed:entries.length});return {data:await this.detail(tx,await this.session(tx,schoolId,classId,String(session.id)))};
+      await audit(tx,c,'attendance',String(session.id),{changed:entries.length,conductSync});return {data:{...await this.detail(tx,await this.session(tx,schoolId,classId,String(session.id))),conductSync}};
     };
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});
     return this.commands.execute(c,authorize,work);

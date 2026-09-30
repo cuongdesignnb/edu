@@ -141,3 +141,12 @@ authorized classes before selecting applied rule-set IDs. Issued configuration
 is immutable in PostgreSQL; a new dated class rule period preserves its predecessor
 and cannot replace a rule version already pinned to a conduct period. Revisions
 are allocated under the school lock.
+# ADR-012 — Conduct sources, reviewed corrections and complete READY projections
+
+Conduct sources use stable attendance-record, activity-participant and position-assignment IDs. Subject teachers must anchor facts to their own assigned lesson and receive a minimal DTO without internal notes. Attendance mappings are explicit issued FIXED rules; one active conduct fact per attendance record is enforced in PostgreSQL. Source changes are checked again at approval and review.
+
+LOCKED periods accept corrections only through an approved adjustment bound to the current baseline publication. The proposal and before/after score preview remain immutable; applying excludes retained old facts, appends attributed replacements and publishes a new revision in one transaction. READY publications store projection count/hash and verify both before publishing. A parent's displayed publication time must come from lifecycle metadata when READY was staged earlier.
+
+# ADR-013 — Optional attendance linkage and authorization serialization
+
+The existing attendance checkbox is represented by optional `AttendanceBulk.linkConduct`. Save returns optional `conductSync` counters and per-enrollment warnings. Corrected drafts may be excluded; an approved fact requires review authority. A locked/deadline-limited period remains unchanged while attendance saves and reports a warning. Published scores never change silently. Commands take the tenant lock before reading permission so a queued command cannot retain authorization read before a revocation.

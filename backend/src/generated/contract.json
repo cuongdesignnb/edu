@@ -4192,6 +4192,45 @@
             "MORNING",
             "AFTERNOON"
           ]
+        },
+        "conductSync": {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "excluded": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "blocked": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "enrollmentId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "enrollmentId",
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "created",
+            "excluded",
+            "blocked"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -4292,6 +4331,9 @@
           },
           "minItems": 1,
           "maxItems": 200
+        },
+        "linkConduct": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -4501,6 +4543,13 @@
         "maxOccurrencesPerDay": {
           "type": "integer",
           "minimum": 1
+        },
+        "attendanceStatus": {
+          "type": "string",
+          "enum": [
+            "LATE",
+            "UNEXCUSED"
+          ]
         }
       },
       "required": [
@@ -4849,6 +4898,21 @@
         "recordedBy": {
           "type": "string",
           "format": "uuid"
+        },
+        "lessonId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subjectId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sourceId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "exclusionReason": {
+          "type": "string"
         }
       },
       "required": [
@@ -4917,6 +4981,10 @@
           "format": "uuid"
         },
         "clientEventId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "lessonId": {
           "type": "string",
           "format": "uuid"
         }
@@ -5275,6 +5343,29 @@
             ],
             "additionalProperties": false
           }
+        },
+        "preview": {
+          "type": "object",
+          "properties": {
+            "before": {
+              "$ref": "#/components/schemas/ConductSummary"
+            },
+            "after": {
+              "$ref": "#/components/schemas/ConductSummary"
+            }
+          },
+          "required": [
+            "before",
+            "after"
+          ],
+          "additionalProperties": false
+        },
+        "decisionReason": {
+          "type": "string"
+        },
+        "resultPublicationId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [
@@ -5330,7 +5421,9 @@
               "action"
             ],
             "additionalProperties": false
-          }
+          },
+          "minItems": 1,
+          "maxItems": 100
         }
       },
       "required": [

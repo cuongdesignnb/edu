@@ -165,7 +165,7 @@ test('B0 health ready checks actual migrations, database and private storage',as
 });
 test('B2 class lists use SQL scope and cross-school details deny before serialization',async()=>{
   await login('teacher-a@example.invalid');
-  const classes=await request('GET',`/api/v1/schools/${schoolA}/classes`);
+  const classes=await request('GET',`/api/v1/schools/${schoolA}/classes?q=10A`);
   assert.equal(classes.statusCode,200);
   assert.deepEqual(new Set(classes.json().data.map(row=>row.id)),new Set([classA,classB]));
   const classDetail=await request('GET',`/api/v1/schools/${schoolA}/classes/${classB}`);assert.equal(classDetail.statusCode,200);
@@ -699,4 +699,150 @@ test('B3 rule sets require explicit points, immutable issuance and effective wee
   const knownIssued=await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets/${ruleSet.id}`);assert.equal(knownIssued.statusCode,404);
   const catalog=await request('GET',`/api/v1/schools/${schoolA}/conduct-rule-sets`);assert.equal(catalog.statusCode,200,catalog.body);assert.equal(catalog.json().data.some(r=>r.id===ruleSet.id),false);
   const own=await request('GET',`/api/v1/schools/${schoolA}/classes/${classA}/rules`);assert.equal(own.statusCode,200);assert.equal(own.json().data.id,seedId('ruleset:A'));
+});
+
+async function conductFixture(csrf){
+  const prefix=crypto.randomUUID(),post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const created=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`CON-${prefix}`,name:'Lớp thi đua giả',capacity:4});assert.equal(created.statusCode,201,created.body);const cls=created.json().data;
+  const enrollments=[];
+  for(let i=0;i<2;i++){
+    const student=await post('students',{studentCode:`CON-${prefix}-${i}`,fullName:`Học sinh thi đua giả ${i}`,initialClassId:cls.id,startsOn:'2026-09-01'});assert.equal(student.statusCode,201);
+    const roster=await request('GET',`/api/v1/schools/${schoolA}/students/${student.json().data.id}/enrollments`);assert.equal(roster.statusCode,200,roster.body);enrollments.push(roster.json().data[0]);
+  }
+  const createdRules=await post('conduct-rule-sets',{name:`Nội quy thi đua ${prefix}`,basePoints:'80.10',minimumPoints:'0',maximumPoints:'100'});assert.equal(createdRules.statusCode,201);let rules=createdRules.json().data;
+  const fixed=crypto.randomUUID(),manual=crypto.randomUUID(),attendance=crypto.randomUUID();
+  const patched=await request('PATCH',`/api/v1/schools/${schoolA}/conduct-rule-sets/${rules.id}`,{expectedVersion:rules.version,rules:[
+    {id:fixed,code:'fixed',label:'Đóng góp',groupName:'Học tập',valueMode:'FIXED',defaultDelta:'0.20',reasonRequired:true,maxOccurrencesPerDay:2},
+    {id:manual,code:'manual',label:'Ghi nhận trường',groupName:'Khác',valueMode:'MANUAL',defaultDelta:'0',minimumDelta:'-2',maximumDelta:'2',reasonRequired:true},
+    {id:attendance,code:'attendance',label:'Đi muộn',groupName:'Chuyên cần',valueMode:'FIXED',defaultDelta:'-5.10',reasonRequired:true,attendanceStatus:'LATE'},
+  ],thresholds:[{label:'Đạt',minimumScore:'75'},{label:'Cần cố gắng',minimumScore:'0'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(patched.statusCode,200,patched.body);rules=patched.json().data;
+  const issued=await post(`conduct-rule-sets/${rules.id}/issue`,{expectedVersion:rules.version});assert.equal(issued.statusCode,200);
+  assert.equal((await post(`classes/${cls.id}/rules/apply`,{expectedClassVersion:cls.version,ruleSetId:rules.id,startsOn:'2026-09-01'})).statusCode,200);
+  const periodResponse=await post(`classes/${cls.id}/conduct-periods`,{weekId:seedId('week:A:5')});assert.equal(periodResponse.statusCode,201,periodResponse.body);
+  return {classId:cls.id,enrollments,period:periodResponse.json().data,fixed,manual,attendance,post};
+}
+
+test('B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,records=`${base}/conduct-records`,periods=`${base}/conduct-periods`;
+  const event={periodId:f.period.id,enrollmentId:f.enrollments[0].id,ruleId:f.fixed,publicReason:'Đóng góp trong tiết học',internalNote:'Chỉ dành cho nhân sự',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'MANUAL',clientEventId:crypto.randomUUID()};
+  const key=crypto.randomUUID(),first=await f.post(records,event,key);assert.equal(first.statusCode,201,first.body);let record=first.json().data;
+  const duplicate=await f.post(records,event);assert.equal(duplicate.statusCode,409);assert.equal(duplicate.json().code,'DUPLICATE_SOURCE');
+  const override=await f.post(records,{...event,clientEventId:crypto.randomUUID(),manualDelta:'0'});assert.equal(override.statusCode,422);
+  const manualBad=await f.post(records,{...event,clientEventId:crypto.randomUUID(),ruleId:f.manual,manualDelta:'2.01'});assert.equal(manualBad.statusCode,422);
+  const review=await request('GET',`/api/v1/schools/${schoolA}/${periods}/${f.period.id}/review`);assert.equal(review.statusCode,200,review.body);assert.equal(review.json().data.canLock,false);assert.equal(review.json().data.blockers[0].recordId,record.id);
+  const pending=await f.post(`${periods}/${f.period.id}/lock`,{expectedVersion:review.json().data.period.version});assert.equal(pending.statusCode,422);assert.equal(pending.json().code,'REVIEW_BLOCKED');
+  const edited=await request('PATCH',`/api/v1/schools/${schoolA}/${records}/${record.id}`,{expectedVersion:record.version,publicReason:'Đóng góp đã xác minh'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200);record=edited.json().data;
+  const stale=await f.post(`${records}/${record.id}/approve`,{expectedVersion:record.version-1});assert.equal(stale.statusCode,409);
+  const approved=await f.post(`${records}/${record.id}/approve`,{expectedVersion:record.version});assert.equal(approved.statusCode,200,approved.body);record=approved.json().data;
+  const readonly=await request('PATCH',`/api/v1/schools/${schoolA}/${records}/${record.id}`,{expectedVersion:record.version,publicReason:'Không được viết lại sự kiện'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(readonly.statusCode,409);
+  const excludedEvent=await f.post(records,{...event,ruleId:f.manual,manualDelta:'-1',clientEventId:crypto.randomUUID()});assert.equal(excludedEvent.statusCode,201);
+  const excluded=await f.post(`${records}/${excludedEvent.json().data.id}/exclude`,{expectedVersion:excludedEvent.json().data.version,reason:'Nhập nhầm cần giữ lịch sử'});assert.equal(excluded.statusCode,200,excluded.body);assert.equal(excluded.json().data.status,'EXCLUDED');assert.equal(excluded.json().data.exclusionReason,'Nhập nhầm cần giữ lịch sử');
+  const summary=await request('GET',`/api/v1/schools/${schoolA}/${periods}/${f.period.id}/summary`);assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.pendingCount,0);assert.equal(summary.json().data.students.find(s=>s.enrollmentId===event.enrollmentId).finalPoints,'80.30');
+  const period=summary.json().data.period;
+  const locked=await f.post(`${periods}/${period.id}/lock`,{expectedVersion:period.version});assert.equal(locked.statusCode,200,locked.body);assert.equal(locked.json().data.status,'LOCKED');
+  const stage=await db.transaction(tx=>tx.query('SELECT id,status,expected_item_count,projection_hash FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2',[schoolA,period.id]),{schoolId:schoolA});assert.equal(stage.rowCount,1);assert.equal(stage.rows[0].status,'READY');assert.equal(stage.rows[0].expected_item_count,2);assert.match(stage.rows[0].projection_hash,/^[a-f0-9]{64}$/);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.conduct_records SET public_reason='Viết lại sau chốt' WHERE school_id=$1 AND id=$2",[schoolA,record.id]),{schoolId:schoolA}),error=>error.code==='23514');
+  const wrongSource=await f.post(`${periods}/${period.id}/publish`,{expectedSourceVersion:period.dataVersion-1,expectedPublicationId:null});assert.equal(wrongSource.statusCode,409);
+  const published=await f.post(`${periods}/${period.id}/publish`,{expectedSourceVersion:period.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);assert.equal(published.json().data.id,stage.rows[0].id);
+  const detail=await request('GET',`/api/v1/schools/${schoolA}/${base}/publications/${published.json().data.id}`);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.conduct.students.length,2);
+  const projections=await db.transaction(tx=>tx.query('SELECT payload FROM app.parent_publication_items WHERE school_id=$1 AND publication_id=$2',[schoolA,published.json().data.id]),{schoolId:schoolA});
+  assert.equal(projections.rowCount,2);for(const {payload} of projections.rows){assert.equal(Object.hasOwn(payload,'students'),false);assert.equal(JSON.stringify(payload).includes('Chỉ dành cho nhân sự'),false);assert.equal(payload.adjusted,false);}
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${periods}`)).statusCode,200);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${records}?periodId=${period.id}`)).json().data.length,2);
+  const combined=await conductFixture(csrf),both=await combined.post(`classes/${combined.classId}/conduct-periods/${combined.period.id}/lock-and-publish`,{expectedSourceVersion:combined.period.dataVersion,expectedPublicationId:null});assert.equal(both.statusCode,200,both.body);assert.equal(both.json().data.status,'PUBLISHED');
+});
+
+test('B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts',async()=>{
+  let csrf=await login('admin-a@example.invalid');const f=await conductFixture(csrf),base=`classes/${f.classId}`,records=`${base}/conduct-records`,periods=`${base}/conduct-periods`;
+  const attendanceCreated=await f.post(`${base}/attendance`,{date:'2026-09-29',granularity:'DAILY'});assert.equal(attendanceCreated.statusCode,201);let session=attendanceCreated.json().data;
+  const save=async status=>request('PATCH',`/api/v1/schools/${schoolA}/${base}/attendance/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:session.records[0].enrollmentId,expectedVersion:session.records[0].version,status}]},csrf,{'idempotency-key':crypto.randomUUID()});
+  session=(await save('LATE')).json().data;
+  const linked={periodId:f.period.id,enrollmentId:session.records[0].enrollmentId,ruleId:f.attendance,publicReason:'Đi muộn có nguồn điểm danh',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'ATTENDANCE',sourceId:session.records[0].id,clientEventId:crypto.randomUUID()};
+  const linkedCreated=await f.post(records,linked);assert.equal(linkedCreated.statusCode,201,linkedCreated.body);const linkedRecord=linkedCreated.json().data;
+  const duplicate=await f.post(records,{...linked,clientEventId:crypto.randomUUID()});assert.equal(duplicate.statusCode,409);assert.equal(duplicate.json().code,'DUPLICATE_SOURCE');
+  await db.transaction(tx=>tx.query("UPDATE app.attendance_records SET status='PRESENT',late_minutes=NULL WHERE school_id=$1 AND id=$2",[schoolA,session.records[0].id]),{schoolId:schoolA});
+  session=(await request('GET',`/api/v1/schools/${schoolA}/${base}/attendance/${session.id}`)).json().data;
+  const stale=await f.post(`${records}/${linkedRecord.id}/approve`,{expectedVersion:linkedRecord.version});assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'STALE_SOURCE');
+  assert.equal((await f.post(`${records}/${linkedRecord.id}/exclude`,{expectedVersion:linkedRecord.version,reason:'Nguồn điểm danh đã sửa'})).statusCode,200);
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-a'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201,assignment.body);
+  const fixture=await db.transaction(async tx=>{
+    const t=(await tx.query(`INSERT INTO app.timetable_versions(school_id,class_id,year_id,revision,starts_on,ends_on,created_by) VALUES($1,$2,$3,1,'2026-09-01','2027-06-01',$4) RETURNING id`,[schoolA,f.classId,seedId('year:A'),seedId('user:admin-a')])).rows[0];
+    const free=(await tx.query(`SELECT min(at) AS at FROM generate_series('2026-09-29T03:00:00Z'::timestamptz,'2026-09-29T06:00:00Z'::timestamptz,interval '1 minute') at
+      WHERE NOT EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=$1 AND l.member_id=$2 AND l.status='SCHEDULED' AND tstzrange(l.starts_at,l.ends_at,'[)')&&tstzrange(at,at+interval '30 seconds','[)'))`,[schoolA,seedId('member:A:teacher-a')])).rows[0];assert.ok(free.at);
+    return (await tx.query(`INSERT INTO app.lesson_occurrences(school_id,class_id,timetable_id,subject_id,member_id,starts_at,ends_at) VALUES($1,$2,$3,$4,$5,$6,$6::timestamptz+interval '30 seconds') RETURNING id,starts_at`,[schoolA,f.classId,t.id,seedId('subject:A:math'),seedId('member:A:teacher-a'),free.at])).rows[0];
+  },{schoolId:schoolA});
+  const event={periodId:f.period.id,enrollmentId:f.enrollments[1].id,ruleId:f.fixed,publicReason:'Ghi nhận đúng tiết học',internalNote:'Ghi chú riêng của giáo viên',occurredAt:new Date(fixture.starts_at.getTime()+10000).toISOString(),sourceKind:'MANUAL',clientEventId:crypto.randomUUID(),lessonId:fixture.id};
+  const adminFact=await f.post(records,event);assert.equal(adminFact.statusCode,201,adminFact.body);
+  csrf=await login('teacher-a@example.invalid');
+  const teacherPost=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const noLesson=await teacherPost(records,{...event,lessonId:undefined,clientEventId:crypto.randomUUID()});assert.equal(noLesson.statusCode,404);
+  const manual=await teacherPost(records,{...event,ruleId:f.manual,manualDelta:'1',clientEventId:crypto.randomUUID()});assert.equal(manual.statusCode,404);
+  const own=await teacherPost(records,{...event,clientEventId:crypto.randomUUID()});assert.equal(own.statusCode,201,own.body);assert.equal(Object.hasOwn(own.json().data,'internalNote'),false);
+  const list=await request('GET',`/api/v1/schools/${schoolA}/${records}?periodId=${f.period.id}`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().data.length,1);assert.equal(list.json().data[0].id,own.json().data.id);assert.equal(Object.hasOwn(list.json().data[0],'internalNote'),false);
+  for(const suffix of ['summary','review'])assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${periods}/${f.period.id}/${suffix}`)).statusCode,404);
+  const wrongAuthor=await request('PATCH',`/api/v1/schools/${schoolA}/${records}/${adminFact.json().data.id}`,{expectedVersion:adminFact.json().data.version,publicReason:'Không được sửa người khác'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(wrongAuthor.statusCode,404);
+  assert.equal((await teacherPost(`${records}/${own.json().data.id}/approve`,{expectedVersion:own.json().data.version})).statusCode,404);
+  assert.equal((await teacherPost(`${periods}/${f.period.id}/lock-and-publish`,{expectedSourceVersion:f.period.dataVersion})).statusCode,404);
+});
+
+test('B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,records=`${base}/conduct-records`,periods=`${base}/conduct-periods`,adjustments=`${base}/adjustments`;
+  const event={periodId:f.period.id,enrollmentId:f.enrollments[0].id,ruleId:f.fixed,publicReason:'Ghi nhận trước điều chỉnh',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'MANUAL',clientEventId:crypto.randomUUID()};
+  const created=await f.post(records,event);assert.equal(created.statusCode,201);let record=created.json().data;
+  const approved=await f.post(`${records}/${record.id}/approve`,{expectedVersion:record.version});assert.equal(approved.statusCode,200);record=approved.json().data;
+  const summary=(await request('GET',`/api/v1/schools/${schoolA}/${periods}/${f.period.id}/summary`)).json().data;
+  const published=await f.post(`${periods}/${f.period.id}/lock-and-publish`,{expectedSourceVersion:summary.period.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);const publication=published.json().data;
+  const proposal={periodId:f.period.id,baselinePublicationId:publication.id,reason:'Xác minh lại sự kiện đã chốt',proposedChanges:[{recordId:record.id,action:'REPLACE',replacement:{...event,ruleId:f.manual,manualDelta:'-1.25',publicReason:'Sự kiện sau xác minh',clientEventId:crypto.randomUUID()}}]};
+  const submitted=await f.post(adjustments,proposal);assert.equal(submitted.statusCode,201,submitted.body);let adjustment=submitted.json().data;
+  assert.equal(adjustment.preview.before.students[0].finalPoints,'80.30');assert.equal(adjustment.preview.after.students[0].finalPoints,'78.85');
+  const unchanged=await db.transaction(tx=>tx.query('SELECT status,public_reason FROM app.conduct_records WHERE school_id=$1 AND id=$2',[schoolA,record.id]),{schoolId:schoolA});assert.equal(unchanged.rows[0].status,'APPROVED');assert.equal(unchanged.rows[0].public_reason,event.publicReason);
+  const notApproved=await f.post(`${adjustments}/${adjustment.id}/apply-and-publish`,{expectedSourceVersion:publication.sourceVersion,expectedPublicationId:publication.id});assert.equal(notApproved.statusCode,409);assert.equal(notApproved.json().code,'ADJUSTMENT_NOT_APPROVED');
+  const competing=await f.post(adjustments,{...proposal,proposedChanges:[{recordId:record.id,action:'EXCLUDE'}]});assert.equal(competing.statusCode,201);
+  const accepted=await f.post(`${adjustments}/${adjustment.id}/approve`,{expectedVersion:adjustment.version});assert.equal(accepted.statusCode,200,accepted.body);adjustment=accepted.json().data;
+  const acceptedOther=await f.post(`${adjustments}/${competing.json().data.id}/approve`,{expectedVersion:competing.json().data.version});assert.equal(acceptedOther.statusCode,200);
+  const key=crypto.randomUUID(),body={expectedSourceVersion:publication.sourceVersion,expectedPublicationId:publication.id};
+  const applied=await request('POST',`/api/v1/schools/${schoolA}/${adjustments}/${adjustment.id}/apply-and-publish`,body,csrf,{'idempotency-key':key});assert.equal(applied.statusCode,200,applied.body);const next=applied.json().data;assert.equal(next.revision,publication.revision+1);
+  const replay=await request('POST',`/api/v1/schools/${schoolA}/${adjustments}/${adjustment.id}/apply-and-publish`,body,csrf,{'idempotency-key':key});assert.equal(replay.statusCode,200);assert.deepEqual(replay.json().data,next);
+  const stale=await f.post(`${adjustments}/${competing.json().data.id}/apply-and-publish`,body);assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'STALE_BASELINE');
+  const saved=await db.transaction(async tx=>({records:(await tx.query('SELECT id,status,supersedes_id,recorded_by,approved_by,public_reason FROM app.conduct_records WHERE school_id=$1 AND period_id=$2',[schoolA,f.period.id])).rows,publications:(await tx.query('SELECT id,status,content_hash FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2',[schoolA,f.period.id])).rows,items:(await tx.query('SELECT payload FROM app.parent_publication_items WHERE school_id=$1 AND publication_id=$2',[schoolA,next.id])).rows}),{schoolId:schoolA});
+  assert.equal(saved.records.length,2);assert.equal(saved.records.find(r=>r.id===record.id).status,'EXCLUDED');const replacement=saved.records.find(r=>r.supersedes_id===record.id);assert.equal(replacement.status,'APPROVED');assert.equal(replacement.recorded_by,seedId('user:admin-a'));assert.equal(replacement.approved_by,seedId('user:admin-a'));
+  assert.equal(saved.publications.filter(p=>p.status==='PUBLISHED').length,1);assert.equal(saved.publications.find(p=>p.id===publication.id).status,'SUPERSEDED');assert.equal(saved.publications.find(p=>p.id===publication.id).content_hash,publication.contentHash);
+  assert.equal(saved.items.every(i=>i.payload.adjusted),true);assert.equal(saved.items.find(i=>i.payload.lines.length).payload.finalPoints,'78.85');
+  const list=await request('GET',`/api/v1/schools/${schoolA}/${adjustments}`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().data.find(a=>a.id===adjustment.id).status,'APPLIED');assert.equal(list.json().data.find(a=>a.id===adjustment.id).resultPublicationId,next.id);
+  const rejected=await f.post(adjustments,{periodId:f.period.id,baselinePublicationId:next.id,reason:'Đề nghị kiểm tra để từ chối',proposedChanges:[{recordId:replacement.id,action:'EXCLUDE'}]});assert.equal(rejected.statusCode,201);
+  const declined=await f.post(`${adjustments}/${rejected.json().data.id}/reject`,{expectedVersion:rejected.json().data.version,reason:'Đã kiểm tra không cần điều chỉnh'});assert.equal(declined.statusCode,200,declined.body);assert.equal(declined.json().data.status,'REJECTED');assert.equal(declined.json().data.decisionReason,'Đã kiểm tra không cần điều chỉnh');
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.conduct_records SET status='EXCLUDED',exclusion_reason='Không có phê duyệt hiện hành' WHERE school_id=$1 AND id=$2",[schoolA,replacement.id]),{schoolId:schoolA,userId:seedId('user:admin-a')}),e=>e.code==='23514');
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.adjustment_requests SET reason='Viết lại đề nghị cũ' WHERE school_id=$1 AND id=$2",[schoolA,adjustment.id]),{schoolId:schoolA}),e=>e.code==='23514');
+});
+
+test('B3 a simultaneous conduct record and lock/publish has one source winner',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`;
+  const event={periodId:f.period.id,enrollmentId:f.enrollments[0].id,ruleId:f.fixed,publicReason:'Sự kiện cạnh tranh chốt',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'MANUAL',clientEventId:crypto.randomUUID()};
+  const [created,published]=await Promise.all([f.post(`${base}/conduct-records`,event),f.post(`${base}/conduct-periods/${f.period.id}/lock-and-publish`,{expectedSourceVersion:f.period.dataVersion,expectedPublicationId:null})]);
+  assert.ok((created.statusCode===201&&published.statusCode===409)||(created.statusCode===409&&published.statusCode===200),JSON.stringify({created:created.json(),published:published.json()}));
+  const summary=await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-periods/${f.period.id}/summary`);assert.equal(summary.statusCode,200);
+  const publications=await request('GET',`/api/v1/schools/${schoolA}/${base}/publications`);assert.equal(publications.statusCode,200);
+  if(published.statusCode===200){assert.equal(summary.json().data.period.status,'LOCKED');assert.equal(summary.json().data.pendingCount,0);assert.equal(publications.json().data.length,1);}
+  else{assert.equal(summary.json().data.period.status,'OPEN');assert.equal(summary.json().data.pendingCount,1);assert.equal(publications.json().data.length,0);}
+});
+
+test('B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`;
+  const created=await f.post(`${base}/attendance`,{date:'2026-09-29',granularity:'DAILY'});assert.equal(created.statusCode,201);let session=created.json().data;
+  async function save(status,linkConduct=true){
+    const response=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/attendance/${session.id}/records`,{expectedVersion:session.version,linkConduct,records:[{enrollmentId:session.records[0].enrollmentId,expectedVersion:session.records[0].version,status}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(response.statusCode,200,response.body);session=response.json().data;return session.conductSync;
+  }
+  assert.deepEqual(await save('LATE'),{created:1,excluded:0,blocked:[]});
+  assert.deepEqual(await save('LATE'),{created:0,excluded:0,blocked:[]});
+  let records=(await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-records?periodId=${f.period.id}`)).json().data;assert.equal(records.length,1);assert.equal(records[0].status,'DRAFT');assert.equal(records[0].sourceId,session.records[0].id);
+  assert.deepEqual(await save('PRESENT',false),{created:0,excluded:1,blocked:[]});
+  assert.deepEqual(await save('LATE'),{created:1,excluded:0,blocked:[]});
+  records=(await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-records?periodId=${f.period.id}`)).json().data;assert.equal(records.length,2);const active=records.find(r=>r.status==='DRAFT');
+  assert.equal((await f.post(`${base}/conduct-records/${active.id}/approve`,{expectedVersion:active.version})).statusCode,200);
+  const summary=(await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-periods/${f.period.id}/summary`)).json().data;
+  const published=await f.post(`${base}/conduct-periods/${f.period.id}/lock-and-publish`,{expectedSourceVersion:summary.period.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);
+  const blocked=await save('PRESENT');assert.deepEqual(blocked,{created:0,excluded:0,blocked:[{enrollmentId:session.records[0].enrollmentId,code:'PERIOD_LOCKED'}]});assert.equal(session.records[0].status,'PRESENT');
+  const after=(await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-periods/${f.period.id}/summary`)).json().data;
+  assert.equal(after.students.find(s=>s.enrollmentId===session.records[0].enrollmentId).finalPoints,'75.00');assert.equal(after.period.dataVersion,summary.period.dataVersion);
+  const current=(await request('GET',`/api/v1/schools/${schoolA}/${base}/publications/${published.json().data.id}`)).json().data;assert.equal(current.publication.status,'PUBLISHED');assert.equal(current.publication.contentHash,published.json().data.contentHash);
 });

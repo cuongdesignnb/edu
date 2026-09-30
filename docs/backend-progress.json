@@ -1707,8 +1707,10 @@
         "CL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "createConductPeriod",
@@ -1717,8 +1719,10 @@
         "CL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "getConductSummary",
@@ -1726,8 +1730,10 @@
         "CL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "listConductRecords",
@@ -1735,8 +1741,10 @@
         "CL06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "createConductRecord",
@@ -1744,8 +1752,10 @@
         "CL06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "updateConductRecord",
@@ -1753,8 +1763,10 @@
         "CL06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "approveConductRecord",
@@ -1762,8 +1774,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "excludeConductRecord",
@@ -1771,8 +1785,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "reviewConductPeriod",
@@ -1780,8 +1796,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "lockConductPeriod",
@@ -1789,8 +1807,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "publishConductPeriod",
@@ -1798,8 +1818,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "lockAndPublishConduct",
@@ -1807,8 +1829,10 @@
         "CL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "listAdjustments",
@@ -1816,8 +1840,10 @@
         "CL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "createAdjustment",
@@ -1825,8 +1851,10 @@
         "CL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "approveAdjustment",
@@ -1834,8 +1862,10 @@
         "CL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "rejectAdjustment",
@@ -1843,8 +1873,10 @@
         "CL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "applyAdjustment",
@@ -1852,8 +1884,10 @@
         "CL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/conduct-sync-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolPublications",
@@ -3766,7 +3800,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL07",
@@ -3779,7 +3813,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL08",
@@ -3795,7 +3829,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL09",
@@ -3833,7 +3867,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL12",

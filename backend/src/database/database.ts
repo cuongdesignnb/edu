@@ -27,7 +27,7 @@ export class Database implements OnApplicationShutdown {
       await connection.query('BEGIN');
       // Empty values override any accidentally retained session setting as well.
       await connection.query(`SELECT set_config('app.school_id',$1,true),
-        set_config('app.authenticated_user_id',$2,true),set_config('app.parent_session_id',$3,true)`,
+        set_config('app.authenticated_user_id',$2,true),set_config('app.parent_session_id',$3,true),set_config('app.adjustment_id','',true)`,
       [context.schoolId ?? '', context.userId ?? '', context.parentSessionId ?? '']);
       const value = await fn(connection);
       await connection.query('COMMIT');

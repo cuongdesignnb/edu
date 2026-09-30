@@ -1,0 +1,48 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-59fd294c51c5 Creating 
+ Container edumanage_backend_test-runner-run-59fd294c51c5 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (411.089381ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (10.187566ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (4.097995ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (3.857427ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (134.874429ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (74.600693ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (126.245281ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (63.050293ms)
+✔ BE21 parent runtime role cannot select raw student rows (29.371433ms)
+✔ B0 health ready checks actual migrations, database and private storage (14.614006ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (94.399174ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (69.257336ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (127.186957ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (78.967611ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (151.193712ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (108.144616ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (186.562163ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (147.662686ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (494.08597ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (876.198726ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (166.884579ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (832.527043ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (1182.931231ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (5956.740642ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (3879.691736ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (4319.760873ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (1904.179172ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (927.022908ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (597.112526ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (1066.35281ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (3157.20304ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1483.042132ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (481.506065ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (224.887821ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (428.365719ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30562.671844

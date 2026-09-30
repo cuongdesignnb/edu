@@ -13,6 +13,8 @@ import { ImportsService } from './modules/imports/imports.service';
 import { PublicationsService } from './modules/publications/publications.service';
 import { AttendanceService } from './modules/attendance/attendance.service';
 import { RulesService } from './modules/conduct/rules.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService];
+import { ConductService } from './modules/conduct/conduct.service';
+import { AdjustmentsService } from './modules/conduct/adjustments.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService];
 @Module({providers:services,exports:services})
 export class AppModule {}

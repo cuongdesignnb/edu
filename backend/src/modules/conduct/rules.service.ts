@@ -13,7 +13,7 @@ export async function loadRules(tx:Transaction,schoolId:string,id:string){return
   thresholds:(await tx.query<Row>('SELECT * FROM app.rule_thresholds WHERE school_id=$1 AND rule_set_id=$2 ORDER BY minimum_score DESC,id',[schoolId,id])).rows,
 };}
 function ruleDto(rule:Row){return {id:rule.id,code:rule.code,label:rule.label,groupName:rule.group_name,valueMode:rule.value_mode,defaultDelta:rule.default_delta,
-  ...(rule.minimum_delta!==null?{minimumDelta:rule.minimum_delta}:{}),...(rule.maximum_delta!==null?{maximumDelta:rule.maximum_delta}:{}),reasonRequired:rule.reason_required,...(rule.max_occurrences_per_day!==null?{maxOccurrencesPerDay:rule.max_occurrences_per_day}:{})};}
+  ...(rule.minimum_delta!==null?{minimumDelta:rule.minimum_delta}:{}),...(rule.maximum_delta!==null?{maximumDelta:rule.maximum_delta}:{}),reasonRequired:rule.reason_required,...(rule.max_occurrences_per_day!==null?{maxOccurrencesPerDay:rule.max_occurrences_per_day}:{}),...(rule.attendance_status?{attendanceStatus:rule.attendance_status}:{})};}
 @Injectable()
 export class RulesService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
@@ -83,13 +83,14 @@ export class RulesService {
         await tx.query("UPDATE app.rule_sets SET status='ISSUED',issued_at=now(),issued_by=$3 WHERE school_id=$1 AND id=$2",[schoolId,current.id,c.principal!.userId]);
       }else{
         this.limits({...current,...Object.fromEntries(['basePoints','minimumPoints','maximumPoints'].filter(field=>Object.hasOwn(c.body,field)).map(field=>[r.fields[field],c.body[field]]))});
-        if(c.body.rules){const rules=c.body.rules as {id:string;code:string;label:string;groupName:string;valueMode:string;defaultDelta:string;minimumDelta?:string;maximumDelta?:string;reasonRequired:boolean;maxOccurrencesPerDay?:number}[];
+        if(c.body.rules){const rules=c.body.rules as {id:string;code:string;label:string;groupName:string;valueMode:string;defaultDelta:string;minimumDelta?:string;maximumDelta?:string;reasonRequired:boolean;maxOccurrencesPerDay?:number;attendanceStatus?:string}[];
           if(rules.length>200||new Set(rules.map(rule=>rule.id)).size!==rules.length||new Set(rules.map(rule=>rule.code)).size!==rules.length)validation('rules','Quy tắc trùng hoặc quá giới hạn');
           for(const rule of rules){points(rule.defaultDelta);if(rule.minimumDelta!==undefined)points(rule.minimumDelta);if(rule.maximumDelta!==undefined)points(rule.maximumDelta);
+            if(rule.attendanceStatus&&rule.valueMode!=='FIXED')validation('rules','Điểm danh chỉ liên kết quy tắc điểm cố định');
             if(rule.valueMode==='MANUAL'&&(rule.minimumDelta===undefined||rule.maximumDelta===undefined||new Decimal(rule.minimumDelta).gt(rule.maximumDelta)||new Decimal(rule.defaultDelta).lt(rule.minimumDelta)||new Decimal(rule.defaultDelta).gt(rule.maximumDelta)))validation('rules','Điểm thủ công thiếu hoặc vượt giới hạn');}
           await tx.query('DELETE FROM app.conduct_rules WHERE school_id=$1 AND rule_set_id=$2',[schoolId,current.id]);
-          for(const rule of rules)await tx.query(`INSERT INTO app.conduct_rules(id,school_id,rule_set_id,code,label,group_name,value_mode,default_delta,minimum_delta,maximum_delta,reason_required,max_occurrences_per_day)
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,[rule.id,schoolId,current.id,rule.code,rule.label,rule.groupName,rule.valueMode,rule.defaultDelta,rule.minimumDelta??null,rule.maximumDelta??null,rule.reasonRequired,rule.maxOccurrencesPerDay??null]);
+          for(const rule of rules)await tx.query(`INSERT INTO app.conduct_rules(id,school_id,rule_set_id,code,label,group_name,value_mode,default_delta,minimum_delta,maximum_delta,reason_required,max_occurrences_per_day,attendance_status)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,[rule.id,schoolId,current.id,rule.code,rule.label,rule.groupName,rule.valueMode,rule.defaultDelta,rule.minimumDelta??null,rule.maximumDelta??null,rule.reasonRequired,rule.maxOccurrencesPerDay??null,rule.attendanceStatus??null]);
         }
         if(c.body.thresholds){const thresholds=c.body.thresholds as {label:string;minimumScore:string}[];if(thresholds.length>50||new Set(thresholds.map(t=>points(t.minimumScore))).size!==thresholds.length)validation('thresholds','Mốc xếp loại trùng hoặc quá giới hạn');
           await tx.query('DELETE FROM app.rule_thresholds WHERE school_id=$1 AND rule_set_id=$2',[schoolId,current.id]);

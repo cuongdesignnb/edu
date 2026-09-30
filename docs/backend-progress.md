@@ -160,23 +160,23 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | simulateRules | SC30 | TESTED | qa/backend/rules-integration.log |
 | getClassRules | CL12 | TESTED | qa/backend/rules-integration.log |
 | applyClassRules | CL12 | TESTED | qa/backend/rules-integration.log |
-| listConductPeriods | CL07 | NOT_STARTED |  |
-| createConductPeriod | CL06, CL07 | NOT_STARTED |  |
-| getConductSummary | CL07 | NOT_STARTED |  |
-| listConductRecords | CL06 | NOT_STARTED |  |
-| createConductRecord | CL06 | NOT_STARTED |  |
-| updateConductRecord | CL06 | NOT_STARTED |  |
-| approveConductRecord | CL08 | NOT_STARTED |  |
-| excludeConductRecord | CL08 | NOT_STARTED |  |
-| reviewConductPeriod | CL08 | NOT_STARTED |  |
-| lockConductPeriod | CL08 | NOT_STARTED |  |
-| publishConductPeriod | CL08 | NOT_STARTED |  |
-| lockAndPublishConduct | CL08 | NOT_STARTED |  |
-| listAdjustments | CL11 | NOT_STARTED |  |
-| createAdjustment | CL11 | NOT_STARTED |  |
-| approveAdjustment | CL11 | NOT_STARTED |  |
-| rejectAdjustment | CL11 | NOT_STARTED |  |
-| applyAdjustment | CL11 | NOT_STARTED |  |
+| listConductPeriods | CL07 | TESTED | qa/backend/conduct-sync-integration.log |
+| createConductPeriod | CL06, CL07 | TESTED | qa/backend/conduct-sync-integration.log |
+| getConductSummary | CL07 | TESTED | qa/backend/conduct-sync-integration.log |
+| listConductRecords | CL06 | TESTED | qa/backend/conduct-sync-integration.log |
+| createConductRecord | CL06 | TESTED | qa/backend/conduct-sync-integration.log |
+| updateConductRecord | CL06 | TESTED | qa/backend/conduct-sync-integration.log |
+| approveConductRecord | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| excludeConductRecord | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| reviewConductPeriod | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| lockConductPeriod | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| publishConductPeriod | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| lockAndPublishConduct | CL08 | TESTED | qa/backend/conduct-sync-integration.log |
+| listAdjustments | CL11 | TESTED | qa/backend/conduct-sync-integration.log |
+| createAdjustment | CL11 | TESTED | qa/backend/conduct-sync-integration.log |
+| approveAdjustment | CL11 | TESTED | qa/backend/conduct-sync-integration.log |
+| rejectAdjustment | CL11 | TESTED | qa/backend/conduct-sync-integration.log |
+| applyAdjustment | CL11 | TESTED | qa/backend/conduct-sync-integration.log |
 | listSchoolPublications | SC36 | TESTED | qa/backend/attendance-integration.log |
 | listClassPublications | CL09 | TESTED | qa/backend/attendance-integration.log |
 | getClassPublication | CL10 | TESTED | qa/backend/attendance-integration.log |
@@ -346,12 +346,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL03 | core | TESTED | NOT_STARTED |  |
 | CL04 | core | TESTED | NOT_STARTED |  |
 | CL05 | core | TESTED | NOT_STARTED |  |
-| CL06 | core | PARTIAL | NOT_STARTED |  |
-| CL07 | core | PARTIAL | NOT_STARTED |  |
-| CL08 | core | PARTIAL | NOT_STARTED |  |
+| CL06 | core | TESTED | NOT_STARTED |  |
+| CL07 | core | TESTED | NOT_STARTED |  |
+| CL08 | core | TESTED | NOT_STARTED |  |
 | CL09 | core | TESTED | NOT_STARTED |  |
 | CL10 | core | TESTED | NOT_STARTED |  |
-| CL11 | core | PARTIAL | NOT_STARTED |  |
+| CL11 | core | TESTED | NOT_STARTED |  |
 | CL12 | core | TESTED | NOT_STARTED |  |
 | CL13 | core | PARTIAL | NOT_STARTED |  |
 | CL14 | core | PARTIAL | NOT_STARTED |  |
