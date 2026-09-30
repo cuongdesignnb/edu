@@ -48,6 +48,11 @@ async function login(email,currentPassword=password){
   assert.equal(result.statusCode,200,'valid fixture login must succeed');
   return result.json().data.csrfToken;
 }
+async function unusedYearRange(schoolId,past=false){
+  const result=await db.transaction(tx=>tx.query(`SELECT min(starts_on)::text AS lo,max(ends_on)::text AS hi FROM app.academic_years WHERE school_id=$1`,[schoolId]),{schoolId});
+  const year=Number(String(past?result.rows[0].lo:result.rows[0].hi).slice(0,4))+(past?-1:1);
+  return {startsOn:`${year}-09-01`,endsOn:`${year+1}-06-01`};
+}
 before(async()=>{
   await migrate();await seedLocal(password,true);
   // Only the explicitly disposable test database and synthetic namespace. CLI
@@ -211,7 +216,13 @@ test('B6 password/session commands use actual cookies, reject bad passwords and 
 
 test('BE21 parent runtime role cannot select raw student rows',async()=>{
   await assert.rejects(db.parent.query('SELECT id FROM app.students'),error=>error.code==='42501');
+  const started=performance.now();
   assert.equal((await db.parent.query('SELECT id FROM app.parent_publication_items')).rowCount,0);
+  const elapsed=performance.now()-started;assert.ok(elapsed<1000,'absent context must be denied before expensive publication/session joins');
+  assert.equal((await db.parent.query('SELECT id FROM app.parent_document_items')).rowCount,0);
+  const explain=await db.parent.query('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) SELECT id FROM app.parent_publication_items');
+  const plan=explain.rows[0]['QUERY PLAN'][0];assert.equal(plan.Plan['Actual Rows'],0);assert.ok(plan['Execution Time']<1000);
+  console.log(JSON.stringify({checkpoint:'parent-without-context',queryMs:Number(elapsed.toFixed(3)),planExecutionMs:plan['Execution Time'],planRows:plan.Plan['Actual Rows']}));
 });
 test('B0 health ready checks actual migrations, database and private storage',async()=>{
   const ready=await request('GET','/api/v1/health/ready');assert.equal(ready.statusCode,200);assert.equal(ready.json().data.status,'ok');
@@ -233,7 +244,7 @@ test('BE09 idempotent organization create/retry/concurrency performs one write',
   const csrf=await login('admin-a@example.invalid');
   const key=crypto.randomUUID(),code=`TEST-${crypto.randomBytes(4).toString('hex')}`;
   const url=`/api/v1/schools/${schoolA}/academic-years`;
-  const body={code,name:'Năm kiểm thử idempotency',startsOn:'2028-09-01',endsOn:'2029-06-01'};
+  const body={code,name:'Năm kiểm thử idempotency',...await unusedYearRange(schoolA)};
   const results=await Promise.all([request('POST',url,body,csrf,{'idempotency-key':key}),request('POST',url,body,csrf,{'idempotency-key':key})]);
   assert.deepEqual(results.map(r=>r.statusCode),[201,201]);assert.equal(results[0].json().data.id,results[1].json().data.id);
   const conflict=await request('POST',url,{...body,name:'Khác nội dung'},csrf,{'idempotency-key':key});assert.equal(conflict.statusCode,409);
@@ -433,7 +444,7 @@ test('B2 transfers serialize capacity, handover removes the old teacher and roll
   const stored=await db.transaction(tx=>tx.query('SELECT member_id,starts_on,ends_on FROM app.teaching_assignments WHERE school_id=$1 AND class_id=$2 ORDER BY starts_on',[schoolA,handoverClass.id]),{schoolId:schoolA});
   assert.equal(stored.rows.length,2);assert.equal(stored.rows[0].ends_on,stored.rows[1].starts_on);
 
-  const year=await post('academic-years',{code:`NEXT-${crypto.randomUUID()}`,name:'Năm mới giả',startsOn:'2027-09-01',endsOn:'2028-06-01'});assert.equal(year.statusCode,201);
+  const year=await post('academic-years',{code:`NEXT-${crypto.randomUUID()}`,name:'Năm mới giả',...await unusedYearRange(schoolA)});assert.equal(year.statusCode,201,year.body);
   const target=await makeClass(1,year.json().data.id);
   const plan=[{studentId:students[winner].id,fromClassId:to.id,toClassId:target.id,decision:'PROMOTED'}];
   const batch=await post(`academic-years/${seedId('year:A')}/rollovers`,{targetYearId:year.json().data.id,plan});assert.equal(batch.statusCode,201);
@@ -1542,7 +1553,7 @@ test('B5 dashboard attendance counters and publication tasks follow persisted ma
     jar.set('edu_staff',adminCookie);assert.equal((await settings.patch((await settings.get()).version,{homeroomMayPublish:false})).statusCode,200);jar.set('edu_staff',teacherCookie);assert.equal((await tasks()).some(t=>t.id===`attendance-publish:${session.id}`),false);
     jar.set('edu_staff',adminCookie);assert.equal((await settings.patch((await settings.get()).version,{homeroomMayPublish:true})).statusCode,200);const published=await f.post(`${base}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion});assert.equal(published.statusCode,200,published.body);jar.set('edu_staff',teacherCookie);assert.equal((await tasks()).some(t=>t.id===`attendance-publish:${session.id}`),false);
     jar.set('edu_staff',adminCookie);const pub=published.json().data;assert.equal((await f.post(`publications/${pub.id}/withdraw`,{expectedVersion:pub.version,reason:'Thu hồi bản chuyên cần để kiểm tra hàng việc'})).statusCode,200);jar.set('edu_staff',teacherCookie);assert.equal((await tasks()).some(t=>t.id===`attendance-publish:${session.id}`),true);
-    jar.set('edu_staff',adminCookie);const old=await f.post('academic-years',{code:`PAST-${crypto.randomUUID()}`,name:'Năm trước tham chiếu dashboard',startsOn:'2020-09-01',endsOn:'2021-06-01'});assert.equal(old.statusCode,201,old.body);const history=await request('GET',`/api/v1/schools/${schoolA}/overview?yearId=${old.json().data.id}`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().data.referenceDate,'2021-05-31');assert.equal(history.json().data.metrics.find(m=>m.key==='classes').value,0);assert.deepEqual(history.json().data.tasks,[]);
+    jar.set('edu_staff',adminCookie);const past=await unusedYearRange(schoolA,true),old=await f.post('academic-years',{code:`PAST-${crypto.randomUUID()}`,name:'Năm trước tham chiếu dashboard',...past});assert.equal(old.statusCode,201,old.body);const history=await request('GET',`/api/v1/schools/${schoolA}/overview?yearId=${old.json().data.id}`);assert.equal(history.statusCode,200,history.body);const expectedReference=new Date(`${past.endsOn}T00:00:00Z`);expectedReference.setUTCDate(expectedReference.getUTCDate()-1);assert.equal(history.json().data.referenceDate,expectedReference.toISOString().slice(0,10));assert.equal(history.json().data.metrics.find(m=>m.key==='classes').value,0);assert.deepEqual(history.json().data.tasks,[]);
   }finally{await settings.restore();}
 });
 
@@ -1767,4 +1778,78 @@ test('B6 organization display fields persist with versions and tenant-safe refer
   const termId=seedId('term:A'),term=(await request('GET',`${base}/terms/${termId}`)).json().data;
   const opening=await command('PATCH',`terms/${termId}`,{expectedVersion:term.version,openingDate:'2026-09-05'});assert.equal(opening.statusCode,200,opening.body);assert.equal(opening.json().data.openingDate,'2026-09-05');
   assert.equal((await command('PATCH',`terms/${termId}`,{expectedVersion:opening.json().data.version,openingDate:'2027-02-01'})).statusCode,422);
+});
+
+test('B6 year wizard creates bounded terms, weeks, published holidays and independent draft rules atomically and idempotently',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`/api/v1/schools/${schoolA}`,range=await unusedYearRange(schoolA),number=Number(range.startsOn.slice(0,4)),code=`WIZ-${crypto.randomUUID()}`;
+  const body={code,name:`${number}–${number+1}`,...range,terms:[
+    {code:'T1',name:'Học kỳ một',startsOn:range.startsOn,endsOn:`${number+1}-01-20`,openingDate:`${number}-09-05`},
+    {code:'T2',name:'Học kỳ hai',startsOn:`${number+1}-01-20`,endsOn:range.endsOn},
+  ],holidays:[{title:'Ngày nghỉ giả',startsOn:`${number}-09-10`,endsOn:`${number}-09-11`}],copyRules:true};
+  const post=(payload,key=crypto.randomUUID())=>request('POST',`${base}/academic-years`,payload,csrf,{'idempotency-key':key});
+  const originalRules=await request('GET',`${base}/classes/${f.classId}/rules`);assert.equal(originalRules.statusCode,200,originalRules.body);
+  for(const invalid of [
+    {...body,terms:[...body.terms.slice(0,1),{...body.terms[1],startsOn:`${number+1}-01-19`}]},
+    {...body,terms:[{...body.terms[0],openingDate:`${number+1}-01-20`},body.terms[1]]},
+    {...body,holidays:[{...body.holidays[0],endsOn:`${number+2}-01-01`}]},
+  ]){const rejected=await post(invalid);assert.equal(rejected.statusCode,422,rejected.body);const count=await db.transaction(tx=>tx.query('SELECT id FROM app.academic_years WHERE school_id=$1 AND code=$2',[schoolA,code]),{schoolId:schoolA});assert.equal(count.rowCount,0);}
+  const key=crypto.randomUUID(),first=await post(body,key);assert.equal(first.statusCode,201,first.body);const created=first.json().data,replay=await post(body,key);assert.equal(replay.statusCode,201,replay.body);assert.deepEqual(replay.json().data,created);assert.equal(created.setup.termCount,2);assert.equal(created.setup.holidayCount,1);assert.ok(created.setup.copiedRuleSetId);
+  const terms=await request('GET',`${base}/terms?yearId=${created.id}&sort=startsOn&limit=100`),weeks=await request('GET',`${base}/weeks?yearId=${created.id}&sort=weekNumber&limit=100`),holidays=await request('GET',`${base}/calendar-events?yearId=${created.id}&status=PUBLISHED`);
+  assert.equal(terms.statusCode,200,terms.body);assert.equal(terms.json().data.length,2);assert.equal(terms.json().data[0].openingDate,`${number}-09-05`);assert.equal(weeks.statusCode,200,weeks.body);assert.equal(weeks.json().data.length,created.setup.weekCount);assert.equal(holidays.statusCode,200,holidays.body);assert.equal(holidays.json().data.length,1);
+  let expectedNumber=1;
+  for(const term of terms.json().data){const children=weeks.json().data.filter(w=>w.termId===term.id);assert.equal(children[0].startsOn,term.startsOn);assert.equal(children.at(-1).endsOn,term.endsOn);for(let index=0;index<children.length;index++){const week=children[index];assert.equal(week.weekNumber,expectedNumber++);assert.ok(week.startsOn>=term.startsOn&&week.endsOn<=term.endsOn);assert.ok(Date.parse(week.endsOn)-Date.parse(week.startsOn)<=7*86400000);assert.ok(week.inputDeadline);if(index)assert.equal(children[index-1].endsOn,week.startsOn);}}
+  const copy=await request('GET',`${base}/conduct-rule-sets/${created.setup.copiedRuleSetId}`);assert.equal(copy.statusCode,200,copy.body);assert.equal(copy.json().data.status,'DRAFT');assert.equal(copy.json().data.basePoints,originalRules.json().data.basePoints);assert.equal(copy.json().data.rules.length,originalRules.json().data.rules.length);assert.equal(copy.json().data.thresholds.length,originalRules.json().data.thresholds.length);assert.notEqual(copy.json().data.rules[0].id,originalRules.json().data.rules[0].id);
+  const stillOriginal=await request('GET',`${base}/classes/${f.classId}/rules`);assert.deepEqual(stillOriginal.json().data,originalRules.json().data);
+  const overlapping=await post({...body,code:`OVER-${crypto.randomUUID()}`});assert.equal(overlapping.statusCode,422);assert.equal(overlapping.json().code,'YEAR_RANGE_OVERLAP');
+  const holiday=holidays.json().data[0],withdrawn=await request('PATCH',`${base}/calendar-events/${holiday.id}`,{expectedVersion:holiday.version,status:'WITHDRAWN',reason:'Thu hồi ngày nghỉ kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal(withdrawn.json().data.status,'WITHDRAWN');assert.equal((await request('GET',`${base}/calendar-events?yearId=${created.id}&status=PUBLISHED`)).json().page.total,0);assert.equal((await request('GET',`${base}/calendar-events/${holiday.id}`)).json().data.status,'WITHDRAWN');
+  const stale=await request('PATCH',`${base}/calendar-events/${holiday.id}`,{expectedVersion:holiday.version,title:'Không được ghi đè'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(stale.statusCode,409);
+  const term=terms.json().data[0],edit=await request('PATCH',`${base}/terms/${term.id}`,{expectedVersion:term.version,name:'Học kỳ một sửa',openingDate:`${number}-09-06`},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edit.statusCode,200,edit.body);assert.equal(edit.json().data.openingDate,`${number}-09-06`);
+  const week=weeks.json().data[0],deadlineDay=week.endsOn,deadline=await request('PATCH',`${base}/weeks/${week.id}`,{expectedVersion:week.version,inputDeadlineDay:deadlineDay},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(deadline.statusCode,200,deadline.body);const savedWeek=await request('GET',`${base}/weeks/${week.id}`);assert.equal(savedWeek.statusCode,200,savedWeek.body);assert.equal(savedWeek.json().data.inputDeadlineDay,deadlineDay);assert.equal(savedWeek.json().data.locked,false);
+  const localHour=await db.transaction(tx=>tx.query("SELECT to_char(w.input_deadline AT TIME ZONE s.timezone,'HH24:MI:SS.MS') AS hour FROM app.school_weeks w JOIN platform.schools s ON s.id=w.school_id WHERE w.school_id=$1 AND w.id=$2",[schoolA,week.id]),{schoolId:schoolA});assert.equal(localHour.rows[0].hour,'23:59:59.999');
+  const added=await request('POST',`${base}/calendar-events`,{yearId:created.id,title:'Ngày nghỉ thêm giả',kind:'HOLIDAY',startsOn:`${number}-09-12`,endsOn:`${number}-09-13`,status:'PUBLISHED'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(added.statusCode,201,added.body);assert.equal(added.json().data.status,'PUBLISHED');assert.equal((await request('GET',`${base}/calendar-events?yearId=${created.id}&status=PUBLISHED`)).json().page.total,1);
+  const detail=await request('GET',`${base}/academic-years/${created.id}`);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.terms.reduce((total,t)=>total+t.weekCount,0),created.setup.weekCount);
+});
+
+test('B6 class form assigns homeroom atomically, denies foreign/backdated inputs, requires handover and preserves archived history',async()=>{
+  const csrf=await login('admin-a@example.invalid'),base=`/api/v1/schools/${schoolA}`,code=`FORM-${crypto.randomUUID()}`;
+  // A fresh invited identity respects the one-current-homeroom-per-teacher rule
+  // even when this retained test database has previous FORM assignments.
+  const post=(suffix,payload)=>request('POST',`${base}/${suffix}`,payload,csrf,{'idempotency-key':crypto.randomUUID()});
+  const role=await post('roles',{code:`form-staff-${crypto.randomUUID()}`,label:'Nhân sự form giả',permissions:[{action:'school.read',scopes:['SCHOOL']}]});assert.equal(role.statusCode,201,role.body);
+  const email=`form-staff-${crypto.randomUUID()}@example.invalid`,invite=await post('invitations',{email,roleId:role.json().data.id,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(invite.statusCode,201,invite.body);
+  const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invite.json().data.id}`])).rows[0].encrypted_payload,token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token'),anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Nhân sự form lớp giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
+  const member=await db.transaction(tx=>tx.query('SELECT m.id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,email]),{schoolId:schoolA});
+  const body={yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code,name:'Lớp form giả',capacity:40,homeroomMemberId:member.rows[0].id};
+  const create=(payload,key=crypto.randomUUID())=>request('POST',`${base}/classes`,payload,csrf,{'idempotency-key':key});
+  for(const [invalid,status] of [[{...body,homeroomMemberId:seedId('member:B:admin-b')},404],[{...body,homeroomStartsOn:'2026-09-01'},422]]){const rejected=await create(invalid);assert.equal(rejected.statusCode,status,rejected.body);assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.classes WHERE school_id=$1 AND code=$2',[schoolA,code]),{schoolId:schoolA})).rowCount,0);}
+  const key=crypto.randomUUID(),first=await create(body,key);assert.equal(first.statusCode,201,first.body);let cls=first.json().data;assert.equal((await create(body,key)).json().data.id,cls.id);
+  const assignments=await request('GET',`${base}/assignments?classId=${cls.id}`);assert.equal(assignments.statusCode,200,assignments.body);assert.equal(assignments.json().data.length,1);assert.equal(assignments.json().data[0].memberId,body.homeroomMemberId);
+  const patch=(payload)=>request('PATCH',`${base}/classes/${cls.id}`,payload,csrf,{'idempotency-key':crypto.randomUUID()});
+  const handover=await patch({expectedVersion:cls.version,name:'Không được lưu',homeroomMemberId:seedId('member:A:teacher-b')});assert.equal(handover.statusCode,409,handover.body);assert.equal(handover.json().code,'HANDOVER_REQUIRED');assert.equal((await request('GET',`${base}/classes/${cls.id}`)).json().data.name,body.name);
+  const activated=await request('POST',`${base}/classes/${cls.id}/activate`,{expectedVersion:cls.version},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(activated.statusCode,200,activated.body);cls=activated.json().data;
+  const draft=await patch({expectedVersion:cls.version,status:'DRAFT'});assert.equal(draft.statusCode,200,draft.body);assert.equal(draft.json().data.status,'DRAFT');
+  const yearRange=await unusedYearRange(schoolA),year=await request('POST',`${base}/academic-years`,{code:`ARCH-${crypto.randomUUID()}`,name:'Năm lưu trữ giả',...yearRange},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(year.statusCode,201,year.body);
+  const archivedClass=await create({...body,code:`ARCH-${crypto.randomUUID()}`,yearId:year.json().data.id});assert.equal(archivedClass.statusCode,201,archivedClass.body);
+  const archived=await request('POST',`${base}/academic-years/${year.json().data.id}/archive`,{expectedVersion:year.json().data.version,reason:'Lưu trữ năm học kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(archived.statusCode,200,archived.body);const retained=await request('GET',`${base}/classes/${archivedClass.json().data.id}`);assert.equal(retained.statusCode,200);assert.equal(retained.json().data.status,'ARCHIVED');
+  const blocked=await request('PATCH',`${base}/classes/${archivedClass.json().data.id}`,{expectedVersion:retained.json().data.version,name:'Không sửa lịch sử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(blocked.statusCode,409);assert.equal(blocked.json().code,'CLASS_ARCHIVED');
+});
+
+test('B6 organization projections scope counts in SQL and a year-only grant cannot copy or publish rules',async()=>{
+  const csrf=await login('admin-a@example.invalid'),base=`/api/v1/schools/${schoolA}`,yearId=seedId('year:A');
+  const year=await request('GET',`${base}/academic-years/${yearId}`);assert.equal(year.statusCode,200,year.body);assert.ok(year.json().data.terms.length);assert.equal(typeof year.json().data.classCount,'number');assert.equal(typeof year.json().data.studentCount,'number');
+  const expected=await db.transaction(tx=>tx.query("SELECT count(DISTINCT student_id)::int AS count FROM app.enrollments WHERE school_id=$1 AND year_id=$2 AND status<>'CANCELLED'",[schoolA,yearId]),{schoolId:schoolA});assert.equal(year.json().data.studentCount,expected.rows[0].count);
+  const classes=await request('GET',`${base}/classes?yearId=${yearId}&limit=2&sort=studentCount&dir=desc`);assert.equal(classes.statusCode,200,classes.body);assert.equal(classes.json().data.length,2);for(const row of classes.json().data){assert.equal(typeof row.studentCount,'number');assert.equal(row.yearName,year.json().data.name);assert.equal(typeof row.gradeName,'string');assert.equal(typeof row.hasTimetable,'boolean');}
+  const missing=await request('GET',`${base}/classes?yearId=${yearId}&homeroom=none&limit=2`);assert.equal(missing.statusCode,200,missing.body);for(const row of missing.json().data)assert.equal(row.homeroomMemberId,undefined);
+  const post=(suffix,body)=>request('POST',`${base}/${suffix}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const role=await post('roles',{code:`year-only-${crypto.randomUUID()}`,label:'Chỉ quản lý năm học giả',permissions:['year.manage','year.read'].map(action=>({action,scopes:['SCHOOL']}))});assert.equal(role.statusCode,201,role.body);
+  const grant=await post('grants',{memberId:seedId('member:A:teacher-b'),roleId:role.json().data.id,scopeType:'SCHOOL',validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(grant.statusCode,201,grant.body);
+  const adminCookie=jar.get('edu_staff');
+  try{
+  jar.delete('edu_staff');const teacherCsrf=await login('teacher-b@example.invalid'),range=await unusedYearRange(schoolA),n=Number(range.startsOn.slice(0,4)),body={code:`RIGHT-${crypto.randomUUID()}`,name:'Năm quyền hạn giả',...range,terms:[{code:'T1',name:'Học kỳ giả',...range}],holidays:[],copyRules:true};
+  const denied=await request('POST',`${base}/academic-years`,body,teacherCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(denied.statusCode,403,denied.body);assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.academic_years WHERE school_id=$1 AND code=$2',[schoolA,body.code]),{schoolId:schoolA})).rowCount,0);
+  const allowed=await request('POST',`${base}/academic-years`,{...body,copyRules:false},teacherCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(allowed.statusCode,201,allowed.body);assert.ok(allowed.json().data.setup.weekCount>0);assert.equal(allowed.json().data.setup.copiedRuleSetId,undefined);assert.equal(allowed.json().data.startsOn,`${n}-09-01`);
+  const noCount=await request('GET',`${base}/academic-years/${yearId}`);assert.equal(noCount.statusCode,200,noCount.body);assert.equal(noCount.json().data.studentCount,null);assert.equal(noCount.json().data.classCount,null);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const subject=await request('GET',`${base}/classes/${classB}`);assert.equal(subject.statusCode,200,subject.body);assert.equal(subject.json().data.studentCount,null);assert.equal(subject.json().data.yearName,year.json().data.name);assert.equal(Object.hasOwn(subject.json().data,'guardians'),false);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/academic-years/${seedId('year:B')}`)).statusCode,404);
+  }finally{jar.set('edu_staff',adminCookie);const revoked=await post(`grants/${grant.json().data.id}/revoke`,{expectedVersion:grant.json().data.version,reason:'Kết thúc kiểm thử quyền năm học'});assert.equal(revoked.statusCode,200,revoked.body);}
 });

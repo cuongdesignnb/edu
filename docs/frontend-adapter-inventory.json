@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 21,
+  "candidateCount": 34,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1981,7 +1981,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "context",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2096,7 +2106,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "years",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2109,7 +2129,17 @@
         "yearId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "yearDetail",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2122,7 +2152,17 @@
         "input: { label: string; startDate: string; endDate: string; terms: { name: string; startDate: string; endDate: string; openingDate?: string }[]; holidays: { name: string; startDate: string; endDate: string }[]; copyRules: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "createYear",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2136,7 +2176,17 @@
         "patch: Pick<Term, \"name\" | \"startDate\" | \"endDate\" | \"openingDate\">"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "updateTerm",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2150,7 +2200,17 @@
         "closeDeadline: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "updateWeekDeadline",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2164,7 +2224,17 @@
         "h: Omit<Holiday, \"id\" | \"schoolId\" | \"yearId\">"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "addHoliday",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2177,7 +2247,17 @@
         "holidayId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "removeHoliday",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2191,7 +2271,17 @@
         "status: AcademicYear[\"status\"]"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "setYearStatus",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2303,7 +2393,17 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "classes",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2316,7 +2416,17 @@
         "yearId?: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "classOptions",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2341,7 +2451,17 @@
         "input: { id?: ID; yearId: ID; gradeId: ID; name: string; capacity: number; roomId?: ID; homeroomMembershipId?: ID; motto?: string; version?: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "saveClass",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",
@@ -2355,7 +2475,17 @@
         "status: ClassRoom[\"status\"]"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "setClassStatus",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",

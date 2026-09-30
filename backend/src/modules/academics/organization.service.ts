@@ -6,6 +6,9 @@ import { Commands,audit } from '../../common/commands';
 import { Problem,validation } from '../../common/problem';
 import { checkCapacity } from '../students/enrollment';
 import { validateSchoolWebsite } from '../../common/school-website';
+import { StaffService } from '../staff/staff.service';
+import { createYearSetup,ensureYearRange,addDateDays } from './year-setup';
+import { organizationRead } from './organization-read';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const registry:Record<string,{kind:string;mode:'list'|'get'|'create'|'update'|'status';id?:string;status?:string}>={};
@@ -23,7 +26,7 @@ Object.assign(registry,{
 });
 @Injectable()
 export class OrganizationService {
-  constructor(private readonly db:Database,private readonly permissions:Permissions,private readonly commands:Commands){}
+  constructor(private readonly db:Database,private readonly permissions:Permissions,private readonly commands:Commands,private readonly staff:StaffService){}
   handlers():Record<string,Handler>{
     const result:Record<string,Handler>={};
     for(const id of Object.keys(registry))result[id]=c=>this.handle(c);
@@ -35,6 +38,8 @@ export class OrganizationService {
   private async handle(c:RequestContext):Promise<Result>{
     const entry=registry[c.operation.id]!,r=resource(entry.kind),schoolId=c.params.schoolId!,id=entry.id?c.params[entry.id]:undefined;
     const authorize=async(tx:Transaction)=>{
+      if(entry.kind==='year'&&c.body.copyRules)await this.permissions.require(tx,c.principal!,'rules.read+rules.manage',{schoolId});
+      if(entry.kind==='class'&&c.body.homeroomMemberId)await this.permissions.require(tx,c.principal!,'assignment.manage',{schoolId});
       if(entry.mode==='list'&&entry.kind==='class')return this.permissions.collection(tx,c.principal!,'class.read',schoolId,true);
       return this.permissions.require(tx,c.principal!,c.operation.permission,{
         schoolId,classId:entry.kind==='class'?id:undefined,
@@ -43,21 +48,39 @@ export class OrganizationService {
     };
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{
       const allowed=await authorize(tx);
-      if(entry.mode==='get')return {data:dto(r,await getResource(tx,r,schoolId,id!))};
+      const view=organizationRead(entry.kind,schoolId,allowed.grants,allowed.today,entry.mode==='list');
+      if(entry.mode==='get')return {data:dto(view.resource,await getResource(tx,view.resource,schoolId,id!,false,view.bindings))};
       const classes=entry.kind==='class'?allowed as unknown as {all:boolean;classIds:string[]}:undefined;
-      return listResource(tx,r,schoolId,c.query,classes&&!classes.all?{sql:'t.id=ANY($1::uuid[])',values:[classes.classIds]}:undefined,c.principal!.userId);
+      const extra={sql:'',values:[] as unknown[]};
+      if(classes&&!classes.all){extra.sql='t.id=ANY($1::uuid[])';extra.values.push(classes.classIds);}
+      if(entry.kind==='class'&&c.query.homeroom==='none')extra.sql+=(extra.sql?' AND ':'')+'t.homeroom_member_id IS NULL';
+      return listResource(tx,view.resource,schoolId,c.query,extra,c.principal!.userId,view.bindings);
     },{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
       await tx.query('SELECT app.lock_school()');
-      await this.validate(tx,c,entry.kind,id);
+      let body=c.body;
+      if(entry.kind==='week'&&body.inputDeadlineDay){
+        if(body.inputDeadline)validation('inputDeadlineDay','Chỉ chọn một cách khai báo hạn chốt');
+        const converted=await one<{deadline:Date}>(tx,"SELECT ($2::date::timestamp+interval '1 day'-interval '1 millisecond') AT TIME ZONE timezone AS deadline FROM platform.schools WHERE id=$1",[schoolId,body.inputDeadlineDay]);
+        body={...body,inputDeadline:converted!.deadline.toISOString()};
+      }
+      await this.validate(tx,{...c,body},entry.kind,id);
       if(entry.mode==='status'&&entry.status==='ACTIVE'&&entry.kind==='class'){
-        const assigned=(await tx.query(`SELECT a.id FROM app.teaching_assignments a JOIN platform.schools s ON s.id=a.school_id WHERE a.school_id=$1 AND a.class_id=$2
+        const assigned=(await tx.query(`SELECT a.id FROM app.teaching_assignments a JOIN platform.schools s ON s.id=a.school_id
+          JOIN app.memberships m ON m.school_id=a.school_id AND m.id=a.member_id AND m.status='ACTIVE' AND m.ended_at IS NULL
+          JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+          JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE' WHERE a.school_id=$1 AND a.class_id=$2
           AND a.kind='HOMEROOM' AND a.revoked_at IS NULL AND a.starts_on<=(now() AT TIME ZONE s.timezone)::date
           AND (a.ends_on IS NULL OR a.ends_on>(now() AT TIME ZONE s.timezone)::date)`,[schoolId,id])).rowCount;
         if(!assigned)throw new Problem(422,'HOMEROOM_REQUIRED');
       }
-      const data=entry.mode==='create'?await insertResource(tx,r,schoolId,c.body):await updateResource(tx,r,schoolId,id!,c.body,
-        entry.mode==='status'?{status:entry.status}:{});
+      const data=entry.mode==='create'?await insertResource(tx,r,schoolId,body,entry.kind==='calendar'&&body.status?{status:body.status}:{}):await updateResource(tx,r,schoolId,id!,body,
+        entry.mode==='status'?{status:entry.status}:['calendar','class'].includes(entry.kind)&&body.status?{status:body.status}:{});
+      if(entry.kind==='year'&&entry.mode==='create'){
+        const setup=await createYearSetup(tx,c,String(data.id));if(setup)data.setup=setup;
+      }
+      if(entry.kind==='year'&&entry.mode==='status'&&entry.status==='ARCHIVED')await tx.query("UPDATE app.classes SET status='ARCHIVED' WHERE school_id=$1 AND year_id=$2 AND status<>'ARCHIVED'",[schoolId,id]);
+      if(entry.kind==='class'&&c.body.homeroomMemberId)await this.homeroom(tx,c,String(data.id));
       await audit(tx,c,r.table,String(data.id),{version:data.version,status:data.status});
       return {data,status:entry.mode==='create'?201:200};
     });
@@ -65,8 +88,12 @@ export class OrganizationService {
   private async validate(tx:Transaction,c:RequestContext,kind:string,id?:string){
     const schoolId=c.params.schoolId!,body=c.body,r=resource(kind);
     const current=id?await getResource(tx,r,schoolId,id,true):undefined;
+    if(kind==='class'&&current?.status==='ARCHIVED'&&c.operation.id!=='archiveClass')throw new Problem(409,'CLASS_ARCHIVED');
+    if(kind==='year'&&current?.status==='ARCHIVED'&&c.operation.id!=='archiveYear')throw new Problem(409,'YEAR_ARCHIVED');
+    if(kind==='class'&&(body.homeroomStartsOn||body.homeroomReason)&&!body.homeroomMemberId)validation('homeroomMemberId','Chọn giáo viên để phân công');
     const starts=body.startsOn??current?.starts_on,ends=body.endsOn??current?.ends_on;
     if(starts&&ends&&String(starts)>=String(ends))validation('endsOn','Ngày kết thúc phải sau ngày bắt đầu');
+    if(kind==='year'&&(!current||body.startsOn||body.endsOn))await ensureYearRange(tx,schoolId,String(starts),String(ends),id);
     const yearId=body.yearId??current?.year_id;
     if(yearId){
       const year=await getResource(tx,resource('year'),schoolId,String(yearId),true);
@@ -103,6 +130,22 @@ export class OrganizationService {
       if((await tx.query(`SELECT id FROM app.conduct_periods WHERE school_id=$1 AND week_id=$2 AND status='LOCKED' LIMIT 1`,[schoolId,id])).rowCount)
         throw new Problem(409,'PERIOD_LOCKED');
     }
+    if(kind==='week'&&body.inputDeadline){
+      const deadline=await one<{day:string}>(tx,"SELECT ($2::timestamptz AT TIME ZONE timezone)::date AS day FROM platform.schools WHERE id=$1",[schoolId,body.inputDeadline]);
+      if(deadline!.day<addDateDays(String(ends),-1))validation('inputDeadline','Hạn chốt không sớm hơn ngày cuối tuần');
+    }
+  }
+  private async homeroom(tx:Transaction,c:RequestContext,classId:string){
+    const schoolId=c.params.schoolId!,cls=await getResource(tx,resource('class'),schoolId,classId),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
+    const allowed=await this.permissions.require(tx,c.principal!,'assignment.manage',{schoolId,classId});
+    const starts=String(c.body.homeroomStartsOn??(allowed.today<String(year.starts_on)?year.starts_on:allowed.today));
+    const existing=await one<Row>(tx,`SELECT * FROM app.teaching_assignments WHERE school_id=$1 AND class_id=$2 AND kind='HOMEROOM' AND revoked_at IS NULL AND starts_on<=$3 AND (ends_on IS NULL OR ends_on>$3)`,[schoolId,classId,starts]);
+    if(existing){
+      if(existing.member_id!==c.body.homeroomMemberId||c.body.homeroomStartsOn||c.body.homeroomReason)throw new Problem(409,'HANDOVER_REQUIRED');
+      return;
+    }
+    const assignment=await this.staff.createAssignment(tx,c,{classId,memberId:c.body.homeroomMemberId,kind:'HOMEROOM',startsOn:starts,endsOn:year.ends_on,reason:c.body.homeroomReason});
+    await audit(tx,c,'assignment',String(assignment.id));
   }
   private async dictionary(c:RequestContext):Promise<Result>{
     const kind={grades:'grade',subjects:'subject',rooms:'room'}[c.params.dictionary! as 'grades'|'subjects'|'rooms'];

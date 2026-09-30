@@ -26898,6 +26898,52 @@ components:
     YearCreate:
       type: object
       properties:
+        terms:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                pattern: ^[A-Za-z0-9_-]{1,64}$
+              name:
+                type: string
+                minLength: 1
+                maxLength: 200
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+              openingDate:
+                type: string
+                format: date
+                nullable: true
+            required: [code, name, startsOn, endsOn]
+            additionalProperties: false
+        holidays:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                minLength: 1
+                maxLength: 200
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+            required: [title, startsOn, endsOn]
+            additionalProperties: false
+        copyRules:
+          type: boolean
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -27074,6 +27120,9 @@ components:
     WeekPatch:
       type: object
       properties:
+        inputDeadlineDay:
+          type: string
+          format: date
         expectedVersion: *id003
         startsOn:
           type: string
@@ -27224,6 +27273,9 @@ components:
     CalendarEventCreate:
       type: object
       properties:
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED]
         yearId:
           type: string
           format: uuid
@@ -27256,6 +27308,13 @@ components:
     CalendarEventPatch:
       type: object
       properties:
+        status:
+          type: string
+          enum: [WITHDRAWN]
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 2000
         expectedVersion: *id003
         title:
           type: string
@@ -27316,6 +27375,16 @@ components:
     ClassCreate:
       type: object
       properties:
+        homeroomMemberId:
+          type: string
+          format: uuid
+        homeroomStartsOn:
+          type: string
+          format: date
+        homeroomReason:
+          type: string
+          minLength: 5
+          maxLength: 2000
         roomId:
           type: string
           format: uuid
@@ -27351,6 +27420,19 @@ components:
     ClassPatch:
       type: object
       properties:
+        status:
+          type: string
+          enum: [DRAFT]
+        homeroomMemberId:
+          type: string
+          format: uuid
+        homeroomStartsOn:
+          type: string
+          format: date
+        homeroomReason:
+          type: string
+          minLength: 5
+          maxLength: 2000
         gradeLevelId:
           type: string
           format: uuid

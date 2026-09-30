@@ -44,29 +44,29 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
 | getSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | updateSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
-| listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
-| createYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
+| listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| createYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| getYear | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
 | updateYear | SC03, SC04, SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listTerms | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
+| listTerms | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
 | createTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
-| getTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| updateTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
-| listWeeks | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
+| getTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| updateTerm | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| listWeeks | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
 | createWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| getWeek | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| updateWeek | SC05, SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listCalendarEvents | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| createCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| getCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| updateCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
-| createClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log |
-| updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
+| getWeek | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| updateWeek | SC05, SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| listCalendarEvents | SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| createCalendarEvent | SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| getCalendarEvent | SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| updateCalendarEvent | SC06 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| listClasss | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| createClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| getClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| updateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
 | activateYear | SC05 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| archiveYear | SC07 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| activateClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| archiveYear | SC07 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
+| activateClass | SC09 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata |
 | archiveClass | SC09 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | publishCalendarEvent | SC06 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listDictionary | SC08 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |

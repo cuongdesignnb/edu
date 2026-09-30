@@ -20,7 +20,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 29 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
+| B1 | PARTIAL | 30 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; selected support reads, independent consent and SQL read-only mode tested; broader release acceptance pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
@@ -30,6 +30,16 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## B6 atomic organization workflows and parent denial checkpoint
+
+- The latest actual PostgreSQL suite is **87/87**, exit0, zero skipped, in qa/backend/b6-organization-rls-integration.log. Migration 030 applied and checksum replay verified; all 30 migrations are applied. Backend build/typecheck/lint and 12 unit/contract checks exit0. Frontend TypeScript, scoped lint and 27 unit checks exit0; ten school adapter checks use synthetic fetch responses and do not certify browser workflows.
+- The year wizard now creates the year, bounded terms, continuous partial/full weeks, published holidays and an optional independent draft copy of the currently applied issued rules in one idempotent school transaction. Invalid term overlap/opening date or holiday range rolls everything back. Copying rules requires both rules.read and rules.manage; a year-only grant is denied and never obtains those privileges indirectly. New/edited year ranges cannot overlap another year. Existing retained synthetic test history was not rewritten or deleted.
+- Class forms can create homeroom assignments in the same transaction through the existing delegation ceiling/time validation. A foreign member or unexplained backdating rolls back the class. A different current homeroom requires the existing handover workflow. Activation checks a current active membership/role/grant. Draft transitions preserve records; year archive also archives its classes, and archived classes reject later edits.
+- Calendar creation can explicitly publish a holiday in one acknowledgement. Removal is a versioned withdrawal with reason, retaining history. Deadline-day commands convert to 23:59:59.999 in the school's configured timezone. Read projections provide real year terms/counts and class work metadata; unauthorized student/class aggregates remain null. Subject staff never receive a school student total or full-class student count from these additions. Query filters, sorts and keysets remain in SQL.
+- Earlier attempts are retained: 85/86 missed the required archive reason; 86/87 exposed a repeated synthetic teacher already holding a homeroom assignment; a build found one misplaced brace. A later 86/87 run exposed a real no-context parent RLS query timeout as retained snapshots grew. Migration 030 keeps all session/link/guardian/publication checks and adds an early context denial plus tenant predicates, without raising timeouts or changing RLS roles.
+- The executed no-context diagnostic was 5.527 ms for the pool query and 0.022 ms plan execution, zero rows. Raw student SELECT still denies 42501; populated child/section/revoke/multitab checks all passed in the full suite. This is one SQL denial diagnostic, **not the B7 concurrency/load benchmark**.
+- Adapter candidates now total 34 methods, including 20 school methods. All 231 legacy methods and 118 core screen acceptance still await facade activation; form pickers, dashboards and rollover composition remain outstanding. Root deploy merge, final URL, restart, restore, SMTP/process-kill and performance acceptance remain NOT_RUN. Production is not deployed.
 
 ## B6 organization forms checkpoint
 

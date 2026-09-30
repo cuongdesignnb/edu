@@ -37,8 +37,8 @@ export function dto(r:Resource,row:Row):Record<string,unknown> {
   }
   return value;
 }
-export async function getResource(tx:Transaction,r:Resource,schoolId:string,id:string,lock=false){
-  const row=await one<Row>(tx,`SELECT ${columns(r)} FROM ${r.table} t WHERE t.school_id=$1 AND t.id=$2${lock?' FOR UPDATE':''}`,[schoolId,id]);
+export async function getResource(tx:Transaction,r:Resource,schoolId:string,id:string,lock=false,baseParameters:unknown[]=[]){
+  const row=await one<Row>(tx,`SELECT ${columns(r)} FROM ${r.table} t WHERE t.school_id=$1 AND t.id=$2${lock?' FOR UPDATE':''}`,[schoolId,id,...baseParameters]);
   if(!row)notFound();return row;
 }
 export async function insertResource(tx:Transaction,r:Resource,schoolId:string,body:Record<string,unknown>,extra:Record<string,unknown>={}){

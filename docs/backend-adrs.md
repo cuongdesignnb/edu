@@ -372,3 +372,56 @@ the version displayed by the form for dictionary edits. No latest-version fetch
 or mock fallback is used. Executed evidence: 84/84 PostgreSQL checks, 12 backend
 unit/contract checks, 22 frontend unit checks, typecheck/lint exit0. Browser
 activation and full workflow acceptance remain separate outstanding work.
+
+## ADR-030 — atomic organization commands and authorized read metadata
+
+The existing year wizard collects terms, holidays and optional rule copying in
+one submit. YearCreate accepts bounded nested terms/holidays and copyRules. The
+school command validates every range, creates partial weeks at term boundaries,
+copies only an actually applied issued rule set into independent draft records,
+and audits/idempotently acknowledges the whole transaction. Copying requires
+rules.read and rules.manage even on replay. Half-open dates are canonical in the
+API; the browser adapter converts its inclusive last day once. A maximum 730-day
+wizard range bounds week generation. New/edited ranges are serialized by the
+school lock and reject overlaps; earlier retained synthetic history is preserved.
+
+ClassCreate/Patch can request a homeroom membership/date/reason. The existing
+StaffService assignment validator enforces school membership, paired role/grant,
+delegation expiry ceilings, teacher uniqueness and dated reason requirements.
+Failures roll back the class change. Replacing a current homeroom returns
+HANDOVER_REQUIRED. Class activation checks active membership/role/grant; a draft
+transition retains facts. Archiving a year archives its classes and blocks edits.
+
+CalendarCreate supports explicit DRAFT/PUBLISHED; CalendarPatch supports reasoned
+WITHDRAWN. This preserves the existing holiday form without sequential partial
+publishing or physical deletion. WeekPatch can accept inputDeadlineDay, converted
+by PostgreSQL with the actual school timezone; both date and timestamp together
+are rejected. The date represents the last millisecond of that school day.
+
+Read-only year/term/week/class projections add the metadata used by existing
+screens. School-wide counts require the corresponding live school grant; a
+subject grant does not receive a full-class student count. Missing authority is
+null, never a fabricated zero. Week lock metadata is only available to a school
+year manager. Selected support grants do not inherit student aggregates.
+Filters/counts/keysets remain inside tenant SQL; cursor signatures include their
+authorization bindings. Mutation acknowledgements remain minimal, avoiding
+replay of private aggregate data after permission changes. Candidate adapters
+require the displayed version and explicit withdrawal/archive reason. Their
+activation and browser acceptance are still outstanding.
+
+## ADR-031 — deny missing parent context before private joins
+
+An executed retained-database run timed out at five seconds for an edu_parent
+SELECT on parent_publication_items with no transaction context. Raw student
+SELECT was correctly denied; the expensive projection policy caused the failure.
+Migration 030 replaces the two permission helpers with explicit early return for
+null/mismatched tenant or missing parent session, followed by the unchanged
+session/link/guardian/school/section/publication conditions. Policies also include
+an uncorrelated tenant predicate. SECURITY DEFINER ownership/search path and
+restricted execution grants are retained; RLS remains enabled/forced and no role
+receives BYPASSRLS. No applied migration, history, volume or timeout was changed.
+
+The full 87/87 suite passes with populated parent, expiry/revoke and multitab
+checks. The no-context query measured 5.527 ms, EXPLAIN execution 0.022 ms and zero
+rows. This diagnostic is not a concurrency or p95 acceptance result. Migration
+checksums/replay and the raw-row 42501 denial were also actually tested.

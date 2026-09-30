@@ -1,9 +1,11 @@
 import type {ID,School,SchoolSettings} from '../../model/types';
-import type {Ctx} from '../core';
+import type {Ctx,ListQuery} from '../core';
 import type {ApiSchemas} from '../../api/generated';
 import {http} from '../../api/client';
-import {apiList} from '../../api/lists';
-import {refreshStaffContext} from '../../api/session';
+import {apiList,apiPage} from '../../api/lists';
+import {refreshStaffContext,serverToday} from '../../api/session';
+import {exclusiveDate} from '../../api/dates';
+import {year,term,holiday,week,classRow,classInfo} from './organization-mapping';
 import {uiActions} from '../../api/permissions';
 import {RepoError} from '../errors';
 import {formResult,requiredId,requiredValue} from './common';
@@ -18,8 +20,14 @@ type DictionaryKind='grade'|'subject'|'room';
 const paths={grade:'grades',subject:'subjects',room:'rooms'} as const;
 function dictionary(row:ApiSchemas['DictionaryItem'],schoolId:ID){return {id:requiredId(row.id),schoolId,code:row.code,name:row.name,status:row.status==='ACTIVE'?'active' as const:'inactive' as const,version:row.version,inUse:row.inUse,level:row.gradeLevel??null,color:row.color,capacity:row.capacity??null};}
 function version(value:number|undefined){if(value===undefined)throw new RepoError('CONFLICT','Hãy tải lại dữ liệu trước khi sửa để giữ đúng phiên bản.',{details:{requiresReload:true}});return value;}
+function reason(value:string|undefined){if(!value||value.trim().length<5)throw new RepoError('VALIDATION','Hãy nhập lý do ít nhất 5 ký tự.',{fieldErrors:{reason:'Nhập lý do ít nhất 5 ký tự.'}});return value.trim();}
 
 export const connectedSchoolRepo={
+  async context(_ctx:Ctx,schoolId:ID){
+    const [profile,rows,context]=await Promise.all([http('getSchoolProfile',{params:{schoolId}}),apiList('listYears',{params:{schoolId},query:{sort:'startsOn',dir:'desc'}},100),refreshStaffContext()]);
+    const member=context.memberships.find(m=>m.schoolId===schoolId);if(!member||member.status!=='ACTIVE')throw new RepoError('REVOKED');
+    return {school:school(profile.data),years:rows.map(row=>year(row,schoolId)),currentYearId:rows.find(row=>row.status==='ACTIVE')?.id??undefined,roleNames:[...new Set(member.grants.filter(g=>g.scopeType==='SCHOOL').map(g=>g.roleLabel))],membershipId:requiredId(member.memberId)};
+  },
   async profile(_ctx:Ctx,schoolId:ID){const [value,context]=await Promise.all([http('getSchoolProfile',{params:{schoolId}}),refreshStaffContext()]);return {school:school(value.data),canEdit:uiActions(context,{schoolId}).has('school.profile.edit')};},
   async saveProfile(_ctx:Ctx,schoolId:ID,patch:Pick<School,'shortName'|'motto'|'publicIntro'|'publicPhone'|'publicEmail'|'address'|'website'|'accentColor'>&{version:number}){
     const value=await formResult(http('updateSchoolProfile',{params:{schoolId},body:{expectedVersion:patch.version,shortName:patch.shortName,motto:patch.motto,publicIntro:patch.publicIntro,publicContactPhone:patch.publicPhone||null,publicContactEmail:patch.publicEmail||null,publicAddress:patch.address||null,website:patch.website||null,accentColor:patch.accentColor}}),{expectedVersion:'version',publicContactPhone:'publicPhone',publicContactEmail:'publicEmail',publicAddress:'address'});return school(value.data);
@@ -41,5 +49,46 @@ export const connectedSchoolRepo={
   },
   async setDictionaryStatus(_ctx:Ctx,schoolId:ID,kind:DictionaryKind,itemId:ID,status:'active'|'inactive',expectedVersion?:number){
     const value=await http('updateDictionary',{params:{schoolId,dictionary:paths[kind],itemId},body:{expectedVersion:version(expectedVersion),status:status==='active'?'ACTIVE':'ARCHIVED'}});return dictionary(value.data,schoolId);
+  },
+  async years(_ctx:Ctx,schoolId:ID){return (await apiList('listYears',{params:{schoolId},query:{sort:'startsOn',dir:'desc'}},100)).map(row=>({...year(row,schoolId),terms:requiredValue(row.terms,'terms').map(t=>term(t,schoolId)),classCount:requiredValue(row.classCount,'classCount'),studentCount:requiredValue(row.studentCount,'studentCount')}));},
+  async createYear(_ctx:Ctx,schoolId:ID,input:{label:string;startDate:string;endDate:string;terms:{name:string;startDate:string;endDate:string;openingDate?:string}[];holidays:{name:string;startDate:string;endDate:string}[];copyRules:boolean}){
+    if(!/^\d{4}–\d{4}$/.test(input.label))throw new RepoError('VALIDATION','Định dạng năm học chưa hợp lệ.',{fieldErrors:{label:'Định dạng năm học: 2027–2028'}});
+    const result=await formResult(http('createYear',{params:{schoolId},body:{code:input.label.replace('–','-'),name:input.label,startsOn:input.startDate,endsOn:exclusiveDate(input.endDate),terms:input.terms.map((t,i)=>({code:`TERM-${i+1}`,name:t.name,startsOn:t.startDate,endsOn:exclusiveDate(t.endDate),openingDate:t.openingDate})),holidays:input.holidays.map(h=>({title:h.name,startsOn:h.startDate,endsOn:exclusiveDate(h.endDate)})),copyRules:input.copyRules}}),{name:'label',code:'label',startsOn:'startDate',endsOn:'endDate',title:'name'});return {id:requiredId(result.data.id),setup:requiredValue(result.data.setup,'setup')};
+  },
+  async updateTerm(_ctx:Ctx,schoolId:ID,termId:ID,patch:{name:string;startDate:string;endDate:string;openingDate?:string;version?:number}){
+    const result=await formResult(http('updateTerm',{params:{schoolId,termId},body:{expectedVersion:version(patch.version),name:patch.name,startsOn:patch.startDate,endsOn:exclusiveDate(patch.endDate),openingDate:patch.openingDate??null}}),{expectedVersion:'version',startsOn:'startDate',endsOn:'endDate'});return term(result.data,schoolId);
+  },
+  async updateWeekDeadline(_ctx:Ctx,schoolId:ID,weekId:ID,closeDeadline:string,expectedVersion?:number){
+    const result=await formResult(http('updateWeek',{params:{schoolId,weekId},body:{expectedVersion:version(expectedVersion),inputDeadlineDay:closeDeadline}}),{expectedVersion:'version',inputDeadlineDay:'closeDeadline',inputDeadline:'closeDeadline'});return {id:requiredId(result.data.id),index:result.data.weekNumber,closeDeadline,version:result.data.version};
+  },
+  async addHoliday(_ctx:Ctx,schoolId:ID,yearId:ID,input:{name:string;startDate:string;endDate:string}){
+    const created=await formResult(http('createCalendarEvent',{params:{schoolId},body:{yearId,title:input.name,kind:'HOLIDAY',startsOn:input.startDate,endsOn:exclusiveDate(input.endDate),status:'PUBLISHED'}}),{title:'name',startsOn:'startDate',endsOn:'endDate'});return holiday(created.data,schoolId);
+  },
+  async removeHoliday(_ctx:Ctx,schoolId:ID,holidayId:ID,expectedVersion?:number,explanation?:string){await http('updateCalendarEvent',{params:{schoolId,eventId:holidayId},body:{expectedVersion:version(expectedVersion),status:'WITHDRAWN',reason:reason(explanation)}});return true;},
+  async setYearStatus(_ctx:Ctx,schoolId:ID,yearId:ID,status:'active'|'archived',expectedVersion?:number,explanation?:string){
+    const result=status==='active'?await http('activateYear',{params:{schoolId,yearId},body:{expectedVersion:version(expectedVersion)}}):await http('archiveYear',{params:{schoolId,yearId},body:{expectedVersion:version(expectedVersion),reason:reason(explanation)}});return year(result.data,schoolId);
+  },
+  async classes(_ctx:Ctx,schoolId:ID,q:ListQuery){
+    const filters=q.filters??{},sort=q.sort==='size'?'studentCount':q.sort==='homeroom'?'homeroomName':q.sort??'name';
+    return apiPage('listClasss',{params:{schoolId},query:{q:q.q,yearId:filters.yearId,gradeLevelId:filters.gradeId,status:filters.status?.toUpperCase(),sort,dir:q.dir,...(filters.homeroom==='none'?{homeroom:'none'}:filters.homeroom?{homeroomUserId:filters.homeroom}:{})}},q,row=>classRow(row,schoolId));
+  },
+  async classOptions(_ctx:Ctx,schoolId:ID,yearId?:ID){
+    if(!yearId){const years=await apiList('listYears',{params:{schoolId},query:{status:'ACTIVE'}},100);yearId=years[0]?.id??undefined;}
+    if(!yearId)return [];
+    return (await apiList('listClasss',{params:{schoolId},query:{yearId,sort:'name'}},200)).map(row=>({id:requiredId(row.id),name:row.name,status:row.status.toLowerCase() as 'draft'|'active'|'archived',gradeId:requiredId(row.gradeLevelId)}));
+  },
+  async saveClass(_ctx:Ctx,schoolId:ID,input:{id?:ID;yearId:ID;gradeId:ID;name:string;capacity:number;roomId?:ID;motto?:string;homeroomMembershipId?:ID;version?:number}){
+    const name=input.name.trim().toUpperCase(),body={name,gradeLevelId:input.gradeId,capacity:input.capacity,roomId:input.roomId??null,motto:input.motto,homeroomMemberId:input.homeroomMembershipId};
+    const write=input.id?http('updateClass',{params:{schoolId,classId:input.id},body:{...body,expectedVersion:version(input.version)}}):http('createClass',{params:{schoolId},body:{...body,code:name,yearId:input.yearId}});
+    return {...classInfo((await formResult(write,{gradeLevelId:'gradeId',expectedVersion:'version',homeroomMemberId:'homeroomMembershipId'})).data,schoolId),...(!input.id?{homeroomAssigned:!!input.homeroomMembershipId}:{})};
+  },
+  async setClassStatus(_ctx:Ctx,schoolId:ID,classId:ID,status:'draft'|'active'|'archived',expectedVersion?:number,explanation?:string){
+    const options={params:{schoolId,classId},body:{expectedVersion:version(expectedVersion)}};
+    const value=status==='active'?await http('activateClass',options):status==='archived'?await http('archiveClass',{...options,body:{...options.body,reason:reason(explanation)}}):await http('updateClass',{...options,body:{...options.body,status:'DRAFT'}});return classInfo(value.data,schoolId);
+  },
+  async yearDetail(_ctx:Ctx,schoolId:ID,yearId:ID){
+    const [value,weekRows,holidayRows,classes,grades,context]=await Promise.all([http('getYear',{params:{schoolId,yearId}}),apiList('listWeeks',{params:{schoolId},query:{yearId,sort:'weekNumber'}},110),apiList('listCalendarEvents',{params:{schoolId},query:{yearId,status:'PUBLISHED',sort:'startsOn'}},100),apiList('listClasss',{params:{schoolId},query:{yearId,sort:'name'}},200),apiList('listDictionary',{params:{schoolId,dictionary:'grades'}},100),refreshStaffContext()]);
+    const rows=classes.map(c=>classRow(c,schoolId)),gradeRows=grades.map(g=>dictionary(g,schoolId)),actions=uiActions(context,{schoolId});
+    return {year:year(value.data,schoolId),terms:requiredValue(value.data.terms,'terms').map(t=>term(t,schoolId)),weeks:weekRows.map(w=>week(w,schoolId,serverToday(schoolId))),holidays:holidayRows.map(h=>holiday(h,schoolId)),grades:gradeRows,classesByGrade:gradeRows.map(grade=>({grade,classes:rows.filter(row=>row.gradeId===grade.id)})).filter(group=>group.classes.length||group.grade.status==='active'),assignedHomeroom:rows.filter(c=>c.homeroomName).length,totalClasses:rows.length,canManage:actions.has('year.manage'),canManageClasses:actions.has('class.manage')};
   },
 };
