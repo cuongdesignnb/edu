@@ -1,4 +1,14 @@
 import {RepoError,isRepoError} from '../errors';
+import {captureStaffAccess} from '../../api/client';
+
+/** Keep a composite result within one staff identity/scope, including its error callback. */
+export function withStaffAccess<T extends Record<string,(...args:never[])=>Promise<unknown>>>(repository:T):T{
+  return Object.fromEntries(Object.entries(repository).map(([name,method])=>[name,async(...args:never[])=>{
+    const access=captureStaffAccess();
+    try{const value=await method.apply(repository,args);access.assertCurrent();return value;}
+    catch(error){access.assertCurrent();throw error;}
+  }])) as T;
+}
 
 /** Preserve the existing form's field names while using the server request DTO. */
 export async function formResult<T>(work:Promise<T>,names:Record<string,string>):Promise<T>{

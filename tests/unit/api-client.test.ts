@@ -1,5 +1,5 @@
 import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
-import {http,download,setStaffCsrf,authenticationChanged} from '@/lib/api/client';
+import {http,download,setStaffCsrf,authenticationChanged,authorizationChanged,captureStaffAccess,staffAccessRevision} from '@/lib/api/client';
 
 const schoolId='00000000-0000-4000-8000-000000000001';
 const envelope=(data:unknown,status=200)=>new Response(JSON.stringify({data,requestId:'test-request'}),{status,headers:{'content-type':'application/json'}});
@@ -41,5 +41,18 @@ describe('connected HTTP transport',()=>{
     let release!:(value:unknown)=>void,start!:()=>void;const begun=new Promise<void>(resolve=>{start=resolve;});
     const response=envelope({id:'old-private-data'});vi.spyOn(response,'json').mockImplementation(()=>{start();return new Promise(resolve=>{release=resolve;});});vi.stubGlobal('fetch',vi.fn().mockResolvedValue(response));
     const reading=http('getMyProfile');await begun;authenticationChanged();release({data:{id:'old-private-data'},requestId:'old-request'});await expect(reading).rejects.toMatchObject({code:'NO_SESSION'});
+  });
+  it('rejects a completed private body after same-identity permission changes',async()=>{
+    let release!:(value:unknown)=>void,start!:()=>void;const begun=new Promise<void>(resolve=>{start=resolve;}),response=envelope({id:'old-private-data'});
+    vi.spyOn(response,'json').mockImplementation(()=>{start();return new Promise(resolve=>{release=resolve;});});vi.stubGlobal('fetch',vi.fn().mockResolvedValue(response));const reading=http('getMyProfile');await begun;const access=captureStaffAccess();authorizationChanged();release({data:{id:'old-private-data'},requestId:'old-request'});
+    expect(()=>access.assertCurrent()).toThrow();await expect(reading).rejects.toMatchObject({code:'FORBIDDEN',details:{scopeChanged:true}});
+  });
+  it('keeps an uncertain command key and current CSRF after a permission refresh for the same identity',async()=>{
+    const fetcher=vi.fn().mockRejectedValueOnce(new TypeError('lost response')).mockResolvedValueOnce(envelope({id:'created'},201));vi.stubGlobal('fetch',fetcher);const options={params:{schoolId},body:{code:'KEY',name:'Lớp thật',yearId:schoolId,gradeLevelId:schoolId,capacity:40}};
+    await expect(http('createClass',options)).rejects.toMatchObject({code:'NETWORK'});authorizationChanged();await http('createClass',options);expect(fetcher.mock.calls[1][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[0][1].headers['Idempotency-Key']);expect(fetcher.mock.calls[1][1].headers['X-CSRF-Token']).toBe('memory-only-csrf');
+  });
+  it('does not let an old unauthorized response clear a newer authenticated context',async()=>{
+    let release!:(response:Response)=>void;vi.stubGlobal('fetch',vi.fn().mockImplementation(()=>new Promise<Response>(resolve=>{release=resolve;})));const reading=http('getMyProfile');authenticationChanged();setStaffCsrf('new-csrf');const revision=staffAccessRevision();release(new Response(JSON.stringify({code:'UNAUTHENTICATED'}),{status:401}));
+    await expect(reading).rejects.toMatchObject({code:'NO_SESSION'});expect(staffAccessRevision()).toBe(revision);
   });
 });

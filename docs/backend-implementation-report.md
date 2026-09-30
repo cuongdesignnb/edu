@@ -1,5 +1,12 @@
 # Backend implementation evidence
 
+## B6 staff scope ownership checkpoint
+
+- Frontend TypeScript and scoped lint exit0. Actual frontend checks are **51/51**, zero skipped, in `qa/backend/b6-scope-owner-frontend-unit.log`. They cover late 401 responses, changed permission scope during body decoding, composite reads/errors, current context changes and reauthorized rollover retries. These are unit checks, not browser acceptance.
+- Staff identity and scope revisions are separate. Actual role/action/assignment/date/school changes purge private reads; equivalent context refreshes do not. A late response cannot reset a replacement login. Uncertain mutation keys and CSRF remain available for the same identity after a scope refresh.
+- All 25 school candidates bind their composite result to one identity/scope. Rollover clears private previews on scope changes and retains only opaque acknowledgement receipts and stage keys in memory. A completed retry asks the API for current authorization instead of returning a cached success. Reload recovery still remains pending.
+- Backend code and migration state are unchanged: latest PostgreSQL evidence remains **90/90**, 30 migrations, 265 operations and 316 schemas. There are 39 candidate methods; 231 legacy methods and 118 core screens still await activation. Root deployment merge, final local URL, restart, backup/restore, SMTP/process-kill and load acceptance remain outstanding. Production is not deployed.
+
 Started 2026-09-30 (Asia/Saigon). Baseline frontend commit: `14dfad5`.
 Branch: `codex/backend-postgresql`. Initial working tree contained only supplied,
 untracked `docs/backend-handoff/` and `docs/EduManage-Backend-PostgreSQL-Handoff.zip`.

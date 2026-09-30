@@ -10,17 +10,26 @@ export interface ApiOptions<K extends OperationId> {
 }
 interface HttpProblem {code?:string;status?:number;currentVersion?:number;requestId?:string;fieldErrors?:{path:string;message:string}[]}
 let staffCsrf:string|null=null,bootstrapCsrf:string|null=null,bootstrapPending:Promise<string>|null=null;
-let authEpoch=0;
+let authEpoch=0,accessEpoch=0;
 const authListeners=new Set<()=>void>();
+const accessListeners=new Set<()=>void>();
 const retries=new Map<string,{key:string;at:number}>();
 const blobs=new WeakMap<Blob,string>();
 
 /** Session/CSRF values are memory-only. Authentication itself is an HttpOnly cookie. */
 export function setStaffCsrf(value:string|null){staffCsrf=value;}
-export function authenticationChanged(){authEpoch++;staffCsrf=null;bootstrapCsrf=null;retries.clear();authListeners.forEach(fn=>fn());}
+export function authenticationChanged(){authEpoch++;accessEpoch++;staffCsrf=null;bootstrapCsrf=null;retries.clear();authListeners.forEach(fn=>fn());accessListeners.forEach(fn=>fn());}
 export function onAuthenticationChanged(fn:()=>void){authListeners.add(fn);return()=>{authListeners.delete(fn);};}
-/** Bind a composite read/command to the same authenticated identity throughout. */
-export function captureStaffAccess(){const epoch=authEpoch;return {epoch,assertCurrent(){if(epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi. Vui lòng tải lại dữ liệu trước khi tiếp tục.');}};}
+/** Permission changes invalidate private reads, while uncertain command keys stay bound to the same identity. */
+export function authorizationChanged(){accessEpoch++;accessListeners.forEach(fn=>fn());}
+export function onStaffAccessChanged(fn:()=>void){accessListeners.add(fn);return()=>{accessListeners.delete(fn);};}
+export function staffAccessRevision(){return accessEpoch;}
+function assertStaffAccess(epoch:number,identity:number){
+  if(identity!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi. Vui lòng tải lại dữ liệu trước khi tiếp tục.');
+  if(epoch!==accessEpoch)throw new RepoError('FORBIDDEN','Phạm vi quyền đã thay đổi. Vui lòng tải lại dữ liệu.',{details:{scopeChanged:true}});
+}
+/** Bind a composite read/command to the same identity and permission scope throughout. */
+export function captureStaffAccess(){const epoch=accessEpoch,identity=authEpoch;return {epoch,assertCurrent(){assertStaffAccess(epoch,identity);}};}
 function canonical(value:unknown):string{
   if(value===null||typeof value!=='object')return JSON.stringify(value);
   if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
@@ -64,8 +73,8 @@ function urlFor<K extends OperationId>(id:K,options:ApiOptions<K>){
   const query=new URLSearchParams();for(const [key,value]of Object.entries(options.query??{}))if(value!==undefined&&value!==null&&value!=='')query.set(key,String(value));
   return path+(query.size?'?'+query.toString():'');
 }
-async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{response:Response;hash?:string;epoch:number}>{
-  const op=apiOperations[id],read=op.method==='GET',headers:Record<string,string>={Accept:'application/json'},epoch=authEpoch;
+async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{response:Response;hash?:string;epoch:number;identity:number}>{
+  const op=apiOperations[id],read=op.method==='GET',headers:Record<string,string>={Accept:'application/json'},epoch=accessEpoch,identity=authEpoch;
   const url=urlFor(id,options);
   if(options.body!==undefined&&options.multipart)throw new RepoError('VALIDATION','Yêu cầu chứa hai kiểu nội dung.');
   let body:BodyInit|undefined,hash:string|undefined;
@@ -77,31 +86,34 @@ async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{
     if(!headers['X-CSRF-Token'])throw new RepoError('REVOKED','Phiên tra cứu chưa được mở.');
     hash=await fingerprint({id,params:options.params,query:options.query,body:options.multipart?formIdentity(options.multipart):options.body});headers['Idempotency-Key']=retryKey(hash,options.idempotencyKey);
   }
-  if(op.auth==='staff'&&epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi trước khi gửi yêu cầu. Vui lòng tải lại.');
+  if(op.auth==='staff')assertStaffAccess(epoch,identity);
   let response:Response;
   try{response=await fetch(url,{method:op.method,headers,body,credentials:'include',cache:'no-store',redirect:'error',signal:options.signal??AbortSignal.timeout(options.multipart?120_000:30_000)});}
-  catch{throw new RepoError(read?'READ_ERROR':'NETWORK',read?'Không kết nối được máy chủ để đọc dữ liệu. Hãy thử lại.':'Không nhận được xác nhận lưu. Giữ nguyên nội dung và thử lại với cùng lệnh.');}
+  catch{if(op.auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(read?'READ_ERROR':'NETWORK',read?'Không kết nối được máy chủ để đọc dữ liệu. Hãy thử lại.':'Không nhận được xác nhận lưu. Giữ nguyên nội dung và thử lại với cùng lệnh.');}
+  if(op.auth==='staff')assertStaffAccess(epoch,identity);
   if(!response.ok){
     let problem:HttpProblem={};try{problem=await response.json() as HttpProblem;}catch{/* Unparseable errors are still errors; no data fallback. */}
+    if(op.auth==='staff')assertStaffAccess(epoch,identity);
     if(response.status<500&&response.status!==429&&hash)retries.delete(hash);
     if(problem.code==='CSRF_INVALID'){bootstrapCsrf=null;staffCsrf=null;}
     if(response.status===401&&op.auth==='staff'&&problem.code!=='INVALID_CREDENTIALS')authenticationChanged();
     throw error(response.status,problem,op.auth,read,response.headers.get('retry-after'),id);
   }
-  if(op.auth==='staff'&&epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi trong lúc tải dữ liệu. Vui lòng tải lại.');
-  return {response,hash,epoch};
+  if(op.auth==='staff')assertStaffAccess(epoch,identity);
+  return {response,hash,epoch,identity};
 }
 export async function http<K extends OperationId>(id:K,options:ApiOptions<K>={}):Promise<ApiEnvelope<ApiData<K>>>{
-  const {response,hash,epoch}=await send(id,options);let result:ApiEnvelope<ApiData<K>>;
-  try{result=await response.json() as ApiEnvelope<ApiData<K>>;}catch{throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.');}
+  const {response,hash,epoch,identity}=await send(id,options);let result:ApiEnvelope<ApiData<K>>;
+  try{result=await response.json() as ApiEnvelope<ApiData<K>>;}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.');}
+  if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(!result||typeof result!=='object'||!Object.hasOwn(result,'data')||typeof result.requestId!=='string')throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Phản hồi API không đúng hợp đồng.');
-  if(apiOperations[id].auth==='staff'&&epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi trong lúc đọc phản hồi.');
+  if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(hash)retries.delete(hash);return result;
 }
 export async function download<K extends OperationId>(id:K,options:ApiOptions<K>={}):Promise<{blob:Blob;filename:string}>{
-  const {response,hash,epoch}=await send(id,options),disposition=response.headers.get('content-disposition')??'';let filename='download';
+  const {response,hash,epoch,identity}=await send(id,options),disposition=response.headers.get('content-disposition')??'';let filename='download';
   const encoded=/filename\*=UTF-8''([^;]+)/i.exec(disposition);if(encoded)try{filename=decodeURIComponent(encoded[1]).replace(/[\x00-\x1f\x7f<>:"/\\|?*]/g,'_');}catch{/* Safe filename remains. */}
-  let blob:Blob;try{blob=await response.blob();}catch{throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Tệp chưa được tải đầy đủ. Vui lòng thử lại.');}
-  if(apiOperations[id].auth==='staff'&&epoch!==authEpoch)throw new RepoError('NO_SESSION','Phiên đã thay đổi trong lúc tải tệp.');
+  let blob:Blob;try{blob=await response.blob();}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Tệp chưa được tải đầy đủ. Vui lòng thử lại.');}
+  if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(hash)retries.delete(hash);return {blob,filename};
 }

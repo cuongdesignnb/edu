@@ -1,6 +1,6 @@
 import type {Actor} from '../permissions/can';
 import type {ApiSchemas} from './generated';
-import {http,setStaffCsrf,authenticationChanged,onAuthenticationChanged} from './client';
+import {http,setStaffCsrf,authenticationChanged,authorizationChanged,onAuthenticationChanged} from './client';
 import {RepoError,isRepoError} from '../repositories/errors';
 
 export interface StaffSession {actor:Actor;startedAt:string;expiresAt?:string;via:'login'|'invitation'|'demo'}
@@ -8,6 +8,7 @@ type Context=ApiSchemas['Context'];
 let current:StaffSession|null=null,context:Context|null=null,pending:Promise<Context>|null=null;
 let offset=0,generation=0,channel:BroadcastChannel|null=null;
 const listeners=new Set<()=>void>();
+function accessSignature(value:Context){return JSON.stringify({userId:value.user.id,platform:[...value.platformActions].sort(),memberships:value.memberships.map(m=>({schoolId:m.schoolId,memberId:m.memberId,status:m.status,schoolStatus:m.schoolStatus,timezone:m.timezone,today:m.today,grants:m.grants.map(g=>({id:g.id,version:g.version,roleId:g.roleId,roleCode:g.roleCode,scope:g.scopeType,classId:g.classId,subjectId:g.subjectId,from:g.validFrom,until:g.validUntil,starts:g.assignmentStartsOn,ends:g.assignmentEndsOn,actions:[...g.actions].sort()})).sort((a,b)=>String(a.id).localeCompare(String(b.id))),duties:m.duties.map(d=>({id:d.id,classId:d.classId,subjectId:d.subjectId,kind:d.kind,starts:d.startsOn,ends:d.endsOn})).sort((a,b)=>a.id.localeCompare(b.id))})).sort((a,b)=>String(a.memberId).localeCompare(String(b.memberId)))});}
 function emit(){listeners.forEach(fn=>fn());}
 onAuthenticationChanged(()=>{generation++;current=null;context=null;pending=null;emit();});
 
@@ -28,10 +29,12 @@ export async function refreshStaffContext():Promise<Context>{
     const value=(await http('getMyContext')).data;
     if(revision!==generation)throw new RepoError('NO_SESSION','Phiên đã thay đổi trong lúc tải.');
     if(!value.user.id||!Number.isFinite(Date.parse(value.serverNow)))throw new RepoError('READ_ERROR','Ngữ cảnh phiên không đúng hợp đồng.');
+    const scopeChanged=!!context&&context.user.id===value.user.id&&accessSignature(context)!==accessSignature(value);
     if(current&&current.actor.kind!=='anonymous'&&current.actor.userId!==value.user.id){authenticationChanged();}
-    const actor:Actor=current&&current.actor.kind!=='anonymous'&&current.actor.userId===value.user.id?current.actor:{kind:value.platformActions.length?'platform':'staff',userId:value.user.id};
+    const kind=value.platformActions.length?'platform' as const:'staff' as const;
+    const actor:Actor=current&&current.actor.kind===kind&&current.actor.userId===value.user.id?current.actor:{kind,userId:value.user.id};
     offset=Date.parse(value.serverNow)-Date.now();context=value;setStaffCsrf(value.csrfToken);
-    current={actor,startedAt:current?.startedAt??value.serverNow,via:current?.via??'login'};emit();return value;
+    current={actor,startedAt:current?.startedAt??value.serverNow,via:current?.via??'login'};if(scopeChanged)authorizationChanged();emit();return value;
   })();
   pending=work;
   try{return await work;}finally{if(pending===work)pending=null;}

@@ -18,8 +18,9 @@ const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRep
 for(const name of (await fs.readdir(path.join(directory,'connected'))).filter(n=>n.endsWith('.ts')).sort()){
   const source=await fs.readFile(path.join(directory,'connected',name),'utf8'),file=ts.createSourceFile(name,source,ts.ScriptTarget.Latest,true);
   const visit=node=>{
-    if(ts.isVariableDeclaration(node)&&aliases[node.name.getText(file)]&&node.initializer&&ts.isObjectLiteralExpression(node.initializer)){
-      for(const member of node.initializer.properties)if((ts.isMethodDeclaration(member)||ts.isPropertyAssignment(member))&&member.name)candidates.push({repository:aliases[node.name.getText(file)],method:member.name.getText(file),file:`src/lib/repositories/connected/${name}`,status:'IMPLEMENTED',activated:false,evidence:['Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance.']});
+    if(ts.isVariableDeclaration(node)&&aliases[node.name.getText(file)]&&node.initializer){
+      const initializer=ts.isCallExpression(node.initializer)&&node.initializer.expression.getText(file)==='withStaffAccess'?node.initializer.arguments[0]:node.initializer;
+      if(initializer&&ts.isObjectLiteralExpression(initializer))for(const member of initializer.properties)if((ts.isMethodDeclaration(member)||ts.isPropertyAssignment(member))&&member.name)candidates.push({repository:aliases[node.name.getText(file)],method:member.name.getText(file),file:`src/lib/repositories/connected/${name}`,status:'IMPLEMENTED',activated:false,evidence:['Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance.']});
     }
     ts.forEachChild(node,visit);
   };visit(file);

@@ -521,3 +521,29 @@ unit/contract is 13/13, frontend unit is 41/41, typecheck/scoped lint/build exit
 Runtime remains 265 operations and now 316 schemas. These checks do not certify
 browser activation or B7 performance; retained-fixture timings are not p95 load
 measurements. All 25 school methods now have candidates, still unactivated.
+
+## ADR-035 — separate staff identity and permission revisions
+
+The HttpOnly session remains the authentication authority. Memory-only context
+now compares actual school/action/grant/assignment/date boundaries, excluding
+display fields, CSRF and server clock refreshes. A changed scope increments the
+private-read revision after installing the new context; changed identity also
+clears CSRF and uncertain command keys. HTTP guards run before sending, after
+headers/body decoding and on failure. An old 401 cannot clear a newer login.
+
+Composite school methods also bind their complete result/error to the starting
+identity and scope. This prevents assembling old private data with new context
+after individual requests have completed. Multi-stage commands still explicitly
+check between stages; a wrapper is not a substitute for those checks.
+
+Rollover previews are evicted on any scope change. Same-identity retries retain
+only batch ID/version/status/hash, acknowledgement body and independent stage
+keys, with no cached student plan or names. Even APPLIED retries call the native
+commit with the original key/body so current authorization precedes replay.
+Nothing is persisted to browser storage. Durable reload recovery, query-provider
+activation and real browser revocation checks remain separate pending work.
+
+Executed frontend evidence is 51/51 in
+qa/backend/b6-scope-owner-frontend-unit.log; TypeScript/scoped lint exit0. Backend
+source is unchanged from the executed 90/90 PostgreSQL and 13/13 contract/unit
+checkpoint. No browser, restart, restore or performance PASS is inferred.

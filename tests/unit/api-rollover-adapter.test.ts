@@ -1,6 +1,6 @@
 import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
 import {connectedSchoolRepo} from '@/lib/repositories/connected/school';
-import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
+import {authenticationChanged,authorizationChanged,setStaffCsrf} from '@/lib/api/client';
 import type {Ctx} from '@/lib/repositories/core';
 
 const schoolId='00000000-0000-4000-8000-000000000001',sourceId='00000000-0000-4000-8000-000000000002',targetId='00000000-0000-4000-8000-000000000003',classId='00000000-0000-4000-8000-000000000004',targetClassId='00000000-0000-4000-8000-000000000005',studentId='00000000-0000-4000-8000-000000000006',batchId='00000000-0000-4000-8000-000000000007';
@@ -22,7 +22,7 @@ describe('rollover command acknowledgement',()=>{
     await expect(run()).rejects.toMatchObject({code:'NETWORK'});expect(fetcher).toHaveBeenCalledTimes(1);
     await expect(run()).resolves.toMatchObject({enrolled:1,left:0,warnings:['Cần phê duyệt phân công riêng.']});expect(fetcher).toHaveBeenCalledTimes(4);
     expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);expect(JSON.parse(fetcher.mock.calls[2][1].body)).toEqual({expectedVersion:1});expect(JSON.parse(fetcher.mock.calls[3][1].body)).toEqual({expectedVersion:2,previewHash:'a'.repeat(64)});
-    await expect(run()).resolves.toMatchObject({enrolled:1,left:0});expect(fetcher).toHaveBeenCalledTimes(4);
+    fetcher.mockResolvedValueOnce(envelope(batch('APPLIED',3)));await expect(run()).resolves.toMatchObject({enrolled:1,left:0});expect(fetcher).toHaveBeenCalledTimes(5);expect(fetcher.mock.calls[4][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[3][1].headers['Idempotency-Key']);expect(fetcher.mock.calls[4][1].body).toBe(fetcher.mock.calls[3][1].body);
   });
   it.each(['validate','commit'])('retries only the uncertain %s stage with its same key and body',async(stage)=>{
     const fetcher=vi.fn().mockResolvedValueOnce(envelope(batch('DRAFT',1)));
@@ -44,5 +44,11 @@ describe('rollover command acknowledgement',()=>{
   it('rejects missing source classes, duplicate students and a substituted acknowledgement plan',async()=>{
     const fetcher=vi.fn().mockResolvedValue(envelope({...batch('DRAFT',1),plan:[{studentId:classId,fromClassId:classId,toClassId:targetClassId,decision:'PROMOTED'}]}));vi.stubGlobal('fetch',fetcher);
     await expect(connectedSchoolRepo.rolloverApply(ctx,schoolId,sourceId,targetId,[{studentId,action:'leave'}])).rejects.toMatchObject({code:'CONFLICT'});await expect(connectedSchoolRepo.rolloverApply(ctx,schoolId,sourceId,targetId,[...decision,...decision])).rejects.toMatchObject({code:'VALIDATION'});expect(fetcher).not.toHaveBeenCalled();await expect(run()).rejects.toMatchObject({code:'NETWORK'});expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+  it('does not reuse a private roster after scope changes, and completed command replays still obtain authorization',async()=>{
+    const year={id:sourceId,name:'2026–2027',code:'2026-2027',startsOn:'2026-09-01',endsOn:'2027-06-01',status:'ACTIVE',version:1};
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope({source:year,referenceDate:'2027-05-31',sourceClasses:[{id:classId,name:'10A1',gradeLevel:10,students:[{id:studentId,studentCode:'A001',fullName:'Học sinh API',status:'ACTIVE'}]}],targets:[],grades:[]}));vi.stubGlobal('fetch',fetcher);await connectedSchoolRepo.rolloverPreview(ctx,schoolId,sourceId);authorizationChanged();
+    await expect(connectedSchoolRepo.rolloverApply(ctx,schoolId,sourceId,targetId,[{studentId,action:'promote',targetClassId}])).rejects.toMatchObject({code:'CONFLICT'});expect(fetcher).toHaveBeenCalledTimes(1);
+    fetcher.mockResolvedValueOnce(envelope(batch('DRAFT',1))).mockResolvedValueOnce(envelope(batch('VALIDATED',2))).mockResolvedValueOnce(envelope(batch('APPLIED',3))).mockResolvedValueOnce(new Response(JSON.stringify({code:'FORBIDDEN'}),{status:403}));await expect(run()).resolves.toMatchObject({enrolled:1});authorizationChanged();await expect(run()).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(5);expect(fetcher.mock.calls[4][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[3][1].headers['Idempotency-Key']);
   });
 });

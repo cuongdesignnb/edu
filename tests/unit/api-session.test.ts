@@ -1,5 +1,5 @@
 import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
-import {authenticationChanged,setStaffCsrf,http} from '@/lib/api/client';
+import {authenticationChanged,setStaffCsrf,http,staffAccessRevision,onStaffAccessChanged} from '@/lib/api/client';
 import {refreshStaffContext,readStaffSession,readStaffContext,adoptAuthenticatedSession,logoutStaff,restoreStaffSession,serverToday} from '@/lib/api/session';
 import {uiActions} from '@/lib/api/permissions';
 import type {ApiSchemas} from '@/lib/api/generated';
@@ -37,5 +37,15 @@ describe('cookie session and advisory permissions',()=>{
   it('keeps class, subject and event dates on the same grant and hides ended assignments',()=>{
     const ctx=fixture();expect(uiActions(ctx,{schoolId,classId:classA}).has('seating.manage')).toBe(true);expect(uiActions(ctx,{schoolId,classId:classB}).has('seating.manage')).toBe(false);expect(uiActions(ctx,{schoolId,classId:classB}).has('guardian.view')).toBe(false);expect(uiActions(ctx,{schoolId}).size).toBe(0);expect(uiActions(ctx,{schoolId,classId:classB,subjectId:userId}).size).toBe(0);expect(uiActions(ctx,{schoolId,classId:classA,date:'2027-06-01'}).size).toBe(0);
     ctx.memberships[0].status='SUSPENDED';expect(uiActions(ctx,{schoolId,classId:classA}).size).toBe(0);
+  });
+  it('invalidates private scope when the same identity loses a grant while preserving its cookie session',async()=>{
+    const original=fixture(),changed=structuredClone(original);changed.memberships[0].grants=[];changed.memberships[0].duties=[];const fetcher=vi.fn().mockResolvedValueOnce(reply(original)).mockResolvedValueOnce(reply(changed));vi.stubGlobal('fetch',fetcher);await refreshStaffContext();const revision=staffAccessRevision(),actor=readStaffSession()!.actor;
+    const observed=vi.fn(()=>expect(readStaffContext()?.memberships[0].grants).toEqual([])),off=onStaffAccessChanged(observed);await refreshStaffContext();off();expect(staffAccessRevision()).toBe(revision+1);expect(observed).toHaveBeenCalledTimes(1);expect(readStaffSession()?.actor).toBe(actor);expect(readStaffContext()?.csrfToken).toBe('only-memory');
+  });
+  it('does not invalidate scope for server time refresh or reordering equivalent grants/actions',async()=>{
+    const original=fixture(),same=structuredClone(original);same.serverNow=new Date(Date.parse(original.serverNow)+3000).toISOString();same.memberships[0].grants.reverse();for(const g of same.memberships[0].grants)g.actions.reverse();vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(reply(original)).mockResolvedValueOnce(reply(same)));await refreshStaffContext();const revision=staffAccessRevision();await refreshStaffContext();expect(staffAccessRevision()).toBe(revision);
+  });
+  it('updates actor kind and scope for newly granted platform rights and school date/timezone changes',async()=>{
+    const original=fixture(),platform=structuredClone(original);platform.platformActions=['platform.read'];const nextDay=structuredClone(platform);nextDay.memberships[0].today='2026-10-01';nextDay.memberships[0].timezone='Asia/Tokyo';vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(reply(original)).mockResolvedValueOnce(reply(platform)).mockResolvedValueOnce(reply(nextDay)));await refreshStaffContext();const revision=staffAccessRevision();await refreshStaffContext();expect(readStaffSession()?.actor).toEqual({kind:'platform',userId});expect(staffAccessRevision()).toBe(revision+1);await refreshStaffContext();expect(staffAccessRevision()).toBe(revision+2);
   });
 });

@@ -8,7 +8,7 @@ import {exclusiveDate} from '../../api/dates';
 import {year,term,holiday,week,classRow,classInfo} from './organization-mapping';
 import {uiActions} from '../../api/permissions';
 import {RepoError} from '../errors';
-import {formResult,requiredId,requiredValue} from './common';
+import {formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {readRolloverPreview,applyRollover,type RolloverDecision} from './rollover';
 
 function school(row:ApiSchemas['School']){
@@ -23,7 +23,7 @@ function dictionary(row:ApiSchemas['DictionaryItem'],schoolId:ID){return {id:req
 function version(value:number|undefined){if(value===undefined)throw new RepoError('CONFLICT','Hãy tải lại dữ liệu trước khi sửa để giữ đúng phiên bản.',{details:{requiresReload:true}});return value;}
 function reason(value:string|undefined){if(!value||value.trim().length<5)throw new RepoError('VALIDATION','Hãy nhập lý do ít nhất 5 ký tự.',{fieldErrors:{reason:'Nhập lý do ít nhất 5 ký tự.'}});return value.trim();}
 
-export const connectedSchoolRepo={
+export const connectedSchoolRepo=withStaffAccess({
   async context(_ctx:Ctx,schoolId:ID){
     const [profile,rows,context]=await Promise.all([http('getSchoolProfile',{params:{schoolId}}),apiList('listYears',{params:{schoolId},query:{sort:'startsOn',dir:'desc'}},100),refreshStaffContext()]);
     const member=context.memberships.find(m=>m.schoolId===schoolId);if(!member||member.status!=='ACTIVE')throw new RepoError('REVOKED');
@@ -111,4 +111,4 @@ export const connectedSchoolRepo={
     for(const key of ['activeClasses','draftClasses','prevClasses','staffActive','students','prevStudents','linksActive','linksOpened'] as const)requiredValue(value.kpi[key],key);
     return {year:year(value.year,schoolId),prevYear:value.prevYear?year(value.prevYear,schoolId):undefined,kpi:value.kpi,setup:value.setup,classesNeedingAction:requiredValue(value.classesNeedingAction,'classesNeedingAction')?.map(row=>({...classRow(row,schoolId),tasks:row.tasks,severity:row.severity}))??null,classesNeedingActionTotal:requiredValue(value.classesNeedingActionTotal,'classesNeedingActionTotal'),todayItems:requiredValue(value.todayItems,'todayItems'),announcements:requiredValue(value.announcements,'announcements')?.map(a=>({id:requiredId(a.id),title:a.title,summary:a.summary,status:a.status.toLowerCase() as 'published'|'scheduled',createdAt:a.createdAt,publishedAt:a.publishedAt??undefined,scheduledAt:a.scheduledAt??undefined}))??null,asOf:response.asOf,referenceDate:requiredValue(response.referenceDate,'referenceDate')};
   },
-};
+});
