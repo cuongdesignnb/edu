@@ -20,7 +20,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 15 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 16 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position sources, immutable publication and approved adjustment workflows tested; activity sources and connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
@@ -204,3 +204,9 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - Seating checks duplicate student/key/coordinate and effective enrollment; drafts have version and optional latest-revision guards. Future activation bounds the old plan without replacing its payload. Activated content and seats deny direct SQL modification. Subject-only teachers can read class metadata but cannot read whole-class seating/groups.
 - qa/backend/classroom-integration.log: 44/44 actual integration tests, exit0. qa/backend/classroom-unit-contract.log: 11/11 executed, exit0. Build/typecheck and lint exit0. Initial 42/44 run found an invalid Ack DTO and a test missing a required nullable clientEventId; both corrected before the successful full rerun.
 - 179/264 API operations implemented. Ending enrollments must still close class organization intervals. Timetable/duty publication, activities, announcements, reports/support/platform, frontend adapters and B7 acceptance remain unfinished. No local final deployment or production deployment.
+
+## Enrollment organization boundary — actual execution
+
+- Migration 016 applied and replay verified. Ending/transfer of enrollment closes dated group and position assignments atomically, retains cancelled future assignments, and preserves locked conduct source protection.
+- qa/backend/enrollment-org-integration.log: 45/45 executed, exit0. Docker/backend build, host typecheck and lint exit0. This adds one transfer-domain integration scenario; no new API operation.
+- 179/264 API operations remain implemented. Timetable/duty publication and the remaining B5/B6/B7 work are pending; final local URL is not serving the completed stack yet.

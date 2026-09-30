@@ -1055,3 +1055,19 @@ test('B5 seating validates effective enrollment and unique seats, preserves date
   const subject=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-a'),subjectId:seedId('subject:A:math'),kind:'SUBJECT',startsOn:'2026-09-28',endsOn:'2027-06-01',reason:'Phân công môn kiểm tra sơ đồ'});assert.equal(subject.statusCode,201,subject.body);
   await login('teacher-a@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`)).statusCode,200);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/groups`)).statusCode,404);
 });
+
+test('B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,today=await schoolToday(),cutoff=nextDate(today,1),future=nextDate(today,3);
+  const group=await f.post(`${base}/groups`,{name:'Tổ chuyển lớp giả',sortOrder:1}),cls=(await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`)).json().data;
+  assert.equal((await f.post(`${base}/groups/assign`,{groupId:group.json().data.id,enrollmentIds:[f.enrollments[0].id],effectiveOn:'2026-09-28',expectedClassVersion:cls.version,reason:'Xác nhận tổ đầu tuần'})).statusCode,200);
+  const position=await f.post(`${base}/positions`,{code:'group_leader',name:'Tổ trưởng chuyển lớp giả',singleHolder:true,groupId:group.json().data.id}),futurePosition=await f.post(`${base}/positions`,{code:'secretary',name:'Chức vụ dự kiến giả',singleHolder:true});
+  const current=await f.post(`${base}/positions/assign`,{positionId:position.json().data.id,enrollmentId:f.enrollments[0].id,startsOn:'2026-09-28',reason:'Xác nhận chức vụ đầu tuần'});assert.equal(current.statusCode,201,current.body);
+  const planned=await f.post(`${base}/positions/assign`,{positionId:futurePosition.json().data.id,enrollmentId:f.enrollments[0].id,startsOn:future});assert.equal(planned.statusCode,201);
+  const target=await f.post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`ORG-TRANSFER-${crypto.randomUUID()}`,name:'Lớp nhận tổ chức giả',capacity:4});assert.equal(target.statusCode,201);
+  const submitted=await f.post('transfers',{studentId:f.enrollments[0].studentId,fromEnrollmentId:f.enrollments[0].id,toClassId:target.json().data.id,effectiveOn:cutoff,reason:'Chuyển lớp kết thúc tổ chức'});assert.equal(submitted.statusCode,201);
+  const applied=await f.post(`transfers/${submitted.json().data.id}/approve`,{expectedVersion:submitted.json().data.version});assert.equal(applied.statusCode,200,applied.body);
+  const positions=(await request('GET',`/api/v1/schools/${schoolA}/${base}/position-assignments`)).json().data;assert.equal(positions.find(p=>p.id===current.json().data.id).endsOn,cutoff);assert.ok(positions.find(p=>p.id===planned.json().data.id).cancelledAt);
+  const history=await db.transaction(tx=>tx.query('SELECT ends_on FROM app.group_memberships WHERE school_id=$1 AND enrollment_id=$2',[schoolA,f.enrollments[0].id]),{schoolId:schoolA});assert.equal(history.rowCount,1);assert.equal(history.rows[0].ends_on,cutoff);
+  const groups=await request('GET',`/api/v1/schools/${schoolA}/${base}/groups?onDate=${cutoff}`);assert.equal(groups.json().data.every(g=>!g.enrollmentIds.includes(f.enrollments[0].id)),true);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/students/${f.enrollments[0].studentId}/enrollments`)).json().data.length,2);
+});
