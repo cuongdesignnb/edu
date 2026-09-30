@@ -193,3 +193,11 @@ Timetable and duty publications are current per class/year/kind. PublishCommand.
 Implementation schemas add dataVersion/publishedAt, lesson periodNumber/changeReason, parent lesson status, private ParentLessonBatch/ParentDutyBatch storage envelopes and duty/lesson fields in staff PublicationDetail. Parent endpoints still flatten and validate individual items through the read-only parent role. No whole-class roster or staff IDs are included in parent payloads.
 
 Evidence: qa/backend/schedule-integration.log, 48/48 executed; qa/backend/schedule-unit-contract.log, 11/11 executed. Group-to-duty expansion at publication, the existing UI's single-lesson change/discard workflows and broader schedule races remain pending follow-up; no connected UI acceptance is implied.
+
+## ADR-018 — group duty targets resolved at publication
+
+Duty drafts may contain explicit individual assignments and dated group plans. Migration 018 stores group plans with typed class/schedule/group foreign keys, FORCE RLS and the same draft-only source guard. A plan contributes to dataVersion; publication resolves the group's effective, non-cancelled membership on its task date and materializes individual assignments with group_plan_id provenance. Empty active groups and duplicate individual/group tasks block publication. Expansion is bounded to 5,000 targets, and the publication binds the source version after expansion.
+
+A later group move never rewrites a published child's task. The parent projection contains only that child's individual tasks. Group draft edits and generated assignment edits are rejected after publication by PostgreSQL.
+
+Evidence: qa/backend/group-duty-integration.log, 49/49 executed, exit0; qa/backend/group-duty-unit-contract.log, 11/11 executed, exit0. Typecheck and lint exit0. The first unapplied migration attempt referenced an incorrect RLS function name and rolled back; after checking database metadata, the corrected migration applied and replayed successfully. No applied migration was edited. Connected frontend and operational acceptance remain pending.

@@ -5,7 +5,7 @@ import { Permissions,grantAllows } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation,notFound } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
-import { timetableResource,dutyResource,lessonResource,timetableDto,dutyDto,range,validateEntries,occurrences,conflicts,type Entry,type DutyInput } from './schedule-data';
+import { timetableResource,dutyResource,lessonResource,timetableDto,dutyDto,range,validateEntries,occurrences,conflicts,type Entry,type DutyInput,type GroupDutyInput } from './schedule-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
@@ -38,9 +38,12 @@ export class ScheduleService {
         const create=op.startsWith('create'),existing=create?null:await this.row(tx,r,c,(c.params.timetableId??c.params.dutyId)!,true);
         if(existing){this.version(existing,c.body.expectedVersion);if(['PUBLISHED','ARCHIVED'].includes(String(existing.status)))throw new Problem(409,'SCHEDULE_IMMUTABLE');}
         const starts=String(c.body.startsOn??existing?.starts_on),ends=String(c.body.endsOn??existing?.ends_on);range(ctx.year,starts,ends);
+        if(isDuty&&starts<ctx.today)validation('startsOn','Không sửa lịch trực nhật ngày đã qua');
         const data=isDuty?(c.body.assignments as DutyInput[]|undefined)??((await dutyDto(tx,existing!)).assignments as DutyInput[]):
           (c.body.entries as Entry[]|undefined)??((await timetableDto(tx,existing!)).entries as Entry[]);
+        const groups=isDuty?(c.body.groupAssignments as GroupDutyInput[]|undefined)??(existing?(await dutyDto(tx,existing)).groupAssignments as GroupDutyInput[]:[]):[];
         if(isDuty)await this.validateDuties(tx,c,data as DutyInput[],starts,ends);else await validateEntries(tx,ctx.schoolId,data as Entry[]);
+        for(const g of groups){if(g.dutyDate<starts||g.dutyDate>=ends||!g.task.trim())validation('groupAssignments','Ngày/nhiệm vụ ngoài lịch');const group=await one(tx,'SELECT id FROM app.class_groups WHERE school_id=$1 AND class_id=$2 AND id=$3',[ctx.schoolId,ctx.classId,g.groupId]);if(!group)validation('groupAssignments.groupId','Tổ không thuộc lớp');}
         let row:Row;
         if(create){
           if(isDuty)row=(await one<Row>(tx,'INSERT INTO app.duty_schedules(school_id,class_id,year_id,starts_on,ends_on,created_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',[ctx.schoolId,ctx.classId,ctx.year.id,starts,ends,c.principal!.userId]))!;
@@ -49,10 +52,12 @@ export class ScheduleService {
         }else{
           row=(await one<Row>(tx,`UPDATE ${r.table} SET status='DRAFT',starts_on=$3,ends_on=$4,data_version=data_version+1 WHERE school_id=$1 AND id=$2 RETURNING *`,[ctx.schoolId,existing!.id,starts,ends]))!;
           await tx.query(`DELETE FROM app.${isDuty?'duty_assignments':'timetable_entries'} WHERE school_id=$1 AND ${isDuty?'schedule_id':'timetable_id'}=$2`,[ctx.schoolId,row.id]);
+          if(isDuty)await tx.query('DELETE FROM app.duty_group_plans WHERE school_id=$1 AND schedule_id=$2',[ctx.schoolId,row.id]);
         }
         if(isDuty)for(const a of data as DutyInput[])await tx.query('INSERT INTO app.duty_assignments(school_id,class_id,schedule_id,enrollment_id,duty_date,task,status) VALUES($1,$2,$3,$4,$5,$6,$7)',[ctx.schoolId,ctx.classId,row.id,a.enrollmentId,a.dutyDate,a.task,a.status??'ASSIGNED']);
         else for(const e of data as Entry[])await tx.query(`INSERT INTO app.timetable_entries(school_id,class_id,timetable_id,weekday,period_number,subject_id,member_id,room_id,starts_at_local,ends_at_local)
           VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,[ctx.schoolId,ctx.classId,row.id,e.weekday,e.periodNumber,e.subjectId,e.memberId,e.roomId??null,e.startsAtLocal,e.endsAtLocal]);
+        for(const g of groups)await tx.query('INSERT INTO app.duty_group_plans(school_id,class_id,schedule_id,group_id,duty_date,task,status) VALUES($1,$2,$3,$4,$5,$6,$7)',[ctx.schoolId,ctx.classId,row.id,g.groupId,g.dutyDate,g.task,g.status??'ASSIGNED']);
         row=await this.row(tx,r,c,String(row.id));await audit(tx,c,isDuty?'duty':'timetable',String(row.id));return {data:isDuty?await dutyDto(tx,row):await timetableDto(tx,row),status:create?201:200};
       }
       const row=await this.row(tx,r,c,(c.params.timetableId??c.params.dutyId)!,true);
@@ -67,6 +72,8 @@ export class ScheduleService {
       if(row.status==='PUBLISHED'&&current&&current[isDuty?'duty_schedule_id':'timetable_id']===row.id&&current.source_version===row.data_version)return {data:this.publicationView(current)};
       if(['PUBLISHED','ARCHIVED'].includes(String(row.status)))throw new Problem(409,'SCHEDULE_IMMUTABLE');
       if(isDuty){
+        if(String(row.starts_on)<ctx.today)validation('startsOn','Không công bố lại lịch trực nhật ngày đã qua');
+        await this.expandGroups(tx,c,row);
         const data=await dutyDto(tx,row);await this.validateDuties(tx,c,data.assignments as DutyInput[],String(row.starts_on),String(row.ends_on));
       }else{
         const checked=await conflicts(tx,row,await occurrences(tx,row));if(!checked.validation.valid)throw new Problem(422,'SCHEDULE_CONFLICTS');
@@ -83,7 +90,7 @@ export class ScheduleService {
       // Older revisions remain immutable but are replaced atomically for readers.
       await tx.query("UPDATE app.publication_revisions SET status='SUPERSEDED' WHERE school_id=$1 AND class_id=$2 AND year_id=$3 AND kind=$4 AND status='PUBLISHED'",[ctx.schoolId,ctx.classId,ctx.year.id,kind]);
       const snapshot=isDuty?{duty:await dutyDto(tx,published)}:{timetable:await timetableDto(tx,published),lessons:(await tx.query<Row>('SELECT * FROM app.lesson_occurrences WHERE school_id=$1 AND class_id=$2 ORDER BY starts_at,id LIMIT 10000',[ctx.schoolId,ctx.classId])).rows.map(l=>dto(lessonResource,l))};
-      const result=await this.publications.create(tx,{...c,body:{...c.body,expectedPublicationId:null}},{kind,id:String(row.id),schoolId:ctx.schoolId,classId:ctx.classId,yearId:String(ctx.year.id),version:Number(row.data_version)},snapshot,items,true);
+      const result=await this.publications.create(tx,{...c,body:{...c.body,expectedPublicationId:null}},{kind,id:String(row.id),schoolId:ctx.schoolId,classId:ctx.classId,yearId:String(ctx.year.id),version:Number(published.data_version)},snapshot,items,true);
       await audit(tx,c,isDuty?'duty':'timetable',String(row.id),{status:'PUBLISHED',sourceVersion:row.data_version});return {data:result};
     };
     return c.operation.method==='GET'?this.db.transaction(work,{schoolId:c.params.schoolId}):this.commands.execute(c,authorize,work);
@@ -97,6 +104,22 @@ export class ScheduleService {
       const key=`${a.enrollmentId}:${a.dutyDate}:${a.task}`;if(!a.task.trim()||a.dutyDate<starts||a.dutyDate>=ends||keys.has(key))validation('assignments','Ngày/nhiệm vụ bị trùng hoặc ngoài lịch');keys.add(key);
       const e=await one<Row>(tx,"SELECT * FROM app.enrollments WHERE school_id=$1 AND class_id=$2 AND id=$3 AND status<>'CANCELLED' AND starts_on<=$4 AND (ends_on IS NULL OR ends_on>$4)",[c.params.schoolId,c.params.classId,a.enrollmentId,a.dutyDate]);if(!e)validation('assignments.enrollmentId','Học sinh không thuộc lớp trong ngày trực nhật');
     }
+  }
+  private async expandGroups(tx:Transaction,c:RequestContext,row:Row){
+    const groups=(await tx.query<Row>('SELECT * FROM app.duty_group_plans WHERE school_id=$1 AND schedule_id=$2 ORDER BY duty_date,id',[row.school_id,row.id])).rows;
+    let total=Number((await one<{n:number}>(tx,'SELECT count(*)::int AS n FROM app.duty_assignments WHERE school_id=$1 AND schedule_id=$2',[row.school_id,row.id]))!.n);
+    for(const group of groups){
+      const members=(await tx.query<{enrollment_id:string}>(`SELECT g.enrollment_id FROM app.group_memberships g JOIN app.enrollments e ON e.school_id=g.school_id AND e.id=g.enrollment_id
+        WHERE g.school_id=$1 AND g.group_id=$2 AND g.class_id=$3 AND g.cancelled_at IS NULL AND g.starts_on<=$4 AND g.ends_on>$4
+        AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4) ORDER BY g.enrollment_id`,[row.school_id,group.group_id,row.class_id,group.duty_date])).rows;
+      if(!members.length&&group.status!=='CANCELLED')validation('groupAssignments','Tổ không có học sinh trong ngày trực nhật');
+      for(const member of members){
+        if(++total>5000)throw new Problem(422,'DUTY_ASSIGNMENT_LIMIT');
+        if((await tx.query('SELECT id FROM app.duty_assignments WHERE school_id=$1 AND schedule_id=$2 AND enrollment_id=$3 AND duty_date=$4 AND task=$5',[row.school_id,row.id,member.enrollment_id,group.duty_date,group.task])).rowCount)validation('groupAssignments','Nhiệm vụ trùng với học sinh đã được chọn');
+        await tx.query('INSERT INTO app.duty_assignments(school_id,class_id,schedule_id,enrollment_id,duty_date,task,status,group_plan_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[row.school_id,row.class_id,row.id,member.enrollment_id,group.duty_date,group.task,group.status,group.id]);
+      }
+    }
+    if(groups.length)await audit(tx,c,'duty',String(row.id),{groupPlans:groups.length,assignments:total,expandedAtPublication:true});
   }
   private async lessonItems(tx:Transaction,row:Row):Promise<ParentItem[]>{
     const rows=(await tx.query<Row>(`SELECT e.student_id,l.id,(l.starts_at AT TIME ZONE sc.timezone)::date AS day,l.starts_at,l.ends_at,l.status,l.change_reason,s.name AS subject_name,m.work_display_name,r.name AS room_name

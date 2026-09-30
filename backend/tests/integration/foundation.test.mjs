@@ -1138,3 +1138,20 @@ test('B5 duties publish only individual tasks, reject foreign enrollment and ret
   await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.duty_assignments SET task='Viết lại nhiệm vụ đã công bố' WHERE school_id=$1 AND schedule_id=$2",[schoolA,duty.id]),{schoolId:schoolA}),e=>e.code==='23514');
   assert.equal((await f.post(`publications/${publication.id}/withdraw`,{expectedVersion:publication.version,reason:'Thu hồi trực nhật kiểm thử'})).statusCode,200);assert.equal((await parentGet('duties',context)).json().page.total,0);
 });
+
+test('B5 group duties expand the effective group at publication and retain the individual targets after later moves',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,day=nextDate(await schoolToday(),1),task='Nhiệm vụ theo tổ được cố định khi công bố';
+  const createdGroup=await f.post(`${base}/groups`,{name:'Tổ trực nhật giả',sortOrder:1});assert.equal(createdGroup.statusCode,201);const groupId=createdGroup.json().data.id;
+  const move=async(enrollmentId,group)=>{const cls=(await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`)).json().data;const response=await f.post(`${base}/groups/assign`,{groupId:group,enrollmentIds:[enrollmentId],effectiveOn:day,expectedClassVersion:cls.version});assert.equal(response.statusCode,200,response.body);};
+  await move(f.enrollments[0].id,groupId);
+  const created=await f.post(`${base}/duties`,{startsOn:day,endsOn:nextDate(day,1),assignments:[],groupAssignments:[{groupId,dutyDate:day,task}]});assert.equal(created.statusCode,201,created.body);let duty=created.json().data;assert.equal(duty.assignments.length,0);assert.equal(duty.groupAssignments.length,1);
+  const relation=await parentRelationship(csrf,f.post,f.enrollments[0].studentId),access=await f.post('parent-access',{studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview','duties'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(access.statusCode,201);const firstContext=await parentExchange(access.json().data.link);
+  await move(f.enrollments[0].id,null);await move(f.enrollments[1].id,groupId);
+  const published=await f.post(`${base}/duties/${duty.id}/publish`,{expectedSourceVersion:duty.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);const publication=published.json().data;assert.equal((await parentGet('duties',firstContext)).json().page.total,0);
+  duty=(await request('GET',`/api/v1/schools/${schoolA}/${base}/duties`)).json().data.find(d=>d.id===duty.id);assert.equal(duty.assignments.length,1);assert.equal(duty.assignments[0].enrollmentId,f.enrollments[1].id);assert.equal(duty.dataVersion,publication.sourceVersion);
+  const secondRelation=await parentRelationship(csrf,f.post,f.enrollments[1].studentId),secondAccess=await f.post('parent-access',{studentId:f.enrollments[1].studentId,yearId:seedId('year:A'),relationshipId:secondRelation.id,allowedSections:['overview','duties'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(secondAccess.statusCode,201);const secondContext=await parentExchange(secondAccess.json().data.link);assert.equal((await parentGet('duties',secondContext)).json().data[0].task,task);
+  await move(f.enrollments[1].id,null);assert.equal((await parentGet('duties',secondContext)).json().data[0].task,task);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.duty_group_plans SET task='Đổi nguồn sau công bố' WHERE school_id=$1 AND schedule_id=$2",[schoolA,duty.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  const empty=await f.post(`${base}/duties`,{startsOn:day,endsOn:nextDate(day,1),assignments:[],groupAssignments:[{groupId,dutyDate:day,task:'Tổ rỗng không được công bố'}]});assert.equal(empty.statusCode,201);assert.equal((await f.post(`${base}/duties/${empty.json().data.id}/publish`,{expectedSourceVersion:empty.json().data.dataVersion,expectedPublicationId:publication.id})).statusCode,422);
+  assert.equal((await parentGet('duties',secondContext)).json().data[0].task,task);
+});

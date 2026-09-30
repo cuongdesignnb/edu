@@ -188,10 +188,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | updateTimetable | CL15 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
 | validateTimetable | CL15, SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
 | publishTimetable | CL15, SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
-| listDuties | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
-| createDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
-| updateDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
-| publishDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| listDuties | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
+| createDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
+| updateDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
+| publishDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
 | listActivities | CL17 | NOT_STARTED |  |
 | createActivity | CL18 | NOT_STARTED |  |
 | getActivity | CL19 | NOT_STARTED |  |

@@ -72,6 +72,8 @@ spec.components.schemas.ParentLesson.properties.status={type:'string',enum:['SCH
 spec.components.schemas.Lesson.properties.periodNumber={type:'integer',minimum:1,nullable:true};
 spec.components.schemas.Lesson.properties.changeReason={type:'string',maxLength:4000,nullable:true};
 for(const name of ['DutyCreate','DutySchedulePatch','DutySchedule'])spec.components.schemas[name].properties.assignments.maxItems=5000;
+spec.components.schemas.GroupDutyAssignment={type:'object',properties:{id:{type:'string',format:'uuid'},groupId:{type:'string',format:'uuid'},dutyDate:{type:'string',format:'date'},task:{type:'string',minLength:3,maxLength:4000},status:{type:'string',enum:['ASSIGNED','DONE','CANCELLED']}},required:['groupId','dutyDate','task'],additionalProperties:false};
+for(const name of ['DutyCreate','DutySchedulePatch','DutySchedule'])spec.components.schemas[name].properties.groupAssignments={type:'array',maxItems:200,items:{$ref:'#/components/schemas/GroupDutyAssignment'}};
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });

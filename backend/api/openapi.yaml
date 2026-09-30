@@ -32198,6 +32198,11 @@ components:
           type: string
           format: date-time
           nullable: true
+        groupAssignments:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/GroupDutyAssignment"
       required:
         - id
         - version
@@ -32248,6 +32253,11 @@ components:
               - task
             additionalProperties: false
           maxItems: 5000
+        groupAssignments:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/GroupDutyAssignment"
       required:
         - startsOn
         - endsOn
@@ -32294,6 +32304,11 @@ components:
         endsOn:
           type: string
           format: date
+        groupAssignments:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/GroupDutyAssignment"
       required:
         - expectedVersion
       additionalProperties: false
@@ -35326,6 +35341,33 @@ components:
           maxItems: 5000
       required:
         - items
+      additionalProperties: false
+    GroupDutyAssignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        dutyDate:
+          type: string
+          format: date
+        task:
+          type: string
+          minLength: 3
+          maxLength: 4000
+        status:
+          type: string
+          enum:
+            - ASSIGNED
+            - DONE
+            - CANCELLED
+      required:
+        - groupId
+        - dutyDate
+        - task
       additionalProperties: false
   securitySchemes:
     StaffCookie:
