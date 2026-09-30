@@ -1,9 +1,9 @@
 import type {ApiSchemas} from '../../api/generated';
-import {http} from '../../api/client';
-import {apiList} from '../../api/lists';
+import {http,captureStaffAccess} from '../../api/client';
+import {apiList,apiPage} from '../../api/lists';
 import {serverNowISO} from '../../api/session';
 import type {ID,Membership} from '../../model/types';
-import type {Ctx} from '../core';
+import type {Ctx,ListQuery} from '../core';
 import {RepoError} from '../errors';
 import {commandReason,displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 
@@ -24,7 +24,29 @@ function staffInvitation(row:ApiSchemas['Invitation'],schoolId:ID){
     status:row.status==='PENDING'&&Date.parse(row.expiresAt)<=Date.parse(serverNowISO())?'expired':row.status.toLowerCase(),
     inviterName:row.inviterName,deliveryState:row.deliveryState};
 }
+function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
+  const status=requiredValue(row.status,'status'),statuses={ACTIVE:'active',SUSPENDED:'suspended',ENDED:'revoked',INVITED:'invited_member'} as const;
+  return {id:requiredId(row.id),version:displayedVersion(row.version),membershipId:requiredValue(row.memberId,'memberId'),userId:requiredValue(row.userId,'userId'),
+    fullName:requiredValue(row.fullName,'fullName'),displayName:row.fullName,email:requiredValue(row.email,'email'),department:requiredValue(row.department,'department'),staffCode:requiredValue(row.staffCode,'staffCode'),
+    roleLabels:requiredValue(row.roleLabels,'roleLabels'),dutyLabels:requiredValue(row.dutyLabels,'dutyLabels'),accessActive:requiredValue(row.accessActive,'accessActive'),
+    kind:requiredValue(row.kind,'kind')==='MEMBER'?'member' as const:'invitation' as const,status:status===null?null:statuses[status],
+    invitationStatus:row.kind==='INVITATION'?'pending' as const:undefined,expiresAt:requiredValue(row.expiresAt,'expiresAt'),avatarTone:row.kind==='INVITATION'?'amber':'blue'};
+}
 export const connectedStaffRepo=withStaffAccess({
+  async teachers(_ctx:Ctx,schoolId:ID,q:ListQuery){
+    const access=captureStaffAccess(),summary=(await http('getStaffDirectorySummary',{params:{schoolId}})).data;access.assertCurrent();
+    const status=q.filters?.status,statuses:Record<string,string>={active:'ACTIVE',suspended:'SUSPENDED',revoked:'ENDED',invited:'PENDING_INVITATION',invited_member:'INVITED'};
+    if(status&&!statuses[status])throw new RepoError('VALIDATION','Bộ lọc trạng thái nhân sự không hợp lệ.');
+    const options={params:{schoolId},query:{q:q.q,status:status?statuses[status]:undefined,department:q.filters?.department,role:q.filters?.role,
+      sort:q.sort==='name'?'fullName':q.sort??'fullName',dir:q.dir??'asc'}};
+    let page;
+    if(q.pageSize===100000){
+      const items=(await apiList('listStaffDirectory',{...options,query:{...options.query,purpose:'export'}},10000)).map(directoryRow);access.assertCurrent();
+      page={items,total:items.length,page:1,pageSize:q.pageSize!,pageCount:1,allIds:items.map(r=>r.id)};
+    }else page=await apiPage('listStaffDirectory',options,q,directoryRow);
+    access.assertCurrent();return {...page,kpi:requiredValue(summary.kpi,'kpi'),departments:requiredValue(summary.departments,'departments'),roleOptions:requiredValue(summary.roleLabels,'roleLabels'),
+      canInvite:requiredValue(summary.canInvite,'canInvite'),canSuspend:requiredValue(summary.canSuspend,'canSuspend'),canAssign:requiredValue(summary.canAssign,'canAssign'),canExport:requiredValue(summary.canExport,'canExport'),canViewInvitations:requiredValue(summary.canViewInvitations,'canViewInvitations')};
+  },
   async setMemberRoles(_ctx:Ctx,schoolId:ID,membershipId:ID,roleTemplateIds:ID[],reason:string,version?:number,validUntil?:string|null){
     const row=await formResult(http('replaceMemberSchoolRoles',{params:{schoolId,memberId:membershipId},body:{
       expectedVersion:displayedVersion(version),roleIds:roleTemplateIds,reason:commandReason(reason),...(validUntil!==undefined?{validUntil}:{})}}),{roleIds:'roleTemplateIds',roleId:'roleTemplateIds'});

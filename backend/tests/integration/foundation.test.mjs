@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,279);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,281);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2169,4 +2169,66 @@ test('B6 expired staff invitations cannot be revoked as pending or delivered, an
   const response=await f.post(`invitations/${id}/revoke`,{expectedVersion:expired.version,reason:'Không thể thu hồi lời mời hết hạn giả'});assert.equal(response.statusCode,409);assert.equal(response.json().code,'INVITATION_UNAVAILABLE');
   const persisted=(await db.transaction(tx=>tx.query('SELECT version,status FROM app.staff_invitations WHERE school_id=$1 AND id=$2',[f.schoolId,id]),{schoolId:f.schoolId})).rows[0];assert.deepEqual(persisted,expired);
   const mail=(await db.app.query('SELECT id,status FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${id}`])).rows[0];assert.equal(mail.status,'PENDING');assert.equal((await db.transaction(tx=>tx.query('SELECT identity.mail_delivery_allowed($1) AS allowed',[mail.id]),{schoolId:f.schoolId})).rows[0].allowed,false);
+});
+
+
+test('B6 staff directory combines authorized pending invitations in SQL, searches folded work data and counts before keysets',async()=>{
+  const f=await staffUiFixture();await db.transaction(async tx=>{
+    await tx.query("UPDATE app.memberships SET work_display_name='Nguyễn Hoàng Bình',department='Bộ môn Toán',work_email='binh-work@example.invalid' WHERE school_id=$1 AND id=$2",[f.schoolId,f.target]);
+    await tx.query("UPDATE app.memberships SET work_display_name='Trần Minh An',department='Bộ môn Văn',status='SUSPENDED' WHERE school_id=$1 AND id=$2",[f.schoolId,f.other]);
+    await tx.query("UPDATE app.memberships SET work_display_name='Quản trị Dũng' WHERE school_id=$1 AND id=$2",[f.schoolId,f.admin]);
+  },{schoolId:f.schoolId});
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'HOMEROOM',startsOn:f.today,endsOn:f.endsOn});assert.equal(assignment.statusCode,201,assignment.body);
+  const invited=await f.post('staff-invitations',{email:`directory-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Lê Thị Ánh',proposedDuty:'Bộ môn Sinh',roleIds:[],expiresInDays:2});assert.equal(invited.statusCode,201,invited.body);
+  const expired=await f.post('staff-invitations',{email:`expired-directory-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Lời mời hết hạn ẩn',roleIds:[],expiresInDays:1});assert.equal(expired.statusCode,201,expired.body);await db.transaction(tx=>tx.query("UPDATE app.staff_invitations SET expires_at=now()-interval '1 second' WHERE school_id=$1 AND id=$2",[f.schoolId,expired.json().data.id]),{schoolId:f.schoolId});
+  const url=`/api/v1/schools/${f.schoolId}/staff-directory`,first=await request('GET',url+'?limit=2');assert.equal(first.statusCode,200,first.body);assert.equal(first.json().page.total,4);assert.equal(first.json().page.hasMore,true);assert.deepEqual(first.json().data.map(r=>r.fullName),['Trần Minh An','Lê Thị Ánh']);
+  const second=await request('GET',url+'?limit=2&cursor='+encodeURIComponent(first.json().page.nextCursor));assert.equal(second.statusCode,200,second.body);assert.equal(second.json().page.total,4);assert.deepEqual(second.json().data.map(r=>r.fullName),['Nguyễn Hoàng Bình','Quản trị Dũng']);assert.equal(second.json().page.hasMore,false);
+  const invitation=first.json().data.find(r=>r.kind==='INVITATION');assert.equal(invitation.memberId,null);assert.equal(invitation.userId,null);assert.equal(invitation.status,null);assert.equal(invitation.accessActive,false);
+  const filtered=await request('GET',url+'?q=nguyen%20hoang%20binh&department='+encodeURIComponent('Bộ môn Toán')+'&role=GVCN');assert.equal(filtered.statusCode,200,filtered.body);assert.equal(filtered.json().page.total,1);assert.equal(filtered.json().data[0].email,'binh-work@example.invalid');assert.deepEqual(filtered.json().data[0].dutyLabels,['Chủ nhiệm Lớp phân quyền giả']);
+  assert.equal((await request('GET',url+'?q=teacher-a%40example.invalid')).json().page.total,0);assert.equal((await request('GET',url+'?q=bo%20mon%20sinh')).json().page.total,1);
+  for(const text of ['Bình binh-work','%','_']){const response=await request('GET',url+'?q='+encodeURIComponent(text));assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,0,text);}
+  const changed=await request('GET',url+'?limit=2&role=GVCN&cursor='+encodeURIComponent(first.json().page.nextCursor));assert.equal(changed.statusCode,422);assert.equal(changed.json().code,'INVALID_CURSOR');
+  const metadata=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory-summary`);assert.equal(metadata.statusCode,200,metadata.body);assert.deepEqual(metadata.json().data.kpi,{total:3,active:2,suspended:1,pendingInvites:1});assert.deepEqual(metadata.json().data.departments,['Bộ môn Toán','Bộ môn Văn']);assert.equal(metadata.json().data.canViewInvitations,true);
+  for(const response of [first,second,metadata])for(const privateField of ['loginEmail','workPhone','token_hash','token','proposed_assignments','rolePermissions'])assert.equal(response.body.includes('"'+privateField+'"'),false);
+});
+
+test('B6 directory read does not lend invitation, role catalog, assignment or export authority and revocation invalidates opaque scope cursors',async()=>{
+  const f=await staffUiFixture(),reader=await f.role([{action:'member.read',scopes:['SCHOOL']}]),readerGrant=await f.grant(f.target,reader.id),manager=await f.role([{action:'member.manage',scopes:['SCHOOL']}]),managerGrant=await f.grant(f.target,manager.id);
+  const invitation=await f.post('staff-invitations',{email:`private-directory-${crypto.randomUUID()}@example.invalid`,workDisplayName:'Lời mời riêng thật',roleIds:[],expiresInDays:2});assert.equal(invitation.statusCode,201,invitation.body);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const url=`/api/v1/schools/${f.schoolId}/staff-directory`,first=await request('GET',url+'?limit=1');assert.equal(first.statusCode,200,first.body);assert.equal(first.json().page.total,4);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,managerGrant.id]),{schoolId:f.schoolId});
+  const summary=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory-summary`);assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.kpi.pendingInvites,null);assert.equal(summary.json().data.canInvite,false);assert.equal(summary.json().data.canAssign,false);assert.equal(summary.json().data.canExport,false);
+  const members=await request('GET',url);assert.equal(members.statusCode,200,members.body);assert.equal(members.json().page.total,3);assert.ok(members.json().data.every(r=>r.kind==='MEMBER'));assert.equal(members.body.includes(invitation.json().data.email),false);
+  for(const path of ['/invitations','/roles','/assignments','/staff-directory?status=PENDING_INVITATION','/staff-directory?purpose=export'])assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}`+path)).statusCode,403,path);
+  const oldCursor=await request('GET',url+'?limit=1&cursor='+encodeURIComponent(first.json().page.nextCursor));assert.equal(oldCursor.statusCode,422);assert.equal(oldCursor.json().code,'INVALID_CURSOR');
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,readerGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory-summary`)).statusCode,403);
+});
+
+test('B6 Vietnamese composite keysets preserve given/full-name order, case/diacritic ties and nullable departments in both directions',async()=>{
+  const f=await staffUiFixture(),names=['Đặng Thị An','đặng thị an','Lê Quốc Ánh','Trần Đức Bình','Nguyễn Minh Bình','Lê Văn Đạt','Nguyễn Anh','Phạm Văn Dũng'];
+  await db.transaction(async tx=>{
+    for(let i=0;i<names.length;i++){
+      const user=(await tx.query("INSERT INTO identity.users(email_normalized,display_name,status) VALUES($1,$2,'INVITED') RETURNING id",[`sort-staff-${crypto.randomUUID()}@example.invalid`,names[i]])).rows[0].id;
+      await tx.query("INSERT INTO app.memberships(school_id,user_id,work_display_name,department,status) VALUES($1,$2,$3,$4,'INVITED')",[f.schoolId,user,names[i],i%2?'Bộ môn Toán':null]);
+    }
+  },{schoolId:f.schoolId});
+  const all=(await db.transaction(tx=>tx.query('SELECT id,work_display_name AS name,department FROM app.memberships WHERE school_id=$1',[f.schoolId]),{schoolId:f.schoolId})).rows;
+  const cmp=(a,b)=>a.name.trim().split(/\s+/).at(-1).localeCompare(b.name.trim().split(/\s+/).at(-1),'vi',{sensitivity:'base'})||a.name.localeCompare(b.name,'vi',{sensitivity:'base'})||a.id.localeCompare(b.id);
+  for(const dir of ['asc','desc']){
+    const output=[];let cursor;
+    do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,all.length);output.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
+    assert.deepEqual(output.map(r=>r.id),[...all].sort(cmp).map(r=>r.id)[dir==='asc'?'slice':'reverse']());assert.equal(new Set(output.map(r=>r.id)).size,all.length);
+    const departmentRows=[];cursor=undefined;
+    do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&sort=department&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);departmentRows.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
+    assert.equal(new Set(departmentRows.map(r=>r.id)).size,all.length);const firstNull=departmentRows.findIndex(r=>r.department===null);assert.ok(firstNull>=0);assert.ok(departmentRows.slice(firstNull).every(r=>r.department===null));
+  }
+  assert.equal((await verifyInstallation(pool)).migrations,33);
+});
+
+test('B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access',async()=>{
+  const f=await staffUiFixture(),read=await f.role([{action:'school.read',scopes:['SCHOOL']}]);
+  const created=await db.transaction(async tx=>{const user=(await tx.query("INSERT INTO identity.users(email_normalized,display_name,status) VALUES($1,'Danh tính khóa giả','LOCKED') RETURNING id",[`locked-staff-${crypto.randomUUID()}@example.invalid`])).rows[0].id;const member=(await tx.query("INSERT INTO app.memberships(school_id,user_id,work_display_name,status) VALUES($1,$2,'Danh tính khóa giả','ACTIVE') RETURNING id",[f.schoolId,user])).rows[0].id;await tx.query("INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,granted_by) VALUES($1,$2,$3,'SCHOOL',$4)",[f.schoolId,member,read.id,seedId('user:admin-a')]);return {user,member};},{schoolId:f.schoolId});
+  const grants=await db.transaction(tx=>policy.grants(tx,created.user,f.schoolId),{schoolId:f.schoolId});assert.deepEqual(grants,[]);assert.deepEqual((await f.member(created.member)).grants,[]);
+  const row=(await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?q=`+encodeURIComponent('Danh tính khóa giả'))).json().data[0];assert.equal(row.status,'ACTIVE');assert.equal(row.accessActive,false);
+  const summary=(await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory-summary`)).json().data;assert.equal(summary.kpi.total,4);assert.equal(summary.kpi.active,3);
 });

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,279);assert.equal(new Set(operations.map(op=>op.id)).size,279);
+  assert.equal(operations.length,281);assert.equal(new Set(operations.map(op=>op.id)).size,281);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
 });
 test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
@@ -41,4 +41,9 @@ test('school overview accepts explicit unavailable panels and rejects private di
   const value={year:null,prevYear:null,kpi:counts,setup:Array.from({length:8},(_,i)=>({key:String(i),label:'Hạng mục',done:null,detail:'Không có quyền xem hạng mục',href:'/school'})),classesNeedingAction:null,classesNeedingActionTotal:null,todayItems:null,announcements:null};
   validateSchema('SchoolOverviewDetails',value,true);
   assert.throws(()=>validateSchema('SchoolOverviewDetails',{...value,students:[{phone:'private'}]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+});
+test('directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit',()=>{
+  const value={id:'da72b470-4b45-4f5f-b89d-179c0cdf454a',version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),kind:'INVITATION',memberId:null,userId:null,status:null,accessActive:false,fullName:'Nhân sự mời',email:'invite@example.invalid',department:null,staffCode:null,expiresAt:new Date().toISOString(),roleLabels:['Lời mời'],dutyLabels:[]};validateSchema('StaffDirectoryRow',value,true);
+  for(const field of ['loginEmail','workPhone','token','rolePermissions'])assert.throws(()=>validateSchema('StaffDirectoryRow',{...value,[field]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  validateSchema('StaffDirectorySummary',{kpi:{total:2,active:1,suspended:1,pendingInvites:null},departments:[],roleLabels:[],canInvite:false,canSuspend:false,canAssign:false,canExport:false,canViewInvitations:false},true);
 });

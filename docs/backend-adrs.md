@@ -794,3 +794,55 @@ integration, zero skipped, in `qa/backend/b6-staff-integration-complete.log`;
 final/complete logs. TypeScript/scoped lint exit0. Runtime is 279 operations and
 337 schemas, with 74 adapter candidates and zero facade activation. This is not
 browser, final deployment, backup/restore, SMTP or performance acceptance.
+
+## ADR-043 — SQL staff directory with native scope and Vietnamese ordering
+
+SC10's combined table uses `listStaffDirectory` and `getStaffDirectorySummary`
+under current school-wide `member.read`. PostgreSQL combines member rows and
+currently pending/unexpired invitations before filtering, counting and keysets.
+Invitations are included only with independent `member.manage`; their KPI is
+null without that authority, and requesting an invitation-only filter is denied.
+Losing invitation authority invalidates an earlier directory cursor through its
+scope fingerprint. Directory authority does not lend invitation history, role
+catalog permissions, assignments or exports.
+
+Member email is actual work email, never a login-email fallback or search over
+hidden identity contacts. Nullable work fields remain explicit. Invitation rows
+have no fabricated member/user ID or ACTIVE membership status. Labels show real
+current role/duty metadata, without role permissions or other private profiles.
+Departments and role-filter names are bounded purpose choices, with an explicit
+overflow error. KPI counts cover the actual whole school, independently of the
+current table filters/page. Locked identities retain their source lifecycle
+status but have `accessActive=false` and do not count as active work access.
+`Permissions.grants()` also excludes locked/inactive identities, so their member
+profile never advertises effective grants that cannot be used.
+
+Migration 033 installs the Vietnamese primary-strength ICU collation and the
+existing NFD/combining-mark/đ search folding in SQL. Directory names sort by final
+word, then full name, then ID; departments use Vietnamese ordering. Generic
+keysets support trusted non-null composite text keys with their own collations;
+signed cursors preserve every component instead of concatenating boundaries.
+Single-key nulls remain last in either direction. Installation verification
+checks the collation provider/determinism and its actual runtime version.
+Search matches each displayed name/work email/department/duty independently;
+it does not match across concatenated fields or treat `%`/`_` as wildcards.
+
+The existing export-size call reads all actual filtered rows with explicit
+`purpose=export`, requiring both `member.read` and `report.export` on the server.
+It retains all opaque-page filters, checks captured staff ownership between
+stages/pages and fails rather than truncating above 10,000 rows. These are live
+directory rows for the existing browser CSV/XLSX formatting, not publication
+snapshots or proof that the browser download flow has passed acceptance. Actual
+academic report exports retain their prior pinned worker/file workflow.
+
+The teachers adapter is a candidate, not facade activation. Native screen
+connection must retain nullable/unavailable panels, invitation-specific status,
+actual versions and native role-filter options, and check ownership before
+download side effects. Member details/role and assignment adapters, remaining
+repositories, browser acceptance and B7 deployment/drills/load remain required.
+
+Actual ADR-043 evidence: 33 verified migrations/checksums/replay and 107/107
+PostgreSQL integration, zero skipped, in the final directory integration log;
+18/18 backend contract/unit and 94/94 frontend API unit. TypeScript/scoped lint
+exit0. Runtime is 281 operations/341 schemas and 75 unactivated candidates.
+No browser download, E2E, final Docker deployment, drill or load PASS is claimed.

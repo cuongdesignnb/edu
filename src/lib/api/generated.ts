@@ -337,6 +337,10 @@ export interface ApiSchemas {
   "MemberSchoolRoles": { "id": string; "version": number; "status": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "schoolRoleGrants": Array<ApiSchemas["GrantView"]>; };
   "MemberSchoolRolesResponse": { "data": ApiSchemas["MemberSchoolRoles"]; "requestId": string; };
   "SchoolStaffInvite": { "email": string; "workDisplayName": string; "proposedDuty"?: string; "roleIds": Array<string>; "expiresInDays": number; "validUntil"?: (string) | null; };
+  "StaffDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "kind": "MEMBER" | "INVITATION"; "memberId": (string) | null; "userId": (string) | null; "status": ("INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED" | null) | null; "accessActive": boolean; "fullName": string; "email": (string) | null; "department": (string) | null; "staffCode": (string) | null; "expiresAt": (string) | null; "roleLabels": Array<string>; "dutyLabels": Array<string>; };
+  "StaffDirectoryRowPage": { "data": Array<ApiSchemas["StaffDirectoryRow"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "StaffDirectorySummary": { "kpi": { "total": number; "active": number; "suspended": number; "pendingInvites": (number) | null; }; "departments": Array<string>; "roleLabels": Array<string>; "canInvite": boolean; "canSuspend": boolean; "canAssign": boolean; "canExport": boolean; "canViewInvitations": boolean; };
+  "StaffDirectorySummaryResponse": { "data": ApiSchemas["StaffDirectorySummary"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -2850,6 +2854,24 @@ export const apiOperations = {
     "response": "Invitation",
     "list": false,
     "permission": "member.manage"
+  },
+  "listStaffDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/staff-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "StaffDirectoryRow",
+    "list": true,
+    "permission": "member.read"
+  },
+  "getStaffDirectorySummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/staff-directory-summary",
+    "auth": "staff",
+    "request": null,
+    "response": "StaffDirectorySummary",
+    "list": false,
+    "permission": "member.read"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

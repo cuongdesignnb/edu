@@ -913,7 +913,8 @@
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
         "qa/backend/support-read-integration.log",
-        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries",
+        "ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated"
       ]
     },
     {
@@ -926,7 +927,8 @@
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/support-read-integration.log",
-        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
+        "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated",
+        "ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated"
       ]
     },
     {
@@ -3307,6 +3309,28 @@
       "evidence": [
         "ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated"
       ]
+    },
+    {
+      "operationId": "listStaffDirectory",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated"
+      ]
+    },
+    {
+      "operationId": "getStaffDirectorySummary",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated"
+      ]
     }
   ],
   "screens": [
@@ -3729,7 +3753,9 @@
         "listInvitations",
         "inviteStaff",
         "revokeInvitation",
-        "inviteSchoolStaff"
+        "inviteSchoolStaff",
+        "listStaffDirectory",
+        "getStaffDirectorySummary"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

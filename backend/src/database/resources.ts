@@ -8,6 +8,7 @@ import crypto from 'node:crypto';
 
 export interface Resource {
   table:string;fields:Record<string,string>;writeFields:string[];search:string[];filters:Record<string,string>;
+  sortKeys?:Record<string,Array<{column:string;collation?:string}>>;
 }
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 export const resources:Record<string,Resource>={
@@ -67,6 +68,8 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string|nul
   const sort=query.sort??'id',sortColumn=r.fields[sort];
   if(!sortColumn||['phone','email','workPhone','workEmail'].includes(sort))throw new Problem(422,'INVALID_SORT');
   const direction=query.dir??'asc';if(!['asc','desc'].includes(direction))throw new Problem(422,'INVALID_SORT');
+  const keys=r.sortKeys?.[sort]??[{column:sortColumn}],expressions=keys.map(key=>`t.${key.column}${key.collation?' COLLATE '+key.collation:''}`);
+  const composite=keys.length>1;
   const values:unknown[]=[schoolId,...baseParameters],where=[schoolId===null?'$1::uuid IS NULL':'t.school_id=$1'];
   for(const [field,column] of Object.entries(r.filters))if(query[field]){values.push(query[field]);where.push(`t.${column}=$${values.length}`);}
   if(query.q){
@@ -77,25 +80,32 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string|nul
     const offset=values.length;values.push(...extra.values);
     where.push('('+extra.sql.replace(/\$(\d+)/g,(_,i)=>'$'+(Number(i)+offset))+')');
   }
-  const fingerprint=crypto.createHash('sha256').update(canonical({cursorVersion:2,schoolId,principalId,table:r.table,
-    query:{...query,cursor:undefined},extra,baseParameters})).digest('hex');
+  const fingerprint=crypto.createHash('sha256').update(canonical({cursorVersion:composite?3:2,schoolId,principalId,table:r.table,
+    query:{...query,cursor:undefined},extra,baseParameters,...(r.sortKeys?{sortKeys:r.sortKeys}:{})})).digest('hex');
   const count=(await one<{total:string}>(tx,`SELECT count(*) AS total FROM ${r.table} t WHERE ${where.join(' AND ')}`,values))!.total;
   if(query.cursor){
     const [payload,signature]=query.cursor.split('.');
     if(!payload||!signature||!equal(signature,cursorSign(payload)))throw new Problem(422,'INVALID_CURSOR');
-    let cursor:{fingerprint:string;sortValue:unknown;id:string};
+    let cursor:{fingerprint:string;sortValue:unknown;sortValues?:unknown[];id:string};
     try{cursor=JSON.parse(Buffer.from(payload,'base64url').toString('utf8')) as typeof cursor;}catch{throw new Problem(422,'INVALID_CURSOR');}
     if(cursor.fingerprint!==fingerprint||typeof cursor.id!=='string')throw new Problem(422,'INVALID_CURSOR');
     const compare=direction==='asc'?'>':'<';
-    if(cursor.sortValue===null){values.push(cursor.id);where.push(`t.${sortColumn} IS NULL AND t.id ${compare} $${values.length}`);}
-    else{values.push(cursor.sortValue,cursor.id);where.push(`((t.${sortColumn},t.id) ${compare} ($${values.length-1},$${values.length}) OR t.${sortColumn} IS NULL)`);}
+    if(composite){
+      // Composite keys are configured non-null text keys. Each component keeps
+      // its original value and collation; concatenating names loses boundaries.
+      if(!Array.isArray(cursor.sortValues)||cursor.sortValues.length!==keys.length||cursor.sortValues.some(value=>typeof value!=='string'))throw new Problem(422,'INVALID_CURSOR');
+      const places=cursor.sortValues.map(value=>{values.push(value);return '$'+values.length;});values.push(cursor.id);
+      where.push(`(${[...expressions,'t.id'].join(',')}) ${compare} (${[...places,'$'+values.length].join(',')})`);
+    }else if(cursor.sortValue===null){values.push(cursor.id);where.push(`${expressions[0]} IS NULL AND t.id ${compare} $${values.length}`);}
+    else{values.push(cursor.sortValue,cursor.id);where.push(`((${expressions[0]},t.id) ${compare} ($${values.length-1},$${values.length}) OR ${expressions[0]} IS NULL)`);}
   }
   values.push(limit+1);
   // PostgreSQL text retains timestamp microseconds and exact decimals. Parsing
   // them through a JavaScript Date/number before signing would lose the boundary.
-  const rows=(await tx.query<Row>(`SELECT ${columns(r)},t.${sortColumn}::text AS __cursor_sort FROM ${r.table} t WHERE ${where.join(' AND ')}
-    ORDER BY t.${sortColumn} ${direction} NULLS LAST,t.id ${direction} LIMIT $${values.length}`,values)).rows;
+  const cursorColumns=composite?keys.map((key,i)=>`t.${key.column}::text AS __cursor_sort_${i}`).join(','):`t.${sortColumn}::text AS __cursor_sort`;
+  const rows=(await tx.query<Row>(`SELECT ${columns(r)},${cursorColumns} FROM ${r.table} t WHERE ${where.join(' AND ')}
+    ORDER BY ${expressions.map(expression=>`${expression} ${direction} NULLS LAST`).join(',')},t.id ${direction} LIMIT $${values.length}`,values)).rows;
   const hasMore=rows.length>limit;if(hasMore)rows.pop();const last=rows.at(-1);
-  const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,sortValue:last.__cursor_sort,id:last.id})).toString('base64url'):null;
+  const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,...(composite?{sortValues:keys.map((_,i)=>last[`__cursor_sort_${i}`])}:{sortValue:last.__cursor_sort}),id:last.id})).toString('base64url'):null;
   return {data:rows.map(row=>dto(r,row)),page:{limit,hasMore,nextCursor:payload?`${payload}.${cursorSign(payload)}`:null,total:Number(count)}};
 }

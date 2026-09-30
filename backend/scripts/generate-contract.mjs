@@ -267,6 +267,16 @@ extendOperation('suspendMember','endMember','/schools/{schoolId}/members/{member
 spec.components.schemas.SchoolStaffInvite=object({email:{type:'string',format:'email'},workDisplayName:{type:'string',minLength:3,maxLength:200},proposedDuty:{type:'string',maxLength:300},roleIds:{type:'array',maxItems:50,uniqueItems:true,items:uuid},expiresInDays:{type:'integer',minimum:1,maximum:30},validUntil:{...timestamp,nullable:true}},['email','workDisplayName','roleIds','expiresInDays']);
 Object.assign(spec.components.schemas.Invitation.properties,{proposedDuty:{type:'string',maxLength:300},roleIds:{type:'array',items:uuid}});
 extendOperation('inviteStaff','inviteSchoolStaff','/schools/{schoolId}/staff-invitations','member.manage','Invitation',false,['SC10'],undefined,'SchoolStaffInvite');
+// ADR-043: SC10 reads one SQL-filtered directory, with authority-separated invitation metadata.
+spec.components.schemas.StaffDirectoryRow=object({id:uuid,version:{type:'integer',minimum:1},createdAt:timestamp,updatedAt:timestamp,kind:{type:'string',enum:['MEMBER','INVITATION']},memberId:{...uuid,nullable:true},userId:{...uuid,nullable:true},status:{type:'string',enum:[...spec.components.schemas.Member.properties.status.enum,null],nullable:true},accessActive:{type:'boolean'},fullName:label,email:{type:'string',format:'email',nullable:true},department:{type:'string',nullable:true},staffCode:{type:'string',nullable:true},expiresAt:{...timestamp,nullable:true},roleLabels:{type:'array',items:label},dutyLabels:{type:'array',items:label}});
+spec.components.schemas.StaffDirectoryRowPage=object({data:{type:'array',items:{$ref:'#/components/schemas/StaffDirectoryRow'}},page:{$ref:'#/components/schemas/PageInfo'},requestId:label});
+spec.components.schemas.StaffDirectorySummary=object({kpi:object({total:count,active:count,suspended:count,pendingInvites:{...count,nullable:true}}),departments:{type:'array',maxItems:1000,items:label},roleLabels:{type:'array',maxItems:1003,items:label},canInvite:{type:'boolean'},canSuspend:{type:'boolean'},canAssign:{type:'boolean'},canExport:{type:'boolean'},canViewInvitations:{type:'boolean'}});
+spec.components.schemas.StaffDirectorySummaryResponse=object({data:{$ref:'#/components/schemas/StaffDirectorySummary'},requestId:label});
+extendOperation('listMembers','listStaffDirectory','/schools/{schoolId}/staff-directory','member.read','StaffDirectoryRow',true,['SC10']);
+const staffList=spec.paths['/schools/{schoolId}/staff-directory'].get;
+staffList.parameters=staffList.parameters.filter(p=>!['purpose','status'].includes(p.name));
+staffList.parameters.push({name:'status',in:'query',schema:{type:'string',enum:['ACTIVE','SUSPENDED','ENDED','INVITED','PENDING_INVITATION']}},{name:'purpose',in:'query',schema:{type:'string',enum:['export']}},...['department','role'].map(name=>({name,in:'query',schema:{type:'string',maxLength:200}})));
+extendOperation('getMember','getStaffDirectorySummary','/schools/{schoolId}/staff-directory-summary','member.read','StaffDirectorySummary',false,['SC10']);
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

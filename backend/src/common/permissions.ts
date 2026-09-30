@@ -68,7 +68,8 @@ export class Permissions {
   async grants(tx: Transaction, userId: string, schoolId: string): Promise<Grant[]> {
     return (await tx.query<Grant>(`SELECT g.id,g.version,g.role_id,r.code AS role_code,r.label,g.scope_type,g.class_id,g.subject_id,g.valid_from,g.valid_until,
       array_agg(DISTINCT p.action_code) AS actions, a.id AS assignment_id,a.starts_on,a.ends_on
-      FROM app.memberships m JOIN app.role_grants g ON g.school_id=m.school_id AND g.member_id=m.id
+      FROM app.memberships m JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE'
+      JOIN app.role_grants g ON g.school_id=m.school_id AND g.member_id=m.id
       JOIN platform.schools config ON config.id=m.school_id
       JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
       JOIN app.role_permissions p ON p.school_id=r.school_id AND p.role_id=r.id AND g.scope_type=ANY(p.allowed_scopes)

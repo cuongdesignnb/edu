@@ -18,6 +18,10 @@ export async function verifyInstallation(pool: Pool, storageRoot?: string) {
   const missing = (await pool.query(`SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
     WHERE n.nspname='app' AND c.relkind='r' AND (NOT c.relrowsecurity OR NOT c.relforcerowsecurity)`)).rows;
   if (missing.length) throw new Error('MISSING_FORCE_RLS');
+  const vi = (await pool.query<{stable:boolean}>(`SELECT c.collprovider='i' AND NOT c.collisdeterministic
+    AND c.collversion=pg_collation_actual_version(c.oid) AS stable FROM pg_collation c JOIN pg_namespace n ON n.oid=c.collnamespace
+    WHERE n.nspname='app' AND c.collname='vi_names'`)).rows[0];
+  if (!vi?.stable) throw new Error('SCHEMA_COLLATION_MISMATCH');
   if (storageRoot) {
     await fs.mkdir(storageRoot, { recursive: true, mode: 0o700 });
     const probe = path.join(storageRoot,`.ready-${crypto.randomUUID()}`);

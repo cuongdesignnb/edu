@@ -29443,6 +29443,215 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/staff-directory:
+    get:
+      operationId: listStaffDirectory
+      tags:
+        - Staff
+      summary: listStaffDirectory
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 1024
+        - name: q
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - SUSPENDED
+              - ENDED
+              - INVITED
+              - PENDING_INVITATION
+        - name: purpose
+          in: query
+          schema:
+            type: string
+            enum:
+              - export
+        - name: department
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: role
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffDirectoryRowPage"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/staff-directory-summary:
+    get:
+      operationId: getStaffDirectorySummary
+      tags:
+        - Staff
+      summary: getStaffDirectorySummary
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffDirectorySummaryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -39205,6 +39414,169 @@ components:
         - workDisplayName
         - roleIds
         - expiresInDays
+      additionalProperties: false
+    StaffDirectoryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        kind:
+          type: string
+          enum:
+            - MEMBER
+            - INVITATION
+        memberId:
+          type: string
+          format: uuid
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum:
+            - INVITED
+            - ACTIVE
+            - SUSPENDED
+            - ENDED
+            - null
+          nullable: true
+        accessActive:
+          type: boolean
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+        department:
+          type: string
+          nullable: true
+        staffCode:
+          type: string
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        roleLabels:
+          type: array
+          items:
+            type: string
+        dutyLabels:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - kind
+        - memberId
+        - userId
+        - status
+        - accessActive
+        - fullName
+        - email
+        - department
+        - staffCode
+        - expiresAt
+        - roleLabels
+        - dutyLabels
+      additionalProperties: false
+    StaffDirectoryRowPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/StaffDirectoryRow"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
+        - requestId
+      additionalProperties: false
+    StaffDirectorySummary:
+      type: object
+      properties:
+        kpi:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            active:
+              type: integer
+              minimum: 0
+            suspended:
+              type: integer
+              minimum: 0
+            pendingInvites:
+              type: integer
+              minimum: 0
+              nullable: true
+          required:
+            - total
+            - active
+            - suspended
+            - pendingInvites
+          additionalProperties: false
+        departments:
+          type: array
+          maxItems: 1000
+          items:
+            type: string
+        roleLabels:
+          type: array
+          maxItems: 1003
+          items:
+            type: string
+        canInvite:
+          type: boolean
+        canSuspend:
+          type: boolean
+        canAssign:
+          type: boolean
+        canExport:
+          type: boolean
+        canViewInvitations:
+          type: boolean
+      required:
+        - kpi
+        - departments
+        - roleLabels
+        - canInvite
+        - canSuspend
+        - canAssign
+        - canExport
+        - canViewInvitations
+      additionalProperties: false
+    StaffDirectorySummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/StaffDirectorySummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
       additionalProperties: false
   securitySchemes:
     StaffCookie:

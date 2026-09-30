@@ -6,6 +6,7 @@ import { Commands,audit } from '../../common/commands';
 import { permissions as actionAllowlist } from '../../common/contract';
 import { Problem,validation,notFound } from '../../common/problem';
 import { InvitationsService,invitationDto } from '../identity/invitations.service';
+import {staffDirectory,staffDirectorySummary} from './staff-directory';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -30,7 +31,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -38,10 +39,15 @@ export class StaffService {
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
     const picker=op==='listMembers'&&c.query.purpose==='assignment-picker';
-    if(c.query.purpose&&!picker)validation('purpose','Mục đích danh sách không hợp lệ');
-    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,picker?'assignment.manage':c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
+    const exportDirectory=op==='listStaffDirectory'&&c.query.purpose==='export';
+    if(c.query.purpose&&!picker&&!exportDirectory)validation('purpose','Mục đích danh sách không hợp lệ');
+    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,picker?'assignment.manage':exportDirectory?'member.read+report.export':c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
     const work=async(tx:Transaction):Promise<Result>=>{
       if(c.operation.method!=='GET')await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
+      if(op==='listStaffDirectory'||op==='getStaffDirectorySummary'){
+        const grants=await this.policy.grants(tx,c.principal!.userId,schoolId);
+        return op==='listStaffDirectory'?staffDirectory(tx,c,grants):{data:await staffDirectorySummary(tx,schoolId,grants)};
+      }
       if(op==='listMembers'){
         if(picker)return listResource(tx,pickerResource,schoolId,c.query,undefined,c.principal!.userId);
         const result=await listResource(tx,resource('member'),schoolId,c.query,undefined,c.principal!.userId);

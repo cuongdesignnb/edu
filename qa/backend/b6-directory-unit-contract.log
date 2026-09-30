@@ -1,0 +1,26 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (0.8176ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (8.8136ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (4.179ms)
+✔ login rejects spoofed role, school and unknown fields (1.0124ms)
+✔ private user DTO rejects secrets and unknown properties (3.4906ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2143ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (17.3634ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (5.8653ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (3.5877ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.2724ms)
+✔ grant action and class scope stay together (0.7675ms)
+✔ subject grants never authorize management without explicit subject policy (0.1224ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1099ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1272ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.16ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.8605ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.299ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (82.2025ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 406.4629
