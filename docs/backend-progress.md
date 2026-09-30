@@ -130,21 +130,21 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getClassOverview | CL01 | NOT_STARTED |  |
 | listClassStudents | CL02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getClassStudent | CL03 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| listGroups | CL13 | NOT_STARTED |  |
-| createGroup | CL13 | NOT_STARTED |  |
-| listPositions | CL13 | NOT_STARTED |  |
-| createPosition | CL13 | NOT_STARTED |  |
-| listSeatingPlans | CL14 | NOT_STARTED |  |
-| createSeatingPlan | CL14 | NOT_STARTED |  |
-| updateGroup | CL13 | NOT_STARTED |  |
-| updatePosition | CL13 | NOT_STARTED |  |
-| listPositionAssignments | CL13 | NOT_STARTED |  |
-| endPositionAssignment | CL13 | NOT_STARTED |  |
-| assignGroup | CL13 | NOT_STARTED |  |
-| assignPosition | CL13 | NOT_STARTED |  |
-| getSeatingPlan | CL14 | NOT_STARTED |  |
-| updateSeatingPlan | CL14 | NOT_STARTED |  |
-| activateSeatingPlan | CL14 | NOT_STARTED |  |
+| listGroups | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| createGroup | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| listPositions | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| createPosition | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| listSeatingPlans | CL14 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| createSeatingPlan | CL14 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| updateGroup | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| updatePosition | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| listPositionAssignments | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| endPositionAssignment | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| assignGroup | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| assignPosition | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| getSeatingPlan | CL14 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| updateSeatingPlan | CL14 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
+| activateSeatingPlan | CL14 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
 | listAttendanceSessions | CL04, CL05 | TESTED | qa/backend/attendance-integration.log |
 | createAttendanceSession | CL04 | TESTED | qa/backend/attendance-integration.log |
 | getAttendanceSession | CL04 | TESTED | qa/backend/attendance-integration.log |
@@ -353,8 +353,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL10 | core | TESTED | NOT_STARTED |  |
 | CL11 | core | TESTED | NOT_STARTED |  |
 | CL12 | core | TESTED | NOT_STARTED |  |
-| CL13 | core | PARTIAL | NOT_STARTED |  |
-| CL14 | core | PARTIAL | NOT_STARTED |  |
+| CL13 | core | TESTED | NOT_STARTED |  |
+| CL14 | core | TESTED | NOT_STARTED |  |
 | CL15 | core | PARTIAL | NOT_STARTED |  |
 | CL16 | core | PARTIAL | NOT_STARTED |  |
 | CL17 | core | PARTIAL | NOT_STARTED |  |

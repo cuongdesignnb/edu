@@ -64,7 +64,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string"
@@ -161,7 +162,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -169,7 +171,8 @@
         },
         "roleId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "roleLabel": {
           "type": "string",
@@ -230,7 +233,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -286,7 +290,8 @@
             "properties": {
               "schoolId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "schoolName": {
                 "type": "string",
@@ -295,7 +300,8 @@
               },
               "memberId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "status": {
                 "type": "string"
@@ -464,7 +470,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "deviceSummary": {
           "type": "string"
@@ -500,7 +507,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -713,11 +721,13 @@
         },
         "schoolId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "dueAt": {
           "type": "string",
@@ -729,7 +739,8 @@
         },
         "targetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -774,7 +785,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -790,7 +802,8 @@
         },
         "userId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "staffCode": {
           "type": "string",
@@ -884,7 +897,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -950,15 +964,18 @@
         },
         "roleId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "subjectId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "validFrom": {
           "type": "string",
@@ -1033,7 +1050,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1196,11 +1214,13 @@
       "properties": {
         "memberId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "roleId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "scopeType": {
           "type": "string",
@@ -1212,11 +1232,13 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "subjectId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "validFrom": {
           "type": "string",
@@ -1274,7 +1296,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1387,7 +1410,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1403,7 +1427,8 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "code": {
           "type": "string",
@@ -1501,7 +1526,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1517,11 +1543,13 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "termId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "weekNumber": {
           "type": "integer",
@@ -1624,7 +1652,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1736,7 +1765,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1752,11 +1782,13 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -1875,7 +1907,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -1891,11 +1924,13 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "gradeLevelId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "code": {
           "type": "string",
@@ -2001,7 +2036,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2017,15 +2053,18 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "memberId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "roleGrantId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "kind": {
           "type": "string",
@@ -2036,7 +2075,8 @@
         },
         "subjectId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -2117,7 +2157,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2133,15 +2174,18 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "fromAssignmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "toMemberId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "effectiveOn": {
           "type": "string",
@@ -2214,15 +2258,18 @@
       "properties": {
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "fromClassId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "toClassId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "decision": {
           "type": "string",
@@ -2246,7 +2293,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2262,11 +2310,13 @@
         },
         "sourceYearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "targetYearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "plan": {
           "type": "array",
@@ -2311,7 +2361,8 @@
       "properties": {
         "targetYearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "plan": {
           "type": "array",
@@ -2351,7 +2402,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2429,7 +2481,8 @@
         },
         "initialClassId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -2475,7 +2528,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2491,15 +2545,18 @@
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -2538,11 +2595,13 @@
       "properties": {
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -2561,7 +2620,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2665,7 +2725,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2681,11 +2742,13 @@
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "guardianId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "relationshipLabel": {
           "type": "string",
@@ -2836,7 +2899,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2852,11 +2916,13 @@
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "fromEnrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "toClassId": {
           "type": "string",
@@ -2932,7 +2998,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -2948,15 +3015,18 @@
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "relationshipId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "allowedSections": {
           "type": "array",
@@ -3085,11 +3155,13 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "accessLinkId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "eventKind": {
           "type": "string"
@@ -3132,7 +3204,8 @@
       "properties": {
         "viewId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "school": {
           "type": "object",
@@ -3319,7 +3392,8 @@
       "properties": {
         "periodId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "periodLabel": {
           "type": "string",
@@ -3455,7 +3529,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -3509,7 +3584,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -3551,7 +3627,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -3636,7 +3713,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -3652,7 +3730,8 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "name": {
           "type": "string",
@@ -3666,7 +3745,8 @@
           "type": "array",
           "items": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       },
@@ -3725,13 +3805,15 @@
       "properties": {
         "groupId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentIds": {
           "type": "array",
           "items": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "minItems": 1,
           "maxItems": 200
@@ -3743,6 +3825,11 @@
         "expectedClassVersion": {
           "type": "integer",
           "minimum": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 2000
         }
       },
       "required": [
@@ -3758,7 +3845,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -3774,7 +3862,8 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "code": {
           "type": "string",
@@ -3787,6 +3876,10 @@
         },
         "singleHolder": {
           "type": "boolean"
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [
@@ -3815,6 +3908,10 @@
         },
         "singleHolder": {
           "type": "boolean"
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [
@@ -3850,7 +3947,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -3866,11 +3964,13 @@
         },
         "positionId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -3879,6 +3979,11 @@
         "endsOn": {
           "type": "string",
           "format": "date",
+          "nullable": true
+        },
+        "cancelledAt": {
+          "type": "string",
+          "format": "date-time",
           "nullable": true
         }
       },
@@ -3922,11 +4027,13 @@
       "properties": {
         "positionId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -3936,6 +4043,11 @@
           "type": "string",
           "format": "date",
           "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 2000
         }
       },
       "required": [
@@ -3978,7 +4090,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -3994,7 +4107,8 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "revision": {
           "type": "integer",
@@ -4018,6 +4132,11 @@
             "$ref": "#/components/schemas/Seat"
           },
           "maxItems": 200
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
         }
       },
       "required": [
@@ -4072,6 +4191,10 @@
             "$ref": "#/components/schemas/Seat"
           },
           "maxItems": 200
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -4085,7 +4208,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -4101,7 +4225,8 @@
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string",
@@ -4142,7 +4267,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -4158,11 +4284,13 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "date": {
           "type": "string",
@@ -4177,7 +4305,8 @@
         },
         "lessonId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string",
@@ -4272,7 +4401,8 @@
         },
         "lessonId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "slot": {
           "type": "string",
@@ -4302,7 +4432,8 @@
             "properties": {
               "enrollmentId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "expectedVersion": {
                 "type": "integer",
@@ -4423,7 +4554,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -4512,7 +4644,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "code": {
           "type": "string",
@@ -4701,7 +4834,8 @@
       "properties": {
         "ruleSetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "events": {
           "type": "array",
@@ -4710,7 +4844,8 @@
             "properties": {
               "ruleId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "manualDelta": {
                 "type": "string",
@@ -4736,7 +4871,8 @@
       "properties": {
         "ruleSetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -4764,7 +4900,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -4780,15 +4917,18 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "weekId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "ruleSetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string",
@@ -4827,7 +4967,8 @@
       "properties": {
         "weekId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -4840,7 +4981,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -4856,19 +4998,23 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "periodId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "ruleId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "deltaSnapshot": {
           "type": "string",
@@ -4907,7 +5053,8 @@
         },
         "recordedBy": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "lessonId": {
           "type": "string",
@@ -4950,15 +5097,18 @@
       "properties": {
         "periodId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "ruleId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "manualDelta": {
           "type": "string",
@@ -4988,11 +5138,13 @@
         },
         "sourceId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "clientEventId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "lessonId": {
           "type": "string",
@@ -5048,11 +5200,13 @@
             "properties": {
               "studentId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "enrollmentId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "fullName": {
                 "type": "string",
@@ -5132,7 +5286,8 @@
               },
               "recordId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               }
             },
             "required": [
@@ -5181,7 +5336,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -5208,15 +5364,18 @@
         },
         "sourceId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "revision": {
           "type": "integer",
@@ -5291,7 +5450,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -5307,11 +5467,13 @@
         },
         "periodId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "baselinePublicationId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "reason": {
           "type": "string",
@@ -5334,7 +5496,8 @@
             "properties": {
               "recordId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "action": {
                 "type": "string",
@@ -5449,7 +5612,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "weekday": {
           "type": "integer",
@@ -5463,15 +5627,18 @@
         },
         "subjectId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "memberId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "roomId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsAtLocal": {
           "type": "string",
@@ -5497,7 +5664,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -5513,11 +5681,13 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "revision": {
           "type": "integer",
@@ -5671,23 +5841,28 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "subjectId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "memberId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "roomId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsAt": {
           "type": "string",
@@ -5721,7 +5896,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -5737,11 +5913,13 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "startsOn": {
           "type": "string",
@@ -5766,11 +5944,13 @@
             "properties": {
               "id": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "enrollmentId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "dutyDate": {
                 "type": "string",
@@ -5933,7 +6113,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -5949,11 +6130,13 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -6027,7 +6210,8 @@
           "type": "array",
           "items": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "minItems": 1,
           "maxItems": 200
@@ -6104,7 +6288,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6120,11 +6305,13 @@
         },
         "activityId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "enrollmentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string",
@@ -6157,7 +6344,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6198,7 +6386,8 @@
         },
         "uploadedBy": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "scanStatus": {
           "type": "string",
@@ -6245,7 +6434,8 @@
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -6259,23 +6449,28 @@
       "properties": {
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "activityId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "announcementId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "shareWithGuardian": {
           "type": "boolean"
@@ -6292,7 +6487,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6308,15 +6504,18 @@
         },
         "participantId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "submittedBy": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "caption": {
           "type": "string",
@@ -6357,11 +6556,13 @@
       "properties": {
         "participantId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "caption": {
           "type": "string",
@@ -6420,7 +6621,8 @@
         },
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -6433,7 +6635,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6449,11 +6652,13 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "title": {
           "type": "string",
@@ -6490,7 +6695,8 @@
           "type": "array",
           "items": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "maxItems": 20
         }
@@ -6614,7 +6820,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6639,7 +6846,8 @@
         },
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "status": {
           "type": "string",
@@ -6724,15 +6932,18 @@
         },
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -6849,7 +7060,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -6894,7 +7106,8 @@
         },
         "fileId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "expiresAt": {
           "type": "string",
@@ -6935,15 +7148,18 @@
         },
         "yearId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "studentId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "from": {
           "type": "string",
@@ -6986,11 +7202,13 @@
             "properties": {
               "studentId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "classId": {
                 "type": "string",
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true
               },
               "label": {
                 "type": "string"
@@ -7030,7 +7248,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -7054,14 +7273,16 @@
         },
         "schoolId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "targetType": {
           "type": "string"
         },
         "targetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "readAt": {
           "type": "string",
@@ -7087,7 +7308,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "actorLabel": {
           "type": "string"
@@ -7100,7 +7322,8 @@
         },
         "targetId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "createdAt": {
           "type": "string",
@@ -7328,7 +7551,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -7344,7 +7568,8 @@
         },
         "schoolId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "subject": {
           "type": "string",
@@ -7373,7 +7598,8 @@
         },
         "assigneeId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -7447,7 +7673,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "authorLabel": {
           "type": "string",
@@ -7490,7 +7717,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "version": {
           "type": "integer",
@@ -7506,19 +7734,23 @@
         },
         "schoolId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "ticketId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "operatorId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "classId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "allowedActions": {
           "type": "array",
@@ -7613,7 +7845,8 @@
       "properties": {
         "id": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         },
         "kind": {
           "type": "string"
@@ -11662,7 +11895,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -12375,7 +12609,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -12939,7 +13174,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -13070,7 +13306,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -13232,7 +13469,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -13393,7 +13631,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -13551,7 +13790,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -13712,7 +13952,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -13721,7 +13962,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -14030,7 +14272,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -14161,7 +14404,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -14311,7 +14555,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -14468,7 +14713,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -15324,7 +15570,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -15455,7 +15702,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -15586,7 +15834,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -15749,7 +15998,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -15908,7 +16158,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16071,7 +16322,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16080,7 +16332,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -16213,7 +16466,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16222,7 +16476,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16384,7 +16639,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16418,7 +16674,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -16550,7 +16807,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16712,7 +16970,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16721,7 +16980,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -16853,7 +17113,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -16862,7 +17123,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17024,7 +17286,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17058,7 +17321,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -17190,7 +17454,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17352,7 +17617,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17361,7 +17627,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -17493,7 +17760,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17502,7 +17770,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17663,7 +17932,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17697,7 +17967,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -17828,7 +18099,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17989,7 +18261,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -17998,7 +18271,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -18129,7 +18403,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18138,7 +18413,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18299,7 +18575,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18333,7 +18610,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -18464,7 +18742,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18625,7 +18904,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18634,7 +18914,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -18765,7 +19046,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18774,7 +19056,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18935,7 +19218,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -18944,7 +19228,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19105,7 +19390,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19114,7 +19400,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19275,7 +19562,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19284,7 +19572,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19445,7 +19734,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19454,7 +19744,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19615,7 +19906,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19624,7 +19916,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19785,7 +20078,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -19955,7 +20249,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20129,7 +20424,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20151,7 +20447,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20312,7 +20609,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20321,7 +20619,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20482,7 +20781,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20491,7 +20791,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -20622,7 +20923,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20631,7 +20933,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20792,7 +21095,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20801,7 +21105,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -20962,7 +21267,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21119,7 +21425,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21128,7 +21435,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -21259,7 +21567,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21268,7 +21577,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21430,7 +21740,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21439,7 +21750,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21601,7 +21913,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21610,7 +21923,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21771,7 +22085,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -21928,7 +22243,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22089,7 +22405,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22098,7 +22415,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22259,7 +22577,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22416,7 +22735,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22425,7 +22745,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -22556,7 +22877,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22717,7 +23039,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22726,7 +23049,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -22888,7 +23212,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23050,7 +23375,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23212,7 +23538,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23221,7 +23548,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23383,7 +23711,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23417,7 +23746,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23425,7 +23755,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -23556,7 +23887,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23718,7 +24050,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23727,7 +24060,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -23888,7 +24222,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24045,7 +24380,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24206,7 +24542,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24215,7 +24552,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24376,7 +24714,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24410,7 +24749,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24418,7 +24758,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -24549,7 +24890,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24711,7 +25053,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24720,7 +25063,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -24851,7 +25195,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -24860,7 +25205,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25021,7 +25367,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25030,7 +25377,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25188,7 +25536,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25349,7 +25698,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25507,7 +25857,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25668,7 +26019,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25677,7 +26029,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25838,7 +26191,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -25847,7 +26201,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26008,7 +26363,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26166,7 +26522,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26336,7 +26693,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26345,7 +26703,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -26476,7 +26835,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26485,7 +26845,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26647,7 +27008,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26681,7 +27043,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26689,7 +27052,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -26821,7 +27185,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26982,7 +27347,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -26991,7 +27357,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27152,7 +27519,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27161,7 +27529,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27322,7 +27691,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27480,7 +27850,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27641,7 +28012,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27650,7 +28022,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -27781,7 +28154,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27790,7 +28164,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27951,7 +28326,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -27960,7 +28336,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28121,7 +28498,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28130,7 +28508,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28287,7 +28666,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28296,7 +28676,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -28427,7 +28808,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -28558,7 +28940,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28715,7 +29098,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -28872,7 +29256,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29029,7 +29414,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29186,7 +29572,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29195,7 +29582,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -29326,7 +29714,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29335,7 +29724,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29492,7 +29882,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29501,7 +29892,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29510,7 +29902,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -29641,7 +30034,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29650,7 +30044,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29677,6 +30072,14 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
           }
         }
       ],
@@ -29807,7 +30210,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29816,7 +30220,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29977,7 +30382,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -29986,7 +30392,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30143,7 +30550,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30152,7 +30560,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30313,7 +30722,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30322,7 +30732,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30479,7 +30890,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30488,7 +30900,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30649,7 +31062,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30658,7 +31072,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30667,7 +31082,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30828,7 +31244,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30837,7 +31254,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -30846,7 +31264,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31007,7 +31426,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31016,7 +31436,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31043,6 +31464,30 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "positionId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "enrollmentId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -31173,7 +31618,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31182,7 +31628,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31191,7 +31638,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31352,7 +31800,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31361,7 +31810,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31522,7 +31972,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31531,7 +31982,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31692,7 +32144,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31701,7 +32154,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31710,7 +32164,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -31841,7 +32296,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31850,7 +32306,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -31859,7 +32316,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32020,7 +32478,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32029,7 +32488,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32038,7 +32498,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32200,7 +32661,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32209,7 +32671,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32382,7 +32845,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32391,7 +32855,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32552,7 +33017,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32561,7 +33027,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32570,7 +33037,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -32701,7 +33169,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32710,7 +33179,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32719,7 +33189,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32880,7 +33351,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -32889,7 +33361,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33058,7 +33531,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33067,7 +33541,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33076,7 +33551,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33237,7 +33713,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33246,7 +33723,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33255,7 +33733,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33416,7 +33895,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33574,7 +34054,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33735,7 +34216,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33744,7 +34226,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -33875,7 +34358,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -33884,7 +34368,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34045,7 +34530,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34054,7 +34540,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34215,7 +34702,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34376,7 +34864,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34385,7 +34874,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -34516,7 +35006,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34525,7 +35016,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34686,7 +35178,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34695,7 +35188,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34853,7 +35347,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -34862,7 +35357,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35023,7 +35519,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35032,7 +35529,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35041,7 +35539,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -35172,7 +35671,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35181,7 +35681,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35215,7 +35716,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35223,7 +35725,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -35354,7 +35857,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35363,7 +35867,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35524,7 +36029,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35533,7 +36039,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35542,7 +36049,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35703,7 +36211,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35712,7 +36221,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35721,7 +36231,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35882,7 +36393,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35891,7 +36403,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -35900,7 +36413,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36061,7 +36575,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36070,7 +36585,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36079,7 +36595,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -36210,7 +36727,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36219,7 +36737,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36228,7 +36747,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36389,7 +36909,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36398,7 +36919,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36407,7 +36929,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36568,7 +37091,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36577,7 +37101,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36586,7 +37111,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36747,7 +37273,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36756,7 +37283,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36913,7 +37441,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -36922,7 +37451,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37083,7 +37613,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37092,7 +37623,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37101,7 +37633,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37262,7 +37795,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37271,7 +37805,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37280,7 +37815,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37441,7 +37977,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37450,7 +37987,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37459,7 +37997,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37620,7 +38159,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37654,7 +38194,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37662,7 +38203,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -37793,7 +38335,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37802,7 +38345,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37959,7 +38503,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37968,7 +38513,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -37977,7 +38523,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -38109,7 +38656,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38118,7 +38666,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38279,7 +38828,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38329,7 +38879,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38337,7 +38888,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38345,7 +38897,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -38476,7 +39029,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38485,7 +39039,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38643,7 +39198,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38652,7 +39208,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38813,7 +39370,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38822,7 +39380,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38831,7 +39390,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -38962,7 +39522,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38971,7 +39532,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -38980,7 +39542,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39142,7 +39705,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39151,7 +39715,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39160,7 +39725,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39322,7 +39888,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39331,7 +39898,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39340,7 +39908,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39501,7 +40070,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39510,7 +40080,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39667,7 +40238,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39676,7 +40248,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39837,7 +40410,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39846,7 +40420,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -39855,7 +40430,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40016,7 +40592,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40025,7 +40602,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40034,7 +40612,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40195,7 +40774,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40204,7 +40784,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40361,7 +40942,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40370,7 +40952,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40531,7 +41114,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40540,7 +41124,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40549,7 +41134,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -40680,7 +41266,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40689,7 +41276,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40698,7 +41286,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40859,7 +41448,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40868,7 +41458,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40877,7 +41468,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -40886,7 +41478,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41047,7 +41640,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41056,7 +41650,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41065,7 +41660,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41223,7 +41819,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41232,7 +41829,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41241,7 +41839,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41402,7 +42001,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41411,7 +42011,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41420,7 +42021,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41582,7 +42184,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41591,7 +42194,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41625,7 +42229,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -41757,7 +42362,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41766,7 +42372,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41928,7 +42535,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41937,7 +42545,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -41946,7 +42555,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42107,7 +42717,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42116,7 +42727,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42276,7 +42888,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42437,7 +43050,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42446,7 +43060,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -42578,7 +43193,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42587,7 +43203,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -42719,7 +43336,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42728,7 +43346,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -42889,7 +43508,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43052,7 +43672,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43211,7 +43832,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43374,7 +43996,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43383,7 +44006,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -43516,7 +44140,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43525,7 +44150,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43688,7 +44314,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43697,7 +44324,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43860,7 +44488,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -43869,7 +44498,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44032,7 +44662,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44041,7 +44672,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44204,7 +44836,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44213,7 +44846,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44372,7 +45006,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44381,7 +45016,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44544,7 +45180,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44553,7 +45190,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44562,7 +45200,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -44695,7 +45334,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44704,7 +45344,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44713,7 +45354,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44876,7 +45518,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44885,7 +45528,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -44894,7 +45538,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45057,7 +45702,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45066,7 +45712,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45075,7 +45722,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45238,7 +45886,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45247,7 +45896,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45256,7 +45906,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45417,7 +46068,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45574,7 +46226,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45735,7 +46388,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45744,7 +46398,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -45875,7 +46530,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -45884,7 +46540,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46046,7 +46703,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46055,7 +46713,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46212,7 +46871,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46221,7 +46881,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46382,7 +47043,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46391,7 +47053,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46552,7 +47215,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46561,7 +47225,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -46695,7 +47360,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46718,7 +47384,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46742,7 +47409,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46750,7 +47418,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -46882,7 +47551,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46891,7 +47561,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46914,7 +47585,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46938,7 +47610,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -46946,7 +47619,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -47077,7 +47751,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47236,7 +47911,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47397,7 +48073,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47406,7 +48083,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -47538,7 +48216,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47547,7 +48226,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -47679,7 +48359,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47688,7 +48369,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47849,7 +48531,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -47883,7 +48566,8 @@
           "in": "query",
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -48015,7 +48699,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -48147,7 +48832,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48308,7 +48994,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48465,7 +49152,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48626,7 +49314,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48635,7 +49324,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],
@@ -48766,7 +49456,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48775,7 +49466,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48932,7 +49624,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -48941,7 +49634,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49103,7 +49797,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49261,7 +49956,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49422,7 +50118,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49431,7 +50128,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49592,7 +50290,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49601,7 +50300,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -49920,7 +50620,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -50060,7 +50761,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -50209,7 +50911,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -50349,7 +51052,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -50531,7 +51235,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -50697,7 +51402,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -50706,7 +51412,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -50846,7 +51553,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -51028,7 +51736,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -51210,7 +51919,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -51376,7 +52086,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -51385,7 +52096,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -51525,7 +52237,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -51691,7 +52404,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -51700,7 +52414,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -51840,7 +52555,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -52006,7 +52722,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         },
@@ -52172,7 +52889,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         },
         {
@@ -52181,7 +52899,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           },
           "description": "Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác."
         }
@@ -52452,7 +53171,8 @@
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true
           }
         }
       ],

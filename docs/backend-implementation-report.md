@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 14 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 15 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
-| B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, immutable publication and approved adjustment workflows tested; activity/position sources and connected browser acceptance pending |
+| B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position sources, immutable publication and approved adjustment workflows tested; activity sources and connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private file processing, mail/outbox worker and timetable import drafts tested; remaining domain services, publication and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, timetable import drafts and dated groups/positions/seating tested; remaining domains, publication and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -196,3 +196,11 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - Parent absolute session expiry is eight hours per handoff 03. Class capacity edits use the yearly peak and reject shrinking below two already-planned future enrollments.
 - qa/backend/temporal-integration.log: 41/41 actual PostgreSQL HTTP/integration tests, exit0. qa/backend/temporal-unit-contract.log: 11/11 executed, exit0. TypeScript build and ESLint completed exit0. Fourteen migrations are still applied; this checkpoint adds no migration.
 - API implementation remains 164/264. Support access, remaining B5 domains, all frontend adapters, browser E2E, final Docker stack, restart/backup-restore and load acceptance are unfinished. No production deployment.
+
+## Classroom organization checkpoint — actual execution
+
+- Migration 015 applied and checksum replay verified. Fifteen new APIs cover dated groups, positions, assignment history/end commands and seating create/edit/activate/history.
+- Group commands check class version, effective enrollment and backdated authority/reason. Same-day move/unassign retains cancelled history. Moving out of a group ends its leader assignment. PostgreSQL interval exclusions serialize single-holder races; position source scoring/publication is now exercised and locked approved sources cannot be shortened through API or direct SQL.
+- Seating checks duplicate student/key/coordinate and effective enrollment; drafts have version and optional latest-revision guards. Future activation bounds the old plan without replacing its payload. Activated content and seats deny direct SQL modification. Subject-only teachers can read class metadata but cannot read whole-class seating/groups.
+- qa/backend/classroom-integration.log: 44/44 actual integration tests, exit0. qa/backend/classroom-unit-contract.log: 11/11 executed, exit0. Build/typecheck and lint exit0. Initial 42/44 run found an invalid Ack DTO and a test missing a required nullable clientEventId; both corrected before the successful full rerun.
+- 179/264 API operations implemented. Ending enrollments must still close class organization intervals. Timetable/duty publication, activities, announcements, reports/support/platform, frontend adapters and B7 acceptance remain unfinished. No local final deployment or production deployment.

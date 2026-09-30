@@ -1419,8 +1419,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "createGroup",
@@ -1428,8 +1430,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "listPositions",
@@ -1437,8 +1441,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "createPosition",
@@ -1446,8 +1452,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "listSeatingPlans",
@@ -1455,8 +1463,10 @@
         "CL14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "createSeatingPlan",
@@ -1464,8 +1474,10 @@
         "CL14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "updateGroup",
@@ -1473,8 +1485,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "updatePosition",
@@ -1482,8 +1496,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "listPositionAssignments",
@@ -1491,8 +1507,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "endPositionAssignment",
@@ -1500,8 +1518,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "assignGroup",
@@ -1509,8 +1529,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "assignPosition",
@@ -1518,8 +1540,10 @@
         "CL13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "getSeatingPlan",
@@ -1527,8 +1551,10 @@
         "CL14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "updateSeatingPlan",
@@ -1536,8 +1562,10 @@
         "CL14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "activateSeatingPlan",
@@ -1545,8 +1573,10 @@
         "CL14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks"
+      ]
     },
     {
       "operationId": "listAttendanceSessions",
@@ -3945,7 +3975,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL14",
@@ -3960,7 +3990,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL15",

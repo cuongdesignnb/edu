@@ -995,3 +995,63 @@ test('B2 shrinking class capacity checks planned future occupancy peaks, rather 
   const denied=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${cls.id}`,{expectedVersion:cls.version,capacity:1},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(denied.statusCode,422);assert.equal(denied.json().code,'CLASS_CAPACITY_EXCEEDED');
   const allowed=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${cls.id}`,{expectedVersion:cls.version,capacity:2},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(allowed.statusCode,200);assert.equal(allowed.json().data.capacity,2);
 });
+
+async function schoolToday(){return (await db.app.query('SELECT (now() AT TIME ZONE timezone)::date AS day FROM platform.schools WHERE id=$1',[schoolA])).rows[0].day;}
+function nextDate(day,n){return new Date(Date.parse(`${day}T00:00:00Z`)+n*86400000).toISOString().slice(0,10);}
+test('B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,today=await schoolToday(),future=nextDate(today,2);
+  const first=await f.post(`${base}/groups`,{name:'Tổ một giả',sortOrder:1}),second=await f.post(`${base}/groups`,{name:'Tổ hai giả',sortOrder:2});assert.equal(first.statusCode,201,first.body);assert.equal(second.statusCode,201);let group=first.json().data;
+  const edited=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/groups/${group.id}`,{expectedVersion:group.version,name:'Tổ một đổi tên giả'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200);group=edited.json().data;
+  const currentClass=async()=>(await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`)).json().data;
+  const move=async(groupId,effectiveOn,reason)=>f.post(`${base}/groups/assign`,{groupId,enrollmentIds:[f.enrollments[0].id],effectiveOn,expectedClassVersion:(await currentClass()).version,...(reason?{reason}:{})});
+  const noReason=await move(group.id,'2026-09-28');assert.equal(noReason.statusCode,422);
+  const before=await currentClass(),assigned=await move(group.id,'2026-09-28','Xác minh tổ từ đầu tuần');assert.equal(assigned.statusCode,200,assigned.body);
+  const stale=await f.post(`${base}/groups/assign`,{groupId:second.json().data.id,enrollmentIds:[f.enrollments[0].id],effectiveOn:future,expectedClassVersion:before.version});assert.equal(stale.statusCode,409);
+  const position=await f.post(`${base}/positions`,{code:'group_leader',name:'Tổ trưởng giả',singleHolder:true,groupId:group.id});assert.equal(position.statusCode,201,position.body);
+  const leader=await f.post(`${base}/positions/assign`,{positionId:position.json().data.id,enrollmentId:f.enrollments[0].id,startsOn:'2026-09-28',reason:'Xác minh tổ trưởng từ đầu tuần'});assert.equal(leader.statusCode,201,leader.body);
+  const invalid=await f.post(`${base}/positions/assign`,{positionId:position.json().data.id,enrollmentId:f.enrollments[1].id,startsOn:today});assert.equal(invalid.statusCode,422);
+  assert.equal((await move(second.json().data.id,future)).statusCode,200);
+  const old=await request('GET',`/api/v1/schools/${schoolA}/${base}/groups?onDate=${today}`);assert.equal(old.statusCode,200,old.body);assert.deepEqual(old.json().data.find(g=>g.id===group.id).enrollmentIds,[f.enrollments[0].id]);
+  const upcoming=await request('GET',`/api/v1/schools/${schoolA}/${base}/groups?onDate=${future}`);assert.deepEqual(upcoming.json().data.find(g=>g.id===second.json().data.id).enrollmentIds,[f.enrollments[0].id]);
+  const ended=(await request('GET',`/api/v1/schools/${schoolA}/${base}/position-assignments?positionId=${position.json().data.id}`)).json().data[0];assert.equal(ended.endsOn,future);
+  assert.equal((await move(group.id,future)).statusCode,200);assert.equal((await move(null,future)).statusCode,200);
+  const history=await db.transaction(tx=>tx.query('SELECT group_id,starts_on,ends_on,cancelled_at FROM app.group_memberships WHERE school_id=$1 AND enrollment_id=$2 ORDER BY created_at',[schoolA,f.enrollments[0].id]),{schoolId:schoolA});assert.equal(history.rowCount,3);assert.equal(history.rows.filter(row=>row.cancelled_at).length,2);assert.equal(history.rows[0].ends_on,future);
+  const upcomingAfter=await request('GET',`/api/v1/schools/${schoolA}/${base}/groups?onDate=${future}`);assert.equal(upcomingAfter.json().data.every(g=>!g.enrollmentIds.includes(f.enrollments[0].id)),true);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/positions`)).statusCode,200);
+});
+
+test('B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,position=await f.post(`${base}/positions`,{code:'class_monitor',name:'Lớp trưởng giả',singleHolder:true});assert.equal(position.statusCode,201);const pos=position.json().data;
+  const body={positionId:pos.id,startsOn:'2026-09-28',reason:'Xác minh lớp trưởng từ đầu tuần'},race=await Promise.all(f.enrollments.map(e=>f.post(`${base}/positions/assign`,{...body,enrollmentId:e.id})));assert.deepEqual(race.map(r=>r.statusCode).sort(),[201,409]);let assigned=race.find(r=>r.statusCode===201).json().data;
+  const inUse=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/positions/${pos.id}`,{expectedVersion:pos.version,singleHolder:false},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(inUse.statusCode,409);
+  const renamed=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/positions/${pos.id}`,{expectedVersion:pos.version,name:'Lớp trưởng đã xác minh giả'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(renamed.statusCode,200);
+  const created=await f.post(`${base}/conduct-records`,{periodId:f.period.id,enrollmentId:assigned.enrollmentId,ruleId:f.fixed,publicReason:'Hoàn thành chức vụ được xác minh',occurredAt:'2026-09-29T01:00:00Z',sourceKind:'POSITION',sourceId:assigned.id,clientEventId:null});assert.equal(created.statusCode,201,created.body);const record=created.json().data;
+  assert.equal((await f.post(`${base}/conduct-records/${record.id}/approve`,{expectedVersion:record.version})).statusCode,200);
+  const summary=(await request('GET',`/api/v1/schools/${schoolA}/${base}/conduct-periods/${f.period.id}/summary`)).json().data;
+  const locked=await f.post(`${base}/conduct-periods/${f.period.id}/lock-and-publish`,{expectedSourceVersion:summary.period.dataVersion,expectedPublicationId:null});assert.equal(locked.statusCode,200,locked.body);
+  const denied=await f.post(`${base}/position-assignments/${assigned.id}/end`,{expectedVersion:assigned.version,endsOn:'2026-09-29',reason:'Không được sửa nguồn đã chốt'});assert.equal(denied.statusCode,409,denied.body);assert.equal(denied.json().code,'LOCKED_CONDUCT_SOURCE');
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.position_assignments SET ends_on='2026-09-29' WHERE school_id=$1 AND id=$2",[schoolA,assigned.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  const ended=await f.post(`${base}/position-assignments/${assigned.id}/end`,{expectedVersion:assigned.version,endsOn:nextDate(await schoolToday(),1),reason:'Kết thúc từ ngày mai'});assert.equal(ended.statusCode,200,ended.body);assigned=ended.json().data;
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/position-assignments?onDate=2026-09-29`)).json().data.some(row=>row.id===assigned.id),true);
+  const other=await f.post(`${base}/positions`,{code:'secretary',name:'Bí thư giả',singleHolder:true});assert.equal(other.statusCode,201);
+  const toCancel=await f.post(`${base}/positions/assign`,{...body,positionId:other.json().data.id,enrollmentId:f.enrollments[0].id});assert.equal(toCancel.statusCode,201);
+  const cancelled=await f.post(`${base}/position-assignments/${toCancel.json().data.id}/end`,{expectedVersion:toCancel.json().data.version,endsOn:'2026-09-28',reason:'Hủy phân công nhầm cùng ngày'});assert.equal(cancelled.statusCode,200,cancelled.body);assert.ok(cancelled.json().data.cancelledAt);
+});
+
+test('B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,today=await schoolToday(),future=nextDate(today,2),seats=[{key:'A1',row:0,column:0,enrollmentId:f.enrollments[0].id},{key:'A2',row:0,column:1,enrollmentId:f.enrollments[1].id},{key:'A3',row:0,column:2,enrollmentId:null}];
+  for(const invalid of [[seats[0],{...seats[1],enrollmentId:seats[0].enrollmentId}],[seats[0],{...seats[1],column:0}],[{...seats[0],enrollmentId:seedId('enrollment:A:10A1:1')}]]){const denied=await f.post(`${base}/seating-plans`,{effectiveOn:today,seats:invalid});assert.equal(denied.statusCode,422,denied.body);}
+  const race=await Promise.all([1,2].map(()=>f.post(`${base}/seating-plans`,{effectiveOn:today,seats,expectedRevision:0})));assert.deepEqual(race.map(r=>r.statusCode).sort(),[201,409]);let first=race.find(r=>r.statusCode===201).json().data;assert.equal(first.status,'DRAFT');
+  const saved=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`,{expectedVersion:first.version,effectiveOn:today,seats},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(saved.statusCode,200,saved.body);first=saved.json().data;
+  const stale=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`,{expectedVersion:first.version-1,effectiveOn:today,seats},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(stale.statusCode,409);
+  const active=await f.post(`${base}/seating-plans/${first.id}/activate`,{expectedVersion:first.version});assert.equal(active.statusCode,200,active.body);first=active.json().data;
+  const next=await f.post(`${base}/seating-plans`,{effectiveOn:future,seats:[{...seats[0],enrollmentId:f.enrollments[1].id},{...seats[1],enrollmentId:f.enrollments[0].id}],expectedRevision:first.revision});assert.equal(next.statusCode,201,next.body);
+  assert.equal((await f.post(`${base}/seating-plans/${next.json().data.id}/activate`,{expectedVersion:next.json().data.version})).statusCode,200);
+  const old=await request('GET',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`);assert.equal(old.statusCode,200);assert.equal(old.json().data.endsOn,future);assert.deepEqual(old.json().data.seats,seats);
+  const immutable=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`,{expectedVersion:old.json().data.version,effectiveOn:today,seats:[]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(immutable.statusCode,409);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.seating_plans SET layout='{}' WHERE school_id=$1 AND id=$2",[schoolA,first.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  await assert.rejects(db.transaction(tx=>tx.query('DELETE FROM app.seat_assignments WHERE school_id=$1 AND plan_id=$2',[schoolA,first.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  const history=await request('GET',`/api/v1/schools/${schoolA}/${base}/seating-plans?limit=1`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().page.total,2);assert.equal(history.json().page.hasMore,true);
+  const subject=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-a'),subjectId:seedId('subject:A:math'),kind:'SUBJECT',startsOn:'2026-09-28',endsOn:'2027-06-01',reason:'Phân công môn kiểm tra sơ đồ'});assert.equal(subject.statusCode,201,subject.body);
+  await login('teacher-a@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`)).statusCode,200);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/seating-plans/${first.id}`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/groups`)).statusCode,404);
+});

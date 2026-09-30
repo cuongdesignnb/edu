@@ -1051,6 +1051,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -1500,6 +1501,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -1855,6 +1857,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -1936,6 +1939,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -2041,6 +2045,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -2145,6 +2150,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -2245,6 +2251,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -2349,12 +2356,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -2552,6 +2561,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -2633,6 +2643,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -2728,6 +2739,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -2826,6 +2838,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -3363,6 +3376,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -3445,6 +3459,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -3526,6 +3541,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -3632,6 +3648,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -3732,6 +3749,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -3838,12 +3856,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -3927,12 +3947,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -4038,6 +4060,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -4060,6 +4083,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -4142,6 +4166,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -4247,12 +4272,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: termId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -4335,12 +4362,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: termId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -4446,6 +4475,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -4468,6 +4498,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -4550,6 +4581,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -4655,12 +4687,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: weekId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -4743,12 +4777,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: weekId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -4853,6 +4889,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -4875,6 +4912,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -4956,6 +4994,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5060,12 +5099,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: eventId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -5147,12 +5188,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: eventId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5257,6 +5300,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -5279,6 +5323,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -5360,6 +5405,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5464,12 +5510,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -5551,12 +5599,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5661,12 +5711,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5771,12 +5823,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5881,12 +5935,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -5991,12 +6047,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6101,12 +6159,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: eventId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6211,6 +6271,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: dictionary
           in: path
           required: true
@@ -6318,6 +6379,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: dictionary
           in: path
           required: true
@@ -6431,6 +6493,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: dictionary
           in: path
           required: true
@@ -6446,6 +6509,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6550,12 +6614,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6660,12 +6726,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: rolloverId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -6748,12 +6816,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: rolloverId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6858,12 +6928,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: rolloverId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -6968,6 +7040,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -7067,12 +7140,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -7154,12 +7229,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -7265,12 +7342,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -7376,12 +7455,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -7486,6 +7567,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -7584,6 +7666,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -7688,12 +7771,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: invitationId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -7798,6 +7883,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -7896,6 +7982,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8000,12 +8087,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: roleId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -8087,12 +8176,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: roleId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8198,6 +8289,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8303,6 +8395,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8408,12 +8501,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: grantId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8519,6 +8614,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -8541,11 +8637,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -8627,6 +8725,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8732,12 +8831,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: assignmentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -8842,6 +8943,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -8940,6 +9042,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9044,12 +9147,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: handoverId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9154,6 +9259,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -9176,11 +9282,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -9262,6 +9370,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9367,12 +9476,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: studentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -9454,12 +9565,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: studentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9564,12 +9677,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: studentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -9670,6 +9785,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9774,6 +9890,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -9873,6 +9990,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -9977,12 +10095,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: transferId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10087,12 +10207,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: transferId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10197,6 +10319,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -10296,6 +10419,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10406,12 +10530,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: guardianId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -10493,12 +10619,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: guardianId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10604,6 +10732,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -10626,11 +10755,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: guardianId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -10713,6 +10844,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10817,12 +10949,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: relationshipId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -10927,12 +11061,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: relationshipId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -11037,6 +11173,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -11136,6 +11273,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -11240,12 +11378,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: accessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -11328,12 +11468,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: accessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -11438,12 +11580,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: accessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -11548,12 +11692,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: accessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -11654,12 +11800,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: accessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -11742,6 +11890,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -11824,6 +11973,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -11923,6 +12073,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12022,6 +12173,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12121,6 +12273,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12220,12 +12373,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -12308,12 +12463,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12413,18 +12570,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: studentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -12507,12 +12667,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12530,6 +12692,11 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: Thành công
@@ -12611,12 +12778,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -12721,12 +12890,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -12825,12 +12996,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -12935,12 +13108,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -13039,12 +13214,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13149,18 +13326,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: groupId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13265,18 +13445,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: positionId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13381,12 +13564,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -13404,6 +13589,21 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: positionId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: enrollmentId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -13486,18 +13686,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: assignmentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13602,12 +13805,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13712,12 +13917,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -13822,18 +14029,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: planId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -13915,18 +14125,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: planId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14031,18 +14244,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: planId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14148,12 +14364,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -14262,12 +14480,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14372,18 +14592,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: sessionId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -14466,18 +14689,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: sessionId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14582,12 +14808,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: from
           in: query
           schema:
@@ -14694,18 +14922,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: sessionId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14810,18 +15041,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: sessionId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -14926,6 +15160,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -15025,6 +15260,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15129,12 +15365,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ruleSetId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -15216,12 +15454,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ruleSetId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15326,12 +15566,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ruleSetId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15437,6 +15679,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15541,12 +15784,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -15629,12 +15874,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15739,12 +15986,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -15844,12 +16093,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -15954,18 +16205,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: periodId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -16048,12 +16302,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -16076,11 +16332,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: enrollmentId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -16162,12 +16420,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16272,18 +16532,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: recordId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16388,18 +16651,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: recordId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16504,18 +16770,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: recordId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16620,18 +16889,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: periodId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -16714,18 +16986,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: periodId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16830,18 +17105,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: periodId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -16946,18 +17224,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: periodId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -17062,12 +17343,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -17166,12 +17449,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -17276,18 +17561,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: adjustmentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -17392,18 +17680,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: adjustmentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -17508,18 +17799,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: adjustmentId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -17624,6 +17918,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -17646,11 +17941,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: yearId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -17733,12 +18030,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -17838,18 +18137,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: publicationId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -17933,12 +18235,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: publicationId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -18043,6 +18347,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -18075,16 +18380,19 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: memberId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: roomId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -18167,12 +18475,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -18272,12 +18582,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -18382,18 +18694,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: timetableId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -18475,18 +18790,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: timetableId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -18592,18 +18910,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: timetableId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -18709,18 +19030,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: timetableId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -18825,12 +19149,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -18929,12 +19255,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19039,18 +19367,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: dutyId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19155,18 +19486,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: dutyId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19271,12 +19605,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -19375,12 +19711,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19485,18 +19823,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -19578,18 +19919,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19694,24 +20038,28 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: participantId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -19816,18 +20164,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -19928,18 +20279,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20044,18 +20398,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: activityId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20161,12 +20518,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -20189,6 +20548,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -20271,12 +20631,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20382,18 +20744,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: evidenceId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20498,12 +20863,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -20606,6 +20973,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20710,12 +21078,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: fileId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -20799,12 +21169,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: fileId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Tải file sau khi kiểm tra quyền lại; no-store.
@@ -20888,12 +21260,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: fileId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -20998,6 +21372,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21104,6 +21479,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -21204,6 +21580,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21310,12 +21687,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -21399,12 +21778,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21511,12 +21892,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21623,12 +22006,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21735,12 +22120,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -21847,12 +22234,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -21953,12 +22342,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22065,18 +22456,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -22160,18 +22554,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22278,18 +22675,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22396,18 +22796,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22514,18 +22917,21 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: announcementId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22630,6 +23036,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -22728,6 +23135,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -22832,12 +23240,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -22920,12 +23330,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -23031,12 +23443,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -23136,12 +23550,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -23246,12 +23662,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -23356,12 +23774,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: importId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Tải file sau khi kiểm tra quyền lại; no-store.
@@ -23447,6 +23867,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: reportType
           in: path
           required: true
@@ -23463,6 +23884,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: from
           in: query
           schema:
@@ -23478,11 +23900,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -23566,12 +23990,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: reportType
           in: path
           required: true
@@ -23588,6 +24014,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: from
           in: query
           schema:
@@ -23603,11 +24030,13 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: classId
           in: query
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -23690,6 +24119,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -23790,6 +24220,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -23894,12 +24325,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: exportId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -23983,12 +24416,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: exportId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Tải file sau khi kiểm tra quyền lại; no-store.
@@ -24072,12 +24507,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: exportId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -24182,6 +24619,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -24204,6 +24642,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -24287,6 +24726,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -24369,6 +24809,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -24473,6 +24914,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -24571,6 +25013,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -24675,12 +25118,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ticketId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -24763,12 +25208,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ticketId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -24867,12 +25314,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: ticketId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -24978,6 +25427,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: limit
           in: query
           schema:
@@ -25077,6 +25527,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -25181,12 +25632,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: supportAccessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -25291,12 +25744,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: supportAccessId
           in: path
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-CSRF-Token
           in: header
           required: true
@@ -25502,6 +25957,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -25590,6 +26046,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: X-CSRF-Token
           in: header
@@ -25685,6 +26142,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -25773,6 +26231,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -25888,6 +26347,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -25993,12 +26453,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-Parent-View
           in: header
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -26087,6 +26549,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26202,6 +26665,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26317,6 +26781,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26422,12 +26887,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-Parent-View
           in: header
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -26516,6 +26983,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26621,12 +27089,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-Parent-View
           in: header
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -26715,6 +27185,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26820,6 +27291,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
         - name: limit
           in: query
@@ -26925,12 +27397,14 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
         - name: X-Parent-View
           in: header
           required: true
           schema:
             type: string
             format: uuid
+            nullable: true
           description: Khớp viewId trả khi exchange, tránh tab cũ đọc nhầm khi mở link khác.
       responses:
         "200":
@@ -27099,6 +27573,7 @@ paths:
           schema:
             type: string
             format: uuid
+            nullable: true
       responses:
         "200":
           description: Thành công
@@ -27209,6 +27684,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
         version:
@@ -27278,12 +27754,14 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
         roleId:
           type: string
           format: uuid
+          nullable: true
         roleLabel:
           type: string
           minLength: 1
@@ -27331,6 +27809,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -27375,6 +27854,7 @@ components:
               schoolId:
                 type: string
                 format: uuid
+                nullable: true
               schoolName:
                 type: string
                 minLength: 1
@@ -27382,6 +27862,7 @@ components:
               memberId:
                 type: string
                 format: uuid
+                nullable: true
               status:
                 type: string
               grants:
@@ -27502,6 +27983,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         deviceSummary:
           type: string
         current:
@@ -27529,6 +28011,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -27689,9 +28172,11 @@ components:
         schoolId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         dueAt:
           type: string
           format: date-time
@@ -27701,6 +28186,7 @@ components:
         targetId:
           type: string
           format: uuid
+          nullable: true
       required:
         - id
         - kind
@@ -27734,6 +28220,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -27746,6 +28233,7 @@ components:
         userId:
           type: string
           format: uuid
+          nullable: true
         staffCode:
           type: string
           nullable: true
@@ -27817,6 +28305,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -27868,12 +28357,15 @@ components:
         roleId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         subjectId:
           type: string
           format: uuid
+          nullable: true
         validFrom:
           type: string
           format: date-time
@@ -27930,6 +28422,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28049,9 +28542,11 @@ components:
         memberId:
           type: string
           format: uuid
+          nullable: true
         roleId:
           type: string
           format: uuid
+          nullable: true
         scopeType:
           type: string
           enum:
@@ -28061,9 +28556,11 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         subjectId:
           type: string
           format: uuid
+          nullable: true
         validFrom:
           type: string
           format: date-time
@@ -28106,6 +28603,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28192,6 +28690,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28204,6 +28703,7 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -28279,6 +28779,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28291,9 +28792,11 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         termId:
           type: string
           format: uuid
+          nullable: true
         weekNumber:
           type: integer
           minimum: 1
@@ -28373,6 +28876,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28456,6 +28960,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28468,9 +28973,11 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -28562,6 +29069,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28574,9 +29082,11 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         gradeLevelId:
           type: string
           format: uuid
+          nullable: true
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -28659,6 +29169,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28671,12 +29182,15 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         memberId:
           type: string
           format: uuid
+          nullable: true
         roleGrantId:
           type: string
           format: uuid
+          nullable: true
         kind:
           type: string
           enum:
@@ -28685,6 +29199,7 @@ components:
         subjectId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -28748,6 +29263,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28760,12 +29276,15 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         fromAssignmentId:
           type: string
           format: uuid
+          nullable: true
         toMemberId:
           type: string
           format: uuid
+          nullable: true
         effectiveOn:
           type: string
           format: date
@@ -28823,12 +29342,15 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         fromClassId:
           type: string
           format: uuid
+          nullable: true
         toClassId:
           type: string
           format: uuid
+          nullable: true
         decision:
           type: string
           enum:
@@ -28847,6 +29369,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28859,9 +29382,11 @@ components:
         sourceYearId:
           type: string
           format: uuid
+          nullable: true
         targetYearId:
           type: string
           format: uuid
+          nullable: true
         plan:
           type: array
           items:
@@ -28896,6 +29421,7 @@ components:
         targetYearId:
           type: string
           format: uuid
+          nullable: true
         plan:
           type: array
           items:
@@ -28925,6 +29451,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -28986,6 +29513,7 @@ components:
         initialClassId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -29020,6 +29548,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29032,12 +29561,15 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -29069,9 +29601,11 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -29086,6 +29620,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29165,6 +29700,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29177,9 +29713,11 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         guardianId:
           type: string
           format: uuid
+          nullable: true
         relationshipLabel:
           type: string
           minLength: 1
@@ -29291,6 +29829,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29303,9 +29842,11 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         fromEnrollmentId:
           type: string
           format: uuid
+          nullable: true
         toClassId:
           type: string
           format: uuid
@@ -29365,6 +29906,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29377,12 +29919,15 @@ components:
         studentId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         relationshipId:
           type: string
           format: uuid
+          nullable: true
         allowedSections:
           type: array
           items:
@@ -29484,9 +30029,11 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         accessLinkId:
           type: string
           format: uuid
+          nullable: true
         eventKind:
           type: string
         occurredAt:
@@ -29518,6 +30065,7 @@ components:
         viewId:
           type: string
           format: uuid
+          nullable: true
         school:
           type: object
           properties:
@@ -29659,6 +30207,7 @@ components:
         periodId:
           type: string
           format: uuid
+          nullable: true
         periodLabel:
           type: string
           minLength: 1
@@ -29763,6 +30312,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -29804,6 +30354,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -29836,6 +30387,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -29898,6 +30450,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -29910,6 +30463,7 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         name:
           type: string
           minLength: 1
@@ -29921,6 +30475,7 @@ components:
           items:
             type: string
             format: uuid
+            nullable: true
       required:
         - id
         - version
@@ -29964,11 +30519,13 @@ components:
         groupId:
           type: string
           format: uuid
+          nullable: true
         enrollmentIds:
           type: array
           items:
             type: string
             format: uuid
+            nullable: true
           minItems: 1
           maxItems: 200
         effectiveOn:
@@ -29977,6 +30534,10 @@ components:
         expectedClassVersion:
           type: integer
           minimum: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 2000
       required:
         - groupId
         - enrollmentIds
@@ -29989,6 +30550,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30001,6 +30563,7 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -30010,6 +30573,9 @@ components:
           maxLength: 200
         singleHolder:
           type: boolean
+        groupId:
+          type: string
+          format: uuid
       required:
         - id
         - version
@@ -30032,6 +30598,9 @@ components:
           maxLength: 200
         singleHolder:
           type: boolean
+        groupId:
+          type: string
+          format: uuid
       required:
         - code
         - name
@@ -30058,6 +30627,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30070,15 +30640,21 @@ components:
         positionId:
           type: string
           format: uuid
+          nullable: true
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
         endsOn:
           type: string
           format: date
+          nullable: true
+        cancelledAt:
+          type: string
+          format: date-time
           nullable: true
       required:
         - id
@@ -30113,9 +30689,11 @@ components:
         positionId:
           type: string
           format: uuid
+          nullable: true
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -30123,6 +30701,10 @@ components:
           type: string
           format: date
           nullable: true
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 2000
       required:
         - positionId
         - enrollmentId
@@ -30155,6 +30737,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30167,6 +30750,7 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         revision:
           type: integer
           minimum: 1
@@ -30184,6 +30768,10 @@ components:
           items:
             $ref: "#/components/schemas/Seat"
           maxItems: 200
+        endsOn:
+          type: string
+          format: date
+          nullable: true
       required:
         - id
         - version
@@ -30225,6 +30813,9 @@ components:
           items:
             $ref: "#/components/schemas/Seat"
           maxItems: 200
+        expectedRevision:
+          type: integer
+          minimum: 0
       required:
         - effectiveOn
         - seats
@@ -30235,6 +30826,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30247,6 +30839,7 @@ components:
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
           enum:
@@ -30279,6 +30872,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30291,9 +30885,11 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         date:
           type: string
           format: date
@@ -30305,6 +30901,7 @@ components:
         lessonId:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
           enum:
@@ -30375,6 +30972,7 @@ components:
         lessonId:
           type: string
           format: uuid
+          nullable: true
         slot:
           type: string
           enum:
@@ -30398,6 +30996,7 @@ components:
               enrollmentId:
                 type: string
                 format: uuid
+                nullable: true
               expectedVersion:
                 type: integer
                 minimum: 1
@@ -30486,6 +31085,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30553,6 +31153,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         code:
           type: string
           pattern: ^[A-Za-z0-9_-]{1,64}$
@@ -30694,6 +31295,7 @@ components:
         ruleSetId:
           type: string
           format: uuid
+          nullable: true
         events:
           type: array
           items:
@@ -30702,6 +31304,7 @@ components:
               ruleId:
                 type: string
                 format: uuid
+                nullable: true
               manualDelta:
                 type: string
                 pattern: ^-?\d{1,8}(\.\d{1,2})?$
@@ -30719,6 +31322,7 @@ components:
         ruleSetId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -30740,6 +31344,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30752,12 +31357,15 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         weekId:
           type: string
           format: uuid
+          nullable: true
         ruleSetId:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
           enum:
@@ -30789,6 +31397,7 @@ components:
         weekId:
           type: string
           format: uuid
+          nullable: true
       required:
         - weekId
       additionalProperties: false
@@ -30798,6 +31407,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -30810,15 +31420,19 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         periodId:
           type: string
           format: uuid
+          nullable: true
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         ruleId:
           type: string
           format: uuid
+          nullable: true
         deltaSnapshot:
           type: string
           pattern: ^-?\d{1,8}(\.\d{1,2})?$
@@ -30848,6 +31462,7 @@ components:
         recordedBy:
           type: string
           format: uuid
+          nullable: true
         lessonId:
           type: string
           format: uuid
@@ -30883,12 +31498,15 @@ components:
         periodId:
           type: string
           format: uuid
+          nullable: true
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         ruleId:
           type: string
           format: uuid
+          nullable: true
         manualDelta:
           type: string
           pattern: ^-?\d{1,8}(\.\d{1,2})?$
@@ -30912,9 +31530,11 @@ components:
         sourceId:
           type: string
           format: uuid
+          nullable: true
         clientEventId:
           type: string
           format: uuid
+          nullable: true
         lessonId:
           type: string
           format: uuid
@@ -30958,9 +31578,11 @@ components:
               studentId:
                 type: string
                 format: uuid
+                nullable: true
               enrollmentId:
                 type: string
                 format: uuid
+                nullable: true
               fullName:
                 type: string
                 minLength: 1
@@ -31021,6 +31643,7 @@ components:
               recordId:
                 type: string
                 format: uuid
+                nullable: true
             required:
               - code
               - message
@@ -31055,6 +31678,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31076,12 +31700,15 @@ components:
         sourceId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         revision:
           type: integer
           minimum: 1
@@ -31138,6 +31765,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31150,9 +31778,11 @@ components:
         periodId:
           type: string
           format: uuid
+          nullable: true
         baselinePublicationId:
           type: string
           format: uuid
+          nullable: true
         reason:
           type: string
           maxLength: 4000
@@ -31172,6 +31802,7 @@ components:
               recordId:
                 type: string
                 format: uuid
+                nullable: true
               action:
                 type: string
                 enum:
@@ -31255,6 +31886,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         weekday:
           type: integer
           minimum: 1
@@ -31266,12 +31898,15 @@ components:
         subjectId:
           type: string
           format: uuid
+          nullable: true
         memberId:
           type: string
           format: uuid
+          nullable: true
         roomId:
           type: string
           format: uuid
+          nullable: true
         startsAtLocal:
           type: string
           pattern: ^\d{2}:\d{2}$
@@ -31292,6 +31927,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31304,9 +31940,11 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         revision:
           type: integer
           minimum: 1
@@ -31422,18 +32060,23 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         subjectId:
           type: string
           format: uuid
+          nullable: true
         memberId:
           type: string
           format: uuid
+          nullable: true
         roomId:
           type: string
           format: uuid
+          nullable: true
         startsAt:
           type: string
           format: date-time
@@ -31460,6 +32103,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31472,9 +32116,11 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         startsOn:
           type: string
           format: date
@@ -31495,9 +32141,11 @@ components:
               id:
                 type: string
                 format: uuid
+                nullable: true
               enrollmentId:
                 type: string
                 format: uuid
+                nullable: true
               dutyDate:
                 type: string
                 format: date
@@ -31618,6 +32266,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31630,9 +32279,11 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -31691,6 +32342,7 @@ components:
           items:
             type: string
             format: uuid
+            nullable: true
           minItems: 1
           maxItems: 200
       required:
@@ -31748,6 +32400,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31760,9 +32413,11 @@ components:
         activityId:
           type: string
           format: uuid
+          nullable: true
         enrollmentId:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
           enum:
@@ -31789,6 +32444,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31820,6 +32476,7 @@ components:
         uploadedBy:
           type: string
           format: uuid
+          nullable: true
         scanStatus:
           type: string
           enum:
@@ -31857,6 +32514,7 @@ components:
         classId:
           type: string
           format: uuid
+          nullable: true
       required:
         - file
         - purpose
@@ -31867,18 +32525,23 @@ components:
         fileId:
           type: string
           format: uuid
+          nullable: true
         studentId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         activityId:
           type: string
           format: uuid
+          nullable: true
         announcementId:
           type: string
           format: uuid
+          nullable: true
         shareWithGuardian:
           type: boolean
       required:
@@ -31891,6 +32554,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -31903,12 +32567,15 @@ components:
         participantId:
           type: string
           format: uuid
+          nullable: true
         fileId:
           type: string
           format: uuid
+          nullable: true
         submittedBy:
           type: string
           format: uuid
+          nullable: true
         caption:
           type: string
           maxLength: 4000
@@ -31941,9 +32608,11 @@ components:
         participantId:
           type: string
           format: uuid
+          nullable: true
         fileId:
           type: string
           format: uuid
+          nullable: true
         caption:
           type: string
           maxLength: 4000
@@ -31988,6 +32657,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
       required:
         - kind
       additionalProperties: false
@@ -31997,6 +32667,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32009,9 +32680,11 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         title:
           type: string
           minLength: 1
@@ -32041,6 +32714,7 @@ components:
           items:
             type: string
             format: uuid
+            nullable: true
           maxItems: 20
       required:
         - id
@@ -32134,6 +32808,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32153,6 +32828,7 @@ components:
         fileId:
           type: string
           format: uuid
+          nullable: true
         status:
           type: string
           enum:
@@ -32217,12 +32893,15 @@ components:
         fileId:
           type: string
           format: uuid
+          nullable: true
         yearId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
       required:
         - kind
         - fileId
@@ -32308,6 +32987,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32343,6 +33023,7 @@ components:
         fileId:
           type: string
           format: uuid
+          nullable: true
         expiresAt:
           type: string
           format: date-time
@@ -32375,12 +33056,15 @@ components:
         yearId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         studentId:
           type: string
           format: uuid
+          nullable: true
         from:
           type: string
           format: date
@@ -32414,9 +33098,11 @@ components:
               studentId:
                 type: string
                 format: uuid
+                nullable: true
               classId:
                 type: string
                 format: uuid
+                nullable: true
               label:
                 type: string
               values:
@@ -32445,6 +33131,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32463,11 +33150,13 @@ components:
         schoolId:
           type: string
           format: uuid
+          nullable: true
         targetType:
           type: string
         targetId:
           type: string
           format: uuid
+          nullable: true
         readAt:
           type: string
           format: date-time
@@ -32489,6 +33178,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         actorLabel:
           type: string
         action:
@@ -32498,6 +33188,7 @@ components:
         targetId:
           type: string
           format: uuid
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -32669,6 +33360,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32681,6 +33373,7 @@ components:
         schoolId:
           type: string
           format: uuid
+          nullable: true
         subject:
           type: string
           minLength: 1
@@ -32703,6 +33396,7 @@ components:
         assigneeId:
           type: string
           format: uuid
+          nullable: true
       required:
         - id
         - version
@@ -32759,6 +33453,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         authorLabel:
           type: string
           minLength: 1
@@ -32791,6 +33486,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         version:
           type: integer
           minimum: 1
@@ -32803,15 +33499,19 @@ components:
         schoolId:
           type: string
           format: uuid
+          nullable: true
         ticketId:
           type: string
           format: uuid
+          nullable: true
         operatorId:
           type: string
           format: uuid
+          nullable: true
         classId:
           type: string
           format: uuid
+          nullable: true
         allowedActions:
           type: array
           items:
@@ -32885,6 +33585,7 @@ components:
         id:
           type: string
           format: uuid
+          nullable: true
         kind:
           type: string
         status:

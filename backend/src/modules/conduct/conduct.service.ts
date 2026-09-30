@@ -64,7 +64,7 @@ export class ConductService {
       const source=await one<Row>(tx,"SELECT id FROM app.activity_participants WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND status='APPROVED'",[schoolId,classId,body.enrollmentId,sourceId]);if(!source)validation('sourceId','Chưa có kết quả hoạt động đã duyệt');key=`activity:${sourceId}`;
     }else if(body.sourceKind==='POSITION'){
       if(!sourceId)validation('sourceId','Cần phân công chức vụ');
-      const source=await one<Row>(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,body.enrollmentId,sourceId,scoped.date]);if(!source)validation('sourceId','Chức vụ không hiệu lực trong ngày');key=`position:${sourceId}:${p.id}`;
+      const source=await one<Row>(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND cancelled_at IS NULL AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,body.enrollmentId,sourceId,scoped.date]);if(!source)validation('sourceId','Chức vụ không hiệu lực trong ngày');key=`position:${sourceId}:${p.id}`;
     }else if(sourceId)validation('sourceId','Sự kiện thủ công dùng clientEventId riêng');
     const duplicate=await one<Row>(tx,"SELECT id FROM app.conduct_records WHERE school_id=$1 AND enrollment_id=$2 AND (rule_id=$3 OR source_kind='ATTENDANCE') AND source_kind=$4 AND source_key=$5 AND status<>'EXCLUDED' AND ($6::uuid IS NULL OR id<>$6)",[schoolId,body.enrollmentId,rule.id,body.sourceKind,key,options.supersedesId??null]);if(duplicate)throw new Problem(409,'DUPLICATE_SOURCE');
     const delta=ruleDelta(rule,body.manualDelta as string|undefined);return {p,scoped,rule,key,sourceId,delta};
@@ -85,7 +85,7 @@ export class ConductService {
         WHERE a.school_id=$1 AND a.class_id=$2 AND a.id=$3`,[schoolId,classId,row.source_id,row.rule_id]);
       valid=valid&&!!source&&source.enrollment_id===row.enrollment_id&&source.session_date===date&&source.lesson_id===row.lesson_id&&source.status===source.attendance_status;
     }else if(row.source_kind==='ACTIVITY')valid=valid&&!!await one(tx,"SELECT id FROM app.activity_participants WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND status='APPROVED'",[schoolId,classId,row.enrollment_id,row.source_id]);
-    else if(row.source_kind==='POSITION')valid=valid&&!!await one(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,row.enrollment_id,row.source_id,date]);
+    else if(row.source_kind==='POSITION')valid=valid&&!!await one(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND cancelled_at IS NULL AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,row.enrollment_id,row.source_id,date]);
     if(!valid)throw new Problem(409,'STALE_SOURCE');
   }
   async review(tx:Transaction,p:Row){const data=await conductSummary(tx,p);const blockers=data.records.filter(r=>r.status==='DRAFT').map(r=>({code:'UNREVIEWED_RECORD',message:'Ghi nhận chưa được rà soát',recordId:String(r.id)}));

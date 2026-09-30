@@ -51,6 +51,19 @@ spec.components.schemas.Adjustment.properties.decisionReason={type:'string'};
 spec.components.schemas.Adjustment.properties.resultPublicationId={type:'string',format:'uuid'};
 spec.components.schemas.AdjustmentCreate.properties.proposedChanges.minItems=1;
 spec.components.schemas.AdjustmentCreate.properties.proposedChanges.maxItems=100;
+// ADR-016: preserve dated class organization and the existing unassign UI.
+spec.components.schemas.GroupAssign.properties.groupId.nullable=true;
+for(const name of ['GroupAssign','PositionAssign'])spec.components.schemas[name].properties.reason={type:'string',minLength:5,maxLength:2000};
+spec.components.schemas.PositionCreate.properties.groupId={type:'string',format:'uuid'};
+spec.components.schemas.Position.properties.groupId={type:'string',format:'uuid'};
+spec.components.schemas.PositionAssignment.properties.cancelledAt={type:'string',format:'date-time',nullable:true};
+spec.components.schemas.SeatingPlan.properties.endsOn={type:'string',format:'date',nullable:true};
+spec.components.schemas.SeatingCreate.properties.expectedRevision={type:'integer',minimum:0};
+for(const id of ['listGroups','listPositionAssignments']){
+  const op=Object.values(spec.paths).flatMap(path=>Object.values(path)).find(op=>op?.operationId===id);
+  op.parameters.push({name:'onDate',in:'query',schema:{type:'string',format:'date'}});
+}
+spec.paths['/schools/{schoolId}/classes/{classId}/position-assignments'].get.parameters.push(...['positionId','enrollmentId'].map(name=>({name,in:'query',schema:{type:'string',format:'uuid'}})));
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
