@@ -1418,6 +1418,24 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: kind
+          in: query
+          schema:
+            type: string
+            enum:
+              - task
+              - announcement
+              - system
+              - permission
+        - name: unread
+          in: query
+          schema:
+            type: boolean
       responses:
         "200":
           description: Thành công
@@ -33359,6 +33377,16 @@ components:
           type: string
           format: date-time
           nullable: true
+        body:
+          type: string
+          maxLength: 2000
+        schoolName:
+          type: string
+        classId:
+          type: string
+          format: uuid
+        accessible:
+          type: boolean
       required:
         - id
         - version

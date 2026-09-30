@@ -28,6 +28,7 @@ import { StaffService } from '../../dist/modules/staff/staff.service.js';
 
 let app,server,db,policy;
 const password=crypto.randomBytes(24).toString('base64url');
+const resetPassword=crypto.randomBytes(24).toString('base64url');
 const pool=new Pool({...databaseConfig('app'),max:1});
 const schoolA=seedId('school:A'),schoolB=seedId('school:B'),classA=seedId('class:A:10A1'),classB=seedId('class:A:10A2');
 const origin=process.env.APP_URL;
@@ -39,9 +40,9 @@ async function request(method,url,body,csrf,extra={}){
   for(const cookie of response.cookies)jar.set(cookie.name,cookie.value);
   return response;
 }
-async function login(email){
+async function login(email,currentPassword=password){
   const csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
-  const result=await request('POST','/api/v1/auth/login',{email,password},csrf);
+  const result=await request('POST','/api/v1/auth/login',{email,password:currentPassword},csrf);
   assert.equal(result.statusCode,200,'valid fixture login must succeed');
   return result.json().data.csrfToken;
 }
@@ -274,8 +275,8 @@ test('B1 password reset token is encrypted, single-use and revokes all prior ses
   const mail=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`reset:${id}`])).rows[0];
   const token=new URLSearchParams(new URL(decryptMail(mail.encrypted_payload).url).hash.slice(1)).get('token');
   assert.equal(mail.encrypted_payload.includes(token),false);
-  const reset=await request('POST','/api/v1/auth/password/reset',{token,password:'Synthetic-reset-password-2026'},csrf);assert.equal(reset.statusCode,200);
-  const again=await request('POST','/api/v1/auth/password/reset',{token,password:'Synthetic-reset-password-2026'},csrf);assert.equal(again.statusCode,422);
+  const reset=await request('POST','/api/v1/auth/password/reset',{token,password:resetPassword},csrf);assert.equal(reset.statusCode,200);
+  const again=await request('POST','/api/v1/auth/password/reset',{token,password:resetPassword},csrf);assert.equal(again.statusCode,422);
   const oldRead=await server.inject({method:'GET',url:'/api/v1/me/context',headers:{cookie:`edu_staff=${oldCookie}`}});assert.equal(oldRead.statusCode,401);
   const unknown=await request('POST','/api/v1/auth/password/forgot',{email:`absent-${crypto.randomUUID()}@example.invalid`},csrf);
   assert.equal(unknown.statusCode,200);assert.equal(unknown.json().data.status,forgot.json().data.status);
@@ -1228,6 +1229,7 @@ test('B5 evidence stays private until review and publication; parent documents r
     assert.equal((await f.post('file-links',{fileId:file.id,activityId:f.activity.id,shareWithGuardian:true})).statusCode,422);
     const earlyShare=await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,shareWithGuardian:true});assert.equal(earlyShare.statusCode,422);
     let ev=await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,caption:'Sản phẩm của riêng học sinh',shareWithGuardian:false});assert.equal(ev.statusCode,201,ev.body);ev=ev.json().data;assert.equal((await f.participants())[0].status,'SUBMITTED');
+    const notice=await request('GET',`/api/v1/me/notifications?kind=task&q=${encodeURIComponent(f.activity.title)}`);assert.equal(notice.statusCode,200,notice.body);assert.equal(notice.json().data.filter(n=>n.targetId===f.activity.id).length,1);assert.equal(notice.json().data.find(n=>n.targetId===f.activity.id).accessible,true);
     assert.equal((await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,shareWithGuardian:false})).statusCode,409);
     const ctx=await activityParent(csrf,f);assert.equal((await parentGet('documents',ctx)).json().data.length,0);
     const needReason=await f.post(`${f.base}/evidence/${ev.id}/review`,{expectedVersion:ev.version,decision:'APPROVED',shareWithGuardian:true});assert.equal(needReason.statusCode,422);
@@ -1410,4 +1412,43 @@ test('B3 configured second approval rejects self approval in API and SQL, while 
     const applied=await f.post(`${adjustments}/${a.id}/apply-and-publish`,{expectedSourceVersion:summary.period.dataVersion,expectedPublicationId:pub.json().data.id});assert.equal(applied.statusCode,200,applied.body);assert.notEqual(applied.json().data.id,pub.json().data.id);
     const final=await request('GET',`/api/v1/schools/${schoolA}/${records}?periodId=${f.period.id}`);assert.equal(final.statusCode,200,final.body);assert.equal(final.json().data.find(r=>r.id===fact.id).status,'EXCLUDED');
   }finally{await settings.restore();}
+});
+
+test('B5 personal notifications paginate across actual memberships, deduplicate publication events and deny foreign recipients and cross-user cursors',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=`NOTICE-${crypto.randomUUID()}`,f=await announcementFixture(csrf,false,{title:`${prefix} A`});
+  const assigned=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:multi'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:await schoolToday(),endsOn:'2027-06-01'});assert.equal(assigned.statusCode,201,assigned.body);
+  const pubA=await f.post(`${f.path}/${f.a.id}/publish`,{expectedSourceVersion:f.a.dataVersion});assert.equal(pubA.statusCode,200,pubA.body);
+  const replay=await f.post(`${f.path}/${f.a.id}/publish`,{expectedSourceVersion:f.a.dataVersion,expectedPublicationId:pubA.json().data.id});assert.equal(replay.statusCode,200,replay.body);
+  const duplicates=(await db.transaction(tx=>tx.query('SELECT count(*)::int AS n FROM app.notifications WHERE school_id=$1 AND member_id=$2 AND source_key=$3',[schoolA,seedId('member:A:multi'),`publication:${pubA.json().data.id}`]),{schoolId:schoolA})).rows[0].n;assert.equal(duplicates,1);
+  const foreign=(await db.transaction(tx=>tx.query('SELECT id,read_at FROM app.notifications WHERE school_id=$1 AND member_id=$2 AND source_key=$3',[schoolA,seedId('member:A:admin-a'),`publication:${pubA.json().data.id}`]),{schoolId:schoolA})).rows[0];assert.ok(foreign);
+  const csrfB=await login('admin-b@example.invalid',resetPassword),postB=(tail,body)=>request('POST',`/api/v1/schools/${schoolB}/${tail}`,body,csrfB,{'idempotency-key':crypto.randomUUID()});
+  const createdB=await postB('announcements',{yearId:seedId('year:B'),title:`${prefix} B`,sanitizedHtml:'<p>Thông báo trường thứ hai</p>',targets:[{kind:'SCHOOL'}],audience:'ALL'});assert.equal(createdB.statusCode,201,createdB.body);const aB=createdB.json().data;
+  const pubB=await postB(`announcements/${aB.id}/publish`,{expectedSourceVersion:aB.dataVersion});assert.equal(pubB.statusCode,200,pubB.body);
+  jar.delete('edu_staff');const multiCsrf=await login('multi@example.invalid'),multiCookie=jar.get('edu_staff'),query=`kind=announcement&q=${encodeURIComponent(prefix)}&limit=1`;
+  const first=await request('GET',`/api/v1/me/notifications?${query}`);assert.equal(first.statusCode,200,first.body);assert.equal(first.json().page.total,2);assert.equal(first.json().page.hasMore,true);assert.equal(first.json().data.length,1);const cursor=first.json().page.nextCursor;
+  const second=await request('GET',`/api/v1/me/notifications?${query}&cursor=${encodeURIComponent(cursor)}`);assert.equal(second.statusCode,200,second.body);assert.equal(second.json().page.hasMore,false);const notices=[...first.json().data,...second.json().data];assert.equal(new Set(notices.map(n=>n.id)).size,2);assert.deepEqual(new Set(notices.map(n=>n.schoolId)),new Set([schoolA,schoolB]));assert.ok(notices.every(n=>n.accessible));
+  const aNotice=notices.find(n=>n.schoolId===schoolA),bNotice=notices.find(n=>n.schoolId===schoolB);assert.equal(aNotice.classId,f.classId);assert.equal(aNotice.targetId,f.a.id);
+  assert.equal((await request('GET',`/api/v1/me/notifications?${query}&schoolId=${schoolA}&cursor=${encodeURIComponent(cursor)}`)).statusCode,422);
+  const mark=await request('POST',`/api/v1/me/notifications/${bNotice.id}/read`,undefined,multiCsrf);assert.equal(mark.statusCode,200,mark.body);assert.equal((await request('POST',`/api/v1/me/notifications/${bNotice.id}/read`,undefined,multiCsrf)).statusCode,200);
+  const unread=await request('GET',`/api/v1/me/notifications?kind=announcement&q=${encodeURIComponent(prefix)}&unread=true`);assert.equal(unread.statusCode,200,unread.body);assert.equal(unread.json().page.total,1);assert.equal(unread.json().data[0].id,aNotice.id);
+  assert.equal((await request('POST',`/api/v1/me/notifications/${foreign.id}/read`,undefined,multiCsrf)).statusCode,404);assert.equal((await db.transaction(tx=>tx.query('SELECT read_at FROM app.notifications WHERE school_id=$1 AND id=$2',[schoolA,foreign.id]),{schoolId:schoolA})).rows[0].read_at,foreign.read_at);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`/api/v1/me/notifications?${query}&cursor=${encodeURIComponent(cursor)}`)).statusCode,422);jar.set('edu_staff',multiCookie);
+  assert.equal((await request('GET',`/api/v1/me/notifications?schoolId=${crypto.randomUUID()}`)).statusCode,404);
+  // Revocation is an actual grant command; content and search are redacted in SQL.
+  jar.delete('edu_staff');const adminCsrf=await login('admin-a@example.invalid');const grant=(await db.transaction(tx=>tx.query('SELECT g.* FROM app.teaching_assignments a JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id WHERE a.school_id=$1 AND a.id=$2',[schoolA,assigned.json().data.id]),{schoolId:schoolA})).rows[0];
+  const revoked=await request('POST',`/api/v1/schools/${schoolA}/grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Thu hồi phạm vi trước khi đọc thông báo'},adminCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(revoked.statusCode,200,revoked.body);jar.set('edu_staff',multiCookie);
+  const hiddenSearch=await request('GET',`/api/v1/me/notifications?kind=announcement&q=${encodeURIComponent(prefix)}`);assert.equal(hiddenSearch.statusCode,200,hiddenSearch.body);assert.equal(hiddenSearch.json().page.total,1);assert.equal(hiddenSearch.json().data[0].id,bNotice.id);
+  const redacted=await request('GET',`/api/v1/me/notifications?schoolId=${schoolA}&kind=announcement&limit=1`);assert.equal(redacted.statusCode,200,redacted.body);const hidden=redacted.json().data[0];assert.equal(hidden.id,aNotice.id);assert.equal(hidden.accessible,false);assert.equal(hidden.targetId,null);assert.equal(Object.hasOwn(hidden,'classId'),false);assert.equal(hidden.title.includes(prefix),false);assert.equal(hidden.body.includes(f.classId),false);
+  assert.equal((await request('POST',`/api/v1/me/notifications/${aNotice.id}/read`,undefined,multiCsrf)).statusCode,200);
+  try{await db.app.query("UPDATE platform.schools SET status='SUSPENDED' WHERE id=$1",[schoolA]);const suspended=await request('GET',`/api/v1/me/notifications?schoolId=${schoolA}`);assert.equal(suspended.statusCode,404);const other=await request('GET',`/api/v1/me/notifications?kind=announcement&q=${encodeURIComponent(prefix)}`);assert.equal(other.statusCode,200,other.body);assert.equal(other.json().data[0].schoolId,schoolB);}
+  finally{await db.app.query("UPDATE platform.schools SET status='ACTIVE' WHERE id=$1",[schoolA]);}
+});
+
+test('B5 withdrawn announcements redact retained staff notifications instead of exposing a stale published target',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=`WITHDRAW-NOTICE-${crypto.randomUUID()}`,f=await announcementFixture(csrf,false,{title:prefix});
+  const published=await f.post(`${f.path}/${f.a.id}/publish`,{expectedSourceVersion:f.a.dataVersion});assert.equal(published.statusCode,200,published.body);
+  const initial=await request('GET',`/api/v1/me/notifications?kind=announcement&q=${encodeURIComponent(prefix)}`);assert.equal(initial.statusCode,200,initial.body);assert.equal(initial.json().data.length,1);assert.equal(initial.json().data[0].accessible,true);const id=initial.json().data[0].id;
+  const current=await f.get(),withdrawn=await f.post(`${f.path}/${current.id}/withdraw`,{expectedVersion:current.version,reason:'Thu hồi thông báo có notification'});assert.equal(withdrawn.statusCode,200,withdrawn.body);
+  const oldTitle=await request('GET',`/api/v1/me/notifications?kind=announcement&q=${encodeURIComponent(prefix)}`);assert.equal(oldTitle.statusCode,200,oldTitle.body);assert.equal(oldTitle.json().page.total,0);
+  const history=await request('GET',`/api/v1/me/notifications?schoolId=${schoolA}&kind=announcement&limit=1`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().data[0].id,id);assert.equal(history.json().data[0].targetId,null);assert.equal(history.json().data[0].accessible,false);
 });

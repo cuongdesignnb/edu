@@ -200,8 +200,10 @@
         "TE05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending"
+      ]
     },
     {
       "operationId": "readMyNotification",
@@ -210,8 +212,10 @@
         "TE05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending"
+      ]
     },
     {
       "operationId": "getPlatformOverview",
@@ -3069,7 +3073,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "AU10",

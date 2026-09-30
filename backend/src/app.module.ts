@@ -22,6 +22,7 @@ import { ScheduleService } from './modules/schedule/schedule.service';
 import { ActivitiesService } from './modules/activities/activities.service';
 import { AnnouncementsService } from './modules/announcements/announcements.service';
 import { SettingsService } from './modules/settings/settings.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService,ClassroomService,ScheduleService,ActivitiesService,AnnouncementsService,SettingsService];
+import { NotificationsService } from './modules/notifications/notifications.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService,ClassroomService,ScheduleService,ActivitiesService,AnnouncementsService,SettingsService,NotificationsService];
 @Module({providers:services,exports:services})
 export class AppModule {}

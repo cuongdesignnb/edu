@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 21 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 22 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence, announcements, school settings and school audit tested; remaining domains and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence, announcements, personal notifications, school settings and audit tested; remaining domains and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -268,3 +268,18 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - School audit returns scoped, sanitized real events, rejects cross-school reads
   and changed-filter cursors, and denies a subject teacher's school-wide access.
 - Reports/exports, dashboard, notifications, platform/support and B6/B7 remain pending.
+
+## Personal notification checkpoint — actual PostgreSQL execution
+
+- Migration 022 applied/replayed; implemented API coverage now 222/264.
+- qa/backend/notifications-integration.log: 62/62 exit0; unit-contract: 12/12 exit0;
+  typecheck/lint exit0. The first 61/62 attempt and its credential fixture failure
+  are retained. Password-reset credentials are random runtime values, not fixed.
+- Accepted invitations, published staff announcements and received evidence create
+  notification rows atomically. A publication retry produces one receipt per user.
+- One real identity reads two schools through signed global keyset pagination.
+  A changed filter/user invalidates its cursor. A foreign receipt cannot be read.
+  Revocation masks private titles, target UUIDs and query counts immediately;
+  withdrawal and school suspension also apply on the next request.
+- All source queries still use tenant RLS and currently granted action/scope/time.
+  Frontend connection, dashboards, reports/exports, platform/support and B7 pending.

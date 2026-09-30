@@ -20,8 +20,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | inspectInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | acceptInvitation | AU04 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | declineInvitation | AU04 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listMyNotifications | AU09, TE05 | NOT_STARTED |  |
-| readMyNotification | AU09, TE05 | NOT_STARTED |  |
+| listMyNotifications | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
+| readMyNotification | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | getPlatformOverview | PL01 | NOT_STARTED |  |
 | listPlatformSchools | PL01, PL02 | NOT_STARTED |  |
 | createSchool | PL03 | NOT_STARTED |  |
@@ -279,7 +279,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | AU06 | core | TESTED | NOT_STARTED |  |
 | AU07 | core | IMPLEMENTED | NOT_STARTED |  |
 | AU08 | core | TESTED | NOT_STARTED |  |
-| AU09 | core | PARTIAL | NOT_STARTED |  |
+| AU09 | core | TESTED | NOT_STARTED |  |
 | AU10 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD. |
 | PL01 | core | PARTIAL | NOT_STARTED |  |
 | PL02 | core | PARTIAL | NOT_STARTED |  |

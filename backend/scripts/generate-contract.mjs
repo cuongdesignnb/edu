@@ -24,6 +24,9 @@ normalize(spec);
 for(const name of ['Settings','SettingsPatch'])Object.assign(spec.components.schemas[name].properties,{
   reportHeader:{type:'string',minLength:1,maxLength:200},shareTeacherPhone:{type:'boolean'},shareTeacherEmail:{type:'boolean'},contactHours:{type:'string',maxLength:120}
 });
+// ADR-022: personal notifications carry only a currently authorized target.
+Object.assign(spec.components.schemas.Notification.properties,{body:{type:'string',maxLength:2000},schoolName:{type:'string'},classId:{type:'string',format:'uuid'},accessible:{type:'boolean'}});
+spec.paths['/me/notifications'].get.parameters.push({name:'schoolId',in:'query',schema:{type:'string',format:'uuid'}},{name:'kind',in:'query',schema:{type:'string',enum:['task','announcement','system','permission']}},{name:'unread',in:'query',schema:{type:'boolean'}});
 // ADR-004: expose lifecycle metadata needed by the existing assignment UI.
 spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
 spec.components.schemas.AssignmentCreate.properties.reason={type:'string',minLength:5,maxLength:4000};

@@ -9,6 +9,7 @@ import { operations,validateSchema } from '../../common/contract';
 import { PublicationsService,type ParentItem,publicationDto } from '../publications/publications.service';
 import { FilesService } from '../files/files.service';
 import { announcementHtml } from './html';
+import { notifyMany } from '../notifications/notify';
 import type { Handler,RequestContext,ActorContext,Result } from '../../api.router';
 
 const r:Resource={table:'app.announcements',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',rootId:'root_id',yearId:'year_id',classId:'class_id',title:'title',sanitizedHtml:'sanitized_html',status:'status',scheduledAt:'scheduled_at',dataVersion:'data_version',summary:'summary',audience:'audience',internalNote:'internal_note',discardedAt:'discarded_at'},writeFields:[],search:['title','summary'],filters:{status:'status',yearId:'year_id'}};
@@ -148,6 +149,24 @@ export class AnnouncementsService {
     const saved=(await one<Row>(tx,'SELECT * FROM app.announcements WHERE school_id=$1 AND id=$2',[ctx.schoolId,row.id]))!;
     const published=await this.publications.create(tx,{...c,body:{...c.body,expectedPublicationId:null}},{kind:'ANNOUNCEMENT',id:String(row.id),schoolId:ctx.schoolId,classId:ctx.classId,yearId:String(ctx.year!.id),version:Number(row.data_version)},{announcement:await this.view(tx,saved)},items,true,publicPayload);
     for(const doc of documents)await tx.query('INSERT INTO app.parent_document_items(id,school_id,student_id,year_id,file_id,publication_id,title,published_at,download_allowed) VALUES($1,$2,$3,$4,$5,$6,$7,$8,true)',[doc.id,ctx.schoolId,doc.studentId,ctx.year!.id,doc.file.id,published.id,String(doc.file.original_name).slice(0,200),published.publishedAt]);
+    if(row.audience!=='FAMILIES'){
+      const recipients=(await tx.query<{id:string;class_id:string|null;subject_id:string|null}>(`SELECT m.id,assignment.class_id,assignment.subject_id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE'
+        LEFT JOIN LATERAL(SELECT a.class_id,a.subject_id FROM app.teaching_assignments a JOIN app.classes cls ON cls.school_id=a.school_id AND cls.id=a.class_id AND cls.year_id=$2
+          JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+          JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
+          WHERE a.school_id=m.school_id AND a.member_id=m.id AND a.revoked_at IS NULL AND a.starts_on<=$4 AND (a.ends_on IS NULL OR a.ends_on>$4)
+          AND EXISTS(SELECT 1 FROM app.announcement_targets t WHERE t.school_id=m.school_id AND t.announcement_id=$3 AND (t.audience_kind IN ('PUBLIC','SCHOOL') OR (t.audience_kind='STAFF' AND t.member_id=m.id)
+           OR (t.audience_kind='CLASS' AND t.class_id=a.class_id) OR (t.audience_kind='GRADE' AND t.grade_id=cls.grade_level_id)
+           OR (t.audience_kind='STUDENT' AND a.kind='HOMEROOM' AND EXISTS(SELECT 1 FROM app.enrollments e WHERE e.school_id=m.school_id AND e.class_id=a.class_id AND e.student_id=t.student_id AND e.year_id=$2 AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4)))))
+          ORDER BY CASE WHEN a.kind='HOMEROOM' THEN 0 ELSE 1 END,a.id LIMIT 1) assignment ON true
+        WHERE m.school_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL AND (assignment.class_id IS NOT NULL
+         OR EXISTS(SELECT 1 FROM app.announcement_targets t WHERE t.school_id=m.school_id AND t.announcement_id=$3 AND t.audience_kind IN ('PUBLIC','SCHOOL'))
+         OR EXISTS(SELECT 1 FROM app.announcement_targets t WHERE t.school_id=m.school_id AND t.announcement_id=$3 AND t.audience_kind='STAFF' AND t.member_id=m.id)
+         OR EXISTS(SELECT 1 FROM app.role_grants g JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE' JOIN app.role_permissions rp ON rp.school_id=r.school_id AND rp.role_id=r.id AND rp.action_code='announcement.read' AND 'SCHOOL'=ANY(rp.allowed_scopes)
+          WHERE g.school_id=m.school_id AND g.member_id=m.id AND g.scope_type='SCHOOL' AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now()))) ORDER BY m.id LIMIT 5001`,[ctx.schoolId,ctx.year!.id,row.id,ctx.today])).rows;
+      if(recipients.length>5000)throw new Problem(422,'NOTIFICATION_LIMIT');
+      await notifyMany(tx,recipients.map(m=>({schoolId:ctx.schoolId,memberId:m.id,kind:'announcement',title:String(row.title),body:'Thông báo mới đã được công bố trong phạm vi bạn được cấp.',targetType:'announcement',targetId:String(row.id),...(ctx.classId||m.class_id?{classId:ctx.classId??m.class_id!}:{}),...(m.subject_id?{subjectId:m.subject_id}:{}),requiredAction:'announcement.read',sourceKey:`publication:${published.id}`})));
+    }
     await this.cancelJobs(tx,ctx.schoolId,String(row.id),preserveLease);await audit(tx,c,'announcement',String(row.id),{rootId:row.root_id,status:'PUBLISHED',studentCount:students.length,public:!!publicPayload});return published;
   }
   async runScheduled(schoolId:string,id:string,userId:string,sourceVersion:number,guard:(tx:Transaction)=>Promise<void>){

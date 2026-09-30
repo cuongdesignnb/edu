@@ -5,6 +5,7 @@ import { IdentityService,type UserRow } from './identity.service';
 import { Permissions,coversDelegatedExpiry } from '../../common/permissions';
 import { hashToken,randomToken,hashPassword,encryptMail } from '../../common/security';
 import { Problem,validation } from '../../common/problem';
+import { notify } from '../notifications/notify';
 import type { RequestContext,Handler } from '../../api.router';
 
 export interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null;reason?:string}
@@ -110,6 +111,7 @@ export class InvitationsService {
         }
       }
       await tx.query("UPDATE app.staff_invitations SET status='ACCEPTED',accepted_at=now(),accepted_user_id=$3 WHERE school_id=$1 AND id=$2",[school.id,invitation.id,user!.id]);
+      await notify(tx,{schoolId:school.id,memberId:member.id,kind:'permission',title:'Lời mời đã được chấp nhận',body:'Nhiệm vụ và thời gian được cấp đã được lưu vào quyền của bạn.',targetType:'school',targetId:school.id,requiredAction:'school.read',sourceKey:`invitation:${invitation.id}:accepted`});
       await tx.query(`INSERT INTO app.audit_events(school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,reason)
         VALUES($1,$2,'STAFF','acceptInvitation','invitation',$3,$4,$5)`,[school.id,user!.id,invitation.id,c.requestId,
         invitation.proposed_assignments.map(proposal=>proposal.reason).filter(Boolean).join('; ').slice(0,2000)||null]);

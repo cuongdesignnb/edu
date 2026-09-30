@@ -7,6 +7,7 @@ import { Commands,audit } from '../../common/commands';
 import { Problem,notFound,validation } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
 import { FilesService } from '../files/files.service';
+import { notify } from '../notifications/notify';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -106,6 +107,7 @@ export class ActivitiesService {
         if(c.body.shareWithGuardian)validation('shareWithGuardian','Chỉ chia sẻ sau khi duyệt');const file=await this.files.authorizeFile(tx,ctx.schoolId,String(c.body.fileId),c.principal!.userId,'file.read');
         if(file.status!=='READY'||file.purpose!=='EVIDENCE'||file.upload_class_id!==ctx.classId||(file.expires_at&&new Date(file.expires_at as Date).getTime()<=Date.now()))throw new Problem(409,'FILE_UNAVAILABLE');
         const saved=await one<Row>(tx,'INSERT INTO app.evidence(school_id,participant_id,file_id,submitted_by,caption) VALUES($1,$2,$3,$4,$5) RETURNING *',[ctx.schoolId,participantRow!.id,file.id,c.principal!.userId,c.body.caption??null]);
+        const owner=await one<{id:string}>(tx,"SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2 AND status='ACTIVE' AND ended_at IS NULL",[ctx.schoolId,row.created_by]);if(owner)await notify(tx,{schoolId:ctx.schoolId,memberId:owner.id,classId:ctx.classId,kind:'task',title:'Đã nhận minh chứng hoạt động',body:String(row.title).slice(0,2000),targetType:'activity',targetId:String(row.id),requiredAction:'evidence.review',sourceKey:`evidence:${saved!.id}:submitted`});
         await tx.query("UPDATE app.activity_participants SET status='SUBMITTED',review_note=NULL,reviewed_by=NULL,reviewed_at=NULL WHERE school_id=$1 AND id=$2",[ctx.schoolId,participantRow!.id]);await audit(tx,c,'evidence',String(saved!.id),{activityId:row.id});return {data:cleanDto(evidence,saved!),status:201};
       }
       version(evidenceRow!,c.body.expectedVersion);if(String(c.body.reason??'').trim().length<3)validation('reason','Cần lý do duyệt minh chứng');
