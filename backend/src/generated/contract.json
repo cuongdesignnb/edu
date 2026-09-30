@@ -559,6 +559,90 @@
         "publicAddress": {
           "type": "string",
           "nullable": true
+        },
+        "shortName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "province": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "THPT",
+            "THCS",
+            "Tiểu học",
+            null
+          ],
+          "nullable": true
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "publicIntro": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "statusReason": {
+          "type": "string",
+          "nullable": true
+        },
+        "activatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "classCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "staffCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "adminNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "onboarding": {
+          "type": "object",
+          "properties": {
+            "profileDone": {
+              "type": "boolean"
+            },
+            "adminAssigned": {
+              "type": "boolean"
+            },
+            "yearCreated": {
+              "type": "boolean"
+            },
+            "classesCreated": {
+              "type": "boolean"
+            },
+            "teachersInvited": {
+              "type": "boolean"
+            },
+            "studentsImported": {
+              "type": "boolean"
+            },
+            "homeroomAssigned": {
+              "type": "boolean"
+            },
+            "rulesPublished": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [
@@ -605,6 +689,37 @@
         "publicAddress": {
           "type": "string",
           "nullable": true
+        },
+        "shortName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "province": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "THPT",
+            "THCS",
+            "Tiểu học",
+            null
+          ],
+          "nullable": true
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "publicIntro": {
+          "type": "string",
+          "maxLength": 4000
         }
       },
       "required": [
@@ -638,6 +753,37 @@
         "publicAddress": {
           "type": "string",
           "nullable": true
+        },
+        "shortName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "province": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "THPT",
+            "THCS",
+            "Tiểu học",
+            null
+          ],
+          "nullable": true
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "publicIntro": {
+          "type": "string",
+          "maxLength": 4000
         }
       },
       "required": [
@@ -878,6 +1024,10 @@
           "items": {
             "$ref": "#/components/schemas/GrantView"
           }
+        },
+        "loginEmail": {
+          "type": "string",
+          "format": "email"
         }
       },
       "required": [
@@ -1019,6 +1169,11 @@
           "type": "string",
           "format": "date-time",
           "nullable": true
+        },
+        "workDisplayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
         },
         "reason": {
           "type": "string",
@@ -7854,10 +8009,17 @@
         },
         "supportEmail": {
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "nullable": true
         },
         "publicSupportPhone": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 120,
+          "nullable": true
+        },
+        "footerNote": {
+          "type": "string",
+          "maxLength": 1000
         }
       },
       "required": [
@@ -7881,10 +8043,17 @@
         },
         "supportEmail": {
           "type": "string",
-          "format": "email"
+          "format": "email",
+          "nullable": true
         },
         "publicSupportPhone": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 120,
+          "nullable": true
+        },
+        "footerNote": {
+          "type": "string",
+          "maxLength": 1000
         }
       },
       "required": [
@@ -13346,6 +13515,20 @@
               "ARCHIVED"
             ]
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "province",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -15473,6 +15656,28 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "action",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "targetType",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "schoolId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -15620,6 +15825,20 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "kind",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
           }
         }
       ],

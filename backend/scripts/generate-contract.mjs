@@ -40,6 +40,17 @@ for(const id of ['getSchoolOverview','getTeacherOverview','getClassOverview','li
   if(id==='listMySchedule')for(const name of ['from','to'])if(!op.parameters.some(p=>p.name===name))op.parameters.push({name,in:'query',schema:{type:'string',format:'date'}});
 }
 // ADR-004: expose lifecycle metadata needed by the existing assignment UI.
+// ADR-024: retain the platform school/profile forms and represent unconfigured contacts honestly.
+const schoolProfile={shortName:{type:'string',minLength:1,maxLength:200},province:{type:'string',maxLength:120},level:{type:'string',enum:['THPT','THCS','Tiểu học',null],nullable:true},accentColor:{type:'string',pattern:'^#[0-9a-fA-F]{6}$'},motto:{type:'string',maxLength:300},publicIntro:{type:'string',maxLength:4000}};
+for(const name of ['School','SchoolCreate','SchoolPatch'])Object.assign(spec.components.schemas[name].properties,structuredClone(schoolProfile));
+Object.assign(spec.components.schemas.School.properties,{statusReason:{type:'string',nullable:true},activatedAt:{type:'string',format:'date-time',nullable:true},classCount:{type:'integer',minimum:0},staffCount:{type:'integer',minimum:0},adminNames:{type:'array',items:{type:'string'}},onboarding:{type:'object',properties:Object.fromEntries(['profileDone','adminAssigned','yearCreated','classesCreated','teachersInvited','studentsImported','homeroomAssigned','rulesPublished'].map(k=>[k,{type:'boolean'}])),additionalProperties:false}});
+spec.components.schemas.Member.properties.loginEmail={type:'string',format:'email'};
+spec.components.schemas.InviteRequest.properties.workDisplayName={type:'string',minLength:1,maxLength:200};
+for(const name of ['PlatformSettings','PlatformSettingsPatch']){spec.components.schemas[name].properties.supportEmail.nullable=true;Object.assign(spec.components.schemas[name].properties,{publicSupportPhone:{type:'string',maxLength:120,nullable:true},footerNote:{type:'string',maxLength:1000}});}
+for(const id of ['listPlatformSchools','listPlatformAudit','listOperations']){
+  const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
+  for(const name of id==='listPlatformSchools'?['status','province']:id==='listPlatformAudit'?['action','targetType','schoolId']:['kind','status'])op.parameters.push({name,in:'query',schema:{type:'string',...(name==='schoolId'?{format:'uuid'}:{})}});
+}
 spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
 spec.components.schemas.AssignmentCreate.properties.reason={type:'string',minLength:5,maxLength:4000};
 spec.components.schemas.InviteRequest.properties.reason={type:'string',minLength:5,maxLength:4000};

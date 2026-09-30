@@ -60,14 +60,14 @@ export async function updateResource(tx:Transaction,r:Resource,schoolId:string,i
 }
 export interface Predicate {sql:string;values:unknown[]}
 function cursorSign(text:string){return crypto.createHmac('sha256',runtimeConfig().key).update('cursor:'+text).digest('base64url');}
-export async function listResource(tx:Transaction,r:Resource,schoolId:string,query:Record<string,string>,
+export async function listResource(tx:Transaction,r:Resource,schoolId:string|null,query:Record<string,string>,
   extra:Predicate={sql:'',values:[]},principalId='',baseParameters:unknown[]=[]){
   const limit=Number(query.limit??25);
   if(!Number.isInteger(limit)||limit<1||limit>100)throw new Problem(422,'INVALID_LIMIT');
   const sort=query.sort??'id',sortColumn=r.fields[sort];
   if(!sortColumn||['phone','email','workPhone','workEmail'].includes(sort))throw new Problem(422,'INVALID_SORT');
   const direction=query.dir??'asc';if(!['asc','desc'].includes(direction))throw new Problem(422,'INVALID_SORT');
-  const values:unknown[]=[schoolId,...baseParameters],where=['t.school_id=$1'];
+  const values:unknown[]=[schoolId,...baseParameters],where=[schoolId===null?'$1::uuid IS NULL':'t.school_id=$1'];
   for(const [field,column] of Object.entries(r.filters))if(query[field]){values.push(query[field]);where.push(`t.${column}=$${values.length}`);}
   if(query.q){
     if(query.q.length>200)throw new Problem(422,'INVALID_SEARCH');

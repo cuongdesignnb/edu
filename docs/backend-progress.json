@@ -223,8 +223,10 @@
         "PL01"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "listPlatformSchools",
@@ -233,8 +235,10 @@
         "PL02"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "createSchool",
@@ -242,8 +246,10 @@
         "PL03"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "getPlatformSchool",
@@ -251,8 +257,10 @@
         "PL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "updatePlatformSchool",
@@ -260,8 +268,10 @@
         "PL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "setSchoolStatus",
@@ -270,8 +280,10 @@
         "PL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolAdmins",
@@ -279,8 +291,10 @@
         "PL05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "inviteSchoolAdmin",
@@ -289,8 +303,10 @@
         "PL05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "revokeSchoolAdmin",
@@ -298,8 +314,10 @@
         "PL05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "listPlatformTickets",
@@ -361,8 +379,10 @@
         "PL09"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "listOperations",
@@ -370,8 +390,10 @@
         "PL10"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "getPlatformSettings",
@@ -379,8 +401,10 @@
         "PL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "updatePlatformSettings",
@@ -388,8 +412,10 @@
         "PL11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/platform-integration.log"
+      ]
     },
     {
       "operationId": "getSchoolOverview",
@@ -3107,7 +3133,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL02",
@@ -3119,7 +3145,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL03",
@@ -3131,7 +3157,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL04",
@@ -3144,7 +3170,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL05",
@@ -3157,7 +3183,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL06",
@@ -3204,7 +3230,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL10",
@@ -3215,7 +3241,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL11",
@@ -3227,7 +3253,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC01",

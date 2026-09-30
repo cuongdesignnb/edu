@@ -20,7 +20,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 22 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 24 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
@@ -30,6 +30,15 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## Platform metadata and administrator bootstrap checks
+
+- Thirteen supplied platform operations implemented and tested; API implementation coverage is now 242/264. Six platform support operations, nine school support operations and seven reports/export operations remain.
+- Actual suite: 68/68 integration tests, exit0 in qa/backend/platform-integration.log; 12/12 unit/contract tests, exit0 in platform-unit-contract.log; build/typecheck/lint exit0.
+- Real create/replay/conflict, default-role bootstrap, encrypted invitation queue and acceptance, existing identity/password preservation, activation preconditions, suspended-school denial, last-admin protection, target-school admin revocation, operator expiry ceilings, rollback after inviter expiry, global pagination, public configuration and artifact redaction were exercised.
+- Migrations 023 and 024 applied/replayed/checksum-verified. The first attempt 65/67 exposed an aggregate query using the wrong rule-set table. Applied 023 was preserved; 024 repairs the function. The next 66/67 attempt expected 403 instead of the specified out-of-scope 404; fixed and the full expanded 68-test suite rerun.
+- Platform aggregates expose counts/onboarding and active admin work labels only, with a guarded RLS-constrained function. Platform rights still do not authorize school student routes. Unconfigured level/contact fields are nullable rather than invented.
+- Connected UI, consented support reads, reports/exports, final local deployment and operational drills remain incomplete.
 
 ## Dashboard and teacher route checks
 

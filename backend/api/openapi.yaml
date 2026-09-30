@@ -1705,6 +1705,14 @@ paths:
               - ACTIVE
               - SUSPENDED
               - ARCHIVED
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: province
+          in: query
+          schema:
+            type: string
       responses:
         "200":
           description: Thành công
@@ -3056,6 +3064,19 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: targetType
+          in: query
+          schema:
+            type: string
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -3149,6 +3170,14 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: kind
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
       responses:
         "200":
           description: Thành công
@@ -28163,6 +28192,67 @@ components:
         publicAddress:
           type: string
           nullable: true
+        shortName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        province:
+          type: string
+          maxLength: 120
+        level:
+          type: string
+          enum:
+            - THPT
+            - THCS
+            - Tiểu học
+            - null
+          nullable: true
+        accentColor:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+        motto:
+          type: string
+          maxLength: 300
+        publicIntro:
+          type: string
+          maxLength: 4000
+        statusReason:
+          type: string
+          nullable: true
+        activatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        classCount:
+          type: integer
+          minimum: 0
+        staffCount:
+          type: integer
+          minimum: 0
+        adminNames:
+          type: array
+          items:
+            type: string
+        onboarding:
+          type: object
+          properties:
+            profileDone:
+              type: boolean
+            adminAssigned:
+              type: boolean
+            yearCreated:
+              type: boolean
+            classesCreated:
+              type: boolean
+            teachersInvited:
+              type: boolean
+            studentsImported:
+              type: boolean
+            homeroomAssigned:
+              type: boolean
+            rulesPublished:
+              type: boolean
+          additionalProperties: false
       required:
         - id
         - version
@@ -28199,6 +28289,30 @@ components:
         publicAddress:
           type: string
           nullable: true
+        shortName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        province:
+          type: string
+          maxLength: 120
+        level:
+          type: string
+          enum:
+            - THPT
+            - THCS
+            - Tiểu học
+            - null
+          nullable: true
+        accentColor:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+        motto:
+          type: string
+          maxLength: 300
+        publicIntro:
+          type: string
+          maxLength: 4000
       required:
         - code
         - slug
@@ -28224,6 +28338,30 @@ components:
         publicAddress:
           type: string
           nullable: true
+        shortName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        province:
+          type: string
+          maxLength: 120
+        level:
+          type: string
+          enum:
+            - THPT
+            - THCS
+            - Tiểu học
+            - null
+          nullable: true
+        accentColor:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+        motto:
+          type: string
+          maxLength: 300
+        publicIntro:
+          type: string
+          maxLength: 4000
       required:
         - expectedVersion
       additionalProperties: false
@@ -28402,6 +28540,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/GrantView"
+        loginEmail:
+          type: string
+          format: email
       required:
         - id
         - version
@@ -28511,6 +28652,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        workDisplayName:
+          type: string
+          minLength: 1
+          maxLength: 200
         reason:
           type: string
           minLength: 5
@@ -33702,8 +33847,14 @@ components:
         supportEmail:
           type: string
           format: email
+          nullable: true
         publicSupportPhone:
           type: string
+          maxLength: 120
+          nullable: true
+        footerNote:
+          type: string
+          maxLength: 1000
       required:
         - version
         - brandName
@@ -33722,8 +33873,14 @@ components:
         supportEmail:
           type: string
           format: email
+          nullable: true
         publicSupportPhone:
           type: string
+          maxLength: 120
+          nullable: true
+        footerNote:
+          type: string
+          maxLength: 1000
       required:
         - expectedVersion
       additionalProperties: false

@@ -22,25 +22,25 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | declineInvitation | AU04 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listMyNotifications | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | readMyNotification | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
-| getPlatformOverview | PL01 | NOT_STARTED |  |
-| listPlatformSchools | PL01, PL02 | NOT_STARTED |  |
-| createSchool | PL03 | NOT_STARTED |  |
-| getPlatformSchool | PL04 | NOT_STARTED |  |
-| updatePlatformSchool | PL04 | NOT_STARTED |  |
-| setSchoolStatus | PL02, PL04 | NOT_STARTED |  |
-| listSchoolAdmins | PL05 | NOT_STARTED |  |
-| inviteSchoolAdmin | PL03, PL05 | NOT_STARTED |  |
-| revokeSchoolAdmin | PL05 | NOT_STARTED |  |
+| getPlatformOverview | PL01 | TESTED | qa/backend/platform-integration.log |
+| listPlatformSchools | PL01, PL02 | TESTED | qa/backend/platform-integration.log |
+| createSchool | PL03 | TESTED | qa/backend/platform-integration.log |
+| getPlatformSchool | PL04 | TESTED | qa/backend/platform-integration.log |
+| updatePlatformSchool | PL04 | TESTED | qa/backend/platform-integration.log |
+| setSchoolStatus | PL02, PL04 | TESTED | qa/backend/platform-integration.log |
+| listSchoolAdmins | PL05 | TESTED | qa/backend/platform-integration.log |
+| inviteSchoolAdmin | PL03, PL05 | TESTED | qa/backend/platform-integration.log |
+| revokeSchoolAdmin | PL05 | TESTED | qa/backend/platform-integration.log |
 | listPlatformTickets | PL06 | NOT_STARTED |  |
 | getPlatformTicket | PL07 | NOT_STARTED |  |
 | updatePlatformTicket | PL07 | NOT_STARTED |  |
 | listPlatformTicketMessages | PL07 | NOT_STARTED |  |
 | postPlatformTicketMessage | PL07 | NOT_STARTED |  |
 | listPlatformSupportAccess | PL08 | NOT_STARTED |  |
-| listPlatformAudit | PL09 | NOT_STARTED |  |
-| listOperations | PL10 | NOT_STARTED |  |
-| getPlatformSettings | PL11 | NOT_STARTED |  |
-| updatePlatformSettings | PL11 | NOT_STARTED |  |
+| listPlatformAudit | PL09 | TESTED | qa/backend/platform-integration.log |
+| listOperations | PL10 | TESTED | qa/backend/platform-integration.log |
+| getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
+| updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
 | getSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | updateSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
@@ -281,17 +281,17 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | AU08 | core | TESTED | NOT_STARTED |  |
 | AU09 | core | TESTED | NOT_STARTED |  |
 | AU10 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD. |
-| PL01 | core | PARTIAL | NOT_STARTED |  |
-| PL02 | core | PARTIAL | NOT_STARTED |  |
-| PL03 | core | PARTIAL | NOT_STARTED |  |
-| PL04 | core | PARTIAL | NOT_STARTED |  |
-| PL05 | core | PARTIAL | NOT_STARTED |  |
+| PL01 | core | TESTED | NOT_STARTED |  |
+| PL02 | core | TESTED | NOT_STARTED |  |
+| PL03 | core | TESTED | NOT_STARTED |  |
+| PL04 | core | TESTED | NOT_STARTED |  |
+| PL05 | core | TESTED | NOT_STARTED |  |
 | PL06 | core | PARTIAL | NOT_STARTED |  |
 | PL07 | core | PARTIAL | NOT_STARTED |  |
 | PL08 | core | PARTIAL | NOT_STARTED |  |
-| PL09 | core | PARTIAL | NOT_STARTED |  |
-| PL10 | core | PARTIAL | NOT_STARTED |  |
-| PL11 | core | PARTIAL | NOT_STARTED |  |
+| PL09 | core | TESTED | NOT_STARTED |  |
+| PL10 | core | TESTED | NOT_STARTED |  |
+| PL11 | core | TESTED | NOT_STARTED |  |
 | SC01 | core | TESTED | NOT_STARTED |  |
 | SC02 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC03 | core | IMPLEMENTED | NOT_STARTED |  |

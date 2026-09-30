@@ -72,8 +72,8 @@ export class Permissions {
     }
     return { grants, today };
   }
-  async platform(principal: Principal, action: string) {
-    const row = (await this.db.app.query(`SELECT id FROM platform.operator_grants
+  async platform(principal: Pick<Principal,'userId'>, action: string,tx?:Transaction) {
+    const row = (await (tx??this.db.app).query(`SELECT id FROM platform.operator_grants
       WHERE user_id=$1 AND action_code=$2 AND revoked_at IS NULL AND valid_from<=now()
       AND (valid_until IS NULL OR valid_until>now())`, [principal.userId,action])).rows[0];
     if (!row) throw new Problem(403, 'FORBIDDEN');

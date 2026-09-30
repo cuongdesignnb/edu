@@ -1,0 +1,101 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-003a6da11566 Creating 
+ Container edumanage_backend_test-runner-run-003a6da11566 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (454.592415ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (10.777731ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (4.375398ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (4.126324ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (187.406971ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (102.645811ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (391.162929ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (193.494145ms)
+✔ BE21 parent runtime role cannot select raw student rows (783.234448ms)
+✔ B0 health ready checks actual migrations, database and private storage (19.10099ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (294.474791ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (269.723287ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (471.068344ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (267.313774ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (437.28449ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (329.919846ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (571.887532ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (472.806677ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (1266.814258ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (2753.066336ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (713.94302ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (4336.642676ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (4498.067607ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (1501.192865ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (3352.61777ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (2948.860492ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (436.555657ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (251.145139ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (143.548299ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (287.496126ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (725.954285ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (680.454719ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (602.867601ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (238.397577ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (548.390686ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (1053.533626ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (501.688166ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (584.316998ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (547.797397ms)
+✔ B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason (295.544832ms)
+✔ B2 shrinking class capacity checks planned future occupancy peaks, rather than only today (139.701399ms)
+✔ B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties (631.093883ms)
+✔ B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened (472.410612ms)
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (588.179264ms)
+✔ B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically (405.151093ms)
+✔ B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history (750.049544ms)
+✔ B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions (823.211047ms)
+✔ B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history (454.318209ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (702.124575ms)
+✔ B5 activities count only explicit participants, preserve published states and require current source/review authority (989.626776ms)
+✔ B5 approved activity results are explicit conduct sources and locked approved facts protect their source history (581.150149ms)
+✔ B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability (1344.31387ms)
+✔ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (3521.387211ms)
+✔ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (1365.761746ms)
+✔ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (1204.013384ms)
+✔ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (1225.007917ms)
+✔ B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn (1387.528988ms)
+✔ B5 school settings persist with version guards, affect only new link expiry and suppress work contacts without changing old link permissions (875.150233ms)
+✔ B5 disabling homeroom publication takes effect inside existing sessions and restores only after an explicit setting change (720.374194ms)
+✔ B3 configured second approval rejects self approval in API and SQL, while a different scoped approver permits atomic adjustment (627.708789ms)
+✔ B5 personal notifications paginate across actual memberships, deduplicate publication events and deny foreign recipients and cross-user cursors (1010.215543ms)
+✔ B5 withdrawn announcements redact retained staff notifications instead of exposing a stale published target (524.959661ms)
+✔ B5 dashboards count real scoped rows, keep homeroom and subject tasks separate and immediately recheck revocation (1199.421212ms)
+✔ B5 teacher schedule is own dated teaching and announcement feed reads only current publications across draft edits (1178.724291ms)
+✔ B5 dashboard attendance counters and publication tasks follow persisted marks, publish/withdraw and current school policy (813.08089ms)
+✖ B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation (394.828422ms)
+✔ B5 platform settings and operation records persist actual state, redact artifacts and reauthorize command replays (302.14494ms)
+ℹ tests 67
+ℹ suites 0
+ℹ pass 66
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58632.310661
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1499:1
+✖ B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation (394.828422ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  404 !== 403
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1512:445)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 403,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
