@@ -36,6 +36,9 @@ export function grantDto(grant: Grant) {
     ...(grant.class_id ? { classId: grant.class_id } : {}), ...(grant.subject_id ? { subjectId: grant.subject_id } : {}),
     validFrom: iso(grant.valid_from), validUntil: grant.valid_until ? iso(grant.valid_until) : null };
 }
+export function coversDelegatedExpiry(grant:Pick<Grant,'valid_until'>,from:Date,until:Date|null){
+  return !grant.valid_until||(from<grant.valid_until&&!!until&&until<=grant.valid_until);
+}
 
 @Injectable()
 export class Permissions {

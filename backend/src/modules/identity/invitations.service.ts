@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import crypto from 'node:crypto';
 import { Database,one,iso,type Transaction } from '../../database/database';
 import { IdentityService,type UserRow } from './identity.service';
-import { Permissions } from '../../common/permissions';
+import { Permissions,coversDelegatedExpiry } from '../../common/permissions';
 import { hashToken,randomToken,hashPassword,encryptMail } from '../../common/security';
 import { Problem,validation } from '../../common/problem';
 import type { RequestContext,Handler } from '../../api.router';
 
-export interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null}
+export interface Proposal {roleId:string;scopeType:string;classId?:string;subjectId?:string;validFrom:string;validUntil?:string|null;reason?:string}
 export interface WorkProfile {staffCode?:string;workDisplayName?:string;workPhone?:string;department?:string}
 interface InvitationRow {
   id:string;school_id:string;email_normalized:string;proposed_assignments:Proposal[];status:string;
@@ -76,9 +76,10 @@ export class InvitationsService {
       if(member.status!=='ACTIVE')throw new Problem(409,'MEMBERSHIP_REACTIVATION_REQUIRED');
       if(profile.staffCode&&member.staff_code!==profile.staffCode)throw new Problem(409,'STAFF_CODE_CONFLICT');
       const inviterGrants=await this.permissions.grants(tx,invitation.invited_by,school.id);
-      const platformAdmin=(await tx.query(`SELECT g.id FROM platform.operator_grants g JOIN identity.users u ON u.id=g.user_id
+      const platformGrants=(await tx.query<{valid_until:Date|null}>(`SELECT g.valid_until FROM platform.operator_grants g JOIN identity.users u ON u.id=g.user_id
         WHERE g.user_id=$1 AND u.status='ACTIVE' AND g.action_code='platform.admins.manage' AND g.revoked_at IS NULL
-        AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())`,[invitation.invited_by])).rowCount;
+        AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())`,[invitation.invited_by])).rows;
+      const platformAdmin=platformGrants.length>0;
       if(!platformAdmin&&!inviterGrants.some(grant=>grant.scope_type==='SCHOOL'&&grant.actions.includes('member.manage')))
         throw new Problem(422,'INVITATION_UNAVAILABLE');
       for(const proposal of invitation.proposed_assignments){
@@ -86,8 +87,9 @@ export class InvitationsService {
         if(!role)throw new Problem(422,'INVITATION_UNAVAILABLE');
         const actions=(await tx.query<{action_code:string}>(`SELECT action_code FROM app.role_permissions WHERE school_id=$1 AND role_id=$2
           AND $3=ANY(allowed_scopes)`,[school.id,proposal.roleId,proposal.scopeType])).rows;
-        if(!actions.length||(platformAdmin&&!inviterGrants.length&&role.code!=='SCHOOL_ADMIN')||(!platformAdmin&&actions.some(action=>
-          !inviterGrants.some(grant=>grant.scope_type==='SCHOOL'&&grant.actions.includes(action.action_code)))))throw new Problem(422,'INVITATION_UNAVAILABLE');
+        const from=new Date(proposal.validFrom),until=proposal.validUntil?new Date(proposal.validUntil):null;
+        const ordinary=['member.manage',...actions.map(action=>action.action_code)].every(action=>inviterGrants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes(action)&&coversDelegatedExpiry(g,from,until))),bootstrap=platformAdmin&&role.code==='SCHOOL_ADMIN'&&proposal.scopeType==='SCHOOL'&&platformGrants.some(g=>coversDelegatedExpiry(g,from,until));
+        if(!actions.length||!Number.isFinite(from.getTime())||(until&&(!Number.isFinite(until.getTime())||until<=from))||!(ordinary||bootstrap))throw new Problem(422,'INVITATION_UNAVAILABLE');
         if(proposal.validUntil&&new Date(proposal.validUntil).getTime()<=Date.now())throw new Problem(422,'INVITATION_UNAVAILABLE');
         const grant=(await tx.query<{id:string}>(`INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,class_id,subject_id,valid_from,valid_until,granted_by)
           VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,[school.id,member.id,proposal.roleId,proposal.scopeType,
@@ -97,18 +99,20 @@ export class InvitationsService {
           const year=await one<{starts_on:string;ends_on:string}>(tx,`SELECT y.starts_on,y.ends_on FROM app.academic_years y JOIN app.classes cl
             ON cl.school_id=y.school_id AND cl.year_id=y.id WHERE cl.school_id=$1 AND cl.id=$2`,[school.id,proposal.classId]);
           if(!year)throw new Problem(422,'INVITATION_UNAVAILABLE');
-          const dates=await one<{starts:string;ends:string}>(tx,`SELECT ($1::timestamptz AT TIME ZONE s.timezone)::date AS starts,
-            COALESCE(($2::timestamptz AT TIME ZONE s.timezone)::date,$3::date) AS ends FROM platform.schools s WHERE s.id=$4`,
+          const dates=await one<{starts:string;ends:string;today:string}>(tx,`SELECT ($1::timestamptz AT TIME ZONE s.timezone)::date AS starts,
+            COALESCE(($2::timestamptz AT TIME ZONE s.timezone)::date,$3::date) AS ends,(now() AT TIME ZONE s.timezone)::date AS today FROM platform.schools s WHERE s.id=$4`,
           [proposal.validFrom,proposal.validUntil??null,year.ends_on,school.id]);
           if(!dates||dates.starts<year.starts_on||dates.ends>year.ends_on||dates.starts>=dates.ends)throw new Problem(422,'INVITATION_UNAVAILABLE');
+          if(dates.starts<dates.today&&(!proposal.reason||proposal.reason.trim().length<5))throw new Problem(422,'INVITATION_UNAVAILABLE');
           await tx.query(`INSERT INTO app.teaching_assignments(school_id,class_id,member_id,role_grant_id,subject_id,kind,starts_on,ends_on)
             VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[school.id,proposal.classId,member.id,grant.id,proposal.subjectId??null,
             proposal.scopeType==='CLASS'?'HOMEROOM':'SUBJECT',dates.starts,dates.ends]);
         }
       }
       await tx.query("UPDATE app.staff_invitations SET status='ACCEPTED',accepted_at=now(),accepted_user_id=$3 WHERE school_id=$1 AND id=$2",[school.id,invitation.id,user!.id]);
-      await tx.query(`INSERT INTO app.audit_events(school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id)
-        VALUES($1,$2,'STAFF','acceptInvitation','invitation',$3,$4)`,[school.id,user!.id,invitation.id,c.requestId]);
+      await tx.query(`INSERT INTO app.audit_events(school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,reason)
+        VALUES($1,$2,'STAFF','acceptInvitation','invitation',$3,$4,$5)`,[school.id,user!.id,invitation.id,c.requestId,
+        invitation.proposed_assignments.map(proposal=>proposal.reason).filter(Boolean).join('; ').slice(0,2000)||null]);
       return {id:invitation.id,status:'ACCEPTED'};
     },{schoolId:school.id});
   }

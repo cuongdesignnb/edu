@@ -62,10 +62,10 @@ export class ParentService {
       const candidate=await one<Row>(tx,'SELECT id FROM app.parent_access_links WHERE school_id=$1 AND token_hash=$2',[school.id,hashToken(String(c.body.token))]);if(!candidate)throw new Problem(401,'PARENT_ACCESS_INVALID');
       const link=await this.link(tx,String(school.id),String(candidate.id));
       const old=c.request.cookies[runtimeConfig().parentCookie];if(old)await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE token_hash=$1',[hashToken(old)]);
-      const session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(id,school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,$5,least($6,now()+interval '30 minutes'),least($6,now()+interval '12 hours')) RETURNING *`,[sessionId,school.id,link.id,tokenHash,hashToken(csrfToken),link.expires_at]);
+      const session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(id,school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,$5,least($6,now()+interval '30 minutes'),least($6,now()+interval '8 hours')) RETURNING *`,[sessionId,school.id,link.id,tokenHash,hashToken(csrfToken),link.expires_at]);
       const principal=this.principal(session!,link);await this.event(tx,c,principal,'EXCHANGED');return principal;
     },{schoolId:String(school.id)});
-    setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(43200,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:this.context(p)};
+    setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(28800,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:this.context(p)};
   }
   private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string}){
     this.allow(p,section);if(query.sort&&!['id','createdAt','publishedAt'].includes(query.sort))validation('sort','Chỉ sắp xếp theo thời gian công bố');

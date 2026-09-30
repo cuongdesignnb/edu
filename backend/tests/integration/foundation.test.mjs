@@ -315,7 +315,7 @@ test('B2 staff delegation stays within the ceiling, custom class scope and immed
   },{schoolId:schoolA}).catch(error=>assert.equal(error.message,'ROLLBACK_TEST'));
   const cls=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`staff-${crypto.randomUUID()}`,name:'Lớp phân công giả',capacity:8});
   assert.equal(cls.statusCode,201);
-  const assignmentBody={classId:cls.json().data.id,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'};
+  const assignmentBody={classId:cls.json().data.id,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01',reason:'Khởi tạo phân công lịch sử kiểm thử'};
   const [a,b]=await Promise.all([post('assignments',assignmentBody),post('assignments',assignmentBody)]);
   assert.deepEqual([a.statusCode,b.statusCode].sort(),[201,409]);
   const assignment=(a.statusCode===201?a:b).json().data;
@@ -371,7 +371,7 @@ test('B2 transfers serialize capacity, handover removes the old teacher and roll
     people.push({email,memberId:member.rows[0].id});
   }
   const handoverClass=await makeClass(10);
-  const assignment=await post('assignments',{classId:handoverClass.id,memberId:people[0].memberId,kind:'HOMEROOM',startsOn:'2026-09-01',endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201);
+  const assignment=await post('assignments',{classId:handoverClass.id,memberId:people[0].memberId,kind:'HOMEROOM',startsOn:'2026-09-01',endsOn:'2027-06-01',reason:'Khởi tạo phân công lịch sử kiểm thử'});assert.equal(assignment.statusCode,201);
   const handover=await post('handovers',{classId:handoverClass.id,fromAssignmentId:assignment.json().data.id,toMemberId:people[1].memberId,effectiveOn:'2026-09-30',reason:'Bàn giao kiểm thử có lịch sử'});assert.equal(handover.statusCode,201);
   const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');
   await login(people[0].email);const oldTeacherCookies=cookies();
@@ -567,11 +567,21 @@ test('B2 imports update only verified codes, create class drafts and staff invit
     staff=await commitCsv(csrf,worker,staff);assert.equal(staff.status,'COMPLETED');
     assert.equal((await db.app.query('SELECT id FROM identity.users WHERE email_normalized=$1',[email])).rowCount,0);
     const invitation=(await db.transaction(tx=>tx.query('SELECT id,work_profile,status FROM app.staff_invitations WHERE school_id=$1 AND email_normalized=$2',[schoolA,email]),{schoolId:schoolA})).rows[0];assert.equal(invitation.status,'PENDING');assert.equal(invitation.work_profile.staffCode,`T-${prefix}`);
+    const proposed=(await db.transaction(tx=>tx.query('SELECT proposed_assignments FROM app.staff_invitations WHERE school_id=$1 AND id=$2',[schoolA,invitation.id]),{schoolId:schoolA})).rows[0].proposed_assignments[0];assert.ok(Number.isFinite(Date.parse(proposed.validFrom)));assert.ok(Number.isFinite(Date.parse(proposed.validUntil)));
     const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.id}`])).rows[0].encrypted_payload;
     const token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token');
     const anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
     const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Danh tính import giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
     const member=(await db.transaction(tx=>tx.query('SELECT m.staff_code,m.work_display_name FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,email]),{schoolId:schoolA})).rows[0];assert.equal(member.staff_code,`T-${prefix}`);assert.equal(member.work_display_name,'Nhân sự import giả');
+    const backdateEmail=`backdate-import-${prefix}@example.invalid`,reason='Xác minh phân công từ đầu năm học';
+    let backdated=await importCsv(csrf,worker,`email,staffCode,workDisplayName,roleCode,classCode,reason\n${backdateEmail},BACK-T-${prefix},Giáo viên import giả,HOMEROOM,C-${prefix},${reason}\n`,'STAFF');
+    const backdateFields=['email','staffCode','workDisplayName','roleCode','classCode'];backdated=await validateCsv(csrf,worker,backdated,backdateFields.map(name=>({sourceColumn:name,targetField:name})));assert.equal(backdated.summary.invalid,1);
+    const backdateErrors=await request('GET',`/api/v1/schools/${schoolA}/imports/${backdated.id}/rows`);assert.equal(backdateErrors.json().data[0].errors[0].field,'reason');
+    backdated=await validateCsv(csrf,worker,backdated,[...backdateFields,'reason'].map(name=>({sourceColumn:name,targetField:name})));assert.equal(backdated.summary.invalid,0);backdated=await commitCsv(csrf,worker,backdated);assert.equal(backdated.status,'COMPLETED');
+    const scopedInvite=(await db.transaction(tx=>tx.query('SELECT id,proposed_assignments FROM app.staff_invitations WHERE school_id=$1 AND email_normalized=$2',[schoolA,backdateEmail]),{schoolId:schoolA})).rows[0];assert.equal(scopedInvite.proposed_assignments[0].reason,reason);
+    const scopedMail=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${scopedInvite.id}`])).rows[0];const scopedToken=new URLSearchParams(new URL(decryptMail(scopedMail.encrypted_payload).url).hash.slice(1)).get('token');
+    const scopedAccepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token:scopedToken,displayName:'Giáo viên import giả',newPassword:password},anonymousCsrf);assert.equal(scopedAccepted.statusCode,200,scopedAccepted.body);
+    assert.equal((await db.transaction(tx=>tx.query("SELECT reason FROM app.audit_events WHERE school_id=$1 AND target_id=$2 AND action='acceptInvitation'",[schoolA,scopedInvite.id]),{schoolId:schoolA})).rows[0].reason,reason);
   }finally{await worker.close();}
 });
 
@@ -770,7 +780,7 @@ test('B3 conduct linked attendance detects stale sources and subject teachers se
   session=(await request('GET',`/api/v1/schools/${schoolA}/${base}/attendance/${session.id}`)).json().data;
   const stale=await f.post(`${records}/${linkedRecord.id}/approve`,{expectedVersion:linkedRecord.version});assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'STALE_SOURCE');
   assert.equal((await f.post(`${records}/${linkedRecord.id}/exclude`,{expectedVersion:linkedRecord.version,reason:'Nguồn điểm danh đã sửa'})).statusCode,200);
-  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-a'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201,assignment.body);
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-a'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01',reason:'Khởi tạo phân công lịch sử kiểm thử'});assert.equal(assignment.statusCode,201,assignment.body);
   const fixture=await db.transaction(async tx=>{
     const t=(await tx.query(`INSERT INTO app.timetable_versions(school_id,class_id,year_id,revision,starts_on,ends_on,created_by) VALUES($1,$2,$3,1,'2026-09-01','2027-06-01',$4) RETURNING id`,[schoolA,f.classId,seedId('year:A'),seedId('user:admin-a')])).rows[0];
     const free=(await tx.query(`SELECT min(at) AS at FROM generate_series('2026-09-29T03:00:00Z'::timestamptz,'2026-09-29T06:00:00Z'::timestamptz,interval '1 minute') at
@@ -873,6 +883,7 @@ test('B4 private parent links expose only published child projections, preserve 
   const repeated=await request('POST',`/api/v1/schools/${schoolA}/parent-access`,body,csrf,{'idempotency-key':key});assert.equal(repeated.statusCode,409);assert.equal(repeated.json().code,'LINK_ALREADY_ISSUED');
   const stored=(await request('GET',`/api/v1/schools/${schoolA}/parent-access/${link.access.id}`)).json().data;assert.equal(Object.hasOwn(stored,'tokenHash'),false);assert.equal(Object.hasOwn(stored,'link'),false);
   const adminCookie=jar.get('edu_staff'),context=await parentExchange(link.link);assert.equal(jar.get('edu_staff'),adminCookie);assert.equal(Object.hasOwn(context.student,'id'),false);assert.equal(Object.hasOwn(context.student,'guardians'),false);
+  assert.ok(new Date(context.expiresAt).getTime()<=Date.now()+8*3600000);
   assert.equal((await parentGet('conduct',context)).json().data.length,0);
   assert.equal((await request('GET','/api/v1/parent/truong-thu-a/context')).statusCode,409);
   assert.equal((await request('GET','/api/v1/parent/truong-thu-b/context',undefined,undefined,{'x-parent-view':context.viewId})).statusCode,401);
@@ -921,7 +932,7 @@ test('B4 private documents stream only with both download rights, and teacher co
   const docs=await db.transaction(async tx=>{
     const rows=[];for(const e of f.enrollments)rows.push((await tx.query(`INSERT INTO app.parent_document_items(school_id,student_id,year_id,file_id,title,download_allowed,published_at) VALUES($1,$2,$3,$4,'Tài liệu đã công bố cho con',true,now()) RETURNING id`,[schoolA,e.studentId,seedId('year:A'),upload.json().data.id])).rows[0]);return rows;
   },{schoolId:schoolA});
-  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201,assignment.body);
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01',reason:'Khởi tạo phân công lịch sử kiểm thử'});assert.equal(assignment.statusCode,201,assignment.body);
   const body={studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview','teachers','documents'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'};
   const deniedLink=await f.post('parent-access',body);assert.equal(deniedLink.statusCode,201);let context=await parentExchange(deniedLink.json().data.link);
   const list=await parentGet('documents',context);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().data.length,1);assert.equal(list.json().data[0].id,docs[0].id);assert.equal(list.json().data[0].downloadAllowed,false);assert.equal(Object.hasOwn(list.json().data[0],'fileId'),false);
@@ -953,4 +964,34 @@ test('B4 expired links, suspended schools, CSRF and exchange throttles deny with
   await db.transaction(tx=>tx.query("UPDATE app.parent_access_links SET expires_at=created_at+interval '1 millisecond' WHERE school_id=$1 AND id=$2",[schoolA,issued.json().data.access.id]),{schoolId:schoolA});assert.equal((await parentGet('context',context)).statusCode,401);
   const bootstrap=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
   for(let i=0;i<21;i++){const invalid=await request('POST','/api/v1/parent/truong-thu-a/access/exchange',{token:'x'.repeat(43)},bootstrap);assert.equal(invalid.statusCode,i<19?401:429);assert.equal(invalid.body.includes('displayName'),false);}
+});
+
+test('B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=crypto.randomUUID(),post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const role=await post('roles',{code:`expiry-${prefix}`,label:'Quyền đọc có hạn giả',permissions:[{action:'school.read',scopes:['SCHOOL']}]});assert.equal(role.statusCode,201);
+  const grantId=seedId('grant:A:admin-a:admin'),original=(await db.transaction(tx=>tx.query('SELECT valid_until FROM app.role_grants WHERE school_id=$1 AND id=$2',[schoolA,grantId]),{schoolId:schoolA})).rows[0].valid_until;
+  const now=Date.now(),proposal={memberId:seedId('member:A:teacher-b'),roleId:role.json().data.id,scopeType:'SCHOOL',validFrom:new Date(now).toISOString()};
+  try{
+    await db.transaction(tx=>tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[schoolA,grantId,new Date(now+10*60000)]),{schoolId:schoolA});
+    for(const until of [null,new Date(now+20*60000).toISOString()]){const denied=await post('grants',{...proposal,validUntil:until});assert.equal(denied.statusCode,403,denied.body);assert.equal(denied.json().code,'DELEGATION_EXPIRY_CEILING');}
+    const okay=await post('grants',{...proposal,validUntil:new Date(now+5*60000).toISOString()});assert.equal(okay.statusCode,201,okay.body);
+    const email=`expiry-${prefix}@example.invalid`,invitation=await post('invitations',{email,roleId:role.json().data.id,validFrom:proposal.validFrom,validUntil:new Date(now+5*60000).toISOString()});assert.equal(invitation.statusCode,201,invitation.body);
+    const mail=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0],payload=decryptMail(mail.encrypted_payload),token=new URLSearchParams(new URL(payload.url).hash.slice(1)).get('token');
+    await db.transaction(tx=>tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[schoolA,grantId,new Date(now+2*60000)]),{schoolId:schoolA});
+    const anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+    const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Nhân sự bị trần quyền giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,422,accepted.body);assert.equal(accepted.json().code,'INVITATION_UNAVAILABLE');assert.equal((await db.app.query('SELECT id FROM identity.users WHERE email_normalized=$1',[email])).rowCount,0);
+  }finally{await db.transaction(tx=>tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[schoolA,grantId,original]),{schoolId:schoolA});}
+  const cls=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`BACK-${prefix}`,name:'Lớp lùi ngày giả',capacity:10});assert.equal(cls.statusCode,201);
+  const assignment={classId:cls.json().data.id,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:'2026-09-01',endsOn:'2027-06-01'};
+  const missing=await post('assignments',assignment);assert.equal(missing.statusCode,422);assert.equal(missing.json().fieldErrors[0].path,'reason');
+  const assigned=await post('assignments',{...assignment,reason:'Xác nhận phân công đã có từ đầu năm'});assert.equal(assigned.statusCode,201,assigned.body);
+  const audit=await db.transaction(tx=>tx.query("SELECT reason FROM app.audit_events WHERE school_id=$1 AND target_id=$2 AND action='createAssignment'",[schoolA,assigned.json().data.id]),{schoolId:schoolA});assert.equal(audit.rows[0].reason,'Xác nhận phân công đã có từ đầu năm');
+});
+
+test('B2 shrinking class capacity checks planned future occupancy peaks, rather than only today',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=crypto.randomUUID(),post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const created=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`PEAK-${prefix}`,name:'Lớp sĩ số theo thời gian giả',capacity:3});assert.equal(created.statusCode,201);const cls=created.json().data;
+  for(let i=0;i<2;i++){const enrolled=await post('students',{studentCode:`PEAK-${prefix}-${i}`,fullName:'Học sinh tương lai giả',initialClassId:cls.id,startsOn:'2026-11-01'});assert.equal(enrolled.statusCode,201,enrolled.body);}
+  const denied=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${cls.id}`,{expectedVersion:cls.version,capacity:1},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(denied.statusCode,422);assert.equal(denied.json().code,'CLASS_CAPACITY_EXCEEDED');
+  const allowed=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${cls.id}`,{expectedVersion:cls.version,capacity:2},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(allowed.statusCode,200);assert.equal(allowed.json().data.capacity,2);
 });

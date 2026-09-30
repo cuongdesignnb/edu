@@ -20,7 +20,7 @@ const rowResource:Resource={table:'app.import_rows',fields:{id:'id',rowNumber:'r
 const fieldSets:Record<string,readonly string[]>={
   STUDENTS:['studentCode','fullName','dateOfBirth','preferredName','classCode','startsOn','guardianName','guardianPhone','guardianEmail','relationshipLabel'],
   CLASSES:['code','name','gradeCode','capacity'],
-  STAFF:['email','staffCode','workDisplayName','workPhone','department','roleCode','classCode','subjectCode','startsOn','endsOn'],
+  STAFF:['email','staffCode','workDisplayName','workPhone','department','roleCode','classCode','subjectCode','startsOn','endsOn','reason'],
   TIMETABLE:['weekday','slot','startsAt','endsAt','subjectCode','staffCode','roomCode'],
 };
 const actions:Record<string,string>={STUDENTS:'student.manage',CLASSES:'class.manage',STAFF:'member.manage',TIMETABLE:'schedule.manage'};

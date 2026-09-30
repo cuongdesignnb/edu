@@ -4,6 +4,7 @@ import { resource,dto,getResource,insertResource,updateResource,listResource } f
 import { Permissions } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation } from '../../common/problem';
+import { checkCapacity } from '../students/enrollment';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const registry:Record<string,{kind:string;mode:'list'|'get'|'create'|'update'|'status';id?:string;status?:string}>={};
@@ -78,10 +79,8 @@ export class OrganizationService {
     if(kind==='class'){
       if(body.gradeLevelId)await getResource(tx,resource('grade'),schoolId,String(body.gradeLevelId));
       if(current&&body.capacity!==undefined){
-        const count=await one<{count:string}>(tx,`SELECT count(*) AS count FROM app.enrollments e JOIN platform.schools s ON s.id=e.school_id WHERE e.school_id=$1 AND e.class_id=$2
-          AND e.status='ACTIVE' AND e.starts_on<=(now() AT TIME ZONE s.timezone)::date
-          AND (e.ends_on IS NULL OR e.ends_on>(now() AT TIME ZONE s.timezone)::date)`,[schoolId,id]);
-        if(Number(body.capacity)<Number(count!.count))validation('capacity','Sức chứa thấp hơn sĩ số hiện có');
+        const year=await getResource(tx,resource('year'),schoolId,String(current.year_id));
+        await checkCapacity(tx,schoolId,{...current,capacity:body.capacity},String(year.starts_on),String(year.ends_on),0);
       }
     }
     if(kind==='calendar'&&(body.classId??current?.class_id)){

@@ -968,6 +968,11 @@
           "type": "string",
           "format": "date-time",
           "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 4000
         }
       },
       "required": [
@@ -2092,6 +2097,11 @@
           "type": "string",
           "format": "date",
           "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 4000
         }
       },
       "required": [

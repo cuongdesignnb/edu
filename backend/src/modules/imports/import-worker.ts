@@ -1,6 +1,6 @@
 import { Database,one,type Transaction,type Row } from '../../database/database';
 import { canonical } from '../../common/commands';
-import { Permissions } from '../../common/permissions';
+import { Permissions,coversDelegatedExpiry } from '../../common/permissions';
 import { Problem,mapError } from '../../common/problem';
 import { hashToken } from '../../common/security';
 import { ImportsService,emptySummary } from './imports.service';
@@ -169,17 +169,18 @@ export class ImportWorker {
     if(scope==='SUBJECT'&&!subject)invalid('subjectCode','Môn không khả dụng');
     const starts=v.startsOn?date(v.startsOn,'startsOn'):String(year.starts_on),ends=v.endsOn?date(v.endsOn,'endsOn'):String(year.ends_on);
     if(starts<String(year.starts_on)||ends>String(year.ends_on)||starts>=ends)invalid('startsOn','Ngoài năm học');
-    const timestamps=await one<{starts:string;ends:string}>(tx,`SELECT to_char($1::date::timestamp AT TIME ZONE timezone,'YYYY-MM-DD"T"HH24:MI:SSOF') AS starts,
-      to_char($2::date::timestamp AT TIME ZONE timezone,'YYYY-MM-DD"T"HH24:MI:SSOF') AS ends FROM platform.schools WHERE id=$3`,[starts,ends,job.school_id]);
+    const timestamps=await one<{starts:Date;ends:Date;today:string}>(tx,`SELECT $1::date::timestamp AT TIME ZONE timezone AS starts,
+      $2::date::timestamp AT TIME ZONE timezone AS ends,(now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$3`,[starts,ends,job.school_id]);
     const grants=await this.policy.grants(tx,job.requested_by,job.school_id);
     const actions=(await tx.query<{action_code:string}>('SELECT action_code FROM app.role_permissions WHERE school_id=$1 AND role_id=$2 AND $3=ANY(allowed_scopes)',[job.school_id,role.id,scope])).rows;
-    if(!actions.length||actions.some(a=>!grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes(a.action_code)&&(!g.valid_until||g.valid_until.getTime()>=new Date(timestamps!.ends).getTime()))))invalid('roleCode','Vượt quyền hoặc thời hạn của người mời');
+    if(!actions.length||['member.manage',...actions.map(a=>a.action_code)].some(action=>!grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes(action)&&coversDelegatedExpiry(g,timestamps!.starts,timestamps!.ends))))invalid('roleCode','Vượt quyền hoặc thời hạn của người mời');
     if(scope!=='SCHOOL'){
+      if(starts<timestamps!.today&&(!v.reason||v.reason.trim().length<5))invalid('reason','Phân công lùi ngày cần lý do');
       if((await tx.query(`SELECT id FROM app.teaching_assignments WHERE school_id=$1 AND revoked_at IS NULL AND kind=$2
         AND daterange(starts_on,ends_on,'[)')&&daterange($3,$4,'[)') AND ${scope==='CLASS'?'class_id=$5':'class_id=$5 AND subject_id=$6'}`,
       scope==='CLASS'?[job.school_id,'HOMEROOM',starts,ends,cls!.id]:[job.school_id,'SUBJECT',starts,ends,cls!.id,subject!.id])).rowCount)invalid('classCode','Phân công bị trùng');
     }
-    return {roleId:String(role.id),scopeType:scope,...(cls?{classId:String(cls.id)}:{}),...(subject?{subjectId:String(subject.id)}:{}),validFrom:timestamps!.starts,validUntil:timestamps!.ends};
+    return {roleId:String(role.id),scopeType:scope,...(cls?{classId:String(cls.id)}:{}),...(subject?{subjectId:String(subject.id)}:{}),validFrom:timestamps!.starts.toISOString(),validUntil:timestamps!.ends.toISOString(),...(v.reason?{reason:required(v,'reason',2000)}:{})};
   }
   private checkTimetableRows(plan:Plan,previous:Plan[]){
     if(previous.some(p=>p.values.weekday===plan.values.weekday&&p.values.startsAt!<plan.values.endsAt!&&p.values.endsAt!>plan.values.startsAt!))invalid('slot','Hai tiết trong lớp bị chồng giờ');

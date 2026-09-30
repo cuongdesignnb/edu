@@ -27881,6 +27881,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
       required:
         - email
         - roleId
@@ -28728,6 +28732,10 @@ components:
           type: string
           format: date
           nullable: true
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
       required:
         - classId
         - memberId

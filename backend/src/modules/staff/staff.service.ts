@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Database,one,iso,type Transaction,type Row } from '../../database/database';
 import { resource,dto,getResource,updateResource,listResource,type Resource } from '../../database/resources';
-import { Permissions,grantDto } from '../../common/permissions';
+import { Permissions,grantDto,grantAllows,coversDelegatedExpiry } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { permissions as actionAllowlist } from '../../common/contract';
 import { Problem,validation,notFound } from '../../common/problem';
@@ -90,7 +90,7 @@ export class StaffService {
         if((scopeType==='CLASS'&&role.code!=='HOMEROOM')||(scopeType==='SUBJECT'&&role.code!=='SUBJECT_TEACHER'))validation('roleId','Lời mời phân công cần đúng mẫu giáo viên');
         const data=await this.invitations.create(tx,schoolId,c.principal!.userId,String(c.body.email),{
           roleId:String(c.body.roleId),scopeType,classId:c.body.classId as string|undefined,subjectId:c.body.subjectId as string|undefined,
-          validFrom:String(c.body.validFrom),validUntil:c.body.validUntil as string|null|undefined});
+          validFrom:String(c.body.validFrom),validUntil:c.body.validUntil as string|null|undefined,reason:c.body.reason as string|undefined});
         await audit(tx,c,'invitation',data.id);return {data,status:201};
       }
       const row=await one<Row>(tx,'SELECT * FROM app.staff_invitations WHERE school_id=$1 AND id=$2 FOR UPDATE',[schoolId,c.params.invitationId]);if(!row)notFound();
@@ -119,12 +119,13 @@ export class StaffService {
     if(body.subjectId)await getResource(tx,resource('subject'),schoolId,String(body.subjectId));
     const roleActions=(role.permissions as PermissionInput[]).filter(p=>p.scopes.includes(String(body.scopeType))).map(p=>p.action);
     if(!roleActions.length)validation('roleId','Mẫu không hỗ trợ phạm vi đã chọn');
-    for(const action of roleActions){
-      if(!actionAllowlist.includes(action)||action.startsWith('platform.'))throw new Problem(403,'DELEGATION_CEILING');
-      await this.policy.require(tx,c.principal!,action,{schoolId,classId:body.classId as string|undefined,subjectId:body.subjectId as string|undefined,allowSubject:body.scopeType==='SUBJECT'});
-    }
     const start=new Date(String(body.validFrom)),end=body.validUntil?new Date(String(body.validUntil)):null;
-    if(!Number.isFinite(start.getTime())||(end&&end<=start))validation('validUntil','Khoảng hiệu lực không hợp lệ');
+    if(!Number.isFinite(start.getTime())||(end&&(!Number.isFinite(end.getTime())||end<=start)))validation('validUntil','Khoảng hiệu lực không hợp lệ');
+    for(const action of new Set([...roleActions,...c.operation.permission.split('+')])){
+      if(!actionAllowlist.includes(action)||action.startsWith('platform.'))throw new Problem(403,'DELEGATION_CEILING');
+      const scope={schoolId,classId:body.classId as string|undefined,subjectId:body.subjectId as string|undefined,allowSubject:body.scopeType==='SUBJECT'},allowed=await this.policy.require(tx,c.principal!,action,scope);
+      if(!allowed.grants.some(g=>grantAllows(g,action,scope,allowed.today)&&coversDelegatedExpiry(g,start,end)))throw new Problem(403,'DELEGATION_EXPIRY_CEILING');
+    }
     if(body.classId){
       const valid=await one<{valid:boolean}>(tx,`SELECT ($2::timestamptz AT TIME ZONE s.timezone)::date>=y.starts_on
         AND ($2::timestamptz AT TIME ZONE s.timezone)::date<y.ends_on
@@ -132,6 +133,8 @@ export class StaffService {
         FROM app.classes cl JOIN app.academic_years y ON y.school_id=cl.school_id AND y.id=cl.year_id
         JOIN platform.schools s ON s.id=cl.school_id WHERE cl.school_id=$1 AND cl.id=$4`,[schoolId,start,end,body.classId]);
       if(!valid?.valid)validation('validFrom','Phân công phải nằm trong năm học');
+      if(invitation){const dates=(await one<{starts:string;today:string}>(tx,"SELECT ($2::timestamptz AT TIME ZONE timezone)::date AS starts,(now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$1",[schoolId,start]))!;
+        if(dates.starts<dates.today&&(typeof body.reason!=='string'||body.reason.trim().length<5))validation('reason','Lời mời phân công lùi ngày cần lý do');}
     }
     return {role,actions:roleActions};
   }
@@ -172,6 +175,8 @@ export class StaffService {
     const year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
     const starts=String(body.startsOn),ends=body.endsOn?String(body.endsOn):String(year.ends_on);
     if(starts<String(year.starts_on)||starts>=ends||ends>String(year.ends_on)||year.status==='ARCHIVED'||cls.status==='ARCHIVED')validation('startsOn','Khoảng phân công không thuộc năm/lớp đang quản lý');
+    const current=(await one<{today:string}>(tx,"SELECT (now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$1",[schoolId]))!.today;
+    if(starts<current&&(typeof body.reason!=='string'||body.reason.trim().length<5))validation('reason','Phân công lùi ngày cần lý do ít nhất 5 ký tự');
     const role=await one<Row>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code=$2 AND status='ACTIVE'",[schoolId,body.kind==='HOMEROOM'?'HOMEROOM':'SUBJECT_TEACHER']);
     if(!role)validation('kind','Thiếu mẫu quyền giáo viên');
     const dates=await one<{valid_from:Date;valid_until:Date}>(tx,`SELECT $2::date::timestamp AT TIME ZONE timezone AS valid_from,

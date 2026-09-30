@@ -83,7 +83,7 @@ export class TransitionsService {
         const until=await one<{end:Date}>(tx,"SELECT $2::date::timestamp AT TIME ZONE timezone AS end FROM platform.schools WHERE id=$1",[schoolId,row.effective_on]);
         await tx.query('UPDATE app.teaching_assignments SET ends_on=$3 WHERE school_id=$1 AND id=$2',[schoolId,previous.id,row.effective_on]);
         await tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[schoolId,previous.role_grant_id,until!.end]);
-        const assignment=await this.staff.createAssignment(tx,c,{classId:row.class_id,memberId:row.to_member_id,kind:'HOMEROOM',startsOn:row.effective_on,endsOn:previous.ends_on});
+        const assignment=await this.staff.createAssignment(tx,c,{classId:row.class_id,memberId:row.to_member_id,kind:'HOMEROOM',startsOn:row.effective_on,endsOn:previous.ends_on,reason:row.reason});
         const checklist=await this.checklist(tx,schoolId,String(row.class_id));
         const saved=await one<Row>(tx,"UPDATE app.handover_requests SET status='APPLIED',decided_by=$3,checklist=$4 WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,c.principal!.userId,checklist]);
         await audit(tx,c,'handover',String(row.id),{status:'APPLIED',assignmentId:assignment.id,checklist});return {data:dto(handover,saved!)};

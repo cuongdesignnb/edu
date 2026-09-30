@@ -22,6 +22,8 @@ function normalize(node) {
 normalize(spec);
 // ADR-004: expose lifecycle metadata needed by the existing assignment UI.
 spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
+spec.components.schemas.AssignmentCreate.properties.reason={type:'string',minLength:5,maxLength:4000};
+spec.components.schemas.InviteRequest.properties.reason={type:'string',minLength:5,maxLength:4000};
 spec.components.schemas.GrantView.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
 // ADR-006: scoped creation of a new unassociated guardian contact.
 spec.paths['/schools/{schoolId}/guardians'].post.parameters.push({name:'classId',in:'query',required:false,schema:{type:'string',format:'uuid'}});
