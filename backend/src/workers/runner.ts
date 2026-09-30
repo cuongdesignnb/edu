@@ -13,6 +13,8 @@ import { ImportsService } from '../modules/imports/imports.service';
 import { ImportWorker } from '../modules/imports/import-worker';
 import { InvitationsService } from '../modules/identity/invitations.service';
 import { IdentityService } from '../modules/identity/identity.service';
+import { PublicationsService } from '../modules/publications/publications.service';
+import { AnnouncementsService } from '../modules/announcements/announcements.service';
 
 interface Job extends Row {id:string;school_id:string;kind:string;payload:Record<string,unknown>;attempts:number}
 interface Mail extends Row {id:string;school_id:string|null;template_key:string;encrypted_payload:string;attempts:number}
@@ -26,6 +28,8 @@ export class WorkerRunner {
     const imports=new ImportsService(db,policy,commands,files);
     const importer=new ImportWorker(db,policy,imports,new InvitationsService(db,new IdentityService(db),policy));
     for(const kind of ['PARSE_IMPORT','VALIDATE_IMPORT','COMMIT_IMPORT'])this.register(kind,(job,guard)=>importer.run(kind,job.school_id,String(job.payload.importId),guard));
+    const announcements=new AnnouncementsService(db,policy,commands,new PublicationsService(db,policy,commands),files);
+    this.register('PUBLISH_ANNOUNCEMENT',(job,guard)=>announcements.runScheduled(job.school_id,String(job.payload.announcementId),String(job.payload.userId),Number(job.payload.sourceVersion),guard));
   }
   register(kind:string,handler:JobHandler){this.handlers.set(kind,handler);}
   async claim(schoolId:string):Promise<Job|undefined>{

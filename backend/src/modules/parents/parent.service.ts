@@ -74,7 +74,7 @@ export class ParentService {
     for(const bound of ['from','to'])if(query[bound]){if(!/^\d{4}-\d{2}-\d{2}$/.test(query[bound]!))validation(bound,'Ngày ISO bắt buộc');values.push(query[bound]);where.push(`t.payload->>'date'${bound==='from'?'>=':'<'}$${values.length}`);}
     const result=await this.db.transaction(async tx=>{
       const result=await listResource(tx,projection,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId);
-      if(section==='activities')for(const row of result.data){
+      if(section==='activities'||section==='announcements')for(const row of result.data){
         const payload=row.payload as Record<string,unknown>,documents=Array.isArray(payload.documents)?payload.documents as {id:string}[]:[];
         const visible=(p.link.allowed_sections as string[]).includes('documents')&&documents.length?(await tx.query<Row>(`SELECT d.id,d.title,d.published_at,d.download_allowed,app.parent_document_metadata(d.school_id,d.id) AS metadata
           FROM app.parent_document_items d WHERE d.school_id=$1 AND d.id=ANY($2::uuid[]) AND app.parent_document_metadata(d.school_id,d.id) IS NOT NULL`,[p.schoolId,documents.map(d=>d.id)])).rows:[];

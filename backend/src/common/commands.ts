@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Database,one,type Transaction } from '../database/database';
 import { hashToken } from './security';
 import { Problem } from './problem';
-import type { RequestContext,Result } from '../api.router';
+import type { RequestContext,ActorContext,Result } from '../api.router';
 export function canonical(value:unknown):string {
   if(value===null||typeof value!=='object')return JSON.stringify(value);
   if(Array.isArray(value))return '['+value.map(canonical).join(',')+']';
@@ -44,7 +44,7 @@ export class Commands {
     },{schoolId,userId:c.principal!.userId});
   }
 }
-export async function audit(tx:Transaction,c:RequestContext,targetType:string,targetId:string,metadata:Record<string,unknown>={}){
+export async function audit(tx:Transaction,c:ActorContext,targetType:string,targetId:string,metadata:Record<string,unknown>={}){
   await tx.query(`INSERT INTO app.audit_events(school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,reason,redacted_after)
     VALUES($1,$2,'STAFF',$3,$4,$5,$6,$7,$8)`,[c.params.schoolId,c.principal!.userId,c.operation.id,targetType,targetId,
     c.requestId,typeof c.body.reason==='string'?c.body.reason:null,metadata]);

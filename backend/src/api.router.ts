@@ -10,9 +10,12 @@ import { runtimeConfig } from './common/config';
 import { bootstrapCsrf,requireBootstrapCsrf,requireSessionCsrf } from './common/security';
 import { verifyInstallation } from './database/verify';
 import type { ParentPrincipal } from './modules/parents/parent.service';
-export interface RequestContext {
-  request: FastifyRequest;reply:FastifyReply;requestId:string;operation:Operation;
-  principal?:Principal;parent?:ParentPrincipal;params:Record<string,string>;query:Record<string,string>;body:Record<string,unknown>;
+export interface ActorContext {
+  requestId:string;operation:Operation;principal?:Pick<Principal,'userId'>;
+  params:Record<string,string>;query:Record<string,string>;body:Record<string,unknown>;
+}
+export interface RequestContext extends ActorContext {
+  request:FastifyRequest;reply:FastifyReply;principal?:Principal;parent?:ParentPrincipal;
 }
 export interface Result { data:unknown;status?:number;page?:{limit:number;nextCursor:string|null;hasMore:boolean;total?:number};
   binary?:{stream:Readable;contentType:string;filename:string;byteSize?:number} }

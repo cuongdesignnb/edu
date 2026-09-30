@@ -1,0 +1,151 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-f3c2ef5e2a8a Creating 
+ Container edumanage_backend_test-runner-run-f3c2ef5e2a8a Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (380.861631ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (8.703275ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.765279ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (3.435461ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (107.153537ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (46.863792ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (112.538364ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (62.737853ms)
+✔ BE21 parent runtime role cannot select raw student rows (177.105986ms)
+✔ B0 health ready checks actual migrations, database and private storage (22.734921ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (108.536886ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (63.440952ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (116.445065ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (80.095191ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (149.2043ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (95.259338ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (169.182317ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (132.954295ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (427.424948ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (783.659039ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (170.34769ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (796.220898ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (1644.570316ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (1028.66068ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (2347.792112ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (2542.572303ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (371.784393ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (199.647334ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (132.05274ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (247.602894ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (585.456124ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (497.267332ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (403.260472ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (192.829892ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (345.556848ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (719.640787ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (404.327364ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (514.479826ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (390.593921ms)
+✔ B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason (204.224711ms)
+✔ B2 shrinking class capacity checks planned future occupancy peaks, rather than only today (93.879952ms)
+✔ B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties (398.035843ms)
+✔ B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened (352.007638ms)
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (430.588661ms)
+✔ B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically (285.544683ms)
+✔ B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history (551.052852ms)
+✔ B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions (749.636454ms)
+✔ B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history (394.095682ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (560.007814ms)
+✔ B5 activities count only explicit participants, preserve published states and require current source/review authority (789.390841ms)
+✔ B5 approved activity results are explicit conduct sources and locked approved facts protect their source history (871.432304ms)
+✔ B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability (947.740882ms)
+✖ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (250.079102ms)
+✖ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (275.923056ms)
+✖ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (252.496961ms)
+✖ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (252.220597ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 52
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24964.115333
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1261:1
+✖ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (250.079102ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:schedule_conflict","title":"SCHEDULE_CONFLICT","status":409,"code":"SCHEDULE_CONFLICT","requestId":"15c9f84c-a99a-4b39-af66-a2234e6a8712"}
+  
+  409 !== 201
+  
+      at activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1256:176)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1249:103)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1262:55)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1281:1
+✖ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (275.923056ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:schedule_conflict","title":"SCHEDULE_CONFLICT","status":409,"code":"SCHEDULE_CONFLICT","requestId":"80e0c7e0-d18e-4f6c-a75f-fe709b130257"}
+  
+  409 !== 201
+  
+      at activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1256:176)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1249:103)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1282:55)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1296:1
+✖ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (252.496961ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:schedule_conflict","title":"SCHEDULE_CONFLICT","status":409,"code":"SCHEDULE_CONFLICT","requestId":"71dbe39b-aea1-4caf-980c-c997839a76fa"}
+  
+  409 !== 201
+  
+      at activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1256:176)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1249:103)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1297:55)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1310:1
+✖ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (252.220597ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:schedule_conflict","title":"SCHEDULE_CONFLICT","status":409,"code":"SCHEDULE_CONFLICT","requestId":"6503536b-bbb0-4a33-a8dc-2e939e251ce8"}
+  
+  409 !== 201
+  
+      at activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1256:176)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1311:104)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+

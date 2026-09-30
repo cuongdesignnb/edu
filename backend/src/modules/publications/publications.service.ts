@@ -6,7 +6,7 @@ import { Commands,audit,canonical } from '../../common/commands';
 import { hashToken } from '../../common/security';
 import { Problem } from '../../common/problem';
 import { validateSchema } from '../../common/contract';
-import type { RequestContext,Handler,Result } from '../../api.router';
+import type { RequestContext,ActorContext,Handler,Result } from '../../api.router';
 
 const columns:Record<string,string>={CONDUCT:'conduct_period_id',ATTENDANCE:'attendance_session_id',TIMETABLE:'timetable_id',DUTY:'duty_schedule_id',ACTIVITY:'activity_id',ANNOUNCEMENT:'announcement_id'};
 const r:Resource={table:'app.publication_revisions',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',kind:'kind',classId:'class_id',yearId:'year_id',revision:'revision',sourceVersion:'source_version',status:'status',publishedAt:'published_at',contentHash:'content_hash',
@@ -18,7 +18,7 @@ export interface ParentItem {studentId:string;section:string;payload:Record<stri
 export class PublicationsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
   handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolPublications','listClassPublications','getClassPublication','withdrawPublication'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
-  async create(tx:Transaction,c:RequestContext,source:PublicationSource,snapshot:Record<string,unknown>,items:ParentItem[],publish:boolean){
+  async create(tx:Transaction,c:ActorContext,source:PublicationSource,snapshot:Record<string,unknown>,items:ParentItem[],publish:boolean,publicPayload?:Record<string,unknown>){
     const column=columns[source.kind];if(!column)throw new Error('Unknown publication source');
     const current=await one<Row>(tx,`SELECT * FROM app.publication_revisions WHERE school_id=$1 AND ${column}=$2 AND status='PUBLISHED' FOR UPDATE`,[source.schoolId,source.id]);
     if(publish&&Object.hasOwn(c.body,'expectedPublicationId')&&(c.body.expectedPublicationId??null)!==(current?.id??null))throw new Problem(409,'PUBLICATION_CONFLICT');
@@ -26,9 +26,9 @@ export class PublicationsService {
     if(new Set(items.map(item=>item.studentId)).size!==items.length)throw new Problem(422,'DUPLICATE_PROJECTION');
     for(const item of items)validateSchema(item.schema,item.payload,true);
     const projectionHash=hashToken(canonical(items.map(item=>({studentId:item.studentId,section:item.section,payload:item.payload})).sort((a,b)=>a.studentId.localeCompare(b.studentId))));
-    const saved=await one<Row>(tx,`INSERT INTO app.publication_revisions(school_id,class_id,year_id,kind,${column},revision,source_version,content_hash,staff_snapshot,created_by,expected_item_count,projection_hash)
-      SELECT $1,$2,$3,$4,$5,coalesce(max(revision),0)+1,$6,$7,$8,$9,$10,$11 FROM app.publication_revisions WHERE school_id=$1 AND ${column}=$5 RETURNING *`,
-    [source.schoolId,source.classId??null,source.yearId,source.kind,source.id,source.version,hashToken(canonical({source,snapshot,items})),snapshot,c.principal!.userId,items.length,projectionHash]);
+    const saved=await one<Row>(tx,`INSERT INTO app.publication_revisions(school_id,class_id,year_id,kind,${column},revision,source_version,content_hash,staff_snapshot,created_by,expected_item_count,projection_hash,public_payload)
+      SELECT $1,$2,$3,$4,$5,coalesce(max(revision),0)+1,$6,$7,$8,$9,$10,$11,$12 FROM app.publication_revisions WHERE school_id=$1 AND ${column}=$5 RETURNING *`,
+    [source.schoolId,source.classId??null,source.yearId,source.kind,source.id,source.version,hashToken(canonical({source,snapshot,items,publicPayload:publicPayload??null})),snapshot,c.principal!.userId,items.length,projectionHash,publicPayload??null]);
     for(const item of items)await tx.query('INSERT INTO app.parent_publication_items(school_id,publication_id,student_id,year_id,section,payload) VALUES($1,$2,$3,$4,$5,$6)',[source.schoolId,saved!.id,item.studentId,source.yearId,item.section,item.payload]);
     const count=await one<{n:number}>(tx,'SELECT count(*)::int AS n FROM app.parent_publication_items WHERE school_id=$1 AND publication_id=$2',[source.schoolId,saved!.id]);
     if(count!.n!==items.length)throw new Problem(409,'PROJECTION_INCOMPLETE');
@@ -37,7 +37,7 @@ export class PublicationsService {
     const published=await one<Row>(tx,"UPDATE app.publication_revisions SET status='PUBLISHED',published_at=now(),published_by=$3 WHERE school_id=$1 AND id=$2 RETURNING *",[source.schoolId,saved!.id,c.principal!.userId]);
     await audit(tx,c,'publication',String(saved!.id),{sourceVersion:source.version,revision:saved!.revision,items:items.length});return publicationDto(published!);
   }
-  async publishReady(tx:Transaction,c:RequestContext,source:PublicationSource,ready:Row){
+  async publishReady(tx:Transaction,c:ActorContext,source:PublicationSource,ready:Row){
     const column=columns[source.kind]!;
     if(ready.status!=='READY'||ready.source_version!==source.version||ready[column]!==source.id)throw new Problem(409,'STALE_SOURCE');
     const current=await one<Row>(tx,`SELECT * FROM app.publication_revisions WHERE school_id=$1 AND ${column}=$2 AND status='PUBLISHED' FOR UPDATE`,[source.schoolId,source.id]);

@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 19 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 20 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty and activities/evidence tested; remaining domains and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty, activities/evidence and announcement revisions/scheduling tested; remaining domains and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -232,3 +232,23 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - qa/backend/activities-integration.log: 52/52 executed, exit0. qa/backend/activities-unit-contract.log: 11/11 executed, exit0. Typecheck/lint and Docker build exit0. The initial run was 50/52 because two parent-link fixtures omitted expiresAt; those fixtures were repaired and the full suite rerun. No applied migration was edited.
 - Parent populated activity/evidence tests cover unpublished invisibility, retained public state until republish, another child's denial, both download permissions, embedded document filtering when a file is archived, stale sources and withdraw. This is backend HTTP/PG evidence; browser E2E remains NOT_RUN.
 - 201/264 API operations implemented. Announcements, reports/support/platform, notifications/dashboard, frontend connection and B7 acceptance remain unfinished. Final local stack at port 18763 is not serving yet; no production deployment.
+
+## Announcement checkpoint — actual PostgreSQL execution
+
+- Migration 020 applied and replayed without changing any applied migration.
+- Implemented API coverage is now 217/264; frontend screen connection is still NO.
+- qa/backend/announcements-integration.log: 57/57, exit0. Checks include immutable
+  published revisions, private child targeting, public/private replacement,
+  sanitizer output, current publication conflicts, scheduled due-time processing,
+  authority revoked before execution, acknowledgement-loss replay and private files.
+- Parent file tests exercise download/section flags, foreign-child denial, archive
+  exclusion, withdrawal and an old tab returning 409 after a new exchange.
+- qa/backend/announcements-unit-contract.log: 12/12, exit0; typecheck/lint exit0.
+  These are executed schema/policy/unit checks, not 264 API acceptance claims.
+- Earlier failures and corrected fixture checks remain in attempt1–5 logs.
+  A multi-student announcement with a student-specific file now rejects with 422.
+- Backend sanitizer dependencies are pinned: sanitize-html 2.17.7 and types 2.16.2.
+  Install audit reported zero vulnerabilities at this checkpoint.
+- Public announcement attachment download is unavailable in the supplied contract;
+  public metadata explicitly returns downloadAllowed=false. Browser workflows,
+  notification/report/support modules and deployment acceptance are still pending.

@@ -25,6 +25,7 @@ import { ParentAccessService } from './modules/parents/access.service';
 import { ClassroomService } from './modules/classroom/classroom.service';
 import { ScheduleService } from './modules/schedule/schedule.service';
 import { ActivitiesService } from './modules/activities/activities.service';
+import { AnnouncementsService } from './modules/announcements/announcements.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -51,6 +52,7 @@ export async function createApplication() {
   registerHandlers(server,app.get(ClassroomService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(ScheduleService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(ActivitiesService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(AnnouncementsService).handlers(),app.get(IdentityService));
   const parent=app.get(ParentService);
   registerHandlers(server,parent.handlers(),app.get(IdentityService),(request,slug)=>parent.authenticate(request,slug));
   app.enableShutdownHooks();

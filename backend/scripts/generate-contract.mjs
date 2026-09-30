@@ -88,6 +88,22 @@ for(const id of ['listActivities','listParticipants','listEvidence']){
   op.parameters.push({name:'status',in:'query',schema:{type:'string'}});
   if(id==='listEvidence')op.parameters.push({name:'participantId',in:'query',schema:{type:'string',format:'uuid'}});
 }
+// ADR-020: announcement source revisions remain separate from published readers.
+for(const name of ['Announcement','AnnouncementCreate','AnnouncementPatch']){
+  spec.components.schemas[name].properties.summary={type:'string',maxLength:4000};
+  spec.components.schemas[name].properties.audience={type:'string',enum:['FAMILIES','STAFF','ALL']};
+  spec.components.schemas[name].properties.internalNote={type:'string',maxLength:4000};
+}
+spec.components.schemas.Announcement.properties.rootId={type:'string',format:'uuid'};
+spec.components.schemas.Announcement.properties.dataVersion={type:'integer',minimum:1};
+spec.components.schemas.Announcement.properties.discardedAt={type:'string',format:'date-time',nullable:true};
+spec.components.schemas.Announcement.properties.scheduleState={type:'string',enum:['PENDING','LEASED','DONE','FAILED','CANCELLED']};
+spec.components.schemas.Announcement.properties.scheduleErrorCode={type:'string'};
+spec.components.schemas.AnnouncementPatch.properties.discard={type:'boolean'};
+for(const id of ['listSchoolAnnouncements','listClassAnnouncements']){
+  const op=Object.values(spec.paths).flatMap(path=>Object.values(path)).find(op=>op?.operationId===id);
+  op.parameters.push({name:'status',in:'query',schema:{type:'string'}},{name:'yearId',in:'query',schema:{type:'string',format:'uuid'}});
+}
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });

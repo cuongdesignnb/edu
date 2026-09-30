@@ -1,0 +1,81 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-8633074da3a3 Creating 
+ Container edumanage_backend_test-runner-run-8633074da3a3 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (453.387765ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (9.681576ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.774037ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (3.957251ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (136.144258ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (52.763117ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (104.920969ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (63.759459ms)
+✔ BE21 parent runtime role cannot select raw student rows (276.008217ms)
+✔ B0 health ready checks actual migrations, database and private storage (18.964329ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (115.78521ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (71.255815ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (185.814094ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (125.978767ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (170.134518ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (107.330592ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (187.230677ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (144.359982ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (463.252397ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (882.475663ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (190.073971ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (995.81003ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (1961.894641ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (1233.873566ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (4247.311989ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (2892.068277ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (420.182311ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (214.056301ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (150.802419ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (274.086078ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (690.101175ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (564.660303ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (505.334525ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (227.914095ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (427.032815ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (922.368595ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (467.429102ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (632.323584ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (538.077858ms)
+✔ B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason (265.291086ms)
+✔ B2 shrinking class capacity checks planned future occupancy peaks, rather than only today (149.360042ms)
+✔ B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties (456.294348ms)
+✔ B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened (383.737872ms)
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (509.452934ms)
+✔ B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically (329.976364ms)
+✔ B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history (576.156734ms)
+✔ B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions (771.913989ms)
+✔ B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history (402.824817ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (671.333731ms)
+✔ B5 activities count only explicit participants, preserve published states and require current source/review authority (832.088505ms)
+✔ B5 approved activity results are explicit conduct sources and locked approved facts protect their source history (333.007987ms)
+✔ B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability (1087.940948ms)
+✔ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (2339.028456ms)
+✔ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (2326.368189ms)
+✔ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (1943.202814ms)
+✔ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (2156.210995ms)
+✖ B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn (5663.932486ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 56
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43067.294897
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1331:1
+✖ B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn (5663.932486ms)
+  TypeError: Cannot read properties of undefined (reading 'documents')
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1346:255)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+

@@ -2,7 +2,11 @@
   "name": "edumanage-backend",
   "version": "0.1.0",
   "private": true,
-  "overrides": { "exceljs": { "uuid": "11.1.1" } },
+  "overrides": {
+    "exceljs": {
+      "uuid": "11.1.1"
+    }
+  },
   "engines": {
     "node": ">=24 <25"
   },
@@ -35,6 +39,7 @@
     "pg": "8.23.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
+    "sanitize-html": "2.17.7",
     "sharp": "0.35.5",
     "yauzl": "3.4.0"
   },
@@ -43,6 +48,7 @@
     "@types/node": "24.10.13",
     "@types/nodemailer": "7.0.11",
     "@types/pg": "8.23.1",
+    "@types/sanitize-html": "2.16.2",
     "@types/yauzl": "2.10.3",
     "eslint": "10.11.0",
     "typescript": "5.9.3",

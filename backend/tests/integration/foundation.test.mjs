@@ -1244,3 +1244,107 @@ test('B5 evidence stays private until review and publication; parent documents r
     const listing=await request('GET',`/api/v1/schools/${schoolA}/${f.base}/evidence?activityId=${a.id}`);assert.equal(listing.statusCode,200,listing.body);assert.equal(listing.json().data.length,1);
   }finally{await worker.close();}
 });
+
+async function announcementFixture(csrf,school=false,overrides={}){
+  const f=await conductFixture(csrf),path=school?'announcements':`classes/${f.classId}/announcements`;await activateFixtureClass(f);
+  const created=await f.post(path,{yearId:seedId('year:A'),title:'Thông báo kiểm thử phạm vi',summary:'Nội dung thông báo được lưu thật',sanitizedHtml:'<h2>Thông báo</h2><p>Nội dung đã soạn</p>',targets:school?[{kind:'SCHOOL'}]:[{kind:'CLASS',id:f.classId}],audience:'ALL',internalNote:'Ghi chú nội bộ không công bố',...overrides});assert.equal(created.statusCode,201,created.body);
+  const a=created.json().data,get=async id=>{const r=await request('GET',`/api/v1/schools/${schoolA}/${path}/${id??a.id}`);assert.equal(r.statusCode,200,r.body);return r.json().data;},patch=(id,body)=>request('PATCH',`/api/v1/schools/${schoolA}/${path}/${id}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  return {...f,path,a,get,patch};
+}
+async function announcementParent(csrf,f,index=0,sections=['announcements','documents'],allowDownload=true){return activityParent(csrf,f,index,sections,allowDownload);}
+async function activateFixtureClass(f){
+  const email=`announcement-homeroom-${crypto.randomUUID()}@example.invalid`;
+  const invitation=await f.post('invitations',{email,roleId:seedId('role:A:HOMEROOM'),classId:f.classId,validFrom:new Date().toISOString(),validUntil:'2027-06-01T00:00:00Z'});assert.equal(invitation.statusCode,201,invitation.body);
+  const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0].encrypted_payload;
+  const token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token'),anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Chủ nhiệm thông báo kiểm thử',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
+  const cls=await request('GET',`/api/v1/schools/${schoolA}/classes/${f.classId}`);assert.equal(cls.statusCode,200,cls.body);
+  const active=await f.post(`classes/${f.classId}/activate`,{expectedVersion:cls.json().data.version});assert.equal(active.statusCode,200,active.body);
+}
+
+test('B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await announcementFixture(csrf);let a=f.a;
+  const narrowed=await f.patch(a.id,{expectedVersion:a.version,targets:[{kind:'STUDENT',id:f.enrollments[0].studentId}],audience:'FAMILIES'});assert.equal(narrowed.statusCode,200,narrowed.body);a=narrowed.json().data;
+  const ctx=await announcementParent(csrf,f);assert.equal((await parentGet('announcements',ctx)).json().data.length,0);
+  const stale=await f.post(`${f.path}/${a.id}/publish`,{expectedSourceVersion:f.a.dataVersion});assert.equal(stale.statusCode,409,stale.body);
+  let pub=await f.post(`${f.path}/${a.id}/publish`,{expectedSourceVersion:a.dataVersion,expectedPublicationId:null});assert.equal(pub.statusCode,200,pub.body);pub=pub.json().data;
+  const publicView=await parentGet(`announcements/${a.rootId}`,ctx);assert.equal(publicView.statusCode,200,publicView.body);assert.equal(publicView.json().data.title,a.title);assert.equal(Object.hasOwn(publicView.json().data,'internalNote'),false);assert.equal(Object.hasOwn(publicView.json().data,'targets'),false);
+  const other=await announcementParent(csrf,f,1);assert.equal((await parentGet('announcements',other)).json().data.length,0);assert.equal((await parentGet(`announcements/${a.rootId}`,other)).statusCode,404);
+  const first=await announcementParent(csrf,f);a=await f.get();const draft=await f.patch(a.id,{expectedVersion:a.version,title:'Bản sửa chưa công bố',sanitizedHtml:'<p>Nội dung sửa đang nháp</p>'});assert.equal(draft.statusCode,200,draft.body);const revision=draft.json().data;assert.notEqual(revision.id,a.id);assert.equal(revision.rootId,a.rootId);assert.equal(revision.status,'DRAFT');
+  assert.equal((await parentGet(`announcements/${a.rootId}`,first)).json().data.title,a.title);
+  await assert.rejects(db.transaction(tx=>tx.query('UPDATE app.announcements SET title=$3 WHERE school_id=$1 AND id=$2',[schoolA,a.id,'Không được sửa nguồn đã công bố']),{schoolId:schoolA}),e=>e.code==='23514');
+  const badCurrent=await f.post(`${f.path}/${revision.id}/publish`,{expectedSourceVersion:revision.dataVersion,expectedPublicationId:null});assert.equal(badCurrent.statusCode,409,badCurrent.body);
+  const replacement=await f.post(`${f.path}/${revision.id}/publish`,{expectedSourceVersion:revision.dataVersion,expectedPublicationId:pub.id});assert.equal(replacement.statusCode,200,replacement.body);assert.equal((await parentGet(`announcements/${a.rootId}`,first)).json().data.title,revision.title);
+  const wrongPublic=await f.post(f.path,{yearId:seedId('year:A'),title:'Không mở công khai lớp',sanitizedHtml:'<p>Không được</p>',targets:[{kind:'PUBLIC'}]});assert.equal(wrongPublic.statusCode,422,wrongPublic.body);
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-b'),kind:'SUBJECT',subjectId:seedId('subject:A:math'),startsOn:await schoolToday(),endsOn:'2027-06-01'});assert.equal(assignment.statusCode,201,assignment.body);
+  const forbidden=await announcementFixture(csrf);const forbiddenPub=await forbidden.post(`${forbidden.path}/${forbidden.a.id}/publish`,{expectedSourceVersion:forbidden.a.dataVersion});assert.equal(forbiddenPub.statusCode,200,forbiddenPub.body);
+  const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');await login('teacher-b@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${f.path}/${revision.id}`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${forbidden.path}/${forbidden.a.id}`)).statusCode,404);jar.set('edu_staff',adminCookie);
+  const withdrawn=await f.post(`${f.path}/${revision.id}/withdraw`,{expectedVersion:(await f.get(revision.id)).version,reason:'Thu hồi bản đã sửa'});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal((await parentGet('announcements',first)).json().data.length,0);
+});
+
+test('B5 public school announcements sanitize content and keep draft/private replacements out of the public projection',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await announcementFixture(csrf,true,{targets:[{kind:'PUBLIC'},{kind:'SCHOOL'}],sanitizedHtml:'<p onclick="run()">Nội dung công khai</p><script>run()</script><img src="https://track.invalid"><a href="javascript:run()">Liên kết</a>'});let a=f.a;
+  assert.doesNotMatch(a.sanitizedHtml,/script|onclick|track.invalid|javascript:|<img|<a/);
+  const publicPath=`/api/v1/public/schools/truong-thu-a/announcements/${a.rootId}`;assert.equal((await request('GET',publicPath)).statusCode,404);
+  const pub=await f.post(`${f.path}/${a.id}/publish`,{expectedSourceVersion:a.dataVersion});assert.equal(pub.statusCode,200,pub.body);
+  const view=await request('GET',publicPath);assert.equal(view.statusCode,200,view.body);assert.equal(view.json().data.sanitizedHtml,a.sanitizedHtml);for(const key of ['targets','fileIds','internalNote','createdBy','schoolId'])assert.equal(Object.hasOwn(view.json().data,key),false);
+  const school=await request('GET','/api/v1/public/schools/truong-thu-a');assert.equal(school.statusCode,200,school.body);assert.equal(school.json().data.announcements.some(item=>item.id===a.rootId),true);
+  a=await f.get();const draft=await f.patch(a.id,{expectedVersion:a.version,title:'Thông báo riêng thay công khai',targets:[{kind:'STUDENT',id:f.enrollments[0].studentId}],audience:'FAMILIES'});assert.equal(draft.statusCode,200,draft.body);const d=draft.json().data;assert.equal((await request('GET',publicPath)).json().data.title,a.title);
+  const replace=await f.post(`${f.path}/${d.id}/publish`,{expectedSourceVersion:d.dataVersion,expectedPublicationId:pub.json().data.id});assert.equal(replace.statusCode,200,replace.body);assert.equal((await request('GET',publicPath)).statusCode,404);
+  const ctx=await announcementParent(csrf,f),parentView=await parentGet(`announcements/${a.rootId}`,ctx);assert.equal(parentView.statusCode,200,parentView.body);assert.equal(parentView.json().data.title,d.title);
+  const invalid=await f.post('announcements',{yearId:seedId('year:A'),title:'Không công khai dữ liệu riêng',sanitizedHtml:'<p>Không mở riêng công khai</p>',targets:[{kind:'PUBLIC'},{kind:'STUDENT',id:f.enrollments[0].studentId}]});assert.equal(invalid.statusCode,422,invalid.body);
+  assert.equal((await request('GET',`/api/v1/public/schools/truong-thu-b/announcements/${a.rootId}`)).statusCode,404);
+  const disposable=await announcementFixture(csrf);const discarded=await disposable.patch(disposable.a.id,{expectedVersion:disposable.a.version,discard:true});assert.equal(discarded.statusCode,200,discarded.body);assert.ok(discarded.json().data.discardedAt);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${disposable.path}/${disposable.a.id}`)).statusCode,404);
+});
+
+test('B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await announcementFixture(csrf),worker=new WorkerRunner();
+  try{
+    const scheduledAt=new Date(Date.now()+600).toISOString(),scheduled=await f.post(`${f.path}/${f.a.id}/schedule`,{expectedVersion:f.a.version,scheduledAt});assert.equal(scheduled.statusCode,200,scheduled.body);assert.equal(scheduled.json().data.status,'SCHEDULED');assert.equal(scheduled.json().data.scheduleState,'PENDING');
+    const ctx=await announcementParent(csrf,f);assert.equal((await parentGet('announcements',ctx)).json().data.length,0);
+    assert.equal((await db.transaction(tx=>tx.query("SELECT id FROM app.outbox_events WHERE school_id=$1 AND kind='PUBLISH_ANNOUNCEMENT' AND payload->>'announcementId'=$2 AND run_after<=now()",[schoolA,f.a.id]),{schoolId:schoolA})).rowCount,0);
+    await new Promise(resolve=>setTimeout(resolve,Math.max(0,new Date(scheduledAt).getTime()-Date.now()+20)));await drainSchool(worker);
+    const job=(await db.transaction(tx=>tx.query("SELECT * FROM app.outbox_events WHERE school_id=$1 AND kind='PUBLISH_ANNOUNCEMENT' AND payload->>'announcementId'=$2",[schoolA,f.a.id]),{schoolId:schoolA})).rows[0];assert.equal(job.status,'DONE',JSON.stringify({status:job.status,error:job.last_error_code}));assert.equal((await f.get()).status,'PUBLISHED');assert.equal((await parentGet(`announcements/${f.a.rootId}`,ctx)).statusCode,200);
+    const count=async()=>(await db.transaction(tx=>tx.query('SELECT count(*)::int AS n FROM app.publication_revisions WHERE school_id=$1 AND announcement_id=$2',[schoolA,f.a.id]),{schoolId:schoolA})).rows[0].n;assert.equal(await count(),1);
+    // Simulate loss of the worker acknowledgement after committed side effects.
+    await db.transaction(tx=>tx.query("UPDATE app.outbox_events SET status='PENDING',run_after=now(),processed_at=NULL WHERE school_id=$1 AND id=$2",[schoolA,job.id]),{schoolId:schoolA});await drainSchool(worker);assert.equal(await count(),1);
+  }finally{await worker.close();}
+});
+
+test('B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot',async()=>{
+  const adminCsrf=await login('admin-a@example.invalid'),f=await conductFixture(adminCsrf),post=f.post;await activateFixtureClass(f);
+  const role=await post('roles',{code:`ann-${crypto.randomUUID()}`,label:'Quyền thông báo kiểm thử',permissions:['announcement.manage','announcement.publish','announcement.read'].map(action=>({action,scopes:['CLASS']}))});assert.equal(role.statusCode,201,role.body);
+  const grant=await post('grants',{memberId:seedId('member:A:teacher-b'),roleId:role.json().data.id,scopeType:'CLASS',classId:f.classId,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(grant.statusCode,201,grant.body);
+  const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');const teacherCsrf=await login('teacher-b@example.invalid'),path=`classes/${f.classId}/announcements`,teacherPost=(tail,body)=>request('POST',`/api/v1/schools/${schoolA}/${tail}`,body,teacherCsrf,{'idempotency-key':crypto.randomUUID()});
+  const created=await teacherPost(path,{yearId:seedId('year:A'),title:'Thông báo chờ kiểm quyền',sanitizedHtml:'<p>Chỉ công bố khi còn quyền</p>',targets:[{kind:'CLASS',id:f.classId}]});assert.equal(created.statusCode,201,created.body);const a=created.json().data,at=new Date(Date.now()+600).toISOString();
+  const scheduled=await teacherPost(`${path}/${a.id}/schedule`,{expectedVersion:a.version,scheduledAt:at});assert.equal(scheduled.statusCode,200,scheduled.body);jar.set('edu_staff',adminCookie);
+  const revoked=await post(`grants/${grant.json().data.id}/revoke`,{expectedVersion:grant.json().data.version,reason:'Thu hồi trước giờ công bố'});assert.equal(revoked.statusCode,200,revoked.body);
+  const ctx=await announcementParent(adminCsrf,f),worker=new WorkerRunner();
+  try{await new Promise(resolve=>setTimeout(resolve,Math.max(0,new Date(at).getTime()-Date.now()+20)));await drainSchool(worker);
+    const detail=await request('GET',`/api/v1/schools/${schoolA}/${path}/${a.id}`);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.status,'SCHEDULED');assert.equal(detail.json().data.scheduleState,'FAILED');assert.equal(detail.json().data.scheduleErrorCode,'RESOURCE_NOT_FOUND');
+    assert.equal((await parentGet('announcements',ctx)).json().data.length,0);assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.publication_revisions WHERE school_id=$1 AND announcement_id=$2',[schoolA,a.id]),{schoolId:schoolA})).rowCount,0);
+    const edited=await request('PATCH',`/api/v1/schools/${schoolA}/${path}/${a.id}`,{expectedVersion:detail.json().data.version,title:'Nhà trường sửa bản bị chặn'},adminCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200,edited.body);assert.equal(edited.json().data.status,'DRAFT');
+    const queue=(await db.transaction(tx=>tx.query("SELECT status FROM app.outbox_events WHERE school_id=$1 AND kind='PUBLISH_ANNOUNCEMENT' AND payload->>'announcementId'=$2",[schoolA,a.id]),{schoolId:schoolA})).rows[0];assert.equal(queue.status,'CANCELLED');
+  }finally{await worker.close();}
+});
+
+test('B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await announcementFixture(csrf),worker=new WorkerRunner();
+  try{
+    const bytes=await sharp({create:{width:4,height:4,channels:3,background:'#336699'}}).png().toBuffer(),form=new FormData();form.append('purpose','CLASS_DOCUMENT');form.append('classId',f.classId);form.append('file',new Blob([bytes],{type:'image/png'}),'tai-lieu-rieng.png');const prepared=new Request(origin,{method:'POST',body:form});
+    const upload=await server.inject({method:'POST',url:`/api/v1/schools/${schoolA}/files`,headers:{origin,cookie:cookies(),'x-csrf-token':csrf,'idempotency-key':crypto.randomUUID(),'content-type':prepared.headers.get('content-type')},payload:Buffer.from(await prepared.arrayBuffer())});assert.equal(upload.statusCode,200,upload.body);await drainSchool(worker);
+    const file=(await request('GET',`/api/v1/schools/${schoolA}/files/${upload.json().data.id}`)).json().data;assert.equal(file.status,'READY');
+    const link=await f.post('file-links',{fileId:file.id,studentId:f.enrollments[0].studentId,shareWithGuardian:false});assert.equal(link.statusCode,201,link.body);
+    const both=await f.patch(f.a.id,{expectedVersion:f.a.version,fileIds:[file.id],targets:f.enrollments.map(e=>({kind:'STUDENT',id:e.studentId}))});assert.equal(both.statusCode,422,both.body);
+    const patched=await f.patch(f.a.id,{expectedVersion:f.a.version,fileIds:[file.id],targets:[{kind:'STUDENT',id:f.enrollments[0].studentId}],audience:'FAMILIES'});assert.equal(patched.statusCode,200,patched.body);const a=patched.json().data;
+    const ctx=await announcementParent(csrf,f);assert.equal((await parentGet('documents',ctx)).json().data.length,0);
+    const pub=await f.post(`${f.path}/${a.id}/publish`,{expectedSourceVersion:a.dataVersion});assert.equal(pub.statusCode,200,pub.body);
+    const detail=await parentGet(`announcements/${a.rootId}`,ctx);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.documents.length,1);const doc=detail.json().data.documents[0];assert.notEqual(doc.id,file.id);assert.equal((await parentGet(`documents/${doc.id}/download`,ctx)).statusCode,200);
+    const other=await announcementParent(csrf,f,1);assert.equal((await parentGet('documents',other)).json().data.length,0);assert.equal((await parentGet(`documents/${doc.id}/download`,other)).statusCode,404);
+    const hidden=await announcementParent(csrf,f,0,['announcements'],false);assert.equal((await parentGet(`announcements/${a.rootId}`,hidden)).json().data.documents.length,0);
+    const restricted=await announcementParent(csrf,f,0,['announcements','documents'],false);assert.equal((await parentGet(`announcements/${a.rootId}`,restricted)).json().data.documents[0].downloadAllowed,false);assert.equal((await parentGet(`documents/${doc.id}/download`,restricted)).statusCode,403);
+    assert.equal((await parentGet(`announcements/${a.rootId}`,ctx)).statusCode,409);const currentCtx=await announcementParent(csrf,f);
+    const archived=await f.post(`files/${file.id}/archive`,{expectedVersion:file.version,reason:'Lưu trữ tài liệu thông báo'});assert.equal(archived.statusCode,200,archived.body);const afterArchive=await parentGet(`announcements/${a.rootId}`,currentCtx);assert.equal(afterArchive.statusCode,200,afterArchive.body);assert.equal(afterArchive.json().data.documents.length,0);assert.equal((await parentGet(`documents/${doc.id}/download`,currentCtx)).statusCode,404);
+    const current=await f.get(),withdrawn=await f.post(`${f.path}/${a.id}/withdraw`,{expectedVersion:current.version,reason:'Thu hồi thông báo riêng'});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal((await parentGet(`announcements/${a.rootId}`,currentCtx)).statusCode,404);
+  }finally{await worker.close();}
+});

@@ -21514,6 +21514,15 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -22276,6 +22285,15 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -32838,6 +32856,38 @@ components:
             format: uuid
             nullable: true
           maxItems: 20
+        summary:
+          type: string
+          maxLength: 4000
+        audience:
+          type: string
+          enum:
+            - FAMILIES
+            - STAFF
+            - ALL
+        internalNote:
+          type: string
+          maxLength: 4000
+        rootId:
+          type: string
+          format: uuid
+        dataVersion:
+          type: integer
+          minimum: 1
+        discardedAt:
+          type: string
+          format: date-time
+          nullable: true
+        scheduleState:
+          type: string
+          enum:
+            - PENDING
+            - LEASED
+            - DONE
+            - FAILED
+            - CANCELLED
+        scheduleErrorCode:
+          type: string
       required:
         - id
         - version
@@ -32877,6 +32927,18 @@ components:
             type: string
             format: uuid
           maxItems: 20
+        summary:
+          type: string
+          maxLength: 4000
+        audience:
+          type: string
+          enum:
+            - FAMILIES
+            - STAFF
+            - ALL
+        internalNote:
+          type: string
+          maxLength: 4000
       required:
         - yearId
         - title
@@ -32908,6 +32970,20 @@ components:
             type: string
             format: uuid
           maxItems: 20
+        summary:
+          type: string
+          maxLength: 4000
+        audience:
+          type: string
+          enum:
+            - FAMILIES
+            - STAFF
+            - ALL
+        internalNote:
+          type: string
+          maxLength: 4000
+        discard:
+          type: boolean
       required:
         - expectedVersion
       additionalProperties: false

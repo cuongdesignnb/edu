@@ -1,0 +1,109 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-6a79b1621ae9 Creating 
+ Container edumanage_backend_test-runner-run-6a79b1621ae9 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (393.48078ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (8.701997ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.547102ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (3.802894ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (124.082552ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (42.9636ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (107.088132ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (57.756323ms)
+✔ BE21 parent runtime role cannot select raw student rows (182.41966ms)
+✔ B0 health ready checks actual migrations, database and private storage (17.054923ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (108.408571ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (65.516787ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (110.15289ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (79.174812ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (151.550889ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (98.817362ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (180.589276ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (135.441935ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (429.498847ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (788.657911ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (172.087509ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (797.168937ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (1755.460692ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (1046.814948ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (2409.984711ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (2423.83852ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (382.660257ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (197.603457ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (131.215328ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (248.803021ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (579.187973ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1175.776945ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (2670.788664ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (1296.73084ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (372.262747ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (720.615222ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (394.381331ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (524.442291ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (396.099032ms)
+✔ B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason (199.742447ms)
+✔ B2 shrinking class capacity checks planned future occupancy peaks, rather than only today (93.998355ms)
+✔ B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties (402.316333ms)
+✔ B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened (358.325188ms)
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (422.833278ms)
+✔ B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically (299.626757ms)
+✔ B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history (522.708048ms)
+✔ B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions (648.290941ms)
+✔ B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history (350.15986ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (495.347541ms)
+✔ B5 activities count only explicit participants, preserve published states and require current source/review authority (753.018797ms)
+✔ B5 approved activity results are explicit conduct sources and locked approved facts protect their source history (403.495844ms)
+✔ B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability (1014.775947ms)
+✖ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (1500.061833ms)
+✔ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (919.990441ms)
+✔ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (1602.599312ms)
+✖ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (436.929282ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 54
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 31930.320228
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1265:1
+✖ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (1500.061833ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:unauthenticated","title":"UNAUTHENTICATED","status":401,"code":"UNAUTHENTICATED","requestId":"13c3978f-5565-4a29-99c9-d5fcf3746ae9"}
+  
+  401 !== 200
+  
+      at Object.get (file:///srv/api/tests/integration/foundation.test.mjs:1251:131)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1282:86)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1314:1
+✖ B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot (436.929282ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:unauthenticated","title":"UNAUTHENTICATED","status":401,"code":"UNAUTHENTICATED","requestId":"7082c99e-4d0c-4565-ba31-f2d05334b570"}
+  
+  401 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1321:155)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+

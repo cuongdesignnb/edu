@@ -209,20 +209,20 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | downloadFile | CL24, CL20 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
 | archiveFile | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
 | createFileLink | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
-| listSchoolAnnouncements | SC33, SC34, SC35 | NOT_STARTED |  |
-| createSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| getSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| updateSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| publishSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| scheduleSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| withdrawSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
-| listClassAnnouncements | CL21, CL22, CL23 | NOT_STARTED |  |
-| createClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| getClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| updateClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| publishClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| scheduleClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
-| withdrawClassAnnouncement | CL21, CL22, CL23 | NOT_STARTED |  |
+| listSchoolAnnouncements | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| createSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| getSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| updateSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| publishSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| scheduleSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| withdrawSchoolAnnouncement | SC33, SC34, SC35 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| listClassAnnouncements | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| createClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| getClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| updateClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| publishClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| scheduleClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| withdrawClassAnnouncement | CL21, CL22, CL23 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | listImports | SC26 | TESTED | qa/backend/imports-integration.log |
 | createImport | SC27 | TESTED | qa/backend/imports-integration.log |
 | getImport | SC28 | TESTED | qa/backend/imports-integration.log |
@@ -266,8 +266,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getParentTeachers | PA12 | TESTED | qa/backend/parent-integration.log |
 | listParentDocuments | PA13 | TESTED | qa/backend/parent-integration.log |
 | downloadParentDocument | PA13 | TESTED | qa/backend/parent-integration.log |
-| getPublicSchool | SY01 | NOT_STARTED |  |
-| getPublicAnnouncement | SY02 | NOT_STARTED |  |
+| getPublicSchool | SY01 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
+| getPublicAnnouncement | SY02 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|
@@ -324,9 +324,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC30 | core | TESTED | NOT_STARTED |  |
 | SC31 | core | PARTIAL | NOT_STARTED |  |
 | SC32 | core | TESTED | NOT_STARTED |  |
-| SC33 | core | PARTIAL | NOT_STARTED |  |
-| SC34 | core | PARTIAL | NOT_STARTED |  |
-| SC35 | core | PARTIAL | NOT_STARTED |  |
+| SC33 | core | TESTED | NOT_STARTED |  |
+| SC34 | core | TESTED | NOT_STARTED |  |
+| SC35 | core | TESTED | NOT_STARTED |  |
 | SC36 | core | TESTED | NOT_STARTED |  |
 | SC37 | core | PARTIAL | NOT_STARTED |  |
 | SC38 | core | PARTIAL | NOT_STARTED |  |
@@ -361,9 +361,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL18 | core | TESTED | NOT_STARTED |  |
 | CL19 | core | TESTED | NOT_STARTED |  |
 | CL20 | core | TESTED | NOT_STARTED |  |
-| CL21 | core | PARTIAL | NOT_STARTED |  |
-| CL22 | core | PARTIAL | NOT_STARTED |  |
-| CL23 | core | PARTIAL | NOT_STARTED |  |
+| CL21 | core | TESTED | NOT_STARTED |  |
+| CL22 | core | TESTED | NOT_STARTED |  |
+| CL23 | core | TESTED | NOT_STARTED |  |
 | CL24 | core | TESTED | NOT_STARTED |  |
 | CL25 | core | PARTIAL | NOT_STARTED |  |
 | CL26 | core | PARTIAL | NOT_STARTED |  |
@@ -381,8 +381,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA12 | core | TESTED | NOT_STARTED |  |
 | PA13 | core | TESTED | NOT_STARTED |  |
 | PA14 | core | TESTED | NOT_STARTED |  |
-| SY01 | core | PARTIAL | NOT_STARTED |  |
-| SY02 | core | PARTIAL | NOT_STARTED |  |
+| SY01 | core | TESTED | NOT_STARTED |  |
+| SY02 | core | TESTED | NOT_STARTED |  |
 | SY03 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Trang chính sách cần chủ dự án duyệt, nội dung tĩnh. |
 | SY04 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Điều kiện sử dụng tĩnh, không billing. |
 | SY05 | core | TESTED | NOT_STARTED |  |
