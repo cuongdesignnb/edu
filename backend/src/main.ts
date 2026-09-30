@@ -30,6 +30,7 @@ import { SettingsService } from './modules/settings/settings.service';
 import { NotificationsService } from './modules/notifications/notifications.service';
 import { DashboardsService } from './modules/dashboards/dashboards.service';
 import { PlatformService } from './modules/platform/platform.service';
+import { SupportService } from './modules/support/support.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -61,6 +62,7 @@ export async function createApplication() {
   registerHandlers(server,app.get(NotificationsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(DashboardsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(PlatformService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(SupportService).handlers(),app.get(IdentityService));
   const parent=app.get(ParentService);
   registerHandlers(server,parent.handlers(),app.get(IdentityService),(request,slug)=>parent.authenticate(request,slug));
   app.enableShutdownHooks();

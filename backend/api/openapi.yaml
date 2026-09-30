@@ -2505,6 +2505,24 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+        - name: assigneeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -2971,6 +2989,25 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: ticketId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: operatorId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -25074,6 +25111,19 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+        - name: assigneeId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -25587,6 +25637,20 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: ticketId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: operatorId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -25915,7 +25979,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ReasonCommand"
+              $ref: "#/components/schemas/SupportAccessRevoke"
       responses:
         "200":
           description: Thành công
@@ -33918,15 +33982,39 @@ components:
             - IN_PROGRESS
             - RESOLVED
             - CLOSED
+            - WAITING_SCHOOL
         priority:
           type: string
           enum:
             - NORMAL
             - HIGH
+            - LOW
         assigneeId:
           type: string
           format: uuid
           nullable: true
+        schoolName:
+          type: string
+        requesterName:
+          type: string
+        assigneeName:
+          type: string
+          nullable: true
+        operatorChoices:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
       required:
         - id
         - version
@@ -33953,6 +34041,7 @@ components:
           enum:
             - NORMAL
             - HIGH
+            - LOW
       required:
         - subject
         - description
@@ -33971,9 +34060,11 @@ components:
             - IN_PROGRESS
             - RESOLVED
             - CLOSED
+            - WAITING_SCHOOL
         assigneeId:
           type: string
           format: uuid
+          nullable: true
       required:
         - expectedVersion
       additionalProperties: false
@@ -33994,6 +34085,12 @@ components:
         createdAt:
           type: string
           format: date-time
+        side:
+          type: string
+          enum:
+            - SCHOOL
+            - PLATFORM
+            - UNKNOWN
       required:
         - id
         - authorLabel
@@ -34062,6 +34159,28 @@ components:
         validUntil:
           type: string
           format: date-time
+        requestedById:
+          type: string
+          format: uuid
+        approvedById:
+          type: string
+          format: uuid
+        operatorName:
+          type: string
+        approverName:
+          type: string
+          nullable: true
+        requesterName:
+          type: string
+          nullable: true
+        schoolName:
+          type: string
+        effective:
+          type: boolean
+        revokedAt:
+          type: string
+          format: date-time
+          nullable: true
       required:
         - id
         - version
@@ -34092,6 +34211,8 @@ components:
           type: array
           items:
             type: string
+          minItems: 1
+          maxItems: 9
         reason:
           type: string
           maxLength: 4000
@@ -35846,6 +35967,25 @@ components:
         - groupId
         - dutyDate
         - task
+      additionalProperties: false
+    SupportAccessRevoke:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 2000
+        decision:
+          type: string
+          enum:
+            - REVOKE
+            - REJECT
+      required:
+        - expectedVersion
+        - reason
       additionalProperties: false
   securitySchemes:
     StaffCookie:

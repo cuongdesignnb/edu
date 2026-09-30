@@ -8101,20 +8101,53 @@
             "OPEN",
             "IN_PROGRESS",
             "RESOLVED",
-            "CLOSED"
+            "CLOSED",
+            "WAITING_SCHOOL"
           ]
         },
         "priority": {
           "type": "string",
           "enum": [
             "NORMAL",
-            "HIGH"
+            "HIGH",
+            "LOW"
           ]
         },
         "assigneeId": {
           "type": "string",
           "format": "uuid",
           "nullable": true
+        },
+        "schoolName": {
+          "type": "string"
+        },
+        "requesterName": {
+          "type": "string"
+        },
+        "assigneeName": {
+          "type": "string",
+          "nullable": true
+        },
+        "operatorChoices": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -8146,7 +8179,8 @@
           "type": "string",
           "enum": [
             "NORMAL",
-            "HIGH"
+            "HIGH",
+            "LOW"
           ]
         }
       },
@@ -8170,12 +8204,14 @@
             "OPEN",
             "IN_PROGRESS",
             "RESOLVED",
-            "CLOSED"
+            "CLOSED",
+            "WAITING_SCHOOL"
           ]
         },
         "assigneeId": {
           "type": "string",
-          "format": "uuid"
+          "format": "uuid",
+          "nullable": true
         }
       },
       "required": [
@@ -8203,6 +8239,14 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "SCHOOL",
+            "PLATFORM",
+            "UNKNOWN"
+          ]
         }
       },
       "required": [
@@ -8293,6 +8337,36 @@
         "validUntil": {
           "type": "string",
           "format": "date-time"
+        },
+        "requestedById": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "approvedById": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operatorName": {
+          "type": "string"
+        },
+        "approverName": {
+          "type": "string",
+          "nullable": true
+        },
+        "requesterName": {
+          "type": "string",
+          "nullable": true
+        },
+        "schoolName": {
+          "type": "string"
+        },
+        "effective": {
+          "type": "boolean"
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
         }
       },
       "required": [
@@ -8330,7 +8404,9 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "minItems": 1,
+          "maxItems": 9
         },
         "reason": {
           "type": "string",
@@ -10856,6 +10932,32 @@
         "groupId",
         "dutyDate",
         "task"
+      ],
+      "additionalProperties": false
+    },
+    "SupportAccessRevoke": {
+      "type": "object",
+      "properties": {
+        "expectedVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2000
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "REVOKE",
+            "REJECT"
+          ]
+        }
+      },
+      "required": [
+        "expectedVersion",
+        "reason"
       ],
       "additionalProperties": false
     }
@@ -14768,6 +14870,36 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "priority",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "assigneeId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "schoolId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -15507,6 +15639,37 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "ticketId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "operatorId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "schoolId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -49837,6 +50000,28 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "priority",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "assigneeId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -50640,6 +50825,29 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "ticketId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "operatorId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -51088,7 +51296,7 @@
       "tag": "Support",
       "permission": "support.approve",
       "scope": "school",
-      "request": "ReasonCommand",
+      "request": "SupportAccessRevoke",
       "response": "SupportAccess",
       "list": false,
       "auth": "staff",
@@ -51144,7 +51352,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ReasonCommand"
+              "$ref": "#/components/schemas/SupportAccessRevoke"
             }
           }
         }
@@ -54175,7 +54383,8 @@
     "year.manage",
     "year.read",
     "publication.read",
-    "publication.withdraw"
+    "publication.withdraw",
+    "import.read"
   ],
   "roles": [
     {

@@ -325,8 +325,10 @@
         "PL06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "getPlatformTicket",
@@ -334,8 +336,10 @@
         "PL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "updatePlatformTicket",
@@ -343,8 +347,10 @@
         "PL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "listPlatformTicketMessages",
@@ -352,8 +358,10 @@
         "PL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "postPlatformTicketMessage",
@@ -361,8 +369,10 @@
         "PL07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "listPlatformSupportAccess",
@@ -370,8 +380,10 @@
         "PL08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "listPlatformAudit",
@@ -2726,8 +2738,10 @@
         "SC42"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "createTicket",
@@ -2735,8 +2749,10 @@
         "SC42"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "getSchoolTicket",
@@ -2744,8 +2760,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolMessages",
@@ -2753,8 +2771,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "postSchoolMessage",
@@ -2762,8 +2782,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolSupportAccess",
@@ -2772,8 +2794,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "createSupportAccess",
@@ -2782,8 +2806,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "approveSupportAccess",
@@ -2791,8 +2817,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "revokeSupportAccess",
@@ -2800,8 +2828,10 @@
         "SC43"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/support-integration.log"
+      ]
     },
     {
       "operationId": "exchangeParentLink",
@@ -3194,7 +3224,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL07",
@@ -3208,7 +3238,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL08",
@@ -3219,7 +3249,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PL09",
@@ -3845,7 +3875,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC43",
@@ -3862,7 +3892,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE01",

@@ -25,6 +25,7 @@ import { SettingsService } from './modules/settings/settings.service';
 import { NotificationsService } from './modules/notifications/notifications.service';
 import { DashboardsService } from './modules/dashboards/dashboards.service';
 import { PlatformService } from './modules/platform/platform.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService,ClassroomService,ScheduleService,ActivitiesService,AnnouncementsService,SettingsService,NotificationsService,DashboardsService,PlatformService];
+import { SupportService } from './modules/support/support.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService,ClassroomService,ScheduleService,ActivitiesService,AnnouncementsService,SettingsService,NotificationsService,DashboardsService,PlatformService,SupportService];
 @Module({providers:services,exports:services})
 export class AppModule {}

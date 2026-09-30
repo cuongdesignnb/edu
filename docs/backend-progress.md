@@ -31,12 +31,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listSchoolAdmins | PL05 | TESTED | qa/backend/platform-integration.log |
 | inviteSchoolAdmin | PL03, PL05 | TESTED | qa/backend/platform-integration.log |
 | revokeSchoolAdmin | PL05 | TESTED | qa/backend/platform-integration.log |
-| listPlatformTickets | PL06 | NOT_STARTED |  |
-| getPlatformTicket | PL07 | NOT_STARTED |  |
-| updatePlatformTicket | PL07 | NOT_STARTED |  |
-| listPlatformTicketMessages | PL07 | NOT_STARTED |  |
-| postPlatformTicketMessage | PL07 | NOT_STARTED |  |
-| listPlatformSupportAccess | PL08 | NOT_STARTED |  |
+| listPlatformTickets | PL06 | TESTED | qa/backend/support-integration.log |
+| getPlatformTicket | PL07 | TESTED | qa/backend/support-integration.log |
+| updatePlatformTicket | PL07 | TESTED | qa/backend/support-integration.log |
+| listPlatformTicketMessages | PL07 | TESTED | qa/backend/support-integration.log |
+| postPlatformTicketMessage | PL07 | TESTED | qa/backend/support-integration.log |
+| listPlatformSupportAccess | PL08 | TESTED | qa/backend/support-integration.log |
 | listPlatformAudit | PL09 | TESTED | qa/backend/platform-integration.log |
 | listOperations | PL10 | TESTED | qa/backend/platform-integration.log |
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
@@ -241,15 +241,15 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
 | getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
 | updateSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
-| listSchoolTickets | SC42 | NOT_STARTED |  |
-| createTicket | SC42 | NOT_STARTED |  |
-| getSchoolTicket | SC43 | NOT_STARTED |  |
-| listSchoolMessages | SC43 | NOT_STARTED |  |
-| postSchoolMessage | SC43 | NOT_STARTED |  |
-| listSchoolSupportAccess | SC42, SC43 | NOT_STARTED |  |
-| createSupportAccess | SC42, SC43 | NOT_STARTED |  |
-| approveSupportAccess | SC43 | NOT_STARTED |  |
-| revokeSupportAccess | SC43 | NOT_STARTED |  |
+| listSchoolTickets | SC42 | TESTED | qa/backend/support-integration.log |
+| createTicket | SC42 | TESTED | qa/backend/support-integration.log |
+| getSchoolTicket | SC43 | TESTED | qa/backend/support-integration.log |
+| listSchoolMessages | SC43 | TESTED | qa/backend/support-integration.log |
+| postSchoolMessage | SC43 | TESTED | qa/backend/support-integration.log |
+| listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log |
+| createSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log |
+| approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log |
+| revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log |
 | exchangeParentLink | PA01 | TESTED | qa/backend/parent-integration.log |
 | getParentContext | PA01, PA14 | TESTED | qa/backend/parent-integration.log |
 | endParentSession | PA14 | TESTED | qa/backend/parent-integration.log |
@@ -286,9 +286,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL03 | core | TESTED | NOT_STARTED |  |
 | PL04 | core | TESTED | NOT_STARTED |  |
 | PL05 | core | TESTED | NOT_STARTED |  |
-| PL06 | core | PARTIAL | NOT_STARTED |  |
-| PL07 | core | PARTIAL | NOT_STARTED |  |
-| PL08 | core | PARTIAL | NOT_STARTED |  |
+| PL06 | core | TESTED | NOT_STARTED |  |
+| PL07 | core | TESTED | NOT_STARTED |  |
+| PL08 | core | TESTED | NOT_STARTED |  |
 | PL09 | core | TESTED | NOT_STARTED |  |
 | PL10 | core | TESTED | NOT_STARTED |  |
 | PL11 | core | TESTED | NOT_STARTED |  |
@@ -333,8 +333,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC39 | core | PARTIAL | NOT_STARTED |  |
 | SC40 | core | TESTED | NOT_STARTED |  |
 | SC41 | core | TESTED | NOT_STARTED |  |
-| SC42 | core | PARTIAL | NOT_STARTED |  |
-| SC43 | core | PARTIAL | NOT_STARTED |  |
+| SC42 | core | TESTED | NOT_STARTED |  |
+| SC43 | core | TESTED | NOT_STARTED |  |
 | TE01 | core | TESTED | NOT_STARTED |  |
 | TE02 | core | TESTED | NOT_STARTED |  |
 | TE03 | core | TESTED | NOT_STARTED |  |

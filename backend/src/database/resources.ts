@@ -77,7 +77,7 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string|nul
     const offset=values.length;values.push(...extra.values);
     where.push('('+extra.sql.replace(/\$(\d+)/g,(_,i)=>'$'+(Number(i)+offset))+')');
   }
-  const fingerprint=crypto.createHash('sha256').update(canonical({schoolId,principalId,table:r.table,
+  const fingerprint=crypto.createHash('sha256').update(canonical({cursorVersion:2,schoolId,principalId,table:r.table,
     query:{...query,cursor:undefined},extra,baseParameters})).digest('hex');
   const count=(await one<{total:string}>(tx,`SELECT count(*) AS total FROM ${r.table} t WHERE ${where.join(' AND ')}`,values))!.total;
   if(query.cursor){
@@ -86,12 +86,16 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string|nul
     let cursor:{fingerprint:string;sortValue:unknown;id:string};
     try{cursor=JSON.parse(Buffer.from(payload,'base64url').toString('utf8')) as typeof cursor;}catch{throw new Problem(422,'INVALID_CURSOR');}
     if(cursor.fingerprint!==fingerprint||typeof cursor.id!=='string')throw new Problem(422,'INVALID_CURSOR');
-    values.push(cursor.sortValue,cursor.id);where.push(`(t.${sortColumn},t.id) ${direction==='asc'?'>':'<'} ($${values.length-1},$${values.length})`);
+    const compare=direction==='asc'?'>':'<';
+    if(cursor.sortValue===null){values.push(cursor.id);where.push(`t.${sortColumn} IS NULL AND t.id ${compare} $${values.length}`);}
+    else{values.push(cursor.sortValue,cursor.id);where.push(`((t.${sortColumn},t.id) ${compare} ($${values.length-1},$${values.length}) OR t.${sortColumn} IS NULL)`);}
   }
   values.push(limit+1);
-  const rows=(await tx.query<Row>(`SELECT ${columns(r)} FROM ${r.table} t WHERE ${where.join(' AND ')}
-    ORDER BY t.${sortColumn} ${direction},t.id ${direction} LIMIT $${values.length}`,values)).rows;
+  // PostgreSQL text retains timestamp microseconds and exact decimals. Parsing
+  // them through a JavaScript Date/number before signing would lose the boundary.
+  const rows=(await tx.query<Row>(`SELECT ${columns(r)},t.${sortColumn}::text AS __cursor_sort FROM ${r.table} t WHERE ${where.join(' AND ')}
+    ORDER BY t.${sortColumn} ${direction} NULLS LAST,t.id ${direction} LIMIT $${values.length}`,values)).rows;
   const hasMore=rows.length>limit;if(hasMore)rows.pop();const last=rows.at(-1);
-  const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,sortValue:last[sortColumn],id:last.id})).toString('base64url'):null;
+  const payload=hasMore&&last?Buffer.from(JSON.stringify({fingerprint,sortValue:last.__cursor_sort,id:last.id})).toString('base64url'):null;
   return {data:rows.map(row=>dto(r,row)),page:{limit,hasMore,nextCursor:payload?`${payload}.${cursorSign(payload)}`:null,total:Number(count)}};
 }

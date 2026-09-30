@@ -135,6 +135,20 @@ for(const id of ['listSchoolAnnouncements','listClassAnnouncements']){
   op.parameters.push({name:'status',in:'query',schema:{type:'string'}},{name:'yearId',in:'query',schema:{type:'string',format:'uuid'}});
 }
 spec.info.version = '1.0.0-implementation';
+// ADR-025: the existing support queue/consent states are persisted, not simulated.
+for(const name of ['SupportTicket','SupportTicketPatch'])spec.components.schemas[name].properties.status.enum.push('WAITING_SCHOOL');
+for(const name of ['SupportTicket','TicketCreate'])spec.components.schemas[name].properties.priority.enum.push('LOW');
+spec.components.schemas.SupportTicketPatch.properties.assigneeId.nullable=true;
+Object.assign(spec.components.schemas.SupportTicket.properties,{schoolName:{type:'string'},requesterName:{type:'string'},assigneeName:{type:'string',nullable:true},operatorChoices:{type:'array',maxItems:100,items:{type:'object',properties:{id:{type:'string',format:'uuid'},name:{type:'string'}},required:['id','name'],additionalProperties:false}}});
+spec.components.schemas.SupportMessage.properties.side={type:'string',enum:['SCHOOL','PLATFORM','UNKNOWN']};
+Object.assign(spec.components.schemas.SupportAccess.properties,{requestedById:{type:'string',format:'uuid'},approvedById:{type:'string',format:'uuid'},operatorName:{type:'string'},approverName:{type:'string',nullable:true},requesterName:{type:'string',nullable:true},schoolName:{type:'string'},effective:{type:'boolean'},revokedAt:{type:'string',format:'date-time',nullable:true}});
+spec.components.schemas.SupportAccessCreate.properties.allowedActions.minItems=1;spec.components.schemas.SupportAccessCreate.properties.allowedActions.maxItems=9;
+spec.components.schemas.SupportAccessRevoke={...structuredClone(spec.components.schemas.ReasonCommand),properties:{...structuredClone(spec.components.schemas.ReasonCommand.properties),decision:{type:'string',enum:['REVOKE','REJECT']}}};
+spec.paths['/schools/{schoolId}/support-access/{supportAccessId}/revoke'].post.requestBody.content['application/json'].schema={$ref:'#/components/schemas/SupportAccessRevoke'};
+for(const id of ['listPlatformTickets','listSchoolTickets','listPlatformSupportAccess','listSchoolSupportAccess']){
+  const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id),names=id.includes('SupportAccess')?['status','ticketId','operatorId','schoolId']:['status','priority','assigneeId','schoolId'];
+  for(const name of names)if(!op.parameters.some(p=>p.name===name))op.parameters.push({name,in:'query',schema:{type:'string',...(name.endsWith('Id')?{format:'uuid'}:{})}});
+}
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
 await fs.writeFile(path.join(root, 'backend/api/openapi.yaml'), YAML.stringify(spec, { aliasDuplicateObjects: false }));
@@ -143,6 +157,7 @@ const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));
 permissions.push('publication.read', 'publication.withdraw');
+permissions.push('import.read');
 for (const role of roles.roles) {
   if (['HOMEROOM', 'SUBJECT_TEACHER'].includes(role.code)) role.actions.push('class.read');
   if (role.actions.includes('conduct.read')) role.actions.push('publication.read');
@@ -154,7 +169,7 @@ const resolvedOperations = operations.map(op => {
   const actual = spec.paths[op.path.replace(/^\/api\/v1/, '')]?.[op.method.toLowerCase()]
     ?? spec.paths[op.path]?.[op.method.toLowerCase()];
   if (!actual || actual.operationId !== op.id) throw new Error(`Registry mismatch ${op.id}`);
-  return { ...op, parameters: actual.parameters ?? [], requestBody: actual.requestBody,
+  return { ...op, ...(op.id==='revokeSupportAccess'?{request:'SupportAccessRevoke'}:{}),parameters: actual.parameters ?? [], requestBody: actual.requestBody,
     responses: actual.responses };
 });
 await fs.mkdir(path.join(root, 'backend/src/generated'), { recursive: true });

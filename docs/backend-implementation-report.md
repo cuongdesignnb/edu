@@ -20,7 +20,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 24 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 25 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support request/consent transitions tested, selected-grant read integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
@@ -30,6 +30,15 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
+
+## Support queue and consent workflow checks
+
+- Fifteen supplied support operations implemented and exercised; API implementation coverage is now 257/264. The seven report/export operations remain. This API count does not certify all B1–B7 requirements or connected screens.
+- Actual suite: 70/70 integration tests, exit0 in qa/backend/support-integration.log; 12/12 unit/contract tests, exit0 in support-unit-contract.log; build/typecheck/lint exit0. Migration 025 applied/replayed/checksum-verified.
+- Tickets/messages are persisted, with per-school denial, platform routing, LOW priority, WAITING_SCHOOL → IN_PROGRESS on an actual school reply, stale-version rejection, closed-ticket write denial and idempotent append commands.
+- Support scope/action/time/ticket/class validation, current school consent, delegation expiry ceilings, immutable requested scope, explicit reject and revoke transitions, and retained audit were exercised. Actual selected-grant reads, operator-plus-admin self-approval and read-mode expiry/audit tests remain pending.
+- Generic signed keyset cursors now retain PostgreSQL timestamp microseconds/exact native values and explicitly paginate nulls last. Actual two-message ascending pagination was exercised; broader nullable-boundary coverage remains pending.
+- Connected frontend, reports/exports, final local deployment, restart/backup/restore, process-kill/SMTP and load drills remain incomplete.
 
 ## Platform metadata and administrator bootstrap checks
 
