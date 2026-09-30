@@ -86,3 +86,10 @@ test('handover receipts retain unknown legacy metadata and strict reviewed sourc
   validateSchema('HandoverApprove',{expectedVersion:1,previewHash:'a'.repeat(64)});assert.equal(operations.find(op=>op.id==='approveHandover').request,'HandoverApprove');
   assert.equal(operations.find(op=>op.id==='getHandoverByRequest').permission,'assignment.manage');
 });
+
+test('student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={fullName:'Học sinh giả',dateOfBirth:'2011-09-30',gender:'Nữ',initialClassId:id,startsOn:'2026-10-01',initialGuardian:{fullName:'Giám hộ giả',relationshipLabel:'Mẹ',phone:'0912222222'}};validateSchema('StudentCreate',value);
+  validateSchema('StudentPatch',{expectedVersion:3,gender:null,internalNote:null});
+  for(const bad of [{...value,gender:'UNKNOWN'},{...value,actorId:id},{...value,schoolId:id},{...value,initialGuardian:{...value.initialGuardian,status:'VERIFIED',canReceiveInfo:true}}])assert.throws(()=>validateSchema('StudentCreate',bad),error=>error.status===422);
+  const student={id,version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),studentCode:'HS26001',fullName:'Học sinh cũ giả',dateOfBirth:null,gender:null,status:'ACTIVE'};validateSchema('Student',student,true);validateSchema('StudentDetail',{student,enrollments:[],internalNote:null},true);
+});

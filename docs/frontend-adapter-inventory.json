@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 86,
+  "candidateCount": 88,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3466,7 +3466,17 @@
         "input: { code?: string; fullName: string; dob: string; gender: Gender; classId: ID; startDate: string; guardian?: { fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string } }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "create",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",
@@ -3480,7 +3490,17 @@
         "patch: { fullName: string; dob: string; gender: Gender; internalNote?: string; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "update",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",

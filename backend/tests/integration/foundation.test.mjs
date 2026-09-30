@@ -243,10 +243,12 @@ test('B0 health ready checks actual migrations, database and private storage',as
   assert.equal(ready.headers['cache-control'],'no-store');
 });
 test('B2 class lists use SQL scope and cross-school details deny before serialization',async()=>{
+  const denied=(await db.transaction(tx=>tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity) VALUES($1,$2,$3,$4,'10A Không được phân công giả',10) RETURNING id",[schoolA,seedId('year:A'),seedId('grade:A'),'DENY-'+crypto.randomUUID()]),{schoolId:schoolA})).rows[0].id;
   await login('teacher-a@example.invalid');
   const classes=await request('GET',`/api/v1/schools/${schoolA}/classes?q=10A`);
   assert.equal(classes.statusCode,200);
-  assert.deepEqual(new Set(classes.json().data.map(row=>row.id)),new Set([classA,classB]));
+  const ids=new Set(classes.json().data.map(row=>row.id));assert.ok(ids.has(classA));assert.ok(ids.has(classB));assert.equal(ids.has(denied),false);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/classes/${denied}`)).statusCode,404);
   const classDetail=await request('GET',`/api/v1/schools/${schoolA}/classes/${classB}`);assert.equal(classDetail.statusCode,200);
   const cross=await request('GET',`/api/v1/schools/${schoolB}/classes/${seedId('class:B:10A1')}`);assert.equal(cross.statusCode,404);
   const year=await request('GET',`/api/v1/schools/${schoolA}/academic-years`);assert.equal(year.statusCode,200);
@@ -2222,7 +2224,7 @@ test('B6 Vietnamese composite keysets preserve given/full-name order, case/diacr
     do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&sort=department&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);departmentRows.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
     assert.equal(new Set(departmentRows.map(r=>r.id)).size,all.length);const firstNull=departmentRows.findIndex(r=>r.department===null);assert.ok(firstNull>=0);assert.ok(departmentRows.slice(firstNull).every(r=>r.department===null));
   }
-  assert.equal((await verifyInstallation(pool)).migrations,35);
+  assert.equal((await verifyInstallation(pool)).migrations,36);
 });
 
 test('B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access',async()=>{
@@ -2462,4 +2464,48 @@ test('B6 handover receipts remain actor/school bound, recheck delegation and den
   const list=await request('GET',`/api/v1/schools/${f.schoolId}/handovers?classId=${f.classId}&status=SUBMITTED&sort=effectiveOn&dir=asc&limit=1`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().page.total,1);assert.equal(list.json().data[0].id,receipt.id);assert.equal(list.body.includes('sourceState'),false);
   assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers?sort=sourceState`)).statusCode,422);
   jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const malformed=await f.post(`handovers/${receipt.id}/review`,{expectedVersion:receipt.version,previewHash:view.previewHash,expectedClassVersion:view.classVersion,expectedFromAssignmentVersion:view.current.version,expectedToMemberVersion:view.toMemberVersion,toMemberId:f.target});assert.equal(malformed.statusCode,422);
+});
+
+test('B6 student creation allocates actual codes and atomically retains enrollment, gender and a separate unverified guardian',async()=>{
+  const f=await staffUiFixture(),body={fullName:'  Học   sinh form giả  ',dateOfBirth:'2011-09-30',gender:'Nữ',initialClassId:f.classId,startsOn:f.today,initialGuardian:{fullName:'Giám hộ form giả',relationshipLabel:'Mẹ',phone:'0912222222'}},key=crypto.randomUUID();
+  const created=await f.post('students',body,key);assert.equal(created.statusCode,201,created.body);const s=created.json().data;assert.equal(s.fullName,'Học sinh form giả');assert.equal(s.gender,'Nữ');assert.equal(s.studentCode,'HS'+f.today.slice(2,4)+'001');assert.equal(s.initialEnrollment.classId,f.classId);assert.equal(s.initialRelationship.status,'UNVERIFIED');assert.equal(s.initialRelationship.canReceiveInfo,false);assert.equal(s.initialGuardian.id,s.initialRelationship.guardianId);
+  const replay=await f.post('students',body,key);assert.equal(replay.statusCode,201,replay.body);assert.deepEqual(replay.json().data,s);
+  const parallel=await Promise.all([f.post('students',{...body,fullName:'Học sinh form thứ hai'}),f.post('students',{...body,fullName:'Học sinh form thứ ba'})]);for(const r of parallel)assert.equal(r.statusCode,201,r.body);assert.equal(new Set([s.studentCode,...parallel.map(r=>r.json().data.studentCode)]).size,3);assert.notEqual(parallel[0].json().data.initialGuardian.id,parallel[1].json().data.initialGuardian.id);
+  const stored=await db.transaction(async tx=>({students:(await tx.query('SELECT student_code,gender,date_of_birth FROM app.students WHERE school_id=$1',[f.schoolId])).rows,enrollments:(await tx.query('SELECT count(*)::int AS n FROM app.enrollments WHERE school_id=$1',[f.schoolId])).rows[0].n,guardians:(await tx.query('SELECT count(*)::int AS n FROM app.guardians WHERE school_id=$1',[f.schoolId])).rows[0].n,links:(await tx.query('SELECT count(*)::int AS n FROM app.parent_access_links WHERE school_id=$1',[f.schoolId])).rows[0].n}),{schoolId:f.schoolId});assert.equal(stored.students.length,3);assert.equal(stored.enrollments,3);assert.equal(stored.guardians,3);assert.equal(stored.links,0);for(const row of stored.students){assert.equal(row.gender,'Nữ');assert.equal(row.date_of_birth,'2011-09-30');}
+});
+
+test('B6 student form failures roll back every row and optional contacts require independent current authority on replay',async()=>{
+  const f=await staffUiFixture(),role=await f.role([{action:'student.manage',scopes:['SCHOOL']}]),contactRole=await f.role([{action:'guardian.manage',scopes:['SCHOOL']}]);await f.grant(f.other,role.id);const contactGrant=await f.grant(f.other,contactRole.id);
+  jar.delete('edu_staff');f.setCsrf(await login('teacher-b@example.invalid'));const body={fullName:'Học sinh quyền giả',dateOfBirth:'2011-09-30',gender:'Nam',initialClassId:f.classId,startsOn:f.today,initialGuardian:{fullName:'Giám hộ quyền giả',relationshipLabel:'Bố',phone:'0912222222'}},key=crypto.randomUUID(),created=await f.post('students',body,key);assert.equal(created.statusCode,201,created.body);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,contactGrant.id]),{schoolId:f.schoolId});const replay=await f.post('students',body,key);assert.equal(replay.statusCode,404,replay.body);assert.equal(replay.json().code,'RESOURCE_NOT_FOUND');assert.equal(replay.body.includes('0912222222'),false);const denied=await f.post('students',{...body,fullName:'Không tạo được giả'});assert.equal(denied.statusCode,404,denied.body);
+  jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const invalid=await f.post('students',{...body,initialGuardian:{...body.initialGuardian,phone:'bad'}});assert.equal(invalid.statusCode,422,invalid.body);const future=await f.post('students',{...body,dateOfBirth:nextDate(f.today,1)});assert.equal(future.statusCode,422);const foreign=await f.post('students',{...body,initialClassId:classA});assert.equal(foreign.statusCode,404,foreign.body);
+  const counts=await db.transaction(tx=>tx.query("SELECT (SELECT count(*)::int FROM app.students WHERE school_id=$1) AS students,(SELECT count(*)::int FROM app.guardians WHERE school_id=$1) AS guardians,(SELECT count(*)::int FROM app.enrollments WHERE school_id=$1) AS enrollments,(SELECT count(*)::int FROM app.idempotency_keys WHERE school_id=$1 AND operation_id='createStudent') AS receipts",[f.schoolId]),{schoolId:f.schoolId});assert.deepEqual(counts.rows[0],{students:1,guardians:1,enrollments:1,receipts:1});
+});
+
+test('B6 student edits retain displayed versions and never replay internal notes after private profile authority is revoked',async()=>{
+  const f=await staffUiFixture(),created=await f.post('students',{fullName:'Học sinh sửa giả',studentCode:'EDIT',dateOfBirth:'2011-09-30',gender:'Nam',initialClassId:f.classId,startsOn:f.today});assert.equal(created.statusCode,201,created.body);const s=created.json().data;
+  const manage=await f.role([{action:'student.manage',scopes:['SCHOOL']},{action:'student.read',scopes:['SCHOOL']}]),privateRole=await f.role([{action:'guardian.read',scopes:['SCHOOL']}]);await f.grant(f.other,manage.id);const privateGrant=await f.grant(f.other,privateRole.id);
+  jar.delete('edu_staff');const csrf=await login('teacher-b@example.invalid'),url=`/api/v1/schools/${f.schoolId}/students/${s.id}`,body={expectedVersion:s.version,fullName:'Học sinh đã sửa giả',dateOfBirth:'2010-01-01',gender:'Nữ',internalNote:'Ghi chú nội bộ không công bố'},key=crypto.randomUUID();const saved=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(saved.statusCode,200,saved.body);const actual=saved.json().data;assert.ok(actual.version>s.version);assert.equal(actual.gender,'Nữ');assert.equal(actual.internalNote,body.internalNote);
+  const stale=await request('PATCH',url,{...body,fullName:'Không ghi đè nguồn'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(stale.statusCode,409,stale.body);assert.equal(stale.json().code,'VERSION_CONFLICT');
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,privateGrant.id]),{schoolId:f.schoolId});const denied=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(denied.statusCode,403,denied.body);assert.equal(denied.body.includes(body.internalNote),false);
+  const detail=await request('GET',url);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.student.gender,'Nữ');assert.equal(Object.hasOwn(detail.json().data.student,'dateOfBirth'),false);assert.equal(Object.hasOwn(detail.json().data,'internalNote'),false);assert.equal(Object.hasOwn(detail.json().data,'guardians'),false);
+  const edit=await request('PATCH',url,{expectedVersion:actual.version,gender:'Nam'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edit.statusCode,200,edit.body);assert.equal(Object.hasOwn(edit.json().data,'internalNote'),false);const source=await db.transaction(tx=>tx.query('SELECT full_name,gender,internal_note FROM app.students WHERE school_id=$1 AND id=$2',[f.schoolId,s.id]),{schoolId:f.schoolId});assert.deepEqual(source.rows[0],{full_name:body.fullName,gender:'Nam',internal_note:body.internalNote});
+});
+
+test('B6 student unknown historic gender remains null and invalid gender/guardian state cannot be fabricated',async()=>{
+  const f=await staffUiFixture(),body={fullName:'Học sinh nguồn cũ giả',studentCode:'UNKNOWN',initialClassId:f.classId,startsOn:f.today},created=await f.post('students',body);assert.equal(created.statusCode,201,created.body);const s=created.json().data;assert.equal(s.gender,null);assert.equal(s.dateOfBirth,null);
+  const invalid=await f.post('students',{...body,studentCode:'INVALID',gender:'UNKNOWN'});assert.equal(invalid.statusCode,422);const spoofed=await f.post('students',{...body,studentCode:'SPOOF',initialGuardian:{fullName:'Giám hộ giả',relationshipLabel:'Mẹ',status:'VERIFIED',canReceiveInfo:true}});assert.equal(spoofed.statusCode,422);
+  const row=await request('GET',`/api/v1/schools/${f.schoolId}/students/${s.id}`);assert.equal(row.statusCode,200,row.body);assert.equal(row.json().data.student.gender,null);assert.equal(row.json().data.internalNote,null);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.students SET gender='invented' WHERE school_id=$1 AND id=$2",[f.schoolId,s.id]),{schoolId:f.schoolId}),error=>error.code==='23514');
+});
+
+test('B6 real CSV gender mapping normalizes supported values, preserves unmapped sources and retains invalid rows',async()=>{
+  const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner(),prefix=crypto.randomUUID();
+  try{
+    const cls=await request('POST',`/api/v1/schools/${schoolA}/classes`,{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`gender-${prefix}`,name:'Lớp giới tính import giả',capacity:5},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(cls.statusCode,201,cls.body);const classId=cls.json().data.id,mapping=['studentCode','fullName','dateOfBirth','gender'].map(name=>({sourceColumn:name,targetField:name})),code=`G-${prefix}`;
+    let job=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth,gender\n${code},Học sinh import giới tính giả,2011-09-30,NỮ\n`,'STUDENTS',classId);job=await validateCsv(csrf,worker,job,mapping);job=await commitCsv(csrf,worker,job);assert.equal(job.status,'COMPLETED');
+    const read=()=>db.transaction(tx=>tx.query('SELECT gender,full_name FROM app.students WHERE school_id=$1 AND student_code=$2',[schoolA,code]),{schoolId:schoolA});assert.equal((await read()).rows[0].gender,'Nữ');
+    let update=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth\n${code},Tên import mới giả,2011-09-30\n`,'STUDENTS',classId);update=await validateCsv(csrf,worker,update,mapping.filter(m=>m.targetField!=='gender'),'UPSERT_VERIFIED_CODE');update=await commitCsv(csrf,worker,update);assert.equal(update.status,'COMPLETED');assert.deepEqual((await read()).rows[0],{gender:'Nữ',full_name:'Tên import mới giả'});
+    let invalid=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth,gender\nBAD-${prefix},Giới tính không rõ giả,2011-09-30,other\n`,'STUDENTS',classId);invalid=await validateCsv(csrf,worker,invalid,mapping);assert.equal(invalid.summary.invalid,1);const rows=await request('GET',`/api/v1/schools/${schoolA}/imports/${invalid.id}/rows`);assert.equal(rows.statusCode,200,rows.body);assert.equal(rows.json().data[0].errors[0].field,'gender');const blocked=await request('POST',`/api/v1/schools/${schoolA}/imports/${invalid.id}/commit`,{expectedVersion:invalid.version,previewHash:invalid.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(blocked.statusCode,422,blocked.body);
+  }finally{await worker.close();}
 });

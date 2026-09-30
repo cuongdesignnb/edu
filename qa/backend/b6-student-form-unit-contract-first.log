@@ -1,0 +1,51 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (1.1242ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (7.7305ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (4.2781ms)
+✔ login rejects spoofed role, school and unknown fields (1.3447ms)
+✔ private user DTO rejects secrets and unknown properties (3.332ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2133ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (18.3966ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (6.0522ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (14.821ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.7299ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (13.1347ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (11.46ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (9.2318ms)
+✖ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (3.3816ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (3.4556ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.3272ms)
+✔ grant action and class scope stay together (0.7444ms)
+✔ subject grants never authorize management without explicit subject policy (0.1247ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.112ms)
+✔ a custom class grant authorizes only its delegated action and class (0.12ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.155ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (4.1714ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.5184ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (79.2046ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 23
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 389.2482
+
+✖ failing tests:
+
+test at tests\contract\schemas.test.mjs:90:1
+✖ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (3.3816ms)
+  Error: VALIDATION_ERROR
+      at validateSchema (D:\Edu\backend\dist\common\contract.js:31:11)
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:92:3)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    status: 422,
+    code: 'VALIDATION_ERROR',
+    fieldErrors: [ { path: '/gender', code: 'enum', message: 'Dữ liệu không hợp lệ' } ],
+    currentVersion: undefined
+  }

@@ -98,9 +98,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | createHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending |
 | approveHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending |
 | listStudents | SC16 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| createStudent | SC17 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getStudent | SC18, SC19 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| updateStudent | SC19 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| createStudent | SC17 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending |
+| getStudent | SC18, SC19 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending |
+| updateStudent | SC19 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending |
 | listStudentEnrollments | SC18 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | createEnrollment | SC17, SC20 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listTransfers | SC20 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
@@ -226,9 +226,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listImports | SC26 | TESTED | qa/backend/imports-integration.log; qa/backend/support-read-integration.log |
 | createImport | SC27 | TESTED | qa/backend/imports-integration.log |
 | getImport | SC28 | TESTED | qa/backend/imports-integration.log; qa/backend/support-read-integration.log |
-| validateImport | SC27 | TESTED | qa/backend/imports-integration.log |
+| validateImport | SC27 | TESTED | qa/backend/imports-integration.log; qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending |
 | listImportRows | SC27, SC28 | TESTED | qa/backend/imports-integration.log |
-| commitImport | SC27 | TESTED | qa/backend/imports-integration.log |
+| commitImport | SC27 | TESTED | qa/backend/imports-integration.log; qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending |
 | cancelImport | SC28 | TESTED | qa/backend/imports-integration.log |
 | downloadImportErrors | SC28 | TESTED | qa/backend/imports-integration.log |
 | getSchoolReport | SC37, SC38, TE06 | TESTED | qa/backend/reports-integration.log |
@@ -336,7 +336,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC16 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC17 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC18 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC19 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC19 | core | TESTED | NOT_STARTED |  |
 | SC20 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC21 | core | TESTED | NOT_STARTED |  |
 | SC22 | core | IMPLEMENTED | NOT_STARTED |  |

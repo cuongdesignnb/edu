@@ -3,8 +3,9 @@ import { Database,one,type Transaction,type Row } from '../../database/database'
 import { resource,dto,getResource,insertResource,updateResource,listResource,type Predicate } from '../../database/resources';
 import { Permissions,grantAllows,type Grant } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
-import { validation,notFound } from '../../common/problem';
+import { Problem,validation,notFound } from '../../common/problem';
 import { placeEnrollment } from './enrollment';
+import {studentForm,nextStudentCode} from './student-form';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 @Injectable()
@@ -46,16 +47,22 @@ export class StudentsService {
     const schoolId=c.params.schoolId!,operation=c.operation.id,studentId=c.params.studentId??String(c.body.studentId??'');
     const write=c.operation.method!=='GET';
     const authorize=async(tx:Transaction)=>{
-      if(operation==='createStudent')return this.permissions.require(tx,c.principal!,c.operation.permission,
-        {schoolId,classId:c.body.initialClassId as string|undefined,date:c.body.startsOn as string|undefined});
+      if(operation==='createStudent'){
+        const access=await this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId,classId:c.body.initialClassId as string|undefined,date:c.body.startsOn as string|undefined});
+        if(c.body.initialGuardian)await this.permissions.require(tx,c.principal!,'guardian.manage',{schoolId,classId:c.body.initialClassId as string|undefined});
+        return access;
+      }
       if(operation==='createGuardian')return this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId,classId:c.query.classId});
       if(operation==='listStudents'||operation==='listClassStudents'){
         const classId=c.params.classId??c.query.classId;
         if(classId)await this.permissions.require(tx,c.principal!,'student.read',{schoolId,classId,yearId:c.query.yearId,allowSubject:true});
         return this.permissions.collection(tx,c.principal!,'student.read',schoolId,true);
       }
-      if(['getStudent','getClassStudent','listStudentEnrollments','updateStudent','createEnrollment','createRelationship'].includes(operation))
-        return this.studentScope(tx,c,studentId,c.operation.permission);
+      if(['getStudent','getClassStudent','listStudentEnrollments','updateStudent','createEnrollment','createRelationship'].includes(operation)){
+        const access=await this.studentScope(tx,c,studentId,c.operation.permission);
+        if(operation==='updateStudent'&&Object.hasOwn(c.body,'internalNote')&&!this.privateProfile(c,access))throw new Problem(403,'FORBIDDEN');
+        return access;
+      }
       if(['listGuardians','listRelationships'].includes(operation))return this.permissions.collection(tx,c.principal!,c.operation.permission,schoolId);
       if(['getGuardian','updateGuardian'].includes(operation))return this.guardianScope(tx,c,c.params.guardianId!);
       if(['verifyRelationship','revokeRelationship'].includes(operation)){
@@ -83,15 +90,30 @@ export class StudentsService {
       }
       if(operation==='createStudent'){
         await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
-        const data=await insertResource(tx,resource('student'),schoolId,c.body);
+        const body=studentForm(c.body,access.today),guardian=body.initialGuardian as Record<string,unknown>|undefined;
+        if(guardian)await this.permissions.require(tx,c.principal!,'guardian.manage',{schoolId,classId:body.initialClassId as string|undefined});
+        if(body.studentCode===undefined)body.studentCode=await nextStudentCode(tx,schoolId,access.today);
+        const data=await insertResource(tx,resource('student'),schoolId,body);
         if(c.body.initialClassId){
           if(!c.body.startsOn)validation('startsOn','Cần ngày bắt đầu theo học');
-          await this.enroll(tx,c,String(data.id),String(c.body.initialClassId),String(c.body.startsOn));
+          data.initialEnrollment=await this.enroll(tx,c,String(data.id),String(c.body.initialClassId),String(c.body.startsOn));
+        }
+        if(guardian){
+          const name=String(guardian.fullName).trim().replace(/\s+/g,' '),relation=String(guardian.relationshipLabel).trim();
+          if(!name)validation('initialGuardian.fullName','Nhập tên người giám hộ');if(!relation)validation('initialGuardian.relationshipLabel','Nhập quan hệ giám hộ');
+          if(typeof guardian.phone==='string'&&!/^[+\d ().*-]{8,32}$/.test(guardian.phone.trim()))validation('initialGuardian.phone','Điện thoại không hợp lệ');
+          const contact=await insertResource(tx,resource('guardian'),schoolId,{...guardian,fullName:name,...(typeof guardian.phone==='string'?{phone:guardian.phone.trim()}:{})});
+          const relationship=await insertResource(tx,resource('relationship'),schoolId,{studentId:data.id,guardianId:contact.id,relationshipLabel:relation,isPrimary:true},{status:'UNVERIFIED',can_receive_info:false});
+          data.initialGuardian=contact;data.initialRelationship=relationship;
+          await audit(tx,c,'guardian',String(contact.id));await audit(tx,c,'relationship',String(relationship.id),{status:'UNVERIFIED'});
         }
         await audit(tx,c,'student',String(data.id));return {data,status:201};
       }
       if(operation==='updateStudent'){
-        const data=await updateResource(tx,resource('student'),schoolId,studentId,c.body);
+        const allowed=access as unknown as {all:boolean;classIds:string[];today:string;grants:Grant[];enrollments:Row[]},body=studentForm(c.body,allowed.today);
+        if(Object.hasOwn(body,'internalNote')&&!this.privateProfile(c,allowed))throw new Problem(403,'FORBIDDEN');
+        const data=await updateResource(tx,resource('student'),schoolId,studentId,body,Object.hasOwn(body,'internalNote')?{internal_note:body.internalNote}:{});
+        if(Object.hasOwn(body,'internalNote'))data.internalNote=(await one<{internal_note:string|null}>(tx,'SELECT internal_note FROM app.students WHERE school_id=$1 AND id=$2',[schoolId,studentId]))!.internal_note;
         await audit(tx,c,'student',studentId,{version:data.version});return {data};
       }
       if(operation==='createEnrollment'){
@@ -166,8 +188,7 @@ export class StudentsService {
   }
   private async detail(tx:Transaction,c:RequestContext,studentId:string,access:{all:boolean;classIds:string[];today:string;grants:Grant[];enrollments:Row[]}){
     const schoolId=c.params.schoolId!,student=await getResource(tx,resource('student'),schoolId,studentId);
-    const full=access.grants.some(grant=>grant.scope_type==='SCHOOL'&&grant.actions.includes('guardian.read'))||access.enrollments.some(enrollment=>
-      access.grants.some(grant=>grantAllows(grant,'guardian.read',{schoolId,classId:String(enrollment.class_id)},access.today)));
+    const full=this.privateProfile(c,access);
     const studentDto=dto(resource('student'),student);if(!full){delete studentDto.dateOfBirth;delete studentDto.preferredName;}
     const values:unknown[]=[schoolId,studentId];let predicate='';
     if(!access.all){values.push(access.classIds);predicate=` AND class_id=ANY($${values.length}::uuid[])`;}
@@ -179,9 +200,13 @@ export class StudentsService {
         (SELECT guardian_id FROM app.guardian_relationships WHERE school_id=$1 AND student_id=$2)`,[schoolId,studentId])).rows;
       data.relationships=rels.map(row=>dto(resource('relationship'),row));data.guardians=guardians.map(row=>dto(resource('guardian'),row));
       const note=await one<{internal_note:string|null}>(tx,'SELECT internal_note FROM app.students WHERE school_id=$1 AND id=$2',[schoolId,studentId]);
-      if(note?.internal_note)data.internalNote=note.internal_note;
+      data.internalNote=note?.internal_note??null;
     }
     return data;
+  }
+  private privateProfile(c:RequestContext,access:{today:string;grants:Grant[];enrollments:Row[]}){
+    const schoolId=c.params.schoolId!;return access.grants.some(grant=>grant.scope_type==='SCHOOL'&&grant.actions.includes('guardian.read'))||access.enrollments.some(enrollment=>
+      access.grants.some(grant=>grantAllows(grant,'guardian.read',{schoolId,classId:String(enrollment.class_id)},access.today)));
   }
   private async enroll(tx:Transaction,c:RequestContext,studentId:string,classId:string,startsOn:string){
     const schoolId=c.params.schoolId!;

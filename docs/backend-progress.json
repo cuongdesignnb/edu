@@ -1194,7 +1194,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending"
       ]
     },
     {
@@ -1204,9 +1205,10 @@
         "SC19"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending"
       ]
     },
     {
@@ -1215,9 +1217,10 @@
         "SC19"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending"
       ]
     },
     {
@@ -2668,7 +2671,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/imports-integration.log"
+        "qa/backend/imports-integration.log",
+        "qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending"
       ]
     },
     {
@@ -2691,7 +2695,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/imports-integration.log"
+        "qa/backend/imports-integration.log",
+        "qa/backend/b6-student-form-integration.log: 132/132 exit0, 36 migrations/checksum replay; b6-student-form-unit-contract.log: 24/24; b6-student-form-frontend-unit.log: 131/131; atomic forms, private replay denial and sourced gender; UI activation/E2E pending"
       ]
     },
     {
@@ -4004,7 +4009,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "IMPLEMENTED"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC20",

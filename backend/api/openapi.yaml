@@ -32993,6 +32993,23 @@ components:
             - LEFT
             - GRADUATED
             - ARCHIVED
+        gender:
+          type: string
+          enum:
+            - Nam
+            - Nữ
+            - null
+          nullable: true
+        initialEnrollment:
+          $ref: "#/components/schemas/Enrollment"
+        initialGuardian:
+          $ref: "#/components/schemas/Guardian"
+        initialRelationship:
+          $ref: "#/components/schemas/Relationship"
+        internalNote:
+          type: string
+          maxLength: 4000
+          nullable: true
       required:
         - id
         - version
@@ -33001,6 +33018,7 @@ components:
         - studentCode
         - fullName
         - status
+        - gender
       additionalProperties: false
     StudentCreate:
       type: object
@@ -33027,8 +33045,16 @@ components:
         startsOn:
           type: string
           format: date
+        gender:
+          type: string
+          enum:
+            - Nam
+            - Nữ
+            - null
+          nullable: true
+        initialGuardian:
+          $ref: "#/components/schemas/StudentInitialGuardian"
       required:
-        - studentCode
         - fullName
       additionalProperties: false
     StudentPatch:
@@ -33048,6 +33074,17 @@ components:
         dateOfBirth:
           type: string
           format: date
+          nullable: true
+        gender:
+          type: string
+          enum:
+            - Nam
+            - Nữ
+            - null
+          nullable: true
+        internalNote:
+          type: string
+          maxLength: 4000
           nullable: true
       required:
         - expectedVersion
@@ -33329,6 +33366,7 @@ components:
             $ref: "#/components/schemas/Guardian"
         internalNote:
           type: string
+          nullable: true
       required:
         - student
         - enrollments
@@ -41229,6 +41267,29 @@ components:
         - expectedFromAssignmentVersion
         - expectedClassVersion
         - expectedToMemberVersion
+      additionalProperties: false
+    StudentInitialGuardian:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        email:
+          type: string
+          format: email
+          nullable: true
+        relationshipLabel:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+        - fullName
+        - relationshipLabel
       additionalProperties: false
   securitySchemes:
     StaffCookie:

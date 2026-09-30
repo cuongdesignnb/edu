@@ -61,9 +61,9 @@ export interface ApiSchemas {
   "Rollover": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "sourceYearId": (string) | null; "targetYearId": (string) | null; "plan": Array<ApiSchemas["RolloverItem"]>; "planHash"?: string; "status": "DRAFT" | "VALIDATED" | "APPLYING" | "APPLIED" | "FAILED"; "warnings"?: Array<string>; };
   "RolloverCreate": { "targetYearId": (string) | null; "plan": Array<ApiSchemas["RolloverItem"]>; };
   "PlanCommit": { "expectedVersion": number; "previewHash": string; };
-  "Student": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; };
-  "StudentCreate": { "studentCode": string; "fullName": string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; "initialClassId"?: (string) | null; "startsOn"?: string; };
-  "StudentPatch": { "expectedVersion": number; "fullName"?: string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; };
+  "Student": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "gender": ("Nam" | "Nữ" | null) | null; "initialEnrollment"?: ApiSchemas["Enrollment"]; "initialGuardian"?: ApiSchemas["Guardian"]; "initialRelationship"?: ApiSchemas["Relationship"]; "internalNote"?: (string) | null; };
+  "StudentCreate": { "studentCode"?: string; "fullName": string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; "initialClassId"?: (string) | null; "startsOn"?: string; "gender"?: ("Nam" | "Nữ" | null) | null; "initialGuardian"?: ApiSchemas["StudentInitialGuardian"]; };
+  "StudentPatch": { "expectedVersion": number; "fullName"?: string; "preferredName"?: (string) | null; "dateOfBirth"?: (string) | null; "gender"?: ("Nam" | "Nữ" | null) | null; "internalNote"?: (string) | null; };
   "Enrollment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; };
   "EnrollmentCreate": { "studentId": (string) | null; "classId": (string) | null; "startsOn": string; };
   "Guardian": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "status": "ACTIVE" | "ARCHIVED"; };
@@ -73,7 +73,7 @@ export interface ApiSchemas {
   "RelationshipCreate": { "studentId": string; "guardianId": string; "relationshipLabel": string; "isPrimary"?: boolean; };
   "RelationshipPatch": { "expectedVersion": number; "relationshipLabel"?: string; "isPrimary"?: boolean; };
   "VerifyRelationship": { "expectedVersion": number; "canReceiveInfo": boolean; "verificationNote": string; };
-  "StudentDetail": { "student": ApiSchemas["Student"]; "enrollments": Array<ApiSchemas["Enrollment"]>; "relationships"?: Array<ApiSchemas["Relationship"]>; "guardians"?: Array<ApiSchemas["Guardian"]>; "internalNote"?: string; };
+  "StudentDetail": { "student": ApiSchemas["Student"]; "enrollments": Array<ApiSchemas["Enrollment"]>; "relationships"?: Array<ApiSchemas["Relationship"]>; "guardians"?: Array<ApiSchemas["Guardian"]>; "internalNote"?: (string) | null; };
   "Transfer": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "fromEnrollmentId": (string) | null; "toClassId"?: string; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; };
   "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; };
   "ParentAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "yearId": (string) | null; "relationshipId": (string) | null; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt"?: (string) | null; "issuedToGuardianName"?: string; };
@@ -361,6 +361,7 @@ export interface ApiSchemas {
   "HandoverPreviewResponse": { "data": ApiSchemas["HandoverPreview"]; "requestId": string; };
   "HandoverApprove": { "expectedVersion": number; "previewHash"?: string; };
   "HandoverReview": { "expectedVersion": number; "previewHash": string; "expectedFromAssignmentVersion": number; "expectedClassVersion": number; "expectedToMemberVersion": number; };
+  "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
 }
 
 export const apiOperations = {

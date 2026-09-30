@@ -3330,6 +3330,29 @@
             "GRADUATED",
             "ARCHIVED"
           ]
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Nam",
+            "Nữ",
+            null
+          ],
+          "nullable": true
+        },
+        "initialEnrollment": {
+          "$ref": "#/components/schemas/Enrollment"
+        },
+        "initialGuardian": {
+          "$ref": "#/components/schemas/Guardian"
+        },
+        "initialRelationship": {
+          "$ref": "#/components/schemas/Relationship"
+        },
+        "internalNote": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
         }
       },
       "required": [
@@ -3339,7 +3362,8 @@
         "updatedAt",
         "studentCode",
         "fullName",
-        "status"
+        "status",
+        "gender"
       ],
       "additionalProperties": false
     },
@@ -3373,10 +3397,21 @@
         "startsOn": {
           "type": "string",
           "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Nam",
+            "Nữ",
+            null
+          ],
+          "nullable": true
+        },
+        "initialGuardian": {
+          "$ref": "#/components/schemas/StudentInitialGuardian"
         }
       },
       "required": [
-        "studentCode",
         "fullName"
       ],
       "additionalProperties": false
@@ -3401,6 +3436,20 @@
         "dateOfBirth": {
           "type": "string",
           "format": "date",
+          "nullable": true
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Nam",
+            "Nữ",
+            null
+          ],
+          "nullable": true
+        },
+        "internalNote": {
+          "type": "string",
+          "maxLength": 4000,
           "nullable": true
         }
       },
@@ -3771,7 +3820,8 @@
           }
         },
         "internalNote": {
-          "type": "string"
+          "type": "string",
+          "nullable": true
         }
       },
       "required": [
@@ -14457,6 +14507,36 @@
         "expectedFromAssignmentVersion",
         "expectedClassVersion",
         "expectedToMemberVersion"
+      ],
+      "additionalProperties": false
+    },
+    "StudentInitialGuardian": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "nullable": true,
+          "maxLength": 32
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "nullable": true
+        },
+        "relationshipLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "fullName",
+        "relationshipLabel"
       ],
       "additionalProperties": false
     }

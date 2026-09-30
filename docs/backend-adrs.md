@@ -1068,3 +1068,55 @@ integration, zero skipped, 23/23 backend contract/unit and 125/125 frontend API 
 TypeScript/scoped lint exit0. Runtime is 290 operations/361 schemas with 86
 unactivated candidates. Failed test expectations and remaining acceptance are
 recorded in the implementation report; this does not certify B6/B7 completion.
+
+## ADR-050 — Atomic student forms and sourced nullable gender
+
+The existing student form contains gender, an optional student code and an optional
+initial guardian. The supplied Student contract had no persisted gender and
+required a code. Migration 036 adds nullable `Nam`/`Nữ` without inferring old values
+from names. Nullable enum validation explicitly includes null. Directory/profile
+and write projections retain this source state; a new form command requires the
+user's explicit gender choice. Native status remains available when adapting the
+legacy display labels, rather than losing GRADUATED/ARCHIVED distinctions.
+
+Create derives an omitted code as `HS` + school-local two-digit year + next numeric
+suffix, padded to at least three digits. The current school command lock serializes
+allocation with other commands/imports; retained actual codes determine the next
+suffix. The existing per-school unique constraint remains authoritative. Explicit
+codes keep the API source value; the existing UI sends its normalized uppercase
+input. No browser counter, clock, random substitute or source fallback creates a
+code. Names are trimmed/space-normalized; nonnull birth dates are constrained to
+1900 through the school's current day.
+
+Student, initial dated enrollment, optional contact and primary UNVERIFIED
+relationship are one transaction. Equal name/phone does not merge families.
+Can-receive-info stays false; no parent link or user account is created. The reply
+contains the actual initial rows. Guardian management is independent of student
+management and is checked before idempotent replay as well as before writes.
+Invalid contact, foreign class, dates, capacity or authority rolls back every row
+and the acknowledgement. The adapter requires matching source fields, enrollment
+and unverified relationship before displaying success; uncertain manual retry uses
+the transport's retained command key.
+
+Student edits send the displayed version and never fetch a new version to replace
+that review. Internal note edits additionally require the existing private-profile
+authority (`guardian.read` at School or at a current enrollment's Class). This is
+checked before cached replay, closing a path that could otherwise return an old
+private note after revocation. A command without a note never includes a note in
+its acknowledgement. Full profile reads retain actual null notes; subject/private
+denied projections omit the note and birthdate. Parent projections remain separate.
+
+CSV imports may map gender; supported case/diacritic forms normalize to Nam/Nữ.
+A mapped invalid/blank value remains an invalid row. Omitted mappings preserve
+existing gender on updates; absent sources on new records remain null. Import
+preview/version/worker/current-authority rules continue unchanged.
+
+These create/edit candidates remain unactivated. Full student directory/profile,
+guardian/link/import/transfer UI integration and browser/reload/visual acceptance
+remain required. This decision does not accept the whole frontend or B7.
+
+Actual ADR-050 checks: 36 verified migrations/checksum replay, 132/132 PostgreSQL
+integration, zero skipped, 24/24 backend contract/unit and 131/131 frontend API unit;
+TypeScript/scoped lint exit0. Runtime is 290 operations/362 schemas with 88
+unactivated candidates. Failed contract/integration attempts and required remaining
+acceptance are preserved in the implementation report.

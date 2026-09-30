@@ -99,6 +99,7 @@ export class ImportWorker {
     let key='';
     if(job.kind==='STUDENTS'){
       key=code(v,'studentCode');required(v,'fullName');
+      if(Object.hasOwn(v,'gender')){const normalized=v.gender!.normalize('NFD').replace(/\p{M}/gu,'').trim().toLowerCase();if(!['nam','nu'].includes(normalized))invalid('gender','Giới tính phải là Nam hoặc Nữ');v.gender=normalized==='nam'?'Nam':'Nữ';}
       if(v.dateOfBirth){v.dateOfBirth=date(v.dateOfBirth,'dateOfBirth');if(v.dateOfBirth>String(year.ends_on)||v.dateOfBirth<'1900-01-01')invalid('dateOfBirth','Ngày sinh ngoài phạm vi');}
       const cls=await this.classFor(tx,job,v.classCode);p.classId=String(cls.id);
       await this.policy.require(tx,{userId:job.requested_by},'student.manage',{schoolId:job.school_id,classId:p.classId});
@@ -225,9 +226,9 @@ export class ImportWorker {
     const refs:Ref[]=[],v=p.values;const track=(table:string,row:Row)=>{refs.push({table,id:String(row.id),version:Number(row.version)});return String(row.id);};let id='';
     if(job.kind==='STUDENTS'){
       await this.policy.require(tx,{userId:job.requested_by},'student.manage',{schoolId:job.school_id,classId:p.classId});
-      const student=p.decision==='ADD'?await one<Row>(tx,`INSERT INTO app.students(school_id,student_code,full_name,date_of_birth,preferred_name) VALUES($1,$2,$3,$4,$5) RETURNING *`,[job.school_id,v.studentCode,v.fullName,v.dateOfBirth||null,v.preferredName||null]):
+      const student=p.decision==='ADD'?await one<Row>(tx,`INSERT INTO app.students(school_id,student_code,full_name,date_of_birth,preferred_name,gender) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,[job.school_id,v.studentCode,v.fullName,v.dateOfBirth||null,v.preferredName||null,v.gender??null]):
         await one<Row>(tx,`UPDATE app.students SET full_name=$4,date_of_birth=CASE WHEN $5::boolean THEN $6::date ELSE date_of_birth END,
-          preferred_name=CASE WHEN $7::boolean THEN $8 ELSE preferred_name END WHERE school_id=$1 AND id=$2 AND version=$3 RETURNING *`,[job.school_id,p.id,p.version,v.fullName,Object.hasOwn(v,'dateOfBirth'),v.dateOfBirth||null,Object.hasOwn(v,'preferredName'),v.preferredName||null]);
+          preferred_name=CASE WHEN $7::boolean THEN $8 ELSE preferred_name END,gender=CASE WHEN $9::boolean THEN $10 ELSE gender END WHERE school_id=$1 AND id=$2 AND version=$3 RETURNING *`,[job.school_id,p.id,p.version,v.fullName,Object.hasOwn(v,'dateOfBirth'),v.dateOfBirth||null,Object.hasOwn(v,'preferredName'),v.preferredName||null,Object.hasOwn(v,'gender'),v.gender??null]);
       if(!student)throw new Problem(422,'STALE_PREVIEW');id=track('students',student);
       if(p.decision==='ADD'){
         const enrollment=await placeEnrollment(tx,job.school_id,id,p.classId!,v.startsOn!);refs.push({table:'enrollments',id:String(enrollment.id),version:Number(enrollment.version)});

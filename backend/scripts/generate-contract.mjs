@@ -334,6 +334,16 @@ extendOperation('getClass','getHandover','/schools/{schoolId}/handovers/{handove
 extendOperation('getClass','getHandoverByRequest','/schools/{schoolId}/handovers/requests/{requestId}','assignment.manage','Handover',false,['SC15'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'requestId',in:'path',required:true,schema:uuid}]);
 extendOperation('approveHandover','reviewHandover','/schools/{schoolId}/handovers/{handoverId}/review','assignment.manage','Handover',false,['SC15'],undefined,'HandoverReview');
 spec.paths['/schools/{schoolId}/handovers/{handoverId}/approve'].post.requestBody.content['application/json'].schema={$ref:'#/components/schemas/HandoverApprove'};
+// ADR-050: keep the existing student form atomic and persist actual nullable gender.
+const studentGender={type:'string',enum:['Nam','Nữ',null],nullable:true};
+for(const name of ['Student','StudentCreate','StudentPatch'])spec.components.schemas[name].properties.gender=structuredClone(studentGender);
+spec.components.schemas.Student.required.push('gender');
+spec.components.schemas.StudentCreate.required=spec.components.schemas.StudentCreate.required.filter(name=>name!=='studentCode');
+spec.components.schemas.StudentInitialGuardian=object({...structuredClone(spec.components.schemas.GuardianCreate.properties),relationshipLabel:{type:'string',minLength:1,maxLength:100}},['fullName','relationshipLabel']);
+spec.components.schemas.StudentCreate.properties.initialGuardian={$ref:'#/components/schemas/StudentInitialGuardian'};
+Object.assign(spec.components.schemas.Student.properties,{initialEnrollment:{$ref:'#/components/schemas/Enrollment'},initialGuardian:{$ref:'#/components/schemas/Guardian'},initialRelationship:{$ref:'#/components/schemas/Relationship'},internalNote:{type:'string',maxLength:4000,nullable:true}});
+spec.components.schemas.StudentPatch.properties.internalNote={type:'string',maxLength:4000,nullable:true};
+spec.components.schemas.StudentDetail.properties.internalNote.nullable=true;
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

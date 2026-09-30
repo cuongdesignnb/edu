@@ -18,7 +18,7 @@ const importResource:Resource={table:'app.import_jobs',fields:{id:'id',version:'
   writeFields:[],search:[],filters:{kind:'kind',status:'status'}};
 const rowResource:Resource={table:'app.import_rows',fields:{id:'id',rowNumber:'row_number',status:'status',errors:'errors',values:'source_data',plan:'normalized_data'},writeFields:[],search:[],filters:{status:'status'}};
 const fieldSets:Record<string,readonly string[]>={
-  STUDENTS:['studentCode','fullName','dateOfBirth','preferredName','classCode','startsOn','guardianName','guardianPhone','guardianEmail','relationshipLabel'],
+  STUDENTS:['studentCode','fullName','dateOfBirth','gender','preferredName','classCode','startsOn','guardianName','guardianPhone','guardianEmail','relationshipLabel'],
   CLASSES:['code','name','gradeCode','capacity'],
   STAFF:['email','staffCode','workDisplayName','workPhone','department','roleCode','classCode','subjectCode','startsOn','endsOn','reason'],
   TIMETABLE:['weekday','slot','startsAt','endsAt','subjectCode','staffCode','roomCode'],
