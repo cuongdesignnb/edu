@@ -15,7 +15,7 @@ export class Commands {
   async execute(c:RequestContext,authorize:(tx:Transaction)=>Promise<unknown>,work:(tx:Transaction)=>Promise<Result>,secretResult=false):Promise<Result>{
     const schoolId=c.params.schoolId!;
     const key=c.request.headers['idempotency-key'];
-    if(typeof key!=='string'||key.length<8||key.length>200)throw new Problem(422,'IDEMPOTENCY_KEY_REQUIRED');
+    if(typeof key!=='string'||key.length<16||key.length>128)throw new Problem(422,'IDEMPOTENCY_KEY_REQUIRED');
     const requestHash=hashToken(canonical({params:c.params,body:c.body,query:c.query}));
     return this.db.transaction(async tx=>{
       await authorize(tx); // Replayed commands must still have current permission.

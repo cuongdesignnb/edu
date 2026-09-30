@@ -203,12 +203,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listEvidence | CL20, CL19 | NOT_STARTED |  |
 | createEvidence | CL20, CL19 | NOT_STARTED |  |
 | reviewEvidence | CL20, CL19 | NOT_STARTED |  |
-| listClassFiles | CL24 | NOT_STARTED |  |
-| uploadFile | SC02, CL20, CL24, SC27 | NOT_STARTED |  |
-| getFile | CL24 | NOT_STARTED |  |
-| downloadFile | CL24, CL20 | NOT_STARTED |  |
-| archiveFile | CL24 | NOT_STARTED |  |
-| createFileLink | CL24 | NOT_STARTED |  |
+| listClassFiles | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
+| uploadFile | SC02, CL20, CL24, SC27 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
+| getFile | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
+| downloadFile | CL24, CL20 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
+| archiveFile | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
+| createFileLink | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
 | listSchoolAnnouncements | SC33, SC34, SC35 | NOT_STARTED |  |
 | createSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
 | getSchoolAnnouncement | SC33, SC34, SC35 | NOT_STARTED |  |
@@ -293,7 +293,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL10 | core | PARTIAL | NOT_STARTED |  |
 | PL11 | core | PARTIAL | NOT_STARTED |  |
 | SC01 | core | PARTIAL | NOT_STARTED |  |
-| SC02 | core | PARTIAL | NOT_STARTED |  |
+| SC02 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC03 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC04 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC05 | core | IMPLEMENTED | NOT_STARTED |  |
@@ -364,7 +364,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL21 | core | PARTIAL | NOT_STARTED |  |
 | CL22 | core | PARTIAL | NOT_STARTED |  |
 | CL23 | core | PARTIAL | NOT_STARTED |  |
-| CL24 | core | PARTIAL | NOT_STARTED |  |
+| CL24 | core | TESTED | NOT_STARTED |  |
 | CL25 | core | PARTIAL | NOT_STARTED |  |
 | CL26 | core | PARTIAL | NOT_STARTED |  |
 | PA01 | core | PARTIAL | NOT_STARTED |  |

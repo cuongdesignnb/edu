@@ -36,14 +36,19 @@ services:
       MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
       MAIL_MODE: file
       COOKIE_SECURE: 'false'
-      STORAGE_ROOT: /tmp/edumanage-uploads
-      LOCAL_MAIL_ROOT: /tmp/edumanage-mail
+      STORAGE_ROOT: /data/uploads
+      LOCAL_MAIL_ROOT: /data/mail
     secrets: [db_migrator_password, db_app_password, db_parent_password, db_worker_password, app_key, mail_key]
     networks: [test_data]
+    volumes:
+      - test_files:/data/uploads
+      - test_mail:/data/mail
     depends_on:
       postgres: { condition: service_healthy }
 volumes:
   test_pgdata: {}
+  test_files: {}
+  test_mail: {}
 networks:
   test_data: { internal: true }
 secrets:

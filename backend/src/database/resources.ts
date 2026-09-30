@@ -75,7 +75,7 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string,que
   }
   if(extra.sql){
     const offset=values.length;values.push(...extra.values);
-    where.push(extra.sql.replace(/\$(\d+)/g,(_,i)=>'$'+(Number(i)+offset)));
+    where.push('('+extra.sql.replace(/\$(\d+)/g,(_,i)=>'$'+(Number(i)+offset))+')');
   }
   const fingerprint=crypto.createHash('sha256').update(canonical({schoolId,principalId,table:r.table,
     query:{...query,cursor:undefined},extra})).digest('hex');

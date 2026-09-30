@@ -1,4 +1,4 @@
-import test,{before,after} from 'node:test';
+import test,{before,after,beforeEach} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -15,6 +15,9 @@ import { Permissions } from '../../dist/common/permissions.js';
 import { hashPassword } from '../../dist/common/security.js';
 import { decryptMail } from '../../dist/common/security.js';
 import { InvitationsService } from '../../dist/modules/identity/invitations.service.js';
+import { WorkerRunner } from '../../dist/workers/runner.js';
+import sharp from 'sharp';
+import ExcelJS from 'exceljs';
 
 let app,server,db,policy;
 const password=crypto.randomBytes(24).toString('base64url');
@@ -48,6 +51,12 @@ before(async()=>{
   db=app.get(Database);policy=app.get(Permissions);
 });
 after(async()=>{await app?.close();await pool.end();});
+beforeEach(async()=>{
+  // Each security case gets a clean test-only throttle window; rate-limit
+  // assertions still exercise repeated real requests inside their own case.
+  assert.equal(process.env.APP_ENV,'test');assert.equal(process.env.DB_NAME,'edumanage_test_local');
+  await pool.query('DELETE FROM identity.rate_limit_buckets');
+});
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
   const result=await migrate();assert.deepEqual(result.applied,[]);assert.equal(result.total,(await fs.readdir('migrations')).filter(name=>name.endsWith('.sql')).length);
@@ -383,4 +392,64 @@ test('B2 scoped guardian creation cannot acquire an unrelated family through rel
   const fresh=await post(`guardians?classId=${classA}`,{fullName:'Giám hộ GVCN tạo giả',phone:'0911111111'});assert.equal(fresh.statusCode,201);
   const rel=await post('relationships',{studentId:seedId('student:A:10A1:3'),guardianId:fresh.json().data.id,relationshipLabel:'Giám hộ'});assert.equal(rel.statusCode,201);
   assert.equal(rel.json().data.status,'UNVERIFIED');assert.equal(rel.json().data.canReceiveInfo,false);
+});
+
+test('B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets',async()=>{
+  const csrf=await login('admin-a@example.invalid');
+  async function upload(bytes,name,type,purpose='CLASS_DOCUMENT',classId=classA,key=crypto.randomUUID()){
+    const form=new FormData();form.append('purpose',purpose);if(classId)form.append('classId',classId);form.append('file',new Blob([bytes],{type}),name);
+    const prepared=new Request(origin,{method:'POST',body:form});
+    return server.inject({method:'POST',url:`/api/v1/schools/${schoolA}/files`,headers:{origin,cookie:cookies(),'x-csrf-token':csrf,'idempotency-key':key,'content-type':prepared.headers.get('content-type')},payload:Buffer.from(await prepared.arrayBuffer())});
+  }
+  const image=await sharp({create:{width:10,height:10,channels:3,background:'#3377aa'}}).withMetadata().png().toBuffer();
+  const key=crypto.randomUUID(),imageResponse=await upload(image,'../../ảnh.png','image/png','CLASS_DOCUMENT',classA,key);
+  assert.equal(imageResponse.statusCode,200);let file=imageResponse.json().data;assert.equal(file.status,'QUARANTINED');assert.equal(file.originalName.includes('/'),false);
+  for(const secret of ['objectKey','schoolId','purpose','uploadClassId'])assert.equal(Object.hasOwn(file,secret),false);
+  const replay=await upload(image,'../../ảnh.png','image/png','CLASS_DOCUMENT',classA,key);assert.equal(replay.statusCode,200);assert.equal(replay.json().data.id,file.id);
+  const blocked=await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`);assert.equal(blocked.statusCode,409);
+  const dangerous=await upload(Buffer.from('<html><script>bad()</script></html>'),'fake.png','image/png');assert.equal(dangerous.statusCode,200);
+  const worker1=new WorkerRunner(),worker2=new WorkerRunner();
+  try{
+    assert.equal((await worker1.db.app.query('SELECT current_user AS role')).rows[0].role,'edu_worker');
+    const [j1,j2]=await Promise.all([worker1.claim(schoolA),worker2.claim(schoolA)]);assert.ok(j1);assert.ok(j2);assert.notEqual(j1.id,j2.id);
+    await assert.rejects(worker2.db.transaction(tx=>worker2.guard(tx,j1),{schoolId:schoolA}),error=>error.code==='JOB_LEASE_LOST');
+    await Promise.all([worker1.run(j1),worker2.run(j2)]);
+    file=(await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}`)).json().data;
+    assert.equal(file.status,'READY');assert.equal(file.scanStatus,'NOT_SCANNED');assert.equal(file.contentType,'image/png');
+    const download=await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`);assert.equal(download.statusCode,200);
+    assert.equal((await sharp(download.rawPayload).metadata()).exif,undefined);
+    assert.equal(download.headers['cache-control'],'no-store');assert.match(download.headers['content-disposition'],/^attachment/);
+    const rejected=(await request('GET',`/api/v1/schools/${schoolA}/files/${dangerous.json().data.id}`)).json().data;
+    assert.equal(rejected.status,'REJECTED');assert.equal(rejected.rejectionCode,'FILE_TYPE_REJECTED');
+    const failed=await db.transaction(tx=>tx.query("SELECT status,attempts FROM app.outbox_events WHERE school_id=$1 AND dedupe_key=$2",[schoolA,`file:${dangerous.json().data.id}`]),{schoolId:schoolA});assert.deepEqual(failed.rows[0],{status:'FAILED',attempts:5});
+    const cross=await request('GET',`/api/v1/schools/${schoolB}/files/${file.id}/download`);assert.equal(cross.statusCode,404);
+    const link=await request('POST',`/api/v1/schools/${schoolA}/file-links`,{fileId:file.id,classId:classA,shareWithGuardian:false},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(link.statusCode,201);
+    const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');
+    await login('teacher-b@example.invalid');
+    const classDocs=await request('GET',`/api/v1/schools/${schoolA}/classes/${classA}/files`);assert.equal(classDocs.statusCode,200);assert.equal(classDocs.json().data.some(f=>f.id===file.id),true);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`)).statusCode,200);
+    jar.set('edu_staff',adminCookie);
+    const workbook=new ExcelJS.Workbook();const sheet=workbook.addWorksheet('Import');sheet.addRow(['code','name']);sheet.addRow(['HS-FAKE','Nguyễn Văn Giả']);
+    const xlsx=await upload(Buffer.from(await workbook.xlsx.writeBuffer()),'students.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','IMPORT',null);
+    assert.equal(xlsx.statusCode,200);const job=await worker1.claim(schoolA);await worker1.run(job);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${xlsx.json().data.id}`)).json().data.status,'READY');
+    const csv=await upload(Buffer.from('code,name\nHS-FAKE,Nguyễn Văn Giả\n'),'students.csv','text/csv','IMPORT',null);assert.equal(csv.statusCode,200);
+    await worker1.run(await worker1.claim(schoolA));
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${csv.json().data.id}`)).json().data.status,'READY');
+    sheet.getCell('A2').value={formula:'1+1',result:2};
+    const formula=await upload(Buffer.from(await workbook.xlsx.writeBuffer()),'formula.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','IMPORT',null);assert.equal(formula.statusCode,200);
+    await worker1.run(await worker1.claim(schoolA));
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${formula.json().data.id}`)).json().data.rejectionCode,'XLSX_ACTIVE_CONTENT_REJECTED');
+    const invitation=await request('POST',`/api/v1/schools/${schoolA}/invitations`,{email:`mail-${crypto.randomUUID()}@example.invalid`,roleId:seedId('role:A:SCHOOL_ADMIN'),validFrom:'2026-09-01T00:00:00Z'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(invitation.statusCode,201);
+    let mail;
+    for(let attempt=0;attempt<100;attempt++){
+      await worker1.processOnce();mail=(await db.app.query('SELECT id,status,delivery_mode,encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0];
+      if(mail.status==='SENT')break;
+    }
+    assert.equal(mail.status,'SENT');assert.equal(mail.delivery_mode,'FILE');assert.equal(mail.encrypted_payload,'');
+    const eml=await fs.readFile(path.join(process.env.LOCAL_MAIL_ROOT,`${mail.id}.eml`),'utf8');assert.match(eml,/LOCAL_FILE/);assert.match(eml,/#token=/);
+    const stat=await fs.stat(path.join(process.env.LOCAL_MAIL_ROOT,`${mail.id}.eml`));assert.equal(stat.mode&0o077,0);
+    const archived=await request('POST',`/api/v1/schools/${schoolA}/files/${file.id}/archive`,{expectedVersion:file.version,reason:'Lưu trữ tệp kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(archived.statusCode,200);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`)).statusCode,409);
+  }finally{await Promise.all([worker1.close(),worker2.close()]);}
 });

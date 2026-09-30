@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter,type NestFastifyApplication } from '@nestjs/platform-fastify';
 import cookie from '@fastify/cookie';
+import multipart from '@fastify/multipart';
 import { AppModule } from './app.module';
 import { Database } from './database/database';
 import { IdentityService } from './modules/identity/identity.service';
@@ -12,6 +13,7 @@ import { StudentsService } from './modules/students/students.service';
 import { InvitationsService } from './modules/identity/invitations.service';
 import { StaffService } from './modules/staff/staff.service';
 import { TransitionsService } from './modules/students/transitions.service';
+import { FilesService } from './modules/files/files.service';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -20,12 +22,14 @@ export async function createApplication() {
   const app=await NestFactory.create<NestFastifyApplication>(AppModule,adapter,{logger:false});
   const server=adapter.getInstance();
   await server.register(cookie);
+  await server.register(multipart,{limits:{files:1,fields:2,parts:3,fileSize:25*1024*1024,fieldSize:256,fieldNameSize:32,headerPairs:100}});
   installRoutes(server,app.get(Database),app.get(IdentityService),app.get(Permissions));
   registerHandlers(server,app.get(OrganizationService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(StudentsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(InvitationsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(StaffService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(TransitionsService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(FilesService).handlers(),app.get(IdentityService));
   app.enableShutdownHooks();
   await app.init();
   return app;

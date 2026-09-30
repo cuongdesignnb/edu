@@ -1,4 +1,4 @@
-import { Injectable, type OnApplicationShutdown } from '@nestjs/common';
+import { Injectable,Optional,Inject, type OnApplicationShutdown } from '@nestjs/common';
 import { Pool, type PoolClient, type QueryResultRow, types } from 'pg';
 import { databaseConfig } from '../common/config';
 types.setTypeParser(1082, value => value);
@@ -8,9 +8,11 @@ export type Transaction = PoolClient;
 
 @Injectable()
 export class Database implements OnApplicationShutdown {
-  readonly app = new Pool(databaseConfig('app'));
-  readonly parent = new Pool(databaseConfig('parent'));
-  constructor() {
+  readonly app:Pool;
+  readonly parent:Pool;
+  constructor(@Optional() @Inject('DATABASE_ROLE') role:'app'|'worker'='app') {
+    this.app=new Pool(databaseConfig(role));
+    this.parent=new Pool(databaseConfig('parent'));
     for (const pool of [this.app, this.parent]) pool.on('error', () => {
       // Never expose connection strings, passwords or SQL in logs.
       process.stderr.write(JSON.stringify({ event: 'database_pool_error' }) + '\n');

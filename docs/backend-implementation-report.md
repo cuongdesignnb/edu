@@ -74,6 +74,31 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
   attach an unrelated family's known guardian ID to acquire its contact data.
 - Unit/contract checks: 7/7 executed. This is schema validation plus policy unit
   coverage, not a claim that all 264 API contracts or 118 core screens passed.
-- Frontend connected: NO. Worker mail/import/export processing, parent portal,
+- Frontend connected: NO. Import/export processing, parent portal,
   publications, browser E2E, operational drills and performance: NOT_RUN.
 - Final root deploy/scripts merge and local URL service have not been started.
+
+## Private files and worker checkpoint
+
+- Migration 007 applied successfully. Upload metadata includes class/purpose,
+  scan state, and a rejection code; storage uses server UUID paths. API upload
+  stays QUARANTINED until a real worker validates/processes it.
+- `qa/backend/files-integration.log`: 22/22 actual PostgreSQL integration checks
+  completed. Includes streaming multipart idempotency, quarantine download denial,
+  EXIF stripping, fake image rejection, XLSX formula rejection, scoped class
+  document reads, archive/download denial and a worker using edu_worker.
+- Two worker instances claim different jobs; the wrong lease owner cannot update
+  a job. Local invitation mail becomes SENT/FILE, writes a mode-0600 LOCAL_FILE
+  message, and clears encrypted token payloads. SMTP delivery/fault tests: NOT_RUN.
+- Test file/mail volumes are private and retained between test runs. This does
+  not certify the final deployment's restart/backup/restore requirements.
+- Local files explicitly report NOT_SCANNED. Production PDF/XLSX acceptance is
+  gated pending an approved scanner. PDF parsing/sanitization coverage remains
+  incomplete; only raster/CSV/XLSX branches have integration evidence so far.
+- Backend lint now uses supported pinned ESLint 10.11.0/typescript-eslint 8.71.0.
+  ExcelJS's UUID v4 dependency is overridden to patched CommonJS UUID 11.1.1;
+  production dependency audit is recorded in `qa/backend/dependency-audit.json`.
+- Updated unit/contract run: 8/8, including sparse XLSX dimension limits and the
+  ExcelJS extension-formatting path using patched UUID. Audit: zero reported
+  production dependency vulnerabilities at this checkpoint (not a security audit
+  of the application or a guarantee of virus scanning).

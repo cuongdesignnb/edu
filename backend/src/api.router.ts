@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import type { Readable } from 'node:stream';
 import type { FastifyInstance,FastifyRequest,FastifyReply,HTTPMethods } from 'fastify';
 import { operations,validateSchema,responseSchema,type Operation } from './common/contract';
 import { Database } from './database/database';
@@ -12,7 +13,8 @@ export interface RequestContext {
   request: FastifyRequest;reply:FastifyReply;requestId:string;operation:Operation;
   principal?:Principal;params:Record<string,string>;query:Record<string,string>;body:Record<string,unknown>;
 }
-export interface Result { data:unknown;status?:number;page?:{limit:number;nextCursor:string|null;hasMore:boolean;total?:number} }
+export interface Result { data:unknown;status?:number;page?:{limit:number;nextCursor:string|null;hasMore:boolean;total?:number};
+  binary?:{stream:Readable;contentType:string;filename:string;byteSize?:number} }
 export type Handler=(context:RequestContext)=>Promise<Result>;
 export function installRoutes(server:FastifyInstance,db:Database,identity:IdentityService,permissions:Permissions) {
   const handlers:Record<string,Handler>={
@@ -47,7 +49,7 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
         reply.header('X-Request-ID',requestId).header('Cache-Control','no-store')
           .header('Referrer-Policy','no-referrer').header('X-Content-Type-Options','nosniff');
         try {
-          if(operation.request) validateSchema(operation.request,request.body);
+          if(operation.request&&operation.id!=='uploadFile') validateSchema(operation.request,request.body);
           else if(request.body!==undefined && request.body!==null) throw new Problem(422,'VALIDATION_ERROR');
           const params=request.params as Record<string,string>,query=request.query as Record<string,string>;
           for(const [key,value] of Object.entries(params)) if(key.endsWith('Id') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw new Problem(404,'RESOURCE_NOT_FOUND');
@@ -58,6 +60,12 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
           }
           const result=await handler({request,reply,requestId,operation,principal,params,query,body:(request.body??{}) as Record<string,unknown>});
           const status=result.status??200;
+          if(result.binary){
+            const file=result.binary;
+            reply.header('Content-Type',file.contentType).header('Content-Disposition',`attachment; filename="download"; filename*=UTF-8''${encodeURIComponent(file.filename)}`);
+            if(file.byteSize!==undefined)reply.header('Content-Length',file.byteSize);
+            return reply.code(status).send(file.stream);
+          }
           const response={data:result.data,...(result.page?{page:result.page}:{}),requestId};
           const schema=responseSchema(operation,status);
           if(schema) validateSchema(schema,response,true);

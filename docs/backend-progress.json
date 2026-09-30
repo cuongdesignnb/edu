@@ -2073,8 +2073,10 @@
         "CL24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "uploadFile",
@@ -2085,8 +2087,10 @@
         "SC27"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "getFile",
@@ -2094,8 +2098,10 @@
         "CL24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "downloadFile",
@@ -2104,8 +2110,10 @@
         "CL20"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "archiveFile",
@@ -2113,8 +2121,10 @@
         "CL24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "createFileLink",
@@ -2122,8 +2132,10 @@
         "CL24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/files-integration.log; 22/22; private file and worker cases"
+      ]
     },
     {
       "operationId": "listSchoolAnnouncements",
@@ -2971,7 +2983,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "IMPLEMENTED"
     },
     {
       "screenId": "SC03",
@@ -3968,7 +3980,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL25",

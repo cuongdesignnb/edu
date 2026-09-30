@@ -31725,6 +31725,15 @@ components:
         uploadedBy:
           type: string
           format: uuid
+        scanStatus:
+          type: string
+          enum:
+            - NOT_SCANNED
+            - SCANNED
+            - GENERATED
+        rejectionCode:
+          type: string
+          nullable: true
       required:
         - id
         - version

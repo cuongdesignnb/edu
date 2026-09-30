@@ -70,3 +70,22 @@ pair in the same transaction, retaining original record authors. Future dated
 handovers preserve the old teacher's access until the effective date. Open-work
 counts are stored in the handover checklist and audit. No implicit parent links
 or teacher assignments are carried into a rollover.
+
+## ADR-008 — File scope and scan metadata
+
+Migration 007 stores the upload purpose, optional class context, scan state and
+sanitized rejection code. File DTOs add optional `scanStatus`/`rejectionCode`.
+Uploader ownership alone never authorizes a read: their current action and scope
+are checked. Other staff need a current school grant or an authorized typed link.
+Upload names never form storage paths. Processing re-encodes raster images,
+rejects active XLSX content and bounds ZIP expansion. Local processed files are
+explicitly NOT_SCANNED. Production presently permits only re-encoded raster
+images; PDF/XLSX acceptance needs an approved scanner integration.
+
+The worker runs as edu_worker and consumes leased jobs with SKIP LOCKED, bounded
+concurrency, ownership checks, lease renewal and retries. Invalid content becomes
+FAILED with no automatic acknowledgement as DONE. Local identity mail writes
+private LOCAL_FILE messages and clears encrypted token payloads after delivery;
+used, expired or revoked tokens are cancelled before delivery. SMTP driver code
+exists but SMTP fault/delivery testing remains pending and no Internet mail has
+been sent by these local tests.

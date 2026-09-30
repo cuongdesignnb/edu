@@ -51,7 +51,7 @@ export class Permissions {
       AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
       GROUP BY g.id,r.code,r.label,a.id`, [userId,schoolId])).rows;
   }
-  async require(tx: Transaction, principal: Principal, actions: string, scope: Scope) {
+  async require(tx: Transaction, principal: Pick<Principal,'userId'>, actions: string, scope: Scope) {
     const school = (await tx.query<{ status: string; timezone: string }>('SELECT status,timezone FROM platform.schools WHERE id=$1', [scope.schoolId])).rows[0];
     const member = (await tx.query('SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2 AND status=$3 AND ended_at IS NULL', [scope.schoolId,principal.userId,'ACTIVE'])).rows[0];
     if (!school || !member) throw new Problem(404, 'RESOURCE_NOT_FOUND');
@@ -73,7 +73,7 @@ export class Permissions {
       AND (valid_until IS NULL OR valid_until>now())`, [principal.userId,action])).rows[0];
     if (!row) throw new Problem(403, 'FORBIDDEN');
   }
-  async collection(tx:Transaction,principal:Principal,action:string,schoolId:string,allowSubject=false) {
+  async collection(tx:Transaction,principal:Pick<Principal,'userId'>,action:string,schoolId:string,allowSubject=false) {
     const membership=(await tx.query(`SELECT m.id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id
       WHERE m.school_id=$1 AND m.user_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL AND s.status='ACTIVE'`,
     [schoolId,principal.userId])).rows[0];

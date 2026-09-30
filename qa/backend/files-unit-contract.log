@@ -1,0 +1,16 @@
+✔ all operation IDs are unique (0.7115ms)
+✔ login rejects spoofed role, school and unknown fields (2.4743ms)
+✔ private user DTO rejects secrets and unknown properties (4.3058ms)
+✔ grant action and class scope stay together (0.6985ms)
+✔ subject grants never authorize management without explicit subject policy (0.1284ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1191ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1051ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (86.0645ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 566.2667

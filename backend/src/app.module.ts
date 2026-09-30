@@ -8,5 +8,7 @@ import { StudentsService } from './modules/students/students.service';
 import { InvitationsService } from './modules/identity/invitations.service';
 import { StaffService } from './modules/staff/staff.service';
 import { TransitionsService } from './modules/students/transitions.service';
-@Module({ providers: [Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService], exports: [Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService] })
+import { FilesService } from './modules/files/files.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService];
+@Module({providers:services,exports:services})
 export class AppModule {}

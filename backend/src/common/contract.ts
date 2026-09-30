@@ -9,6 +9,7 @@ export const permissions: readonly string[] = contract.permissions;
 export const roleTemplates = contract.roles;
 const ajv = new Ajv({ strict: false, allErrors: true, coerceTypes: false, removeAdditional: false });
 addFormats(ajv);
+ajv.addFormat('binary',()=>true); // Multipart bytes are separately streamed/validated.
 ajv.addSchema({ components: { schemas: contract.schemas } }, 'contract');
 const validators = new Map<string, ValidateFunction>();
 export function validateSchema(name: string, value: unknown, response = false): void {

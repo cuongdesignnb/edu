@@ -18,7 +18,9 @@ export function mapError(error: unknown): Problem {
   const code = typeof error === 'object' && error && 'code' in error ? String(error.code) : '';
   if (code === '23505') return new Problem(409, 'DUPLICATE_SOURCE');
   if (code === '23P01') return new Problem(409, 'SCHEDULE_CONFLICT');
+  if(code.startsWith('FST_REQ_FILE_TOO_LARGE')||code.startsWith('FST_FILES_LIMIT')||code.startsWith('FST_FIELDS_LIMIT')||code.startsWith('FST_PARTS_LIMIT'))return new Problem(422,'UPLOAD_LIMIT_EXCEEDED');
+  if(['ENOSPC','EDQUOT','EIO','ENOENT','EACCES'].includes(code))return new Problem(503,'STORAGE_UNAVAILABLE');
   if (['23503', '23514', '22P02', '22007', '22008'].includes(code)) return new Problem(422, 'VALIDATION_ERROR');
-  if (['08000', '08003', '08006', '57P01', 'ECONNREFUSED', 'ETIMEDOUT', '53300'].includes(code)) return new Problem(503, 'DEPENDENCY_UNAVAILABLE');
+  if (['08000', '08003', '08006', '57P01', 'ECONNREFUSED', 'ETIMEDOUT', '53300','40P01','40001'].includes(code)) return new Problem(503, 'DEPENDENCY_UNAVAILABLE');
   return new Problem(500, 'INTERNAL_ERROR');
 }
