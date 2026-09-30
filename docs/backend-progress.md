@@ -23,13 +23,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listMyNotifications | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | readMyNotification | AU09, TE05 | TESTED | qa/backend/notifications-integration.log: 62/62 exit0; migration022 applied/replayed; real invitation/publication/evidence producers; UI pending |
 | getPlatformOverview | PL01 | TESTED | qa/backend/platform-integration.log |
-| listPlatformSchools | PL01, PL02 | TESTED | qa/backend/platform-integration.log |
-| createSchool | PL03 | TESTED | qa/backend/platform-integration.log |
+| listPlatformSchools | PL01, PL02 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
+| createSchool | PL03 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 | getPlatformSchool | PL04 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSchool | PL04 | TESTED | qa/backend/platform-integration.log |
 | setSchoolStatus | PL02, PL04 | TESTED | qa/backend/platform-integration.log |
 | listSchoolAdmins | PL05 | TESTED | qa/backend/platform-integration.log |
-| inviteSchoolAdmin | PL03, PL05 | TESTED | qa/backend/platform-integration.log |
+| inviteSchoolAdmin | PL03, PL05 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 | revokeSchoolAdmin | PL05 | TESTED | qa/backend/platform-integration.log |
 | listPlatformTickets | PL06 | TESTED | qa/backend/support-integration.log |
 | getPlatformTicket | PL07 | TESTED | qa/backend/support-integration.log |
@@ -269,6 +269,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getPublicSchool | SY01 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | getPublicAnnouncement | SY02 | TESTED | qa/backend/announcements-integration.log: 57/57 exit0; qa/backend/announcements-unit-contract.log: 12/12 exit0; migration020 applied/replayed; connected UI pending |
 | getRolloverPreview | SC07 | TESTED | qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization |
+| getPlatformSchoolOptions | PL02, PL03 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
+| checkPlatformSchoolIdentity | PL03 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
+| listSchoolAdminInvitations | PL04, PL05 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
+| revokePlatformAdminInvitation | PL05 | TESTED | qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

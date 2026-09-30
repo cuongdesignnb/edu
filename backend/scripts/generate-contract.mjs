@@ -197,6 +197,29 @@ Object.assign(previewOperation,{operationId:'getRolloverPreview',summary:'Danh s
 previewOperation.responses['200'].content['application/json'].schema={$ref:'#/components/schemas/RolloverPreviewResponse'};
 spec.paths[previewPath]={get:previewOperation};
 operations.push({id:'getRolloverPreview',method:'GET',path:'/api/v1'+previewPath,title:previewOperation.summary,tag:'School',permission:'year.manage',scope:'school',request:null,response:'RolloverPreview',list:false,auth:'staff',async_job:false,frontend_ids:['SC07'],description:previewOperation.description});
+// ADR-036: native platform form metadata and an atomic optional first administrator.
+spec.components.schemas.InviteRequest.properties.expiresInDays={type:'integer',minimum:1,maximum:14,default:2};
+spec.components.schemas.PlatformAdminInviteRequest=structuredClone(spec.components.schemas.InviteRequest);
+spec.components.schemas.PlatformAdminInviteRequest.required=spec.components.schemas.PlatformAdminInviteRequest.required.filter(name=>name!=='validFrom');
+spec.components.schemas.SchoolCreate.properties.firstAdmin={$ref:'#/components/schemas/PlatformAdminInviteRequest'};
+const adminInviteOperation=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId==='inviteSchoolAdmin');
+adminInviteOperation.requestBody.content['application/json'].schema={$ref:'#/components/schemas/PlatformAdminInviteRequest'};
+operations.find(op=>op.id==='inviteSchoolAdmin').request='PlatformAdminInviteRequest';
+spec.components.schemas.PlatformSchoolOptions=object({provinces:{type:'array',maxItems:200,items:label}});
+spec.components.schemas.PlatformSchoolIdentity=object({codeTaken:{type:'boolean'},slugTaken:{type:'boolean'}});
+for(const name of ['PlatformSchoolOptions','PlatformSchoolIdentity'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+function extendOperation(templateId,id,path,permission,response,list,screenIds,parameters){
+  const template=operations.find(op=>op.id===templateId),operation=structuredClone(spec.paths[template.path.replace(/^\/api\/v1/,'')][template.method.toLowerCase()]);
+  Object.assign(operation,{operationId:id,summary:id,description:'Platform operational metadata under current native authority; no pupil data.','x-permission':permission,'x-frontend-screen-ids':screenIds});
+  operation.parameters=parameters??operation.parameters.filter(p=>p.in!=='header');
+  operation.responses[template.method==='POST'?'200':'200'].content['application/json'].schema={$ref:'#/components/schemas/'+response+(list?'Page':'Response')};
+  spec.paths[path]??={};spec.paths[path][template.method.toLowerCase()]=operation;
+  operations.push({...template,id,path:'/api/v1'+path,title:operation.summary,tag:'Platform',permission,response,list,frontend_ids:screenIds,description:operation.description});
+}
+extendOperation('getPlatformSchool','getPlatformSchoolOptions','/platform/school-options','platform.schools.read','PlatformSchoolOptions',false,['PL02','PL03'],[]);
+extendOperation('getPlatformSchool','checkPlatformSchoolIdentity','/platform/school-identity','platform.schools.manage','PlatformSchoolIdentity',false,['PL03'],['code','slug'].map(name=>({name,in:'query',schema:{type:'string',maxLength:name==='code'?16:40}})));
+extendOperation('listInvitations','listSchoolAdminInvitations','/platform/schools/{schoolId}/admin-invitations','platform.admins.manage','Invitation',true,['PL04','PL05']);
+extendOperation('revokeInvitation','revokePlatformAdminInvitation','/platform/schools/{schoolId}/admin-invitations/{invitationId}/revoke','platform.admins.manage','Invitation',false,['PL05']);
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

@@ -81,8 +81,8 @@ beforeEach(async()=>{
   await pool.query('DELETE FROM identity.rate_limit_buckets');
 });
 
-test('B5 all 264 supplied operations and the explicit SC07 preview extension have registered real handlers',async()=>{
-  assert.equal(operations.length,265);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
+  assert.equal(operations.length,269);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -1909,6 +1909,41 @@ test('B6 rollover preview uses exact end-year enrollment, minimal workflow autho
     assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
     jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
   }finally{jar.set('edu_staff',adminCookie);}
+});
+
+test('B6 platform school wizard creates its optional admin invitation atomically and redacts form metadata',async()=>{
+  jar.delete('edu_staff');const csrf=await login('operator@example.invalid'),base='/api/v1/platform',code=`PU${crypto.randomBytes(5).toString('hex').toUpperCase()}`,slug=`pui-${crypto.randomUUID()}`,email=`pui-${crypto.randomUUID()}@example.invalid`,key=crypto.randomUUID();
+  const body={code,slug,name:'Trường wizard giả',province:'Tỉnh wizard giả',firstAdmin:{email,roleId:null,workDisplayName:'Quản trị wizard giả',expiresInDays:7}},post=(url,data,id=crypto.randomUUID())=>request('POST',url,data,csrf,{'idempotency-key':id});
+  const created=await post(`${base}/schools`,body,key);assert.equal(created.statusCode,201,created.body);const school=created.json().data;assert.equal(school.status,'DRAFT');assert.equal(school.onboarding.adminAssigned,false);
+  assert.equal((await post(`${base}/schools`,body,key)).json().data.id,school.id);
+  const choices=await request('GET',`${base}/school-options`);assert.equal(choices.statusCode,200,choices.body);assert.ok(choices.json().data.provinces.includes(body.province));assert.deepEqual(Object.keys(choices.json().data),['provinces']);
+  const identity=await request('GET',`${base}/school-identity?code=${code}&slug=${slug}`);assert.equal(identity.statusCode,200,identity.body);assert.deepEqual(identity.json().data,{codeTaken:true,slugTaken:true});
+  const list=await request('GET',`${base}/schools/${school.id}/admin-invitations`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().page.total,1);const invitation=list.json().data[0];assert.equal(invitation.email,email);assert.equal(invitation.workDisplayName,body.firstAdmin.workDisplayName);assert.ok(Math.abs(Date.parse(invitation.expiresAt)-Date.now()-7*86400000)<30000);
+  assert.deepEqual(Object.keys(invitation).sort(),['createdAt','email','expiresAt','id','status','updatedAt','version','workDisplayName']);
+  assert.equal((await db.app.query('SELECT count(*)::int AS n FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.id}`])).rows[0].n,1);
+  const proposal=(await db.transaction(tx=>tx.query('SELECT proposed_assignments FROM app.staff_invitations WHERE school_id=$1 AND id=$2',[school.id,invitation.id]),{schoolId:school.id})).rows[0].proposed_assignments[0];assert.ok(Math.abs(Date.parse(proposal.validFrom)-Date.now())<30000);assert.equal(proposal.scopeType,'SCHOOL');
+  assert.equal((await post(`${base}/schools/${schoolB}/admin-invitations/${invitation.id}/revoke`,{expectedVersion:invitation.version,reason:'Sai trường giả'})).statusCode,404);
+  const revoked=await post(`${base}/schools/${school.id}/admin-invitations/${invitation.id}/revoke`,{expectedVersion:invitation.version,reason:'Thu hồi lời mời wizard giả'});assert.equal(revoked.statusCode,200,revoked.body);assert.equal(revoked.json().data.status,'REVOKED');
+  assert.equal((await post(`${base}/schools/${school.id}/admin-invitations/${invitation.id}/revoke`,{expectedVersion:invitation.version,reason:'Phiên bản cũ giả'})).statusCode,409);
+  const badCode=`PU${crypto.randomBytes(5).toString('hex').toUpperCase()}`,failed=await post(`${base}/schools`,{...body,code:badCode,slug:`pui-${crypto.randomUUID()}`,firstAdmin:{...body.firstAdmin,validUntil:new Date(Date.now()-3600000).toISOString()}});assert.equal(failed.statusCode,422,failed.body);
+  assert.equal((await db.app.query('SELECT count(*)::int AS n FROM platform.schools WHERE code=$1',[badCode])).rows[0].n,0);
+  for(const sort of ['classCount','staffCount']){const sorted=await request('GET',`${base}/schools?sort=${sort}&dir=desc&limit=2`);assert.equal(sorted.statusCode,200,sorted.body);assert.ok(sorted.json().data[0][sort]>=sorted.json().data[1][sort]);}
+  const operatorCookie=jar.get('edu_staff');jar.delete('edu_staff');const staffCsrf=await login('admin-a@example.invalid'),ordinaryRole=(await db.transaction(tx=>tx.query("SELECT id FROM app.roles WHERE school_id=$1 AND code='SCHOOL_LEADERSHIP'",[schoolA]),{schoolId:schoolA})).rows[0].id;
+  const ordinaryEmail=`pui-staff-${crypto.randomUUID()}@example.invalid`,ordinary=await request('POST',`/api/v1/schools/${schoolA}/invitations`,{email:ordinaryEmail,roleId:ordinaryRole,validFrom:new Date().toISOString()},staffCsrf,{'idempotency-key':crypto.randomUUID()});assert.equal(ordinary.statusCode,201,ordinary.body);jar.set('edu_staff',operatorCookie);
+  const ordinaryList=await request('GET',`${base}/schools/${schoolA}/admin-invitations?q=${encodeURIComponent(ordinaryEmail)}`);assert.equal(ordinaryList.statusCode,200,ordinaryList.body);assert.equal(ordinaryList.json().page.total,0);
+  assert.equal((await post(`${base}/schools/${schoolA}/admin-invitations/${ordinary.json().data.id}/revoke`,{expectedVersion:ordinary.json().data.version,reason:'Không được thu hồi lời mời nhân sự'})).statusCode,404);
+  const adminGrant=seedId('operator:platform.admins.manage');try{await db.app.query('UPDATE platform.operator_grants SET revoked_at=now() WHERE id=$1',[adminGrant]);assert.equal((await post(`${base}/schools`,body,key)).statusCode,403);assert.equal((await request('GET',`${base}/schools/${school.id}/admin-invitations`)).statusCode,403);}finally{await db.app.query('UPDATE platform.operator_grants SET revoked_at=NULL WHERE id=$1',[adminGrant]);}
+});
+
+test('B6 platform school form readers never lend admin or read authority to a create-only operator',async()=>{
+  const uid=crypto.randomUUID(),email=`pui-writer-${crypto.randomUUID()}@example.invalid`,grantId=crypto.randomUUID();
+  await db.app.query("INSERT INTO identity.users(id,email_normalized,display_name,password_hash,status,email_verified_at) VALUES($1,$2,'Người tạo trường giả',$3,'ACTIVE',now())",[uid,email,await hashPassword(password)]);
+  await db.app.query("INSERT INTO platform.operator_grants(id,user_id,action_code,valid_from) VALUES($1,$2,'platform.schools.manage',now()-interval '1 second')",[grantId,uid]);jar.delete('edu_staff');const csrf=await login(email),base='/api/v1/platform',code=`PU${crypto.randomBytes(5).toString('hex').toUpperCase()}`,body={code,slug:`pui-${crypto.randomUUID()}`,name:'Trường chỉ quyền tạo giả'},post=data=>request('POST',`${base}/schools`,data,csrf,{'idempotency-key':crypto.randomUUID()});
+  const identity=await request('GET',`${base}/school-identity?code=${code}`);assert.equal(identity.statusCode,200,identity.body);assert.deepEqual(identity.json().data,{codeTaken:false,slugTaken:false});assert.equal((await request('GET',`${base}/school-options`)).statusCode,403);
+  const failed=await post({...body,firstAdmin:{email:`pui-admin-${crypto.randomUUID()}@example.invalid`,roleId:null,validFrom:new Date().toISOString()}});assert.equal(failed.statusCode,403,failed.body);assert.equal((await db.app.query('SELECT count(*)::int AS n FROM platform.schools WHERE code=$1',[code])).rows[0].n,0);
+  const created=await post(body);assert.equal(created.statusCode,201,created.body);assert.equal((await request('GET',`${base}/schools/${created.json().data.id}/admin-invitations`)).statusCode,403);
+  await db.app.query('UPDATE platform.operator_grants SET revoked_at=now() WHERE id=$1',[grantId]);assert.equal((await request('GET',`${base}/school-identity?code=${code}`)).statusCode,403);
+  jar.delete('edu_staff');await login('admin-a@example.invalid');for(const path of [`${base}/school-options`,`${base}/school-identity?code=${code}`,`${base}/schools/${schoolA}/admin-invitations`])assert.equal((await request('GET',path)).statusCode,403);
 });
 
 test('B6 school overview keeps current scoped totals, actual setup and publication metadata without lending school-wide reads',async()=>{

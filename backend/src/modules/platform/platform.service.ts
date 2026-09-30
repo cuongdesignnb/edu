@@ -1,21 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { Database,one,type Row,type Transaction } from '../../database/database';
-import { listResource } from '../../database/resources';
+import { listResource,dto } from '../../database/resources';
 import { Commands } from '../../common/commands';
 import { Permissions,grantDto,coversDelegatedExpiry } from '../../common/permissions';
 import { roleTemplates } from '../../common/contract';
 import { Problem,notFound,validation } from '../../common/problem';
 import {validateSchoolWebsite} from '../../common/school-website';
 import { InvitationsService } from '../identity/invitations.service';
-import { schoolResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,type OperationalCounts } from './platform-data';
+import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,type OperationalCounts } from './platform-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class PlatformService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOverview','listPlatformSchools','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async school(tx:Transaction,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${lock?' FOR UPDATE':''}`,[id]);if(!row)notFound();return row;}
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
+  private async inviteAdmin(tx:Transaction,c:RequestContext,schoolId:string,input:Record<string,unknown>){
+    await this.policy.platform(c.principal!,'platform.admins.manage',tx);
+    const role=await one<{id:string}>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code='SCHOOL_ADMIN' AND system_role AND status='ACTIVE'",[schoolId]);if(!role)throw new Problem(409,'DEFAULT_ROLES_REQUIRED');
+    if(input.roleId&&input.roleId!==role.id||input.classId||input.subjectId)validation('roleId','Chỉ mời quản trị mặc định của đúng trường');
+    const from=input.validFrom?new Date(String(input.validFrom)):new Date(),until=input.validUntil?new Date(String(input.validUntil)):null;
+    if(!Number.isFinite(from.getTime())||until&&(!Number.isFinite(until.getTime())||until<=from||until.getTime()<=Date.now()))validation('validUntil','Thời hạn quyền chưa hợp lệ');
+    const grants=(await tx.query<{valid_until:Date|null}>(txPermission,[c.principal!.userId])).rows;if(!grants.some(g=>coversDelegatedExpiry(g,from,until)))throw new Problem(403,'DELEGATION_CEILING');
+    const invitation=await this.invitations.create(tx,schoolId,c.principal!.userId,String(input.email),{roleId:role.id,scopeType:'SCHOOL',validFrom:from.toISOString(),validUntil:until?.toISOString()??null},{...(input.workDisplayName?{workDisplayName:String(input.workDisplayName)}:{})},Number(input.expiresInDays??2));
+    await platformAudit(tx,{...c,params:{...c.params,schoolId}},'invitation',String(invitation.id),{status:'PENDING'});return invitation;
+  }
   private async roles(tx:Transaction,schoolId:string){
     for(const template of roleTemplates.filter(r=>r.scope!=='PLATFORM')){
       const role=(await one<{id:string}>(tx,'INSERT INTO app.roles(school_id,code,label,system_role) VALUES($1,$2,$3,true) RETURNING id',[schoolId,template.code,template.label]))!;
@@ -33,12 +43,18 @@ export class PlatformService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const op=c.operation.id,schoolId=c.params.schoolId;
-    const authorize=async(tx:Transaction)=>{await this.policy.platform(c.principal!,c.operation.permission,tx);if(schoolId)await this.school(tx,schoolId);};
+    const authorize=async(tx:Transaction)=>{await this.policy.platform(c.principal!,c.operation.permission,tx);if(op==='createSchool'&&c.body.firstAdmin)await this.policy.platform(c.principal!,'platform.admins.manage',tx);if(schoolId)await this.school(tx,schoolId);};
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='getPlatformOverview')return this.overview(tx,c);
+      if(op==='getPlatformSchoolOptions'){
+        const provinces=(await tx.query<{province:string}>("SELECT DISTINCT province FROM platform.schools WHERE province IS NOT NULL AND province<>'' ORDER BY province LIMIT 201")).rows;
+        if(provinces.length>200)throw new Problem(422,'CHOICE_LIMIT');return {data:{provinces:provinces.map(p=>p.province)}};
+      }
+      if(op==='checkPlatformSchoolIdentity'){
+        const value=(await one<{codeTaken:boolean;slugTaken:boolean}>(tx,'SELECT EXISTS(SELECT 1 FROM platform.schools WHERE code=$1) AS "codeTaken",EXISTS(SELECT 1 FROM platform.schools WHERE slug=$2) AS "slugTaken"',[c.query.code??'',c.query.slug??'']))!;return {data:value};
+      }
       if(op==='listPlatformSchools'){
-        const result=await listResource(tx,schoolResource,null,c.query,undefined,c.principal!.userId);
-        for(const item of result.data){const counts=(await one<OperationalCounts>(tx,'SELECT * FROM platform.operational_counts($1)',[item.id]))!;Object.assign(item,{classCount:counts.class_count,staffCount:counts.staff_count,adminNames:counts.admin_labels,onboarding:counts.onboarding});}return result;
+        return listResource(tx,schoolListResource,null,c.query,undefined,c.principal!.userId);
       }
       if(op==='getPlatformSchool')return {data:await schoolView(tx,await this.school(tx,schoolId!))};
       if(op==='listPlatformAudit'){const result=await listResource(tx,platformAuditResource,null,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);return {...result,data:result.data.map(auditView)};}
@@ -57,9 +73,18 @@ export class PlatformService {
         const timezone=String(c.body.timezone??'Asia/Ho_Chi_Minh');if(!await one(tx,'SELECT name FROM pg_timezone_names WHERE name=$1',[timezone]))validation('timezone','Múi giờ IANA không hợp lệ');
         const body={...c.body,timezone,shortName:c.body.shortName??c.body.name},fields=Object.keys(schoolWriteColumns).filter(k=>Object.hasOwn(body,k)),values=fields.map(k=>body[k as keyof typeof body]);
         const created=(await one<Row>(tx,`INSERT INTO platform.schools(${fields.map(k=>schoolWriteColumns[k]).join(',')}) VALUES(${values.map((_,i)=>'$'+(i+1)).join(',')}) RETURNING *`,values))!;
-        await tx.query("SELECT set_config('app.school_id',$1,true)",[created.id]);await tx.query('SELECT app.lock_school()');await this.roles(tx,String(created.id));await platformAudit(tx,c,'school',String(created.id),{status:'DRAFT'});return {data:await schoolView(tx,created),status:201};
+        await tx.query("SELECT set_config('app.school_id',$1,true)",[created.id]);await tx.query('SELECT app.lock_school()');await this.roles(tx,String(created.id));await platformAudit(tx,c,'school',String(created.id),{status:'DRAFT'});
+        if(c.body.firstAdmin)await this.inviteAdmin(tx,c,String(created.id),c.body.firstAdmin as Record<string,unknown>);
+        return {data:await schoolView(tx,created),status:201};
       }
       const school=await this.school(tx,schoolId!,c.operation.method!=='GET');
+      if(op==='listSchoolAdminInvitations')return listResource(tx,adminInvitationResource,schoolId!,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);
+      if(op==='revokePlatformAdminInvitation'){
+        const row=await one<Row>(tx,`SELECT i.* FROM app.staff_invitations i WHERE i.school_id=$1 AND i.id=$2 AND jsonb_array_length(i.proposed_assignments)=1 AND EXISTS(SELECT 1 FROM app.roles r WHERE r.school_id=i.school_id AND r.code='SCHOOL_ADMIN' AND r.system_role AND r.id::text=i.proposed_assignments->0->>'roleId' AND i.proposed_assignments->0->>'scopeType'='SCHOOL') FOR UPDATE`,[schoolId,c.params.invitationId]);if(!row)notFound();this.version(row,c.body.expectedVersion);
+        if(row.status!=='PENDING'||new Date(row.expires_at as Date).getTime()<=Date.now())throw new Problem(409,'INVITATION_UNAVAILABLE');
+        await tx.query("UPDATE app.staff_invitations SET status='REVOKED' WHERE school_id=$1 AND id=$2",[schoolId,row.id]);await platformAudit(tx,c,'invitation',String(row.id),{status:'REVOKED'});
+        const saved=(await one<Row>(tx,`SELECT * FROM ${adminInvitationResource.table} t WHERE t.school_id=$1 AND t.id=$2`,[schoolId,row.id]))!;return {data:dto(adminInvitationResource,saved)};
+      }
       if(op==='updatePlatformSchool'){
         validateSchoolWebsite(c.body.website);
         this.version(school,c.body.expectedVersion);const fields=Object.keys(schoolWriteColumns).filter(k=>!['code','slug','timezone'].includes(k)&&Object.hasOwn(c.body,k));if(!fields.length)validation('body','Chọn thông tin cần cập nhật');
@@ -77,13 +102,7 @@ export class PlatformService {
       }
       if(op==='inviteSchoolAdmin'){
         if(!['DRAFT','ACTIVE'].includes(String(school.status)))throw new Problem(409,'SCHOOL_UNAVAILABLE');
-        const role=await one<{id:string}>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code='SCHOOL_ADMIN' AND system_role AND status='ACTIVE'",[schoolId]);if(!role)throw new Problem(409,'DEFAULT_ROLES_REQUIRED');
-        if(c.body.roleId&&c.body.roleId!==role.id||c.body.classId||c.body.subjectId)validation('roleId','Chỉ mời quản trị mặc định của đúng trường');
-        const from=new Date(String(c.body.validFrom)),until=c.body.validUntil?new Date(String(c.body.validUntil)):null;
-        if(!Number.isFinite(from.getTime())||until&&(!Number.isFinite(until.getTime())||until<=from||until.getTime()<=Date.now()))validation('validUntil','Thời hạn quyền chưa hợp lệ');
-        const grants=(await tx.query<{valid_until:Date|null}>(txPermission,[c.principal!.userId])).rows;if(!grants.some(g=>coversDelegatedExpiry(g,from,until)))throw new Problem(403,'DELEGATION_CEILING');
-        const invitation=await this.invitations.create(tx,schoolId!,c.principal!.userId,String(c.body.email),{roleId:role.id,scopeType:'SCHOOL',validFrom:from.toISOString(),validUntil:until?.toISOString()??null},{...(c.body.workDisplayName?{workDisplayName:String(c.body.workDisplayName)}:{})});
-        await platformAudit(tx,c,'invitation',invitation.id,{status:'PENDING'});return {data:invitation,status:201};
+        return {data:await this.inviteAdmin(tx,c,schoolId!,c.body),status:201};
       }
       if(op==='revokeSchoolAdmin'){
         const member=await one<Row>(tx,'SELECT * FROM app.memberships WHERE school_id=$1 AND id=$2 FOR UPDATE',[schoolId,c.params.memberId]);if(!member)notFound();this.version(member,c.body.expectedVersion);

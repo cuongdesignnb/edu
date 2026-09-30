@@ -245,7 +245,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/platform-integration.log"
+        "qa/backend/platform-integration.log",
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
       ]
     },
     {
@@ -256,7 +257,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/platform-integration.log"
+        "qa/backend/platform-integration.log",
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
       ]
     },
     {
@@ -313,7 +315,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/platform-integration.log"
+        "qa/backend/platform-integration.log",
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
       ]
     },
     {
@@ -3121,6 +3124,52 @@
       "evidence": [
         "qa/backend/b6-rollover-integration.log: 89/89 PostgreSQL checks; bounded exact end-year preview, target counts/archive filtering and current workflow authorization"
       ]
+    },
+    {
+      "operationId": "getPlatformSchoolOptions",
+      "screenIds": [
+        "PL02",
+        "PL03"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
+      ]
+    },
+    {
+      "operationId": "checkPlatformSchoolIdentity",
+      "screenIds": [
+        "PL03"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
+      ]
+    },
+    {
+      "operationId": "listSchoolAdminInvitations",
+      "screenIds": [
+        "PL04",
+        "PL05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
+      ]
+    },
+    {
+      "operationId": "revokePlatformAdminInvitation",
+      "screenIds": [
+        "PL05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-platform-wizard-integration-final.log: 92/92 PostgreSQL, 30 migration checksums/replay, atomic optional first admin, current delegation/replay authority and redacted purpose-bound platform metadata"
+      ]
     }
   ],
   "screens": [
@@ -3260,7 +3309,8 @@
       "scope": "core",
       "operationIds": [
         "listPlatformSchools",
-        "setSchoolStatus"
+        "setSchoolStatus",
+        "getPlatformSchoolOptions"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3272,7 +3322,9 @@
       "scope": "core",
       "operationIds": [
         "createSchool",
-        "inviteSchoolAdmin"
+        "inviteSchoolAdmin",
+        "getPlatformSchoolOptions",
+        "checkPlatformSchoolIdentity"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3285,7 +3337,8 @@
       "operationIds": [
         "getPlatformSchool",
         "updatePlatformSchool",
-        "setSchoolStatus"
+        "setSchoolStatus",
+        "listSchoolAdminInvitations"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3298,7 +3351,9 @@
       "operationIds": [
         "listSchoolAdmins",
         "inviteSchoolAdmin",
-        "revokeSchoolAdmin"
+        "revokeSchoolAdmin",
+        "listSchoolAdminInvitations",
+        "revokePlatformAdminInvitation"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

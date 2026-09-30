@@ -18,7 +18,7 @@ export interface ApiSchemas {
   "ProfilePatch": { "expectedVersion": number; "displayName"?: string; "workPhone"?: (string) | null; "bio"?: (string) | null; };
   "StaffSession": { "id": (string) | null; "deviceSummary": string; "current": boolean; "createdAt": string; "lastSeenAt": string; "expiresAt": string; };
   "School": { "website"?: (string) | null; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "code": string; "slug": string; "name": string; "status": "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "timezone": string; "publicContactEmail"?: (string) | null; "publicContactPhone"?: (string) | null; "publicAddress"?: (string) | null; "shortName"?: string; "province"?: string; "level"?: ("THPT" | "THCS" | "Tiểu học" | null) | null; "accentColor"?: string; "motto"?: string; "publicIntro"?: string; "statusReason"?: (string) | null; "activatedAt"?: (string) | null; "classCount"?: number; "staffCount"?: number; "adminNames"?: Array<string>; "onboarding"?: { "profileDone"?: boolean; "adminAssigned"?: boolean; "yearCreated"?: boolean; "classesCreated"?: boolean; "teachersInvited"?: boolean; "studentsImported"?: boolean; "homeroomAssigned"?: boolean; "rulesPublished"?: boolean; }; };
-  "SchoolCreate": { "website"?: (string) | null; "code": string; "slug": string; "name": string; "timezone"?: string; "publicContactEmail"?: (string) | null; "publicContactPhone"?: (string) | null; "publicAddress"?: (string) | null; "shortName"?: string; "province"?: string; "level"?: ("THPT" | "THCS" | "Tiểu học" | null) | null; "accentColor"?: string; "motto"?: string; "publicIntro"?: string; };
+  "SchoolCreate": { "website"?: (string) | null; "code": string; "slug": string; "name": string; "timezone"?: string; "publicContactEmail"?: (string) | null; "publicContactPhone"?: (string) | null; "publicAddress"?: (string) | null; "shortName"?: string; "province"?: string; "level"?: ("THPT" | "THCS" | "Tiểu học" | null) | null; "accentColor"?: string; "motto"?: string; "publicIntro"?: string; "firstAdmin"?: ApiSchemas["PlatformAdminInviteRequest"]; };
   "SchoolPatch": { "website"?: (string) | null; "expectedVersion": number; "name"?: string; "publicContactEmail"?: (string) | null; "publicContactPhone"?: (string) | null; "publicAddress"?: (string) | null; "shortName"?: string; "province"?: string; "level"?: ("THPT" | "THCS" | "Tiểu học" | null) | null; "accentColor"?: string; "motto"?: string; "publicIntro"?: string; };
   "SchoolStatusCommand": { "expectedVersion": number; "status": "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "reason": string; };
   "Metric": { "key": string; "label": string; "value": number; "denominator": (number) | null; "unit": string; "asOf": string; };
@@ -27,7 +27,7 @@ export interface ApiSchemas {
   "Member": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "userId": (string) | null; "staffCode"?: (string) | null; "workDisplayName": string; "workEmail"?: (string) | null; "workPhone"?: (string) | null; "shareWorkContact": boolean; "department"?: (string) | null; "status": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "grants"?: Array<ApiSchemas["GrantView"]>; "homeroomOf"?: Array<string>; "loginEmail"?: string; };
   "MemberPatch": { "expectedVersion": number; "workDisplayName"?: string; "workEmail"?: (string) | null; "workPhone"?: (string) | null; "shareWorkContact"?: boolean; "department"?: (string) | null; };
   "Invitation": { "schoolId"?: string; "schoolSlug"?: string; "schoolStatus"?: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "workDisplayName"?: string; "inviterName"?: string; "roleLabels"?: Array<string>; "roleCodes"?: Array<string>; "requiresLogin"?: boolean; "signedInAsInvited"?: boolean; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "email": string; "expiresAt": string; "status": "PENDING" | "ACCEPTED" | "DECLINED" | "REVOKED"; "deliveryState"?: "QUEUED" | "SENT" | "FAILED" | "LOCAL_FILE"; "schoolName"?: string; };
-  "InviteRequest": { "email": string; "roleId": (string) | null; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom": string; "validUntil"?: (string) | null; "workDisplayName"?: string; "reason"?: string; };
+  "InviteRequest": { "email": string; "roleId": (string) | null; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom": string; "validUntil"?: (string) | null; "workDisplayName"?: string; "reason"?: string; "expiresInDays"?: number; };
   "InviteTokenRequest": { "schoolSlug": string; "token": string; };
   "AcceptInviteRequest": { "schoolSlug": string; "token": string; "displayName"?: string; "newPassword"?: string; };
   "Role": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "code": string; "label": string; "systemRole": boolean; "permissions": Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; };
@@ -316,6 +316,11 @@ export interface ApiSchemas {
   "SchoolOverviewTodayItem": { "key": string; "label": string; "detail": string; "href": string; "tone": "danger" | "warning" | "info"; };
   "SchoolOverviewAnnouncement": { "id": string; "title": string; "summary": string; "status": "PUBLISHED" | "SCHEDULED"; "createdAt": string; "publishedAt": (string) | null; "scheduledAt": (string) | null; };
   "SchoolOverviewDetails": { "year": (ApiSchemas["Year"] | (null) | null); "prevYear": (ApiSchemas["Year"] | (null) | null); "kpi": ApiSchemas["SchoolOverviewKpi"]; "setup": Array<ApiSchemas["SchoolOverviewStep"]>; "classesNeedingAction": (Array<ApiSchemas["SchoolOverviewClass"]>) | null; "todayItems": (Array<ApiSchemas["SchoolOverviewTodayItem"]>) | null; "announcements": (Array<ApiSchemas["SchoolOverviewAnnouncement"]>) | null; "classesNeedingActionTotal": (number) | null; };
+  "PlatformAdminInviteRequest": { "email": string; "roleId": (string) | null; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom"?: string; "validUntil"?: (string) | null; "workDisplayName"?: string; "reason"?: string; "expiresInDays"?: number; };
+  "PlatformSchoolOptions": { "provinces": Array<string>; };
+  "PlatformSchoolIdentity": { "codeTaken": boolean; "slugTaken": boolean; };
+  "PlatformSchoolOptionsResponse": { "data": ApiSchemas["PlatformSchoolOptions"]; "requestId": string; };
+  "PlatformSchoolIdentityResponse": { "data": ApiSchemas["PlatformSchoolIdentity"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -548,7 +553,7 @@ export const apiOperations = {
     "method": "POST",
     "path": "/api/v1/platform/schools/{schoolId}/admin-invitations",
     "auth": "staff",
-    "request": "InviteRequest",
+    "request": "PlatformAdminInviteRequest",
     "response": "Invitation",
     "list": false,
     "permission": "platform.admins.manage"
@@ -2703,6 +2708,42 @@ export const apiOperations = {
     "response": "RolloverPreview",
     "list": false,
     "permission": "year.manage"
+  },
+  "getPlatformSchoolOptions": {
+    "method": "GET",
+    "path": "/api/v1/platform/school-options",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformSchoolOptions",
+    "list": false,
+    "permission": "platform.schools.read"
+  },
+  "checkPlatformSchoolIdentity": {
+    "method": "GET",
+    "path": "/api/v1/platform/school-identity",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformSchoolIdentity",
+    "list": false,
+    "permission": "platform.schools.manage"
+  },
+  "listSchoolAdminInvitations": {
+    "method": "GET",
+    "path": "/api/v1/platform/schools/{schoolId}/admin-invitations",
+    "auth": "staff",
+    "request": null,
+    "response": "Invitation",
+    "list": true,
+    "permission": "platform.admins.manage"
+  },
+  "revokePlatformAdminInvitation": {
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/admin-invitations/{invitationId}/revoke",
+    "auth": "staff",
+    "request": "ReasonCommand",
+    "response": "Invitation",
+    "list": false,
+    "permission": "platform.admins.manage"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

@@ -14,6 +14,7 @@ import {readRolloverPreview,applyRollover,type RolloverDecision} from './rollove
 function school(row:ApiSchemas['School']){
   return {id:requiredId(row.id),name:row.name,code:row.code,slug:row.slug,shortName:requiredValue(row.shortName,'shortName'),status:row.status.toLowerCase() as School['status'],level:row.level??null,province:requiredValue(row.province,'province'),address:row.publicAddress??'',publicEmail:row.publicContactEmail??'',publicPhone:row.publicContactPhone??'',website:row.website??undefined,accentColor:requiredValue(row.accentColor,'accentColor'),motto:requiredValue(row.motto,'motto'),publicIntro:requiredValue(row.publicIntro,'publicIntro'),version:row.version,createdAt:row.createdAt,activatedAt:row.activatedAt??undefined,statusReason:row.statusReason??undefined,onboarding:row.onboarding};
 }
+export {school as mapSchool};
 function settings(row:ApiSchemas['Settings'],schoolId:ID){
   return {schoolId,language:'vi' as const,timezone:row.timezone,linkDefaultDays:row.parentLinkTtlDays,reportHeader:requiredValue(row.reportHeader,'reportHeader'),shareTeacherPhone:requiredValue(row.shareTeacherPhone,'shareTeacherPhone'),shareTeacherEmail:requiredValue(row.shareTeacherEmail,'shareTeacherEmail'),contactHours:requiredValue(row.contactHours,'contactHours'),version:row.version};
 }

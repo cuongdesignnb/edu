@@ -547,3 +547,36 @@ Executed frontend evidence is 51/51 in
 qa/backend/b6-scope-owner-frontend-unit.log; TypeScript/scoped lint exit0. Backend
 source is unchanged from the executed 90/90 PostgreSQL and 13/13 contract/unit
 checkpoint. No browser, restart, restore or performance PASS is inferred.
+
+## ADR-036 — native platform school wizard and bounded operational form metadata
+
+PL03 creates a draft school with an optional default administrator invitation in
+one transaction. Supplying firstAdmin requires current platform.admins.manage in
+addition to platform.schools.manage, before cached acknowledgement replay and
+inside the transaction. Default roles exist before invitation creation; grant
+delegation bounds still apply. A failed invitation rolls back the whole school.
+The invitation is queued to the existing encrypted mail outbox, without returning
+its token. It does not activate the school or satisfy the active-admin guard.
+
+PlatformAdminInviteRequest allows the server to supply validFrom. This preserves
+the same request body/idempotency key when a browser retries an uncertain command.
+Explicit grant dates remain supported. Invitation acceptance expiry is separately
+configurable as 1–14 days with the existing proposed 48-hour default. It never
+extends the operator's grant ceiling or a school grant's validUntil.
+
+Four explicit additions fill existing UI contract gaps: getPlatformSchoolOptions
+under platform.schools.read; checkPlatformSchoolIdentity under
+platform.schools.manage; listSchoolAdminInvitations and
+revokePlatformAdminInvitation under platform.admins.manage. The latter SQL reader
+and versioned command select only one system SCHOOL_ADMIN proposal for the same
+school. They exclude ordinary staff proposals and never return tokens, proposed
+permissions or school pupil data. Province facets are bounded complete metadata;
+exceeding the bound is an error. Exact code/slug checks remain advisory; database
+uniqueness decides creation. School class/staff count sorts and admin-label search
+are applied in SQL rather than sorting or filtering a browser tenant dataset.
+
+Executed evidence: b6-platform-wizard-integration-final.log is 92/92, zero skipped,
+30 migrations verified; backend contract/unit 14/14 and frontend unit 58/58.
+Runtime is 269 operations/321 schemas. Ten added adapter candidates are unactivated.
+The literal-wildcard test attempt ran no files, exited1 and is separately retained.
+These results do not certify browser workflows, mail SMTP delivery or B7 drills.

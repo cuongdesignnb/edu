@@ -123,10 +123,11 @@ export class InvitationsService {
       return {id:invitation.id,status:'ACCEPTED'};
     },{schoolId:school.id});
   }
-  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal,profile:WorkProfile={}){
+  async create(tx:Transaction,schoolId:string,inviterId:string,email:string,proposal:Proposal,profile:WorkProfile={},expiresInDays=2){
+    if(!Number.isInteger(expiresInDays)||expiresInDays<1||expiresInDays>14)validation('expiresInDays','Thời hạn lời mời từ 1 đến 14 ngày');
     const token=randomToken(),id=crypto.randomUUID();
     const invitation=await one<InvitationRow>(tx,`INSERT INTO app.staff_invitations(id,school_id,email_normalized,token_hash,proposed_assignments,expires_at,invited_by,work_profile)
-      VALUES($1,$2,$3,$4,$5,now()+interval '48 hours',$6,$7) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify([proposal]),inviterId,profile]);
+      VALUES($1,$2,$3,$4,$5,now()+$8*interval '1 day',$6,$7) RETURNING *`,[id,schoolId,email.trim().toLowerCase(),hashToken(token),JSON.stringify([proposal]),inviterId,profile,expiresInDays]);
     const school=await one<{slug:string}>(tx,'SELECT slug FROM platform.schools WHERE id=$1',[schoolId]);
     await tx.query(`INSERT INTO identity.mail_outbox(school_id,template_key,encrypted_payload,dedupe_key)
       VALUES($1,'STAFF_INVITATION',$2,$3)`,[schoolId,encryptMail({email:email.trim().toLowerCase(),schoolSlug:school!.slug,

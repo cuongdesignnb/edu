@@ -14,7 +14,7 @@ for(const name of (await fs.readdir(directory)).filter(n=>n.endsWith('.ts')).sor
     ts.forEachChild(node,visit);
   };visit(file);
 }
-const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo',connectedSchoolRepo:'schoolRepo'};
+const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo',connectedSchoolRepo:'schoolRepo',connectedPlatformRepo:'platformRepo',connectedPlatformExtraRepo:'platformExtraRepo'};
 for(const name of (await fs.readdir(path.join(directory,'connected'))).filter(n=>n.endsWith('.ts')).sort()){
   const source=await fs.readFile(path.join(directory,'connected',name),'utf8'),file=ts.createSourceFile(name,source,ts.ScriptTarget.Latest,true);
   const visit=node=>{

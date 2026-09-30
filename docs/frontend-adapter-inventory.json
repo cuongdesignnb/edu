@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 39,
+  "candidateCount": 49,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1403,7 +1403,17 @@
         "slug: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformExtraRepo",
+        "method": "checkSchoolIdentity",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformExtraRepo",
@@ -1598,7 +1608,17 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "listSchools",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1622,7 +1642,17 @@
         "input: { name: string; shortName: string; code: string; slug: string; level: School[\"level\"]; province: string; address: string; publicEmail: string; publicPhone: string; adminName: string; adminEmail: string; asDraft: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "createSchool",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1635,7 +1665,17 @@
         "patch: Partial<Pick<School, \"name\" | \"shortName\" | \"province\" | \"address\" | \"publicEmail\" | \"publicPhone\">> & { version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "updateSchoolOps",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1649,7 +1689,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "changeSchoolStatus",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1662,7 +1712,17 @@
         "input: { fullName: string; email: string; days: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "inviteSchoolAdmin",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1676,7 +1736,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "revokeSchoolAdmin",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1688,7 +1758,17 @@
         "inviteId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "revokeInvitation",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1771,7 +1851,17 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "settings",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformRepo",
@@ -1783,7 +1873,17 @@
         "patch: Omit<PlatformSettings, \"version\" | \"dateFormat\" | \"timezone\"> & { version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformRepo",
+        "method": "saveSettings",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "reportsRepo",

@@ -1,5 +1,13 @@
 # Backend implementation evidence
 
+## B6 platform school wizard checkpoint
+
+- Actual PostgreSQL execution is **92/92**, exit0, zero skipped, in `qa/backend/b6-platform-wizard-integration-final.log`. All 30 migration checksums/replay were verified. Current image is `sha256:5e02a12150dd46f9e21862656279ab63406977aba8512d9ae0b18ed77c8ae2f0`. Backend contract/unit **14/14**, frontend unit **58/58**, TypeScript/scoped lint/build exit0. The earlier 92/92 run predates server-time and ordinary-invitation isolation assertions and is retained separately.
+- Optional first-admin invitation is part of the create-school transaction. Current `platform.admins.manage` and delegation expiry are required even on command replay. Failure leaves no school, roles or invitation. Pending invitation does not count as an active administrator. Invitation expiry defaults to 48 hours and can explicitly be 1–14 days; grant expiry is a separate authority boundary. The server supplies the default start time, keeping uncertain browser retries byte-identical.
+- Four explicit operations provide province facets, exact identity availability and list/revoke of only single default SCHOOL_ADMIN proposals. Ordinary staff invitations are excluded in SQL and cannot be revoked through the platform endpoint. A create-only operator cannot read province/admin metadata or attach an administrator; current revocation immediately denies subsequent reads/replays. School count sorts/search remain in SQL before pagination.
+- Runtime is **269 operations / 321 schemas**, with the supplied handoff preserved. Candidate coverage is **49 methods**: 25 school, 9 platform, 1 platform-extra plus existing identity extensions. All **231 legacy methods and 118 core screen acceptance remain pending activation**. Browser E2E, root deploy merge, final local URL, restart, backup/restore and performance are still outstanding. Production is not deployed.
+- A frontend test invocation with a literal wildcard ran no tests and exited1; its log is retained as `b6-platform-wizard-frontend-unit-no-files.log`. The successful 58/58 run passed explicitly discovered file paths. No PASS is attributed to the failed invocation.
+
 ## B6 staff scope ownership checkpoint
 
 - Frontend TypeScript and scoped lint exit0. Actual frontend checks are **51/51**, zero skipped, in `qa/backend/b6-scope-owner-frontend-unit.log`. They cover late 401 responses, changed permission scope during body decoding, composite reads/errors, current context changes and reauthorized rollover retries. These are unit checks, not browser acceptance.
