@@ -1533,6 +1533,32 @@
             ],
             "additionalProperties": false
           }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "SCHOOL",
+              "CLASS",
+              "SUBJECT"
+            ]
+          }
+        },
+        "memberCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assignmentCount": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -1632,10 +1658,16 @@
             ],
             "additionalProperties": false
           }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 1000
         }
       },
       "required": [
-        "expectedVersion"
+        "expectedVersion",
+        "reason"
       ],
       "additionalProperties": false
     },
@@ -13593,6 +13625,146 @@
       "properties": {
         "data": {
           "$ref": "#/components/schemas/MemberDetails"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "RoleHolder": {
+      "type": "object",
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "memberId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scopeType": {
+          "type": "string",
+          "enum": [
+            "SCHOOL",
+            "CLASS",
+            "SUBJECT"
+          ]
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "subjectId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "grantId",
+        "memberId",
+        "name",
+        "scopeType",
+        "classId",
+        "subjectId",
+        "validFrom",
+        "validUntil"
+      ],
+      "additionalProperties": false
+    },
+    "RoleDetails": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/components/schemas/Role"
+        },
+        "canEdit": {
+          "type": "boolean"
+        },
+        "ownRole": {
+          "type": "boolean"
+        },
+        "systemRole": {
+          "type": "boolean"
+        },
+        "canViewMembers": {
+          "type": "boolean"
+        },
+        "canViewHistory": {
+          "type": "boolean"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "canGrant": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "action",
+              "canGrant"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "members": {
+          "type": "array",
+          "nullable": true,
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/RoleHolder"
+          }
+        },
+        "history": {
+          "type": "array",
+          "nullable": true,
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/AuditEvent"
+          }
+        }
+      },
+      "required": [
+        "role",
+        "canEdit",
+        "ownRole",
+        "systemRole",
+        "canViewMembers",
+        "canViewHistory",
+        "actions",
+        "members",
+        "history"
+      ],
+      "additionalProperties": false
+    },
+    "RoleDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/RoleDetails"
         },
         "requestId": {
           "type": "string"
@@ -60632,6 +60804,147 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuditEventPage"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getRoleDetails",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/roles/{roleId}/details",
+      "title": "getRoleDetails",
+      "tag": "Staff",
+      "permission": "role.read",
+      "scope": "school",
+      "request": null,
+      "response": "RoleDetails",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC14"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "roleId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDetailsResponse"
               }
             }
           }

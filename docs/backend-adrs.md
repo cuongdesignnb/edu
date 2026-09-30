@@ -945,3 +945,43 @@ inclusive display dates only in the adapter; browser time never truncates histor
 
 These four adapter methods remain candidates until native UI date/version/action
 handling and the shared connected provider/facade are activated and browser-tested.
+
+## ADR-047 — Exact role scopes, independent panels and live edit ceilings
+
+The existing native Role DTO now carries real status, its distinct allowed scopes,
+held School member count and current teaching assignment count. SQL computes
+these counts against the role's actual grants; a custom Class grant does not
+fabricate a teaching assignment. List filtering/counting/keysets stay in SQL.
+The connected adapter retains every native action and each action's exact scopes,
+including mixed School/Class/Subject roles. Missing counts fail rather than
+substituting zero. No persisted role description exists; it remains null.
+
+`getRoleDetails` requires current `role.read` in a read-only repeatable-read
+transaction. Minimal holder names/grant scopes/times require independent
+`member.read`; role-target audit requires independent `audit.read`. Denied panels
+stay null. Each panel fails explicitly above 2,000 rows; role list composition
+fails above 1,000 templates. Contact/identity email, roster and foreign metadata
+are not borrowed. Native action choices contain only registered school actions
+and current School-scoped grant eligibility. Labels are static Vietnamese
+vocabulary; they never replace the action code or its scope.
+
+Editing preserves ADR-005: system templates are immutable and a held role cannot
+be edited by its holder. Held includes unrevoked future grants, closing the former
+gap where a future recipient could change their own template before activation.
+RolePatch now requires the existing UI's reason, validated again after trimming.
+The command sends the displayed version and explicit permission/scope objects;
+an ambiguous legacy string-only action list is rejected before HTTP. Audit stores
+native added/removed actions and changed scopes through the shared sanitized view.
+
+Custom role edits affect their live grants. Adding an action or widening its
+allowed scopes now checks the aggregate maximum expiry of matching retained
+recipient grants, including future recipients and unbounded grants. The editor's
+current School action grant must cover that exposure. A finite authority cannot
+create newly effective unbounded access through a role edit. SQL aggregation
+avoids loading all recipient grants. Rejected edits roll back before permission,
+version, audit or idempotency acknowledgement writes.
+
+Actual checks: 122/122 PostgreSQL integration, zero skipped, 22/22 backend
+contract/unit and 112/112 frontend API unit; TypeScript/scoped lint exit0.
+Runtime is 286 operations/355 schemas and 83 unactivated adapter candidates.
+These checks do not certify native screen activation, browser E2E or B7 drills.

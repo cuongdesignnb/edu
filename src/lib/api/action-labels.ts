@@ -1,0 +1,8 @@
+/** Static vocabulary for native actions; scope is always retained separately. */
+const subjects:Record<string,string>={activity:'hoạt động',announcement:'thông báo',assignment:'phân công',attendance:'điểm danh',audit:'nhật ký',calendar:'lịch nhà trường',class:'lớp',conduct:'thi đua',dictionary:'danh mục',duty:'trực nhật',evidence:'minh chứng',file:'tệp',grant:'quyền được cấp',group:'tổ học sinh',guardian:'giám hộ',import:'nhập dữ liệu',member:'nhân sự',parent_access:'link phụ huynh',report:'báo cáo',role:'mẫu quyền',rules:'nội quy',schedule:'thời khóa biểu',school:'nhà trường',seating:'sơ đồ chỗ ngồi',student:'học sinh',support:'hỗ trợ',teacher:'giáo viên',year:'năm học'};
+const verbs:Record<string,string>={read:'Xem',manage:'Quản lý',publish:'Công bố',review:'Rà soát',record:'Ghi nhận',reopen:'Mở lại',lock:'Chốt',download:'Tải xuống',upload:'Tải lên',verify:'Xác minh',issue:'Cấp',preview:'Xem trước',revoke:'Thu hồi',export:'Xuất',approve:'Duyệt',apply:'Áp dụng'};
+const exact:Record<string,string>={'conduct.adjust.approve':'Duyệt điều chỉnh thi đua','conduct.adjust.request':'Đề nghị điều chỉnh thi đua','student.transfer':'Duyệt chuyển lớp, ngừng theo học','student.transfer.request':'Đề nghị chuyển lớp, ngừng theo học','school.settings':'Sửa cài đặt nhà trường','teacher.self':'Xem không gian cá nhân giáo viên'};
+export function nativeActionLabel(action:string){
+  const [subject,verb,...tail]=action.split('.'),label=exact[action]??(subjects[subject]&&verbs[verb]&&!tail.length?`${verbs[verb]} ${subjects[subject]}`:'Quyền chưa có nhãn hiển thị');
+  return {label,group:subjects[subject]?subjects[subject][0].toLocaleUpperCase('vi')+subjects[subject].slice(1):'Quyền khác'};
+}

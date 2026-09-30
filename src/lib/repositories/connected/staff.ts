@@ -9,6 +9,7 @@ import type {Ctx,ListQuery} from '../core';
 import {RepoError} from '../errors';
 import {commandReason,displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {assignment,assignmentBody,type StaffAssignmentInput} from './assignment-mapping';
+import {staffRole,staffRoleDetails,rolePermissions} from './role-mapping';
 
 /** Native lifecycle replies retain nullable metadata and exact grant time windows. */
 export function staffMembership(row:ApiSchemas['Member'],schoolId:ID){
@@ -36,6 +37,12 @@ function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
     invitationStatus:row.kind==='INVITATION'?'pending' as const:undefined,expiresAt:requiredValue(row.expiresAt,'expiresAt'),avatarTone:row.kind==='INVITATION'?'amber':'blue'};
 }
 export const connectedStaffRepo=withStaffAccess({
+  async roles(_ctx:Ctx,schoolId:ID){return (await apiList('listRoles',{params:{schoolId},query:{sort:'label',dir:'asc'}},1000)).map(r=>staffRole(r,schoolId));},
+  async role(_ctx:Ctx,schoolId:ID,roleId:ID){return staffRoleDetails((await http('getRoleDetails',{params:{schoolId,roleId}})).data,schoolId);},
+  async saveRole(_ctx:Ctx,schoolId:ID,roleId:ID,permissions:ApiSchemas['Role']['permissions'],version:number,reason:string){
+    const data=(await http('updateRole',{params:{schoolId,roleId},body:{expectedVersion:displayedVersion(version),reason:commandReason(reason),permissions:rolePermissions(permissions)}})).data;
+    return staffRole(data,schoolId);
+  },
   async assignmentMatrix(_ctx:Ctx,schoolId:ID,yearId?:ID){
     const view=(await http('getStaffAssignmentMatrix',{params:{schoolId},query:{yearId}})).data;
     const statuses={ACTIVE:'active',SUSPENDED:'suspended',ENDED:'revoked',INVITED:'invited'} as const;

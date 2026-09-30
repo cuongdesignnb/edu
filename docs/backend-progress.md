@@ -84,10 +84,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listInvitations | SC10 | TESTED | backend/src/modules; B2 TypeScript build; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | inviteStaff | SC10 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeInvitation | SC10 | TESTED | backend/src/modules; B2 TypeScript build; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
-| listRoles | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| getRole | SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
+| listRoles | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log |
+| getRole | SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log |
 | createRole | SC13 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| updateRole | SC14 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| updateRole | SC14 | TESTED | backend/src/modules; B2 TypeScript build; B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log |
 | previewGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
@@ -289,6 +289,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listMemberHistory | SC11 | TESTED | qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS. |
 | previewStaffAssignment | SC14 | TESTED | B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
 | getStaffAssignmentMatrix | SC12 | TESTED | B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
+| getRoleDetails | SC14 | TESTED | B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|
@@ -326,7 +327,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC11 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC12 | core | TESTED | NOT_STARTED |  |
 | SC13 | core | TESTED | NOT_STARTED |  |
-| SC14 | core | IMPLEMENTED | NOT_STARTED |  |
+| SC14 | core | TESTED | NOT_STARTED |  |
 | SC15 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC16 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC17 | core | IMPLEMENTED | NOT_STARTED |  |

@@ -9,11 +9,12 @@ import { InvitationsService,invitationDto } from '../identity/invitations.servic
 import {staffDirectory,staffDirectorySummary} from './staff-directory';
 import {memberDetails,memberHistory} from './member-details';
 import {assignmentMatrix} from './assignment-matrix';
+import {roleDetails,roleSummaryResource,ownsHeldRole,validateLiveRoleExpiry} from './role-details';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const assignmentResource:Resource={table:'app.teaching_assignments',fields:{...meta,classId:'class_id',memberId:'member_id',roleGrantId:'role_grant_id',kind:'kind',subjectId:'subject_id',startsOn:'starts_on',endsOn:'ends_on',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{classId:'class_id',memberId:'member_id'}};
-const roleResource:Resource={table:'app.roles',fields:{...meta,code:'code',label:'label',systemRole:'system_role'},writeFields:[],search:['code','label'],filters:{}};
+const roleResource:Resource={table:'app.roles',fields:{...meta,code:'code',label:'label',systemRole:'system_role',status:'status'},writeFields:[],search:['code','label'],filters:{}};
 const inviteResource:Resource={table:`(SELECT i.*,coalesce(i.work_profile->>'workDisplayName','') AS work_display_name,
   coalesce(i.work_profile->>'proposedDuty','') AS proposed_duty,ARRAY(SELECT p->>'roleId' FROM jsonb_array_elements(i.proposed_assignments) p) AS role_ids,
   coalesce(m.work_display_name,u.display_name,'') AS inviter_name FROM app.staff_invitations i
@@ -33,7 +34,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewStaffAssignment','previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -85,9 +86,9 @@ export class StaffService {
         await audit(tx,c,'member',id,{status:data.status,version:data.version});return {data};
       }
       if(op==='listRoles'){
-        const result=await listResource(tx,roleResource,schoolId,c.query,undefined,c.principal!.userId);
-        for(const role of result.data)role.permissions=await this.rolePermissions(tx,schoolId,String(role.id));return result;
+        return listResource(tx,roleSummaryResource,schoolId,c.query,undefined,c.principal!.userId);
       }
+      if(op==='getRoleDetails')return {data:await roleDetails(tx,c,this.policy)};
       if(op==='getRole')return {data:await this.role(tx,schoolId,c.params.roleId!)};
       if(op==='createRole'||op==='updateRole')return {data:await this.saveRole(tx,c),status:op==='createRole'?201:200};
       if(op==='listAssignments')return listResource(tx,assignmentResource,schoolId,c.query,c.principal!.support?.classId?{sql:'t.class_id=$1',values:[c.principal!.support.classId]}:undefined,c.principal!.userId);
@@ -138,7 +139,7 @@ export class StaffService {
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
     };
     if(op==='previewStaffAssignment')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:true});
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['listRoles','getRole','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
     return this.commands.execute(c,authorize,work);
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
@@ -195,7 +196,7 @@ export class StaffService {
     return (await tx.query<{action_code:string;allowed_scopes:string[]}>('SELECT action_code,allowed_scopes FROM app.role_permissions WHERE school_id=$1 AND role_id=$2 ORDER BY action_code',[schoolId,roleId])).rows.map(row=>({action:row.action_code,scopes:row.allowed_scopes}));
   }
   private async role(tx:Transaction,schoolId:string,id:string){
-    const data=dto(roleResource,await getResource(tx,roleResource,schoolId,id));data.permissions=await this.rolePermissions(tx,schoolId,id);return data;
+    return dto(roleSummaryResource,await getResource(tx,roleSummaryResource,schoolId,id));
   }
   private async validateGrant(tx:Transaction,c:RequestContext,body:Record<string,unknown>,invitation=false){
     const schoolId=c.params.schoolId!,role=await this.role(tx,schoolId,String(body.roleId));
@@ -236,25 +237,33 @@ export class StaffService {
     const schoolId=c.params.schoolId!,id=c.params.roleId;
     let current:Row|undefined;
     if(id){
+      if(typeof c.body.reason!=='string'||c.body.reason.trim().length<3)validation('reason','Ghi lý do thay đổi ít nhất 3 ký tự');
       current=await getResource(tx,roleResource,schoolId,id,true);this.version(current,c.body.expectedVersion);
-      const held=(await this.policy.grants(tx,c.principal!.userId,schoolId)).some(grant=>grant.role_id===id);
+      const held=await ownsHeldRole(tx,schoolId,c.principal!.userId,id);
       if(held)throw new Problem(403,'OWN_ROLE_EDIT_FORBIDDEN');
       if(current.system_role)throw new Problem(409,'SYSTEM_ROLE_IMMUTABLE');
+      if(current.status!=='ACTIVE')throw new Problem(409,'ROLE_ARCHIVED');
     }
-    const inputs=(c.body.permissions??(id?await this.rolePermissions(tx,schoolId,id):[])) as PermissionInput[];
+    const previous=id?await this.rolePermissions(tx,schoolId,id):[];
+    const inputs=(c.body.permissions??previous) as PermissionInput[];
     if(new Set(inputs.map(p=>p.action)).size!==inputs.length)validation('permissions','Hành động bị trùng');
     for(const p of inputs){
       if(!actionAllowlist.includes(p.action)||p.action.startsWith('platform.'))throw new Problem(403,'DELEGATION_CEILING');
       if(!p.scopes.length||new Set(p.scopes).size!==p.scopes.length)validation('permissions','Phạm vi bị thiếu hoặc trùng');
       await this.policy.require(tx,c.principal!,p.action,{schoolId});
     }
+    if(id)await validateLiveRoleExpiry(tx,c,this.policy,previous,inputs);
     const row=id?await one<Row>(tx,'UPDATE app.roles SET label=$3 WHERE school_id=$1 AND id=$2 RETURNING *',[schoolId,id,c.body.label??current!.label]):
       await one<Row>(tx,'INSERT INTO app.roles(school_id,code,label) VALUES($1,$2,$3) RETURNING *',[schoolId,c.body.code,c.body.label]);
     if(c.body.permissions!==undefined||!id){
       await tx.query('DELETE FROM app.role_permissions WHERE school_id=$1 AND role_id=$2',[schoolId,row!.id]);
       for(const p of inputs)await tx.query('INSERT INTO app.role_permissions(school_id,role_id,action_code,allowed_scopes) VALUES($1,$2,$3,$4)',[schoolId,row!.id,p.action,p.scopes]);
     }
-    await audit(tx,c,'role',String(row!.id),{version:row!.version});return this.role(tx,schoolId,String(row!.id));
+    await audit(tx,c,'role',String(row!.id),{version:row!.version,
+      addedActions:inputs.filter(p=>!previous.some(v=>v.action===p.action)).map(p=>p.action),
+      removedActions:previous.filter(p=>!inputs.some(v=>v.action===p.action)).map(p=>p.action),
+      changedScopes:inputs.filter(p=>previous.some(v=>v.action===p.action&&JSON.stringify([...v.scopes].sort())!==JSON.stringify([...p.scopes].sort()))).map(p=>`${p.action}: ${p.scopes.join(', ')}`)});
+    return this.role(tx,schoolId,String(row!.id));
   }
   private async prepareAssignment(tx:Transaction,c:RequestContext,body:Record<string,unknown>,lock=false){
     const schoolId=c.params.schoolId!;

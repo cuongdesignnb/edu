@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,285);assert.equal(new Set(operations.map(op=>op.id)).size,285);
+  assert.equal(operations.length,286);assert.equal(new Set(operations.map(op=>op.id)).size,286);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
 });
 test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
@@ -66,4 +66,13 @@ test('assignment matrix represents a real unconfigured year and empty cells with
   validateSchema('StaffAssignmentMatrixRow',{classId:id,version:1,className:'Lớp giả',status:'ACTIVE',homeroom:null,bySubject:{[id]:null},conflicts:[]},true);
   for(const field of ['students','memberEmails','rolePermissions'])assert.throws(()=>validateSchema('StaffAssignmentMatrix',{...value,[field]:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
   assert.equal(operations.find(op=>op.id==='getStaffAssignmentMatrix').permission,'assignment.read');
+});
+
+test('role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',role={id,version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),code:'NATIVE',label:'Vai trò giả',systemRole:false,status:'ACTIVE',scopes:['CLASS','SUBJECT'],permissions:[{action:'student.read',scopes:['CLASS','SUBJECT']}],memberCount:0,assignmentCount:0};
+  validateSchema('RoleDetails',{role,canEdit:false,ownRole:false,systemRole:false,canViewMembers:false,canViewHistory:false,actions:[{action:'student.read',canGrant:false}],members:null,history:null},true);
+  assert.throws(()=>validateSchema('RoleHolder',{grantId:id,memberId:id,name:'Tên giả',scopeType:'CLASS',classId:id,subjectId:null,validFrom:new Date().toISOString(),validUntil:null,email:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  assert.equal(operations.find(op=>op.id==='getRoleDetails').permission,'role.read');
+  validateSchema('RolePatch',{expectedVersion:1,reason:'Lý do giả',permissions:role.permissions});
+  assert.throws(()=>validateSchema('RolePatch',{expectedVersion:1,permissions:role.permissions}),error=>error.status===422);
 });

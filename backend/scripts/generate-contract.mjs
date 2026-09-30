@@ -289,6 +289,15 @@ spec.components.schemas.MemberDetailsResponse=object({data:{$ref:'#/components/s
 extendOperation('getMember','getMemberDetails','/schools/{schoolId}/members/{memberId}/details','member.read','MemberDetails',false,['SC11']);
 extendOperation('listSchoolAudit','listMemberHistory','/schools/{schoolId}/members/{memberId}/history','member.read+audit.read','AuditEvent',true,['SC11']);
 spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters=spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters.filter(p=>p.in==='path'||['limit','cursor','sort','dir'].includes(p.name));
+// ADR-047: role readers keep exact native scopes and independently authorized panels.
+spec.components.schemas.RolePatch.properties.reason={type:'string',minLength:3,maxLength:1000};
+spec.components.schemas.RolePatch.required.push('reason');
+Object.assign(spec.components.schemas.Role.properties,{status:{type:'string',enum:['ACTIVE','ARCHIVED']},scopes:{type:'array',items:{type:'string',enum:['SCHOOL','CLASS','SUBJECT']}},memberCount:{type:'integer',minimum:0},assignmentCount:{type:'integer',minimum:0}});
+spec.components.schemas.RoleHolder=object({grantId:uuid,memberId:uuid,name:label,scopeType:{type:'string',enum:['SCHOOL','CLASS','SUBJECT']},classId:{...uuid,nullable:true},subjectId:{...uuid,nullable:true},validFrom:timestamp,validUntil:{...timestamp,nullable:true}});
+spec.components.schemas.RoleDetails=object({role:{$ref:'#/components/schemas/Role'},canEdit:{type:'boolean'},ownRole:{type:'boolean'},systemRole:{type:'boolean'},canViewMembers:{type:'boolean'},canViewHistory:{type:'boolean'},
+  actions:{type:'array',items:object({action:{type:'string'},canGrant:{type:'boolean'}})},members:{type:'array',nullable:true,maxItems:2000,items:{$ref:'#/components/schemas/RoleHolder'}},history:{type:'array',nullable:true,maxItems:2000,items:{$ref:'#/components/schemas/AuditEvent'}}});
+spec.components.schemas.RoleDetailsResponse=object({data:{$ref:'#/components/schemas/RoleDetails'},requestId:{type:'string'}});
+extendOperation('getRole','getRoleDetails','/schools/{schoolId}/roles/{roleId}/details','role.read','RoleDetails',false,['SC14']);
 // ADR-046: an assignment preview uses the same dated proposal and delegation
 // policy as saving, without borrowing role.manage or caching obsolete authority.
 Object.assign(spec.components.schemas.AssignmentCreate.properties,{expectedMemberVersion:{type:'integer',minimum:1},expectedClassVersion:{type:'integer',minimum:1}});

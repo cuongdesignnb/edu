@@ -1014,7 +1014,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log"
       ]
     },
     {
@@ -1026,7 +1027,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log"
       ]
     },
     {
@@ -1047,9 +1049,10 @@
         "SC14"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log"
       ]
     },
     {
@@ -3380,6 +3383,17 @@
       "evidence": [
         "B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log"
       ]
+    },
+    {
+      "operationId": "getRoleDetails",
+      "screenIds": [
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log"
+      ]
     }
   ],
   "screens": [
@@ -3869,12 +3883,13 @@
         "previewGrant",
         "createGrant",
         "revokeGrant",
-        "previewStaffAssignment"
+        "previewStaffAssignment",
+        "getRoleDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "IMPLEMENTED"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC15",

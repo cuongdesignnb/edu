@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,285);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,286);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2353,4 +2353,41 @@ test('B6 assignment matrix keeps an unconfigured year explicit and archived disp
   const empty=await operationalUiSchool();jar.delete('edu_staff');await login('admin-a@example.invalid');const unconfigured=await request('GET',`/api/v1/schools/${empty}/assignment-matrix`);assert.equal(unconfigured.statusCode,200,unconfigured.body);assert.equal(unconfigured.json().data.year,null);assert.deepEqual(unconfigured.json().data.rows,[]);
   const f=await staffUiFixture(),year=(await db.transaction(tx=>tx.query('SELECT year_id FROM app.classes WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId]),{schoolId:f.schoolId})).rows[0].year_id;
   await db.transaction(tx=>tx.query("UPDATE app.academic_years SET status='ARCHIVED' WHERE school_id=$1 AND id=$2",[f.schoolId,year]),{schoolId:f.schoolId});const archived=await request('GET',`/api/v1/schools/${f.schoolId}/assignment-matrix?yearId=${year}`);assert.equal(archived.statusCode,200,archived.body);assert.equal(archived.json().data.canAssign,false);assert.equal(archived.json().data.year.status,'ARCHIVED');const ref=new Date(f.endsOn+'T00:00:00Z');ref.setUTCDate(ref.getUTCDate()-63);assert.equal(archived.json().data.referenceDate,ref.toISOString().slice(0,10));assert.ok(archived.json().data.rows[0].conflicts.includes('Thiếu giáo viên chủ nhiệm'));
+});
+
+test('B6 role metadata keeps native scopes and real counts without lending member/audit access or treating custom class grants as assignments',async()=>{
+  const f=await staffUiFixture(),r=await f.role([{action:'student.read',scopes:['CLASS','SUBJECT']}]);await f.grant(f.target,r.id,{scopeType:'CLASS',classId:f.classId});
+  const hr=await f.post('assignments',{memberId:f.target,classId:f.classId,kind:'HOMEROOM',startsOn:f.today,endsOn:f.endsOn});assert.equal(hr.statusCode,201,hr.body);
+  const reader=await f.role([{action:'role.read',scopes:['SCHOOL']}]),g=await f.grant(f.other,reader.id);jar.delete('edu_staff');await login('teacher-b@example.invalid');
+  const url=`/api/v1/schools/${f.schoolId}/roles/${r.id}/details`,response=await request('GET',url);assert.equal(response.statusCode,200,response.body);const d=response.json().data;
+  assert.deepEqual(d.role.permissions,[{action:'student.read',scopes:['CLASS','SUBJECT']}]);assert.deepEqual(d.role.scopes,['CLASS','SUBJECT']);assert.equal(d.role.memberCount,0);assert.equal(d.role.assignmentCount,0);assert.equal(d.members,null);assert.equal(d.history,null);assert.equal(d.canEdit,false);assert.equal(d.canViewMembers,false);assert.equal(d.canViewHistory,false);assert.equal(d.actions.find(a=>a.action==='student.read').canGrant,false);assert.ok(d.actions.every(a=>!a.action.startsWith('platform.')));
+  const list=await request('GET',`/api/v1/schools/${f.schoolId}/roles?limit=100`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().data.find(v=>v.code==='HOMEROOM').assignmentCount,1);assert.equal(list.json().data.find(v=>v.id===reader.id).memberCount,1);
+  for(const text of ['workEmail','workPhone','loginEmail','studentCode'])assert.equal(response.body.includes(text),false);assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/members/${f.target}`)).statusCode,403);assert.equal((await request('GET',url+'?private=1')).statusCode,422);
+  const foreign=(await db.transaction(tx=>tx.query('SELECT id FROM app.roles WHERE school_id=$1 ORDER BY id LIMIT 1',[schoolB]),{schoolId:schoolB})).rows[0].id;assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/roles/${foreign}/details`)).statusCode,404);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,g.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);
+});
+
+test('B6 role details show only independently authorized holders/history and save scoped deltas with a displayed version',async()=>{
+  const f=await staffUiFixture(),r=await f.role([{action:'student.read',scopes:['CLASS','SUBJECT']}]),g=await f.grant(f.target,r.id,{scopeType:'CLASS',classId:f.classId});
+  const permissions=[{action:'student.read',scopes:['CLASS']},{action:'student.manage',scopes:['CLASS']}],url=`/api/v1/schools/${f.schoolId}/roles/${r.id}`;
+  const saved=await request('PATCH',url,{expectedVersion:r.version,reason:'Điều chỉnh phạm vi giả',permissions},(await request('GET','/api/v1/me/context')).json().data.csrfToken,{'idempotency-key':crypto.randomUUID()});assert.equal(saved.statusCode,200,saved.body);assert.ok(saved.json().data.version>r.version);assert.deepEqual(saved.json().data.permissions,permissions.slice().sort((a,b)=>a.action.localeCompare(b.action)));
+  const details=await request('GET',url+'/details');assert.equal(details.statusCode,200,details.body);const d=details.json().data;assert.equal(d.canEdit,true);assert.equal(d.canViewMembers,true);assert.equal(d.canViewHistory,true);assert.equal(d.members.length,1);assert.equal(d.members[0].grantId,g.id);assert.equal(d.members[0].memberId,f.target);assert.equal(d.members[0].classId,f.classId);assert.equal(d.members[0].subjectId,null);assert.equal(d.members[0].validUntil,null);
+  const event=d.history.find(e=>e.action==='updateRole');assert.equal(event.reason,'Điều chỉnh phạm vi giả');assert.ok(event.changes.some(v=>v.field==='addedActions'&&v.after==='student.manage'));assert.ok(event.changes.some(v=>v.field==='changedScopes'&&v.after==='student.read: CLASS'));assert.ok(d.history.every(e=>e.targetId===r.id&&e.targetType==='role'));
+  const stale=await request('PATCH',url,{expectedVersion:r.version,reason:'Phiên bản cũ giả',permissions},(await request('GET','/api/v1/me/context')).json().data.csrfToken,{'idempotency-key':crypto.randomUUID()});assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'VERSION_CONFLICT');
+});
+
+test('B6 future held roles and immutable system templates cannot be edited by their holder',async()=>{
+  const f=await staffUiFixture(),r=await f.role([{action:'student.read',scopes:['SCHOOL']}]);await f.grant(f.other,r.id,{validFrom:new Date(Date.now()+86400000).toISOString(),validUntil:new Date(Date.now()+172800000).toISOString()});
+  const manager=await f.role(['role.read','role.manage','student.read'].map(action=>({action,scopes:['SCHOOL']})));await f.grant(f.other,manager.id);jar.delete('edu_staff');const csrf=await login('teacher-b@example.invalid');
+  const url=`/api/v1/schools/${f.schoolId}/roles/${r.id}`,details=await request('GET',url+'/details');assert.equal(details.statusCode,200,details.body);assert.equal(details.json().data.ownRole,true);assert.equal(details.json().data.canEdit,false);
+  const own=await request('PATCH',url,{expectedVersion:r.version,reason:'Không tự sửa giả',permissions:r.permissions},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(own.statusCode,403);assert.equal(own.json().code,'OWN_ROLE_EDIT_FORBIDDEN');
+  const system=await request('GET',`/api/v1/schools/${f.schoolId}/roles/${f.adminRole}/details`);assert.equal(system.statusCode,200,system.body);assert.equal(system.json().data.ownRole,false);assert.equal(system.json().data.systemRole,true);assert.equal(system.json().data.canEdit,false);
+  const blocked=await request('PATCH',`/api/v1/schools/${f.schoolId}/roles/${f.adminRole}`,{expectedVersion:system.json().data.role.version,reason:'Không sửa hệ thống giả',permissions:[]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(blocked.statusCode,409);assert.equal(blocked.json().code,'SYSTEM_ROLE_IMMUTABLE');
+});
+
+test('B6 editing live roles cannot expand permissions beyond the current editor expiry ceiling',async()=>{
+  const f=await staffUiFixture(),r=await f.role([{action:'student.read',scopes:['SCHOOL']}]),recipient=await f.grant(f.target,r.id),manager=await f.role(['role.read','role.manage','student.read','student.manage'].map(action=>({action,scopes:['SCHOOL']})));
+  await f.grant(f.other,manager.id,{validUntil:new Date(Date.now()+3600000).toISOString()});jar.delete('edu_staff');const csrf=await login('teacher-b@example.invalid'),url=`/api/v1/schools/${f.schoolId}/roles/${r.id}`,body={expectedVersion:r.version,reason:'Thêm quyền có trần giả',permissions:[...r.permissions,{action:'student.manage',scopes:['SCHOOL']}]},key=crypto.randomUUID();
+  const denied=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(denied.statusCode,403,denied.body);assert.equal(denied.json().code,'DELEGATION_EXPIRY_CEILING');const unchanged=await request('GET',url);assert.equal(unchanged.json().data.version,r.version);assert.deepEqual(unchanged.json().data.permissions,r.permissions);
+  await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_until=now()+interval '30 minutes' WHERE school_id=$1 AND id=$2",[f.schoolId,recipient.id]),{schoolId:f.schoolId});const saved=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(saved.statusCode,200,saved.body);assert.ok(saved.json().data.permissions.some(p=>p.action==='student.manage'));
 });

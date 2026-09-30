@@ -30,9 +30,9 @@ export interface ApiSchemas {
   "InviteRequest": { "email": string; "roleId": (string) | null; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom": string; "validUntil"?: (string) | null; "workDisplayName"?: string; "reason"?: string; "expiresInDays"?: number; };
   "InviteTokenRequest": { "schoolSlug": string; "token": string; };
   "AcceptInviteRequest": { "schoolSlug": string; "token": string; "displayName"?: string; "newPassword"?: string; };
-  "Role": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "code": string; "label": string; "systemRole": boolean; "permissions": Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; };
+  "Role": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "code": string; "label": string; "systemRole": boolean; "permissions": Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; "status"?: "ACTIVE" | "ARCHIVED"; "scopes"?: Array<"SCHOOL" | "CLASS" | "SUBJECT">; "memberCount"?: number; "assignmentCount"?: number; };
   "RoleCreate": { "code": string; "label": string; "permissions": Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; };
-  "RolePatch": { "expectedVersion": number; "label"?: string; "permissions"?: Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; };
+  "RolePatch": { "expectedVersion": number; "label"?: string; "permissions"?: Array<{ "action": string; "scopes": Array<"SCHOOL" | "CLASS" | "SUBJECT">; }>; "reason": string; };
   "GrantRequest": { "memberId": (string) | null; "roleId": (string) | null; "scopeType": "SCHOOL" | "CLASS" | "SUBJECT"; "classId"?: (string) | null; "subjectId"?: (string) | null; "validFrom": string; "validUntil"?: (string) | null; };
   "PermissionPreview": { "allowed": boolean; "added": Array<ApiSchemas["GrantView"]>; "removed": Array<ApiSchemas["GrantView"]>; "warnings": Array<string>; };
   "Year": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "code": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "setup"?: { "termCount": number; "weekCount": number; "holidayCount": number; "copiedRuleSetId"?: string; }; "classCount"?: (number) | null; "studentCount"?: (number) | null; "terms"?: Array<ApiSchemas["Term"]>; };
@@ -345,6 +345,9 @@ export interface ApiSchemas {
   "MemberAssignmentDetails": { "id": string; "version": number; "classId": string; "className": string; "yearName": string; "memberId": string; "roleGrantId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "subjectName": (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt": (string) | null; "grantValidFrom": string; "grantValidUntil": (string) | null; "grantRevokedAt": (string) | null; "roleLabel": string; "roleStatus": "ACTIVE" | "ARCHIVED"; "createdAt": string; "createdBy": (string) | null; "createdByName": (string) | null; "live": boolean; };
   "MemberDetails": { "member": ApiSchemas["Member"]; "referenceDate": string; "joinedOn": (string) | null; "accessActive": boolean; "otherSchools": number; "assignments": (Array<ApiSchemas["MemberAssignmentDetails"]>) | null; "roleChoices": (Array<ApiSchemas["MemberRoleChoice"]>) | null; "canAssign": boolean; "canSuspend": boolean; "canRole": boolean; "canViewHistory": boolean; "isSelf": boolean; };
   "MemberDetailsResponse": { "data": ApiSchemas["MemberDetails"]; "requestId": string; };
+  "RoleHolder": { "grantId": string; "memberId": string; "name": string; "scopeType": "SCHOOL" | "CLASS" | "SUBJECT"; "classId": (string) | null; "subjectId": (string) | null; "validFrom": string; "validUntil": (string) | null; };
+  "RoleDetails": { "role": ApiSchemas["Role"]; "canEdit": boolean; "ownRole": boolean; "systemRole": boolean; "canViewMembers": boolean; "canViewHistory": boolean; "actions": Array<{ "action": string; "canGrant": boolean; }>; "members": (Array<ApiSchemas["RoleHolder"]>) | null; "history": (Array<ApiSchemas["AuditEvent"]>) | null; };
+  "RoleDetailsResponse": { "data": ApiSchemas["RoleDetails"]; "requestId": string; };
   "StaffAssignmentPreview": { "memberId": string; "memberVersion": number; "classId": string; "classVersion": number; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "scopeName": string; "referenceDate": string; "startsOn": string; "endsOn": string; "grantStartsAt": string; "grantEndsAt": string; "added": Array<string>; "kept": Array<string>; "notIncluded": Array<string>; "warnings": Array<string>; };
   "StaffAssignmentPreviewResponse": { "data": ApiSchemas["StaffAssignmentPreview"]; "requestId": string; };
   "StaffAssignmentCell": { "assignmentId": string; "version": number; "memberId": string; "name": string; "memberStatus": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "identityActive": boolean; "roleActive": boolean; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "startsOn": string; "endsOn": (string) | null; "grantStartsAt": string; "grantEndsAt": (string) | null; "accessActive": boolean; };
@@ -3183,6 +3186,16 @@ export const apiOperations = {
     "response": "AuditEvent",
     "list": true,
     "permission": "member.read+audit.read",
+    "readOnly": true
+  },
+  "getRoleDetails": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/roles/{roleId}/details",
+    "auth": "staff",
+    "request": null,
+    "response": "RoleDetails",
+    "list": false,
+    "permission": "role.read",
     "readOnly": true
   },
   "previewStaffAssignment": {
