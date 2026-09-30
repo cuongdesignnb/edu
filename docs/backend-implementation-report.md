@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 16 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 17 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
 | B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position sources, immutable publication and approved adjustment workflows tested; activity sources and connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, timetable import drafts and dated groups/positions/seating tested; remaining domains, publication and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating and timetable/individual-duty publication tested; remaining domains, group duty expansion and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -210,3 +210,10 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - Migration 016 applied and replay verified. Ending/transfer of enrollment closes dated group and position assignments atomically, retains cancelled future assignments, and preserves locked conduct source protection.
 - qa/backend/enrollment-org-integration.log: 45/45 executed, exit0. Docker/backend build, host typecheck and lint exit0. This adds one transfer-domain integration scenario; no new API operation.
 - 179/264 API operations remain implemented. Timetable/duty publication and the remaining B5/B6/B7 work are pending; final local URL is not serving the completed stack yet.
+
+## Timetable and individual duty checkpoint — actual execution
+
+- Migration 017 applied and checksum replay verified. Eleven schedule APIs create/update/read drafts, validate/materialize bounded future occurrences and publish immutable timetable/duty projections. Sources expose dataVersion. Future replacement cannot alter past lessons or lessons referenced by attendance/conduct. Published holidays are skipped; revoked/missing dated teaching assignments and teacher/room conflicts block publication.
+- Current class/year/kind publications supersede the previous projection atomically. Parent role reads now have populated timetable and duty evidence, including child-only fields, no other child's task, private work labels and withdraw invisibility. Parent absolute session TTL was actually asserted at eight hours in this run.
+- qa/backend/schedule-integration.log: 48/48 executed, exit0. qa/backend/schedule-unit-contract.log: 11/11 executed, exit0. Build/typecheck/lint exit0. Initial runs exposed a test incorrectly trying to create future attendance (the API correctly rejected it) and a fixture parameter cast error. The replacement-source protection check now explicitly seeds an unexpected future source via the test database and does not claim future attendance API support.
+- 190/264 API operations implemented. Group duty expansion and existing single-lesson change/discard UI workflows remain pending. Activities/evidence, announcements, reports/support/platform, notifications/dashboard, all frontend adapters, browser E2E and B7 acceptance remain unfinished. Final local stack is not running at port 18763 yet; no production deployment.

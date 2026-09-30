@@ -183,3 +183,13 @@ Evidence: qa/backend/classroom-integration.log, 44/44 executed; qa/backend/class
 Migration 016 closes group/position intervals in the same transaction when an enrollment ends or is cancelled. Future intervals starting at/after the cutoff are retained with cancelled_at and their original dates. Positions close before their supporting group membership. A locked approved conduct source still rejects a shortening/cancellation; no source history is silently rewritten. Extending an enrollment does not automatically extend old organization assignments.
 
 Evidence: qa/backend/enrollment-org-integration.log, 45/45 executed, exit0, including actual transfer approval with current/future position intervals and retained enrollment history.
+
+## ADR-017 — bounded schedule materialization and class-kind publication
+
+Timetable/duty dataVersion tracks template or assignment edits independently of metadata status changes. Migration 017 protects published template/assignment rows, immutable lesson identity and past/source-linked lesson history. Timetable entries materialize only future occurrences, within 366 days and at most 5,000 occurrences per command. Published holidays are skipped. Current membership/identity/role, dated assignment and grant validity must cover every generated lesson; class/teacher/room conflicts are rechecked before publication. Used source lessons cannot be cancelled by a replacement, including unexpected preallocated future sources.
+
+Timetable and duty publications are current per class/year/kind. PublishCommand.expectedPublicationId refers to that current class-kind publication, so a new schedule revision can reject a concurrent publication. Older published snapshots remain immutable and become SUPERSEDED atomically. A timetable projection combines effective lesson history for the child, excludes replaced cancelled periods, and contains public names/status only. Duty projections combine dated schedules; the latest published schedule covering a day wins, based on published_at rather than draft creation time.
+
+Implementation schemas add dataVersion/publishedAt, lesson periodNumber/changeReason, parent lesson status, private ParentLessonBatch/ParentDutyBatch storage envelopes and duty/lesson fields in staff PublicationDetail. Parent endpoints still flatten and validate individual items through the read-only parent role. No whole-class roster or staff IDs are included in parent payloads.
+
+Evidence: qa/backend/schedule-integration.log, 48/48 executed; qa/backend/schedule-unit-contract.log, 11/11 executed. Group-to-duty expansion at publication, the existing UI's single-lesson change/discard workflows and broader schedule races remain pending follow-up; no connected UI acceptance is implied.

@@ -1071,3 +1071,70 @@ test('B2/B5 a transfer closes dated groups/positions and retains cancelled futur
   const groups=await request('GET',`/api/v1/schools/${schoolA}/${base}/groups?onDate=${cutoff}`);assert.equal(groups.json().data.every(g=>!g.enrollmentIds.includes(f.enrollments[0].id)),true);
   assert.equal((await request('GET',`/api/v1/schools/${schoolA}/students/${f.enrollments[0].studentId}/enrollments`)).json().data.length,2);
 });
+
+async function scheduleFixture(csrf){
+  const f=await conductFixture(csrf),day=nextDate(await schoolToday(),1),base=`classes/${f.classId}`;
+  const assignment=await f.post('assignments',{classId:f.classId,memberId:seedId('member:A:teacher-b'),subjectId:seedId('subject:A:math'),kind:'SUBJECT',startsOn:'2026-09-28',endsOn:'2027-06-01',reason:'Phân công cho kiểm thử lịch thật'});assert.equal(assignment.statusCode,201,assignment.body);
+  const slot=(await db.transaction(tx=>tx.query(`SELECT to_char(t,'HH24:MI') AS starts,to_char(t+interval '1 minute','HH24:MI') AS ends
+    FROM platform.schools s CROSS JOIN LATERAL generate_series($2::date+interval '8 hours',$2::date+interval '23 hours 58 minutes',interval '1 minute') t
+    WHERE s.id=$1 AND NOT EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=s.id AND l.member_id=$3 AND l.status='SCHEDULED'
+      AND l.starts_at<(t+interval '1 minute') AT TIME ZONE s.timezone AND l.ends_at>t AT TIME ZONE s.timezone) ORDER BY t LIMIT 1`,[schoolA,day,seedId('member:A:teacher-b')]),{schoolId:schoolA})).rows[0];assert.ok(slot);
+  const room=await f.post('dictionaries/rooms',{code:`ROOM-${crypto.randomUUID()}`,name:'Phòng kiểm thử lịch',capacity:20});assert.equal(room.statusCode,201,room.body);
+  const entry={weekday:new Date(`${day}T00:00:00Z`).getUTCDay()||7,periodNumber:1,subjectId:seedId('subject:A:math'),memberId:seedId('member:A:teacher-b'),roomId:room.json().data.id,startsAtLocal:slot.starts,endsAtLocal:slot.ends};return {...f,day,base,entry,assignment:assignment.json().data};
+}
+test('B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await scheduleFixture(csrf),created=await f.post(`${f.base}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[f.entry]});assert.equal(created.statusCode,201,created.body);let timetable=created.json().data;
+  const relation=await parentRelationship(csrf,f.post,f.enrollments[0].studentId),access=await f.post('parent-access',{studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview','timetable'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(access.statusCode,201);const context=await parentExchange(access.json().data.link);
+  assert.ok(Date.parse(context.expiresAt)-Date.now()<=8*3600000+5000);assert.ok(Date.parse(context.expiresAt)-Date.now()>7*3600000);
+  assert.equal((await parentGet('timetable',context)).json().page.total,0);
+  const validated=await f.post(`${f.base}/timetables/${timetable.id}/validate`,{expectedVersion:timetable.version});assert.equal(validated.statusCode,200,validated.body);assert.deepEqual(validated.json().data,{valid:true,conflicts:[]});
+  timetable=(await request('GET',`/api/v1/schools/${schoolA}/${f.base}/timetables/${timetable.id}`)).json().data;assert.equal(timetable.status,'READY');
+  assert.equal((await f.post(`${f.base}/timetables/${timetable.id}/publish`,{expectedSourceVersion:timetable.dataVersion-1,expectedPublicationId:null})).statusCode,409);
+  const published=await f.post(`${f.base}/timetables/${timetable.id}/publish`,{expectedSourceVersion:timetable.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);const publication=published.json().data;
+  const lessons=await request('GET',`/api/v1/schools/${schoolA}/timetable?classId=${f.classId}&from=${f.day}&to=${nextDate(f.day,1)}`);assert.equal(lessons.statusCode,200,lessons.body);assert.equal(lessons.json().data.length,1);const lesson=lessons.json().data[0];assert.equal(lesson.periodNumber,1);assert.equal(lesson.status,'SCHEDULED');
+  const parent=await parentGet('timetable',context);assert.equal(parent.statusCode,200,parent.body);assert.equal(parent.json().page.total,1);assert.equal(parent.json().data[0].date,f.day);assert.equal(parent.json().data[0].subjectName,'Toán');assert.equal(Object.hasOwn(parent.json().data[0],'memberId'),false);assert.equal(Object.hasOwn(parent.json().data[0],'classId'),false);
+  const detail=await request('GET',`/api/v1/schools/${schoolA}/${f.base}/publications/${publication.id}`);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.lessons.length,1);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${f.base}/timetables`)).statusCode,200);
+  const immutable=await request('PATCH',`/api/v1/schools/${schoolA}/${f.base}/timetables/${timetable.id}`,{expectedVersion:(await request('GET',`/api/v1/schools/${schoolA}/${f.base}/timetables/${timetable.id}`)).json().data.version,entries:[]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(immutable.statusCode,409);
+  await assert.rejects(db.transaction(tx=>tx.query('UPDATE app.timetable_entries SET starts_at_local=starts_at_local WHERE school_id=$1 AND timetable_id=$2',[schoolA,timetable.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.lesson_occurrences SET starts_at=starts_at+interval '1 minute' WHERE school_id=$1 AND id=$2",[schoolA,lesson.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  const attendance=await f.post(`${f.base}/attendance`,{date:f.day,granularity:'LESSON',lessonId:lesson.id});assert.equal(attendance.statusCode,422);assert.equal(attendance.json().fieldErrors[0].path,'date');
+  // The attendance API rejects future dates. Seed a synthetic source row to
+  // verify replacement also denies an unexpected/preallocated future source.
+  await db.transaction(tx=>tx.query(`INSERT INTO app.attendance_sessions(school_id,class_id,year_id,session_date,granularity,slot_key,lesson_id,created_by)
+    VALUES($1,$2,$3,$4,'LESSON',$5::uuid::text,$5::uuid,$6)`,[schoolA,f.classId,seedId('year:A'),f.day,lesson.id,seedId('user:admin-a')]),{schoolId:schoolA});
+  const replacement=await f.post(`${f.base}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[]});assert.equal(replacement.statusCode,201);const blocked=await f.post(`${f.base}/timetables/${replacement.json().data.id}/validate`,{expectedVersion:replacement.json().data.version});assert.equal(blocked.statusCode,200);assert.equal(blocked.json().data.valid,false);assert.equal(blocked.json().data.conflicts[0].kind,'CLASS');
+  const withheld=await f.post(`${f.base}/timetables/${replacement.json().data.id}/publish`,{expectedSourceVersion:replacement.json().data.dataVersion,expectedPublicationId:publication.id});assert.equal(withheld.statusCode,422);assert.equal(withheld.json().code,'SCHEDULE_CONFLICTS');assert.equal((await parentGet('timetable',context)).json().page.total,1);
+  const withdrawn=await f.post(`publications/${publication.id}/withdraw`,{expectedVersion:publication.version,reason:'Thu hồi lịch kiểm thử'});assert.equal(withdrawn.statusCode,200);assert.equal((await parentGet('timetable',context)).json().page.total,0);
+});
+
+test('B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await scheduleFixture(csrf),body={startsOn:f.day,endsOn:nextDate(f.day,1),entries:[f.entry]},first=await f.post(`${f.base}/timetables`,body);assert.equal(first.statusCode,201);let t=first.json().data;
+  const patch=await request('PATCH',`/api/v1/schools/${schoolA}/${f.base}/timetables/${t.id}`,{expectedVersion:t.version,entries:[f.entry]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(patch.statusCode,200,patch.body);t=patch.json().data;
+  const published=await f.post(`${f.base}/timetables/${t.id}/publish`,{expectedSourceVersion:t.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);
+  const other=await scheduleFixture(csrf),collision=await other.post(`${other.base}/timetables`,{...body,entries:[f.entry]});assert.equal(collision.statusCode,201);const conflict=await other.post(`${other.base}/timetables/${collision.json().data.id}/validate`,{expectedVersion:collision.json().data.version});assert.equal(conflict.statusCode,200,conflict.body);assert.equal(conflict.json().data.valid,false);assert.equal(conflict.json().data.conflicts.some(c=>c.kind==='TEACHER'),true);
+  assert.equal((await other.post(`${other.base}/timetables/${collision.json().data.id}/publish`,{expectedSourceVersion:collision.json().data.dataVersion,expectedPublicationId:null})).statusCode,422);
+  const revoked=await other.post(`assignments/${other.assignment.id}/revoke`,{expectedVersion:other.assignment.version,reason:'Thu hồi phân công trước công bố'});assert.equal(revoked.statusCode,200,revoked.body);
+  const refresh=(await request('GET',`/api/v1/schools/${schoolA}/${other.base}/timetables/${collision.json().data.id}`)).json().data;
+  const noAuthority=await other.post(`${other.base}/timetables/${refresh.id}/validate`,{expectedVersion:refresh.version});assert.equal(noAuthority.statusCode,200);assert.equal(noAuthority.json().data.conflicts.some(c=>c.kind==='ASSIGNMENT'),true);
+  const changedTeacher=await other.post('assignments',{classId:other.classId,memberId:seedId('member:A:teacher-a'),subjectId:seedId('subject:A:math'),kind:'SUBJECT',startsOn:'2026-09-28',endsOn:'2027-06-01',reason:'Phân công người khác kiểm tra phòng'});assert.equal(changedTeacher.statusCode,201,changedTeacher.body);
+  const roomCollision=await other.post(`${other.base}/timetables`,{...body,entries:[{...f.entry,memberId:seedId('member:A:teacher-a')}]});assert.equal(roomCollision.statusCode,201);
+  const roomConflict=await other.post(`${other.base}/timetables/${roomCollision.json().data.id}/validate`,{expectedVersion:roomCollision.json().data.version});assert.equal(roomConflict.statusCode,200,roomConflict.body);assert.equal(roomConflict.json().data.conflicts.some(c=>c.kind==='ROOM'),true);
+  const holiday=await other.post('calendar-events',{yearId:seedId('year:A'),classId:other.classId,title:'Ngày nghỉ lịch kiểm thử',kind:'HOLIDAY',startsOn:f.day,endsOn:nextDate(f.day,1)});assert.equal(holiday.statusCode,201);
+  assert.equal((await other.post(`calendar-events/${holiday.json().data.id}/publish`,{expectedVersion:holiday.json().data.version})).statusCode,200);
+  const latest=(await request('GET',`/api/v1/schools/${schoolA}/${other.base}/timetables/${refresh.id}`)).json().data,skipped=await other.post(`${other.base}/timetables/${latest.id}/validate`,{expectedVersion:latest.version});assert.equal(skipped.statusCode,200);assert.equal(skipped.json().data.valid,true,skipped.body);
+});
+
+test('B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),base=`classes/${f.classId}`,day=nextDate(await schoolToday(),1),assignments=f.enrollments.map((e,i)=>({enrollmentId:e.id,dutyDate:day,task:`Nhiệm vụ riêng học sinh ${i}`,status:'ASSIGNED'}));
+  const bad=await f.post(`${base}/duties`,{startsOn:day,endsOn:nextDate(day,1),assignments:[{...assignments[0],enrollmentId:seedId('enrollment:A:10A1:1')}]});assert.equal(bad.statusCode,422);
+  const created=await f.post(`${base}/duties`,{startsOn:day,endsOn:nextDate(day,1),assignments});assert.equal(created.statusCode,201,created.body);let duty=created.json().data;
+  const edited=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/duties/${duty.id}`,{expectedVersion:duty.version,assignments},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edited.statusCode,200,edited.body);duty=edited.json().data;
+  const relation=await parentRelationship(csrf,f.post,f.enrollments[0].studentId),access=await f.post('parent-access',{studentId:f.enrollments[0].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:['overview','duties'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(access.statusCode,201);const context=await parentExchange(access.json().data.link);assert.equal((await parentGet('duties',context)).json().page.total,0);
+  const published=await f.post(`${base}/duties/${duty.id}/publish`,{expectedSourceVersion:duty.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);const publication=published.json().data;
+  const parent=await parentGet('duties',context);assert.equal(parent.statusCode,200,parent.body);assert.equal(parent.json().page.total,1);assert.equal(parent.json().data[0].task,assignments[0].task);assert.equal(parent.body.includes(assignments[1].task),false);assert.equal(Object.hasOwn(parent.json().data[0],'enrollmentId'),false);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/duties`)).statusCode,200);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}/publications/${publication.id}`)).statusCode,200);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.duty_assignments SET task='Viết lại nhiệm vụ đã công bố' WHERE school_id=$1 AND schedule_id=$2",[schoolA,duty.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  assert.equal((await f.post(`publications/${publication.id}/withdraw`,{expectedVersion:publication.version,reason:'Thu hồi trực nhật kiểm thử'})).statusCode,200);assert.equal((await parentGet('duties',context)).json().page.total,0);
+});

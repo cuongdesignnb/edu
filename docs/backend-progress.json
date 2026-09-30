@@ -1984,8 +1984,10 @@
         "SC32"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "listClassTimetables",
@@ -1993,8 +1995,10 @@
         "CL15"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "createTimetable",
@@ -2003,8 +2007,10 @@
         "SC32"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "getTimetable",
@@ -2012,8 +2018,10 @@
         "CL15"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "updateTimetable",
@@ -2021,8 +2029,10 @@
         "CL15"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "validateTimetable",
@@ -2031,8 +2041,10 @@
         "SC32"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "publishTimetable",
@@ -2041,8 +2053,10 @@
         "SC32"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "listDuties",
@@ -2050,8 +2064,10 @@
         "CL16"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "createDuty",
@@ -2059,8 +2075,10 @@
         "CL16"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "updateDuty",
@@ -2068,8 +2086,10 @@
         "CL16"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "publishDuty",
@@ -2077,8 +2097,10 @@
         "CL16"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw"
+      ]
     },
     {
       "operationId": "listActivities",
@@ -3577,7 +3599,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC33",
@@ -4006,7 +4028,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL16",
@@ -4020,7 +4042,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL17",

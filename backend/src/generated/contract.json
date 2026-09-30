@@ -3486,6 +3486,13 @@
         "changeNote": {
           "type": "string",
           "maxLength": 4000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "CANCELLED"
+          ]
         }
       },
       "required": [
@@ -5438,6 +5445,16 @@
         },
         "announcement": {
           "$ref": "#/components/schemas/Announcement"
+        },
+        "duty": {
+          "$ref": "#/components/schemas/DutySchedule"
+        },
+        "lessons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Lesson"
+          },
+          "maxItems": 10000
         }
       },
       "required": [
@@ -5716,6 +5733,15 @@
             "$ref": "#/components/schemas/TimetableEntry"
           },
           "maxItems": 200
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
         }
       },
       "required": [
@@ -5878,6 +5904,16 @@
             "SCHEDULED",
             "CANCELLED"
           ]
+        },
+        "periodNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "nullable": true
+        },
+        "changeReason": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
         }
       },
       "required": [
@@ -5975,7 +6011,17 @@
               "task"
             ],
             "additionalProperties": false
-          }
+          },
+          "maxItems": 5000
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
         }
       },
       "required": [
@@ -6039,7 +6085,8 @@
               "task"
             ],
             "additionalProperties": false
-          }
+          },
+          "maxItems": 5000
         }
       },
       "required": [
@@ -6092,7 +6139,8 @@
               "task"
             ],
             "additionalProperties": false
-          }
+          },
+          "maxItems": 5000
         },
         "startsOn": {
           "type": "string",
@@ -10273,6 +10321,38 @@
       "required": [
         "data",
         "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ParentLessonBatch": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ParentLesson"
+          },
+          "maxItems": 5000
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "ParentDutyBatch": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ParentDuty"
+          },
+          "maxItems": 5000
+        }
+      },
+      "required": [
+        "items"
       ],
       "additionalProperties": false
     }

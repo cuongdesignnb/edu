@@ -1,0 +1,19 @@
+✔ all operation IDs are unique (0.7311ms)
+✔ login rejects spoofed role, school and unknown fields (2.4984ms)
+✔ private user DTO rejects secrets and unknown properties (4.1267ms)
+✔ grant action and class scope stay together (0.7459ms)
+✔ subject grants never authorize management without explicit subject policy (0.1299ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1201ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1195ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.1572ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.4527ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.2903ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (81.4128ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 363.8111

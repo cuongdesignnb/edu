@@ -181,17 +181,17 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listClassPublications | CL09 | TESTED | qa/backend/attendance-integration.log |
 | getClassPublication | CL10 | TESTED | qa/backend/attendance-integration.log |
 | withdrawPublication | SC36, CL10 | TESTED | qa/backend/attendance-integration.log |
-| listSchoolLessons | SC32 | NOT_STARTED |  |
-| listClassTimetables | CL15 | NOT_STARTED |  |
-| createTimetable | CL15, SC32 | NOT_STARTED |  |
-| getTimetable | CL15 | NOT_STARTED |  |
-| updateTimetable | CL15 | NOT_STARTED |  |
-| validateTimetable | CL15, SC32 | NOT_STARTED |  |
-| publishTimetable | CL15, SC32 | NOT_STARTED |  |
-| listDuties | CL16 | NOT_STARTED |  |
-| createDuty | CL16 | NOT_STARTED |  |
-| updateDuty | CL16 | NOT_STARTED |  |
-| publishDuty | CL16 | NOT_STARTED |  |
+| listSchoolLessons | SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| listClassTimetables | CL15 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| createTimetable | CL15, SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| getTimetable | CL15 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| updateTimetable | CL15 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| validateTimetable | CL15, SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| publishTimetable | CL15, SC32 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| listDuties | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| createDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| updateDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
+| publishDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw |
 | listActivities | CL17 | NOT_STARTED |  |
 | createActivity | CL18 | NOT_STARTED |  |
 | getActivity | CL19 | NOT_STARTED |  |
@@ -323,7 +323,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC29 | core | TESTED | NOT_STARTED |  |
 | SC30 | core | TESTED | NOT_STARTED |  |
 | SC31 | core | PARTIAL | NOT_STARTED |  |
-| SC32 | core | PARTIAL | NOT_STARTED |  |
+| SC32 | core | TESTED | NOT_STARTED |  |
 | SC33 | core | PARTIAL | NOT_STARTED |  |
 | SC34 | core | PARTIAL | NOT_STARTED |  |
 | SC35 | core | PARTIAL | NOT_STARTED |  |
@@ -355,8 +355,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL12 | core | TESTED | NOT_STARTED |  |
 | CL13 | core | TESTED | NOT_STARTED |  |
 | CL14 | core | TESTED | NOT_STARTED |  |
-| CL15 | core | PARTIAL | NOT_STARTED |  |
-| CL16 | core | PARTIAL | NOT_STARTED |  |
+| CL15 | core | TESTED | NOT_STARTED |  |
+| CL16 | core | TESTED | NOT_STARTED |  |
 | CL17 | core | PARTIAL | NOT_STARTED |  |
 | CL18 | core | PARTIAL | NOT_STARTED |  |
 | CL19 | core | PARTIAL | NOT_STARTED |  |

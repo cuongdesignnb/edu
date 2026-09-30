@@ -64,6 +64,14 @@ for(const id of ['listGroups','listPositionAssignments']){
   op.parameters.push({name:'onDate',in:'query',schema:{type:'string',format:'date'}});
 }
 spec.paths['/schools/{schoolId}/classes/{classId}/position-assignments'].get.parameters.push(...['positionId','enrollmentId'].map(name=>({name,in:'query',schema:{type:'string',format:'uuid'}})));
+for(const name of ['Timetable','DutySchedule']){spec.components.schemas[name].properties.dataVersion={type:'integer',minimum:1};spec.components.schemas[name].properties.publishedAt={type:'string',format:'date-time',nullable:true};}
+for(const [name,item] of [['ParentLessonBatch','ParentLesson'],['ParentDutyBatch','ParentDuty']])spec.components.schemas[name]={type:'object',properties:{items:{type:'array',items:{$ref:`#/components/schemas/${item}`},maxItems:5000}},required:['items'],additionalProperties:false};
+spec.components.schemas.PublicationDetail.properties.duty={$ref:'#/components/schemas/DutySchedule'};
+spec.components.schemas.PublicationDetail.properties.lessons={type:'array',items:{$ref:'#/components/schemas/Lesson'},maxItems:10000};
+spec.components.schemas.ParentLesson.properties.status={type:'string',enum:['SCHEDULED','CANCELLED']};
+spec.components.schemas.Lesson.properties.periodNumber={type:'integer',minimum:1,nullable:true};
+spec.components.schemas.Lesson.properties.changeReason={type:'string',maxLength:4000,nullable:true};
+for(const name of ['DutyCreate','DutySchedulePatch','DutySchedule'])spec.components.schemas[name].properties.assignments.maxItems=5000;
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });
