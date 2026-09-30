@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,286);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,290);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2222,7 +2222,7 @@ test('B6 Vietnamese composite keysets preserve given/full-name order, case/diacr
     do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&sort=department&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);departmentRows.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
     assert.equal(new Set(departmentRows.map(r=>r.id)).size,all.length);const firstNull=departmentRows.findIndex(r=>r.department===null);assert.ok(firstNull>=0);assert.ok(departmentRows.slice(firstNull).every(r=>r.department===null));
   }
-  assert.equal((await verifyInstallation(pool)).migrations,34);
+  assert.equal((await verifyInstallation(pool)).migrations,35);
 });
 
 test('B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access',async()=>{
@@ -2390,4 +2390,76 @@ test('B6 editing live roles cannot expand permissions beyond the current editor 
   await f.grant(f.other,manager.id,{validUntil:new Date(Date.now()+3600000).toISOString()});jar.delete('edu_staff');const csrf=await login('teacher-b@example.invalid'),url=`/api/v1/schools/${f.schoolId}/roles/${r.id}`,body={expectedVersion:r.version,reason:'Thêm quyền có trần giả',permissions:[...r.permissions,{action:'student.manage',scopes:['SCHOOL']}]},key=crypto.randomUUID();
   const denied=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(denied.statusCode,403,denied.body);assert.equal(denied.json().code,'DELEGATION_EXPIRY_CEILING');const unchanged=await request('GET',url);assert.equal(unchanged.json().data.version,r.version);assert.deepEqual(unchanged.json().data.permissions,r.permissions);
   await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_until=now()+interval '30 minutes' WHERE school_id=$1 AND id=$2",[f.schoolId,recipient.id]),{schoolId:f.schoolId});const saved=await request('PATCH',url,body,csrf,{'idempotency-key':key});assert.equal(saved.statusCode,200,saved.body);assert.ok(saved.json().data.permissions.some(p=>p.action==='student.manage'));
+});
+
+async function handoverUiFixture(timezone='Asia/Ho_Chi_Minh'){
+  const f=await staffUiFixture(timezone),prior=new Date(f.today+'T00:00:00Z');prior.setUTCDate(prior.getUTCDate()-1);
+  const source=await f.post('assignments',{memberId:f.target,classId:f.classId,kind:'HOMEROOM',startsOn:prior.toISOString().slice(0,10),endsOn:f.endsOn,reason:'Khởi tạo nguồn lịch sử giả'});assert.equal(source.statusCode,201,source.body);
+  const url=`/api/v1/schools/${f.schoolId}/classes/${f.classId}/handover-preview`,preview=async()=>{const result=await request('GET',url+`?effectiveOn=${f.today}&toMemberId=${f.other}`);assert.equal(result.statusCode,200,result.body);return result.json().data;};
+  const proposal=view=>({classId:f.classId,fromAssignmentId:source.json().data.id,toMemberId:f.other,effectiveOn:f.today,reason:'Bàn giao dữ liệu giả',clientRequestId:crypto.randomUUID(),previewHash:view.previewHash,expectedFromAssignmentVersion:view.current.version,expectedClassVersion:view.classVersion,expectedToMemberVersion:view.toMemberVersion});
+  return {...f,source:source.json().data,url,preview,proposal};
+}
+
+test('B6 handover preview reads real current source/counts under purpose authority without member, family or role catalog access',async()=>{
+  const f=await handoverUiFixture();await db.transaction(async tx=>{
+    await tx.query("UPDATE app.memberships SET status='SUSPENDED',work_email='hidden-handover@example.invalid' WHERE school_id=$1 AND id=$2",[f.schoolId,f.target]);
+    const year=(await tx.query('SELECT year_id FROM app.classes WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId])).rows[0].year_id,id=crypto.randomUUID();
+    await tx.query("INSERT INTO app.announcements(id,school_id,year_id,class_id,title,sanitized_html,status,created_by,root_id) VALUES($1,$2,$3,$4,'Nháp giả','<p>Chỉ đếm</p>','DRAFT',$5,$1)",[id,f.schoolId,year,f.classId,seedId('user:admin-a')]);
+  },{schoolId:f.schoolId});
+  const role=await f.role([{action:'assignment.manage',scopes:['SCHOOL']}]),grant=await f.grant(f.other,role.id);jar.delete('edu_staff');await login('teacher-b@example.invalid');const response=await request('GET',f.url);assert.equal(response.statusCode,200,response.body);const d=response.json().data;
+  assert.equal(d.current.assignmentId,f.source.id);assert.equal(d.current.memberStatus,'SUSPENDED');assert.equal(d.current.accessActive,false);assert.equal(d.previewHash,null);assert.equal(d.toMemberVersion,null);assert.deepEqual(d.openItems,{pendingConduct:0,openWeeks:0,pendingAdjustments:0,pendingEvidence:0,draftAnnouncements:1,activeLinks:0});
+  for(const text of ['workEmail','workPhone','hidden-handover@example.invalid','sourceState','token','studentCode','rolePermissions'])assert.equal(response.body.includes(text),false,text);
+  for(const path of [`members/${f.target}`,'roles','guardians'])assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/${path}`)).statusCode,403,path);
+  assert.equal((await request('GET',f.url+'?private=1')).statusCode,422);assert.equal((await request('GET',f.url+'?effectiveOn=2026-02-30')).statusCode,422);
+  const foreign=(await db.transaction(tx=>tx.query('SELECT id FROM app.classes WHERE school_id=$1 ORDER BY id LIMIT 1',[schoolB]),{schoolId:schoolB})).rows[0].id;assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/classes/${foreign}/handover-preview`)).statusCode,404);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',f.url)).statusCode,403);
+});
+
+test('B6 handover applies exactly once with school-local cutoffs, durable receipts, own-actor recovery and preserved source authorship',async()=>{
+  const f=await handoverUiFixture('Asia/Tokyo'),view=await f.preview(),body=f.proposal(view),first=await f.post('handovers',body);assert.equal(first.statusCode,201,first.body);const row=first.json().data;
+  assert.equal(row.status,'SUBMITTED');assert.equal(row.appliedAssignment,null);assert.equal(row.previewHash,view.previewHash);assert.equal(row.clientRequestId,body.clientRequestId);assert.equal(first.body.includes('sourceState'),false);
+  const duplicate=await f.post('handovers',body);assert.equal(duplicate.statusCode,201,duplicate.body);assert.equal(duplicate.json().data.id,row.id);const changed=await f.post('handovers',{...body,reason:'Ý định khác giả'});assert.equal(changed.statusCode,409);assert.equal(changed.json().code,'IDEMPOTENCY_CONFLICT');
+  const applied=await f.post(`handovers/${row.id}/approve`,{expectedVersion:row.version,previewHash:view.previewHash});assert.equal(applied.statusCode,200,applied.body);const saved=applied.json().data;assert.equal(saved.status,'APPLIED');assert.equal(saved.appliedAssignment.id,saved.appliedAssignmentId);assert.equal(saved.appliedAssignment.startsOn,f.today);assert.equal(saved.appliedAssignment.memberId,f.other);assert.ok(saved.appliedAt);
+  const recovered=await request('GET',`/api/v1/schools/${f.schoolId}/handovers/requests/${body.clientRequestId}`);assert.equal(recovered.statusCode,200,recovered.body);assert.equal(recovered.json().data.appliedAssignmentId,saved.appliedAssignmentId);assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers/${row.id}`)).statusCode,200);
+  const stored=await db.transaction(async tx=>({a:(await tx.query('SELECT ends_on FROM app.teaching_assignments WHERE school_id=$1 AND id=$2',[f.schoolId,f.source.id])).rows[0],g:(await tx.query('SELECT valid_until FROM app.role_grants WHERE school_id=$1 AND id=$2',[f.schoolId,f.source.roleGrantId])).rows[0],cutoff:(await tx.query('SELECT $1::date::timestamp AT TIME ZONE timezone AS end FROM platform.schools WHERE id=$2',[f.today,f.schoolId])).rows[0],count:(await tx.query('SELECT count(*)::int AS n FROM app.teaching_assignments WHERE school_id=$1 AND class_id=$2',[f.schoolId,f.classId])).rows[0].n,notices:(await tx.query("SELECT count(*)::int AS n FROM app.notifications WHERE school_id=$1 AND source_key LIKE $2",[f.schoolId,`handover:${row.id}:%`])).rows[0].n}),{schoolId:f.schoolId});assert.equal(stored.a.ends_on,f.today);assert.equal(stored.g.valid_until.toISOString(),stored.cutoff.end.toISOString());assert.equal(stored.count,2);assert.equal(stored.notices,2);
+  const replay=await f.post('handovers',body);assert.equal(replay.statusCode,201);assert.equal(replay.json().data.status,'APPLIED');assert.equal(replay.json().data.appliedAssignmentId,saved.appliedAssignmentId);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/classes/${f.classId}`)).statusCode,404);
+  jar.delete('edu_staff');await login('teacher-b@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/classes/${f.classId}`)).statusCode,200);assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers/requests/${body.clientRequestId}`)).statusCode,403);
+});
+
+test('B6 changed handover sources fail before submission or application and require an explicit review of the same pending receipt',async()=>{
+  const f=await handoverUiFixture(),firstView=await f.preview(),body=f.proposal(firstView);
+  await db.transaction(tx=>tx.query("UPDATE app.classes SET name='Tên nguồn mới giả' WHERE school_id=$1 AND id=$2",[f.schoolId,f.classId]),{schoolId:f.schoolId});const stale=await f.post('handovers',body);assert.equal(stale.statusCode,409);assert.equal(stale.json().code,'VERSION_CONFLICT');
+  const view=await f.preview(),fresh=f.proposal(view),created=await f.post('handovers',fresh);assert.equal(created.statusCode,201,created.body);const receipt=created.json().data;
+  await db.transaction(tx=>tx.query("UPDATE app.memberships SET department='Nguồn nhận thay đổi giả' WHERE school_id=$1 AND id=$2",[f.schoolId,f.other]),{schoolId:f.schoolId});const blocked=await f.post(`handovers/${receipt.id}/approve`,{expectedVersion:receipt.version,previewHash:view.previewHash});assert.equal(blocked.statusCode,409,blocked.body);assert.equal(blocked.json().code,'STALE_PREVIEW');
+  const before=await db.transaction(tx=>tx.query('SELECT ends_on FROM app.teaching_assignments WHERE school_id=$1 AND id=$2',[f.schoolId,f.source.id]),{schoolId:f.schoolId});assert.equal(before.rows[0].ends_on,f.endsOn);
+  const next=await f.preview(),reviewed=await f.post(`handovers/${receipt.id}/review`,{expectedVersion:receipt.version,previewHash:next.previewHash,expectedClassVersion:next.classVersion,expectedFromAssignmentVersion:next.current.version,expectedToMemberVersion:next.toMemberVersion});assert.equal(reviewed.statusCode,200,reviewed.body);assert.ok(reviewed.json().data.version>receipt.version);assert.equal(reviewed.json().data.previewHash,next.previewHash);
+  const applied=await f.post(`handovers/${receipt.id}/approve`,{expectedVersion:reviewed.json().data.version,previewHash:next.previewHash});assert.equal(applied.statusCode,200,applied.body);assert.equal(applied.json().data.status,'APPLIED');
+});
+
+test('B6 open-item changes invalidate handover review and linked source grants are never extended at the cutoff',async()=>{
+  const f=await handoverUiFixture(),view=await f.preview(),body=f.proposal(view),created=await f.post('handovers',body);assert.equal(created.statusCode,201,created.body);const row=created.json().data;
+  await db.transaction(async tx=>{const year=(await tx.query('SELECT year_id FROM app.classes WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId])).rows[0].year_id,id=crypto.randomUUID();await tx.query("INSERT INTO app.announcements(id,school_id,year_id,class_id,title,sanitized_html,status,created_by,root_id) VALUES($1,$2,$3,$4,'Nguồn việc mở giả','<p>Chờ xử lý</p>','DRAFT',$5,$1)",[id,f.schoolId,year,f.classId,seedId('user:teacher-a')]);}, {schoolId:f.schoolId});
+  const stale=await f.post(`handovers/${row.id}/approve`,{expectedVersion:row.version,previewHash:view.previewHash});assert.equal(stale.statusCode,409,stale.body);assert.equal(stale.json().code,'STALE_PREVIEW');
+  const midnight=new Date(view.referenceDate+'T00:00:00Z');midnight.setUTCDate(midnight.getUTCDate()-1);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[f.schoolId,f.source.roleGrantId,midnight.toISOString()]),{schoolId:f.schoolId});
+  const next=await f.preview();assert.equal(next.current.accessActive,false);assert.equal(next.openItems.draftAnnouncements,1);
+  const review=await f.post(`handovers/${row.id}/review`,{expectedVersion:row.version,previewHash:next.previewHash,expectedClassVersion:next.classVersion,expectedFromAssignmentVersion:next.current.version,expectedToMemberVersion:next.toMemberVersion});assert.equal(review.statusCode,200,review.body);const applied=await f.post(`handovers/${row.id}/approve`,{expectedVersion:review.json().data.version,previewHash:next.previewHash});assert.equal(applied.statusCode,200,applied.body);
+  const source=await db.transaction(tx=>tx.query('SELECT valid_until FROM app.role_grants WHERE school_id=$1 AND id=$2',[f.schoolId,f.source.roleGrantId]),{schoolId:f.schoolId});assert.equal(source.rows[0].valid_until.toISOString(),midnight.toISOString());
+  const author=await db.transaction(tx=>tx.query('SELECT created_by,status FROM app.announcements WHERE school_id=$1 AND class_id=$2',[f.schoolId,f.classId]),{schoolId:f.schoolId});assert.equal(author.rows[0].created_by,seedId('user:teacher-a'));assert.equal(author.rows[0].status,'DRAFT');
+});
+
+test('B6 handover receipts remain actor/school bound, recheck delegation and deny immutable-source replacement',async()=>{
+  const f=await handoverUiFixture(),view=await f.preview(),body=f.proposal(view),created=await f.post('handovers',body);assert.equal(created.statusCode,201,created.body);const receipt=created.json().data,reader=await f.role([{action:'assignment.manage',scopes:['SCHOOL']}]);await f.grant(f.other,reader.id);
+  jar.delete('edu_staff');const csrf=await login('teacher-b@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers/requests/${body.clientRequestId}`)).statusCode,404);
+  // This identity has no membership in seeded school B; conceal the school/resource.
+  const foreignSchool=await request('GET',`/api/v1/schools/${schoolB}/handovers/${receipt.id}`);assert.equal(foreignSchool.statusCode,404,foreignSchool.body);assert.equal(foreignSchool.json().code,'RESOURCE_NOT_FOUND');
+  const foreign=(await db.transaction(tx=>tx.query('SELECT id FROM app.handover_requests WHERE school_id=$1 ORDER BY id LIMIT 1',[schoolA]),{schoolId:schoolA})).rows[0].id;assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers/${foreign}`)).statusCode,404);
+  const visible=await request('GET',`/api/v1/schools/${f.schoolId}/handovers/${receipt.id}`);assert.equal(visible.statusCode,200,visible.body);
+  // Managing requests alone does not supply the class actions of the new grant.
+  const approve=await request('POST',`/api/v1/schools/${f.schoolId}/handovers/${receipt.id}/approve`,{expectedVersion:receipt.version,previewHash:view.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(approve.statusCode,404,approve.body);assert.equal(approve.json().code,'RESOURCE_NOT_FOUND');
+  const unchanged=await request('GET',`/api/v1/schools/${f.schoolId}/handovers/${receipt.id}`);assert.equal(unchanged.statusCode,200,unchanged.body);assert.equal(unchanged.json().data.status,'SUBMITTED');assert.equal(unchanged.json().data.version,receipt.version);assert.equal(unchanged.json().data.appliedAssignmentId,null);
+  const list=await request('GET',`/api/v1/schools/${f.schoolId}/handovers?classId=${f.classId}&status=SUBMITTED&sort=effectiveOn&dir=asc&limit=1`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().page.total,1);assert.equal(list.json().data[0].id,receipt.id);assert.equal(list.body.includes('sourceState'),false);
+  assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/handovers?sort=sourceState`)).statusCode,422);
+  jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const malformed=await f.post(`handovers/${receipt.id}/review`,{expectedVersion:receipt.version,previewHash:view.previewHash,expectedClassVersion:view.classVersion,expectedFromAssignmentVersion:view.current.version,expectedToMemberVersion:view.toMemberVersion,toMemberId:f.target});assert.equal(malformed.statusCode,422);
 });

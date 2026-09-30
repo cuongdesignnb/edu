@@ -1142,9 +1142,10 @@
         "SC15"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
       ]
     },
     {
@@ -1156,7 +1157,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
       ]
     },
     {
@@ -1168,7 +1170,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
       ]
     },
     {
@@ -3394,6 +3397,50 @@
       "evidence": [
         "B6 role: PostgreSQL122/122, native scope/counts, independent holder/audit authority, own future role and live edit expiry ceiling; qa/backend/b6-role-integration.log"
       ]
+    },
+    {
+      "operationId": "getHandoverPreview",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
+      ]
+    },
+    {
+      "operationId": "getHandover",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
+      ]
+    },
+    {
+      "operationId": "getHandoverByRequest",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
+      ]
+    },
+    {
+      "operationId": "reviewHandover",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
+      ]
     }
   ],
   "screens": [
@@ -3897,12 +3944,16 @@
       "operationIds": [
         "listHandovers",
         "createHandover",
-        "approveHandover"
+        "approveHandover",
+        "getHandoverPreview",
+        "getHandover",
+        "getHandoverByRequest",
+        "reviewHandover"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "IMPLEMENTED"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC16",

@@ -1018,3 +1018,53 @@ adaptations must be replaced together. Parent hooks/boundaries are still pending
 Actual evidence is frontend TypeScript/scoped lint exit0 and 117/117 API unit,
 including five query/transport boundary tests. React mounting, timer/broadcast
 behavior in a browser, dirty-form remounts and core E2E are NOT_RUN.
+
+## ADR-049 — Reviewed handover sources and durable actor-owned receipts
+
+SC15 has a purpose-bound preview under current School `assignment.manage`.
+It returns the stored current homeroom assignment, real member state, nullable
+source/receiver versions and six SQL aggregate counts matching the existing UI.
+It does not lend member profiles, family contacts, role catalogs or student rows.
+The reference day and grant cutoff use the school's persisted timezone. A stored
+assignment whose grant expired remains visible as a repairable source with
+`accessActive=false`; revoked sources remain unusable. Receiver identity,
+membership, overlap and current delegation/expiry are rechecked before application.
+
+Creating a request records actual source versions, grant/role/identity/policy state
+and the checklist. The hidden source object becomes an opaque preview hash only
+after projection. Source changes reject the command before assignment writes.
+`reviewHandover` requires a displayed request version and newly reviewed source
+versions/hash for the same immutable intent; approval cannot silently substitute
+a fresh source. Historical incomplete checklists stay null. Migration 035 recovers
+applied assignment/time only from matching retained approval audit evidence and
+the actual assignment, iterating school contexts with FORCE RLS intact.
+
+The client supplies a nonsecret request UUID before submission. Receipts are
+unique per school/requesting actor/UUID; a different immutable intent conflicts.
+`getHandoverByRequest` checks current authority and that requesting actor before
+returning the persisted state. The adapter first reads this receipt on a manual
+retry, avoiding another create/apply after an acknowledgement is lost. A renewed
+review uses its acknowledged request version; it does not auto-refresh the user's
+review. Success requires the actual applied assignment ID, class, receiver, start
+day and applied time. The UI must retain the request UUID through reload and make
+changed-source review explicit when this candidate is activated.
+
+Application cuts off the previous assignment and shortens its linked grant without
+extending an earlier expiry. It creates the new dated homeroom assignment, records
+the actual result and sends two deduplicated permission notifications atomically.
+Past records retain authorship. Notification projection still reauthorizes the
+target; a future grant does not create present class access. Raw source state,
+token/contact/roster data and source-state sort or arbitrary query filters are not
+available through these APIs.
+
+Generated client request metadata now resolves the actual OpenAPI JSON request
+schema reference for every operation. A contract regression checks all compiled
+references, preventing a changed command schema from retaining an obsolete client
+body type. Handover/provider/facade candidates remain unactivated; browser reload,
+dirty-form and multi-tab acceptance are required separately from API/unit tests.
+
+Actual ADR-049 checks: 35 verified migrations/checksum replay, 127/127 PostgreSQL
+integration, zero skipped, 23/23 backend contract/unit and 125/125 frontend API unit;
+TypeScript/scoped lint exit0. Runtime is 290 operations/361 schemas with 86
+unactivated candidates. Failed test expectations and remaining acceptance are
+recorded in the implementation report; this does not certify B6/B7 completion.

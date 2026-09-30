@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,286);assert.equal(new Set(operations.map(op=>op.id)).size,286);
+  assert.equal(operations.length,290);assert.equal(new Set(operations.map(op=>op.id)).size,290);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
+  for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
 test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
   const value={expectedVersion:4,roleIds:[],reason:'Thay vai trò'};validateSchema('MemberRolesReplace',value);
@@ -75,4 +76,13 @@ test('role details retain exact native scopes and denied panels without exposing
   assert.equal(operations.find(op=>op.id==='getRoleDetails').permission,'role.read');
   validateSchema('RolePatch',{expectedVersion:1,reason:'Lý do giả',permissions:role.permissions});
   assert.throws(()=>validateSchema('RolePatch',{expectedVersion:1,permissions:role.permissions}),error=>error.status===422);
+});
+
+test('handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',time=new Date().toISOString(),row={id,version:1,createdAt:time,updatedAt:time,classId:id,fromAssignmentId:id,toMemberId:id,effectiveOn:'2026-10-02',reason:'Lý do giả',status:'SUBMITTED',checklist:null,previewHash:null,appliedAssignmentId:null,appliedAt:null,clientRequestId:null,appliedAssignment:null};validateSchema('Handover',row,true);
+  assert.throws(()=>validateSchema('Handover',{...row,sourceState:{identities:[{email:'private'}]}},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  validateSchema('HandoverCreate',{classId:id,fromAssignmentId:id,toMemberId:id,effectiveOn:'2026-10-02',reason:'Lý do giả',clientRequestId:id,previewHash:'a'.repeat(64),expectedClassVersion:2,expectedFromAssignmentVersion:3,expectedToMemberVersion:4});
+  for(const key of ['actorId','schoolId','appliedAssignmentId'])assert.throws(()=>validateSchema('HandoverCreate',{classId:id,fromAssignmentId:id,toMemberId:id,effectiveOn:'2026-10-02',reason:'Lý do giả',[key]:id}),error=>error.status===422);
+  validateSchema('HandoverApprove',{expectedVersion:1,previewHash:'a'.repeat(64)});assert.equal(operations.find(op=>op.id==='approveHandover').request,'HandoverApprove');
+  assert.equal(operations.find(op=>op.id==='getHandoverByRequest').permission,'assignment.manage');
 });

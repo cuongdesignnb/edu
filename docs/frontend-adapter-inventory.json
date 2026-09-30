@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 83,
+  "candidateCount": 86,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3248,7 +3248,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "handoverPreview",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3261,7 +3271,17 @@
         "input: { classId: ID; toMembershipId: ID; effectiveDate: string; note: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "handover",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3891,6 +3911,16 @@
       "repository": "sessionRepo",
       "method": "revokeSession",
       "file": "src/lib/repositories/connected/session.ts",
+      "status": "IMPLEMENTED",
+      "activated": false,
+      "evidence": [
+        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+      ]
+    },
+    {
+      "repository": "staffRepo",
+      "method": "handoverReceipt",
+      "file": "src/lib/repositories/connected/staff.ts",
       "status": "IMPLEMENTED",
       "activated": false,
       "evidence": [

@@ -13,7 +13,7 @@ import {roleDetails,roleSummaryResource,ownsHeldRole,validateLiveRoleExpiry} fro
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
-const assignmentResource:Resource={table:'app.teaching_assignments',fields:{...meta,classId:'class_id',memberId:'member_id',roleGrantId:'role_grant_id',kind:'kind',subjectId:'subject_id',startsOn:'starts_on',endsOn:'ends_on',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{classId:'class_id',memberId:'member_id'}};
+export const assignmentResource:Resource={table:'app.teaching_assignments',fields:{...meta,classId:'class_id',memberId:'member_id',roleGrantId:'role_grant_id',kind:'kind',subjectId:'subject_id',startsOn:'starts_on',endsOn:'ends_on',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{classId:'class_id',memberId:'member_id'}};
 const roleResource:Resource={table:'app.roles',fields:{...meta,code:'code',label:'label',systemRole:'system_role',status:'status'},writeFields:[],search:['code','label'],filters:{}};
 const inviteResource:Resource={table:`(SELECT i.*,coalesce(i.work_profile->>'workDisplayName','') AS work_display_name,
   coalesce(i.work_profile->>'proposedDuty','') AS proposed_duty,ARRAY(SELECT p->>'roleId' FROM jsonb_array_elements(i.proposed_assignments) p) AS role_ids,
@@ -291,12 +291,7 @@ export class StaffService {
     const schoolId=c.params.schoolId!,body=c.body,p=await this.prepareAssignment(tx,c,body);
     // Preview is read-only and never replays an old authorized result: both the
     // proposal and current action/scope/time ceiling are checked on every call.
-    const conflict=await one(tx,`SELECT id FROM app.teaching_assignments WHERE school_id=$1 AND revoked_at IS NULL
-      AND daterange(starts_on,ends_on,'[)') && daterange($5::date,$6::date,'[)') AND (
-       ($4='HOMEROOM' AND kind='HOMEROOM' AND (class_id=$2 OR (member_id=$3 AND year_id=$7)))
-       OR ($4='SUBJECT' AND kind='SUBJECT' AND class_id=$2 AND subject_id=$8)) LIMIT 1`,
-    [schoolId,body.classId,body.memberId,body.kind,p.starts,p.ends,p.cls.year_id,body.subjectId??null]);
-    if(conflict)throw new Problem(409,'SCHEDULE_CONFLICT');
+    await this.assignmentOverlap(tx,schoolId,body,p.starts,p.ends,String(p.cls.year_id));
     const current=await this.policy.grants(tx,String(p.member.user_id),schoolId),scope={schoolId,classId:String(body.classId),subjectId:body.subjectId as string|undefined,allowSubject:body.kind==='SUBJECT'};
     const held=new Set(current.flatMap(g=>g.actions.filter(action=>grantAllows(g,action,scope,p.current))));
     const homeroom=body.kind==='SUBJECT'?(await one<{id:string}>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code='HOMEROOM' AND status='ACTIVE'",[schoolId])):undefined;
@@ -309,6 +304,19 @@ export class StaffService {
       subjectId:body.subjectId??null,scopeName:String(p.cls.name)+(subject?' — '+String(subject.name):''),referenceDate:p.current,
       startsOn:p.starts,endsOn:p.ends,grantStartsAt:iso(p.dates.valid_from),grantEndsAt:iso(p.dates.valid_until),
       added:p.actions.filter(a=>!held.has(a)),kept:p.actions.filter(a=>held.has(a)),notIncluded:excluded,warnings};
+  }
+  private async assignmentOverlap(tx:Transaction,schoolId:string,body:Record<string,unknown>,starts:string,ends:string,yearId:string,excluded?:string){
+    const conflict=await one(tx,`SELECT id FROM app.teaching_assignments WHERE school_id=$1 AND revoked_at IS NULL AND ($9::uuid IS NULL OR id<>$9)
+      AND daterange(starts_on,ends_on,'[)') && daterange($5::date,$6::date,'[)') AND (
+       ($4='HOMEROOM' AND kind='HOMEROOM' AND (class_id=$2 OR (member_id=$3 AND year_id=$7)))
+       OR ($4='SUBJECT' AND kind='SUBJECT' AND class_id=$2 AND subject_id=$8)) LIMIT 1`,
+    [schoolId,body.classId,body.memberId,body.kind,starts,ends,yearId,body.subjectId??null,excluded??null]);
+    if(conflict)throw new Problem(409,'SCHEDULE_CONFLICT');
+  }
+  async validateHandoverAssignment(tx:Transaction,c:RequestContext,previous:Row,body:Record<string,unknown>){
+    const proposal={classId:body.classId,memberId:body.toMemberId,kind:'HOMEROOM',startsOn:body.effectiveOn,endsOn:previous.ends_on,reason:body.reason};
+    const p=await this.prepareAssignment(tx,c,proposal);
+    await this.assignmentOverlap(tx,c.params.schoolId!,proposal,p.starts,p.ends,String(p.cls.year_id),String(previous.id));
   }
   async createAssignment(tx:Transaction,c:RequestContext,body:Record<string,unknown>){
     const schoolId=c.params.schoolId!;

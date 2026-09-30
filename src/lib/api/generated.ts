@@ -55,8 +55,8 @@ export interface ApiSchemas {
   "ClassPatch": { "status"?: "DRAFT"; "homeroomMemberId"?: string; "homeroomStartsOn"?: string; "homeroomReason"?: string; "gradeLevelId"?: string; "roomId"?: (string) | null; "motto"?: (string) | null; "expectedVersion": number; "name"?: string; "capacity"?: number; };
   "Assignment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "memberId": (string) | null; "roleGrantId": (string) | null; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt"?: (string) | null; };
   "AssignmentCreate": { "classId": string; "memberId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: string; "startsOn": string; "endsOn"?: (string) | null; "reason"?: string; "expectedMemberVersion"?: number; "expectedClassVersion"?: number; };
-  "Handover": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "fromAssignmentId": (string) | null; "toMemberId": (string) | null; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "APPLIED" | "REJECTED"; };
-  "HandoverCreate": { "classId": string; "fromAssignmentId": string; "toMemberId": string; "effectiveOn": string; "reason": string; };
+  "Handover": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "fromAssignmentId": (string) | null; "toMemberId": (string) | null; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "APPLIED" | "REJECTED"; "checklist": (ApiSchemas["HandoverChecklist"] | (null) | null); "previewHash": (string) | null; "appliedAssignmentId": (string) | null; "appliedAt": (string) | null; "clientRequestId": (string) | null; "appliedAssignment"?: (ApiSchemas["Assignment"] | (null) | null); };
+  "HandoverCreate": { "classId": string; "fromAssignmentId": string; "toMemberId": string; "effectiveOn": string; "reason": string; "expectedFromAssignmentVersion"?: number; "expectedClassVersion"?: number; "expectedToMemberVersion"?: number; "previewHash"?: string; "clientRequestId"?: string; };
   "RolloverItem": { "studentId": (string) | null; "fromClassId": (string) | null; "toClassId"?: (string) | null; "decision": "PROMOTED" | "REPEATED" | "LEFT" | "GRADUATED"; };
   "Rollover": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "sourceYearId": (string) | null; "targetYearId": (string) | null; "plan": Array<ApiSchemas["RolloverItem"]>; "planHash"?: string; "status": "DRAFT" | "VALIDATED" | "APPLYING" | "APPLIED" | "FAILED"; "warnings"?: Array<string>; };
   "RolloverCreate": { "targetYearId": (string) | null; "plan": Array<ApiSchemas["RolloverItem"]>; };
@@ -355,6 +355,12 @@ export interface ApiSchemas {
   "StaffAssignmentMatrixRow": { "classId": string; "version": number; "className": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "homeroom": (ApiSchemas["StaffAssignmentCell"] | (null) | null); "bySubject": { [key: string]: (ApiSchemas["StaffAssignmentCell"] | (null) | null); }; "conflicts": Array<string>; };
   "StaffAssignmentMatrix": { "year": (ApiSchemas["Year"] | (null) | null); "referenceDate": string; "subjects": Array<ApiSchemas["StaffMatrixSubject"]>; "rows": Array<ApiSchemas["StaffAssignmentMatrixRow"]>; "canAssign": boolean; "canViewMembers": boolean; };
   "StaffAssignmentMatrixResponse": { "data": ApiSchemas["StaffAssignmentMatrix"]; "requestId": string; };
+  "HandoverChecklist": { "pendingConduct": number; "openWeeks": number; "pendingAdjustments": number; "pendingEvidence": number; "draftAnnouncements": number; "activeLinks": number; };
+  "HandoverCurrent": { "assignmentId": string; "version": number; "membershipId": string; "memberVersion": number; "name": string; "memberStatus": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "startsOn": string; "endsOn": (string) | null; "accessActive": boolean; };
+  "HandoverPreview": { "className": string; "classVersion": number; "referenceDate": string; "effectiveOn": string; "canHandover": boolean; "current": (ApiSchemas["HandoverCurrent"] | (null) | null); "openItems": ApiSchemas["HandoverChecklist"]; "previewHash": (string) | null; "toMemberVersion": (number) | null; };
+  "HandoverPreviewResponse": { "data": ApiSchemas["HandoverPreview"]; "requestId": string; };
+  "HandoverApprove": { "expectedVersion": number; "previewHash"?: string; };
+  "HandoverReview": { "expectedVersion": number; "previewHash": string; "expectedFromAssignmentVersion": number; "expectedClassVersion": number; "expectedToMemberVersion": number; };
 }
 
 export const apiOperations = {
@@ -1282,7 +1288,7 @@ export const apiOperations = {
     "method": "POST",
     "path": "/api/v1/schools/{schoolId}/handovers/{handoverId}/approve",
     "auth": "staff",
-    "request": "VersionCommand",
+    "request": "HandoverApprove",
     "response": "Handover",
     "list": false,
     "permission": "assignment.manage",
@@ -3217,6 +3223,46 @@ export const apiOperations = {
     "list": false,
     "permission": "assignment.read",
     "readOnly": true
+  },
+  "getHandoverPreview": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/handover-preview",
+    "auth": "staff",
+    "request": null,
+    "response": "HandoverPreview",
+    "list": false,
+    "permission": "assignment.manage",
+    "readOnly": true
+  },
+  "getHandover": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/handovers/{handoverId}",
+    "auth": "staff",
+    "request": null,
+    "response": "Handover",
+    "list": false,
+    "permission": "assignment.manage",
+    "readOnly": true
+  },
+  "getHandoverByRequest": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/handovers/requests/{requestId}",
+    "auth": "staff",
+    "request": null,
+    "response": "Handover",
+    "list": false,
+    "permission": "assignment.manage",
+    "readOnly": true
+  },
+  "reviewHandover": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/handovers/{handoverId}/review",
+    "auth": "staff",
+    "request": "HandoverReview",
+    "response": "Handover",
+    "list": false,
+    "permission": "assignment.manage",
+    "readOnly": false
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

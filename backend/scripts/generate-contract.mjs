@@ -316,6 +316,24 @@ spec.components.schemas.StaffAssignmentMatrixRow=object({classId:uuid,version:{t
 spec.components.schemas.StaffAssignmentMatrix=object({year:nullableMatrixRef('Year'),referenceDate:{type:'string',format:'date'},subjects:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/StaffMatrixSubject'}},rows:{type:'array',maxItems:2000,items:{$ref:'#/components/schemas/StaffAssignmentMatrixRow'}},canAssign:{type:'boolean'},canViewMembers:{type:'boolean'}});
 spec.components.schemas.StaffAssignmentMatrixResponse=object({data:{$ref:'#/components/schemas/StaffAssignmentMatrix'},requestId:label});
 extendOperation('getMember','getStaffAssignmentMatrix','/schools/{schoolId}/assignment-matrix','assignment.read','StaffAssignmentMatrix',false,['SC12'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
+// ADR-049: native handover previews bind reviewed sources and durable actor-owned receipts.
+const versionPositive={type:'integer',minimum:1},reviewHash={type:'string',pattern:'^[0-9a-f]{64}$'};
+spec.components.schemas.HandoverChecklist=object(Object.fromEntries(['pendingConduct','openWeeks','pendingAdjustments','pendingEvidence','draftAnnouncements','activeLinks'].map(k=>[k,{type:'integer',minimum:0}])));
+spec.components.schemas.HandoverCurrent=object({assignmentId:uuid,version:versionPositive,membershipId:uuid,memberVersion:versionPositive,name:label,memberStatus:structuredClone(spec.components.schemas.Member.properties.status),startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date',nullable:true},accessActive:{type:'boolean'}});
+spec.components.schemas.HandoverPreview=object({className:label,classVersion:versionPositive,referenceDate:{type:'string',format:'date'},effectiveOn:{type:'string',format:'date'},canHandover:{type:'boolean'},current:nullableMatrixRef('HandoverCurrent'),openItems:{$ref:'#/components/schemas/HandoverChecklist'},previewHash:{...reviewHash,nullable:true},toMemberVersion:{...versionPositive,nullable:true}});
+spec.components.schemas.HandoverPreviewResponse=object({data:{$ref:'#/components/schemas/HandoverPreview'},requestId:label});
+Object.assign(spec.components.schemas.Handover.properties,{checklist:nullableMatrixRef('HandoverChecklist'),previewHash:{...reviewHash,nullable:true},appliedAssignmentId:{...uuid,nullable:true},appliedAt:{...timestamp,nullable:true},clientRequestId:{...uuid,nullable:true},appliedAssignment:nullableMatrixRef('Assignment')});
+spec.components.schemas.Handover.required.push('checklist','previewHash','appliedAssignmentId','appliedAt','clientRequestId');
+Object.assign(spec.components.schemas.HandoverCreate.properties,{expectedFromAssignmentVersion:versionPositive,expectedClassVersion:versionPositive,expectedToMemberVersion:versionPositive,previewHash:reviewHash,clientRequestId:uuid});
+const handoverApproveSchema=spec.paths['/schools/{schoolId}/handovers/{handoverId}/approve'].post.requestBody.content['application/json'].schema.$ref.split('/').at(-1);
+spec.components.schemas.HandoverApprove=structuredClone(spec.components.schemas[handoverApproveSchema]);
+spec.components.schemas.HandoverApprove.properties.previewHash=reviewHash;
+spec.components.schemas.HandoverReview=object({expectedVersion:versionPositive,previewHash:reviewHash,expectedFromAssignmentVersion:versionPositive,expectedClassVersion:versionPositive,expectedToMemberVersion:versionPositive});
+extendOperation('getClass','getHandoverPreview','/schools/{schoolId}/classes/{classId}/handover-preview','assignment.manage','HandoverPreview',false,['SC15'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'classId',in:'path',required:true,schema:uuid},{name:'effectiveOn',in:'query',schema:{type:'string',format:'date'}},{name:'toMemberId',in:'query',schema:uuid}]);
+extendOperation('getClass','getHandover','/schools/{schoolId}/handovers/{handoverId}','assignment.manage','Handover',false,['SC15'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'handoverId',in:'path',required:true,schema:uuid}]);
+extendOperation('getClass','getHandoverByRequest','/schools/{schoolId}/handovers/requests/{requestId}','assignment.manage','Handover',false,['SC15'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'requestId',in:'path',required:true,schema:uuid}]);
+extendOperation('approveHandover','reviewHandover','/schools/{schoolId}/handovers/{handoverId}/review','assignment.manage','Handover',false,['SC15'],undefined,'HandoverReview');
+spec.paths['/schools/{schoolId}/handovers/{handoverId}/approve'].post.requestBody.content['application/json'].schema={$ref:'#/components/schemas/HandoverApprove'};
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));
@@ -349,7 +367,8 @@ const resolvedOperations = operations.map(op => {
   const actual = spec.paths[op.path.replace(/^\/api\/v1/, '')]?.[op.method.toLowerCase()]
     ?? spec.paths[op.path]?.[op.method.toLowerCase()];
   if (!actual || actual.operationId !== op.id) throw new Error(`Registry mismatch ${op.id}`);
-  return { ...op, readOnly:op.method==='GET'||actual['x-read-only']===true,...(op.id==='revokeSupportAccess'?{request:'SupportAccessRevoke'}:{}),parameters: actual.parameters ?? [], requestBody: actual.requestBody,
+  const request=actual.requestBody?.content?.['application/json']?.schema?.$ref?.split('/').at(-1)??op.request;
+  return { ...op, request,readOnly:op.method==='GET'||actual['x-read-only']===true,parameters: actual.parameters ?? [], requestBody: actual.requestBody,
     responses: actual.responses };
 });
 await fs.mkdir(path.join(root, 'backend/src/generated'), { recursive: true });

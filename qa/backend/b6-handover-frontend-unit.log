@@ -1,0 +1,25 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-client.test.ts (11 tests) 38ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 35ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 35ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 66ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 51ms
+ ✓ tests/unit/api-query-boundary.test.ts (5 tests) 42ms
+ ✓ tests/unit/api-platform-adapter.test.ts (12 tests) 50ms
+ ✓ tests/unit/api-school-adapter.test.ts (16 tests) 53ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 53ms
+ ✓ tests/unit/api-member-details.test.ts (5 tests) 22ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 39ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 41ms
+ ✓ tests/unit/api-assignment-adapter.test.ts (8 tests) 46ms
+ ✓ tests/unit/api-handover-adapter.test.ts (8 tests) 57ms
+ ✓ tests/unit/api-staff-adapter.test.ts (9 tests) 53ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 9ms
+ ✓ tests/unit/api-context.test.ts (1 test) 4ms
+
+ Test Files  17 passed (17)
+      Tests  125 passed (125)
+   Start at  06:28:54
+   Duration  1.28s (transform 1.57s, setup 1.01s, collect 5.09s, tests 694ms, environment 4ms, prepare 2.63s)

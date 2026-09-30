@@ -9548,7 +9548,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VersionCommand"
+              $ref: "#/components/schemas/HandoverApprove"
       responses:
         "200":
           description: Thành công
@@ -30109,6 +30109,378 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/classes/{classId}/handover-preview:
+    get:
+      operationId: getHandoverPreview
+      tags:
+        - School
+      summary: getHandoverPreview
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: effectiveOn
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: toMemberId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HandoverPreviewResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/handovers/{handoverId}:
+    get:
+      operationId: getHandover
+      tags:
+        - School
+      summary: getHandover
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: handoverId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HandoverResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/handovers/requests/{requestId}:
+    get:
+      operationId: getHandoverByRequest
+      tags:
+        - School
+      summary: getHandoverByRequest
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HandoverResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/handovers/{handoverId}/review:
+    post:
+      operationId: reviewHandover
+      tags:
+        - Staff
+      summary: reviewHandover
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: handoverId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HandoverReview"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HandoverResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -32387,6 +32759,36 @@ components:
             - APPROVED
             - APPLIED
             - REJECTED
+        checklist:
+          anyOf:
+            - $ref: "#/components/schemas/HandoverChecklist"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        previewHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          nullable: true
+        appliedAssignmentId:
+          type: string
+          format: uuid
+          nullable: true
+        appliedAt:
+          type: string
+          format: date-time
+          nullable: true
+        clientRequestId:
+          type: string
+          format: uuid
+          nullable: true
+        appliedAssignment:
+          anyOf:
+            - $ref: "#/components/schemas/Assignment"
+            - type: object
+              nullable: true
+              enum:
+                - null
       required:
         - id
         - version
@@ -32398,6 +32800,11 @@ components:
         - effectiveOn
         - reason
         - status
+        - checklist
+        - previewHash
+        - appliedAssignmentId
+        - appliedAt
+        - clientRequestId
       additionalProperties: false
     HandoverCreate:
       type: object
@@ -32417,6 +32824,21 @@ components:
         reason:
           type: string
           maxLength: 4000
+        expectedFromAssignmentVersion:
+          type: integer
+          minimum: 1
+        expectedClassVersion:
+          type: integer
+          minimum: 1
+        expectedToMemberVersion:
+          type: integer
+          minimum: 1
+        previewHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        clientRequestId:
+          type: string
+          format: uuid
       required:
         - classId
         - fromAssignmentId
@@ -40642,6 +41064,171 @@ components:
       required:
         - data
         - requestId
+      additionalProperties: false
+    HandoverChecklist:
+      type: object
+      properties:
+        pendingConduct:
+          type: integer
+          minimum: 0
+        openWeeks:
+          type: integer
+          minimum: 0
+        pendingAdjustments:
+          type: integer
+          minimum: 0
+        pendingEvidence:
+          type: integer
+          minimum: 0
+        draftAnnouncements:
+          type: integer
+          minimum: 0
+        activeLinks:
+          type: integer
+          minimum: 0
+      required:
+        - pendingConduct
+        - openWeeks
+        - pendingAdjustments
+        - pendingEvidence
+        - draftAnnouncements
+        - activeLinks
+      additionalProperties: false
+    HandoverCurrent:
+      type: object
+      properties:
+        assignmentId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        membershipId:
+          type: string
+          format: uuid
+        memberVersion:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        memberStatus:
+          type: string
+          enum:
+            - INVITED
+            - ACTIVE
+            - SUSPENDED
+            - ENDED
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+        accessActive:
+          type: boolean
+      required:
+        - assignmentId
+        - version
+        - membershipId
+        - memberVersion
+        - name
+        - memberStatus
+        - startsOn
+        - endsOn
+        - accessActive
+      additionalProperties: false
+    HandoverPreview:
+      type: object
+      properties:
+        className:
+          type: string
+        classVersion:
+          type: integer
+          minimum: 1
+        referenceDate:
+          type: string
+          format: date
+        effectiveOn:
+          type: string
+          format: date
+        canHandover:
+          type: boolean
+        current:
+          anyOf:
+            - $ref: "#/components/schemas/HandoverCurrent"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        openItems:
+          $ref: "#/components/schemas/HandoverChecklist"
+        previewHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          nullable: true
+        toMemberVersion:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+        - className
+        - classVersion
+        - referenceDate
+        - effectiveOn
+        - canHandover
+        - current
+        - openItems
+        - previewHash
+        - toMemberVersion
+      additionalProperties: false
+    HandoverPreviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/HandoverPreview"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    HandoverApprove:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        previewHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+      required:
+        - expectedVersion
+      additionalProperties: false
+    HandoverReview:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        previewHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        expectedFromAssignmentVersion:
+          type: integer
+          minimum: 1
+        expectedClassVersion:
+          type: integer
+          minimum: 1
+        expectedToMemberVersion:
+          type: integer
+          minimum: 1
+      required:
+        - expectedVersion
+        - previewHash
+        - expectedFromAssignmentVersion
+        - expectedClassVersion
+        - expectedToMemberVersion
       additionalProperties: false
   securitySchemes:
     StaffCookie:

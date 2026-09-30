@@ -10,6 +10,7 @@ import {RepoError} from '../errors';
 import {commandReason,displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {assignment,assignmentBody,type StaffAssignmentInput} from './assignment-mapping';
 import {staffRole,staffRoleDetails,rolePermissions} from './role-mapping';
+import {readHandoverPreview,readHandoverReceipt,applyHandover,type HandoverInput,type HandoverPreviewInput} from './handover';
 
 /** Native lifecycle replies retain nullable metadata and exact grant time windows. */
 export function staffMembership(row:ApiSchemas['Member'],schoolId:ID){
@@ -37,6 +38,9 @@ function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
     invitationStatus:row.kind==='INVITATION'?'pending' as const:undefined,expiresAt:requiredValue(row.expiresAt,'expiresAt'),avatarTone:row.kind==='INVITATION'?'amber':'blue'};
 }
 export const connectedStaffRepo=withStaffAccess({
+  async handoverPreview(_ctx:Ctx,schoolId:ID,classId:ID,input:HandoverPreviewInput={}){return readHandoverPreview(schoolId,classId,input);},
+  async handoverReceipt(_ctx:Ctx,schoolId:ID,clientRequestId:string){return readHandoverReceipt(schoolId,clientRequestId);},
+  async handover(_ctx:Ctx,schoolId:ID,input:HandoverInput){return applyHandover(schoolId,input);},
   async roles(_ctx:Ctx,schoolId:ID){return (await apiList('listRoles',{params:{schoolId},query:{sort:'label',dir:'asc'}},1000)).map(r=>staffRole(r,schoolId));},
   async role(_ctx:Ctx,schoolId:ID,roleId:ID){return staffRoleDetails((await http('getRoleDetails',{params:{schoolId,roleId}})).data,schoolId);},
   async saveRole(_ctx:Ctx,schoolId:ID,roleId:ID,permissions:ApiSchemas['Role']['permissions'],version:number,reason:string){
