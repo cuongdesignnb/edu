@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 38,
+  "candidateCount": 39,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -2004,7 +2004,17 @@
         "yearId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "schoolRepo",
+        "method": "overview",
+        "file": "src/lib/repositories/connected/school.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "schoolRepo",

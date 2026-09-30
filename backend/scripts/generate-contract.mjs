@@ -178,6 +178,19 @@ spec.components.schemas.RolloverPreviewTargetClass=object({id:uuid,name:label,gr
 spec.components.schemas.RolloverPreviewTarget=object({year:{$ref:'#/components/schemas/Year'},classes:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/RolloverPreviewTargetClass'}}});
 spec.components.schemas.RolloverPreview=object({source:{$ref:'#/components/schemas/Year'},referenceDate:{type:'string',format:'date'},sourceClasses:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/RolloverPreviewSourceClass'}},targets:{type:'array',maxItems:100,items:{$ref:'#/components/schemas/RolloverPreviewTarget'}},grades:{type:'array',maxItems:100,items:{$ref:'#/components/schemas/DictionaryItem'}}});
 spec.components.schemas.RolloverPreviewResponse=object({data:{$ref:'#/components/schemas/RolloverPreview'},requestId:label});
+// ADR-034: the SC01 projection preserves the existing layout with explicit unavailable fields.
+spec.components.schemas.SchoolOverviewKpi=object(Object.fromEntries(['activeClasses','draftClasses','prevClasses','staffActive','students','prevStudents','linksActive','linksOpened'].map(k=>[k,{...count,nullable:true}])));
+spec.components.schemas.SchoolOverviewStep=object({key:label,label,done:{type:'boolean',nullable:true},detail:label,href:label});
+spec.components.schemas.SchoolOverviewClass=object({...structuredClone(spec.components.schemas.Class.properties),tasks:{type:'array',items:label},severity:{type:'string',enum:['blocked','attention']}},[...spec.components.schemas.Class.required,'tasks','severity']);
+spec.components.schemas.SchoolOverviewTodayItem=object({key:label,label,detail:label,href:label,tone:{type:'string',enum:['danger','warning','info']}});
+spec.components.schemas.SchoolOverviewAnnouncement=object({id:uuid,title:label,summary:label,status:{type:'string',enum:['PUBLISHED','SCHEDULED']},createdAt:{type:'string',format:'date-time'},publishedAt:{type:'string',format:'date-time',nullable:true},scheduledAt:{type:'string',format:'date-time',nullable:true}});
+spec.components.schemas.SchoolOverviewDetails=object({year:{$ref:'#/components/schemas/Year',nullable:true},prevYear:{$ref:'#/components/schemas/Year',nullable:true},kpi:{$ref:'#/components/schemas/SchoolOverviewKpi'},setup:{type:'array',minItems:8,maxItems:8,items:{$ref:'#/components/schemas/SchoolOverviewStep'}},classesNeedingAction:{type:'array',nullable:true,maxItems:2000,items:{$ref:'#/components/schemas/SchoolOverviewClass'}},todayItems:{type:'array',nullable:true,maxItems:5,items:{$ref:'#/components/schemas/SchoolOverviewTodayItem'}},announcements:{type:'array',nullable:true,maxItems:4,items:{$ref:'#/components/schemas/SchoolOverviewAnnouncement'}}});
+// OpenAPI 3.0 nullable with a reference requires an explicit null alternative for AJV.
+spec.components.schemas.SchoolOverviewDetails.properties.classesNeedingAction.maxItems=6;
+spec.components.schemas.SchoolOverviewDetails.properties.classesNeedingActionTotal={...count,nullable:true};
+spec.components.schemas.SchoolOverviewDetails.required.push('classesNeedingActionTotal');
+for(const name of ['year','prevYear'])spec.components.schemas.SchoolOverviewDetails.properties[name]={anyOf:[{$ref:'#/components/schemas/Year'},{type:'object',nullable:true,enum:[null]}]};
+spec.components.schemas.Dashboard.properties.schoolOverview={$ref:'#/components/schemas/SchoolOverviewDetails'};
 const previewOperation=structuredClone(spec.paths['/schools/{schoolId}/academic-years/{yearId}'].get);
 previewOperation.parameters=previewOperation.parameters.filter(p=>p.in==='path');
 Object.assign(previewOperation,{operationId:'getRolloverPreview',summary:'Danh sách cuối năm để chuẩn bị xếp lớp',description:'Minimal end-year roster under current school year.manage; no family/contact fields.', 'x-permission':'year.manage','x-frontend-screen-ids':['SC07']});

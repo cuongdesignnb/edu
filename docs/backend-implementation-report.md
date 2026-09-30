@@ -31,6 +31,13 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
 
+## B6 school overview checkpoint
+
+- Latest PostgreSQL run: **90/90**, exit0, zero skipped, qa/backend/b6-school-overview-integration-isolated.log. All 30 migrations were checksum/replay verified. Backend/frontend TypeScript, scoped lint and runner build exit0; **13 backend unit/contract and 41 frontend unit checks** exit0. Runtime has **265 operations / 316 schemas**.
+- School overview fields now preserve the existing KPI/setup/class/action/announcement layout with actual scoped SQL data. School-wide totals require separate SCHOOL authority. A school.read plus one CLASS student.read grant receives null totals, panels and completion statuses; foreign-school access and immediate revocation are tested. Opened-link counts exclude staff preview. Announcements expose only publication/schedule metadata.
+- The initial **88/90** run hit a real list bound on more than 2,000 retained synthetic classes. The repair computes full counts/setup in SQL and returns a six-row preview with its separate full total. No volume/history was removed. The **89/90** follow-up used a fixture already granted school-B administration by BE07; the final 90/90 run uses a new school-A-only identity. Both failed logs remain retained.
+- There are **39 candidate methods**, including **all 25 school methods**. The **231 legacy methods and 118 core screens remain unactivated/unaccepted**. Null display, full-total labels, versioned commands and reason inputs still need UI wiring. Authentication/scope cache changes, other repositories, final Docker URL, restart, backup/restore and load acceptance remain outstanding. No production deployment.
+
 ## B6 rollover acknowledgement checkpoint
 
 - The latest PostgreSQL suite is **89/89**, exit0, zero skipped, in qa/backend/b6-rollover-integration.log. All 30 migrations were checksum/replay verified. Runner build, backend/frontend TypeScript and scoped lint exit0; 12 backend unit/contract and **38 frontend unit checks** completed with exit0.

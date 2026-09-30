@@ -1910,3 +1910,32 @@ test('B6 rollover preview uses exact end-year enrollment, minimal workflow autho
     jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
   }finally{jar.set('edu_staff',adminCookie);}
 });
+
+test('B6 school overview keeps current scoped totals, actual setup and publication metadata without lending school-wide reads',async()=>{
+  const csrf=await login('admin-a@example.invalid'),base=`/api/v1/schools/${schoolA}`,yearId=seedId('year:A'),post=(suffix,body)=>request('POST',`${base}/${suffix}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const read=await request('GET',`${base}/overview?yearId=${yearId}`);assert.equal(read.statusCode,200,read.body);const data=read.json().data.schoolOverview;assert.ok(data);assert.equal(data.year.id,yearId);assert.equal(data.setup.length,8);
+  const expected=await db.transaction(async tx=>{
+    const classes=(await tx.query("SELECT count(*) FILTER(WHERE status='ACTIVE')::int AS active,count(*) FILTER(WHERE status='DRAFT')::int AS draft FROM app.classes WHERE school_id=$1 AND year_id=$2",[schoolA,yearId])).rows[0];
+    const students=(await tx.query("SELECT count(DISTINCT e.student_id)::int AS n FROM app.enrollments e JOIN app.classes c ON c.school_id=e.school_id AND c.id=e.class_id WHERE e.school_id=$1 AND e.year_id=$2 AND c.status IN ('ACTIVE','ARCHIVED') AND e.status<>'CANCELLED' AND e.starts_on<=$3 AND (e.ends_on IS NULL OR e.ends_on>$3)",[schoolA,yearId,read.json().data.referenceDate])).rows[0].n;
+    const staff=(await tx.query("SELECT count(*)::int AS n FROM app.memberships m JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE' WHERE m.school_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL",[schoolA])).rows[0].n;
+    const links=(await tx.query("SELECT count(*)::int AS active,count(*) FILTER(WHERE EXISTS(SELECT 1 FROM app.parent_access_events e WHERE e.school_id=l.school_id AND e.access_link_id=l.id AND e.event_kind IN ('EXCHANGED','READ')))::int AS opened FROM app.parent_access_links l JOIN app.guardian_relationships g ON g.school_id=l.school_id AND g.id=l.relationship_id AND g.student_id=l.student_id WHERE l.school_id=$1 AND l.year_id=$2 AND l.revoked_at IS NULL AND l.expires_at>now() AND g.status='VERIFIED' AND g.can_receive_info AND g.revoked_at IS NULL",[schoolA,yearId])).rows[0];
+    return {classes,students,staff,links};
+  },{schoolId:schoolA,readOnly:true});
+  assert.equal(data.kpi.activeClasses,expected.classes.active);assert.equal(data.kpi.draftClasses,expected.classes.draft);assert.equal(data.kpi.students,expected.students);assert.equal(data.kpi.staffActive,expected.staff);assert.equal(data.kpi.linksActive,expected.links.active);assert.equal(data.kpi.linksOpened,expected.links.opened);
+  assert.ok(data.classesNeedingAction.length<=6);assert.ok(data.classesNeedingActionTotal>=data.classesNeedingAction.length);assert.equal(Number.isInteger(data.classesNeedingActionTotal),true);
+  for(const step of data.setup){assert.equal(typeof step.done,'boolean');assert.ok(step.href.startsWith(`/school/${schoolA}/`));}for(const c of data.classesNeedingAction){assert.equal(c.yearId,yearId);assert.ok(c.tasks.length||c.status==='DRAFT');assert.ok(['blocked','attention'].includes(c.severity));assert.equal(typeof c.studentCount,'number');}
+  assert.ok(data.announcements.length<=4);for(const a of data.announcements){assert.deepEqual(Object.keys(a).sort(),['createdAt','id','publishedAt','scheduledAt','status','summary','title']);assert.ok(['PUBLISHED','SCHEDULED'].includes(a.status));if(a.status==='PUBLISHED')assert.ok(a.publishedAt);}
+  const role=await post('roles',{code:`overview-read-${crypto.randomUUID()}`,label:'Chỉ xem trang trường và một lớp giả',permissions:[{action:'school.read',scopes:['SCHOOL']},{action:'student.read',scopes:['CLASS']}]});assert.equal(role.statusCode,201,role.body);
+  const email=`overview-read-${crypto.randomUUID()}@example.invalid`,invitation=await post('invitations',{email,roleId:role.json().data.id,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(invitation.statusCode,201,invitation.body);
+  const encrypted=(await db.app.query('SELECT encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0].encrypted_payload,token=new URLSearchParams(new URL(decryptMail(encrypted).url).hash.slice(1)).get('token'),anonymousCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const accepted=await request('POST','/api/v1/invitations/accept',{schoolSlug:'truong-thu-a',token,displayName:'Người đọc tổng quan có giới hạn giả',newPassword:password},anonymousCsrf);assert.equal(accepted.statusCode,200,accepted.body);
+  const member=await db.transaction(tx=>tx.query('SELECT m.id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,email]),{schoolId:schoolA});
+  const scoped=await post('grants',{memberId:member.rows[0].id,roleId:role.json().data.id,scopeType:'CLASS',classId:classA,validFrom:new Date(Date.now()-1000).toISOString()});assert.equal(scoped.statusCode,201,scoped.body);const adminCookie=jar.get('edu_staff');
+  try{
+    jar.delete('edu_staff');await login(email);const restricted=await request('GET',`${base}/overview?yearId=${yearId}`);assert.equal(restricted.statusCode,200,restricted.body);const value=restricted.json().data.schoolOverview;
+    for(const [key,count] of Object.entries(value.kpi))assert.equal(count,null,key);assert.equal(value.classesNeedingAction,null);assert.equal(value.classesNeedingActionTotal,null);assert.equal(value.todayItems,null);assert.equal(value.announcements,null);for(const step of value.setup)assert.equal(step.done,null,step.key);
+    assert.equal((await request('GET',`/api/v1/schools/${schoolB}/overview?yearId=${seedId('year:B')}`)).statusCode,404);
+    const grant=(await request('GET','/api/v1/me/context')).json().data.memberships.find(m=>m.schoolId===schoolA).grants.find(g=>g.scopeType==='SCHOOL');
+    const readerCookie=jar.get('edu_staff');jar.set('edu_staff',adminCookie);const revoked=await post(`grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Kết thúc quyền xem trang trường giả'});assert.equal(revoked.statusCode,200,revoked.body);jar.set('edu_staff',readerCookie);assert.equal((await request('GET',`${base}/overview?yearId=${yearId}`)).statusCode,403);
+  }finally{jar.set('edu_staff',adminCookie);}
+});

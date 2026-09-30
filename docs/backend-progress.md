@@ -41,7 +41,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listOperations | PL10 | TESTED | qa/backend/platform-integration.log |
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
-| getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
+| getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log; qa/backend/b6-school-overview-integration-isolated.log: 90/90 PostgreSQL checks; independent SCHOOL totals, null unavailable panels, six-row SQL preview with full count and current revocation |
 | getSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | updateSchoolProfile | SC02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage |
 | listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; qa/backend/support-read-integration.log; qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata; qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries |

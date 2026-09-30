@@ -4,9 +4,10 @@ import { getResource,resource,listResource,type Resource } from '../../database/
 import { Permissions,grantAllows,type Grant } from '../../common/permissions';
 import { notFound } from '../../common/problem';
 import { allows,baseClasses,requestContext,taskResource } from './dashboard-data';
+import {schoolOverview} from './school-overview';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
-interface ViewContext {schoolId:string;today:string;referenceDate:string;year:Row|undefined;asOf:string;memberId:string;grants:Grant[];bindings:unknown[]}
+export interface ViewContext {schoolId:string;today:string;referenceDate:string;year:Row|undefined;asOf:string;memberId:string;grants:Grant[];bindings:unknown[]}
 interface Metric {key:string;label:string;value:number;denominator:number|null;unit:string;asOf:string}
 const ownClasses:Resource={...resource('class'),table:`(WITH ${requestContext} SELECT c.*,
   CASE WHEN ${allows('student.read','c.id','*')} THEN (SELECT count(*)::int FROM app.enrollments e WHERE e.school_id=c.school_id AND e.class_id=c.id AND e.status<>'CANCELLED' AND e.starts_on<=$4::date AND (e.ends_on IS NULL OR e.ends_on>$4::date)) END AS student_count,
@@ -41,7 +42,7 @@ export class DashboardsService {
   private async metrics(tx:Transaction,ctx:ViewContext){
     const metrics:Metric[]=[],values=[ctx.schoolId,...ctx.bindings],enrollment="e.status<>'CANCELLED' AND e.starts_on<=$4::date AND (e.ends_on IS NULL OR e.ends_on>$4::date)";
     const count=async(key:string,label:string,sql:string,unit='đối tượng')=>{const row=(await one<{n:string}>(tx,`WITH ${requestContext},base AS (${baseClasses}) ${sql}`,values))!;metrics.push({key,label,value:Number(row.n),denominator:null,unit,asOf:ctx.asOf});};
-    await count('classes','Lớp trong phạm vi','SELECT count(*) AS n FROM base','lớp');
+    if(this.has(ctx,'class.read',true))await count('classes','Lớp trong phạm vi',`SELECT count(*) AS n FROM base c WHERE ${allows('class.read','c.id','*')}`,'lớp');
     if(this.has(ctx,'student.read',true))await count('students','Học sinh tại ngày tham chiếu',`SELECT count(DISTINCT e.student_id) AS n FROM base c JOIN app.enrollments e ON e.school_id=c.school_id AND e.class_id=c.id WHERE ${enrollment} AND ${allows('student.read','c.id','*')}`,'học sinh');
     if(ctx.grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes('member.read')))await count('staff','Nhân sự đang hoạt động',"SELECT count(*) AS n FROM app.memberships m JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE' WHERE m.school_id=$1 AND m.status='ACTIVE' AND m.ended_at IS NULL",'nhân sự');
     if(this.has(ctx,'conduct.read'))await count('pendingConduct','Ghi nhận thi đua chờ rà soát',`SELECT count(*) AS n FROM base c JOIN app.conduct_records r ON r.school_id=c.school_id AND r.class_id=c.id WHERE r.status='DRAFT' AND ${allows('conduct.read','c.id')}`,'ghi nhận');
@@ -66,7 +67,7 @@ export class DashboardsService {
       const ctx=await this.context(tx,c);
       if(c.operation.id==='listMyClasses'){const query={...c.query};delete query.yearId;return listResource(tx,ownClasses,ctx.schoolId,query,undefined,c.principal!.userId,ctx.bindings);}
       if(c.operation.id==='listMyTasks')return this.tasks(tx,c,ctx);
-      return {data:{metrics:await this.metrics(tx,ctx),tasks:(await this.tasks(tx,c,ctx,true)).data,asOf:ctx.asOf,referenceDate:ctx.referenceDate,...(ctx.year?{yearId:ctx.year.id}:{})}};
+      return {data:{metrics:await this.metrics(tx,ctx),tasks:(await this.tasks(tx,c,ctx,true)).data,asOf:ctx.asOf,referenceDate:ctx.referenceDate,...(ctx.year?{yearId:ctx.year.id}:{}),...(c.operation.id==='getSchoolOverview'?{schoolOverview:await schoolOverview(tx,ctx)}:{})}};
     },{schoolId:c.params.schoolId,readOnly:true});
   }
 }

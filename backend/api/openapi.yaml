@@ -28978,6 +28978,8 @@ components:
         yearId:
           type: string
           format: uuid
+        schoolOverview:
+          $ref: "#/components/schemas/SchoolOverviewDetails"
       required:
         - metrics
         - tasks
@@ -36875,6 +36877,317 @@ components:
       required:
         - data
         - requestId
+      additionalProperties: false
+    SchoolOverviewKpi:
+      type: object
+      properties:
+        activeClasses:
+          type: integer
+          minimum: 0
+          nullable: true
+        draftClasses:
+          type: integer
+          minimum: 0
+          nullable: true
+        prevClasses:
+          type: integer
+          minimum: 0
+          nullable: true
+        staffActive:
+          type: integer
+          minimum: 0
+          nullable: true
+        students:
+          type: integer
+          minimum: 0
+          nullable: true
+        prevStudents:
+          type: integer
+          minimum: 0
+          nullable: true
+        linksActive:
+          type: integer
+          minimum: 0
+          nullable: true
+        linksOpened:
+          type: integer
+          minimum: 0
+          nullable: true
+      required:
+        - activeClasses
+        - draftClasses
+        - prevClasses
+        - staffActive
+        - students
+        - prevStudents
+        - linksActive
+        - linksOpened
+      additionalProperties: false
+    SchoolOverviewStep:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        done:
+          type: boolean
+          nullable: true
+        detail:
+          type: string
+        href:
+          type: string
+      required:
+        - key
+        - label
+        - done
+        - detail
+        - href
+      additionalProperties: false
+    SchoolOverviewClass:
+      type: object
+      properties:
+        roomId:
+          type: string
+          format: uuid
+        motto:
+          type: string
+          maxLength: 300
+          nullable: true
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        yearId:
+          type: string
+          format: uuid
+          nullable: true
+        gradeLevelId:
+          type: string
+          format: uuid
+          nullable: true
+        code:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        capacity:
+          type: integer
+          minimum: 1
+          maximum: 200
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+            - ARCHIVED
+        studentCount:
+          type: integer
+          minimum: 0
+          nullable: true
+        yearName:
+          type: string
+        gradeName:
+          type: string
+        roomCode:
+          type: string
+          nullable: true
+        homeroomName:
+          type: string
+          nullable: true
+        homeroomUserId:
+          type: string
+          format: uuid
+        homeroomMemberId:
+          type: string
+          format: uuid
+        subjectTeacherCount:
+          type: integer
+          minimum: 0
+        hasTimetable:
+          type: boolean
+        inactiveAssignmentCount:
+          type: integer
+          minimum: 0
+        referenceDate:
+          type: string
+          format: date
+        myAssignments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              kind:
+                type: string
+                enum:
+                  - HOMEROOM
+                  - SUBJECT
+              subjectId:
+                type: string
+                format: uuid
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+            required:
+              - id
+              - kind
+              - startsOn
+            additionalProperties: false
+        tasks:
+          type: array
+          items:
+            type: string
+        severity:
+          type: string
+          enum:
+            - blocked
+            - attention
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - yearId
+        - gradeLevelId
+        - code
+        - name
+        - capacity
+        - status
+        - tasks
+        - severity
+      additionalProperties: false
+    SchoolOverviewTodayItem:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        detail:
+          type: string
+        href:
+          type: string
+        tone:
+          type: string
+          enum:
+            - danger
+            - warning
+            - info
+      required:
+        - key
+        - label
+        - detail
+        - href
+        - tone
+      additionalProperties: false
+    SchoolOverviewAnnouncement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        summary:
+          type: string
+        status:
+          type: string
+          enum:
+            - PUBLISHED
+            - SCHEDULED
+        createdAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - title
+        - summary
+        - status
+        - createdAt
+        - publishedAt
+        - scheduledAt
+      additionalProperties: false
+    SchoolOverviewDetails:
+      type: object
+      properties:
+        year:
+          anyOf:
+            - $ref: "#/components/schemas/Year"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        prevYear:
+          anyOf:
+            - $ref: "#/components/schemas/Year"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        kpi:
+          $ref: "#/components/schemas/SchoolOverviewKpi"
+        setup:
+          type: array
+          minItems: 8
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/SchoolOverviewStep"
+        classesNeedingAction:
+          type: array
+          nullable: true
+          maxItems: 6
+          items:
+            $ref: "#/components/schemas/SchoolOverviewClass"
+        todayItems:
+          type: array
+          nullable: true
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/SchoolOverviewTodayItem"
+        announcements:
+          type: array
+          nullable: true
+          maxItems: 4
+          items:
+            $ref: "#/components/schemas/SchoolOverviewAnnouncement"
+        classesNeedingActionTotal:
+          type: integer
+          minimum: 0
+          nullable: true
+      required:
+        - year
+        - prevYear
+        - kpi
+        - setup
+        - classesNeedingAction
+        - todayItems
+        - announcements
+        - classesNeedingActionTotal
       additionalProperties: false
   securitySchemes:
     StaffCookie:

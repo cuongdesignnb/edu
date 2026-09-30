@@ -82,4 +82,19 @@ describe('school API adapter candidates',()=>{
     const result=await connectedSchoolRepo.weekOf(ctx,schoolId,'2026-09-30');expect(result?.index).toBe(5);expect(result?.endDate).toBe('2026-10-04');expect(result?.isCurrent).toBe(true);expect(fetcher.mock.calls[1][0]).toContain('onDate=2026-09-30');
     fetcher.mockResolvedValueOnce(envelope([yearRow])).mockResolvedValueOnce(envelope([weekRow,{...weekRow,id:schoolId}]));await expect(connectedSchoolRepo.weekOf(ctx,schoolId,'2026-09-30')).rejects.toMatchObject({code:'VALIDATION',details:{maximum:1}});
   });
+  it('preserves unavailable overview panels/counts and does not manufacture completion or query broad datasets',async()=>{
+    const year={id:itemId,name:'2026–2027',code:'2026-2027',startsOn:'2026-09-01',endsOn:'2027-06-01',status:'ACTIVE',version:1},kpi={activeClasses:null,draftClasses:null,prevClasses:null,staffActive:null,students:null,prevStudents:null,linksActive:null,linksOpened:null};
+    const fetcher=vi.fn().mockResolvedValue(envelope({asOf:'2026-09-30T08:00:00Z',referenceDate:'2026-09-30',metrics:[],tasks:[],schoolOverview:{year,prevYear:null,kpi,setup:['year','classes','homeroom','students','timetable','rules','announce','activate'].map(key=>({key,label:key,done:null,detail:'Không có quyền xem hạng mục',href:`/school/${schoolId}/imports`})),classesNeedingAction:null,classesNeedingActionTotal:null,todayItems:null,announcements:null}}));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.overview(ctx,schoolId,itemId);expect(result.kpi).toEqual(kpi);expect(result.setup[0].done).toBeNull();expect(result.classesNeedingAction).toBeNull();expect(result.classesNeedingActionTotal).toBeNull();expect(result.todayItems).toBeNull();expect(result.announcements).toBeNull();expect(result.prevYear).toBeUndefined();expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toContain(`yearId=${itemId}`);
+  });
+  it('rejects a missing overview projection and a substituted selected year',async()=>{
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope({metrics:[],tasks:[],asOf:'2026-09-30T08:00:00Z'})).mockResolvedValueOnce(envelope({schoolOverview:{year:{id:schoolId}}}));vi.stubGlobal('fetch',fetcher);
+    await expect(connectedSchoolRepo.overview(ctx,schoolId,itemId)).rejects.toMatchObject({code:'READ_ERROR'});await expect(connectedSchoolRepo.overview(ctx,schoolId,itemId)).rejects.toMatchObject({code:'READ_ERROR'});
+  });
+  it('keeps full SQL totals separate from the bounded six-row class preview',async()=>{
+    const row={id:itemId,yearId:itemId,gradeLevelId:schoolId,code:'10A1',name:'10A1',capacity:40,status:'DRAFT',version:2,yearName:'2026–2027',gradeName:'Khối 10',homeroomName:null,studentCount:null,subjectTeacherCount:0,hasTimetable:true,inactiveAssignmentCount:0,referenceDate:'2026-09-30',tasks:['Chờ kích hoạt lớp'],severity:'blocked'};
+    const value={year:{id:itemId,name:'2026–2027',code:'2026-2027',startsOn:'2026-09-01',endsOn:'2027-06-01',status:'ACTIVE',version:1},prevYear:null,kpi:{activeClasses:2000,draftClasses:42,prevClasses:null,staffActive:null,students:null,prevStudents:null,linksActive:null,linksOpened:null},setup:[],classesNeedingAction:Array.from({length:6},(_,i)=>({...row,id:`00000000-0000-4000-8000-0000000000${String(i+10)}`})),classesNeedingActionTotal:42,todayItems:[],announcements:[]};
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(envelope({asOf:'2026-09-30T08:00:00Z',referenceDate:'2026-09-30',schoolOverview:value})));
+    const result=await connectedSchoolRepo.overview(ctx,schoolId,itemId);expect(result.classesNeedingAction).toHaveLength(6);expect(result.classesNeedingActionTotal).toBe(42);expect(result.kpi.activeClasses).toBe(2000);expect(result.classesNeedingAction?.[0].size).toBeNull();expect(result.classesNeedingAction?.[0].issues).not.toContain('Chưa có học sinh');
+  });
 });

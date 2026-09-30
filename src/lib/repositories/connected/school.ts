@@ -1,7 +1,7 @@
 import type {ID,School,SchoolSettings} from '../../model/types';
 import type {Ctx,ListQuery} from '../core';
 import type {ApiSchemas} from '../../api/generated';
-import {http} from '../../api/client';
+import {http,captureStaffAccess} from '../../api/client';
 import {apiList,apiPage} from '../../api/lists';
 import {refreshStaffContext,serverToday} from '../../api/session';
 import {exclusiveDate} from '../../api/dates';
@@ -105,4 +105,10 @@ export const connectedSchoolRepo={
   },
   async rolloverPreview(_ctx:Ctx,schoolId:ID,fromYearId:ID){return readRolloverPreview(schoolId,fromYearId);},
   async rolloverApply(_ctx:Ctx,schoolId:ID,fromYearId:ID,toYearId:ID,decisions:RolloverDecision[]){return applyRollover(schoolId,fromYearId,toYearId,decisions);},
+  async overview(_ctx:Ctx,schoolId:ID,yearId:ID){
+    const access=captureStaffAccess(),response=(await http('getSchoolOverview',{params:{schoolId},query:{yearId}})).data;access.assertCurrent();
+    const value=requiredValue(response.schoolOverview,'schoolOverview');if(!value.year||value.year.id!==yearId)throw new RepoError('READ_ERROR','Tổng quan không thuộc năm học đã chọn.');
+    for(const key of ['activeClasses','draftClasses','prevClasses','staffActive','students','prevStudents','linksActive','linksOpened'] as const)requiredValue(value.kpi[key],key);
+    return {year:year(value.year,schoolId),prevYear:value.prevYear?year(value.prevYear,schoolId):undefined,kpi:value.kpi,setup:value.setup,classesNeedingAction:requiredValue(value.classesNeedingAction,'classesNeedingAction')?.map(row=>({...classRow(row,schoolId),tasks:row.tasks,severity:row.severity}))??null,classesNeedingActionTotal:requiredValue(value.classesNeedingActionTotal,'classesNeedingActionTotal'),todayItems:requiredValue(value.todayItems,'todayItems'),announcements:requiredValue(value.announcements,'announcements')?.map(a=>({id:requiredId(a.id),title:a.title,summary:a.summary,status:a.status.toLowerCase() as 'published'|'scheduled',createdAt:a.createdAt,publishedAt:a.publishedAt??undefined,scheduledAt:a.scheduledAt??undefined}))??null,asOf:response.asOf,referenceDate:requiredValue(response.referenceDate,'referenceDate')};
+  },
 };

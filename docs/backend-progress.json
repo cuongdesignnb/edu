@@ -445,7 +445,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/dashboards-integration.log"
+        "qa/backend/dashboards-integration.log",
+        "qa/backend/b6-school-overview-integration-isolated.log: 90/90 PostgreSQL checks; independent SCHOOL totals, null unavailable panels, six-row SQL preview with full count and current revocation"
       ]
     },
     {

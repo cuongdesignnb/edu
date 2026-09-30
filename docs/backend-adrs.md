@@ -483,3 +483,41 @@ subject denial and immediate revocation. Backend unit/contract is 12/12; fronten
 unit is 38/38 including seven rollover checks for uncertain acknowledgements,
 stale preview, changed authentication and substituted plans. Typecheck/lint and
 Docker runner build completed with exit0.
+
+## ADR-034 — school overview fields with independent aggregate authority
+
+getSchoolOverview keeps its school.read entry permission and adds an explicit
+schoolOverview projection for the existing SC01 layout. School-wide class,
+student, member and parent-link totals require their respective current SCHOOL
+actions. A CLASS/SUBJECT action never supplies a school total. Unavailable counts,
+panels and setup completion are null. The generic class metric also applies its
+class.read predicate instead of counting every school class under school.read.
+
+One repeatable-read transaction computes active/draft classes, selected-year
+enrollment, current active staff, valid verified family links and actually opened
+links. Only EXCHANGED/READ events count as opening; STAFF_PREVIEW is excluded.
+Prior-year enrollment uses the last included day. Setup reads actual terms/weeks,
+valid homeroom metadata, activated-class roster/timetable, an issued rule set
+actually applied in the selected year and an existing family publication. Zero
+classes does not produce a completed setup step. Each unavailable step says that
+its status cannot be viewed, without turning that status into false or zero.
+
+An initial 88/90 run exposed a retained fixture year with more than 2,000 classes.
+The repair computes full counts/setup inside SQL and returns six class preview
+DTOs plus classesNeedingActionTotal from a window count before LIMIT. No data or
+volume was deleted and no partial list is described as the total. Announcement
+cards contain only selected-year school publication/schedule metadata, without
+HTML, private notes or recipients. Action cards use current school authority.
+
+The later 89/90 run used teacher-b for a cross-school denial assertion, even
+though BE07 legitimately grants that identity SCHOOL_ADMIN in school B. The
+isolated repair invites a new identity only into school A and gives it school.read
+plus student.read for one class. All school totals/setup/panels remain null;
+school B is denied and revoking its SCHOOL grant immediately denies the overview.
+
+Executed evidence: qa/backend/b6-school-overview-integration-isolated.log is
+90/90, exit0, zero skipped; all 30 migration checksums/replay are verified. Backend
+unit/contract is 13/13, frontend unit is 41/41, typecheck/scoped lint/build exit0.
+Runtime remains 265 operations and now 316 schemas. These checks do not certify
+browser activation or B7 performance; retained-fixture timings are not p95 load
+measurements. All 25 school methods now have candidates, still unactivated.
