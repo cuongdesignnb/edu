@@ -192,17 +192,17 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | createDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
 | updateDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
 | publishDuty | CL16 | TESTED | qa/backend/schedule-integration.log: 48/48 executed, exit0; populated parent projections, source versions, assignments/holiday/collisions and withdraw; qa/backend/group-duty-integration.log: 49/49 executed, exit0; group plan expansion preserves frozen individual targets |
-| listActivities | CL17 | NOT_STARTED |  |
-| createActivity | CL18 | NOT_STARTED |  |
-| getActivity | CL19 | NOT_STARTED |  |
-| updateActivity | CL19 | NOT_STARTED |  |
-| setParticipantStatus | CL19 | NOT_STARTED |  |
-| listParticipants | CL19 | NOT_STARTED |  |
-| assignActivity | CL18, CL19 | NOT_STARTED |  |
-| publishActivity | CL19 | NOT_STARTED |  |
-| listEvidence | CL20, CL19 | NOT_STARTED |  |
-| createEvidence | CL20, CL19 | NOT_STARTED |  |
-| reviewEvidence | CL20, CL19 | NOT_STARTED |  |
+| listActivities | CL17 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| createActivity | CL18 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| getActivity | CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| updateActivity | CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| setParticipantStatus | CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| listParticipants | CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| assignActivity | CL18, CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| publishActivity | CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| listEvidence | CL20, CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| createEvidence | CL20, CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
+| reviewEvidence | CL20, CL19 | TESTED | qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks |
 | listClassFiles | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
 | uploadFile | SC02, CL20, CL24, SC27 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
 | getFile | CL24 | TESTED | qa/backend/files-integration.log; 22/22; private file and worker cases |
@@ -357,10 +357,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL14 | core | TESTED | NOT_STARTED |  |
 | CL15 | core | TESTED | NOT_STARTED |  |
 | CL16 | core | TESTED | NOT_STARTED |  |
-| CL17 | core | PARTIAL | NOT_STARTED |  |
-| CL18 | core | PARTIAL | NOT_STARTED |  |
-| CL19 | core | PARTIAL | NOT_STARTED |  |
-| CL20 | core | PARTIAL | NOT_STARTED |  |
+| CL17 | core | TESTED | NOT_STARTED |  |
+| CL18 | core | TESTED | NOT_STARTED |  |
+| CL19 | core | TESTED | NOT_STARTED |  |
+| CL20 | core | TESTED | NOT_STARTED |  |
 | CL21 | core | PARTIAL | NOT_STARTED |  |
 | CL22 | core | PARTIAL | NOT_STARTED |  |
 | CL23 | core | PARTIAL | NOT_STARTED |  |

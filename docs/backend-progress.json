@@ -2112,8 +2112,10 @@
         "CL17"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "createActivity",
@@ -2121,8 +2123,10 @@
         "CL18"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "getActivity",
@@ -2130,8 +2134,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "updateActivity",
@@ -2139,8 +2145,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "setParticipantStatus",
@@ -2148,8 +2156,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "listParticipants",
@@ -2157,8 +2167,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "assignActivity",
@@ -2167,8 +2179,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "publishActivity",
@@ -2176,8 +2190,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "listEvidence",
@@ -2186,8 +2202,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "createEvidence",
@@ -2196,8 +2214,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "reviewEvidence",
@@ -2206,8 +2226,10 @@
         "CL19"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/activities-integration.log: 52/52 executed, exit0; draft/review/publish isolation, evidence sharing and locked source checks"
+      ]
     },
     {
       "operationId": "listClassFiles",
@@ -4057,7 +4079,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL18",
@@ -4069,7 +4091,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL19",
@@ -4088,7 +4110,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL20",
@@ -4103,7 +4125,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL21",

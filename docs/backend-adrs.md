@@ -201,3 +201,13 @@ Duty drafts may contain explicit individual assignments and dated group plans. M
 A later group move never rewrites a published child's task. The parent projection contains only that child's individual tasks. Group draft edits and generated assignment edits are rejected after publication by PostgreSQL.
 
 Evidence: qa/backend/group-duty-integration.log, 49/49 executed, exit0; qa/backend/group-duty-unit-contract.log, 11/11 executed, exit0. Typecheck and lint exit0. The first unapplied migration attempt referenced an incorrect RLS function name and rolled back; after checking database metadata, the corrected migration applied and replayed successfully. No applied migration was edited. Connected frontend and operational acceptance remain pending.
+
+## ADR-019 — explicit activity participants, reviewed evidence and publication
+
+Activities retain explicit enrollment targets and separate metadata/data versions. Participant and evidence edits increment the activity source version. The implementation schemas include the existing illustration, roster edit, close/reopen and receive-state workflows; review explicitly selects guardian sharing. Cancelling an unreceived participant retains its row. Received participants and evidence history cannot be deleted. Due dates use the school timezone and remain within the academic year.
+
+Assigning, reviewing and receiving evidence do not publish or create conduct points. Activity publication stores one immutable child projection per active participant. Shared documents require APPROVED evidence and an explicit sharing choice, receive new publication-bound document IDs, and remain scoped by the parent SQL role. Parent activity reads filter embedded documents through the same availability/section/download checks as document APIs. Archived files disappear from both embedded and standalone document lists.
+
+An activity conduct source is an approved, non-cancelled participant from an assigned/closed activity at an event time after assignment/participant creation. Locked approved conduct prevents downgrading or cancelling that participant. Private evidence files are bound to one participant and cannot use the generic file-link flow to expose another child's evidence.
+
+Evidence: qa/backend/activities-integration.log, 52/52 executed, exit0; qa/backend/activities-unit-contract.log, 11/11 executed, exit0; typecheck/lint exit0. Migration 019 applied and replay verified. The first integration attempt had two fixtures missing the required expiresAt for parent links (50/52); corrected and all 52 rerun. Browser UI, SMTP faults and B7 operations are still pending.

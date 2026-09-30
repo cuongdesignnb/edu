@@ -1155,3 +1155,92 @@ test('B5 group duties expand the effective group at publication and retain the i
   const empty=await f.post(`${base}/duties`,{startsOn:day,endsOn:nextDate(day,1),assignments:[],groupAssignments:[{groupId,dutyDate:day,task:'Tổ rỗng không được công bố'}]});assert.equal(empty.statusCode,201);assert.equal((await f.post(`${base}/duties/${empty.json().data.id}/publish`,{expectedSourceVersion:empty.json().data.dataVersion,expectedPublicationId:publication.id})).statusCode,422);
   assert.equal((await parentGet('duties',secondContext)).json().data[0].task,task);
 });
+
+async function activityFixture(csrf,evidenceRequired=false){
+  const f=await conductFixture(csrf),base=`classes/${f.classId}`,dueAt=new Date(Date.now()+2*86400000).toISOString();
+  const response=await f.post(`${base}/activities`,{title:'Hoạt động thử nguồn thật',description:'Chỉ người được giao nhận tình trạng riêng',dueAt,evidenceRequired,enrollmentIds:[f.enrollments[0].id],illustration:'stem'});
+  assert.equal(response.statusCode,201,response.body);const activity=response.json().data;
+  const url=`/api/v1/schools/${schoolA}/${base}/activities/${activity.id}`;
+  const get=async()=>{const r=await request('GET',url);assert.equal(r.statusCode,200,r.body);return r.json().data;};
+  const participants=async()=>{const r=await request('GET',`${url}/participants`);assert.equal(r.statusCode,200,r.body);return r.json().data;};
+  const patch=body=>request('PATCH',url,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  return {...f,base,activity,url,get,participants,patch};
+}
+async function activityParent(csrf,f,index=0,sections=['activities','documents'],allowDownload=true){
+  const relation=await parentRelationship(csrf,f.post,f.enrollments[index].studentId);
+  const issued=await f.post('parent-access',{studentId:f.enrollments[index].studentId,yearId:seedId('year:A'),relationshipId:relation.id,allowedSections:sections,allowDownload,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(issued.statusCode,201,issued.body);
+  return parentExchange(issued.json().data.link);
+}
+
+test('B5 activities count only explicit participants, preserve published states and require current source/review authority',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await activityFixture(csrf);
+  assert.equal(f.activity.participantCount,1);assert.equal(f.activity.approvedCount,0);
+  const ctx=await activityParent(csrf,f);assert.equal((await parentGet('activities',ctx)).json().data.length,0);
+  const foreign=await f.post(`${f.base}/activities`,{title:'Sai lớp không được ghi',description:'Không được lấy học sinh lớp khác',dueAt:f.activity.dueAt,evidenceRequired:false,enrollmentIds:[seedId('enrollment:A:10A1:1')]});assert.equal(foreign.statusCode,422,foreign.body);
+  let activity=(await f.post(`${f.base}/activities/${f.activity.id}/assign`,{expectedVersion:f.activity.version})).json().data;assert.equal(activity.status,'ASSIGNED');
+  let p=(await f.participants())[0];
+  const reviewed=await f.post(`${f.base}/activities/${activity.id}/participants/${p.id}/status`,{expectedVersion:p.version,status:'APPROVED',reason:'Đã hoàn thành và được xác minh'});assert.equal(reviewed.statusCode,200,reviewed.body);p=reviewed.json().data;
+  assert.equal((await parentGet('activities',ctx)).json().data.length,0);
+  const noAuto=await db.transaction(tx=>tx.query("SELECT id FROM app.conduct_records WHERE school_id=$1 AND class_id=$2 AND source_kind='ACTIVITY'",[schoolA,f.classId]),{schoolId:schoolA});assert.equal(noAuto.rowCount,0);
+  const stale=await f.post(`${f.base}/activities/${activity.id}/publish`,{expectedSourceVersion:activity.dataVersion});assert.equal(stale.statusCode,409);
+  activity=await f.get();let pub=await f.post(`${f.base}/activities/${activity.id}/publish`,{expectedSourceVersion:activity.dataVersion,expectedPublicationId:null});assert.equal(pub.statusCode,200,pub.body);pub=pub.json().data;
+  const publicView=await parentGet(`activities/${activity.id}`,ctx);assert.equal(publicView.statusCode,200,publicView.body);assert.equal(publicView.json().data.studentStatus,'APPROVED');
+  for(const key of ['enrollmentId','participantId','reviewedBy','internalNote','participantCount'])assert.equal(Object.hasOwn(publicView.json().data,key),false);
+  const other=await activityParent(csrf,f,1);assert.equal((await parentGet('activities',other)).json().data.length,0);assert.equal((await parentGet(`activities/${activity.id}`,other)).statusCode,404);
+  const first=await activityParent(csrf,f);
+  const changed=await f.post(`${f.base}/activities/${activity.id}/participants/${p.id}/status`,{expectedVersion:p.version,status:'NEEDS_REVISION',reason:'Cần bổ sung sản phẩm'});assert.equal(changed.statusCode,200,changed.body);
+  assert.equal((await parentGet(`activities/${activity.id}`,first)).json().data.studentStatus,'APPROVED');
+  activity=await f.get();const updated=await f.post(`${f.base}/activities/${activity.id}/publish`,{expectedSourceVersion:activity.dataVersion,expectedPublicationId:pub.id});assert.equal(updated.statusCode,200,updated.body);
+  assert.equal((await parentGet(`activities/${activity.id}`,first)).json().data.studentStatus,'NEEDS_REVISION');
+  const removed=await f.patch({expectedVersion:activity.version,enrollmentIds:[f.enrollments[1].id]});assert.equal(removed.statusCode,422);
+  const closed=await f.patch({expectedVersion:activity.version,status:'CLOSED'});assert.equal(closed.statusCode,200,closed.body);p=(await f.participants())[0];assert.equal((await f.post(`${f.base}/activities/${activity.id}/participants/${p.id}/status`,{expectedVersion:p.version,status:'EXCUSED',reason:'Không sửa khi kết thúc'})).statusCode,409);
+  const reopened=await f.patch({expectedVersion:closed.json().data.version,status:'ASSIGNED'});assert.equal(reopened.statusCode,200,reopened.body);
+  const withdrawn=await f.post(`publications/${updated.json().data.id}/withdraw`,{expectedVersion:updated.json().data.version,reason:'Thu hồi tình trạng hoạt động'});assert.equal(withdrawn.statusCode,200,withdrawn.body);assert.equal((await parentGet('activities',first)).json().data.length,0);
+  await login('teacher-b@example.invalid');assert.equal((await request('GET',f.url)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/classes/${f.classId}/activities/${activity.id}`)).statusCode,404);
+});
+
+test('B5 approved activity results are explicit conduct sources and locked approved facts protect their source history',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await activityFixture(csrf),aid=f.activity.id;
+  const assigned=await f.post(`${f.base}/activities/${aid}/assign`,{expectedVersion:f.activity.version});assert.equal(assigned.statusCode,200,assigned.body);let p=(await f.participants())[0];
+  const source=()=>({periodId:f.period.id,enrollmentId:f.enrollments[0].id,ruleId:f.fixed,publicReason:'Đóng góp đã duyệt từ hoạt động',occurredAt:new Date().toISOString(),sourceKind:'ACTIVITY',sourceId:p.id,clientEventId:null});
+  const unreviewed=await f.post(`${f.base}/conduct-records`,source());assert.equal(unreviewed.statusCode,422);
+  const approval=await f.post(`${f.base}/activities/${aid}/participants/${p.id}/status`,{expectedVersion:p.version,status:'APPROVED',reason:'Hoàn thành qua xác minh trực tiếp'});assert.equal(approval.statusCode,200,approval.body);p=approval.json().data;
+  const backdated=await f.post(`${f.base}/conduct-records`,{...source(),occurredAt:'2026-09-29T01:00:00Z'});assert.equal(backdated.statusCode,422);
+  let record=await f.post(`${f.base}/conduct-records`,source());assert.equal(record.statusCode,201,record.body);record=record.json().data;
+  const approved=await f.post(`${f.base}/conduct-records/${record.id}/approve`,{expectedVersion:record.version});assert.equal(approved.statusCode,200,approved.body);
+  const review=await request('GET',`/api/v1/schools/${schoolA}/${f.base}/conduct-periods/${f.period.id}/review`);assert.equal(review.json().data.canLock,true);
+  const locked=await f.post(`${f.base}/conduct-periods/${f.period.id}/lock`,{expectedVersion:review.json().data.period.version});assert.equal(locked.statusCode,200,locked.body);
+  const reject=await f.post(`${f.base}/activities/${aid}/participants/${p.id}/status`,{expectedVersion:p.version,status:'NEEDS_REVISION',reason:'Không được viết lại nguồn kỳ khóa'});assert.equal(reject.statusCode,422,reject.body);
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.activity_participants SET status='EXCUSED' WHERE school_id=$1 AND id=$2",[schoolA,p.id]),{schoolId:schoolA}),e=>e.code==='23514');
+  assert.equal((await f.participants())[0].status,'APPROVED');
+});
+
+test('B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability',async()=>{
+  const csrf=await login('admin-a@example.invalid'),f=await activityFixture(csrf,true),worker=new WorkerRunner();
+  try{
+    const assigned=await f.post(`${f.base}/activities/${f.activity.id}/assign`,{expectedVersion:f.activity.version});assert.equal(assigned.statusCode,200,assigned.body);let p=(await f.participants())[0];
+    const noEvidence=await f.post(`${f.base}/activities/${f.activity.id}/participants/${p.id}/status`,{expectedVersion:p.version,status:'APPROVED',reason:'Chưa có minh chứng được duyệt'});assert.equal(noEvidence.statusCode,422);
+    const bytes=await sharp({create:{width:8,height:8,channels:3,background:'#224499'}}).png().toBuffer();
+    const form=new FormData();form.append('purpose','EVIDENCE');form.append('classId',f.classId);form.append('file',new Blob([bytes],{type:'image/png'}),`minh-chung-${crypto.randomUUID()}.png`);const prepared=new Request(origin,{method:'POST',body:form});
+    const upload=await server.inject({method:'POST',url:`/api/v1/schools/${schoolA}/files`,headers:{origin,cookie:cookies(),'x-csrf-token':csrf,'idempotency-key':crypto.randomUUID(),'content-type':prepared.headers.get('content-type')},payload:Buffer.from(await prepared.arrayBuffer())});assert.equal(upload.statusCode,200,upload.body);let file=upload.json().data;
+    const quarantine=await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,shareWithGuardian:false});assert.equal(quarantine.statusCode,409);
+    await drainSchool(worker);file=(await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}`)).json().data;assert.equal(file.status,'READY');
+    assert.equal((await f.post('file-links',{fileId:file.id,activityId:f.activity.id,shareWithGuardian:true})).statusCode,422);
+    const earlyShare=await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,shareWithGuardian:true});assert.equal(earlyShare.statusCode,422);
+    let ev=await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,caption:'Sản phẩm của riêng học sinh',shareWithGuardian:false});assert.equal(ev.statusCode,201,ev.body);ev=ev.json().data;assert.equal((await f.participants())[0].status,'SUBMITTED');
+    assert.equal((await f.post(`${f.base}/evidence`,{participantId:p.id,fileId:file.id,shareWithGuardian:false})).statusCode,409);
+    const ctx=await activityParent(csrf,f);assert.equal((await parentGet('documents',ctx)).json().data.length,0);
+    const needReason=await f.post(`${f.base}/evidence/${ev.id}/review`,{expectedVersion:ev.version,decision:'APPROVED',shareWithGuardian:true});assert.equal(needReason.statusCode,422);
+    const approved=await f.post(`${f.base}/evidence/${ev.id}/review`,{expectedVersion:ev.version,decision:'APPROVED',reason:'Minh chứng đã được kiểm tra',shareWithGuardian:true});assert.equal(approved.statusCode,200,approved.body);ev=approved.json().data;
+    assert.equal((await parentGet('documents',ctx)).json().data.length,0);const a=await f.get();const published=await f.post(`${f.base}/activities/${a.id}/publish`,{expectedSourceVersion:a.dataVersion});assert.equal(published.statusCode,200,published.body);
+    const parent=await parentGet(`activities/${a.id}`,ctx);assert.equal(parent.statusCode,200,parent.body);assert.equal(parent.json().data.documents.length,1);const doc=parent.json().data.documents[0];
+    const download=await parentGet(`documents/${doc.id}/download`,ctx);assert.equal(download.statusCode,200,download.body);assert.equal(download.headers['content-type'],'image/png');
+    const replay=await f.post(`${f.base}/activities/${a.id}/publish`,{expectedSourceVersion:a.dataVersion,expectedPublicationId:published.json().data.id});assert.equal(replay.statusCode,200,replay.body);assert.equal(replay.json().data.id,published.json().data.id);assert.equal((await parentGet('documents',ctx)).json().data.length,1);
+    const other=await activityParent(csrf,f,1);assert.equal((await parentGet('documents',other)).json().data.length,0);assert.equal((await parentGet(`documents/${doc.id}/download`,other)).statusCode,404);
+    const limited=await activityParent(csrf,f,0,['activities'],false);assert.equal((await parentGet(`activities/${a.id}`,limited)).json().data.documents.length,0);
+    const noDownload=await activityParent(csrf,f,0,['activities','documents'],false);assert.equal((await parentGet(`activities/${a.id}`,noDownload)).json().data.documents[0].downloadAllowed,false);assert.equal((await parentGet(`documents/${doc.id}/download`,noDownload)).statusCode,403);
+    const ctx2=await activityParent(csrf,f);const archive=await f.post(`files/${file.id}/archive`,{expectedVersion:file.version,reason:'Tệp minh chứng đã lưu trữ'});assert.equal(archive.statusCode,200,archive.body);
+    assert.equal((await parentGet(`activities/${a.id}`,ctx2)).json().data.documents.length,0);assert.equal((await parentGet('documents',ctx2)).json().data.length,0);assert.equal((await parentGet(`documents/${doc.id}/download`,ctx2)).statusCode,404);
+    const listing=await request('GET',`/api/v1/schools/${schoolA}/${f.base}/evidence?activityId=${a.id}`);assert.equal(listing.statusCode,200,listing.body);assert.equal(listing.json().data.length,1);
+  }finally{await worker.close();}
+});

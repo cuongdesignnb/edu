@@ -20,11 +20,11 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/303 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 18 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
+| B1 | PARTIAL | 19 migrations applied; identity/invitations, idempotency, scoped authorization, expiry ceilings and immediate revocation tested; support access integration remains pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
-| B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position sources, immutable publication and approved adjustment workflows tested; activity sources and connected browser acceptance pending |
+| B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, position/activity sources, immutable publication and approved adjustment workflows tested; connected browser acceptance pending |
 | B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
-| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable and individual/group-duty publication tested; remaining domains and exports pending |
+| B5 | PARTIAL | Private files, mail/outbox, dated groups/positions/seating, timetable, individual/group duty and activities/evidence tested; remaining domains and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
 
@@ -224,3 +224,11 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - qa/backend/group-duty-integration.log: 49/49 executed, exit0. qa/backend/group-duty-unit-contract.log: 11/11 executed, exit0. Build/typecheck/lint exit0. The added scenario moves members before publication and verifies only the new member receives the task; a move after publication leaves that frozen task visible. Empty groups reject publication without replacing the current snapshot.
 - An initial migration attempt referenced the wrong RLS helper and rolled back atomically. Database metadata confirmed migration 017 remained current before the unapplied migration was corrected and rerun. No applied migration was changed.
 - API coverage remains 190/264; this extends existing duty operations. Single-lesson change/discard UI workflows, activities/evidence, announcements, reports/support/platform, notifications/dashboard, all frontend adapters, browser E2E and B7 acceptance remain unfinished. The final local URL is not serving the completed stack; production is not deployed.
+
+## Activities and evidence checkpoint — actual execution
+
+- Migration 019 applied and checksum replay verified. Eleven activity/evidence operations are implemented, including explicit targets, assigned-only progress, draft/assign/receive/review, close/reopen, current dataVersion publication and child-bound approved evidence documents. The schemas preserve existing illustration, roster-edit and review-sharing inputs.
+- Activity completion never creates conduct automatically. Explicit approved activity sources now have time/status validation and locked-period source protection through both HTTP and PostgreSQL.
+- qa/backend/activities-integration.log: 52/52 executed, exit0. qa/backend/activities-unit-contract.log: 11/11 executed, exit0. Typecheck/lint and Docker build exit0. The initial run was 50/52 because two parent-link fixtures omitted expiresAt; those fixtures were repaired and the full suite rerun. No applied migration was edited.
+- Parent populated activity/evidence tests cover unpublished invisibility, retained public state until republish, another child's denial, both download permissions, embedded document filtering when a file is archived, stale sources and withdraw. This is backend HTTP/PG evidence; browser E2E remains NOT_RUN.
+- 201/264 API operations implemented. Announcements, reports/support/platform, notifications/dashboard, frontend connection and B7 acceptance remain unfinished. Final local stack at port 18763 is not serving yet; no production deployment.

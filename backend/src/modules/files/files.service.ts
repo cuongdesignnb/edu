@@ -54,6 +54,7 @@ export class FilesService {
         await audit(tx,c,'file',String(file.id),{status:'ARCHIVED'});return {data:fileDto(saved!)};
       }
       if(file.status!=='READY')throw new Problem(409,'FILE_UNAVAILABLE');
+      if(file.purpose==='EVIDENCE')validation('fileId','Minh chứng chỉ được gắn với người được giao qua luồng minh chứng');
       const link=await one<{id:string}>(tx,`INSERT INTO app.file_links(school_id,file_id,student_id,class_id,activity_id,announcement_id,share_with_guardian)
         VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,[schoolId,file.id,c.body.studentId??null,c.body.classId??null,c.body.activityId??null,c.body.announcementId??null,c.body.shareWithGuardian]);
       await audit(tx,c,'file-link',link!.id,{fileId:file.id,shareWithGuardian:c.body.shareWithGuardian});return {data:{id:link!.id,status:'CREATED'},status:201};
@@ -73,6 +74,8 @@ export class FilesService {
     const access=await this.policy.collection(tx,{userId},action,schoolId,file.purpose==='CLASS_DOCUMENT');
     if(access.all)return file;
     const familyClasses=access.classIds.filter(classId=>access.grants.some(g=>grantAllows(g,'guardian.read',{schoolId,classId},access.today)));
+    if(file.purpose==='EVIDENCE'&&await one(tx,`SELECT ev.id FROM app.evidence ev JOIN app.activity_participants p ON p.school_id=ev.school_id AND p.id=ev.participant_id
+      WHERE ev.school_id=$1 AND ev.file_id=$2 AND p.class_id=ANY($3::uuid[]) LIMIT 1`,[schoolId,fileId,access.classIds]))return file;
     const link=await one(tx,`SELECT l.id FROM app.file_links l
       LEFT JOIN app.activities a ON a.school_id=l.school_id AND a.id=l.activity_id
       LEFT JOIN app.announcements n ON n.school_id=l.school_id AND n.id=l.announcement_id

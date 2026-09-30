@@ -19630,6 +19630,10 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
       responses:
         "200":
           description: Thành công
@@ -20196,6 +20200,10 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: status
+          in: query
+          schema:
+            type: string
       responses:
         "200":
           description: Thành công
@@ -20549,6 +20557,15 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: participantId
+          in: query
+          schema:
+            type: string
+            format: uuid
       responses:
         "200":
           description: Thành công
@@ -32361,6 +32378,21 @@ components:
         approvedCount:
           type: integer
           minimum: 0
+        dataVersion:
+          type: integer
+          minimum: 1
+        assignedAt:
+          type: string
+          format: date-time
+          nullable: true
+        illustration:
+          type: string
+          enum:
+            - trophy
+            - stem
+            - clean
+            - book
+            - heart
       required:
         - id
         - version
@@ -32397,6 +32429,14 @@ components:
             nullable: true
           minItems: 1
           maxItems: 200
+        illustration:
+          type: string
+          enum:
+            - trophy
+            - stem
+            - clean
+            - book
+            - heart
       required:
         - title
         - description
@@ -32422,6 +32462,28 @@ components:
           format: date-time
         evidenceRequired:
           type: boolean
+        illustration:
+          type: string
+          enum:
+            - trophy
+            - stem
+            - clean
+            - book
+            - heart
+        enrollmentIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            nullable: true
+          minItems: 1
+          maxItems: 200
+        status:
+          type: string
+          enum:
+            - ASSIGNED
+            - CLOSED
+            - ARCHIVED
       required:
         - expectedVersion
       additionalProperties: false
@@ -32437,6 +32499,8 @@ components:
             - APPROVED
             - NEEDS_REVISION
             - EXCUSED
+            - ASSIGNED
+            - SUBMITTED
         reason:
           type: string
           minLength: 3
@@ -32481,6 +32545,10 @@ components:
         reviewNote:
           type: string
           maxLength: 4000
+        cancelledAt:
+          type: string
+          format: date-time
+          nullable: true
       required:
         - id
         - version
@@ -32690,6 +32758,8 @@ components:
         reason:
           type: string
           maxLength: 4000
+        shareWithGuardian:
+          type: boolean
       required:
         - expectedVersion
         - decision

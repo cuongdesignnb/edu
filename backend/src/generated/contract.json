@@ -6239,6 +6239,25 @@
         "approvedCount": {
           "type": "integer",
           "minimum": 0
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assignedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "illustration": {
+          "type": "string",
+          "enum": [
+            "trophy",
+            "stem",
+            "clean",
+            "book",
+            "heart"
+          ]
         }
       },
       "required": [
@@ -6284,6 +6303,16 @@
           },
           "minItems": 1,
           "maxItems": 200
+        },
+        "illustration": {
+          "type": "string",
+          "enum": [
+            "trophy",
+            "stem",
+            "clean",
+            "book",
+            "heart"
+          ]
         }
       },
       "required": [
@@ -6317,6 +6346,34 @@
         },
         "evidenceRequired": {
           "type": "boolean"
+        },
+        "illustration": {
+          "type": "string",
+          "enum": [
+            "trophy",
+            "stem",
+            "clean",
+            "book",
+            "heart"
+          ]
+        },
+        "enrollmentIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "minItems": 1,
+          "maxItems": 200
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ASSIGNED",
+            "CLOSED",
+            "ARCHIVED"
+          ]
         }
       },
       "required": [
@@ -6336,7 +6393,9 @@
           "enum": [
             "APPROVED",
             "NEEDS_REVISION",
-            "EXCUSED"
+            "EXCUSED",
+            "ASSIGNED",
+            "SUBMITTED"
           ]
         },
         "reason": {
@@ -6395,6 +6454,11 @@
         "reviewNote": {
           "type": "string",
           "maxLength": 4000
+        },
+        "cancelledAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
         }
       },
       "required": [
@@ -6666,6 +6730,9 @@
         "reason": {
           "type": "string",
           "maxLength": 4000
+        },
+        "shareWithGuardian": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -40950,6 +41017,13 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -41826,6 +41900,13 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
         }
       ],
       "responses": {
@@ -42368,6 +42449,21 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "participantId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],

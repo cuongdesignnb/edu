@@ -61,7 +61,8 @@ export class ConductService {
       if(!source||source.enrollment_id!==body.enrollmentId||source.session_date!==scoped.date||!rule.attendance_status||source.status!==rule.attendance_status)validation('sourceId','Nguồn chuyên cần không khớp học sinh/ngày/quy tắc');key=`attendance:${sourceId}`;
     }else if(body.sourceKind==='ACTIVITY'){
       if(!sourceId)validation('sourceId','Cần kết quả hoạt động');
-      const source=await one<Row>(tx,"SELECT id FROM app.activity_participants WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND status='APPROVED'",[schoolId,classId,body.enrollmentId,sourceId]);if(!source)validation('sourceId','Chưa có kết quả hoạt động đã duyệt');key=`activity:${sourceId}`;
+      const source=await one<Row>(tx,`SELECT p.id FROM app.activity_participants p JOIN app.activities a ON a.school_id=p.school_id AND a.id=p.activity_id
+        WHERE p.school_id=$1 AND p.class_id=$2 AND p.enrollment_id=$3 AND p.id=$4 AND p.status='APPROVED' AND p.cancelled_at IS NULL AND a.status IN ('ASSIGNED','CLOSED') AND a.assigned_at<=$5 AND p.created_at<=$5`,[schoolId,classId,body.enrollmentId,sourceId,body.occurredAt]);if(!source)validation('sourceId','Chưa có kết quả hoạt động đã duyệt tại thời điểm ghi nhận');key=`activity:${sourceId}`;
     }else if(body.sourceKind==='POSITION'){
       if(!sourceId)validation('sourceId','Cần phân công chức vụ');
       const source=await one<Row>(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND cancelled_at IS NULL AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,body.enrollmentId,sourceId,scoped.date]);if(!source)validation('sourceId','Chức vụ không hiệu lực trong ngày');key=`position:${sourceId}:${p.id}`;
@@ -84,7 +85,8 @@ export class ConductService {
         JOIN app.attendance_sessions s ON s.school_id=a.school_id AND s.id=a.session_id JOIN app.conduct_rules r ON r.school_id=a.school_id AND r.id=$4
         WHERE a.school_id=$1 AND a.class_id=$2 AND a.id=$3`,[schoolId,classId,row.source_id,row.rule_id]);
       valid=valid&&!!source&&source.enrollment_id===row.enrollment_id&&source.session_date===date&&source.lesson_id===row.lesson_id&&source.status===source.attendance_status;
-    }else if(row.source_kind==='ACTIVITY')valid=valid&&!!await one(tx,"SELECT id FROM app.activity_participants WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND status='APPROVED'",[schoolId,classId,row.enrollment_id,row.source_id]);
+    }else if(row.source_kind==='ACTIVITY')valid=valid&&!!await one(tx,`SELECT p.id FROM app.activity_participants p JOIN app.activities a ON a.school_id=p.school_id AND a.id=p.activity_id
+      WHERE p.school_id=$1 AND p.class_id=$2 AND p.enrollment_id=$3 AND p.id=$4 AND p.status='APPROVED' AND p.cancelled_at IS NULL AND a.status IN ('ASSIGNED','CLOSED') AND a.assigned_at<=$5 AND p.created_at<=$5`,[schoolId,classId,row.enrollment_id,row.source_id,row.occurred_at]);
     else if(row.source_kind==='POSITION')valid=valid&&!!await one(tx,'SELECT id FROM app.position_assignments WHERE school_id=$1 AND class_id=$2 AND enrollment_id=$3 AND id=$4 AND cancelled_at IS NULL AND starts_on<=$5 AND (ends_on IS NULL OR ends_on>$5)',[schoolId,classId,row.enrollment_id,row.source_id,date]);
     if(!valid)throw new Problem(409,'STALE_SOURCE');
   }

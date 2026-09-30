@@ -74,6 +74,20 @@ spec.components.schemas.Lesson.properties.changeReason={type:'string',maxLength:
 for(const name of ['DutyCreate','DutySchedulePatch','DutySchedule'])spec.components.schemas[name].properties.assignments.maxItems=5000;
 spec.components.schemas.GroupDutyAssignment={type:'object',properties:{id:{type:'string',format:'uuid'},groupId:{type:'string',format:'uuid'},dutyDate:{type:'string',format:'date'},task:{type:'string',minLength:3,maxLength:4000},status:{type:'string',enum:['ASSIGNED','DONE','CANCELLED']}},required:['groupId','dutyDate','task'],additionalProperties:false};
 for(const name of ['DutyCreate','DutySchedulePatch','DutySchedule'])spec.components.schemas[name].properties.groupAssignments={type:'array',maxItems:200,items:{$ref:'#/components/schemas/GroupDutyAssignment'}};
+// ADR-019: preserve the existing activity edit/close/receive/share workflows.
+spec.components.schemas.Activity.properties.dataVersion={type:'integer',minimum:1};
+spec.components.schemas.Activity.properties.assignedAt={type:'string',format:'date-time',nullable:true};
+for(const name of ['Activity','ActivityCreate','ActivityPatch'])spec.components.schemas[name].properties.illustration={type:'string',enum:['trophy','stem','clean','book','heart']};
+spec.components.schemas.ActivityPatch.properties.enrollmentIds=structuredClone(spec.components.schemas.ActivityCreate.properties.enrollmentIds);
+spec.components.schemas.ActivityPatch.properties.status={type:'string',enum:['ASSIGNED','CLOSED','ARCHIVED']};
+spec.components.schemas.Participant.properties.cancelledAt={type:'string',format:'date-time',nullable:true};
+spec.components.schemas.ParticipantStatusCommand.properties.status.enum.push('ASSIGNED','SUBMITTED');
+spec.components.schemas.ReviewEvidence.properties.shareWithGuardian={type:'boolean'};
+for(const id of ['listActivities','listParticipants','listEvidence']){
+  const op=Object.values(spec.paths).flatMap(path=>Object.values(path)).find(op=>op?.operationId===id);
+  op.parameters.push({name:'status',in:'query',schema:{type:'string'}});
+  if(id==='listEvidence')op.parameters.push({name:'participantId',in:'query',schema:{type:'string',format:'uuid'}});
+}
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });

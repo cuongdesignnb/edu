@@ -72,7 +72,16 @@ export class ParentService {
     const values:unknown[]=[p.studentId,p.yearId,section],where=['t.student_id=$1','t.year_id=$2','t.section=$3'];
     if(detail){values.push(detail.id);where.push(`t.payload->>'${detail.key}'=$${values.length}`);}
     for(const bound of ['from','to'])if(query[bound]){if(!/^\d{4}-\d{2}-\d{2}$/.test(query[bound]!))validation(bound,'Ngày ISO bắt buộc');values.push(query[bound]);where.push(`t.payload->>'date'${bound==='from'?'>=':'<'}$${values.length}`);}
-    const result=await this.db.transaction(tx=>listResource(tx,projection,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
+    const result=await this.db.transaction(async tx=>{
+      const result=await listResource(tx,projection,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId);
+      if(section==='activities')for(const row of result.data){
+        const payload=row.payload as Record<string,unknown>,documents=Array.isArray(payload.documents)?payload.documents as {id:string}[]:[];
+        const visible=(p.link.allowed_sections as string[]).includes('documents')&&documents.length?(await tx.query<Row>(`SELECT d.id,d.title,d.published_at,d.download_allowed,app.parent_document_metadata(d.school_id,d.id) AS metadata
+          FROM app.parent_document_items d WHERE d.school_id=$1 AND d.id=ANY($2::uuid[]) AND app.parent_document_metadata(d.school_id,d.id) IS NOT NULL`,[p.schoolId,documents.map(d=>d.id)])).rows:[];
+        row.payload={...payload,documents:visible.map(d=>({id:d.id,title:d.title,...d.metadata as Record<string,unknown>,downloadAllowed:!!(d.download_allowed&&p.link.allow_download),publishedAt:iso(d.published_at as Date)}))};
+      }
+      return result;
+    },{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
     const data:Record<string,unknown>[]=[];
     for(const row of result.data){if(!row.publishedAt)continue;const item=row.payload as Record<string,unknown>,value={...item,...(Object.hasOwn(item,'publishedAt')?{publishedAt:row.publishedAt}:{})};validateSchema(schemas[section]!,value,true);data.push(value);}
     if(detail){if(!data.length)throw new Problem(404,'RESOURCE_NOT_FOUND');return {data:data[0]};}return {data,page:result.page};
