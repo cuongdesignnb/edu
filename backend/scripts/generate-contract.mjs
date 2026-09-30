@@ -32,6 +32,10 @@ spec.components.schemas.ImportJob.properties.classId={type:'string',format:'uuid
 spec.components.schemas.ImportJob.properties.columns={type:'array',items:{type:'string'}};
 spec.components.schemas.ImportRow.properties.decision={type:'string',enum:['ADD','UPDATE','SKIP']};
 spec.components.schemas.ImportRow.properties.matchedId={type:'string',format:'uuid'};
+spec.components.schemas.AttendanceSession.properties.dataVersion={type:'integer',minimum:1};
+spec.components.schemas.AttendanceSession.properties.slot={type:'string',enum:['MORNING','AFTERNOON']};
+spec.components.schemas.AttendanceCreate.properties.slot={type:'string',enum:['MORNING','AFTERNOON']};
+spec.paths['/schools/{schoolId}/classes/{classId}/attendance-summary'].get.parameters.push({name:'slot',in:'query',schema:{type:'string',enum:['MORNING','AFTERNOON']}});
 spec.info.version = '1.0.0-implementation';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.mkdir(path.join(root, 'backend/api'), { recursive: true });

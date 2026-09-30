@@ -14605,6 +14605,13 @@ paths:
             enum:
               - DAILY
               - LESSON
+        - name: slot
+          in: query
+          schema:
+            type: string
+            enum:
+              - MORNING
+              - AFTERNOON
       responses:
         "200":
           description: Thành công
@@ -30299,6 +30306,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AttendanceRecord"
+        dataVersion:
+          type: integer
+          minimum: 1
+        slot:
+          type: string
+          enum:
+            - MORNING
+            - AFTERNOON
       required:
         - id
         - version
@@ -30324,6 +30339,11 @@ components:
         lessonId:
           type: string
           format: uuid
+        slot:
+          type: string
+          enum:
+            - MORNING
+            - AFTERNOON
       required:
         - date
         - granularity

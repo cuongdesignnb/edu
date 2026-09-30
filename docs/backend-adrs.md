@@ -108,3 +108,21 @@ profile on accepting a new membership; they never reset existing identity
 credentials. Student updates require a stable existing code in the selected
 class/year, while family changes stay in the verified relationship workflow.
 Imported timetable versions remain DRAFT until B5 validation/publication.
+
+## ADR-010 — Attendance slots and source versions
+
+The existing UI offers morning/afternoon attendance alongside lessons. DAILY
+keeps those explicit slots through optional MORNING/AFTERNOON fields, with MORNING
+as the default. Summary queries select one slot and one DAILY/LESSON granularity;
+they never combine lessons or both daily slots into a day denominator. Ranges
+use an exclusive end, match enrollment intervals and are limited to 92 days for
+the detailed summary endpoint. Wider exports belong to reporting.
+
+AttendanceSession adds dataVersion independently from its optimistic version.
+Every child record mutation locks its session and increments dataVersion in a
+database trigger. Locked records cannot change directly. Publication checks
+expectedSourceVersion in the same transaction as source locking and projection
+creation, preserves previous snapshots, and atomically supersedes the previous
+publication. Repeating publication of an unchanged source returns its current
+publication. Parent payloads contain only the individual public attendance
+fields; internal notes remain in the authorized staff snapshot.

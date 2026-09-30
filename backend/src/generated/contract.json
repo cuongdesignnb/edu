@@ -4181,6 +4181,17 @@
           "items": {
             "$ref": "#/components/schemas/AttendanceRecord"
           }
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slot": {
+          "type": "string",
+          "enum": [
+            "MORNING",
+            "AFTERNOON"
+          ]
         }
       },
       "required": [
@@ -4213,6 +4224,13 @@
         "lessonId": {
           "type": "string",
           "format": "uuid"
+        },
+        "slot": {
+          "type": "string",
+          "enum": [
+            "MORNING",
+            "AFTERNOON"
+          ]
         }
       },
       "required": [
@@ -32795,6 +32813,17 @@
             "enum": [
               "DAILY",
               "LESSON"
+            ]
+          }
+        },
+        {
+          "name": "slot",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "MORNING",
+              "AFTERNOON"
             ]
           }
         }

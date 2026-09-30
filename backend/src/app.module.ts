@@ -10,6 +10,8 @@ import { StaffService } from './modules/staff/staff.service';
 import { TransitionsService } from './modules/students/transitions.service';
 import { FilesService } from './modules/files/files.service';
 import { ImportsService } from './modules/imports/imports.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService];
+import { PublicationsService } from './modules/publications/publications.service';
+import { AttendanceService } from './modules/attendance/attendance.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService];
 @Module({providers:services,exports:services})
 export class AppModule {}

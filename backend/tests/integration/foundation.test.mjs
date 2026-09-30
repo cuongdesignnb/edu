@@ -594,3 +594,82 @@ test('B2 large import resumes after a lost chunk without duplicating applied row
     assert.equal((await db.transaction(tx=>tx.query('SELECT id FROM app.classes WHERE school_id=$1 AND code=$2',[schoolA,`REVOKE-${prefix}`]),{schoolId:schoolA})).rowCount,0);
   }finally{await worker.close();}
 });
+
+test('B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=crypto.randomUUID();
+  const post=(path,body,key=crypto.randomUUID())=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':key});
+  const created=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`AT-${prefix}`,name:'Lớp điểm danh giả',capacity:10});assert.equal(created.statusCode,201);
+  const classId=created.json().data.id;
+  for(let i=0;i<2;i++)assert.equal((await post('students',{studentCode:`AT-${prefix}-${i}`,fullName:'Học sinh chuyên cần giả',initialClassId:classId,startsOn:'2026-09-01'})).statusCode,201);
+  const base=`classes/${classId}/attendance`;
+  const start=await post(base,{date:'2026-09-29',granularity:'DAILY',slot:'MORNING'});assert.equal(start.statusCode,201,start.body);let session=start.json().data;
+  assert.equal(session.records.length,2);assert.equal(session.records.every(r=>r.status==='UNMARKED'),true);assert.ok(session.dataVersion>1);
+  const duplicate=await post(base,{date:'2026-09-29',granularity:'DAILY',slot:'MORNING'});assert.equal(duplicate.statusCode,409);
+  const afternoon=await post(base,{date:'2026-09-29',granularity:'DAILY',slot:'AFTERNOON'});assert.equal(afternoon.statusCode,201);
+  const incomplete=await post(`${base}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion});assert.equal(incomplete.statusCode,422);
+  const body={expectedVersion:session.version,records:session.records.map((r,i)=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:i?'LATE':'PRESENT',...(i?{lateMinutes:5}:{}),publicNote:'Ghi chú được chia sẻ',internalNote:'Bí mật nội bộ kiểm thử'}))};
+  const saved=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/${session.id}/records`,body,csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(saved.statusCode,200,saved.body);const oldVersion=session.dataVersion;session=saved.json().data;assert.ok(session.dataVersion>oldVersion);
+  const stale=await post(`${base}/${session.id}/publish`,{expectedSourceVersion:oldVersion});assert.equal(stale.statusCode,409);
+  const summary=await request('GET',`/api/v1/schools/${schoolA}/classes/${classId}/attendance-summary?from=2026-09-29&to=2026-09-30&granularity=DAILY&slot=MORNING`);assert.equal(summary.statusCode,200,summary.body);assert.deepEqual(summary.json().data.counts,{unmarked:0,present:1,late:1,excused:0,unexcused:0,expected:2});
+  const afternoonSummary=await request('GET',`/api/v1/schools/${schoolA}/classes/${classId}/attendance-summary?from=2026-09-29&to=2026-09-30&granularity=DAILY&slot=AFTERNOON`);assert.equal(afternoonSummary.json().data.counts.unmarked,2);
+  const key=crypto.randomUUID(),publishBody={expectedSourceVersion:session.dataVersion,expectedPublicationId:null};
+  const published=await post(`${base}/${session.id}/publish`,publishBody,key);assert.equal(published.statusCode,200,published.body);let publication=published.json().data;assert.equal(publication.status,'PUBLISHED');assert.equal(publication.sourceVersion,session.dataVersion);
+  const replay=await post(`${base}/${session.id}/publish`,publishBody,key);assert.equal(replay.statusCode,200);assert.equal(replay.json().data.id,publication.id);
+  const repeated=await post(`${base}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion,expectedPublicationId:publication.id});assert.equal(repeated.statusCode,200);assert.equal(repeated.json().data.id,publication.id);
+  const projection=await db.transaction(tx=>tx.query('SELECT student_id,payload FROM app.parent_publication_items WHERE school_id=$1 AND publication_id=$2',[schoolA,publication.id]),{schoolId:schoolA});assert.equal(projection.rowCount,2);
+  for(const row of projection.rows){assert.equal(Object.hasOwn(row.payload,'internalNote'),false);assert.equal(Object.hasOwn(row.payload,'enrollmentId'),false);assert.equal(Object.hasOwn(row.payload,'studentId'),false);assert.equal(row.payload.publicNote,'Ghi chú được chia sẻ');assert.equal(row.payload.slotLabel,'Buổi sáng');}
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.publication_revisions SET staff_snapshot='{}' WHERE school_id=$1 AND id=$2",[schoolA,publication.id]),{schoolId:schoolA}),error=>error.code==='23514');
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.attendance_records SET status='PRESENT' WHERE school_id=$1 AND session_id=$2",[schoolA,session.id]),{schoolId:schoolA}),error=>error.code==='23514');
+  session=(await request('GET',`/api/v1/schools/${schoolA}/${base}/${session.id}`)).json().data;assert.equal(session.status,'LOCKED');
+  const locked=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:session.records[0].enrollmentId,expectedVersion:session.records[0].version,status:'PRESENT'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(locked.statusCode,409);
+  const opened=await post(`${base}/${session.id}/reopen`,{expectedVersion:session.version,reason:'Sửa chuyên cần có lý do'});assert.equal(opened.statusCode,200);session=opened.json().data;
+  const edit=await request('PATCH',`/api/v1/schools/${schoolA}/${base}/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:session.records[0].enrollmentId,expectedVersion:session.records[0].version,status:'EXCUSED',publicNote:'Đã sửa công khai'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(edit.statusCode,200);session=edit.json().data;
+  const before=(await request('GET',`/api/v1/schools/${schoolA}/classes/${classId}/publications/${publication.id}`)).json().data;assert.equal(before.attendance.records.some(r=>r.publicNote==='Đã sửa công khai'),false);
+  const refreshed=await post(`${base}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion,expectedPublicationId:publication.id});assert.equal(refreshed.statusCode,200);const next=refreshed.json().data;assert.equal(next.revision,publication.revision+1);
+  const versions=await db.transaction(tx=>tx.query('SELECT id,status FROM app.publication_revisions WHERE school_id=$1 AND attendance_session_id=$2',[schoolA,session.id]),{schoolId:schoolA});assert.equal(versions.rows.filter(r=>r.status==='PUBLISHED').length,1);assert.equal(versions.rows.find(r=>r.id===publication.id).status,'SUPERSEDED');publication=next;
+  const list=await request('GET',`/api/v1/schools/${schoolA}/classes/${classId}/publications`);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().data.some(p=>p.id===publication.id),true);
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/publications?limit=1`)).statusCode,200);
+  const withdraw=await post(`publications/${publication.id}/withdraw`,{expectedVersion:publication.version,reason:'Thu hồi bản kiểm thử'});assert.equal(withdraw.statusCode,200);assert.equal(withdraw.json().data.status,'WITHDRAWN');
+  assert.equal((await request('GET',`/api/v1/schools/${schoolA}/${base}`)).statusCode,200);
+});
+
+test('B3 subject attendance requires its actual lesson and cannot borrow daily access from another class',async()=>{
+  const fixture=await db.transaction(async tx=>{
+    await tx.query('SELECT app.lock_school()');
+    const previous=(await tx.query("SELECT id FROM app.lesson_occurrences WHERE school_id=$1 AND class_id=$2 AND member_id=$3 AND starts_at='2026-09-28T01:00:00Z' AND status='SCHEDULED'",[schoolA,classB,seedId('member:A:teacher-a')])).rows[0];
+    if(previous)return previous;
+    const timetable=(await tx.query(`INSERT INTO app.timetable_versions(school_id,class_id,year_id,revision,starts_on,ends_on,created_by)
+      SELECT $1,$2,$3,coalesce(max(revision),0)+1,'2026-09-01','2027-06-01',$4 FROM app.timetable_versions WHERE school_id=$1 AND class_id=$2 RETURNING id`,[schoolA,classB,seedId('year:A'),seedId('user:admin-a')])).rows[0];
+    const lesson=(await tx.query(`INSERT INTO app.lesson_occurrences(school_id,class_id,timetable_id,subject_id,member_id,starts_at,ends_at)
+      VALUES($1,$2,$3,$4,$5,'2026-09-28T01:00:00Z','2026-09-28T01:45:00Z') RETURNING id`,[schoolA,classB,timetable.id,seedId('subject:A:math'),seedId('member:A:teacher-a')])).rows[0];return lesson;
+  },{schoolId:schoolA});
+  const csrf=await login('teacher-a@example.invalid');
+  const post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/classes/${classB}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const daily=await post('attendance',{date:'2026-09-28',granularity:'DAILY'});assert.equal(daily.statusCode,404);
+  const noLesson=await post('attendance',{date:'2026-09-28',granularity:'LESSON'});assert.equal(noLesson.statusCode,422);
+  const created=await post('attendance',{date:'2026-09-28',granularity:'LESSON',lessonId:fixture.id});assert.ok([201,409].includes(created.statusCode),created.body);
+  let session=created.statusCode===201?created.json().data:null;
+  if(!session){const list=(await request('GET',`/api/v1/schools/${schoolA}/classes/${classB}/attendance`)).json().data;
+    const existing=list.find(s=>s.lessonId===fixture.id);assert.ok(existing);session=(await request('GET',`/api/v1/schools/${schoolA}/classes/${classB}/attendance/${existing.id}`)).json().data;}
+  const wrong=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${classB}/attendance/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:seedId('enrollment:A:10A1:1'),expectedVersion:1,status:'PRESENT'}]},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(wrong.statusCode,422);
+  const saved=await request('PATCH',`/api/v1/schools/${schoolA}/classes/${classB}/attendance/${session.id}/records`,{expectedVersion:session.version,records:session.records.map(r=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'PRESENT'}))},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(saved.statusCode,200,saved.body);session=saved.json().data;
+  const published=await post(`attendance/${session.id}/publish`,{expectedSourceVersion:session.dataVersion});assert.equal(published.statusCode,404);
+  const list=await request('GET',`/api/v1/schools/${schoolA}/classes/${classB}/attendance`);assert.equal(list.statusCode,200);assert.equal(list.json().data.every(s=>s.granularity==='LESSON'),true);
+  const wrongDate=await post('attendance',{date:'2026-09-29',granularity:'LESSON',lessonId:fixture.id});assert.equal(wrongDate.statusCode,422);
+});
+
+test('B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version',async()=>{
+  const csrf=await login('admin-a@example.invalid'),prefix=crypto.randomUUID();
+  const post=(path,body)=>request('POST',`/api/v1/schools/${schoolA}/${path}`,body,csrf,{'idempotency-key':crypto.randomUUID()});
+  const cls=await post('classes',{yearId:seedId('year:A'),gradeLevelId:seedId('grade:A'),code:`RACE-${prefix}`,name:'Lớp kiểm thử race',capacity:2});assert.equal(cls.statusCode,201);
+  const classId=cls.json().data.id;assert.equal((await post('students',{studentCode:`RACE-${prefix}`,fullName:'Học sinh race giả',initialClassId:classId,startsOn:'2026-09-01'})).statusCode,201);
+  const base=`classes/${classId}/attendance`,created=await post(base,{date:'2026-09-29',granularity:'DAILY'});assert.equal(created.statusCode,201);let session=created.json().data;
+  const save=async(status)=>request('PATCH',`/api/v1/schools/${schoolA}/${base}/${session.id}/records`,{expectedVersion:session.version,records:[{enrollmentId:session.records[0].enrollmentId,expectedVersion:session.records[0].version,status}]},csrf,{'idempotency-key':crypto.randomUUID()});
+  const marked=await save('PRESENT');assert.equal(marked.statusCode,200);session=marked.json().data;
+  const [edit,publish]=await Promise.all([save('EXCUSED'),post(`${base}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion,expectedPublicationId:null})]);
+  assert.deepEqual([edit.statusCode,publish.statusCode].sort(),[200,409]);
+  const actual=(await request('GET',`/api/v1/schools/${schoolA}/${base}/${session.id}`)).json().data;
+  const publications=(await request('GET',`/api/v1/schools/${schoolA}/classes/${classId}/publications`)).json().data;
+  if(publish.statusCode===200){assert.equal(actual.status,'LOCKED');assert.equal(actual.records[0].status,'PRESENT');assert.equal(publications.length,1);assert.equal(publications[0].sourceVersion,session.dataVersion);}
+  else{assert.equal(actual.status,'OPEN');assert.equal(actual.records[0].status,'EXCUSED');assert.equal(publications.length,0);}
+});

@@ -1541,8 +1541,10 @@
         "CL05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "createAttendanceSession",
@@ -1550,8 +1552,10 @@
         "CL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "getAttendanceSession",
@@ -1559,8 +1563,10 @@
         "CL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "saveAttendanceRecords",
@@ -1568,8 +1574,10 @@
         "CL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "getAttendanceSummary",
@@ -1577,8 +1585,10 @@
         "CL05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "publishAttendance",
@@ -1586,8 +1596,10 @@
         "CL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "reopenAttendance",
@@ -1595,8 +1607,10 @@
         "CL04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "listRuleSets",
@@ -1831,8 +1845,10 @@
         "SC36"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "listClassPublications",
@@ -1840,8 +1856,10 @@
         "CL09"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "getClassPublication",
@@ -1849,8 +1867,10 @@
         "CL10"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "withdrawPublication",
@@ -1859,8 +1879,10 @@
         "CL10"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/attendance-integration.log"
+      ]
     },
     {
       "operationId": "listSchoolLessons",
@@ -3492,7 +3514,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC37",
@@ -3702,7 +3724,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL05",
@@ -3714,7 +3736,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL06",
@@ -3768,7 +3790,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL10",
@@ -3780,7 +3802,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL11",

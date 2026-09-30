@@ -145,13 +145,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getSeatingPlan | CL14 | NOT_STARTED |  |
 | updateSeatingPlan | CL14 | NOT_STARTED |  |
 | activateSeatingPlan | CL14 | NOT_STARTED |  |
-| listAttendanceSessions | CL04, CL05 | NOT_STARTED |  |
-| createAttendanceSession | CL04 | NOT_STARTED |  |
-| getAttendanceSession | CL04 | NOT_STARTED |  |
-| saveAttendanceRecords | CL04 | NOT_STARTED |  |
-| getAttendanceSummary | CL05 | NOT_STARTED |  |
-| publishAttendance | CL04 | NOT_STARTED |  |
-| reopenAttendance | CL04 | NOT_STARTED |  |
+| listAttendanceSessions | CL04, CL05 | TESTED | qa/backend/attendance-integration.log |
+| createAttendanceSession | CL04 | TESTED | qa/backend/attendance-integration.log |
+| getAttendanceSession | CL04 | TESTED | qa/backend/attendance-integration.log |
+| saveAttendanceRecords | CL04 | TESTED | qa/backend/attendance-integration.log |
+| getAttendanceSummary | CL05 | TESTED | qa/backend/attendance-integration.log |
+| publishAttendance | CL04 | TESTED | qa/backend/attendance-integration.log |
+| reopenAttendance | CL04 | TESTED | qa/backend/attendance-integration.log |
 | listRuleSets | SC29 | NOT_STARTED |  |
 | createRuleSet | SC29, SC30 | NOT_STARTED |  |
 | getRuleSet | SC30 | NOT_STARTED |  |
@@ -177,10 +177,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | approveAdjustment | CL11 | NOT_STARTED |  |
 | rejectAdjustment | CL11 | NOT_STARTED |  |
 | applyAdjustment | CL11 | NOT_STARTED |  |
-| listSchoolPublications | SC36 | NOT_STARTED |  |
-| listClassPublications | CL09 | NOT_STARTED |  |
-| getClassPublication | CL10 | NOT_STARTED |  |
-| withdrawPublication | SC36, CL10 | NOT_STARTED |  |
+| listSchoolPublications | SC36 | TESTED | qa/backend/attendance-integration.log |
+| listClassPublications | CL09 | TESTED | qa/backend/attendance-integration.log |
+| getClassPublication | CL10 | TESTED | qa/backend/attendance-integration.log |
+| withdrawPublication | SC36, CL10 | TESTED | qa/backend/attendance-integration.log |
 | listSchoolLessons | SC32 | NOT_STARTED |  |
 | listClassTimetables | CL15 | NOT_STARTED |  |
 | createTimetable | CL15, SC32 | NOT_STARTED |  |
@@ -327,7 +327,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC33 | core | PARTIAL | NOT_STARTED |  |
 | SC34 | core | PARTIAL | NOT_STARTED |  |
 | SC35 | core | PARTIAL | NOT_STARTED |  |
-| SC36 | core | PARTIAL | NOT_STARTED |  |
+| SC36 | core | TESTED | NOT_STARTED |  |
 | SC37 | core | PARTIAL | NOT_STARTED |  |
 | SC38 | core | PARTIAL | NOT_STARTED |  |
 | SC39 | core | PARTIAL | NOT_STARTED |  |
@@ -344,13 +344,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL01 | core | PARTIAL | NOT_STARTED |  |
 | CL02 | core | TESTED | NOT_STARTED |  |
 | CL03 | core | TESTED | NOT_STARTED |  |
-| CL04 | core | PARTIAL | NOT_STARTED |  |
-| CL05 | core | PARTIAL | NOT_STARTED |  |
+| CL04 | core | TESTED | NOT_STARTED |  |
+| CL05 | core | TESTED | NOT_STARTED |  |
 | CL06 | core | PARTIAL | NOT_STARTED |  |
 | CL07 | core | PARTIAL | NOT_STARTED |  |
 | CL08 | core | PARTIAL | NOT_STARTED |  |
-| CL09 | core | PARTIAL | NOT_STARTED |  |
-| CL10 | core | PARTIAL | NOT_STARTED |  |
+| CL09 | core | TESTED | NOT_STARTED |  |
+| CL10 | core | TESTED | NOT_STARTED |  |
 | CL11 | core | PARTIAL | NOT_STARTED |  |
 | CL12 | core | PARTIAL | NOT_STARTED |  |
 | CL13 | core | PARTIAL | NOT_STARTED |  |

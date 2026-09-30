@@ -22,7 +22,7 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
 | B1 | PARTIAL | 8 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
-| B3 | NOT_STARTED | Attendance/conduct/publication workflows pending |
+| B3 | PARTIAL | Attendance and immutable publication lifecycle tested; rules/conduct/review/adjustments pending |
 | B4 | NOT_STARTED | Parent session/projection workflows pending |
 | B5 | PARTIAL | Private file processing, mail/outbox worker and timetable import drafts tested; remaining domain services, publication and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
@@ -133,3 +133,24 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - 105/264 API operations are implemented. Frontend connected: NO. Parent HTTP
   portal, attendance/conduct publications, browser E2E, final local deployment,
   restart/backup-restore and performance measurements remain NOT_RUN.
+
+## Attendance/publication checkpoint — actual execution
+
+- Migration 009 adds attendance data_version and database guards for locked
+  records, enrollment dates, slots and late-minute consistency. New sessions
+  create UNMARKED records for the enrollment roster effective on that date.
+- Morning/afternoon and LESSON summaries remain separate. Subject teachers can
+  read/record only their assigned lesson; a homeroom grant in another class does
+  not authorize daily attendance or publishing in their subject class.
+- Publication creates immutable staff snapshots and a schema-checked projection
+  per student, excludes internal notes, checks the exact effective roster, and
+  atomically switches the current PUBLISHED revision. Reopening requires a reason
+  and preserves the old published content while a correction is drafted.
+- `qa/backend/attendance-integration.log`: 29/29 integration checks executed,
+  including source-version rejection, locked SQL write denial, immutable snapshot
+  SQL denial, supersede/withdraw and simultaneous edit/publish with one winner.
+  `qa/backend/attendance-unit-contract.log`: 8/8 executed. These remain backend
+  integration checks, not connected browser E2E or the parent HTTP portal.
+- 116/264 API operations implemented. Rules, scoring, conduct approval/locking
+  and adjustment publication remain pending in B3. Parent HTTP, all frontend
+  adapters, final deploy and B7 operational acceptance remain NOT_RUN.
