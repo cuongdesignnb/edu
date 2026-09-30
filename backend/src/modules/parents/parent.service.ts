@@ -1,0 +1,125 @@
+import { Injectable } from '@nestjs/common';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import type { FastifyRequest } from 'fastify';
+import { Database,one,iso,type Transaction,type Row } from '../../database/database';
+import { listResource,type Resource } from '../../database/resources';
+import { runtimeConfig } from '../../common/config';
+import { hashToken,randomToken,csrfFor,setCookie } from '../../common/security';
+import { Problem,validation } from '../../common/problem';
+import { validateSchema } from '../../common/contract';
+import { IdentityService } from '../identity/identity.service';
+import { objectPath } from '../files/storage';
+import type { RequestContext,Handler,Result } from '../../api.router';
+
+export interface ParentPrincipal {sessionId:string;schoolId:string;accessId:string;studentId:string;yearId:string;tokenHash:string;csrfHash:string;absoluteExpiresAt:string;link:Row}
+const projection:Resource={table:`(SELECT p.school_id,p.student_id,p.year_id,p.section,p.publication_id,p.created_at,
+  app.parent_publication_time(p.school_id,p.student_id,p.year_id,p.section,p.publication_id) AS published_at,
+  CASE WHEN jsonb_typeof(p.payload->'items')='array' THEN md5(p.id::text||':'||j.ordinal::text)::uuid ELSE p.id END AS id,j.item AS payload
+  FROM app.parent_publication_items p CROSS JOIN LATERAL jsonb_array_elements(CASE WHEN jsonb_typeof(p.payload->'items')='array' THEN p.payload->'items' ELSE jsonb_build_array(p.payload) END) WITH ORDINALITY j(item,ordinal))`,fields:{id:'id',createdAt:'created_at',publishedAt:'published_at',publicationId:'publication_id',payload:'payload'},writeFields:[],search:[],filters:{}};
+const schemas:Record<string,string>={attendance:'ParentAttendance',conduct:'ParentConduct',timetable:'ParentLesson',duties:'ParentDuty',activities:'ParentActivity',announcements:'ParentAnnouncement'};
+const documentResource:Resource={table:`(SELECT d.*,meta.info->>'contentType' AS content_type,(meta.info->>'byteSize')::bigint AS byte_size FROM app.parent_document_items d
+  CROSS JOIN LATERAL(SELECT app.parent_document_metadata(d.school_id,d.id) AS info) meta WHERE meta.info IS NOT NULL)`,fields:{id:'id',title:'title',fileId:'file_id',contentType:'content_type',byteSize:'byte_size',downloadAllowed:'download_allowed',publishedAt:'published_at'},writeFields:[],search:['title'],filters:{}};
+@Injectable()
+export class ParentService {
+  constructor(private readonly db:Database,private readonly identity:IdentityService){}
+  handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','listParentConduct','getParentConduct','getParentTimetable','getParentDuties','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','listParentDocuments','downloadParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  async school(slug:string){const school=(await this.db.app.query<Row>('SELECT id,name,slug,status,timezone,public_contact_phone FROM platform.schools WHERE slug=$1',[slug])).rows[0];if(!school||school.status!=='ACTIVE')throw new Problem(401,'PARENT_ACCESS_INVALID');return school;}
+  async link(tx:Transaction,schoolId:string,id:string){
+    const link=await one<Row>(tx,`SELECT l.*,s.full_name,y.name AS year_label,y.status AS year_status,sc.name AS school_name,sc.slug,sc.public_contact_phone,sc.timezone,
+      coalesce((SELECT c.name FROM app.enrollments e JOIN app.classes c ON c.school_id=e.school_id AND c.id=e.class_id WHERE e.school_id=l.school_id AND e.student_id=l.student_id AND e.year_id=l.year_id AND e.status<>'CANCELLED' AND e.starts_on<=(now() AT TIME ZONE sc.timezone)::date ORDER BY e.starts_on DESC,e.id LIMIT 1),'Chưa xếp lớp') AS class_label
+      FROM app.parent_access_links l JOIN app.guardian_relationships g ON g.school_id=l.school_id AND g.id=l.relationship_id AND g.student_id=l.student_id
+      JOIN app.students s ON s.school_id=l.school_id AND s.id=l.student_id JOIN app.academic_years y ON y.school_id=l.school_id AND y.id=l.year_id JOIN platform.schools sc ON sc.id=l.school_id
+      WHERE l.school_id=$1 AND l.id=$2 AND l.revoked_at IS NULL AND l.expires_at>now() AND g.status='VERIFIED' AND g.can_receive_info AND g.revoked_at IS NULL AND sc.status='ACTIVE'`,[schoolId,id]);
+    if(!link)throw new Problem(401,'PARENT_ACCESS_INVALID');return link;
+  }
+  private principal(session:Row,link:Row):ParentPrincipal{return {sessionId:String(session.id),schoolId:String(link.school_id),accessId:String(link.id),studentId:String(link.student_id),yearId:String(link.year_id),tokenHash:String(session.token_hash),csrfHash:String(session.csrf_hash),absoluteExpiresAt:String(iso(session.absolute_expires_at as Date)),link};}
+  async authenticate(request:FastifyRequest,slug:string):Promise<ParentPrincipal>{
+    const token=request.cookies[runtimeConfig().parentCookie];if(!token)throw new Problem(401,'PARENT_ACCESS_INVALID');
+    const school=await this.school(slug);
+    return this.db.transaction(async tx=>{
+      const session=await one<Row>(tx,`SELECT * FROM identity.parent_sessions WHERE school_id=$1 AND token_hash=$2 AND revoked_at IS NULL AND idle_expires_at>now() AND absolute_expires_at>now() FOR UPDATE`,[school.id,hashToken(token)]);
+      if(!session)throw new Problem(401,'PARENT_ACCESS_INVALID');
+      if(request.headers['x-parent-view']!==session.id)throw new Problem(409,'PARENT_CONTEXT_CHANGED');
+      const link=await this.link(tx,String(school.id),String(session.access_link_id));
+      if(Date.now()-new Date(session.last_seen_at as Date).getTime()>=60000)await tx.query("UPDATE identity.parent_sessions SET last_seen_at=now(),idle_expires_at=least(absolute_expires_at,now()+interval '30 minutes') WHERE id=$1",[session.id]);
+      return this.principal(session,link);
+    },{schoolId:String(school.id)});
+  }
+  context(p:ParentPrincipal){const l=p.link;return {viewId:p.sessionId,school:{name:l.school_name,slug:l.slug,publicContactPhone:l.public_contact_phone},student:{displayName:l.full_name,classLabel:l.class_label,schoolYearLabel:l.year_label},allowedSections:l.allowed_sections,allowDownload:l.allow_download,csrfToken:csrfFor(p.sessionId,p.tokenHash),expiresAt:p.absoluteExpiresAt};}
+  private allow(p:ParentPrincipal,section:string){if(!(p.link.allowed_sections as string[]).includes(section))throw new Problem(403,'PARENT_SECTION_DENIED');}
+  private async event(tx:Transaction,c:RequestContext,p:ParentPrincipal,kind:string,section?:string){
+    const daily=new Date().toISOString().slice(0,10),ipHash=crypto.createHmac('sha256',runtimeConfig().key).update(`parent-ip:${daily}:${c.request.ip}`).digest('hex');
+    const ua=String(c.request.headers['user-agent']??''),device=/Edg\//.test(ua)?'Edge':/Firefox\//.test(ua)?'Firefox':/Chrome\//.test(ua)?'Chrome':/Safari\//.test(ua)?'Safari':'Unknown browser';
+    await tx.query('INSERT INTO app.parent_access_events(school_id,access_link_id,event_kind,request_id,ip_daily_hash,device_summary,section) VALUES($1,$2,$3,$4,$5,$6,$7)',[p.schoolId,p.accessId,kind,c.requestId,ipHash,device,section??null]);
+  }
+  private async exchange(c:RequestContext){
+    await this.identity.rateLimit(`parent-exchange:ip:${c.request.ip}`,20,300);await this.identity.rateLimit(`parent-exchange:token:${hashToken(String(c.body.token))}`,20,300);
+    const school=await this.school(c.params.schoolSlug!),token=randomToken(),tokenHash=hashToken(token),sessionId=crypto.randomUUID(),csrfToken=csrfFor(sessionId,tokenHash);
+    const p=await this.db.transaction(async tx=>{
+      await tx.query('SELECT app.lock_school()');
+      const candidate=await one<Row>(tx,'SELECT id FROM app.parent_access_links WHERE school_id=$1 AND token_hash=$2',[school.id,hashToken(String(c.body.token))]);if(!candidate)throw new Problem(401,'PARENT_ACCESS_INVALID');
+      const link=await this.link(tx,String(school.id),String(candidate.id));
+      const old=c.request.cookies[runtimeConfig().parentCookie];if(old)await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE token_hash=$1',[hashToken(old)]);
+      const session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(id,school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,$5,least($6,now()+interval '30 minutes'),least($6,now()+interval '12 hours')) RETURNING *`,[sessionId,school.id,link.id,tokenHash,hashToken(csrfToken),link.expires_at]);
+      const principal=this.principal(session!,link);await this.event(tx,c,principal,'EXCHANGED');return principal;
+    },{schoolId:String(school.id)});
+    setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(43200,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:this.context(p)};
+  }
+  private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string}){
+    this.allow(p,section);if(query.sort&&!['id','createdAt','publishedAt'].includes(query.sort))validation('sort','Chỉ sắp xếp theo thời gian công bố');
+    const values:unknown[]=[p.studentId,p.yearId,section],where=['t.student_id=$1','t.year_id=$2','t.section=$3'];
+    if(detail){values.push(detail.id);where.push(`t.payload->>'${detail.key}'=$${values.length}`);}
+    for(const bound of ['from','to'])if(query[bound]){if(!/^\d{4}-\d{2}-\d{2}$/.test(query[bound]!))validation(bound,'Ngày ISO bắt buộc');values.push(query[bound]);where.push(`t.payload->>'date'${bound==='from'?'>=':'<'}$${values.length}`);}
+    const result=await this.db.transaction(tx=>listResource(tx,projection,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
+    const data:Record<string,unknown>[]=[];
+    for(const row of result.data){if(!row.publishedAt)continue;const item=row.payload as Record<string,unknown>,value={...item,...(Object.hasOwn(item,'publishedAt')?{publishedAt:row.publishedAt}:{})};validateSchema(schemas[section]!,value,true);data.push(value);}
+    if(detail){if(!data.length)throw new Problem(404,'RESOURCE_NOT_FOUND');return {data:data[0]};}return {data,page:result.page};
+  }
+  private async teachers(p:ParentPrincipal){
+    this.allow(p,'teachers');return this.db.transaction(async tx=>{
+      const rows=(await tx.query<Row>(`SELECT DISTINCT m.work_display_name,m.share_work_contact,m.work_email,m.work_phone,a.kind,s.name AS subject_name FROM app.enrollments e
+        JOIN platform.schools sc ON sc.id=e.school_id JOIN app.teaching_assignments a ON a.school_id=e.school_id AND a.class_id=e.class_id AND a.year_id=e.year_id
+        JOIN app.memberships m ON m.school_id=a.school_id AND m.id=a.member_id AND m.status='ACTIVE' AND m.ended_at IS NULL
+        JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+        LEFT JOIN app.subjects s ON s.school_id=a.school_id AND s.id=a.subject_id WHERE e.school_id=$1 AND e.student_id=$2 AND e.year_id=$3 AND e.status<>'CANCELLED'
+        AND e.starts_on<=(now() AT TIME ZONE sc.timezone)::date AND (e.ends_on IS NULL OR e.ends_on>(now() AT TIME ZONE sc.timezone)::date)
+        AND a.revoked_at IS NULL AND a.starts_on<=(now() AT TIME ZONE sc.timezone)::date AND (a.ends_on IS NULL OR a.ends_on>(now() AT TIME ZONE sc.timezone)::date) ORDER BY m.work_display_name,a.kind`,[p.schoolId,p.studentId,p.yearId])).rows;
+      return {data:rows.map(row=>({displayName:row.work_display_name,assignmentLabel:row.kind==='HOMEROOM'?'Giáo viên chủ nhiệm':'Giáo viên bộ môn',...(row.subject_name?{subjectName:row.subject_name}:{}),...(row.share_work_contact&&row.work_email?{workEmail:row.work_email}:{}),...(row.share_work_contact&&row.work_phone?{workPhone:row.work_phone}:{})})),page:{limit:100,hasMore:false,nextCursor:null}};
+    },{schoolId:p.schoolId});
+  }
+  private async documents(p:ParentPrincipal,query:Record<string,string>,id?:string,download=false):Promise<Result>{
+    this.allow(p,'documents');
+    if(query.sort&&!['id','publishedAt','title'].includes(query.sort))validation('sort','Sắp xếp tài liệu không hợp lệ');
+    const result=await this.db.transaction(tx=>listResource(tx,documentResource,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:`t.student_id=$1 AND t.year_id=$2${id?' AND t.id=$3':''}`,values:id?[p.studentId,p.yearId,id]:[p.studentId,p.yearId]},p.sessionId),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
+    if(id&&!result.data.length)throw new Problem(404,'RESOURCE_NOT_FOUND');
+    const data=result.data.map(row=>({id:row.id,title:row.title,contentType:row.contentType,byteSize:Number(row.byteSize),downloadAllowed:!!(row.downloadAllowed&&p.link.allow_download),publishedAt:row.publishedAt}));
+    if(download){if(!data[0]!.downloadAllowed)throw new Problem(403,'DOWNLOAD_DENIED');
+      const file=await this.db.transaction(tx=>one<Row>(tx,"SELECT * FROM app.files WHERE school_id=$1 AND id=$2 AND status='READY' AND (expires_at IS NULL OR expires_at>now())",[p.schoolId,result.data[0]!.fileId]),{schoolId:p.schoolId});if(!file)throw new Problem(404,'RESOURCE_NOT_FOUND');
+      const filename=objectPath(p.schoolId,String(file.object_key));await fs.access(filename);return {data:null,binary:{stream:createReadStream(filename),contentType:String(file.content_type),filename:String(file.original_name),byteSize:Number(file.byte_size)}};
+    }return {data,page:result.page};
+  }
+  async overview(p:ParentPrincipal){
+    const sections=p.link.allowed_sections as string[],read=async(section:string)=>sections.includes(section)?(await this.published(p,section,{limit:'10'})).data as Record<string,unknown>[]:[];
+    const attendance=await read('attendance'),conduct=await read('conduct'),announcements=await read('announcements'),lessons=await read('timetable'),teachers=sections.includes('teachers')?(await this.teachers(p)).data:[];
+    const today=(await this.db.app.query<{today:string}>("SELECT (now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$1",[p.schoolId])).rows[0]!.today;
+    return {context:this.context(p),attendance,...(conduct.length?{latestConduct:conduct[0]}:{}),teachers,todayLessons:lessons.filter(item=>item.date===today),announcements,asOf:new Date().toISOString()};
+  }
+  async preview(c:RequestContext,schoolId:string,accessId:string){
+    const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW');return principal;},{schoolId});
+    try{return {data:await this.overview(p)};}finally{await this.db.app.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1',[p.sessionId]);}
+  }
+  private async handle(c:RequestContext):Promise<Result>{
+    c.reply.header('X-Robots-Tag','noindex, nofollow');if(c.operation.id==='exchangeParentLink')return this.exchange(c);
+    const p=c.parent!;
+    if(c.operation.id==='endParentSession'){await this.db.transaction(async tx=>{await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1 AND school_id=$2',[p.sessionId,p.schoolId]);await this.event(tx,c,p,'ENDED');},{schoolId:p.schoolId});setCookie(c.reply,runtimeConfig().parentCookie,'',0);return {data:{id:p.sessionId,status:'ENDED'}};}
+    if(c.operation.id==='getParentContext')return {data:this.context(p)};
+    const section=c.operation.permission.replace('parent.','');this.allow(p,section);let result:Result;
+    if(section==='overview')result={data:await this.overview(p)};
+    else if(section==='teachers')result=await this.teachers(p);
+    else if(section==='documents')result=await this.documents(p,c.query,c.params.documentId,c.operation.id==='downloadParentDocument');
+    else result=await this.published(p,section,c.query,c.params.periodId?{key:'periodId',id:c.params.periodId}:c.params.activityId?{key:'id',id:c.params.activityId}:c.params.announcementId?{key:'id',id:c.params.announcementId}:undefined);
+    await this.db.transaction(tx=>this.event(tx,c,p,result.binary?'DOWNLOADED':'READ',section),{schoolId:p.schoolId});return result;
+  }
+}

@@ -1263,8 +1263,10 @@
         "SC23"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "issueParentAccess",
@@ -1273,8 +1275,10 @@
         "SC23"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentAccess",
@@ -1282,8 +1286,10 @@
         "SC24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "revokeParentAccess",
@@ -1291,8 +1297,10 @@
         "SC24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "reissueParentAccess",
@@ -1300,8 +1308,10 @@
         "SC24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "listParentAccessEvents",
@@ -1309,8 +1319,10 @@
         "SC24"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "previewParent",
@@ -1318,8 +1330,10 @@
         "SC25"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getTeacherOverview",
@@ -2639,8 +2653,10 @@
         "PA01"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentContext",
@@ -2649,8 +2665,10 @@
         "PA14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "endParentSession",
@@ -2658,8 +2676,10 @@
         "PA14"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentOverview",
@@ -2667,8 +2687,10 @@
         "PA02"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentAttendance",
@@ -2676,8 +2698,10 @@
         "PA03"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "listParentConduct",
@@ -2685,8 +2709,10 @@
         "PA04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentConduct",
@@ -2694,8 +2720,10 @@
         "PA05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentTimetable",
@@ -2703,8 +2731,10 @@
         "PA06"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentDuties",
@@ -2712,8 +2742,10 @@
         "PA07"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "listParentActivities",
@@ -2721,8 +2753,10 @@
         "PA08"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentActivity",
@@ -2730,8 +2764,10 @@
         "PA09"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "listParentAnnouncements",
@@ -2739,8 +2775,10 @@
         "PA10"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentAnnouncement",
@@ -2748,8 +2786,10 @@
         "PA11"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getParentTeachers",
@@ -2757,8 +2797,10 @@
         "PA12"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "listParentDocuments",
@@ -2766,8 +2808,10 @@
         "PA13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "downloadParentDocument",
@@ -2775,8 +2819,10 @@
         "PA13"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/parent-integration.log"
+      ]
     },
     {
       "operationId": "getPublicSchool",
@@ -3316,7 +3362,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "IMPLEMENTED"
     },
     {
       "screenId": "SC19",
@@ -3383,7 +3429,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC24",
@@ -3397,7 +3443,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC25",
@@ -3408,7 +3454,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC26",
@@ -4105,7 +4151,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA02",
@@ -4116,7 +4162,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA03",
@@ -4127,7 +4173,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA04",
@@ -4138,7 +4184,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA05",
@@ -4149,7 +4195,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA06",
@@ -4160,7 +4206,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA07",
@@ -4171,7 +4217,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA08",
@@ -4182,7 +4228,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA09",
@@ -4193,7 +4239,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA10",
@@ -4204,7 +4250,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA11",
@@ -4215,7 +4261,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA12",
@@ -4226,7 +4272,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA13",
@@ -4238,7 +4284,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "PA14",
@@ -4250,7 +4296,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SY01",

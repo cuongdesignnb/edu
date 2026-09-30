@@ -15,6 +15,8 @@ import { AttendanceService } from './modules/attendance/attendance.service';
 import { RulesService } from './modules/conduct/rules.service';
 import { ConductService } from './modules/conduct/conduct.service';
 import { AdjustmentsService } from './modules/conduct/adjustments.service';
-const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService];
+import { ParentService } from './modules/parents/parent.service';
+import { ParentAccessService } from './modules/parents/access.service';
+const services=[Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService];
 @Module({providers:services,exports:services})
 export class AppModule {}

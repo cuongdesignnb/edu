@@ -115,13 +115,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | createRelationship | SC18, SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | verifyRelationship | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | revokeRelationship | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| listParentAccess | SC23 | NOT_STARTED |  |
-| issueParentAccess | SC18, SC23 | NOT_STARTED |  |
-| getParentAccess | SC24 | NOT_STARTED |  |
-| revokeParentAccess | SC24 | NOT_STARTED |  |
-| reissueParentAccess | SC24 | NOT_STARTED |  |
-| listParentAccessEvents | SC24 | NOT_STARTED |  |
-| previewParent | SC25 | NOT_STARTED |  |
+| listParentAccess | SC23 | TESTED | qa/backend/parent-integration.log |
+| issueParentAccess | SC18, SC23 | TESTED | qa/backend/parent-integration.log |
+| getParentAccess | SC24 | TESTED | qa/backend/parent-integration.log |
+| revokeParentAccess | SC24 | TESTED | qa/backend/parent-integration.log |
+| reissueParentAccess | SC24 | TESTED | qa/backend/parent-integration.log |
+| listParentAccessEvents | SC24 | TESTED | qa/backend/parent-integration.log |
+| previewParent | SC25 | TESTED | qa/backend/parent-integration.log |
 | getTeacherOverview | TE01 | NOT_STARTED |  |
 | listMyClasses | TE02 | NOT_STARTED |  |
 | listMySchedule | TE03 | NOT_STARTED |  |
@@ -250,22 +250,22 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | createSupportAccess | SC42, SC43 | NOT_STARTED |  |
 | approveSupportAccess | SC43 | NOT_STARTED |  |
 | revokeSupportAccess | SC43 | NOT_STARTED |  |
-| exchangeParentLink | PA01 | NOT_STARTED |  |
-| getParentContext | PA01, PA14 | NOT_STARTED |  |
-| endParentSession | PA14 | NOT_STARTED |  |
-| getParentOverview | PA02 | NOT_STARTED |  |
-| getParentAttendance | PA03 | NOT_STARTED |  |
-| listParentConduct | PA04 | NOT_STARTED |  |
-| getParentConduct | PA05 | NOT_STARTED |  |
-| getParentTimetable | PA06 | NOT_STARTED |  |
-| getParentDuties | PA07 | NOT_STARTED |  |
-| listParentActivities | PA08 | NOT_STARTED |  |
-| getParentActivity | PA09 | NOT_STARTED |  |
-| listParentAnnouncements | PA10 | NOT_STARTED |  |
-| getParentAnnouncement | PA11 | NOT_STARTED |  |
-| getParentTeachers | PA12 | NOT_STARTED |  |
-| listParentDocuments | PA13 | NOT_STARTED |  |
-| downloadParentDocument | PA13 | NOT_STARTED |  |
+| exchangeParentLink | PA01 | TESTED | qa/backend/parent-integration.log |
+| getParentContext | PA01, PA14 | TESTED | qa/backend/parent-integration.log |
+| endParentSession | PA14 | TESTED | qa/backend/parent-integration.log |
+| getParentOverview | PA02 | TESTED | qa/backend/parent-integration.log |
+| getParentAttendance | PA03 | TESTED | qa/backend/parent-integration.log |
+| listParentConduct | PA04 | TESTED | qa/backend/parent-integration.log |
+| getParentConduct | PA05 | TESTED | qa/backend/parent-integration.log |
+| getParentTimetable | PA06 | TESTED | qa/backend/parent-integration.log |
+| getParentDuties | PA07 | TESTED | qa/backend/parent-integration.log |
+| listParentActivities | PA08 | TESTED | qa/backend/parent-integration.log |
+| getParentActivity | PA09 | TESTED | qa/backend/parent-integration.log |
+| listParentAnnouncements | PA10 | TESTED | qa/backend/parent-integration.log |
+| getParentAnnouncement | PA11 | TESTED | qa/backend/parent-integration.log |
+| getParentTeachers | PA12 | TESTED | qa/backend/parent-integration.log |
+| listParentDocuments | PA13 | TESTED | qa/backend/parent-integration.log |
+| downloadParentDocument | PA13 | TESTED | qa/backend/parent-integration.log |
 | getPublicSchool | SY01 | NOT_STARTED |  |
 | getPublicAnnouncement | SY02 | NOT_STARTED |  |
 
@@ -309,14 +309,14 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC15 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC16 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC17 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC18 | core | PARTIAL | NOT_STARTED |  |
+| SC18 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC19 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC20 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC21 | core | TESTED | NOT_STARTED |  |
 | SC22 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC23 | core | PARTIAL | NOT_STARTED |  |
-| SC24 | core | PARTIAL | NOT_STARTED |  |
-| SC25 | core | PARTIAL | NOT_STARTED |  |
+| SC23 | core | TESTED | NOT_STARTED |  |
+| SC24 | core | TESTED | NOT_STARTED |  |
+| SC25 | core | TESTED | NOT_STARTED |  |
 | SC26 | core | TESTED | NOT_STARTED |  |
 | SC27 | core | TESTED | NOT_STARTED |  |
 | SC28 | core | TESTED | NOT_STARTED |  |
@@ -367,20 +367,20 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL24 | core | TESTED | NOT_STARTED |  |
 | CL25 | core | PARTIAL | NOT_STARTED |  |
 | CL26 | core | PARTIAL | NOT_STARTED |  |
-| PA01 | core | PARTIAL | NOT_STARTED |  |
-| PA02 | core | PARTIAL | NOT_STARTED |  |
-| PA03 | core | PARTIAL | NOT_STARTED |  |
-| PA04 | core | PARTIAL | NOT_STARTED |  |
-| PA05 | core | PARTIAL | NOT_STARTED |  |
-| PA06 | core | PARTIAL | NOT_STARTED |  |
-| PA07 | core | PARTIAL | NOT_STARTED |  |
-| PA08 | core | PARTIAL | NOT_STARTED |  |
-| PA09 | core | PARTIAL | NOT_STARTED |  |
-| PA10 | core | PARTIAL | NOT_STARTED |  |
-| PA11 | core | PARTIAL | NOT_STARTED |  |
-| PA12 | core | PARTIAL | NOT_STARTED |  |
-| PA13 | core | PARTIAL | NOT_STARTED |  |
-| PA14 | core | PARTIAL | NOT_STARTED |  |
+| PA01 | core | TESTED | NOT_STARTED |  |
+| PA02 | core | TESTED | NOT_STARTED |  |
+| PA03 | core | TESTED | NOT_STARTED |  |
+| PA04 | core | TESTED | NOT_STARTED |  |
+| PA05 | core | TESTED | NOT_STARTED |  |
+| PA06 | core | TESTED | NOT_STARTED |  |
+| PA07 | core | TESTED | NOT_STARTED |  |
+| PA08 | core | TESTED | NOT_STARTED |  |
+| PA09 | core | TESTED | NOT_STARTED |  |
+| PA10 | core | TESTED | NOT_STARTED |  |
+| PA11 | core | TESTED | NOT_STARTED |  |
+| PA12 | core | TESTED | NOT_STARTED |  |
+| PA13 | core | TESTED | NOT_STARTED |  |
+| PA14 | core | TESTED | NOT_STARTED |  |
 | SY01 | core | PARTIAL | NOT_STARTED |  |
 | SY02 | core | PARTIAL | NOT_STARTED |  |
 | SY03 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Trang chính sách cần chủ dự án duyệt, nội dung tĩnh. |

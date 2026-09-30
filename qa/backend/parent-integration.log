@@ -1,0 +1,52 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-773a9638897c Creating 
+ Container edumanage_backend_test-runner-run-773a9638897c Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (410.392585ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (10.18451ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (4.264619ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (5.759088ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (110.908011ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (42.475111ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (110.933974ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (59.546129ms)
+✔ BE21 parent runtime role cannot select raw student rows (53.758066ms)
+✔ B0 health ready checks actual migrations, database and private storage (17.734668ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (105.439948ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (72.807581ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (125.74284ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (85.529751ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (144.001776ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (105.697784ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (174.663038ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (145.249482ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (428.569995ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (805.640441ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (162.71362ms)
+✔ B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets (800.547692ms)
+✔ B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely (1230.561924ms)
+✔ B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries (856.758224ms)
+✔ B2 imports update only verified codes, create class drafts and staff invitations with work profiles (1377.339204ms)
+✔ B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority (2278.968427ms)
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (452.513548ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (175.34142ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (139.506254ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (249.904573ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (625.204186ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (491.978025ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (435.832376ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (200.275757ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (379.367379ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (788.992976ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (440.787749ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (611.024372ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (436.518565ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15821.50741

@@ -20,10 +20,10 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 | Milestone | State | Evidence |
 |---|---|---|
 | B0 | VERIFIED_FOUNDATION | Validator 264 operations/300 schemas; production backend build; HTTP health integration |
-| B1 | PARTIAL | 9 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
+| B1 | PARTIAL | 14 migrations applied; identity/invitations, idempotency, scoped authorization and immediate grant/assignment revocation tested; temporal delegation review and support access integration remain pending |
 | B2 | PARTIAL | Organization, staff, assignments, students, guardians, transfers, handovers, rollover and file/import pipeline implemented; connected screens and broader acceptance coverage remain pending |
-| B3 | PARTIAL | Attendance, rules/scoring and immutable publication lifecycle tested; conduct/review/adjustments pending |
-| B4 | NOT_STARTED | Parent session/projection workflows pending |
+| B3 | PARTIAL | Attendance linkage, rules/scoring, conduct/review/lock, immutable publication and approved adjustment workflows tested; activity/position sources and connected browser acceptance pending |
+| B4 | PARTIAL | Private links, parent cookie/view binding, published child projections, revoke/reissue, files and work contacts tested; remaining B5 publication producers and connected browser acceptance pending |
 | B5 | PARTIAL | Private file processing, mail/outbox worker and timetable import drafts tested; remaining domain services, publication and exports pending |
 | B6 | NOT_STARTED | Connected frontend adapter pending |
 | B7 | NOT_STARTED | Local final stack, restore drill and load testing pending |
@@ -181,3 +181,10 @@ frontend dependencies/lockfile/design are untouched at this checkpoint.
 - Attendance optionally creates linked drafts, deduplicates retries and excludes corrected drafts. A locked score returns an explicit warning and remains unchanged while attendance saves.
 - `qa/backend/conduct-sync-integration.log`: 35/35 executed, exit0, including corrections, stale baselines, direct SQL immutability checks and simultaneous conduct create/lock/publish with one source winner. `qa/backend/adjustments-unit-contract.log`: 10/10 executed before the final linkage extension; final contract/lint checks recorded separately.
 - 141/264 API operations implemented. Browser E2E, parent HTTP portal, all frontend adapters, final local Docker deployment, restart/backup-restore and performance remain NOT_RUN. Activity/position source integration awaits the B5 domains. This checkpoint does not mark all B0–B7 accepted.
+## Parent access checkpoint — actual execution
+
+- Seven staff access-link operations and sixteen parent operations are implemented. No parent account is created. Tokens are fragment-only, hash-only in storage and returned once. Parent sessions use a separate HttpOnly cookie, bootstrap/session CSRF, 30-minute idle/12-hour absolute expiry and per-tab view binding.
+- Migrations 013–014 provide scoped publication-time and available-document metadata functions; the parent runtime role still cannot SELECT raw students, families, attendance, conduct, files or staff snapshots. Projection pagination counts individual items; document counts filter current file availability.
+- `qa/backend/parent-integration.log`: 39/39 actual tests, exit0. Coverage includes unpublished/READY invisibility, one-child score and attendance notes, old-tab 409 after changing child, unchanged staff cookie, same-serializer staff preview, section/download denial, private PNG streaming, available-file pagination, hidden work contacts, withdraw/reissue/revoke, relationship revoke, expiry, suspended school, CSRF, throttling and no new identity row from exchange.
+- Timetable, duty, activity and announcement list endpoints were exercised against real empty projections; unknown detail IDs deny. Their populated publication producers belong to the unfinished B5 domains and have not been certified by these empty-state checks.
+- 164/264 API operations implemented. Frontend is still the original mock implementation and remains unconnected. Browser E2E, final local stack at port 18763, restart/data persistence, backup/restore and load measurements are NOT_RUN. These are required remaining work; no production deployment has occurred.

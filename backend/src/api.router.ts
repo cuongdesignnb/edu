@@ -9,9 +9,10 @@ import { Problem,mapError } from './common/problem';
 import { runtimeConfig } from './common/config';
 import { bootstrapCsrf,requireBootstrapCsrf,requireSessionCsrf } from './common/security';
 import { verifyInstallation } from './database/verify';
+import type { ParentPrincipal } from './modules/parents/parent.service';
 export interface RequestContext {
   request: FastifyRequest;reply:FastifyReply;requestId:string;operation:Operation;
-  principal?:Principal;params:Record<string,string>;query:Record<string,string>;body:Record<string,unknown>;
+  principal?:Principal;parent?:ParentPrincipal;params:Record<string,string>;query:Record<string,string>;body:Record<string,unknown>;
 }
 export interface Result { data:unknown;status?:number;page?:{limit:number;nextCursor:string|null;hasMore:boolean;total?:number};
   binary?:{stream:Readable;contentType:string;filename:string;byteSize?:number} }
@@ -39,7 +40,7 @@ export function installRoutes(server:FastifyInstance,db:Database,identity:Identi
   registerHandlers(server,handlers,identity);
   return Object.keys(handlers);
 }
-export function registerHandlers(server:FastifyInstance,handlers:Record<string,Handler>,identity:IdentityService) {
+export function registerHandlers(server:FastifyInstance,handlers:Record<string,Handler>,identity:IdentityService,parentAuthenticate?:(request:FastifyRequest,slug:string)=>Promise<ParentPrincipal>) {
   for(const operation of operations) {
     const handler=handlers[operation.id];
     if(!handler) continue; // Unimplemented operations remain absent and NOT_STARTED.
@@ -48,17 +49,21 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
         const requestId=crypto.randomUUID(),start=performance.now();
         reply.header('X-Request-ID',requestId).header('Cache-Control','no-store')
           .header('Referrer-Policy','no-referrer').header('X-Content-Type-Options','nosniff');
+        if(operation.path.startsWith('/api/v1/parent/'))reply.header('X-Robots-Tag','noindex, nofollow');
         try {
           if(operation.request&&operation.id!=='uploadFile') validateSchema(operation.request,request.body);
           else if(request.body!==undefined && request.body!==null) throw new Problem(422,'VALIDATION_ERROR');
           const params=request.params as Record<string,string>,query=request.query as Record<string,string>;
           for(const [key,value] of Object.entries(params)) if(key.endsWith('Id') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw new Problem(404,'RESOURCE_NOT_FOUND');
           const principal=operation.auth==='staff'?await identity.authenticate(request):undefined;
+          const parent=operation.auth==='parent'&&parentAuthenticate?await parentAuthenticate(request,params.schoolSlug!):undefined;
+          if(operation.auth==='parent'&&!parent)throw new Problem(401,'PARENT_ACCESS_INVALID');
           if(operation.method!=='GET') {
             if(principal) requireSessionCsrf(request,principal.csrfHash);
+            else if(parent)requireSessionCsrf(request,parent.csrfHash);
             else requireBootstrapCsrf(request);
           }
-          const result=await handler({request,reply,requestId,operation,principal,params,query,body:(request.body??{}) as Record<string,unknown>});
+          const result=await handler({request,reply,requestId,operation,principal,parent,params,query,body:(request.body??{}) as Record<string,unknown>});
           const status=result.status??200;
           if(result.binary){
             const file=result.binary;
