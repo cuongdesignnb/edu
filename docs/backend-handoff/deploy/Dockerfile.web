@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+# Hợp đồng: frontend Next.js tại root, npm lockfile, output: 'standalone'.
+# Nếu repo đã dùng pnpm/yarn/monorepo, Agent sửa Dockerfile theo repo; không ép đổi manager.
+ARG NODE_IMAGE=node:24-bookworm-slim
+FROM ${NODE_IMAGE} AS deps
+WORKDIR /srv/web
+COPY package.json package-lock.json ./
+RUN npm ci
+FROM deps AS build
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_DATA_MODE=connected
+ENV NEXT_PUBLIC_API_BASE_URL=/api/v1
+ENV NEXT_PUBLIC_UI_LAB_ENABLED=false
+COPY . .
+RUN npm run build
+FROM ${NODE_IMAGE} AS runner
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+WORKDIR /srv/web
+COPY --from=build --chown=node:node /srv/web/.next/standalone ./
+COPY --from=build --chown=node:node /srv/web/.next/static ./.next/static
+COPY --from=build --chown=node:node /srv/web/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]

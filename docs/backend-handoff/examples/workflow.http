@@ -1,0 +1,29 @@
+# Chạy bằng HTTP client được phép, không commit giá trị thật.
+@base = http://127.0.0.1:18763/api/v1
+
+### Public liveness
+GET {{base}}/health/live
+
+### CSRF bootstrap, cookie jar cần bật
+GET {{base}}/auth/csrf
+
+### Staff login: điền giá trị qua secret environment của HTTP client
+POST {{base}}/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"email":"{{email}}","password":"{{password}}"}
+
+### Context thật (cookie phiên tự được gửi)
+GET {{base}}/me/context
+
+### Parent exchange: token không phải studentId
+POST {{base}}/parent/{{schoolSlug}}/access/exchange
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"token":"{{parentToken}}"}
+
+### Parent only-read context
+GET {{base}}/parent/{{schoolSlug}}/context
+X-Parent-View: {{viewId}}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "00-architecture",
+    "title": "Kiến trúc hệ thống và Docker",
+    "module_tables": 0,
+    "svg": "diagrams/00-architecture.svg"
+  },
+  {
+    "id": "01-identity",
+    "title": "Danh tính, tài khoản và quyền",
+    "module_tables": 11,
+    "svg": "diagrams/01-identity.svg"
+  },
+  {
+    "id": "02-organization",
+    "title": "Nhà trường, năm học và phân công",
+    "module_tables": 13,
+    "svg": "diagrams/02-organization.svg"
+  },
+  {
+    "id": "03-students",
+    "title": "Học sinh, người giám hộ và lịch sử",
+    "module_tables": 5,
+    "svg": "diagrams/03-students.svg"
+  },
+  {
+    "id": "04-classroom",
+    "title": "Tổ, chức vụ và sơ đồ lớp",
+    "module_tables": 6,
+    "svg": "diagrams/04-classroom.svg"
+  },
+  {
+    "id": "05-parent-publications",
+    "title": "Tra cứu riêng và bản công bố",
+    "module_tables": 6,
+    "svg": "diagrams/05-parent-publications.svg"
+  },
+  {
+    "id": "06-attendance-conduct",
+    "title": "Điểm danh, nội quy và thi đua",
+    "module_tables": 9,
+    "svg": "diagrams/06-attendance-conduct.svg"
+  },
+  {
+    "id": "07-schedule-duties",
+    "title": "Thời khóa biểu và trực nhật",
+    "module_tables": 5,
+    "svg": "diagrams/07-schedule-duties.svg"
+  },
+  {
+    "id": "08-activities-files",
+    "title": "Hoạt động, minh chứng, tệp và thông báo",
+    "module_tables": 7,
+    "svg": "diagrams/08-activities-files.svg"
+  },
+  {
+    "id": "09-operations",
+    "title": "Import, báo cáo, công việc nền và vận hành",
+    "module_tables": 13,
+    "svg": "diagrams/09-operations.svg"
+  },
+  {
+    "id": "10-full-database",
+    "title": "Toàn bộ database · tất cả cột",
+    "module_tables": 75,
+    "svg": "diagrams/10-full-database.svg"
+  }
+]

@@ -1,0 +1,4848 @@
+[
+  {
+    "id": "healthLive",
+    "method": "GET",
+    "path": "/api/v1/health/live",
+    "title": "Tiến trình API còn sống",
+    "tag": "Health",
+    "permission": "public",
+    "scope": "none",
+    "request": null,
+    "response": "Health",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [],
+    "description": "Tiến trình API còn sống"
+  },
+  {
+    "id": "healthReady",
+    "method": "GET",
+    "path": "/api/v1/health/ready",
+    "title": "DB, schema và storage sẵn sàng",
+    "tag": "Health",
+    "permission": "public",
+    "scope": "none",
+    "request": null,
+    "response": "Health",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [],
+    "description": "DB, schema và storage sẵn sàng"
+  },
+  {
+    "id": "getCsrf",
+    "method": "GET",
+    "path": "/api/v1/auth/csrf",
+    "title": "Cấp token CSRF bootstrap",
+    "tag": "Auth",
+    "permission": "public",
+    "scope": "none",
+    "request": null,
+    "response": "Csrf",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU01",
+      "AU02",
+      "AU03",
+      "AU04",
+      "PA01"
+    ],
+    "description": "Cấp token CSRF bootstrap"
+  },
+  {
+    "id": "login",
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "title": "Đăng nhập nhân sự thật",
+    "tag": "Auth",
+    "permission": "public",
+    "scope": "none",
+    "request": "LoginRequest",
+    "response": "LoginResult",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU01"
+    ],
+    "description": "Đăng nhập nhân sự thật"
+  },
+  {
+    "id": "logout",
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "title": "Thu hồi phiên hiện tại",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU07"
+    ],
+    "description": "Thu hồi phiên hiện tại"
+  },
+  {
+    "id": "forgotPassword",
+    "method": "POST",
+    "path": "/api/v1/auth/password/forgot",
+    "title": "Tiếp nhận yêu cầu khôi phục, trả thông điệp chung",
+    "tag": "Auth",
+    "permission": "public",
+    "scope": "none",
+    "request": "ForgotPasswordRequest",
+    "response": "Ack",
+    "list": false,
+    "auth": "none",
+    "async_job": true,
+    "frontend_ids": [
+      "AU02"
+    ],
+    "description": "Tiếp nhận yêu cầu khôi phục, trả thông điệp chung"
+  },
+  {
+    "id": "resetPassword",
+    "method": "POST",
+    "path": "/api/v1/auth/password/reset",
+    "title": "Đổi mật khẩu bằng token dùng một lần",
+    "tag": "Auth",
+    "permission": "public",
+    "scope": "none",
+    "request": "ResetPasswordRequest",
+    "response": "Ack",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU03"
+    ],
+    "description": "Đổi mật khẩu bằng token dùng một lần"
+  },
+  {
+    "id": "changePassword",
+    "method": "POST",
+    "path": "/api/v1/auth/password/change",
+    "title": "Đổi mật khẩu có xác minh mật khẩu cũ",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": "ChangePasswordRequest",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU07"
+    ],
+    "description": "Đổi mật khẩu có xác minh mật khẩu cũ"
+  },
+  {
+    "id": "getMyContext",
+    "method": "GET",
+    "path": "/api/v1/me/context",
+    "title": "Danh tính và quyền còn hiệu lực",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "Context",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU01",
+      "AU05",
+      "AU08",
+      "SY05",
+      "SY06"
+    ],
+    "description": "Danh tính và quyền còn hiệu lực"
+  },
+  {
+    "id": "getMyProfile",
+    "method": "GET",
+    "path": "/api/v1/me/profile",
+    "title": "Hồ sơ cá nhân",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "User",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU06"
+    ],
+    "description": "Hồ sơ cá nhân"
+  },
+  {
+    "id": "updateMyProfile",
+    "method": "PATCH",
+    "path": "/api/v1/me/profile",
+    "title": "Sửa hồ sơ cá nhân",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": "ProfilePatch",
+    "response": "User",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU06"
+    ],
+    "description": "Sửa hồ sơ cá nhân"
+  },
+  {
+    "id": "listMySessions",
+    "method": "GET",
+    "path": "/api/v1/me/sessions",
+    "title": "Danh sách phiên của chính mình",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "StaffSession",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU07"
+    ],
+    "description": "Danh sách phiên của chính mình"
+  },
+  {
+    "id": "revokeMySession",
+    "method": "POST",
+    "path": "/api/v1/me/sessions/{sessionId}/revoke",
+    "title": "Kết thúc một phiên của chính mình",
+    "tag": "Auth",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU07"
+    ],
+    "description": "Kết thúc một phiên của chính mình"
+  },
+  {
+    "id": "inspectInvitation",
+    "method": "POST",
+    "path": "/api/v1/invitations/inspect",
+    "title": "Xem thông tin tối thiểu bằng token lời mời",
+    "tag": "Auth",
+    "permission": "public",
+    "scope": "none",
+    "request": "InviteTokenRequest",
+    "response": "Invitation",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU04"
+    ],
+    "description": "Xem thông tin tối thiểu bằng token lời mời"
+  },
+  {
+    "id": "acceptInvitation",
+    "method": "POST",
+    "path": "/api/v1/invitations/accept",
+    "title": "Chấp nhận lời mời hoặc tạo danh tính qua lời mời",
+    "tag": "Auth",
+    "permission": "invitation",
+    "scope": "none",
+    "request": "AcceptInviteRequest",
+    "response": "Ack",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU04"
+    ],
+    "description": "Nếu email đã có danh tính: yêu cầu đăng nhập đúng email trước khi nhận, không cho newPassword ghi đè danh tính cũ."
+  },
+  {
+    "id": "declineInvitation",
+    "method": "POST",
+    "path": "/api/v1/invitations/decline",
+    "title": "Từ chối lời mời còn hiệu lực",
+    "tag": "Auth",
+    "permission": "invitation",
+    "scope": "none",
+    "request": "InviteTokenRequest",
+    "response": "Ack",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "AU04"
+    ],
+    "description": "Từ chối lời mời còn hiệu lực"
+  },
+  {
+    "id": "listMyNotifications",
+    "method": "GET",
+    "path": "/api/v1/me/notifications",
+    "title": "Thông báo của chính nhân sự theo trường được cấp",
+    "tag": "Notifications",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "Notification",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU09",
+      "TE05"
+    ],
+    "description": "Thông báo của chính nhân sự theo trường được cấp"
+  },
+  {
+    "id": "readMyNotification",
+    "method": "POST",
+    "path": "/api/v1/me/notifications/{notificationId}/read",
+    "title": "Đánh dấu thông báo đã đọc",
+    "tag": "Notifications",
+    "permission": "session",
+    "scope": "staff",
+    "request": null,
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "AU09",
+      "TE05"
+    ],
+    "description": "Đánh dấu thông báo đã đọc"
+  },
+  {
+    "id": "getPlatformOverview",
+    "method": "GET",
+    "path": "/api/v1/platform/overview",
+    "title": "KPI vận hành đã tổng hợp, không hồ sơ học sinh",
+    "tag": "Platform",
+    "permission": "platform.read",
+    "scope": "staff",
+    "request": null,
+    "response": "Dashboard",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL01"
+    ],
+    "description": "KPI vận hành đã tổng hợp, không hồ sơ học sinh"
+  },
+  {
+    "id": "listPlatformSchools",
+    "method": "GET",
+    "path": "/api/v1/platform/schools",
+    "title": "Danh sách trường",
+    "tag": "Platform",
+    "permission": "platform.schools.read",
+    "scope": "staff",
+    "request": null,
+    "response": "School",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL01",
+      "PL02"
+    ],
+    "description": "Danh sách trường"
+  },
+  {
+    "id": "createSchool",
+    "method": "POST",
+    "path": "/api/v1/platform/schools",
+    "title": "Tạo không gian trường ở trạng thái nháp",
+    "tag": "Platform",
+    "permission": "platform.schools.manage",
+    "scope": "staff",
+    "request": "SchoolCreate",
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL03"
+    ],
+    "description": "Tạo không gian trường ở trạng thái nháp"
+  },
+  {
+    "id": "getPlatformSchool",
+    "method": "GET",
+    "path": "/api/v1/platform/schools/{schoolId}",
+    "title": "Hồ sơ vận hành trường",
+    "tag": "Platform",
+    "permission": "platform.schools.read",
+    "scope": "school",
+    "request": null,
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL04"
+    ],
+    "description": "Hồ sơ vận hành trường"
+  },
+  {
+    "id": "updatePlatformSchool",
+    "method": "PATCH",
+    "path": "/api/v1/platform/schools/{schoolId}",
+    "title": "Sửa hồ sơ vận hành trường",
+    "tag": "Platform",
+    "permission": "platform.schools.manage",
+    "scope": "school",
+    "request": "SchoolPatch",
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL04"
+    ],
+    "description": "Sửa hồ sơ vận hành trường"
+  },
+  {
+    "id": "setSchoolStatus",
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/status",
+    "title": "Kích hoạt/tạm dừng, không xóa dữ liệu",
+    "tag": "Platform",
+    "permission": "platform.schools.manage",
+    "scope": "school",
+    "request": "SchoolStatusCommand",
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL02",
+      "PL04"
+    ],
+    "description": "Kích hoạt/tạm dừng, không xóa dữ liệu"
+  },
+  {
+    "id": "listSchoolAdmins",
+    "method": "GET",
+    "path": "/api/v1/platform/schools/{schoolId}/admins",
+    "title": "Các quản trị trường",
+    "tag": "Platform",
+    "permission": "platform.admins.manage",
+    "scope": "school",
+    "request": null,
+    "response": "Member",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL05"
+    ],
+    "description": "Các quản trị trường"
+  },
+  {
+    "id": "inviteSchoolAdmin",
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/admin-invitations",
+    "title": "Mời quản trị trường đầu tiên/kế tiếp",
+    "tag": "Platform",
+    "permission": "platform.admins.manage",
+    "scope": "school",
+    "request": "InviteRequest",
+    "response": "Invitation",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "PL03",
+      "PL05"
+    ],
+    "description": "Mời quản trị trường đầu tiên/kế tiếp"
+  },
+  {
+    "id": "revokeSchoolAdmin",
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/admins/{memberId}/revoke",
+    "title": "Thu hồi vai trò quản trị, không bỏ quản trị cuối",
+    "tag": "Platform",
+    "permission": "platform.admins.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL05"
+    ],
+    "description": "Thu hồi vai trò quản trị, không bỏ quản trị cuối"
+  },
+  {
+    "id": "listPlatformTickets",
+    "method": "GET",
+    "path": "/api/v1/platform/support",
+    "title": "Danh sách yêu cầu hỗ trợ",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": null,
+    "response": "SupportTicket",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL06"
+    ],
+    "description": "Danh sách yêu cầu hỗ trợ"
+  },
+  {
+    "id": "getPlatformTicket",
+    "method": "GET",
+    "path": "/api/v1/platform/support/{ticketId}",
+    "title": "Chi tiết yêu cầu, không tự mở hồ sơ trường",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": null,
+    "response": "SupportTicket",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL07"
+    ],
+    "description": "Chi tiết yêu cầu, không tự mở hồ sơ trường"
+  },
+  {
+    "id": "updatePlatformTicket",
+    "method": "PATCH",
+    "path": "/api/v1/platform/support/{ticketId}",
+    "title": "Phân công và cập nhật trạng thái hỗ trợ",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": "SupportTicketPatch",
+    "response": "SupportTicket",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL07"
+    ],
+    "description": "Phân công và cập nhật trạng thái hỗ trợ"
+  },
+  {
+    "id": "listPlatformTicketMessages",
+    "method": "GET",
+    "path": "/api/v1/platform/support/{ticketId}/messages",
+    "title": "Trao đổi hỗ trợ",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": null,
+    "response": "SupportMessage",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL07"
+    ],
+    "description": "Trao đổi hỗ trợ"
+  },
+  {
+    "id": "postPlatformTicketMessage",
+    "method": "POST",
+    "path": "/api/v1/platform/support/{ticketId}/messages",
+    "title": "Thêm phản hồi hỗ trợ",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": "MessageCreate",
+    "response": "SupportMessage",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL07"
+    ],
+    "description": "Thêm phản hồi hỗ trợ"
+  },
+  {
+    "id": "listPlatformSupportAccess",
+    "method": "GET",
+    "path": "/api/v1/platform/support-access",
+    "title": "Ủy quyền đã được trường xác nhận",
+    "tag": "Support",
+    "permission": "platform.support",
+    "scope": "staff",
+    "request": null,
+    "response": "SupportAccess",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL08"
+    ],
+    "description": "Ủy quyền đã được trường xác nhận"
+  },
+  {
+    "id": "listPlatformAudit",
+    "method": "GET",
+    "path": "/api/v1/platform/audit",
+    "title": "Nhật ký vận hành đã che dữ liệu nhạy cảm",
+    "tag": "Platform",
+    "permission": "platform.audit",
+    "scope": "staff",
+    "request": null,
+    "response": "AuditEvent",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL09"
+    ],
+    "description": "Nhật ký vận hành đã che dữ liệu nhạy cảm"
+  },
+  {
+    "id": "listOperations",
+    "method": "GET",
+    "path": "/api/v1/platform/operations",
+    "title": "Chỉ kết quả vận hành thực, không nút shell/restore",
+    "tag": "Platform",
+    "permission": "platform.operations",
+    "scope": "staff",
+    "request": null,
+    "response": "OperationRun",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL10"
+    ],
+    "description": "Chỉ kết quả vận hành thực, không nút shell/restore"
+  },
+  {
+    "id": "getPlatformSettings",
+    "method": "GET",
+    "path": "/api/v1/platform/settings",
+    "title": "Cấu hình nhận diện nền tảng",
+    "tag": "Platform",
+    "permission": "platform.settings",
+    "scope": "staff",
+    "request": null,
+    "response": "PlatformSettings",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL11"
+    ],
+    "description": "Cấu hình nhận diện nền tảng"
+  },
+  {
+    "id": "updatePlatformSettings",
+    "method": "PATCH",
+    "path": "/api/v1/platform/settings",
+    "title": "Sửa nhận diện, không sửa secret qua UI",
+    "tag": "Platform",
+    "permission": "platform.settings",
+    "scope": "staff",
+    "request": "PlatformSettingsPatch",
+    "response": "PlatformSettings",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "PL11"
+    ],
+    "description": "Sửa nhận diện, không sửa secret qua UI"
+  },
+  {
+    "id": "getSchoolOverview",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/overview",
+    "title": "Tổng quan đúng một trường",
+    "tag": "School",
+    "permission": "school.read",
+    "scope": "school",
+    "request": null,
+    "response": "Dashboard",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC01"
+    ],
+    "description": "Tổng quan đúng một trường"
+  },
+  {
+    "id": "getSchoolProfile",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/profile",
+    "title": "Thông tin trường",
+    "tag": "School",
+    "permission": "school.read",
+    "scope": "school",
+    "request": null,
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC02"
+    ],
+    "description": "Thông tin trường"
+  },
+  {
+    "id": "updateSchoolProfile",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/profile",
+    "title": "Sửa nhận diện và liên hệ công khai",
+    "tag": "School",
+    "permission": "school.settings",
+    "scope": "school",
+    "request": "SchoolPatch",
+    "response": "School",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC02"
+    ],
+    "description": "Sửa nhận diện và liên hệ công khai"
+  },
+  {
+    "id": "listYears",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years",
+    "title": "Danh sách Year",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Year",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC03",
+      "SC04",
+      "SC05"
+    ],
+    "description": "Danh sách Year"
+  },
+  {
+    "id": "createYear",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years",
+    "title": "Tạo Year",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "YearCreate",
+    "response": "Year",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC03",
+      "SC04",
+      "SC05"
+    ],
+    "description": "Tạo Year"
+  },
+  {
+    "id": "getYear",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}",
+    "title": "Chi tiết Year",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Year",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC03",
+      "SC04",
+      "SC05"
+    ],
+    "description": "Chi tiết Year"
+  },
+  {
+    "id": "updateYear",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}",
+    "title": "Sửa Year có version",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "YearPatch",
+    "response": "Year",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC03",
+      "SC04",
+      "SC05"
+    ],
+    "description": "Sửa Year có version"
+  },
+  {
+    "id": "listTerms",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/terms",
+    "title": "Danh sách Term",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Term",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Danh sách Term"
+  },
+  {
+    "id": "createTerm",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/terms",
+    "title": "Tạo Term",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "TermCreate",
+    "response": "Term",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Tạo Term"
+  },
+  {
+    "id": "getTerm",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/terms/{termId}",
+    "title": "Chi tiết Term",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Term",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Chi tiết Term"
+  },
+  {
+    "id": "updateTerm",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/terms/{termId}",
+    "title": "Sửa Term có version",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "TermPatch",
+    "response": "Term",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Sửa Term có version"
+  },
+  {
+    "id": "listWeeks",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/weeks",
+    "title": "Danh sách Week",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Week",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Danh sách Week"
+  },
+  {
+    "id": "createWeek",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/weeks",
+    "title": "Tạo Week",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "WeekCreate",
+    "response": "Week",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Tạo Week"
+  },
+  {
+    "id": "getWeek",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/weeks/{weekId}",
+    "title": "Chi tiết Week",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "Week",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Chi tiết Week"
+  },
+  {
+    "id": "updateWeek",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/weeks/{weekId}",
+    "title": "Sửa Week có version",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "WeekPatch",
+    "response": "Week",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05",
+      "SC06"
+    ],
+    "description": "Sửa Week có version"
+  },
+  {
+    "id": "listCalendarEvents",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/calendar-events",
+    "title": "Danh sách CalendarEvent",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "CalendarEvent",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC06"
+    ],
+    "description": "Danh sách CalendarEvent"
+  },
+  {
+    "id": "createCalendarEvent",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/calendar-events",
+    "title": "Tạo CalendarEvent",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "CalendarEventCreate",
+    "response": "CalendarEvent",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC06"
+    ],
+    "description": "Tạo CalendarEvent"
+  },
+  {
+    "id": "getCalendarEvent",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/calendar-events/{eventId}",
+    "title": "Chi tiết CalendarEvent",
+    "tag": "School",
+    "permission": "year.read",
+    "scope": "school",
+    "request": null,
+    "response": "CalendarEvent",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC06"
+    ],
+    "description": "Chi tiết CalendarEvent"
+  },
+  {
+    "id": "updateCalendarEvent",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/calendar-events/{eventId}",
+    "title": "Sửa CalendarEvent có version",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "CalendarEventPatch",
+    "response": "CalendarEvent",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC06"
+    ],
+    "description": "Sửa CalendarEvent có version"
+  },
+  {
+    "id": "listClasss",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes",
+    "title": "Danh sách Class",
+    "tag": "School",
+    "permission": "class.read",
+    "scope": "school",
+    "request": null,
+    "response": "Class",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Danh sách Class"
+  },
+  {
+    "id": "createClass",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes",
+    "title": "Tạo Class",
+    "tag": "School",
+    "permission": "class.manage",
+    "scope": "school",
+    "request": "ClassCreate",
+    "response": "Class",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Tạo Class"
+  },
+  {
+    "id": "getClass",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}",
+    "title": "Chi tiết Class",
+    "tag": "School",
+    "permission": "class.read",
+    "scope": "class",
+    "request": null,
+    "response": "Class",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Chi tiết Class"
+  },
+  {
+    "id": "updateClass",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}",
+    "title": "Sửa Class có version",
+    "tag": "School",
+    "permission": "class.manage",
+    "scope": "class",
+    "request": "ClassPatch",
+    "response": "Class",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Sửa Class có version"
+  },
+  {
+    "id": "activateYear",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/activate",
+    "title": "Kích hoạt năm học",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "Year",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC05"
+    ],
+    "description": "Kích hoạt năm học"
+  },
+  {
+    "id": "archiveYear",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/archive",
+    "title": "Lưu trữ năm học sau kiểm tra dữ liệu",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Year",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC07"
+    ],
+    "description": "Lưu trữ năm học sau kiểm tra dữ liệu"
+  },
+  {
+    "id": "activateClass",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activate",
+    "title": "Kích hoạt lớp đủ điều kiện",
+    "tag": "School",
+    "permission": "class.manage",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "Class",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Kích hoạt lớp đủ điều kiện"
+  },
+  {
+    "id": "archiveClass",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/archive",
+    "title": "Lưu trữ lớp, không xóa lịch sử",
+    "tag": "School",
+    "permission": "class.manage",
+    "scope": "class",
+    "request": "ReasonCommand",
+    "response": "Class",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC09"
+    ],
+    "description": "Lưu trữ lớp, không xóa lịch sử"
+  },
+  {
+    "id": "publishCalendarEvent",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/calendar-events/{eventId}/publish",
+    "title": "Công bố mốc lịch công khai không PII",
+    "tag": "School",
+    "permission": "calendar.publish",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "CalendarEvent",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC06"
+    ],
+    "description": "Công bố mốc lịch công khai không PII"
+  },
+  {
+    "id": "listDictionary",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/dictionaries/{dictionary}",
+    "title": "Khối/môn/phòng theo whitelist",
+    "tag": "School",
+    "permission": "dictionary.read",
+    "scope": "school",
+    "request": null,
+    "response": "DictionaryItem",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC08"
+    ],
+    "description": "Khối/môn/phòng theo whitelist"
+  },
+  {
+    "id": "createDictionary",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/dictionaries/{dictionary}",
+    "title": "Thêm mục danh mục",
+    "tag": "School",
+    "permission": "dictionary.manage",
+    "scope": "school",
+    "request": "DictionaryCreate",
+    "response": "DictionaryItem",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC08"
+    ],
+    "description": "Thêm mục danh mục"
+  },
+  {
+    "id": "updateDictionary",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/dictionaries/{dictionary}/{itemId}",
+    "title": "Sửa/ngừng dùng danh mục",
+    "tag": "School",
+    "permission": "dictionary.manage",
+    "scope": "school",
+    "request": "DictionaryItemPatch",
+    "response": "DictionaryItem",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC08"
+    ],
+    "description": "Sửa/ngừng dùng danh mục"
+  },
+  {
+    "id": "createRollover",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/rollovers",
+    "title": "Lập kế hoạch sang năm mới",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "RolloverCreate",
+    "response": "Rollover",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC07"
+    ],
+    "description": "Lập kế hoạch sang năm mới"
+  },
+  {
+    "id": "getRollover",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/rollovers/{rolloverId}",
+    "title": "Xem trước tác động từng học sinh",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": null,
+    "response": "Rollover",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC07"
+    ],
+    "description": "Xem trước tác động từng học sinh"
+  },
+  {
+    "id": "validateRollover",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rollovers/{rolloverId}/validate",
+    "title": "Kiểm tra kế hoạch và cấp preview hash",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "Rollover",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC07"
+    ],
+    "description": "Kiểm tra kế hoạch và cấp preview hash"
+  },
+  {
+    "id": "commitRollover",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rollovers/{rolloverId}/commit",
+    "title": "Áp dụng kế hoạch đã duyệt qua job",
+    "tag": "School",
+    "permission": "year.manage",
+    "scope": "school",
+    "request": "PlanCommit",
+    "response": "Rollover",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC07"
+    ],
+    "description": "Áp dụng kế hoạch đã duyệt qua job"
+  },
+  {
+    "id": "listMembers",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/members",
+    "title": "Danh sách nhân sự thuộc trường",
+    "tag": "Staff",
+    "permission": "member.read",
+    "scope": "school",
+    "request": null,
+    "response": "Member",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC10"
+    ],
+    "description": "Danh sách nhân sự thuộc trường"
+  },
+  {
+    "id": "getMember",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}",
+    "title": "Hồ sơ công tác và phân công",
+    "tag": "Staff",
+    "permission": "member.read",
+    "scope": "school",
+    "request": null,
+    "response": "Member",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC11"
+    ],
+    "description": "Hồ sơ công tác và phân công"
+  },
+  {
+    "id": "updateMember",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}",
+    "title": "Sửa hồ sơ công tác, không đổi email danh tính",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": "MemberPatch",
+    "response": "Member",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC11"
+    ],
+    "description": "Sửa hồ sơ công tác, không đổi email danh tính"
+  },
+  {
+    "id": "suspendMember",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/suspend",
+    "title": "Ngừng quyền tại trường, giữ các trường khác",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Member",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC10",
+      "SC11"
+    ],
+    "description": "Ngừng quyền tại trường, giữ các trường khác"
+  },
+  {
+    "id": "reactivateMember",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/members/{memberId}/reactivate",
+    "title": "Khôi phục thành viên, không tự khôi phục grant cũ",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Member",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC10",
+      "SC11"
+    ],
+    "description": "Khôi phục thành viên, không tự khôi phục grant cũ"
+  },
+  {
+    "id": "listInvitations",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/invitations",
+    "title": "Lời mời trong trường",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": null,
+    "response": "Invitation",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC10"
+    ],
+    "description": "Lời mời trong trường"
+  },
+  {
+    "id": "inviteStaff",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/invitations",
+    "title": "Mời nhân sự đúng email đã xác minh",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": "InviteRequest",
+    "response": "Invitation",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC10"
+    ],
+    "description": "Mời nhân sự đúng email đã xác minh"
+  },
+  {
+    "id": "revokeInvitation",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/invitations/{invitationId}/revoke",
+    "title": "Thu hồi lời mời",
+    "tag": "Staff",
+    "permission": "member.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Invitation",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC10"
+    ],
+    "description": "Thu hồi lời mời"
+  },
+  {
+    "id": "listRoles",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/roles",
+    "title": "Danh sách mẫu quyền",
+    "tag": "Staff",
+    "permission": "role.read",
+    "scope": "school",
+    "request": null,
+    "response": "Role",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC13"
+    ],
+    "description": "Danh sách mẫu quyền"
+  },
+  {
+    "id": "getRole",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/roles/{roleId}",
+    "title": "Ma trận mẫu quyền",
+    "tag": "Staff",
+    "permission": "role.read",
+    "scope": "school",
+    "request": null,
+    "response": "Role",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC14"
+    ],
+    "description": "Ma trận mẫu quyền"
+  },
+  {
+    "id": "createRole",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/roles",
+    "title": "Tạo mẫu quyền trong tập quyền được giao",
+    "tag": "Staff",
+    "permission": "role.manage",
+    "scope": "school",
+    "request": "RoleCreate",
+    "response": "Role",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC13"
+    ],
+    "description": "Tạo mẫu quyền trong tập quyền được giao"
+  },
+  {
+    "id": "updateRole",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/roles/{roleId}",
+    "title": "Sửa mẫu quyền, tăng authz version",
+    "tag": "Staff",
+    "permission": "role.manage",
+    "scope": "school",
+    "request": "RolePatch",
+    "response": "Role",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC14"
+    ],
+    "description": "Sửa mẫu quyền, tăng authz version"
+  },
+  {
+    "id": "previewGrant",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/grants/preview",
+    "title": "Xem quyền thêm/bớt, không tự nâng quyền",
+    "tag": "Staff",
+    "permission": "grant.manage",
+    "scope": "school",
+    "request": "GrantRequest",
+    "response": "PermissionPreview",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC12",
+      "SC14"
+    ],
+    "description": "Xem quyền thêm/bớt, không tự nâng quyền"
+  },
+  {
+    "id": "createGrant",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/grants",
+    "title": "Cấp một grant với action và scope gắn nhau",
+    "tag": "Staff",
+    "permission": "grant.manage",
+    "scope": "school",
+    "request": "GrantRequest",
+    "response": "GrantView",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC12",
+      "SC14"
+    ],
+    "description": "Cấp một grant với action và scope gắn nhau"
+  },
+  {
+    "id": "revokeGrant",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/grants/{grantId}/revoke",
+    "title": "Thu hồi quyền ở lần đọc/ghi kế tiếp",
+    "tag": "Staff",
+    "permission": "grant.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC11",
+      "SC14"
+    ],
+    "description": "Thu hồi quyền ở lần đọc/ghi kế tiếp"
+  },
+  {
+    "id": "listAssignments",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/assignments",
+    "title": "Ma trận phân công theo lớp/môn",
+    "tag": "Staff",
+    "permission": "assignment.read",
+    "scope": "school",
+    "request": null,
+    "response": "Assignment",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC11",
+      "SC12"
+    ],
+    "description": "Ma trận phân công theo lớp/môn"
+  },
+  {
+    "id": "createAssignment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/assignments",
+    "title": "Giao nhiệm vụ và cấp grant trong một transaction",
+    "tag": "Staff",
+    "permission": "assignment.manage",
+    "scope": "school",
+    "request": "AssignmentCreate",
+    "response": "Assignment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC12"
+    ],
+    "description": "Giao nhiệm vụ và cấp grant trong một transaction"
+  },
+  {
+    "id": "revokeAssignment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/assignments/{assignmentId}/revoke",
+    "title": "Kết thúc phân công đồng thời thu hồi grant",
+    "tag": "Staff",
+    "permission": "assignment.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Assignment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC11",
+      "SC12"
+    ],
+    "description": "Kết thúc phân công đồng thời thu hồi grant"
+  },
+  {
+    "id": "listHandovers",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/handovers",
+    "title": "Danh sách bàn giao",
+    "tag": "Staff",
+    "permission": "assignment.manage",
+    "scope": "school",
+    "request": null,
+    "response": "Handover",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC15"
+    ],
+    "description": "Danh sách bàn giao"
+  },
+  {
+    "id": "createHandover",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/handovers",
+    "title": "Tạo bàn giao có thời điểm và checklist",
+    "tag": "Staff",
+    "permission": "assignment.manage",
+    "scope": "school",
+    "request": "HandoverCreate",
+    "response": "Handover",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC15"
+    ],
+    "description": "Tạo bàn giao có thời điểm và checklist"
+  },
+  {
+    "id": "approveHandover",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/handovers/{handoverId}/approve",
+    "title": "Duyệt bàn giao và lịch thực hiện",
+    "tag": "Staff",
+    "permission": "assignment.manage",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "Handover",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC15"
+    ],
+    "description": "Duyệt bàn giao và lịch thực hiện"
+  },
+  {
+    "id": "listStudents",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students",
+    "title": "Học sinh được phép xem theo scope",
+    "tag": "Students",
+    "permission": "student.read",
+    "scope": "school",
+    "request": null,
+    "response": "Student",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC16"
+    ],
+    "description": "Học sinh được phép xem theo scope"
+  },
+  {
+    "id": "createStudent",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/students",
+    "title": "Thêm học sinh và enrollment đầu nếu có",
+    "tag": "Students",
+    "permission": "student.manage",
+    "scope": "school",
+    "request": "StudentCreate",
+    "response": "Student",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC17"
+    ],
+    "description": "Thêm học sinh và enrollment đầu nếu có"
+  },
+  {
+    "id": "getStudent",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}",
+    "title": "Hồ sơ có chiếu trường dữ liệu theo quyền",
+    "tag": "Students",
+    "permission": "student.read",
+    "scope": "school",
+    "request": null,
+    "response": "StudentDetail",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC18",
+      "SC19"
+    ],
+    "description": "Hồ sơ có chiếu trường dữ liệu theo quyền"
+  },
+  {
+    "id": "updateStudent",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}",
+    "title": "Sửa hồ sơ không dùng tên làm khóa",
+    "tag": "Students",
+    "permission": "student.manage",
+    "scope": "school",
+    "request": "StudentPatch",
+    "response": "Student",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC19"
+    ],
+    "description": "Sửa hồ sơ không dùng tên làm khóa"
+  },
+  {
+    "id": "listStudentEnrollments",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}/enrollments",
+    "title": "Lịch sử theo học",
+    "tag": "Students",
+    "permission": "student.read",
+    "scope": "school",
+    "request": null,
+    "response": "Enrollment",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC18"
+    ],
+    "description": "Lịch sử theo học"
+  },
+  {
+    "id": "createEnrollment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/enrollments",
+    "title": "Xếp học sinh vào lớp có khoảng ngày",
+    "tag": "Students",
+    "permission": "student.manage",
+    "scope": "school",
+    "request": "EnrollmentCreate",
+    "response": "Enrollment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC17",
+      "SC20"
+    ],
+    "description": "Xếp học sinh vào lớp có khoảng ngày"
+  },
+  {
+    "id": "listTransfers",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/transfers",
+    "title": "Chuyển lớp hoặc ngừng theo học",
+    "tag": "Students",
+    "permission": "student.transfer",
+    "scope": "school",
+    "request": null,
+    "response": "Transfer",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC20"
+    ],
+    "description": "Chuyển lớp hoặc ngừng theo học"
+  },
+  {
+    "id": "createTransfer",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/transfers",
+    "title": "Đề nghị chuyển lớp",
+    "tag": "Students",
+    "permission": "student.transfer.request",
+    "scope": "school",
+    "request": "TransferCreate",
+    "response": "Transfer",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC20",
+      "CL03"
+    ],
+    "description": "Đề nghị chuyển lớp"
+  },
+  {
+    "id": "approveTransfer",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/transfers/{transferId}/approve",
+    "title": "Duyệt chuyển, chuyển đúng thời điểm hiệu lực",
+    "tag": "Students",
+    "permission": "student.transfer",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "Transfer",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC20"
+    ],
+    "description": "Duyệt chuyển, chuyển đúng thời điểm hiệu lực"
+  },
+  {
+    "id": "rejectTransfer",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/transfers/{transferId}/reject",
+    "title": "Từ chối có lý do",
+    "tag": "Students",
+    "permission": "student.transfer",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Transfer",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC20"
+    ],
+    "description": "Từ chối có lý do"
+  },
+  {
+    "id": "listGuardians",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/guardians",
+    "title": "Người giám hộ của học sinh thuộc quyền",
+    "tag": "Students",
+    "permission": "guardian.read",
+    "scope": "school",
+    "request": null,
+    "response": "Guardian",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC21"
+    ],
+    "description": "Người giám hộ của học sinh thuộc quyền"
+  },
+  {
+    "id": "createGuardian",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/guardians",
+    "title": "Thêm người giám hộ, không tạo user",
+    "tag": "Students",
+    "permission": "guardian.manage",
+    "scope": "school",
+    "request": "GuardianCreate",
+    "response": "Guardian",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC21",
+      "SC18"
+    ],
+    "description": "Thêm người giám hộ, không tạo user"
+  },
+  {
+    "id": "getGuardian",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/guardians/{guardianId}",
+    "title": "Thông tin người giám hộ",
+    "tag": "Students",
+    "permission": "guardian.read",
+    "scope": "school",
+    "request": null,
+    "response": "Guardian",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC22"
+    ],
+    "description": "Thông tin người giám hộ"
+  },
+  {
+    "id": "updateGuardian",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/guardians/{guardianId}",
+    "title": "Sửa liên hệ người giám hộ",
+    "tag": "Students",
+    "permission": "guardian.manage",
+    "scope": "school",
+    "request": "GuardianPatch",
+    "response": "Guardian",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC22"
+    ],
+    "description": "Sửa liên hệ người giám hộ"
+  },
+  {
+    "id": "listRelationships",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/relationships",
+    "title": "Quan hệ với từng học sinh",
+    "tag": "Students",
+    "permission": "guardian.read",
+    "scope": "school",
+    "request": null,
+    "response": "Relationship",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC18",
+      "SC22"
+    ],
+    "description": "Quan hệ với từng học sinh"
+  },
+  {
+    "id": "createRelationship",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/relationships",
+    "title": "Liên kết học sinh/người giám hộ",
+    "tag": "Students",
+    "permission": "guardian.manage",
+    "scope": "school",
+    "request": "RelationshipCreate",
+    "response": "Relationship",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC18",
+      "SC22"
+    ],
+    "description": "Liên kết học sinh/người giám hộ"
+  },
+  {
+    "id": "verifyRelationship",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/relationships/{relationshipId}/verify",
+    "title": "Xác nhận quyền nhận thông tin",
+    "tag": "Students",
+    "permission": "guardian.verify",
+    "scope": "school",
+    "request": "VerifyRelationship",
+    "response": "Relationship",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC22"
+    ],
+    "description": "Xác nhận quyền nhận thông tin"
+  },
+  {
+    "id": "revokeRelationship",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/relationships/{relationshipId}/revoke",
+    "title": "Thu hồi quan hệ và quyền link liên quan",
+    "tag": "Students",
+    "permission": "guardian.verify",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Relationship",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC22"
+    ],
+    "description": "Thu hồi quan hệ và quyền link liên quan"
+  },
+  {
+    "id": "listParentAccess",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access",
+    "title": "Danh sách quyền tra cứu, không trả token gốc",
+    "tag": "ParentAccess",
+    "permission": "parent_access.manage",
+    "scope": "school",
+    "request": null,
+    "response": "ParentAccess",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC23"
+    ],
+    "description": "Danh sách quyền tra cứu, không trả token gốc"
+  },
+  {
+    "id": "issueParentAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/parent-access",
+    "title": "Phát hành link, chỉ hiển thị secret một lần",
+    "tag": "ParentAccess",
+    "permission": "parent_access.issue",
+    "scope": "school",
+    "request": "ParentAccessCreate",
+    "response": "ParentAccessIssued",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC18",
+      "SC23"
+    ],
+    "description": "Phát hành link, chỉ hiển thị secret một lần"
+  },
+  {
+    "id": "getParentAccess",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}",
+    "title": "Phạm vi và hạn quyền tra cứu",
+    "tag": "ParentAccess",
+    "permission": "parent_access.manage",
+    "scope": "school",
+    "request": null,
+    "response": "ParentAccess",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC24"
+    ],
+    "description": "Phạm vi và hạn quyền tra cứu"
+  },
+  {
+    "id": "revokeParentAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/revoke",
+    "title": "Thu hồi link/phiên cho lần truy cập kế tiếp",
+    "tag": "ParentAccess",
+    "permission": "parent_access.revoke",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "ParentAccess",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC24"
+    ],
+    "description": "Thu hồi link/phiên cho lần truy cập kế tiếp"
+  },
+  {
+    "id": "reissueParentAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/reissue",
+    "title": "Thu hồi cũ và cấp mới, không khôi phục token",
+    "tag": "ParentAccess",
+    "permission": "parent_access.issue",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "ParentAccessIssued",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC24"
+    ],
+    "description": "Thu hồi cũ và cấp mới, không khôi phục token"
+  },
+  {
+    "id": "listParentAccessEvents",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/events",
+    "title": "Lịch sử dùng link không khẳng định người mở",
+    "tag": "ParentAccess",
+    "permission": "parent_access.manage",
+    "scope": "school",
+    "request": null,
+    "response": "AccessEvent",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC24"
+    ],
+    "description": "Lịch sử dùng link không khẳng định người mở"
+  },
+  {
+    "id": "previewParent",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview",
+    "title": "Xem trước published-only bằng quyền nhân sự",
+    "tag": "ParentAccess",
+    "permission": "parent_access.preview",
+    "scope": "school",
+    "request": null,
+    "response": "ParentOverview",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC25"
+    ],
+    "description": "Không giả cookie phụ huynh; cùng serializer published-only; viewId preview không trao quyền tra cứu thật."
+  },
+  {
+    "id": "getTeacherOverview",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/overview",
+    "title": "Việc hôm nay",
+    "tag": "Teacher",
+    "permission": "teacher.self",
+    "scope": "school",
+    "request": null,
+    "response": "Dashboard",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "TE01"
+    ],
+    "description": "Việc hôm nay"
+  },
+  {
+    "id": "listMyClasses",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/classes",
+    "title": "Lớp đang được phân công",
+    "tag": "Teacher",
+    "permission": "teacher.self",
+    "scope": "school",
+    "request": null,
+    "response": "Class",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "TE02"
+    ],
+    "description": "Lớp đang được phân công"
+  },
+  {
+    "id": "listMySchedule",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/schedule",
+    "title": "Lịch dạy của chính giáo viên",
+    "tag": "Teacher",
+    "permission": "teacher.self",
+    "scope": "school",
+    "request": null,
+    "response": "Lesson",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "TE03"
+    ],
+    "description": "Lịch dạy của chính giáo viên"
+  },
+  {
+    "id": "listMyTasks",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/tasks",
+    "title": "Công việc suy ra từ dữ liệu thật",
+    "tag": "Teacher",
+    "permission": "teacher.self",
+    "scope": "school",
+    "request": null,
+    "response": "Task",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "TE04"
+    ],
+    "description": "Công việc suy ra từ dữ liệu thật"
+  },
+  {
+    "id": "listTeacherAnnouncements",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/announcements",
+    "title": "Thông báo liên quan nhân sự",
+    "tag": "Teacher",
+    "permission": "teacher.self",
+    "scope": "school",
+    "request": null,
+    "response": "Announcement",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "TE05"
+    ],
+    "description": "Thông báo liên quan nhân sự"
+  },
+  {
+    "id": "getClassOverview",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/overview",
+    "title": "Dashboard lớp đúng nhiệm vụ",
+    "tag": "Classroom",
+    "permission": "class.read",
+    "scope": "class",
+    "request": null,
+    "response": "Dashboard",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL01"
+    ],
+    "description": "Dashboard lớp đúng nhiệm vụ"
+  },
+  {
+    "id": "listClassStudents",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/students",
+    "title": "Roster lớp được phân công",
+    "tag": "Classroom",
+    "permission": "student.read",
+    "scope": "class",
+    "request": null,
+    "response": "Student",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL02"
+    ],
+    "description": "Roster lớp được phân công"
+  },
+  {
+    "id": "getClassStudent",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/students/{studentId}",
+    "title": "StudentProfile được cắt đúng phạm vi",
+    "tag": "Classroom",
+    "permission": "student.read",
+    "scope": "class",
+    "request": null,
+    "response": "StudentDetail",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL03"
+    ],
+    "description": "StudentProfile được cắt đúng phạm vi"
+  },
+  {
+    "id": "listGroups",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/groups",
+    "title": "Danh sách Group",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": null,
+    "response": "Group",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Danh sách Group"
+  },
+  {
+    "id": "createGroup",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/groups",
+    "title": "Tạo Group",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "GroupCreate",
+    "response": "Group",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Tạo Group"
+  },
+  {
+    "id": "listPositions",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/positions",
+    "title": "Danh sách Position",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": null,
+    "response": "Position",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Danh sách Position"
+  },
+  {
+    "id": "createPosition",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/positions",
+    "title": "Tạo Position",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "PositionCreate",
+    "response": "Position",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Tạo Position"
+  },
+  {
+    "id": "listSeatingPlans",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/seating-plans",
+    "title": "Danh sách SeatingPlan",
+    "tag": "Classroom",
+    "permission": "seating.manage",
+    "scope": "class",
+    "request": null,
+    "response": "SeatingPlan",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL14"
+    ],
+    "description": "Danh sách SeatingPlan"
+  },
+  {
+    "id": "createSeatingPlan",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/seating-plans",
+    "title": "Tạo SeatingPlan",
+    "tag": "Classroom",
+    "permission": "seating.manage",
+    "scope": "class",
+    "request": "SeatingCreate",
+    "response": "SeatingPlan",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL14"
+    ],
+    "description": "Tạo SeatingPlan"
+  },
+  {
+    "id": "updateGroup",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/groups/{groupId}",
+    "title": "Sửa tên/thứ tự tổ",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "GroupPatch",
+    "response": "Group",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Sửa tên/thứ tự tổ"
+  },
+  {
+    "id": "updatePosition",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/positions/{positionId}",
+    "title": "Sửa nhãn chức vụ chưa ảnh hưởng lịch sử",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "PositionPatch",
+    "response": "Position",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Sửa nhãn chức vụ chưa ảnh hưởng lịch sử"
+  },
+  {
+    "id": "listPositionAssignments",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/position-assignments",
+    "title": "Lịch sử người giữ chức vụ",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": null,
+    "response": "PositionAssignment",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Lịch sử người giữ chức vụ"
+  },
+  {
+    "id": "endPositionAssignment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/position-assignments/{assignmentId}/end",
+    "title": "Kết thúc chức vụ có ngày hiệu lực",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "EndPositionAssignment",
+    "response": "PositionAssignment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Kết thúc chức vụ có ngày hiệu lực"
+  },
+  {
+    "id": "assignGroup",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/groups/assign",
+    "title": "Chuyển tổ có ngày hiệu lực",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "GroupAssign",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Chuyển tổ có ngày hiệu lực"
+  },
+  {
+    "id": "assignPosition",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/positions/assign",
+    "title": "Giao chức vụ không cấp user",
+    "tag": "Classroom",
+    "permission": "group.manage",
+    "scope": "class",
+    "request": "PositionAssign",
+    "response": "PositionAssignment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL13"
+    ],
+    "description": "Giao chức vụ không cấp user"
+  },
+  {
+    "id": "getSeatingPlan",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/seating-plans/{planId}",
+    "title": "Phiên bản sơ đồ và chỗ ngồi",
+    "tag": "Classroom",
+    "permission": "class.read",
+    "scope": "class",
+    "request": null,
+    "response": "SeatingPlan",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL14"
+    ],
+    "description": "Phiên bản sơ đồ và chỗ ngồi"
+  },
+  {
+    "id": "updateSeatingPlan",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/seating-plans/{planId}",
+    "title": "Lưu sơ đồ nháp có kiểm tra trùng chỗ",
+    "tag": "Classroom",
+    "permission": "seating.manage",
+    "scope": "class",
+    "request": "SeatingSave",
+    "response": "SeatingPlan",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL14"
+    ],
+    "description": "Lưu sơ đồ nháp có kiểm tra trùng chỗ"
+  },
+  {
+    "id": "activateSeatingPlan",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/seating-plans/{planId}/activate",
+    "title": "Áp dụng sơ đồ đúng ngày",
+    "tag": "Classroom",
+    "permission": "seating.manage",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "SeatingPlan",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL14"
+    ],
+    "description": "Áp dụng sơ đồ đúng ngày"
+  },
+  {
+    "id": "listAttendanceSessions",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance",
+    "title": "Danh sách buổi/tiết điểm danh",
+    "tag": "Attendance",
+    "permission": "attendance.read",
+    "scope": "class",
+    "request": null,
+    "response": "AttendanceSession",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04",
+      "CL05"
+    ],
+    "description": "Danh sách buổi/tiết điểm danh"
+  },
+  {
+    "id": "createAttendanceSession",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance",
+    "title": "Tạo buổi/tiết với UNMARKED, không mặc định có mặt",
+    "tag": "Attendance",
+    "permission": "attendance.record",
+    "scope": "class",
+    "request": "AttendanceCreate",
+    "response": "AttendanceSession",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04"
+    ],
+    "description": "Tạo buổi/tiết với UNMARKED, không mặc định có mặt"
+  },
+  {
+    "id": "getAttendanceSession",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance/{sessionId}",
+    "title": "Bảng điểm danh hiện tại",
+    "tag": "Attendance",
+    "permission": "attendance.read",
+    "scope": "class",
+    "request": null,
+    "response": "AttendanceSession",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04"
+    ],
+    "description": "Bảng điểm danh hiện tại"
+  },
+  {
+    "id": "saveAttendanceRecords",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance/{sessionId}/records",
+    "title": "Lưu nhiều dòng nguyên tử với version",
+    "tag": "Attendance",
+    "permission": "attendance.record",
+    "scope": "class",
+    "request": "AttendanceBulk",
+    "response": "AttendanceSession",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04"
+    ],
+    "description": "Lưu nhiều dòng nguyên tử với version"
+  },
+  {
+    "id": "getAttendanceSummary",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance-summary",
+    "title": "Tổng hợp đúng mẫu số ngày hoặc tiết",
+    "tag": "Attendance",
+    "permission": "attendance.read",
+    "scope": "class",
+    "request": null,
+    "response": "AttendanceSummary",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL05"
+    ],
+    "description": "Tổng hợp đúng mẫu số ngày hoặc tiết"
+  },
+  {
+    "id": "publishAttendance",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance/{sessionId}/publish",
+    "title": "Chốt và công bố snapshot chuyên cần",
+    "tag": "Attendance",
+    "permission": "attendance.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04"
+    ],
+    "description": "Chốt và công bố snapshot chuyên cần"
+  },
+  {
+    "id": "reopenAttendance",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/attendance/{sessionId}/reopen",
+    "title": "Mở lại để điều chỉnh, giữ snapshot cũ",
+    "tag": "Attendance",
+    "permission": "attendance.reopen",
+    "scope": "class",
+    "request": "ReasonCommand",
+    "response": "AttendanceSession",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL04"
+    ],
+    "description": "Mở lại để điều chỉnh, giữ snapshot cũ"
+  },
+  {
+    "id": "listRuleSets",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets",
+    "title": "Phiên bản nội quy",
+    "tag": "Conduct",
+    "permission": "rules.read",
+    "scope": "school",
+    "request": null,
+    "response": "RuleSet",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC29"
+    ],
+    "description": "Phiên bản nội quy"
+  },
+  {
+    "id": "createRuleSet",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets",
+    "title": "Tạo nội quy nháp mới",
+    "tag": "Conduct",
+    "permission": "rules.manage",
+    "scope": "school",
+    "request": "RuleSetCreate",
+    "response": "RuleSet",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC29",
+      "SC30"
+    ],
+    "description": "Tạo nội quy nháp mới"
+  },
+  {
+    "id": "getRuleSet",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets/{ruleSetId}",
+    "title": "Chi tiết bộ nội quy và mốc xếp loại",
+    "tag": "Conduct",
+    "permission": "rules.read",
+    "scope": "school",
+    "request": null,
+    "response": "RuleSet",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC30"
+    ],
+    "description": "Chi tiết bộ nội quy và mốc xếp loại"
+  },
+  {
+    "id": "updateRuleSet",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets/{ruleSetId}",
+    "title": "Sửa bản nháp, không sửa bản đã ban hành",
+    "tag": "Conduct",
+    "permission": "rules.manage",
+    "scope": "school",
+    "request": "RuleSetPatch",
+    "response": "RuleSet",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC30"
+    ],
+    "description": "Sửa bản nháp, không sửa bản đã ban hành"
+  },
+  {
+    "id": "issueRuleSet",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets/{ruleSetId}/issue",
+    "title": "Ban hành bản mới",
+    "tag": "Conduct",
+    "permission": "rules.issue",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "RuleSet",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC30"
+    ],
+    "description": "Ban hành bản mới"
+  },
+  {
+    "id": "simulateRules",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/conduct-rule-sets/simulate",
+    "title": "Thử tính, không ghi dữ liệu học sinh",
+    "tag": "Conduct",
+    "permission": "rules.read",
+    "scope": "school",
+    "request": "RuleSimulation",
+    "response": "RuleSimulationResult",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC30"
+    ],
+    "description": "Chỉ trả kết quả thử công thức; không tạo học sinh, kỳ hay publication giả."
+  },
+  {
+    "id": "getClassRules",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/rules",
+    "title": "Bản nội quy theo giai đoạn lớp",
+    "tag": "Conduct",
+    "permission": "rules.read",
+    "scope": "class",
+    "request": null,
+    "response": "RuleSet",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL12"
+    ],
+    "description": "Bản nội quy theo giai đoạn lớp"
+  },
+  {
+    "id": "applyClassRules",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/rules/apply",
+    "title": "Gán nội quy từ đầu một tuần chưa mở",
+    "tag": "Conduct",
+    "permission": "rules.apply",
+    "scope": "class",
+    "request": "ClassRulesApply",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL12"
+    ],
+    "description": "Gán nội quy từ đầu một tuần chưa mở"
+  },
+  {
+    "id": "listConductPeriods",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods",
+    "title": "Danh sách kỳ thi đua",
+    "tag": "Conduct",
+    "permission": "conduct.read",
+    "scope": "class",
+    "request": null,
+    "response": "ConductPeriod",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL07"
+    ],
+    "description": "Danh sách kỳ thi đua"
+  },
+  {
+    "id": "createConductPeriod",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods",
+    "title": "Mở kỳ và đóng băng bản nội quy dùng để tính",
+    "tag": "Conduct",
+    "permission": "conduct.record",
+    "scope": "class",
+    "request": "ConductPeriodCreate",
+    "response": "ConductPeriod",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL06",
+      "CL07"
+    ],
+    "description": "Mở kỳ và đóng băng bản nội quy dùng để tính"
+  },
+  {
+    "id": "getConductSummary",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods/{periodId}/summary",
+    "title": "Tổng hợp có giải trình từng điểm",
+    "tag": "Conduct",
+    "permission": "conduct.read",
+    "scope": "class",
+    "request": null,
+    "response": "ConductSummary",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL07"
+    ],
+    "description": "Tổng hợp có giải trình từng điểm"
+  },
+  {
+    "id": "listConductRecords",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-records",
+    "title": "Lịch sử ghi nhận",
+    "tag": "Conduct",
+    "permission": "conduct.read",
+    "scope": "class",
+    "request": null,
+    "response": "ConductRecord",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL06"
+    ],
+    "description": "Lịch sử ghi nhận"
+  },
+  {
+    "id": "createConductRecord",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-records",
+    "title": "Ghi sự kiện, điểm tính tại server",
+    "tag": "Conduct",
+    "permission": "conduct.record",
+    "scope": "class",
+    "request": "ConductRecordCreate",
+    "response": "ConductRecord",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL06"
+    ],
+    "description": "Ghi sự kiện, điểm tính tại server"
+  },
+  {
+    "id": "updateConductRecord",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-records/{recordId}",
+    "title": "Sửa nháp trong thời hạn, kiểm tra version",
+    "tag": "Conduct",
+    "permission": "conduct.record",
+    "scope": "class",
+    "request": "ConductRecordPatch",
+    "response": "ConductRecord",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL06"
+    ],
+    "description": "Sửa nháp trong thời hạn, kiểm tra version"
+  },
+  {
+    "id": "approveConductRecord",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-records/{recordId}/approve",
+    "title": "Duyệt một ghi nhận",
+    "tag": "Conduct",
+    "permission": "conduct.review",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "ConductRecord",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Duyệt một ghi nhận"
+  },
+  {
+    "id": "excludeConductRecord",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-records/{recordId}/exclude",
+    "title": "Loại sự kiện trùng/sai có lý do",
+    "tag": "Conduct",
+    "permission": "conduct.review",
+    "scope": "class",
+    "request": "ReasonCommand",
+    "response": "ConductRecord",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Loại sự kiện trùng/sai có lý do"
+  },
+  {
+    "id": "reviewConductPeriod",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods/{periodId}/review",
+    "title": "Rà soát điều kiện chốt, không ghi thay đổi",
+    "tag": "Conduct",
+    "permission": "conduct.review",
+    "scope": "class",
+    "request": null,
+    "response": "ReviewResult",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Rà soát điều kiện chốt, không ghi thay đổi"
+  },
+  {
+    "id": "lockConductPeriod",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods/{periodId}/lock",
+    "title": "Khóa kỳ khi không còn dữ liệu chưa rà soát",
+    "tag": "Conduct",
+    "permission": "conduct.lock",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "ConductPeriod",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Khóa kỳ khi không còn dữ liệu chưa rà soát"
+  },
+  {
+    "id": "publishConductPeriod",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods/{periodId}/publish",
+    "title": "Công bố bản đã chốt theo source version",
+    "tag": "Conduct",
+    "permission": "conduct.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Công bố bản đã chốt theo source version"
+  },
+  {
+    "id": "lockAndPublishConduct",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/conduct-periods/{periodId}/lock-and-publish",
+    "title": "Chốt và công bố nguyên tử khi đủ hai quyền",
+    "tag": "Conduct",
+    "permission": "conduct.lock+conduct.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL08"
+    ],
+    "description": "Chốt và công bố nguyên tử khi đủ hai quyền"
+  },
+  {
+    "id": "listAdjustments",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/adjustments",
+    "title": "Yêu cầu điều chỉnh sau chốt",
+    "tag": "Conduct",
+    "permission": "conduct.adjust.request",
+    "scope": "class",
+    "request": null,
+    "response": "Adjustment",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL11"
+    ],
+    "description": "Yêu cầu điều chỉnh sau chốt"
+  },
+  {
+    "id": "createAdjustment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/adjustments",
+    "title": "Đề nghị điều chỉnh không sửa bản công bố cũ",
+    "tag": "Conduct",
+    "permission": "conduct.adjust.request",
+    "scope": "class",
+    "request": "AdjustmentCreate",
+    "response": "Adjustment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL11"
+    ],
+    "description": "Đề nghị điều chỉnh không sửa bản công bố cũ"
+  },
+  {
+    "id": "approveAdjustment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/adjustments/{adjustmentId}/approve",
+    "title": "Duyệt thay đổi với baseline còn hiện hành",
+    "tag": "Conduct",
+    "permission": "conduct.adjust.approve",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "Adjustment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL11"
+    ],
+    "description": "Duyệt thay đổi với baseline còn hiện hành"
+  },
+  {
+    "id": "rejectAdjustment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/adjustments/{adjustmentId}/reject",
+    "title": "Từ chối điều chỉnh có lý do",
+    "tag": "Conduct",
+    "permission": "conduct.adjust.approve",
+    "scope": "class",
+    "request": "ReasonCommand",
+    "response": "Adjustment",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL11"
+    ],
+    "description": "Từ chối điều chỉnh có lý do"
+  },
+  {
+    "id": "applyAdjustment",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/adjustments/{adjustmentId}/apply-and-publish",
+    "title": "Áp dụng và phát hành revision mới nguyên tử",
+    "tag": "Conduct",
+    "permission": "conduct.adjust.approve+conduct.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL11"
+    ],
+    "description": "Áp dụng và phát hành revision mới nguyên tử"
+  },
+  {
+    "id": "listSchoolPublications",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/publications",
+    "title": "Trung tâm rà soát và công bố",
+    "tag": "Publication",
+    "permission": "publication.read",
+    "scope": "school",
+    "request": null,
+    "response": "Publication",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC36"
+    ],
+    "description": "Trung tâm rà soát và công bố"
+  },
+  {
+    "id": "listClassPublications",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/publications",
+    "title": "Các revision của lớp",
+    "tag": "Publication",
+    "permission": "publication.read",
+    "scope": "class",
+    "request": null,
+    "response": "Publication",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL09"
+    ],
+    "description": "Các revision của lớp"
+  },
+  {
+    "id": "getClassPublication",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/publications/{publicationId}",
+    "title": "Snapshot bất biến, không tính lại",
+    "tag": "Publication",
+    "permission": "publication.read",
+    "scope": "class",
+    "request": null,
+    "response": "PublicationDetail",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL10"
+    ],
+    "description": "Snapshot bất biến, không tính lại"
+  },
+  {
+    "id": "withdrawPublication",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/publications/{publicationId}/withdraw",
+    "title": "Thu hồi đúng bản và projection",
+    "tag": "Publication",
+    "permission": "publication.withdraw",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC36",
+      "CL10"
+    ],
+    "description": "Thu hồi đúng bản và projection"
+  },
+  {
+    "id": "listSchoolLessons",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/timetable",
+    "title": "Lịch toàn trường theo lớp/giáo viên/phòng",
+    "tag": "Schedule",
+    "permission": "schedule.read",
+    "scope": "school",
+    "request": null,
+    "response": "Lesson",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC32"
+    ],
+    "description": "Lịch toàn trường theo lớp/giáo viên/phòng"
+  },
+  {
+    "id": "listClassTimetables",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables",
+    "title": "Lịch sử phiên bản thời khóa biểu",
+    "tag": "Schedule",
+    "permission": "schedule.read",
+    "scope": "class",
+    "request": null,
+    "response": "Timetable",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15"
+    ],
+    "description": "Lịch sử phiên bản thời khóa biểu"
+  },
+  {
+    "id": "createTimetable",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables",
+    "title": "Soạn phiên bản thời khóa biểu",
+    "tag": "Schedule",
+    "permission": "schedule.manage",
+    "scope": "class",
+    "request": "TimetableCreate",
+    "response": "Timetable",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15",
+      "SC32"
+    ],
+    "description": "Soạn phiên bản thời khóa biểu"
+  },
+  {
+    "id": "getTimetable",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables/{timetableId}",
+    "title": "Grid thời khóa biểu",
+    "tag": "Schedule",
+    "permission": "schedule.read",
+    "scope": "class",
+    "request": null,
+    "response": "Timetable",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15"
+    ],
+    "description": "Grid thời khóa biểu"
+  },
+  {
+    "id": "updateTimetable",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables/{timetableId}",
+    "title": "Sửa phiên bản nháp",
+    "tag": "Schedule",
+    "permission": "schedule.manage",
+    "scope": "class",
+    "request": "TimetablePatch",
+    "response": "Timetable",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15"
+    ],
+    "description": "Sửa phiên bản nháp"
+  },
+  {
+    "id": "validateTimetable",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables/{timetableId}/validate",
+    "title": "Kiểm tra trùng lớp/người/phòng và phân công",
+    "tag": "Schedule",
+    "permission": "schedule.manage",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "ScheduleConflicts",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15",
+      "SC32"
+    ],
+    "description": "Kiểm tra trùng lớp/người/phòng và phân công"
+  },
+  {
+    "id": "publishTimetable",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables/{timetableId}/publish",
+    "title": "Tạo lịch thực tế và công bố đúng giai đoạn",
+    "tag": "Schedule",
+    "permission": "schedule.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL15",
+      "SC32"
+    ],
+    "description": "Tạo lịch thực tế và công bố đúng giai đoạn"
+  },
+  {
+    "id": "listDuties",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/duties",
+    "title": "Lịch trực nhật của lớp",
+    "tag": "Schedule",
+    "permission": "duty.read",
+    "scope": "class",
+    "request": null,
+    "response": "DutySchedule",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL16"
+    ],
+    "description": "Lịch trực nhật của lớp"
+  },
+  {
+    "id": "createDuty",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/duties",
+    "title": "Tạo lịch trực nhật",
+    "tag": "Schedule",
+    "permission": "duty.manage",
+    "scope": "class",
+    "request": "DutyCreate",
+    "response": "DutySchedule",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL16"
+    ],
+    "description": "Tạo lịch trực nhật"
+  },
+  {
+    "id": "updateDuty",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/duties/{dutyId}",
+    "title": "Sửa lịch trực nhật nháp",
+    "tag": "Schedule",
+    "permission": "duty.manage",
+    "scope": "class",
+    "request": "DutySchedulePatch",
+    "response": "DutySchedule",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL16"
+    ],
+    "description": "Sửa lịch trực nhật nháp"
+  },
+  {
+    "id": "publishDuty",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/duties/{dutyId}/publish",
+    "title": "Công bố từng việc cho đúng học sinh",
+    "tag": "Schedule",
+    "permission": "duty.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL16"
+    ],
+    "description": "Công bố từng việc cho đúng học sinh"
+  },
+  {
+    "id": "listActivities",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities",
+    "title": "Hoạt động lớp",
+    "tag": "Activities",
+    "permission": "activity.read",
+    "scope": "class",
+    "request": null,
+    "response": "Activity",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL17"
+    ],
+    "description": "Hoạt động lớp"
+  },
+  {
+    "id": "createActivity",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities",
+    "title": "Tạo hoạt động và danh sách được giao",
+    "tag": "Activities",
+    "permission": "activity.manage",
+    "scope": "class",
+    "request": "ActivityCreate",
+    "response": "Activity",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL18"
+    ],
+    "description": "Tạo hoạt động và danh sách được giao"
+  },
+  {
+    "id": "getActivity",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}",
+    "title": "Chi tiết hoạt động",
+    "tag": "Activities",
+    "permission": "activity.read",
+    "scope": "class",
+    "request": null,
+    "response": "Activity",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL19"
+    ],
+    "description": "Chi tiết hoạt động"
+  },
+  {
+    "id": "updateActivity",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}",
+    "title": "Sửa hoạt động theo trạng thái",
+    "tag": "Activities",
+    "permission": "activity.manage",
+    "scope": "class",
+    "request": "ActivityPatch",
+    "response": "Activity",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL19"
+    ],
+    "description": "Sửa hoạt động theo trạng thái"
+  },
+  {
+    "id": "setParticipantStatus",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}/participants/{participantId}/status",
+    "title": "Xác nhận hoàn thành/bổ sung/miễn nhiệm vụ, có lý do",
+    "tag": "Activities",
+    "permission": "activity.review",
+    "scope": "class",
+    "request": "ParticipantStatusCommand",
+    "response": "Participant",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL19"
+    ],
+    "description": "Xác nhận hoàn thành/bổ sung/miễn nhiệm vụ, có lý do"
+  },
+  {
+    "id": "listParticipants",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}/participants",
+    "title": "Tiến độ từng người được giao",
+    "tag": "Activities",
+    "permission": "activity.read",
+    "scope": "class",
+    "request": null,
+    "response": "Participant",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL19"
+    ],
+    "description": "Tiến độ từng người được giao"
+  },
+  {
+    "id": "assignActivity",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}/assign",
+    "title": "Giao hoạt động, không tự cộng điểm",
+    "tag": "Activities",
+    "permission": "activity.manage",
+    "scope": "class",
+    "request": "VersionCommand",
+    "response": "Activity",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL18",
+      "CL19"
+    ],
+    "description": "Giao hoạt động, không tự cộng điểm"
+  },
+  {
+    "id": "publishActivity",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/activities/{activityId}/publish",
+    "title": "Công bố tình trạng riêng của từng học sinh",
+    "tag": "Activities",
+    "permission": "activity.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL19"
+    ],
+    "description": "Công bố tình trạng riêng của từng học sinh"
+  },
+  {
+    "id": "listEvidence",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/evidence",
+    "title": "Minh chứng trong phạm vi lớp",
+    "tag": "Files",
+    "permission": "evidence.read",
+    "scope": "class",
+    "request": null,
+    "response": "Evidence",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL20",
+      "CL19"
+    ],
+    "description": "Minh chứng trong phạm vi lớp"
+  },
+  {
+    "id": "createEvidence",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/evidence",
+    "title": "Giáo viên ghi nhận file đã kiểm tra",
+    "tag": "Files",
+    "permission": "evidence.manage",
+    "scope": "class",
+    "request": "EvidenceCreate",
+    "response": "Evidence",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL20",
+      "CL19"
+    ],
+    "description": "Giáo viên ghi nhận file đã kiểm tra"
+  },
+  {
+    "id": "reviewEvidence",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/evidence/{evidenceId}/review",
+    "title": "Duyệt hoặc yêu cầu bổ sung minh chứng",
+    "tag": "Files",
+    "permission": "evidence.review",
+    "scope": "class",
+    "request": "ReviewEvidence",
+    "response": "Evidence",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL20",
+      "CL19"
+    ],
+    "description": "Duyệt hoặc yêu cầu bổ sung minh chứng"
+  },
+  {
+    "id": "listClassFiles",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/files",
+    "title": "Tệp của lớp theo quyền gắn file",
+    "tag": "Files",
+    "permission": "file.read",
+    "scope": "class",
+    "request": null,
+    "response": "File",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL24"
+    ],
+    "description": "Tệp của lớp theo quyền gắn file"
+  },
+  {
+    "id": "uploadFile",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/files",
+    "title": "Stream file vào vùng riêng; không base64 DB",
+    "tag": "Files",
+    "permission": "file.upload",
+    "scope": "school",
+    "request": "UploadRequest",
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC02",
+      "CL20",
+      "CL24",
+      "SC27"
+    ],
+    "description": "Stream file vào vùng riêng; không base64 DB"
+  },
+  {
+    "id": "getFile",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/files/{fileId}",
+    "title": "Metadata tệp không trả storage key",
+    "tag": "Files",
+    "permission": "file.read",
+    "scope": "school",
+    "request": null,
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL24"
+    ],
+    "description": "Metadata tệp không trả storage key"
+  },
+  {
+    "id": "downloadFile",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/files/{fileId}/download",
+    "title": "Stream tệp có kiểm tra quyền tại thời điểm tải",
+    "tag": "Files",
+    "permission": "file.download",
+    "scope": "school",
+    "request": null,
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL24",
+      "CL20"
+    ],
+    "description": "Stream tệp có kiểm tra quyền tại thời điểm tải"
+  },
+  {
+    "id": "archiveFile",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/files/{fileId}/archive",
+    "title": "Ngừng dùng tệp, không xóa ngay file lịch sử",
+    "tag": "Files",
+    "permission": "file.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL24"
+    ],
+    "description": "Ngừng dùng tệp, không xóa ngay file lịch sử"
+  },
+  {
+    "id": "createFileLink",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/file-links",
+    "title": "Gắn file đúng đối tượng và quyền chia sẻ",
+    "tag": "Files",
+    "permission": "file.manage",
+    "scope": "school",
+    "request": "FileLinkCreate",
+    "response": "Ack",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL24"
+    ],
+    "description": "Gắn file đúng đối tượng và quyền chia sẻ"
+  },
+  {
+    "id": "listSchoolAnnouncements",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/announcements",
+    "title": "Danh sách thông báo theo scope",
+    "tag": "Announcements",
+    "permission": "announcement.read",
+    "scope": "school",
+    "request": null,
+    "response": "Announcement",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Danh sách thông báo theo scope"
+  },
+  {
+    "id": "createSchoolAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcements",
+    "title": "Soạn thông báo nháp đúng audience",
+    "tag": "Announcements",
+    "permission": "announcement.manage",
+    "scope": "school",
+    "request": "AnnouncementCreate",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Soạn thông báo nháp đúng audience"
+  },
+  {
+    "id": "getSchoolAnnouncement",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/announcements/{announcementId}",
+    "title": "Chi tiết thông báo",
+    "tag": "Announcements",
+    "permission": "announcement.read",
+    "scope": "school",
+    "request": null,
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Chi tiết thông báo"
+  },
+  {
+    "id": "updateSchoolAnnouncement",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/announcements/{announcementId}",
+    "title": "Sửa bản nháp, sanitized HTML",
+    "tag": "Announcements",
+    "permission": "announcement.manage",
+    "scope": "school",
+    "request": "AnnouncementPatch",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Sửa bản nháp, sanitized HTML"
+  },
+  {
+    "id": "publishSchoolAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcements/{announcementId}/publish",
+    "title": "Công bố đúng tập người nhận",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "school",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Công bố đúng tập người nhận"
+  },
+  {
+    "id": "scheduleSchoolAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcements/{announcementId}/schedule",
+    "title": "Lên lịch job công bố phía server",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "school",
+    "request": "SchedulePublish",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Lên lịch job công bố phía server"
+  },
+  {
+    "id": "withdrawSchoolAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcements/{announcementId}/withdraw",
+    "title": "Thu hồi thông báo và bản chiếu công khai",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC33",
+      "SC34",
+      "SC35"
+    ],
+    "description": "Thu hồi thông báo và bản chiếu công khai"
+  },
+  {
+    "id": "listClassAnnouncements",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements",
+    "title": "Danh sách thông báo theo scope",
+    "tag": "Announcements",
+    "permission": "announcement.read",
+    "scope": "class",
+    "request": null,
+    "response": "Announcement",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Danh sách thông báo theo scope"
+  },
+  {
+    "id": "createClassAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements",
+    "title": "Soạn thông báo nháp đúng audience",
+    "tag": "Announcements",
+    "permission": "announcement.manage",
+    "scope": "class",
+    "request": "AnnouncementCreate",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Soạn thông báo nháp đúng audience"
+  },
+  {
+    "id": "getClassAnnouncement",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements/{announcementId}",
+    "title": "Chi tiết thông báo",
+    "tag": "Announcements",
+    "permission": "announcement.read",
+    "scope": "class",
+    "request": null,
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Chi tiết thông báo"
+  },
+  {
+    "id": "updateClassAnnouncement",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements/{announcementId}",
+    "title": "Sửa bản nháp, sanitized HTML",
+    "tag": "Announcements",
+    "permission": "announcement.manage",
+    "scope": "class",
+    "request": "AnnouncementPatch",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Sửa bản nháp, sanitized HTML"
+  },
+  {
+    "id": "publishClassAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements/{announcementId}/publish",
+    "title": "Công bố đúng tập người nhận",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "class",
+    "request": "PublishCommand",
+    "response": "Publication",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Công bố đúng tập người nhận"
+  },
+  {
+    "id": "scheduleClassAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements/{announcementId}/schedule",
+    "title": "Lên lịch job công bố phía server",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "class",
+    "request": "SchedulePublish",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Lên lịch job công bố phía server"
+  },
+  {
+    "id": "withdrawClassAnnouncement",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/announcements/{announcementId}/withdraw",
+    "title": "Thu hồi thông báo và bản chiếu công khai",
+    "tag": "Announcements",
+    "permission": "announcement.publish",
+    "scope": "class",
+    "request": "ReasonCommand",
+    "response": "Announcement",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL21",
+      "CL22",
+      "CL23"
+    ],
+    "description": "Thu hồi thông báo và bản chiếu công khai"
+  },
+  {
+    "id": "listImports",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/imports",
+    "title": "Lịch sử import",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": null,
+    "response": "ImportJob",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC26"
+    ],
+    "description": "Lịch sử import"
+  },
+  {
+    "id": "createImport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/imports",
+    "title": "Tạo job import từ file READY",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": "ImportCreate",
+    "response": "ImportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC27"
+    ],
+    "description": "Tạo job import từ file READY"
+  },
+  {
+    "id": "getImport",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}",
+    "title": "Tiến độ và kết quả nhập",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": null,
+    "response": "ImportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC28"
+    ],
+    "description": "Tiến độ và kết quả nhập"
+  },
+  {
+    "id": "validateImport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}/validate",
+    "title": "Ghép cột, kiểm tra từng dòng, chưa ghi thật",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": "ImportMapping",
+    "response": "ImportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC27"
+    ],
+    "description": "Ghép cột, kiểm tra từng dòng, chưa ghi thật"
+  },
+  {
+    "id": "listImportRows",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}/rows",
+    "title": "Preview và lỗi từng dòng",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": null,
+    "response": "ImportRow",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC27",
+      "SC28"
+    ],
+    "description": "Preview và lỗi từng dòng"
+  },
+  {
+    "id": "commitImport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}/commit",
+    "title": "Nhập từ preview hash đã duyệt, retry an toàn",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": "PlanCommit",
+    "response": "ImportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC27"
+    ],
+    "description": "Nhập từ preview hash đã duyệt, retry an toàn"
+  },
+  {
+    "id": "cancelImport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}/cancel",
+    "title": "Dừng job chưa commit, không đảo giao dịch đã hoàn tất",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "ImportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC28"
+    ],
+    "description": "Dừng job chưa commit, không đảo giao dịch đã hoàn tất"
+  },
+  {
+    "id": "downloadImportErrors",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/imports/{importId}/errors-file",
+    "title": "Tải CSV lỗi chống formula injection",
+    "tag": "Imports",
+    "permission": "import.manage",
+    "scope": "school",
+    "request": null,
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC28"
+    ],
+    "description": "Tải CSV lỗi chống formula injection"
+  },
+  {
+    "id": "getSchoolReport",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/reports/{reportType}",
+    "title": "Báo cáo School đúng phạm vi",
+    "tag": "Reports",
+    "permission": "report.read",
+    "scope": "school",
+    "request": null,
+    "response": "Report",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC37",
+      "SC38",
+      "TE06"
+    ],
+    "description": "Báo cáo School đúng phạm vi"
+  },
+  {
+    "id": "getClassReport",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/reports/{reportType}",
+    "title": "Báo cáo Class đúng phạm vi",
+    "tag": "Reports",
+    "permission": "report.read",
+    "scope": "class",
+    "request": null,
+    "response": "Report",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "CL25",
+      "CL26"
+    ],
+    "description": "Báo cáo Class đúng phạm vi"
+  },
+  {
+    "id": "listExports",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/exports",
+    "title": "Các job xuất người dùng được phép xem",
+    "tag": "Reports",
+    "permission": "report.export",
+    "scope": "school",
+    "request": null,
+    "response": "ExportJob",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC39"
+    ],
+    "description": "Các job xuất người dùng được phép xem"
+  },
+  {
+    "id": "createExport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/exports",
+    "title": "Xuất bất đồng bộ, chụp phạm vi và kiểm tra lại khi chạy",
+    "tag": "Reports",
+    "permission": "report.export",
+    "scope": "school",
+    "request": "ExportCreate",
+    "response": "ExportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": true,
+    "frontend_ids": [
+      "SC38",
+      "SC39",
+      "CL26"
+    ],
+    "description": "Xuất bất đồng bộ, chụp phạm vi và kiểm tra lại khi chạy"
+  },
+  {
+    "id": "getExport",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/exports/{exportId}",
+    "title": "Trạng thái job xuất",
+    "tag": "Reports",
+    "permission": "report.export",
+    "scope": "school",
+    "request": null,
+    "response": "ExportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC39"
+    ],
+    "description": "Trạng thái job xuất"
+  },
+  {
+    "id": "downloadExport",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/exports/{exportId}/download",
+    "title": "Tải file chưa hết hạn sau khi kiểm tra quyền lại",
+    "tag": "Reports",
+    "permission": "report.export",
+    "scope": "school",
+    "request": null,
+    "response": "File",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC39",
+      "CL26"
+    ],
+    "description": "Tải file chưa hết hạn sau khi kiểm tra quyền lại"
+  },
+  {
+    "id": "cancelExport",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/exports/{exportId}/cancel",
+    "title": "Hủy job xuất",
+    "tag": "Reports",
+    "permission": "report.export",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "ExportJob",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC39"
+    ],
+    "description": "Hủy job xuất"
+  },
+  {
+    "id": "listSchoolAudit",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/audit",
+    "title": "Nhật ký trường, không sửa/xóa",
+    "tag": "Audit",
+    "permission": "audit.read",
+    "scope": "school",
+    "request": null,
+    "response": "AuditEvent",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC40"
+    ],
+    "description": "Nhật ký trường, không sửa/xóa"
+  },
+  {
+    "id": "getSchoolSettings",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/settings",
+    "title": "Cấu hình chia sẻ và quy trình",
+    "tag": "Settings",
+    "permission": "school.settings",
+    "scope": "school",
+    "request": null,
+    "response": "Settings",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC31",
+      "SC41"
+    ],
+    "description": "Cấu hình chia sẻ và quy trình"
+  },
+  {
+    "id": "updateSchoolSettings",
+    "method": "PATCH",
+    "path": "/api/v1/schools/{schoolId}/settings",
+    "title": "Sửa cấu hình không tự mở dữ liệu quá khứ",
+    "tag": "Settings",
+    "permission": "school.settings",
+    "scope": "school",
+    "request": "SettingsPatch",
+    "response": "Settings",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC31",
+      "SC41"
+    ],
+    "description": "Sửa cấu hình không tự mở dữ liệu quá khứ"
+  },
+  {
+    "id": "listSchoolTickets",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/support",
+    "title": "Yêu cầu hỗ trợ của trường",
+    "tag": "Support",
+    "permission": "support.manage",
+    "scope": "school",
+    "request": null,
+    "response": "SupportTicket",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC42"
+    ],
+    "description": "Yêu cầu hỗ trợ của trường"
+  },
+  {
+    "id": "createTicket",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/support",
+    "title": "Tạo yêu cầu hỗ trợ không kèm hồ sơ nhạy cảm",
+    "tag": "Support",
+    "permission": "support.manage",
+    "scope": "school",
+    "request": "TicketCreate",
+    "response": "SupportTicket",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC42"
+    ],
+    "description": "Tạo yêu cầu hỗ trợ không kèm hồ sơ nhạy cảm"
+  },
+  {
+    "id": "getSchoolTicket",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/support/{ticketId}",
+    "title": "Chi tiết yêu cầu của trường",
+    "tag": "Support",
+    "permission": "support.manage",
+    "scope": "school",
+    "request": null,
+    "response": "SupportTicket",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC43"
+    ],
+    "description": "Chi tiết yêu cầu của trường"
+  },
+  {
+    "id": "listSchoolMessages",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/support/{ticketId}/messages",
+    "title": "Trao đổi hỗ trợ",
+    "tag": "Support",
+    "permission": "support.manage",
+    "scope": "school",
+    "request": null,
+    "response": "SupportMessage",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC43"
+    ],
+    "description": "Trao đổi hỗ trợ"
+  },
+  {
+    "id": "postSchoolMessage",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/support/{ticketId}/messages",
+    "title": "Thêm phản hồi",
+    "tag": "Support",
+    "permission": "support.manage",
+    "scope": "school",
+    "request": "MessageCreate",
+    "response": "SupportMessage",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC43"
+    ],
+    "description": "Thêm phản hồi"
+  },
+  {
+    "id": "listSchoolSupportAccess",
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/support-access",
+    "title": "Phạm vi hỗ trợ được cấp",
+    "tag": "Support",
+    "permission": "support.approve",
+    "scope": "school",
+    "request": null,
+    "response": "SupportAccess",
+    "list": true,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC42",
+      "SC43"
+    ],
+    "description": "Phạm vi hỗ trợ được cấp"
+  },
+  {
+    "id": "createSupportAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/support-access",
+    "title": "Trường tạo đề nghị cấp quyền hỗ trợ chỉ đọc",
+    "tag": "Support",
+    "permission": "support.approve",
+    "scope": "school",
+    "request": "SupportAccessCreate",
+    "response": "SupportAccess",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC42",
+      "SC43"
+    ],
+    "description": "Trường tạo đề nghị cấp quyền hỗ trợ chỉ đọc"
+  },
+  {
+    "id": "approveSupportAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/support-access/{supportAccessId}/approve",
+    "title": "Quản trị trường duyệt quyền có hạn",
+    "tag": "Support",
+    "permission": "support.approve",
+    "scope": "school",
+    "request": "VersionCommand",
+    "response": "SupportAccess",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC43"
+    ],
+    "description": "Quản trị trường duyệt quyền có hạn"
+  },
+  {
+    "id": "revokeSupportAccess",
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/support-access/{supportAccessId}/revoke",
+    "title": "Thu hồi hỗ trợ",
+    "tag": "Support",
+    "permission": "support.approve",
+    "scope": "school",
+    "request": "ReasonCommand",
+    "response": "SupportAccess",
+    "list": false,
+    "auth": "staff",
+    "async_job": false,
+    "frontend_ids": [
+      "SC43"
+    ],
+    "description": "Thu hồi hỗ trợ"
+  },
+  {
+    "id": "exchangeParentLink",
+    "method": "POST",
+    "path": "/api/v1/parent/{schoolSlug}/access/exchange",
+    "title": "Đổi link bí mật lấy cookie đọc và viewId",
+    "tag": "Parent",
+    "permission": "link.token",
+    "scope": "none",
+    "request": "ParentExchange",
+    "response": "ParentContext",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "PA01"
+    ],
+    "description": "Không nhận studentId/yearId từ client. Tra school slug → hash token → grant/relationship/year → tạo phiên. Không log body, không consume bằng GET/link preview."
+  },
+  {
+    "id": "getParentContext",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/context",
+    "title": "Ngữ cảnh một học sinh đã được cấp",
+    "tag": "Parent",
+    "permission": "parent.context",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentContext",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA01",
+      "PA14"
+    ],
+    "description": "Ngữ cảnh một học sinh đã được cấp"
+  },
+  {
+    "id": "endParentSession",
+    "method": "POST",
+    "path": "/api/v1/parent/{schoolSlug}/session/end",
+    "title": "Kết thúc phiên chỉ đọc, không thu hồi grant",
+    "tag": "Parent",
+    "permission": "parent.context",
+    "scope": "parent",
+    "request": null,
+    "response": "Ack",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA14"
+    ],
+    "description": "Kết thúc phiên chỉ đọc, không thu hồi grant"
+  },
+  {
+    "id": "getParentOverview",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/overview",
+    "title": "Chỉ dữ liệu đã công bố của con: overview",
+    "tag": "Parent",
+    "permission": "parent.overview",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentOverview",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA02"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: overview"
+  },
+  {
+    "id": "getParentAttendance",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/attendance",
+    "title": "Chỉ dữ liệu đã công bố của con: attendance",
+    "tag": "Parent",
+    "permission": "parent.attendance",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentAttendance",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA03"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: attendance"
+  },
+  {
+    "id": "listParentConduct",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/conduct",
+    "title": "Chỉ dữ liệu đã công bố của con: conduct",
+    "tag": "Parent",
+    "permission": "parent.conduct",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentConduct",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA04"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: conduct"
+  },
+  {
+    "id": "getParentConduct",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/conduct/{periodId}",
+    "title": "Chỉ dữ liệu đã công bố của con: conduct",
+    "tag": "Parent",
+    "permission": "parent.conduct",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentConduct",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA05"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: conduct"
+  },
+  {
+    "id": "getParentTimetable",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/timetable",
+    "title": "Chỉ dữ liệu đã công bố của con: timetable",
+    "tag": "Parent",
+    "permission": "parent.timetable",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentLesson",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA06"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: timetable"
+  },
+  {
+    "id": "getParentDuties",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/duties",
+    "title": "Chỉ dữ liệu đã công bố của con: duties",
+    "tag": "Parent",
+    "permission": "parent.duties",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentDuty",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA07"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: duties"
+  },
+  {
+    "id": "listParentActivities",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/activities",
+    "title": "Chỉ dữ liệu đã công bố của con: activities",
+    "tag": "Parent",
+    "permission": "parent.activities",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentActivity",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA08"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: activities"
+  },
+  {
+    "id": "getParentActivity",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/activities/{activityId}",
+    "title": "Chỉ dữ liệu đã công bố của con: activities",
+    "tag": "Parent",
+    "permission": "parent.activities",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentActivity",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA09"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: activities"
+  },
+  {
+    "id": "listParentAnnouncements",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/announcements",
+    "title": "Chỉ dữ liệu đã công bố của con: announcements",
+    "tag": "Parent",
+    "permission": "parent.announcements",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentAnnouncement",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA10"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: announcements"
+  },
+  {
+    "id": "getParentAnnouncement",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/announcements/{announcementId}",
+    "title": "Chỉ dữ liệu đã công bố của con: announcements",
+    "tag": "Parent",
+    "permission": "parent.announcements",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentAnnouncement",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA11"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: announcements"
+  },
+  {
+    "id": "getParentTeachers",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/teachers",
+    "title": "Chỉ dữ liệu đã công bố của con: teachers",
+    "tag": "Parent",
+    "permission": "parent.teachers",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentTeacher",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA12"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: teachers"
+  },
+  {
+    "id": "listParentDocuments",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/documents",
+    "title": "Chỉ dữ liệu đã công bố của con: documents",
+    "tag": "Parent",
+    "permission": "parent.documents",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentDocument",
+    "list": true,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA13"
+    ],
+    "description": "Chỉ dữ liệu đã công bố của con: documents"
+  },
+  {
+    "id": "downloadParentDocument",
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/documents/{documentId}/download",
+    "title": "Chỉ tải file của con có allowDownload",
+    "tag": "Parent",
+    "permission": "parent.documents",
+    "scope": "parent",
+    "request": null,
+    "response": "ParentDocument",
+    "list": false,
+    "auth": "parent",
+    "async_job": false,
+    "frontend_ids": [
+      "PA13"
+    ],
+    "description": "Chỉ tải file của con có allowDownload"
+  },
+  {
+    "id": "getPublicSchool",
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}",
+    "title": "Trang trường không chứa danh sách học sinh",
+    "tag": "Public",
+    "permission": "public",
+    "scope": "none",
+    "request": null,
+    "response": "PublicSchool",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "SY01"
+    ],
+    "description": "Trang trường không chứa danh sách học sinh"
+  },
+  {
+    "id": "getPublicAnnouncement",
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}/announcements/{announcementId}",
+    "title": "Chỉ bản tin public đã công bố",
+    "tag": "Public",
+    "permission": "public",
+    "scope": "none",
+    "request": null,
+    "response": "ParentAnnouncement",
+    "list": false,
+    "auth": "none",
+    "async_job": false,
+    "frontend_ids": [
+      "SY02"
+    ],
+    "description": "Chỉ bản tin public đã công bố"
+  }
+]

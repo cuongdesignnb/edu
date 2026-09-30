@@ -1,0 +1,56 @@
+name: edumanage_backend_test
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    environment:
+      POSTGRES_DB: edumanage_test_local
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_admin_password, db_migrator_password, db_app_password, db_parent_password, db_worker_password]
+    volumes:
+      - test_pgdata:/var/lib/postgresql/data
+      - ./tests/init-db.sh:/docker-entrypoint-initdb.d/01-edumanage.sh:ro
+    networks: [test_data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres -d edumanage_test_local']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    logging:
+      driver: json-file
+      options: { max-size: 10m, max-file: '3' }
+  runner:
+    build: { context: ., dockerfile: Dockerfile, target: test }
+    environment:
+      APP_ENV: test
+      APP_URL: http://127.0.0.1:18763
+      DATA_MODE: connected
+      DB_HOST: postgres
+      DB_NAME: edumanage_test_local
+      DB_USER: edu_app
+      DB_PASSWORD_FILE: /run/secrets/db_app_password
+      MIGRATOR_DB_PASSWORD_FILE: /run/secrets/db_migrator_password
+      PARENT_DB_PASSWORD_FILE: /run/secrets/db_parent_password
+      WORKER_DB_PASSWORD_FILE: /run/secrets/db_worker_password
+      SECRET_KEY_FILE: /run/secrets/app_key
+      MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
+      MAIL_MODE: file
+      COOKIE_SECURE: 'false'
+      STORAGE_ROOT: /tmp/edumanage-uploads
+      LOCAL_MAIL_ROOT: /tmp/edumanage-mail
+    secrets: [db_migrator_password, db_app_password, db_parent_password, db_worker_password, app_key, mail_key]
+    networks: [test_data]
+    depends_on:
+      postgres: { condition: service_healthy }
+volumes:
+  test_pgdata: {}
+networks:
+  test_data: { internal: true }
+secrets:
+  db_admin_password: { file: ./.runtime/secrets/db_admin_password }
+  db_migrator_password: { file: ./.runtime/secrets/db_migrator_password }
+  db_app_password: { file: ./.runtime/secrets/db_app_password }
+  db_parent_password: { file: ./.runtime/secrets/db_parent_password }
+  db_worker_password: { file: ./.runtime/secrets/db_worker_password }
+  app_key: { file: ./.runtime/secrets/app_key }
+  mail_key: { file: ./.runtime/secrets/mail_key }

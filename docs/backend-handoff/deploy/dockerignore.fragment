@@ -1,0 +1,14 @@
+# Merge vào .dockerignore của project, không ghi đè rule hiện có.
+.git
+node_modules
+**/node_modules
+.next
+backend/dist
+.env*
+!.env.example
+.secrets
+backups
+qa
+references
+*.zip
+**/*.log

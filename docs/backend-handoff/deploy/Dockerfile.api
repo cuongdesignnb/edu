@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1
+# Hợp đồng: backend/ package-lock.json; build -> dist/main.js, dist/worker.js, dist/cli.js.
+ARG NODE_IMAGE=node:24-bookworm-slim
+FROM ${NODE_IMAGE} AS deps
+WORKDIR /srv/api
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci
+FROM deps AS build
+COPY backend/ ./
+RUN npm run build && npm prune --omit=dev
+FROM ${NODE_IMAGE} AS runner
+ENV NODE_ENV=production
+WORKDIR /srv/api
+COPY --from=build --chown=node:node /srv/api/package.json ./package.json
+COPY --from=build --chown=node:node /srv/api/node_modules ./node_modules
+COPY --from=build --chown=node:node /srv/api/dist ./dist
+COPY --from=build --chown=node:node /srv/api/migrations ./migrations
+COPY --from=build --chown=node:node /srv/api/assets ./assets
+USER node
+EXPOSE 3001
+CMD ["node", "dist/main.js"]

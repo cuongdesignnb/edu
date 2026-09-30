@@ -1,0 +1,4127 @@
+{
+  "baseline": "14dfad5",
+  "operations": [
+    {
+      "operationId": "healthLive",
+      "screenIds": [],
+      "milestone": "B0",
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "healthReady",
+      "screenIds": [],
+      "milestone": "B0",
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "getCsrf",
+      "screenIds": [
+        "AU01",
+        "AU02",
+        "AU03",
+        "AU04",
+        "PA01"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "login",
+      "screenIds": [
+        "AU01"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "logout",
+      "screenIds": [
+        "AU07"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "forgotPassword",
+      "screenIds": [
+        "AU02"
+      ],
+      "milestone": null,
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0"
+      ]
+    },
+    {
+      "operationId": "resetPassword",
+      "screenIds": [
+        "AU03"
+      ],
+      "milestone": null,
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0"
+      ]
+    },
+    {
+      "operationId": "changePassword",
+      "screenIds": [
+        "AU07"
+      ],
+      "milestone": null,
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0"
+      ]
+    },
+    {
+      "operationId": "getMyContext",
+      "screenIds": [
+        "AU01",
+        "AU05",
+        "AU08",
+        "SY05",
+        "SY06"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "getMyProfile",
+      "screenIds": [
+        "AU06"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "updateMyProfile",
+      "screenIds": [
+        "AU06"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0",
+        "qa/backend/b1-integration.log: 10/10 exit0; tests/contract/schemas.test.mjs"
+      ]
+    },
+    {
+      "operationId": "listMySessions",
+      "screenIds": [
+        "AU07"
+      ],
+      "milestone": null,
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0"
+      ]
+    },
+    {
+      "operationId": "revokeMySession",
+      "screenIds": [
+        "AU07"
+      ],
+      "milestone": null,
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B0-B1 foundation source, build/typecheck/lint exit0"
+      ]
+    },
+    {
+      "operationId": "inspectInvitation",
+      "screenIds": [
+        "AU04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "acceptInvitation",
+      "screenIds": [
+        "AU04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "declineInvitation",
+      "screenIds": [
+        "AU04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listMyNotifications",
+      "screenIds": [
+        "AU09",
+        "TE05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "readMyNotification",
+      "screenIds": [
+        "AU09",
+        "TE05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPlatformOverview",
+      "screenIds": [
+        "PL01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPlatformSchools",
+      "screenIds": [
+        "PL01",
+        "PL02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createSchool",
+      "screenIds": [
+        "PL03"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPlatformSchool",
+      "screenIds": [
+        "PL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updatePlatformSchool",
+      "screenIds": [
+        "PL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "setSchoolStatus",
+      "screenIds": [
+        "PL02",
+        "PL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolAdmins",
+      "screenIds": [
+        "PL05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "inviteSchoolAdmin",
+      "screenIds": [
+        "PL03",
+        "PL05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeSchoolAdmin",
+      "screenIds": [
+        "PL05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPlatformTickets",
+      "screenIds": [
+        "PL06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPlatformTicket",
+      "screenIds": [
+        "PL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updatePlatformTicket",
+      "screenIds": [
+        "PL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPlatformTicketMessages",
+      "screenIds": [
+        "PL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "postPlatformTicketMessage",
+      "screenIds": [
+        "PL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPlatformSupportAccess",
+      "screenIds": [
+        "PL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPlatformAudit",
+      "screenIds": [
+        "PL09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listOperations",
+      "screenIds": [
+        "PL10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPlatformSettings",
+      "screenIds": [
+        "PL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updatePlatformSettings",
+      "screenIds": [
+        "PL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolOverview",
+      "screenIds": [
+        "SC01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolProfile",
+      "screenIds": [
+        "SC02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateSchoolProfile",
+      "screenIds": [
+        "SC02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listYears",
+      "screenIds": [
+        "SC03",
+        "SC04",
+        "SC05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createYear",
+      "screenIds": [
+        "SC03",
+        "SC04",
+        "SC05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getYear",
+      "screenIds": [
+        "SC03",
+        "SC04",
+        "SC05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateYear",
+      "screenIds": [
+        "SC03",
+        "SC04",
+        "SC05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listTerms",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createTerm",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getTerm",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateTerm",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listWeeks",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createWeek",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getWeek",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateWeek",
+      "screenIds": [
+        "SC05",
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listCalendarEvents",
+      "screenIds": [
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createCalendarEvent",
+      "screenIds": [
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getCalendarEvent",
+      "screenIds": [
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateCalendarEvent",
+      "screenIds": [
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClasss",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createClass",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClass",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateClass",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "activateYear",
+      "screenIds": [
+        "SC05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "archiveYear",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "activateClass",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "archiveClass",
+      "screenIds": [
+        "SC09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishCalendarEvent",
+      "screenIds": [
+        "SC06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listDictionary",
+      "screenIds": [
+        "SC08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createDictionary",
+      "screenIds": [
+        "SC08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateDictionary",
+      "screenIds": [
+        "SC08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createRollover",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getRollover",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "validateRollover",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "commitRollover",
+      "screenIds": [
+        "SC07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listMembers",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getMember",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateMember",
+      "screenIds": [
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "suspendMember",
+      "screenIds": [
+        "SC10",
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "reactivateMember",
+      "screenIds": [
+        "SC10",
+        "SC11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listInvitations",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "inviteStaff",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeInvitation",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listRoles",
+      "screenIds": [
+        "SC13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getRole",
+      "screenIds": [
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createRole",
+      "screenIds": [
+        "SC13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateRole",
+      "screenIds": [
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "previewGrant",
+      "screenIds": [
+        "SC12",
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createGrant",
+      "screenIds": [
+        "SC12",
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeGrant",
+      "screenIds": [
+        "SC11",
+        "SC14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listAssignments",
+      "screenIds": [
+        "SC11",
+        "SC12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createAssignment",
+      "screenIds": [
+        "SC12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeAssignment",
+      "screenIds": [
+        "SC11",
+        "SC12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listHandovers",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createHandover",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "approveHandover",
+      "screenIds": [
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listStudents",
+      "screenIds": [
+        "SC16"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createStudent",
+      "screenIds": [
+        "SC17"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getStudent",
+      "screenIds": [
+        "SC18",
+        "SC19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateStudent",
+      "screenIds": [
+        "SC19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listStudentEnrollments",
+      "screenIds": [
+        "SC18"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createEnrollment",
+      "screenIds": [
+        "SC17",
+        "SC20"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listTransfers",
+      "screenIds": [
+        "SC20"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createTransfer",
+      "screenIds": [
+        "SC20",
+        "CL03"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "approveTransfer",
+      "screenIds": [
+        "SC20"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "rejectTransfer",
+      "screenIds": [
+        "SC20"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listGuardians",
+      "screenIds": [
+        "SC21"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createGuardian",
+      "screenIds": [
+        "SC21",
+        "SC18"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getGuardian",
+      "screenIds": [
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateGuardian",
+      "screenIds": [
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listRelationships",
+      "screenIds": [
+        "SC18",
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createRelationship",
+      "screenIds": [
+        "SC18",
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "verifyRelationship",
+      "screenIds": [
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeRelationship",
+      "screenIds": [
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentAccess",
+      "screenIds": [
+        "SC23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "issueParentAccess",
+      "screenIds": [
+        "SC18",
+        "SC23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentAccess",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeParentAccess",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "reissueParentAccess",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentAccessEvents",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "previewParent",
+      "screenIds": [
+        "SC25"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getTeacherOverview",
+      "screenIds": [
+        "TE01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listMyClasses",
+      "screenIds": [
+        "TE02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listMySchedule",
+      "screenIds": [
+        "TE03"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listMyTasks",
+      "screenIds": [
+        "TE04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listTeacherAnnouncements",
+      "screenIds": [
+        "TE05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassOverview",
+      "screenIds": [
+        "CL01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClassStudents",
+      "screenIds": [
+        "CL02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassStudent",
+      "screenIds": [
+        "CL03"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listGroups",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createGroup",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPositions",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createPosition",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSeatingPlans",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createSeatingPlan",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateGroup",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updatePosition",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listPositionAssignments",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "endPositionAssignment",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "assignGroup",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "assignPosition",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSeatingPlan",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateSeatingPlan",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "activateSeatingPlan",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listAttendanceSessions",
+      "screenIds": [
+        "CL04",
+        "CL05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createAttendanceSession",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getAttendanceSession",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "saveAttendanceRecords",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getAttendanceSummary",
+      "screenIds": [
+        "CL05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishAttendance",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "reopenAttendance",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listRuleSets",
+      "screenIds": [
+        "SC29"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createRuleSet",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getRuleSet",
+      "screenIds": [
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateRuleSet",
+      "screenIds": [
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "issueRuleSet",
+      "screenIds": [
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "simulateRules",
+      "screenIds": [
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassRules",
+      "screenIds": [
+        "CL12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "applyClassRules",
+      "screenIds": [
+        "CL12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listConductPeriods",
+      "screenIds": [
+        "CL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createConductPeriod",
+      "screenIds": [
+        "CL06",
+        "CL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getConductSummary",
+      "screenIds": [
+        "CL07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listConductRecords",
+      "screenIds": [
+        "CL06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createConductRecord",
+      "screenIds": [
+        "CL06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateConductRecord",
+      "screenIds": [
+        "CL06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "approveConductRecord",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "excludeConductRecord",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "reviewConductPeriod",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "lockConductPeriod",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishConductPeriod",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "lockAndPublishConduct",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listAdjustments",
+      "screenIds": [
+        "CL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createAdjustment",
+      "screenIds": [
+        "CL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "approveAdjustment",
+      "screenIds": [
+        "CL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "rejectAdjustment",
+      "screenIds": [
+        "CL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "applyAdjustment",
+      "screenIds": [
+        "CL11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolPublications",
+      "screenIds": [
+        "SC36"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClassPublications",
+      "screenIds": [
+        "CL09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassPublication",
+      "screenIds": [
+        "CL10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "withdrawPublication",
+      "screenIds": [
+        "SC36",
+        "CL10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolLessons",
+      "screenIds": [
+        "SC32"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClassTimetables",
+      "screenIds": [
+        "CL15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createTimetable",
+      "screenIds": [
+        "CL15",
+        "SC32"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getTimetable",
+      "screenIds": [
+        "CL15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateTimetable",
+      "screenIds": [
+        "CL15"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "validateTimetable",
+      "screenIds": [
+        "CL15",
+        "SC32"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishTimetable",
+      "screenIds": [
+        "CL15",
+        "SC32"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listDuties",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createDuty",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateDuty",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishDuty",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listActivities",
+      "screenIds": [
+        "CL17"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createActivity",
+      "screenIds": [
+        "CL18"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getActivity",
+      "screenIds": [
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateActivity",
+      "screenIds": [
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "setParticipantStatus",
+      "screenIds": [
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParticipants",
+      "screenIds": [
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "assignActivity",
+      "screenIds": [
+        "CL18",
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishActivity",
+      "screenIds": [
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listEvidence",
+      "screenIds": [
+        "CL20",
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createEvidence",
+      "screenIds": [
+        "CL20",
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "reviewEvidence",
+      "screenIds": [
+        "CL20",
+        "CL19"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClassFiles",
+      "screenIds": [
+        "CL24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "uploadFile",
+      "screenIds": [
+        "SC02",
+        "CL20",
+        "CL24",
+        "SC27"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getFile",
+      "screenIds": [
+        "CL24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "downloadFile",
+      "screenIds": [
+        "CL24",
+        "CL20"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "archiveFile",
+      "screenIds": [
+        "CL24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createFileLink",
+      "screenIds": [
+        "CL24"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolAnnouncements",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "scheduleSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "withdrawSchoolAnnouncement",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listClassAnnouncements",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "publishClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "scheduleClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "withdrawClassAnnouncement",
+      "screenIds": [
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listImports",
+      "screenIds": [
+        "SC26"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createImport",
+      "screenIds": [
+        "SC27"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getImport",
+      "screenIds": [
+        "SC28"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "validateImport",
+      "screenIds": [
+        "SC27"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listImportRows",
+      "screenIds": [
+        "SC27",
+        "SC28"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "commitImport",
+      "screenIds": [
+        "SC27"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "cancelImport",
+      "screenIds": [
+        "SC28"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "downloadImportErrors",
+      "screenIds": [
+        "SC28"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolReport",
+      "screenIds": [
+        "SC37",
+        "SC38",
+        "TE06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getClassReport",
+      "screenIds": [
+        "CL25",
+        "CL26"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listExports",
+      "screenIds": [
+        "SC39"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createExport",
+      "screenIds": [
+        "SC38",
+        "SC39",
+        "CL26"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getExport",
+      "screenIds": [
+        "SC39"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "downloadExport",
+      "screenIds": [
+        "SC39",
+        "CL26"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "cancelExport",
+      "screenIds": [
+        "SC39"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolAudit",
+      "screenIds": [
+        "SC40"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolSettings",
+      "screenIds": [
+        "SC31",
+        "SC41"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "updateSchoolSettings",
+      "screenIds": [
+        "SC31",
+        "SC41"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolTickets",
+      "screenIds": [
+        "SC42"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createTicket",
+      "screenIds": [
+        "SC42"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getSchoolTicket",
+      "screenIds": [
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolMessages",
+      "screenIds": [
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "postSchoolMessage",
+      "screenIds": [
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listSchoolSupportAccess",
+      "screenIds": [
+        "SC42",
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "createSupportAccess",
+      "screenIds": [
+        "SC42",
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "approveSupportAccess",
+      "screenIds": [
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "revokeSupportAccess",
+      "screenIds": [
+        "SC43"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "exchangeParentLink",
+      "screenIds": [
+        "PA01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentContext",
+      "screenIds": [
+        "PA01",
+        "PA14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "endParentSession",
+      "screenIds": [
+        "PA14"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentOverview",
+      "screenIds": [
+        "PA02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentAttendance",
+      "screenIds": [
+        "PA03"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentConduct",
+      "screenIds": [
+        "PA04"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentConduct",
+      "screenIds": [
+        "PA05"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentTimetable",
+      "screenIds": [
+        "PA06"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentDuties",
+      "screenIds": [
+        "PA07"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentActivities",
+      "screenIds": [
+        "PA08"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentActivity",
+      "screenIds": [
+        "PA09"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentAnnouncements",
+      "screenIds": [
+        "PA10"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentAnnouncement",
+      "screenIds": [
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getParentTeachers",
+      "screenIds": [
+        "PA12"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "listParentDocuments",
+      "screenIds": [
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "downloadParentDocument",
+      "screenIds": [
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPublicSchool",
+      "screenIds": [
+        "SY01"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "operationId": "getPublicAnnouncement",
+      "screenIds": [
+        "SY02"
+      ],
+      "milestone": null,
+      "status": "NOT_STARTED",
+      "evidence": []
+    }
+  ],
+  "screens": [
+    {
+      "screenId": "AU01",
+      "scope": "core",
+      "operationIds": [
+        "getCsrf",
+        "login",
+        "getMyContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "AU02",
+      "scope": "core",
+      "operationIds": [
+        "getCsrf",
+        "forgotPassword"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "IMPLEMENTED"
+    },
+    {
+      "screenId": "AU03",
+      "scope": "core",
+      "operationIds": [
+        "getCsrf",
+        "resetPassword"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "IMPLEMENTED"
+    },
+    {
+      "screenId": "AU04",
+      "scope": "core",
+      "operationIds": [
+        "getCsrf",
+        "inspectInvitation",
+        "acceptInvitation",
+        "declineInvitation"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "AU05",
+      "scope": "core",
+      "operationIds": [
+        "getMyContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "AU06",
+      "scope": "core",
+      "operationIds": [
+        "getMyProfile",
+        "updateMyProfile"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "AU07",
+      "scope": "core",
+      "operationIds": [
+        "logout",
+        "changePassword",
+        "listMySessions",
+        "revokeMySession"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "IMPLEMENTED"
+    },
+    {
+      "screenId": "AU08",
+      "scope": "core",
+      "operationIds": [
+        "getMyContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "AU09",
+      "scope": "core",
+      "operationIds": [
+        "listMyNotifications",
+        "readMyNotification"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "AU10",
+      "scope": "core",
+      "operationIds": [],
+      "staticReason": "Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "PL01",
+      "scope": "core",
+      "operationIds": [
+        "getPlatformOverview",
+        "listPlatformSchools"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL02",
+      "scope": "core",
+      "operationIds": [
+        "listPlatformSchools",
+        "setSchoolStatus"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL03",
+      "scope": "core",
+      "operationIds": [
+        "createSchool",
+        "inviteSchoolAdmin"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL04",
+      "scope": "core",
+      "operationIds": [
+        "getPlatformSchool",
+        "updatePlatformSchool",
+        "setSchoolStatus"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL05",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolAdmins",
+        "inviteSchoolAdmin",
+        "revokeSchoolAdmin"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL06",
+      "scope": "core",
+      "operationIds": [
+        "listPlatformTickets"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL07",
+      "scope": "core",
+      "operationIds": [
+        "getPlatformTicket",
+        "updatePlatformTicket",
+        "listPlatformTicketMessages",
+        "postPlatformTicketMessage"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL08",
+      "scope": "core",
+      "operationIds": [
+        "listPlatformSupportAccess"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL09",
+      "scope": "core",
+      "operationIds": [
+        "listPlatformAudit"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL10",
+      "scope": "core",
+      "operationIds": [
+        "listOperations"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PL11",
+      "scope": "core",
+      "operationIds": [
+        "getPlatformSettings",
+        "updatePlatformSettings"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC01",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolOverview"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC02",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolProfile",
+        "updateSchoolProfile",
+        "uploadFile"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC03",
+      "scope": "core",
+      "operationIds": [
+        "listYears",
+        "createYear",
+        "getYear",
+        "updateYear"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC04",
+      "scope": "core",
+      "operationIds": [
+        "listYears",
+        "createYear",
+        "getYear",
+        "updateYear"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC05",
+      "scope": "core",
+      "operationIds": [
+        "listYears",
+        "createYear",
+        "getYear",
+        "updateYear",
+        "listTerms",
+        "createTerm",
+        "getTerm",
+        "updateTerm",
+        "listWeeks",
+        "createWeek",
+        "getWeek",
+        "updateWeek",
+        "activateYear"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC06",
+      "scope": "core",
+      "operationIds": [
+        "listTerms",
+        "createTerm",
+        "getTerm",
+        "updateTerm",
+        "listWeeks",
+        "createWeek",
+        "getWeek",
+        "updateWeek",
+        "listCalendarEvents",
+        "createCalendarEvent",
+        "getCalendarEvent",
+        "updateCalendarEvent",
+        "publishCalendarEvent"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC07",
+      "scope": "core",
+      "operationIds": [
+        "archiveYear",
+        "createRollover",
+        "getRollover",
+        "validateRollover",
+        "commitRollover"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC08",
+      "scope": "core",
+      "operationIds": [
+        "listDictionary",
+        "createDictionary",
+        "updateDictionary"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC09",
+      "scope": "core",
+      "operationIds": [
+        "listClasss",
+        "createClass",
+        "getClass",
+        "updateClass",
+        "activateClass",
+        "archiveClass"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC10",
+      "scope": "core",
+      "operationIds": [
+        "listMembers",
+        "suspendMember",
+        "reactivateMember",
+        "listInvitations",
+        "inviteStaff",
+        "revokeInvitation"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC11",
+      "scope": "core",
+      "operationIds": [
+        "getMember",
+        "updateMember",
+        "suspendMember",
+        "reactivateMember",
+        "revokeGrant",
+        "listAssignments",
+        "revokeAssignment"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC12",
+      "scope": "core",
+      "operationIds": [
+        "previewGrant",
+        "createGrant",
+        "listAssignments",
+        "createAssignment",
+        "revokeAssignment"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC13",
+      "scope": "core",
+      "operationIds": [
+        "listRoles",
+        "createRole"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC14",
+      "scope": "core",
+      "operationIds": [
+        "getRole",
+        "updateRole",
+        "previewGrant",
+        "createGrant",
+        "revokeGrant"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC15",
+      "scope": "core",
+      "operationIds": [
+        "listHandovers",
+        "createHandover",
+        "approveHandover"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC16",
+      "scope": "core",
+      "operationIds": [
+        "listStudents"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC17",
+      "scope": "core",
+      "operationIds": [
+        "createStudent",
+        "createEnrollment"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC18",
+      "scope": "core",
+      "operationIds": [
+        "getStudent",
+        "listStudentEnrollments",
+        "createGuardian",
+        "listRelationships",
+        "createRelationship",
+        "issueParentAccess"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC19",
+      "scope": "core",
+      "operationIds": [
+        "getStudent",
+        "updateStudent"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC20",
+      "scope": "core",
+      "operationIds": [
+        "createEnrollment",
+        "listTransfers",
+        "createTransfer",
+        "approveTransfer",
+        "rejectTransfer"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC21",
+      "scope": "core",
+      "operationIds": [
+        "listGuardians",
+        "createGuardian"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC22",
+      "scope": "core",
+      "operationIds": [
+        "getGuardian",
+        "updateGuardian",
+        "listRelationships",
+        "createRelationship",
+        "verifyRelationship",
+        "revokeRelationship"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC23",
+      "scope": "core",
+      "operationIds": [
+        "listParentAccess",
+        "issueParentAccess"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC24",
+      "scope": "core",
+      "operationIds": [
+        "getParentAccess",
+        "revokeParentAccess",
+        "reissueParentAccess",
+        "listParentAccessEvents"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC25",
+      "scope": "core",
+      "operationIds": [
+        "previewParent"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC26",
+      "scope": "core",
+      "operationIds": [
+        "listImports"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC27",
+      "scope": "core",
+      "operationIds": [
+        "uploadFile",
+        "createImport",
+        "validateImport",
+        "listImportRows",
+        "commitImport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC28",
+      "scope": "core",
+      "operationIds": [
+        "getImport",
+        "listImportRows",
+        "cancelImport",
+        "downloadImportErrors"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC29",
+      "scope": "core",
+      "operationIds": [
+        "listRuleSets",
+        "createRuleSet"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC30",
+      "scope": "core",
+      "operationIds": [
+        "createRuleSet",
+        "getRuleSet",
+        "updateRuleSet",
+        "issueRuleSet",
+        "simulateRules"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC31",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolSettings",
+        "updateSchoolSettings"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC32",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolLessons",
+        "createTimetable",
+        "validateTimetable",
+        "publishTimetable"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC33",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolAnnouncements",
+        "createSchoolAnnouncement",
+        "getSchoolAnnouncement",
+        "updateSchoolAnnouncement",
+        "publishSchoolAnnouncement",
+        "scheduleSchoolAnnouncement",
+        "withdrawSchoolAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC34",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolAnnouncements",
+        "createSchoolAnnouncement",
+        "getSchoolAnnouncement",
+        "updateSchoolAnnouncement",
+        "publishSchoolAnnouncement",
+        "scheduleSchoolAnnouncement",
+        "withdrawSchoolAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC35",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolAnnouncements",
+        "createSchoolAnnouncement",
+        "getSchoolAnnouncement",
+        "updateSchoolAnnouncement",
+        "publishSchoolAnnouncement",
+        "scheduleSchoolAnnouncement",
+        "withdrawSchoolAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC36",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolPublications",
+        "withdrawPublication"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC37",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolReport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC38",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolReport",
+        "createExport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC39",
+      "scope": "core",
+      "operationIds": [
+        "listExports",
+        "createExport",
+        "getExport",
+        "downloadExport",
+        "cancelExport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC40",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolAudit"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC41",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolSettings",
+        "updateSchoolSettings"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC42",
+      "scope": "core",
+      "operationIds": [
+        "listSchoolTickets",
+        "createTicket",
+        "listSchoolSupportAccess",
+        "createSupportAccess"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SC43",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolTicket",
+        "listSchoolMessages",
+        "postSchoolMessage",
+        "listSchoolSupportAccess",
+        "createSupportAccess",
+        "approveSupportAccess",
+        "revokeSupportAccess"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE01",
+      "scope": "core",
+      "operationIds": [
+        "getTeacherOverview"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE02",
+      "scope": "core",
+      "operationIds": [
+        "listMyClasses"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE03",
+      "scope": "core",
+      "operationIds": [
+        "listMySchedule"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE04",
+      "scope": "core",
+      "operationIds": [
+        "listMyTasks"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE05",
+      "scope": "core",
+      "operationIds": [
+        "listMyNotifications",
+        "readMyNotification",
+        "listTeacherAnnouncements"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "TE06",
+      "scope": "core",
+      "operationIds": [
+        "getSchoolReport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL01",
+      "scope": "core",
+      "operationIds": [
+        "getClassOverview"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL02",
+      "scope": "core",
+      "operationIds": [
+        "listClassStudents"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL03",
+      "scope": "core",
+      "operationIds": [
+        "createTransfer",
+        "getClassStudent"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL04",
+      "scope": "core",
+      "operationIds": [
+        "listAttendanceSessions",
+        "createAttendanceSession",
+        "getAttendanceSession",
+        "saveAttendanceRecords",
+        "publishAttendance",
+        "reopenAttendance"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL05",
+      "scope": "core",
+      "operationIds": [
+        "listAttendanceSessions",
+        "getAttendanceSummary"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL06",
+      "scope": "core",
+      "operationIds": [
+        "createConductPeriod",
+        "listConductRecords",
+        "createConductRecord",
+        "updateConductRecord"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL07",
+      "scope": "core",
+      "operationIds": [
+        "listConductPeriods",
+        "createConductPeriod",
+        "getConductSummary"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL08",
+      "scope": "core",
+      "operationIds": [
+        "approveConductRecord",
+        "excludeConductRecord",
+        "reviewConductPeriod",
+        "lockConductPeriod",
+        "publishConductPeriod",
+        "lockAndPublishConduct"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL09",
+      "scope": "core",
+      "operationIds": [
+        "listClassPublications"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL10",
+      "scope": "core",
+      "operationIds": [
+        "getClassPublication",
+        "withdrawPublication"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL11",
+      "scope": "core",
+      "operationIds": [
+        "listAdjustments",
+        "createAdjustment",
+        "approveAdjustment",
+        "rejectAdjustment",
+        "applyAdjustment"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL12",
+      "scope": "core",
+      "operationIds": [
+        "getClassRules",
+        "applyClassRules"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL13",
+      "scope": "core",
+      "operationIds": [
+        "listGroups",
+        "createGroup",
+        "listPositions",
+        "createPosition",
+        "updateGroup",
+        "updatePosition",
+        "listPositionAssignments",
+        "endPositionAssignment",
+        "assignGroup",
+        "assignPosition"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL14",
+      "scope": "core",
+      "operationIds": [
+        "listSeatingPlans",
+        "createSeatingPlan",
+        "getSeatingPlan",
+        "updateSeatingPlan",
+        "activateSeatingPlan"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL15",
+      "scope": "core",
+      "operationIds": [
+        "listClassTimetables",
+        "createTimetable",
+        "getTimetable",
+        "updateTimetable",
+        "validateTimetable",
+        "publishTimetable"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL16",
+      "scope": "core",
+      "operationIds": [
+        "listDuties",
+        "createDuty",
+        "updateDuty",
+        "publishDuty"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL17",
+      "scope": "core",
+      "operationIds": [
+        "listActivities"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL18",
+      "scope": "core",
+      "operationIds": [
+        "createActivity",
+        "assignActivity"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL19",
+      "scope": "core",
+      "operationIds": [
+        "getActivity",
+        "updateActivity",
+        "setParticipantStatus",
+        "listParticipants",
+        "assignActivity",
+        "publishActivity",
+        "listEvidence",
+        "createEvidence",
+        "reviewEvidence"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL20",
+      "scope": "core",
+      "operationIds": [
+        "listEvidence",
+        "createEvidence",
+        "reviewEvidence",
+        "uploadFile",
+        "downloadFile"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL21",
+      "scope": "core",
+      "operationIds": [
+        "listClassAnnouncements",
+        "createClassAnnouncement",
+        "getClassAnnouncement",
+        "updateClassAnnouncement",
+        "publishClassAnnouncement",
+        "scheduleClassAnnouncement",
+        "withdrawClassAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL22",
+      "scope": "core",
+      "operationIds": [
+        "listClassAnnouncements",
+        "createClassAnnouncement",
+        "getClassAnnouncement",
+        "updateClassAnnouncement",
+        "publishClassAnnouncement",
+        "scheduleClassAnnouncement",
+        "withdrawClassAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL23",
+      "scope": "core",
+      "operationIds": [
+        "listClassAnnouncements",
+        "createClassAnnouncement",
+        "getClassAnnouncement",
+        "updateClassAnnouncement",
+        "publishClassAnnouncement",
+        "scheduleClassAnnouncement",
+        "withdrawClassAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL24",
+      "scope": "core",
+      "operationIds": [
+        "listClassFiles",
+        "uploadFile",
+        "getFile",
+        "downloadFile",
+        "archiveFile",
+        "createFileLink"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL25",
+      "scope": "core",
+      "operationIds": [
+        "getClassReport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "CL26",
+      "scope": "core",
+      "operationIds": [
+        "getClassReport",
+        "createExport",
+        "downloadExport"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA01",
+      "scope": "core",
+      "operationIds": [
+        "getCsrf",
+        "exchangeParentLink",
+        "getParentContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA02",
+      "scope": "core",
+      "operationIds": [
+        "getParentOverview"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA03",
+      "scope": "core",
+      "operationIds": [
+        "getParentAttendance"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA04",
+      "scope": "core",
+      "operationIds": [
+        "listParentConduct"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA05",
+      "scope": "core",
+      "operationIds": [
+        "getParentConduct"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA06",
+      "scope": "core",
+      "operationIds": [
+        "getParentTimetable"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA07",
+      "scope": "core",
+      "operationIds": [
+        "getParentDuties"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA08",
+      "scope": "core",
+      "operationIds": [
+        "listParentActivities"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA09",
+      "scope": "core",
+      "operationIds": [
+        "getParentActivity"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA10",
+      "scope": "core",
+      "operationIds": [
+        "listParentAnnouncements"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA11",
+      "scope": "core",
+      "operationIds": [
+        "getParentAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA12",
+      "scope": "core",
+      "operationIds": [
+        "getParentTeachers"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA13",
+      "scope": "core",
+      "operationIds": [
+        "listParentDocuments",
+        "downloadParentDocument"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "PA14",
+      "scope": "core",
+      "operationIds": [
+        "getParentContext",
+        "endParentSession"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SY01",
+      "scope": "core",
+      "operationIds": [
+        "getPublicSchool"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SY02",
+      "scope": "core",
+      "operationIds": [
+        "getPublicAnnouncement"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "PARTIAL"
+    },
+    {
+      "screenId": "SY03",
+      "scope": "core",
+      "operationIds": [],
+      "staticReason": "Trang chính sách cần chủ dự án duyệt, nội dung tĩnh.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "SY04",
+      "scope": "core",
+      "operationIds": [],
+      "staticReason": "Điều kiện sử dụng tĩnh, không billing.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "SY05",
+      "scope": "core",
+      "operationIds": [
+        "getMyContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "SY06",
+      "scope": "core",
+      "operationIds": [
+        "getMyContext"
+      ],
+      "staticReason": "",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "SY07",
+      "scope": "core",
+      "operationIds": [
+        "healthReady"
+      ],
+      "staticReason": "Frontend boundary cho 503/maintenance; healthReady cung cấp tín hiệu.",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "SY08",
+      "scope": "core",
+      "operationIds": [
+        "healthReady"
+      ],
+      "staticReason": "Not-found/error boundary frontend, xử lý status từ API.",
+      "status": "NOT_STARTED",
+      "evidence": [],
+      "apiStatus": "TESTED"
+    },
+    {
+      "screenId": "DV01",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV02",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV03",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV04",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV05",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV06",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "DV07",
+      "scope": "internal",
+      "operationIds": [],
+      "staticReason": "Không đưa UI lab/demo vào API thật.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "EX01",
+      "scope": "optional",
+      "operationIds": [],
+      "staticReason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "EX02",
+      "scope": "optional",
+      "operationIds": [],
+      "staticReason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    },
+    {
+      "screenId": "EX03",
+      "scope": "optional",
+      "operationIds": [],
+      "staticReason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+      "status": "STATIC_UNVERIFIED",
+      "evidence": []
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant GV as Giáo viên
+    participant API as Backend
+    participant PG as PostgreSQL
+    participant PH as Phụ huynh
+    GV->>API: Ghi nhận (session + scope + version)
+    API->>PG: Ghi dữ liệu + audit + outbox trong transaction
+    GV->>API: Rà soát / chốt / công bố
+    API->>PG: Lock source, validate version, tạo snapshot + projection
+    PG-->>API: Commit publication hiện hành
+    PH->>API: Exchange link riêng (không tài khoản)
+    API->>PG: Kiểm link + guardian + hạn + school
+    API-->>PH: Cookie phiên chỉ đọc + viewId
+    PH->>API: GET dữ liệu với cookie + X-Parent-View
+    API->>PG: Parent role / RLS / chỉ projection được công bố
+    PG-->>PH: Dữ liệu đúng một học sinh qua API
+    GV->>API: Thu hồi link
+    API->>PG: Revoke link + sessions
+    PH->>API: Lần đọc tiếp theo
+    API-->>PH: Từ chối; không trả dữ liệu cũ

@@ -1,0 +1,41 @@
+digraph A {
+ graph [rankdir=TB, bgcolor="#ffffff", pad="0.5", nodesep="0.6", ranksep="0.7", fontname="DejaVu Sans", fontsize=24, label="EduManage — Kiến trúc triển khai", labelloc=t];
+ node [shape=box,style="rounded,filled",color="#dce4ef",fillcolor="#f2f6fc",fontname="DejaVu Sans",fontsize=14,margin="0.24,0.18"];
+ edge [color="#6782a4",fontname="DejaVu Sans",fontsize=11];
+ browser [label="Nhân sự / Phụ huynh
+Trình duyệt",fillcolor="#e6f1ff"];
+ panel [label="Production: Nginx aaPanel
+Domain + HTTPS / SSL",style="rounded,dashed",color="#8798b1"];
+ gateway [label="Nginx gateway :8080
+LOCAL: 127.0.0.1:18763
+Cổng duy nhất được publish",fillcolor="#244db7",fontcolor=white];
+ web [label="Next.js frontend :3000
+Giữ toàn bộ UI đã thiết kế",fillcolor="#e8f0fe"];
+ api [label="API NestJS + Fastify :3001
+Auth • Phân quyền • Nghiệp vụ",fillcolor="#e5f5f0"];
+ db [label="PostgreSQL 17 :5432
+Dữ liệu • RLS • Session • Jobs
+Không publish port",shape=cylinder,fillcolor="#ebedfa"];
+ worker [label="Worker — cùng image API
+Import • Export • Mail • Publication",fillcolor="#fff2de"];
+ files [label="Volume tệp riêng
+Không phải thư mục public",shape=folder,fillcolor="#f6ecf4"];
+ mail [label="Local: file mail riêng
+Production: SMTP",fillcolor="#f8f9fb"];
+ migration [label="Migrate một lần
+Role riêng, checksum
+Không chạy mỗi API request",style="rounded,dashed",fillcolor="#fff"];
+ browser->gateway[label="Local HTTP"];
+ browser->panel[style=dashed,label="Production HTTPS"];
+ panel->gateway[style=dashed,label="loopback"];
+ gateway->web[label="UI"];
+ gateway->api[label="/api/v1/*"];
+ web->api[style=dashed,label="SSR same request context"];
+ api->db[label="transaction + tenant/scope"];
+ worker->db[dir=both,label="outbox / lease"];
+ api->files[label="kiểm quyền mỗi download"];
+ worker->files[label="xử lý tệp"];
+ worker->mail[label="queued ≠ sent"];
+ migration->db[style=dashed];
+ {rank=same;web;api;} {rank=same;db;files;} {rank=same;worker;migration;}
+}

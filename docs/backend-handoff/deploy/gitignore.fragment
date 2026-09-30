@@ -1,0 +1,9 @@
+# Merge vào .gitignore hiện tại
+.env.local-docker
+.env.production
+.secrets/
+backups/
+qa/private/
+backend/.env
+backend/dist/
+backend/node_modules/

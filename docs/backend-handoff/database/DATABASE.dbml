@@ -1,0 +1,1682 @@
+Project EduManage {
+  database_type: 'PostgreSQL'
+  Note: 'Thiết kế mới. SQL là nguồn chuẩn cho CHECK, partial/exclusion indexes, trigger và RLS.'
+}
+
+Table identity.users {
+  Note: 'Danh tính nhân sự'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  email_normalized text [not null]
+  display_name text [not null]
+  password_hash text
+  status text [not null, default: `'INVITED'`]
+  authz_version integer [not null, default: `1`]
+  password_changed_at timestamptz
+  email_verified_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (email_normalized) [unique]
+  }
+}
+
+Table identity.staff_sessions {
+  Note: 'Phiên nhân sự'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  token_hash text [not null]
+  csrf_hash text [not null]
+  last_seen_at timestamptz [not null, default: `now()`]
+  idle_expires_at timestamptz [not null]
+  absolute_expires_at timestamptz [not null]
+  revoked_at timestamptz
+  user_agent_summary text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (token_hash) [unique]
+  }
+}
+
+Table identity.auth_challenges {
+  Note: 'Xác minh email / khôi phục mật khẩu'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid
+  email_normalized text [not null]
+  purpose text [not null, default: `'PASSWORD_RESET'`]
+  token_hash text [not null]
+  expires_at timestamptz [not null]
+  consumed_at timestamptz
+  attempts integer [not null, default: `0`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (token_hash) [unique]
+  }
+}
+
+Table identity.parent_sessions {
+  Note: 'Phiên tra cứu không tài khoản'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  access_link_id uuid [not null]
+  token_hash text [not null]
+  csrf_hash text [not null]
+  last_seen_at timestamptz [not null, default: `now()`]
+  idle_expires_at timestamptz [not null]
+  absolute_expires_at timestamptz [not null]
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (token_hash) [unique]
+  }
+}
+
+Table identity.rate_limit_buckets {
+  Note: 'Giới hạn tần suất tối thiểu'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  bucket_hash text [not null]
+  window_start timestamptz [not null]
+  hits integer [not null, default: `0`]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (bucket_hash, window_start) [unique]
+  }
+}
+
+Table identity.mail_outbox {
+  Note: 'Email bảo mật, payload mã hóa'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid
+  school_id uuid
+  template_key text [not null]
+  encrypted_payload text [not null]
+  dedupe_key text [not null]
+  status text [not null, default: `'PENDING'`]
+  attempts integer [not null, default: `0`]
+  run_after timestamptz [not null, default: `now()`]
+  lease_until timestamptz
+  lease_owner text
+  sent_at timestamptz
+  last_error_code text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (dedupe_key) [unique]
+  }
+}
+
+Table platform.schools {
+  Note: 'Không gian trường học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  code text [not null]
+  slug text [not null]
+  name text [not null]
+  status text [not null, default: `'DRAFT'`]
+  timezone text [not null, default: `'Asia/Ho_Chi_Minh'`]
+  public_contact_email text
+  public_contact_phone text
+  public_address text
+  logo_object_key text
+  settings jsonb [not null, default: `'{}'::jsonb`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (code) [unique]
+    (slug) [unique]
+  }
+}
+
+Table platform.operator_grants {
+  Note: 'Quyền vận hành nền tảng'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  action_code text [not null]
+  valid_from timestamptz [not null, default: `now()`]
+  valid_until timestamptz
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.settings {
+  Note: 'Cấu hình vận hành không chứa secret'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  key text [not null]
+  value jsonb [not null, default: `'{}'::jsonb`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (key) [unique]
+  }
+}
+
+Table platform.support_tickets {
+  Note: 'Yêu cầu hỗ trợ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  requester_id uuid [not null]
+  assignee_id uuid
+  subject text [not null]
+  description text [not null]
+  status text [not null, default: `'OPEN'`]
+  priority text [not null, default: `'NORMAL'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.support_messages {
+  Note: 'Trao đổi hỗ trợ nội bộ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  ticket_id uuid [not null]
+  author_id uuid [not null]
+  body text [not null]
+  created_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.support_access {
+  Note: 'Ủy quyền hỗ trợ chỉ đọc, có hạn'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  ticket_id uuid [not null]
+  operator_id uuid [not null]
+  approved_by_user_id uuid
+  class_id uuid
+  allowed_actions "text[]" [not null, default: `ARRAY[]::text[]`]
+  reason text [not null]
+  status text [not null, default: `'REQUESTED'`]
+  valid_from timestamptz [not null]
+  valid_until timestamptz [not null]
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.audit_events {
+  Note: 'Nhật ký vận hành, không payload học sinh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  actor_id uuid
+  school_id uuid
+  action text [not null]
+  target_type text [not null]
+  target_id uuid
+  request_id text [not null]
+  redacted_diff jsonb [not null, default: `'{}'::jsonb`]
+  created_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.operation_runs {
+  Note: 'Kết quả kiểm tra / backup thực tế'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  kind text [not null]
+  status text [not null, default: `'QUEUED'`]
+  started_at timestamptz
+  finished_at timestamptz
+  summary jsonb [not null, default: `'{}'::jsonb`]
+  artifact_checksum text
+  artifact_location_redacted text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+  }
+}
+
+Table platform.public_school_content {
+  Note: 'Bản tin trường công khai đã duyệt'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  announcement_id uuid [not null]
+  revision integer [not null]
+  title text [not null]
+  sanitized_html text [not null]
+  published_at timestamptz [not null]
+  withdrawn_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, announcement_id, revision) [unique]
+  }
+}
+
+Table app.memberships {
+  Note: 'Thành viên và hồ sơ công tác'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  user_id uuid [not null]
+  staff_code text
+  work_display_name text [not null]
+  department text
+  work_email text
+  work_phone text
+  share_work_contact boolean [not null, default: `false`]
+  status text [not null, default: `'INVITED'`]
+  joined_at timestamptz
+  ended_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, user_id) [unique]
+    (school_id, staff_code) [unique]
+  }
+}
+
+Table app.roles {
+  Note: 'Mẫu nhiệm vụ tại trường'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  code text [not null]
+  label text [not null]
+  system_role boolean [not null, default: `false`]
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, code) [unique]
+  }
+}
+
+Table app.role_permissions {
+  Note: 'Hành động của mẫu quyền'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  role_id uuid [not null]
+  action_code text [not null]
+  allowed_scopes "text[]" [not null, default: `ARRAY['SCHOOL']::text[]`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, role_id, action_code) [unique]
+  }
+}
+
+Table app.role_grants {
+  Note: 'Giao quyền đúng phạm vi và thời gian'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  member_id uuid [not null]
+  role_id uuid [not null]
+  scope_type text [not null, default: `'SCHOOL'`]
+  class_id uuid
+  subject_id uuid
+  valid_from timestamptz [not null, default: `now()`]
+  valid_until timestamptz
+  revoked_at timestamptz
+  granted_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.staff_invitations {
+  Note: 'Lời mời nhân sự không đăng ký tự do'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  email_normalized text [not null]
+  token_hash text [not null]
+  proposed_assignments jsonb [not null, default: `'[]'::jsonb`]
+  status text [not null, default: `'PENDING'`]
+  expires_at timestamptz [not null]
+  invited_by uuid [not null]
+  accepted_at timestamptz
+  accepted_user_id uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, token_hash) [unique]
+  }
+}
+
+Table app.grade_levels {
+  Note: 'Khối học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  sort_order integer [not null, default: `0`]
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, code) [unique]
+  }
+}
+
+Table app.subjects {
+  Note: 'Môn học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, code) [unique]
+  }
+}
+
+Table app.rooms {
+  Note: 'Phòng học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  capacity integer
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, code) [unique]
+  }
+}
+
+Table app.academic_years {
+  Note: 'Năm học độc lập'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  starts_on date [not null]
+  ends_on date [not null]
+  status text [not null, default: `'DRAFT'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, code) [unique]
+  }
+}
+
+Table app.terms {
+  Note: 'Học kỳ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  year_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  starts_on date [not null]
+  ends_on date [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, year_id, code) [unique]
+    (school_id, id, year_id) [unique]
+  }
+}
+
+Table app.school_weeks {
+  Note: 'Tuần học và hạn nhập'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  year_id uuid [not null]
+  term_id uuid [not null]
+  week_number integer [not null]
+  starts_on date [not null]
+  ends_on date [not null]
+  input_deadline timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, year_id, week_number) [unique]
+    (school_id, id, year_id) [unique]
+  }
+}
+
+Table app.classes {
+  Note: 'Lớp của một năm học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  year_id uuid [not null]
+  grade_level_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  capacity integer [not null, default: `45`]
+  status text [not null, default: `'DRAFT'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, year_id, code) [unique]
+    (school_id, id, year_id) [unique]
+  }
+}
+
+Table app.calendar_events {
+  Note: 'Ngày nghỉ / mốc công việc'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  year_id uuid [not null]
+  class_id uuid
+  title text [not null]
+  kind text [not null, default: `'HOLIDAY'`]
+  starts_on date [not null]
+  ends_on date [not null]
+  status text [not null, default: `'DRAFT'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.teaching_assignments {
+  Note: 'Phân công chủ nhiệm / bộ môn'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  member_id uuid [not null]
+  role_grant_id uuid [not null]
+  subject_id uuid
+  kind text [not null, default: `'HOMEROOM'`]
+  starts_on date [not null]
+  ends_on date
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, role_grant_id) [unique]
+  }
+}
+
+Table app.students {
+  Note: 'Hồ sơ học sinh tối thiểu'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_code text [not null]
+  full_name text [not null]
+  date_of_birth date
+  preferred_name text
+  status text [not null, default: `'ACTIVE'`]
+  internal_note text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, student_code) [unique]
+  }
+}
+
+Table app.enrollments {
+  Note: 'Quá trình theo học có thời hạn'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  starts_on date [not null]
+  ends_on date
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, id, class_id) [unique]
+    (school_id, id, student_id, year_id) [unique]
+  }
+}
+
+Table app.guardians {
+  Note: 'Liên hệ người giám hộ, không user'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  full_name text [not null]
+  phone text
+  email text
+  status text [not null, default: `'ACTIVE'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.guardian_relationships {
+  Note: 'Quan hệ và quyền nhận thông tin'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_id uuid [not null]
+  guardian_id uuid [not null]
+  relationship_label text [not null]
+  is_primary boolean [not null, default: `false`]
+  can_receive_info boolean [not null, default: `false`]
+  status text [not null, default: `'UNVERIFIED'`]
+  verified_by uuid
+  verified_at timestamptz
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, student_id, guardian_id) [unique]
+    (school_id, id, student_id) [unique]
+  }
+}
+
+Table app.parent_access_links {
+  Note: 'Chìa khóa tra cứu một học sinh/năm'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_id uuid [not null]
+  year_id uuid [not null]
+  relationship_id uuid [not null]
+  token_hash text [not null]
+  allowed_sections "text[]" [not null, default: `ARRAY['overview','teachers','announcements']::text[]`]
+  allow_download boolean [not null, default: `false`]
+  expires_at timestamptz [not null]
+  revoked_at timestamptz
+  revoke_reason text
+  issued_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, token_hash) [unique]
+    (school_id, id, student_id, year_id) [unique]
+  }
+}
+
+Table app.parent_access_events {
+  Note: 'Sử dụng link, không chứng minh danh tính'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  access_link_id uuid [not null]
+  event_kind text [not null]
+  request_id text [not null]
+  ip_daily_hash text
+  device_summary text
+  section text
+  created_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.transfer_requests {
+  Note: 'Yêu cầu chuyển lớp / ngừng học'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_id uuid [not null]
+  from_enrollment_id uuid [not null]
+  to_class_id uuid
+  effective_on date [not null]
+  reason text [not null]
+  status text [not null, default: `'DRAFT'`]
+  requested_by uuid [not null]
+  decided_by uuid
+  applied_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.handover_requests {
+  Note: 'Bàn giao chủ nhiệm'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  from_assignment_id uuid [not null]
+  to_member_id uuid [not null]
+  effective_on date [not null]
+  reason text [not null]
+  checklist jsonb [not null, default: `'{}'::jsonb`]
+  status text [not null, default: `'DRAFT'`]
+  requested_by uuid [not null]
+  decided_by uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.rollover_batches {
+  Note: 'Chuẩn bị năm mới có xem trước'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  source_year_id uuid [not null]
+  target_year_id uuid [not null]
+  plan jsonb [not null, default: `'[]'::jsonb`]
+  plan_hash text
+  status text [not null, default: `'DRAFT'`]
+  requested_by uuid [not null]
+  applied_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.class_groups {
+  Note: 'Tổ trong lớp'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  name text [not null]
+  sort_order integer [not null, default: `0`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, name) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.class_positions {
+  Note: 'Chức vụ học sinh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  code text [not null]
+  name text [not null]
+  single_holder boolean [not null, default: `true`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, code) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.group_memberships {
+  Note: 'Lịch sử xếp tổ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  group_id uuid [not null]
+  enrollment_id uuid [not null]
+  starts_on date [not null]
+  ends_on date
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.position_assignments {
+  Note: 'Lịch sử giao chức vụ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  position_id uuid [not null]
+  enrollment_id uuid [not null]
+  starts_on date [not null]
+  ends_on date
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.seating_plans {
+  Note: 'Phiên bản sơ đồ lớp'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  revision integer [not null]
+  effective_on date [not null]
+  status text [not null, default: `'DRAFT'`]
+  layout jsonb [not null, default: `'{}'::jsonb`]
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, revision) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.seat_assignments {
+  Note: 'Vị trí ngồi của một bản sơ đồ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  plan_id uuid [not null]
+  seat_key text [not null]
+  enrollment_id uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, plan_id, seat_key) [unique]
+    (school_id, plan_id, enrollment_id) [unique]
+  }
+}
+
+Table app.rule_sets {
+  Note: 'Bộ nội quy có phiên bản'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  name text [not null]
+  revision integer [not null]
+  base_points numeric(10,2) [not null, default: `100`]
+  minimum_points numeric(10,2)
+  maximum_points numeric(10,2)
+  status text [not null, default: `'DRAFT'`]
+  issued_at timestamptz
+  issued_by uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.conduct_rules {
+  Note: 'Quy tắc cộng trừ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  rule_set_id uuid [not null]
+  code text [not null]
+  label text [not null]
+  group_name text [not null]
+  value_mode text [not null, default: `'FIXED'`]
+  default_delta numeric(10,2) [not null]
+  minimum_delta numeric(10,2)
+  maximum_delta numeric(10,2)
+  max_occurrences_per_day integer
+  reason_required boolean [not null, default: `true`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, rule_set_id, code) [unique]
+    (school_id, id, rule_set_id) [unique]
+  }
+}
+
+Table app.rule_thresholds {
+  Note: 'Mốc xếp loại nội bộ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  rule_set_id uuid [not null]
+  label text [not null]
+  minimum_score numeric(10,2) [not null]
+  sort_order integer [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, rule_set_id, minimum_score) [unique]
+  }
+}
+
+Table app.class_rule_periods {
+  Note: 'Nội quy áp dụng theo giai đoạn lớp'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  rule_set_id uuid [not null]
+  starts_on date [not null]
+  ends_on date
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.attendance_sessions {
+  Note: 'Buổi / tiết điểm danh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  session_date date [not null]
+  granularity text [not null, default: `'DAILY'`]
+  slot_key text [not null]
+  lesson_id uuid
+  status text [not null, default: `'OPEN'`]
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, session_date, slot_key) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.attendance_records {
+  Note: 'Trạng thái chuyên cần từng học sinh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  session_id uuid [not null]
+  enrollment_id uuid [not null]
+  status text [not null, default: `'UNMARKED'`]
+  late_minutes integer
+  public_note text
+  internal_note text
+  recorded_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, session_id, enrollment_id) [unique]
+  }
+}
+
+Table app.conduct_periods {
+  Note: 'Kỳ thi đua của lớp'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  week_id uuid [not null]
+  rule_set_id uuid [not null]
+  status text [not null, default: `'OPEN'`]
+  data_version integer [not null, default: `1`]
+  input_deadline timestamptz
+  locked_at timestamptz
+  locked_by uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, week_id) [unique]
+    (school_id, id, class_id) [unique]
+    (school_id, id, rule_set_id) [unique]
+  }
+}
+
+Table app.conduct_records {
+  Note: 'Sổ sự kiện thi đua có nguồn'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  period_id uuid [not null]
+  rule_set_id uuid [not null]
+  rule_id uuid [not null]
+  enrollment_id uuid [not null]
+  delta_snapshot numeric(10,2) [not null]
+  rule_label_snapshot text [not null]
+  public_reason text [not null]
+  internal_note text
+  occurred_at timestamptz [not null]
+  status text [not null, default: `'DRAFT'`]
+  source_kind text [not null]
+  source_key text [not null]
+  supersedes_id uuid
+  recorded_by uuid [not null]
+  approved_by uuid
+  approved_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.adjustment_requests {
+  Note: 'Điều chỉnh có phê duyệt sau chốt'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  period_id uuid [not null]
+  baseline_publication_id uuid [not null]
+  reason text [not null]
+  proposed_changes jsonb [not null, default: `'[]'::jsonb`]
+  status text [not null, default: `'SUBMITTED'`]
+  requested_by uuid [not null]
+  decided_by uuid
+  decided_at timestamptz
+  applied_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.timetable_versions {
+  Note: 'Lịch tuần nháp và bản công bố'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  revision integer [not null]
+  starts_on date [not null]
+  ends_on date [not null]
+  status text [not null, default: `'DRAFT'`]
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, class_id, revision) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.timetable_entries {
+  Note: 'Tiết học mẫu trong tuần'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  timetable_id uuid [not null]
+  subject_id uuid [not null]
+  member_id uuid [not null]
+  room_id uuid
+  weekday integer [not null]
+  period_number integer [not null]
+  starts_at_local time [not null]
+  ends_at_local time [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, timetable_id, weekday, period_number) [unique]
+  }
+}
+
+Table app.lesson_occurrences {
+  Note: 'Tiết học thực tế và kiểm tra trùng'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  timetable_id uuid [not null]
+  subject_id uuid [not null]
+  member_id uuid [not null]
+  room_id uuid
+  starts_at timestamptz [not null]
+  ends_at timestamptz [not null]
+  status text [not null, default: `'SCHEDULED'`]
+  change_reason text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.duty_schedules {
+  Note: 'Lịch trực nhật của lớp'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  starts_on date [not null]
+  ends_on date [not null]
+  status text [not null, default: `'DRAFT'`]
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.duty_assignments {
+  Note: 'Nhiệm vụ từng học sinh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  schedule_id uuid [not null]
+  enrollment_id uuid [not null]
+  duty_date date [not null]
+  task text [not null]
+  status text [not null, default: `'ASSIGNED'`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.activities {
+  Note: 'Hoạt động do giáo viên tổ chức'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  year_id uuid [not null]
+  title text [not null]
+  description text [not null]
+  due_at timestamptz [not null]
+  status text [not null, default: `'DRAFT'`]
+  evidence_required boolean [not null, default: `false`]
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, id, class_id) [unique]
+  }
+}
+
+Table app.activity_participants {
+  Note: 'Học sinh được giao hoạt động'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid [not null]
+  activity_id uuid [not null]
+  enrollment_id uuid [not null]
+  status text [not null, default: `'ASSIGNED'`]
+  review_note text
+  reviewed_by uuid
+  reviewed_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, activity_id, enrollment_id) [unique]
+  }
+}
+
+Table app.files {
+  Note: 'Metadata tệp riêng tư'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  object_key text [not null]
+  original_name text [not null]
+  content_type text [not null]
+  byte_size bigint [not null]
+  sha256 text [not null]
+  status text [not null, default: `'UPLOADING'`]
+  storage_driver text [not null, default: `'local'`]
+  uploaded_by uuid [not null]
+  expires_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, object_key) [unique]
+  }
+}
+
+Table app.evidence {
+  Note: 'Minh chứng giáo viên tải thay'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  participant_id uuid [not null]
+  file_id uuid [not null]
+  submitted_by uuid [not null]
+  caption text
+  status text [not null, default: `'SUBMITTED'`]
+  reviewed_by uuid
+  reviewed_at timestamptz
+  review_reason text
+  share_with_guardian boolean [not null, default: `false`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.announcements {
+  Note: 'Thông báo và quy trình công bố'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  year_id uuid [not null]
+  class_id uuid
+  title text [not null]
+  sanitized_html text [not null]
+  status text [not null, default: `'DRAFT'`]
+  scheduled_at timestamptz
+  created_by uuid [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.announcement_targets {
+  Note: 'Đối tượng nhận thông báo'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  announcement_id uuid [not null]
+  audience_kind text [not null, default: `'PUBLIC'`]
+  grade_id uuid
+  class_id uuid
+  student_id uuid
+  member_id uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.file_links {
+  Note: 'Vị trí dùng tệp và khả năng chia sẻ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  file_id uuid [not null]
+  student_id uuid
+  class_id uuid
+  activity_id uuid
+  announcement_id uuid
+  share_with_guardian boolean [not null, default: `false`]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.publication_revisions {
+  Note: 'Bản chốt/công bố bất biến'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  class_id uuid
+  year_id uuid [not null]
+  kind text [not null, default: `'CONDUCT'`]
+  conduct_period_id uuid
+  attendance_session_id uuid
+  timetable_id uuid
+  duty_schedule_id uuid
+  activity_id uuid
+  announcement_id uuid
+  revision integer [not null]
+  status text [not null, default: `'READY'`]
+  source_version integer [not null]
+  content_hash text [not null]
+  staff_snapshot jsonb [not null, default: `'{}'::jsonb`]
+  created_by uuid [not null]
+  published_at timestamptz
+  published_by uuid
+  withdrawn_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, id, year_id) [unique]
+  }
+}
+
+Table app.parent_publication_items {
+  Note: 'Dữ liệu đã lọc riêng từng học sinh'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  publication_id uuid [not null]
+  student_id uuid [not null]
+  year_id uuid [not null]
+  section text [not null, default: `'conduct'`]
+  payload jsonb [not null, default: `'{}'::jsonb`]
+  created_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, publication_id, student_id) [unique]
+  }
+}
+
+Table app.parent_document_items {
+  Note: 'Tệp cho đúng người xem'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  student_id uuid [not null]
+  year_id uuid [not null]
+  file_id uuid [not null]
+  publication_id uuid
+  title text [not null]
+  download_allowed boolean [not null, default: `false`]
+  published_at timestamptz [not null]
+  revoked_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.import_jobs {
+  Note: 'Nhập file có kiểm tra và xác nhận'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  kind text [not null, default: `'STUDENTS'`]
+  file_id uuid [not null]
+  requested_by uuid [not null]
+  column_mapping jsonb [not null, default: `'{}'::jsonb`]
+  preview_hash text
+  status text [not null, default: `'UPLOADED'`]
+  summary jsonb [not null, default: `'{}'::jsonb`]
+  completed_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.import_rows {
+  Note: 'Kết quả từng dòng import'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  import_id uuid [not null]
+  row_number integer [not null]
+  normalized_data jsonb [not null, default: `'{}'::jsonb`]
+  status text [not null, default: `'PENDING'`]
+  errors jsonb [not null, default: `'[]'::jsonb`]
+  business_key text
+  result_id uuid
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, import_id, row_number) [unique]
+  }
+}
+
+Table app.export_jobs {
+  Note: 'Bản xuất dữ liệu có phạm vi'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  requested_by uuid [not null]
+  class_id uuid
+  report_type text [not null]
+  format text [not null, default: `'CSV'`]
+  filters jsonb [not null, default: `'{}'::jsonb`]
+  status text [not null, default: `'QUEUED'`]
+  file_id uuid
+  expires_at timestamptz
+  completed_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.notifications {
+  Note: 'Thông báo nội bộ cho nhân sự'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  member_id uuid [not null]
+  kind text [not null]
+  title text [not null]
+  target_kind text [not null]
+  target_id uuid
+  read_at timestamptz
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.audit_events {
+  Note: 'Nhật ký thay đổi nghiệp vụ'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  actor_user_id uuid
+  actor_kind text [not null]
+  action text [not null]
+  target_type text [not null]
+  target_id uuid
+  request_id text [not null]
+  reason text
+  redacted_before jsonb [not null, default: `'{}'::jsonb`]
+  redacted_after jsonb [not null, default: `'{}'::jsonb`]
+  created_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+  }
+}
+
+Table app.outbox_events {
+  Note: 'Hàng đợi bền vững bằng PostgreSQL'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  kind text [not null]
+  dedupe_key text [not null]
+  payload jsonb [not null, default: `'{}'::jsonb`]
+  status text [not null, default: `'PENDING'`]
+  attempts integer [not null, default: `0`]
+  run_after timestamptz [not null, default: `now()`]
+  lease_until timestamptz
+  lease_owner text
+  processed_at timestamptz
+  last_error_code text
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, dedupe_key) [unique]
+  }
+}
+
+Table app.idempotency_keys {
+  Note: 'Chống gửi lặp thao tác'
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  school_id uuid [not null]
+  actor_user_id uuid [not null]
+  operation_id text [not null]
+  key_hash text [not null]
+  request_hash text [not null]
+  status text [not null, default: `'IN_PROGRESS'`]
+  response_status integer
+  response_metadata jsonb [not null, default: `'{}'::jsonb`]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+  version integer [not null, default: `1`]
+  updated_at timestamptz [not null, default: `now()`]
+  indexes {
+    (school_id, id) [unique]
+    (school_id, actor_user_id, operation_id, key_hash) [unique]
+  }
+}
+Ref fk_001: identity.staff_sessions.(user_id) > identity.users.(id) [delete: restrict]
+Ref fk_002: identity.auth_challenges.(user_id) > identity.users.(id) [delete: restrict]
+Ref fk_003: identity.parent_sessions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_004: identity.parent_sessions.(school_id,access_link_id) > app.parent_access_links.(school_id,id) [delete: restrict]
+Ref fk_005: identity.mail_outbox.(user_id) > identity.users.(id) [delete: restrict]
+Ref fk_006: identity.mail_outbox.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_007: platform.operator_grants.(user_id) > identity.users.(id) [delete: restrict]
+Ref fk_008: platform.support_tickets.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_009: platform.support_tickets.(requester_id) > identity.users.(id) [delete: restrict]
+Ref fk_010: platform.support_tickets.(assignee_id) > identity.users.(id) [delete: restrict]
+Ref fk_011: platform.support_messages.(ticket_id) > platform.support_tickets.(id) [delete: restrict]
+Ref fk_012: platform.support_messages.(author_id) > identity.users.(id) [delete: restrict]
+Ref fk_013: platform.support_access.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_014: platform.support_access.(ticket_id) > platform.support_tickets.(id) [delete: restrict]
+Ref fk_015: platform.support_access.(operator_id) > identity.users.(id) [delete: restrict]
+Ref fk_016: platform.support_access.(approved_by_user_id) > identity.users.(id) [delete: restrict]
+Ref fk_017: platform.support_access.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_018: platform.audit_events.(actor_id) > identity.users.(id) [delete: restrict]
+Ref fk_019: platform.audit_events.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_020: platform.public_school_content.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_021: platform.public_school_content.(school_id,announcement_id) > app.announcements.(school_id,id) [delete: restrict]
+Ref fk_022: app.memberships.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_023: app.memberships.(user_id) > identity.users.(id) [delete: restrict]
+Ref fk_024: app.roles.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_025: app.role_permissions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_026: app.role_permissions.(school_id,role_id) > app.roles.(school_id,id) [delete: restrict]
+Ref fk_027: app.role_grants.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_028: app.role_grants.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_029: app.role_grants.(school_id,role_id) > app.roles.(school_id,id) [delete: restrict]
+Ref fk_030: app.role_grants.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_031: app.role_grants.(school_id,subject_id) > app.subjects.(school_id,id) [delete: restrict]
+Ref fk_032: app.role_grants.(granted_by) > identity.users.(id) [delete: restrict]
+Ref fk_033: app.staff_invitations.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_034: app.staff_invitations.(invited_by) > identity.users.(id) [delete: restrict]
+Ref fk_035: app.staff_invitations.(accepted_user_id) > identity.users.(id) [delete: restrict]
+Ref fk_036: app.grade_levels.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_037: app.subjects.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_038: app.rooms.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_039: app.academic_years.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_040: app.terms.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_041: app.terms.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_042: app.school_weeks.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_043: app.school_weeks.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_044: app.school_weeks.(school_id,term_id,year_id) > app.terms.(school_id,id,year_id) [delete: restrict]
+Ref fk_045: app.classes.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_046: app.classes.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_047: app.classes.(school_id,grade_level_id) > app.grade_levels.(school_id,id) [delete: restrict]
+Ref fk_048: app.calendar_events.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_049: app.calendar_events.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_050: app.calendar_events.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_051: app.teaching_assignments.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_052: app.teaching_assignments.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_053: app.teaching_assignments.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_054: app.teaching_assignments.(school_id,role_grant_id) > app.role_grants.(school_id,id) [delete: restrict]
+Ref fk_055: app.teaching_assignments.(school_id,subject_id) > app.subjects.(school_id,id) [delete: restrict]
+Ref fk_056: app.students.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_057: app.enrollments.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_058: app.enrollments.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_059: app.enrollments.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_060: app.guardians.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_061: app.guardian_relationships.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_062: app.guardian_relationships.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_063: app.guardian_relationships.(school_id,guardian_id) > app.guardians.(school_id,id) [delete: restrict]
+Ref fk_064: app.guardian_relationships.(verified_by) > identity.users.(id) [delete: restrict]
+Ref fk_065: app.parent_access_links.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_066: app.parent_access_links.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_067: app.parent_access_links.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_068: app.parent_access_links.(issued_by) > identity.users.(id) [delete: restrict]
+Ref fk_069: app.parent_access_links.(school_id,relationship_id,student_id) > app.guardian_relationships.(school_id,id,student_id) [delete: restrict]
+Ref fk_070: app.parent_access_events.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_071: app.parent_access_events.(school_id,access_link_id) > app.parent_access_links.(school_id,id) [delete: restrict]
+Ref fk_072: app.transfer_requests.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_073: app.transfer_requests.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_074: app.transfer_requests.(school_id,from_enrollment_id) > app.enrollments.(school_id,id) [delete: restrict]
+Ref fk_075: app.transfer_requests.(school_id,to_class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_076: app.transfer_requests.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_077: app.transfer_requests.(decided_by) > identity.users.(id) [delete: restrict]
+Ref fk_078: app.handover_requests.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_079: app.handover_requests.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_080: app.handover_requests.(school_id,from_assignment_id) > app.teaching_assignments.(school_id,id) [delete: restrict]
+Ref fk_081: app.handover_requests.(school_id,to_member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_082: app.handover_requests.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_083: app.handover_requests.(decided_by) > identity.users.(id) [delete: restrict]
+Ref fk_084: app.rollover_batches.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_085: app.rollover_batches.(school_id,source_year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_086: app.rollover_batches.(school_id,target_year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_087: app.rollover_batches.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_088: app.class_groups.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_089: app.class_groups.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_090: app.class_positions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_091: app.class_positions.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_092: app.group_memberships.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_093: app.group_memberships.(school_id,group_id,class_id) > app.class_groups.(school_id,id,class_id) [delete: restrict]
+Ref fk_094: app.group_memberships.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_095: app.position_assignments.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_096: app.position_assignments.(school_id,position_id,class_id) > app.class_positions.(school_id,id,class_id) [delete: restrict]
+Ref fk_097: app.position_assignments.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_098: app.seating_plans.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_099: app.seating_plans.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_100: app.seating_plans.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_101: app.seat_assignments.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_102: app.seat_assignments.(school_id,plan_id,class_id) > app.seating_plans.(school_id,id,class_id) [delete: restrict]
+Ref fk_103: app.seat_assignments.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_104: app.rule_sets.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_105: app.rule_sets.(issued_by) > identity.users.(id) [delete: restrict]
+Ref fk_106: app.conduct_rules.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_107: app.conduct_rules.(school_id,rule_set_id) > app.rule_sets.(school_id,id) [delete: restrict]
+Ref fk_108: app.rule_thresholds.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_109: app.rule_thresholds.(school_id,rule_set_id) > app.rule_sets.(school_id,id) [delete: restrict]
+Ref fk_110: app.class_rule_periods.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_111: app.class_rule_periods.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_112: app.class_rule_periods.(school_id,rule_set_id) > app.rule_sets.(school_id,id) [delete: restrict]
+Ref fk_113: app.attendance_sessions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_114: app.attendance_sessions.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_115: app.attendance_sessions.(school_id,lesson_id) > app.lesson_occurrences.(school_id,id) [delete: restrict]
+Ref fk_116: app.attendance_sessions.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_117: app.attendance_records.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_118: app.attendance_records.(school_id,session_id,class_id) > app.attendance_sessions.(school_id,id,class_id) [delete: restrict]
+Ref fk_119: app.attendance_records.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_120: app.attendance_records.(recorded_by) > identity.users.(id) [delete: restrict]
+Ref fk_121: app.conduct_periods.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_122: app.conduct_periods.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_123: app.conduct_periods.(school_id,week_id,year_id) > app.school_weeks.(school_id,id,year_id) [delete: restrict]
+Ref fk_124: app.conduct_periods.(school_id,rule_set_id) > app.rule_sets.(school_id,id) [delete: restrict]
+Ref fk_125: app.conduct_periods.(locked_by) > identity.users.(id) [delete: restrict]
+Ref fk_126: app.conduct_records.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_127: app.conduct_records.(school_id,period_id,class_id) > app.conduct_periods.(school_id,id,class_id) [delete: restrict]
+Ref fk_128: app.conduct_records.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_129: app.conduct_records.(school_id,period_id,rule_set_id) > app.conduct_periods.(school_id,id,rule_set_id) [delete: restrict]
+Ref fk_130: app.conduct_records.(school_id,rule_id,rule_set_id) > app.conduct_rules.(school_id,id,rule_set_id) [delete: restrict]
+Ref fk_131: app.conduct_records.(school_id,supersedes_id) > app.conduct_records.(school_id,id) [delete: restrict]
+Ref fk_132: app.conduct_records.(recorded_by) > identity.users.(id) [delete: restrict]
+Ref fk_133: app.conduct_records.(approved_by) > identity.users.(id) [delete: restrict]
+Ref fk_134: app.adjustment_requests.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_135: app.adjustment_requests.(school_id,period_id) > app.conduct_periods.(school_id,id) [delete: restrict]
+Ref fk_136: app.adjustment_requests.(school_id,baseline_publication_id) > app.publication_revisions.(school_id,id) [delete: restrict]
+Ref fk_137: app.adjustment_requests.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_138: app.adjustment_requests.(decided_by) > identity.users.(id) [delete: restrict]
+Ref fk_139: app.timetable_versions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_140: app.timetable_versions.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_141: app.timetable_versions.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_142: app.timetable_entries.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_143: app.timetable_entries.(school_id,timetable_id,class_id) > app.timetable_versions.(school_id,id,class_id) [delete: restrict]
+Ref fk_144: app.timetable_entries.(school_id,subject_id) > app.subjects.(school_id,id) [delete: restrict]
+Ref fk_145: app.timetable_entries.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_146: app.timetable_entries.(school_id,room_id) > app.rooms.(school_id,id) [delete: restrict]
+Ref fk_147: app.lesson_occurrences.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_148: app.lesson_occurrences.(school_id,timetable_id,class_id) > app.timetable_versions.(school_id,id,class_id) [delete: restrict]
+Ref fk_149: app.lesson_occurrences.(school_id,subject_id) > app.subjects.(school_id,id) [delete: restrict]
+Ref fk_150: app.lesson_occurrences.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_151: app.lesson_occurrences.(school_id,room_id) > app.rooms.(school_id,id) [delete: restrict]
+Ref fk_152: app.duty_schedules.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_153: app.duty_schedules.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_154: app.duty_schedules.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_155: app.duty_assignments.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_156: app.duty_assignments.(school_id,schedule_id,class_id) > app.duty_schedules.(school_id,id,class_id) [delete: restrict]
+Ref fk_157: app.duty_assignments.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_158: app.activities.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_159: app.activities.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_160: app.activities.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_161: app.activity_participants.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_162: app.activity_participants.(school_id,activity_id,class_id) > app.activities.(school_id,id,class_id) [delete: restrict]
+Ref fk_163: app.activity_participants.(school_id,enrollment_id,class_id) > app.enrollments.(school_id,id,class_id) [delete: restrict]
+Ref fk_164: app.activity_participants.(reviewed_by) > identity.users.(id) [delete: restrict]
+Ref fk_165: app.files.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_166: app.files.(uploaded_by) > identity.users.(id) [delete: restrict]
+Ref fk_167: app.evidence.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_168: app.evidence.(school_id,participant_id) > app.activity_participants.(school_id,id) [delete: restrict]
+Ref fk_169: app.evidence.(school_id,file_id) > app.files.(school_id,id) [delete: restrict]
+Ref fk_170: app.evidence.(submitted_by) > identity.users.(id) [delete: restrict]
+Ref fk_171: app.evidence.(reviewed_by) > identity.users.(id) [delete: restrict]
+Ref fk_172: app.announcements.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_173: app.announcements.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_174: app.announcements.(school_id,class_id,year_id) > app.classes.(school_id,id,year_id) [delete: restrict]
+Ref fk_175: app.announcements.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_176: app.announcement_targets.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_177: app.announcement_targets.(school_id,announcement_id) > app.announcements.(school_id,id) [delete: restrict]
+Ref fk_178: app.announcement_targets.(school_id,grade_id) > app.grade_levels.(school_id,id) [delete: restrict]
+Ref fk_179: app.announcement_targets.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_180: app.announcement_targets.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_181: app.announcement_targets.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_182: app.file_links.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_183: app.file_links.(school_id,file_id) > app.files.(school_id,id) [delete: restrict]
+Ref fk_184: app.file_links.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_185: app.file_links.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_186: app.file_links.(school_id,activity_id) > app.activities.(school_id,id) [delete: restrict]
+Ref fk_187: app.file_links.(school_id,announcement_id) > app.announcements.(school_id,id) [delete: restrict]
+Ref fk_188: app.publication_revisions.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_189: app.publication_revisions.(school_id,conduct_period_id) > app.conduct_periods.(school_id,id) [delete: restrict]
+Ref fk_190: app.publication_revisions.(school_id,attendance_session_id) > app.attendance_sessions.(school_id,id) [delete: restrict]
+Ref fk_191: app.publication_revisions.(school_id,timetable_id) > app.timetable_versions.(school_id,id) [delete: restrict]
+Ref fk_192: app.publication_revisions.(school_id,duty_schedule_id) > app.duty_schedules.(school_id,id) [delete: restrict]
+Ref fk_193: app.publication_revisions.(school_id,activity_id) > app.activities.(school_id,id) [delete: restrict]
+Ref fk_194: app.publication_revisions.(school_id,announcement_id) > app.announcements.(school_id,id) [delete: restrict]
+Ref fk_195: app.publication_revisions.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_196: app.publication_revisions.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_197: app.publication_revisions.(created_by) > identity.users.(id) [delete: restrict]
+Ref fk_198: app.publication_revisions.(published_by) > identity.users.(id) [delete: restrict]
+Ref fk_199: app.parent_publication_items.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_200: app.parent_publication_items.(school_id,publication_id,year_id) > app.publication_revisions.(school_id,id,year_id) [delete: restrict]
+Ref fk_201: app.parent_publication_items.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_202: app.parent_document_items.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_203: app.parent_document_items.(school_id,student_id) > app.students.(school_id,id) [delete: restrict]
+Ref fk_204: app.parent_document_items.(school_id,year_id) > app.academic_years.(school_id,id) [delete: restrict]
+Ref fk_205: app.parent_document_items.(school_id,file_id) > app.files.(school_id,id) [delete: restrict]
+Ref fk_206: app.parent_document_items.(school_id,publication_id) > app.publication_revisions.(school_id,id) [delete: restrict]
+Ref fk_207: app.import_jobs.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_208: app.import_jobs.(school_id,file_id) > app.files.(school_id,id) [delete: restrict]
+Ref fk_209: app.import_jobs.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_210: app.import_rows.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_211: app.import_rows.(school_id,import_id) > app.import_jobs.(school_id,id) [delete: restrict]
+Ref fk_212: app.export_jobs.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_213: app.export_jobs.(requested_by) > identity.users.(id) [delete: restrict]
+Ref fk_214: app.export_jobs.(school_id,class_id) > app.classes.(school_id,id) [delete: restrict]
+Ref fk_215: app.export_jobs.(school_id,file_id) > app.files.(school_id,id) [delete: restrict]
+Ref fk_216: app.notifications.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_217: app.notifications.(school_id,member_id) > app.memberships.(school_id,id) [delete: restrict]
+Ref fk_218: app.audit_events.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_219: app.audit_events.(actor_user_id) > identity.users.(id) [delete: restrict]
+Ref fk_220: app.outbox_events.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_221: app.idempotency_keys.(school_id) > platform.schools.(id) [delete: restrict]
+Ref fk_222: app.idempotency_keys.(actor_user_id) > identity.users.(id) [delete: restrict]

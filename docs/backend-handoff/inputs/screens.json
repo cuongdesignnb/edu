@@ -1,0 +1,3318 @@
+[
+  {
+    "id": "AU01",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/login",
+    "title": "Đăng nhập nhân sự",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Form email, mật khẩu, trạng thái mời/cấp quyền; minh họa cùng phong cách",
+    "actions": "Vào đúng khu vực demo; không mở đăng ký tự do",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU02",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/forgot-password",
+    "title": "Quên mật khẩu",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Form email, kết quả chung không xác nhận tài khoản tồn tại",
+    "actions": "Mô phỏng gửi hướng dẫn, dẫn sang kịch bản reset demo; không gửi email thật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU03",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/reset-password",
+    "title": "Đặt lại mật khẩu",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Token demo còn hạn/hết hạn; mật khẩu mới và xác nhận",
+    "actions": "Kiểm tra form, báo reset mô phỏng; không lưu mật khẩu thật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU04",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/invitations/:inviteId",
+    "title": "Nhận lời mời nhân sự",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Trường mời, nhiệm vụ, người mời, hạn dùng, danh tính hiện có",
+    "actions": "Chấp nhận/từ chối; xử lý đã nhận, hết hạn, bị thu hồi",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU05",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/choose-school",
+    "title": "Chọn không gian làm việc",
+    "refs": [
+      "R02",
+      "R05"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ các trường nhân sự là thành viên, nhiệm vụ và trạng thái mỗi trường",
+    "actions": "Chọn trường hợp lệ, vào school/teacher đúng quyền",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU06",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/account/profile",
+    "title": "Hồ sơ cá nhân nhân sự",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Tên, avatar, liên hệ công việc, danh sách trường tham gia",
+    "actions": "Sửa trường dữ liệu cho phép; không đổi phân công của mình",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU07",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/account/security",
+    "title": "Bảo mật và phiên demo",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Mẫu đổi mật khẩu, phiên mẫu, xác nhận kết thúc phiên",
+    "actions": "Mô phỏng thao tác; không khẳng định có xác thực backend",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU08",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/account/no-access",
+    "title": "Chưa được phân công / bị thu hồi quyền",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Giải thích không còn quyền ở trường/lớp đang mở",
+    "actions": "Đổi trường hợp lệ hoặc liên hệ đầu mối trường",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU09",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/notifications",
+    "title": "Trung tâm thông báo nhân sự",
+    "refs": [
+      "R05",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Thông báo nội bộ theo quyền, chưa đọc, bộ lọc, liên kết đích",
+    "actions": "Đánh dấu đã đọc, mở bản ghi còn quyền",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "AU10",
+    "group": "Tài khoản nhân sự",
+    "scope": "core",
+    "route": "/help",
+    "title": "Hướng dẫn sử dụng",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Hướng dẫn theo bốn khu vực, tìm kiếm cục bộ, quy trình công bố",
+    "actions": "Xem bài, quay lại đúng vai trò; không tự mở chat dịch vụ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "PL01",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform",
+    "title": "Tổng quan nền tảng",
+    "refs": [
+      "R01"
+    ],
+    "basis": "reference",
+    "layout": "KPI trường và nhân sự giả định, danh sách trường, hoạt động vận hành",
+    "actions": "Lọc trường, tạo trường, mở hồ sơ; không drill-down hồ sơ học sinh",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL02",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/schools",
+    "title": "Danh sách trường",
+    "refs": [
+      "R01"
+    ],
+    "basis": "derived",
+    "layout": "Bảng trường, lọc trạng thái, tìm kiếm, phân trang, đầu mối quản trị",
+    "actions": "Tạo, mở, kích hoạt/tạm dừng có xác nhận",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL03",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/schools/new",
+    "title": "Tạo trường",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Wizard thông tin trường → quản trị đầu tiên → kiểm tra → hoàn tất",
+    "actions": "Lưu nháp/tiếp tục; kiểm tra mã trùng; không tự kích hoạt khi thiếu dữ liệu",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL04",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/schools/:schoolId",
+    "title": "Hồ sơ trường",
+    "refs": [
+      "R01",
+      "R02"
+    ],
+    "basis": "derived",
+    "layout": "Thông tin vận hành, trạng thái, quản trị, checklist khởi tạo",
+    "actions": "Sửa thông tin vận hành, đổi trạng thái; không mở điểm/gia đình",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL05",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/schools/:schoolId/admins",
+    "title": "Quản trị trường",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Danh sách quản trị, lời mời, thời gian hiệu lực, lịch sử",
+    "actions": "Mời/thay/thu hồi; cảnh báo không để trường mất người quản trị cuối",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL06",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/support",
+    "title": "Yêu cầu hỗ trợ",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Bảng yêu cầu theo trường, ưu tiên, trạng thái, người xử lý",
+    "actions": "Mở yêu cầu, phân công hỗ trợ nội bộ bằng mock",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL07",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/support/:ticketId",
+    "title": "Chi tiết yêu cầu hỗ trợ",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung mẫu, cập nhật xử lý, phạm vi hỗ trợ được trường cho phép",
+    "actions": "Ghi cập nhật mock; không có nút đăng nhập thành bất kỳ giáo viên",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL08",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/support-access",
+    "title": "Quyền hỗ trợ tạm thời",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Trường, phạm vi, lý do, hạn, duyệt/thu hồi",
+    "actions": "Xem quyền; không tự cấp quyền dữ liệu của trường cho mình",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL09",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/audit",
+    "title": "Nhật ký nền tảng",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Hành động vận hành, người thao tác, trước/sau, bộ lọc",
+    "actions": "Mở chi tiết sự kiện vận hành, xuất dữ liệu mẫu",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025",
+      "C032"
+    ]
+  },
+  {
+    "id": "PL10",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/operations",
+    "title": "Tình trạng vận hành",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Trạng thái dịch vụ/sao lưu mẫu có nhãn mô phỏng",
+    "actions": "Xem checklist vận hành; không thực thi backup/restore máy chủ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "PL11",
+    "group": "Vận hành nền tảng",
+    "scope": "core",
+    "route": "/platform/settings",
+    "title": "Cấu hình nền tảng",
+    "refs": [
+      "R01"
+    ],
+    "basis": "derived",
+    "layout": "Thương hiệu, liên hệ hỗ trợ, quy ước hiển thị",
+    "actions": "Lưu mock, xem trước; không có gói cước/thanh toán",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C048",
+      "C023",
+      "C025"
+    ]
+  },
+  {
+    "id": "SC01",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId",
+    "title": "Tổng quan trường",
+    "refs": [
+      "R02"
+    ],
+    "basis": "reference",
+    "layout": "KPI tính từ seed, tiến độ năm học, lớp cần xử lý, việc gần đây",
+    "actions": "Tạo lớp, mời giáo viên, import, mở việc cần xử lý",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC02",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/profile",
+    "title": "Thông tin và nhận diện trường",
+    "refs": [
+      "R02"
+    ],
+    "basis": "derived",
+    "layout": "Logo, tên, mã, liên hệ công khai, màu nhấn, bản xem trước",
+    "actions": "Sửa/lưu, kiểm tra ảnh; không HTML/JS tùy ý",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC03",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/academic-years",
+    "title": "Danh sách năm học",
+    "refs": [
+      "R03"
+    ],
+    "basis": "derived",
+    "layout": "Năm hiện tại, các năm lưu trữ, ngày bắt đầu/kết thúc",
+    "actions": "Tạo năm, mở năm, chọn ngữ cảnh; không ghi đè năm cũ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC04",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/academic-years/new",
+    "title": "Thiết lập năm học",
+    "refs": [
+      "R03"
+    ],
+    "basis": "derived",
+    "layout": "Wizard năm → kỳ → tuần/ngày nghỉ → kiểm tra",
+    "actions": "Sao chép cấu hình được chọn, không tự chuyển tất cả học sinh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC05",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/academic-years/:yearId",
+    "title": "Chi tiết năm học",
+    "refs": [
+      "R03"
+    ],
+    "basis": "reference",
+    "layout": "Học kỳ, mốc tuần, khối/lớp, tiến độ phân công",
+    "actions": "Sửa mốc có hiệu lực, tạo lớp bằng drawer; kiểm tra trùng ngày",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC06",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/academic-years/:yearId/calendar",
+    "title": "Học kỳ, tuần và ngày nghỉ",
+    "refs": [
+      "R03"
+    ],
+    "basis": "derived",
+    "layout": "Calendar + danh sách mốc tuần, lịch nghỉ và hạn chốt",
+    "actions": "Chỉnh kỳ/tuần/hạn; xử lý xung đột và dữ liệu đã chốt",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC07",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/academic-years/:yearId/rollover",
+    "title": "Kết thúc năm và chuẩn bị năm mới",
+    "refs": [
+      "R03",
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Wizard lớp đích, lên lớp/lưu ban/chuyển đi, phân công mới",
+    "actions": "Xem trước, xác nhận từng nhóm; giữ nguyên dữ liệu năm cũ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC08",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/dictionaries",
+    "title": "Danh mục khối, môn, phòng",
+    "refs": [
+      "R03"
+    ],
+    "basis": "derived",
+    "layout": "Tabs dùng chung bảng danh mục; mã, tên, trạng thái",
+    "actions": "Thêm/sửa/ngừng dùng; không xóa mục đang có lịch sử",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC09",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/classes",
+    "title": "Danh sách lớp",
+    "refs": [
+      "R03",
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Bộ lọc năm/khối/GVCN, sĩ số, trạng thái khởi tạo",
+    "actions": "Tạo lớp, gán người phụ trách, mở ClassWorkspace",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC10",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/teachers",
+    "title": "Danh sách giáo viên",
+    "refs": [
+      "R04"
+    ],
+    "basis": "reference",
+    "layout": "Thông tin công tác, vai trò, phạm vi, lời mời, trạng thái",
+    "actions": "Mời, xem hồ sơ, xem phân công, khóa thành viên trường",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "SC11",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/teachers/:memberId",
+    "title": "Hồ sơ và phân công giáo viên",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Thông tin thành viên, nhiệm vụ theo lớp/môn/thời gian, lịch sử",
+    "actions": "Gán/thu hồi phân công; không reset danh tính ở trường khác",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "SC12",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/assignments",
+    "title": "Ma trận phân công",
+    "refs": [
+      "R04",
+      "R03"
+    ],
+    "basis": "derived",
+    "layout": "Hàng lớp, cột chủ nhiệm/môn, hiệu lực, xung đột",
+    "actions": "Chọn người → nhiệm vụ → phạm vi → thời gian; xem trước quyền",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "SC13",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/roles",
+    "title": "Mẫu quyền nhà trường",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Quản trị trường/BGH/Giáo vụ/GVCN/GVBM; mô tả tiếng Việt",
+    "actions": "Xem/chỉnh quyền theo ủy quyền; không tự nâng quyền người thao tác",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C050"
+    ]
+  },
+  {
+    "id": "SC14",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/roles/:roleId",
+    "title": "Chi tiết mẫu quyền",
+    "refs": [
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Ma trận hành động, phạm vi, tóm tắt thay đổi trước/sau",
+    "actions": "Xem tác động, lưu có xác nhận; không ghép quyền chéo lớp",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C050"
+    ]
+  },
+  {
+    "id": "SC15",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/handovers",
+    "title": "Bàn giao giáo viên chủ nhiệm",
+    "refs": [
+      "R04",
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Wizard người cũ/mới, lớp, ngày hiệu lực, việc còn mở",
+    "actions": "Xác nhận bàn giao, cập nhật quyền mock, giữ tác giả lịch sử",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C073"
+    ]
+  },
+  {
+    "id": "SC16",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/students",
+    "title": "Danh sách học sinh",
+    "refs": [
+      "R06",
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Tìm theo mã/tên, lọc năm/lớp/trạng thái; không gộp tên trùng",
+    "actions": "Thêm, import, mở hồ sơ, đề nghị/chuyển lớp",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "SC17",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/students/new",
+    "title": "Thêm học sinh",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Thông tin tối thiểu, lớp đầu tiên, người giám hộ tùy chọn",
+    "actions": "Kiểm tra mã, lưu mock; không thu CCCD/dân tộc mặc định",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "SC18",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/students/:studentId",
+    "title": "Hồ sơ học sinh",
+    "refs": [
+      "R07"
+    ],
+    "basis": "reference",
+    "layout": "Thông tin, giám hộ, lịch sử lớp, link tra cứu, nhật ký link",
+    "actions": "Sửa, chuyển lớp, thêm giám hộ, cấp/thu hồi link theo quyền",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "SC19",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/students/:studentId/edit",
+    "title": "Sửa học sinh",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Form có giá trị hiện tại, trường được phép, version dữ liệu",
+    "actions": "Lưu, hủy, cảnh báo chưa lưu và xung đột phiên bản",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "SC20",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/transfers",
+    "title": "Chuyển lớp và trạng thái theo học",
+    "refs": [
+      "R07",
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Danh sách yêu cầu, lớp cũ/mới, ngày hiệu lực, lý do",
+    "actions": "Duyệt chuyển/ghi nghỉ học; không đổi lớp của báo cáo quá khứ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C073"
+    ]
+  },
+  {
+    "id": "SC21",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/guardians",
+    "title": "Người giám hộ",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Liên hệ, học sinh liên quan trong trường, trạng thái xác minh",
+    "actions": "Mở hồ sơ/quan hệ; không tạo tài khoản phụ huynh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C054"
+    ]
+  },
+  {
+    "id": "SC22",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/guardians/:guardianId",
+    "title": "Quan hệ và quyền nhận thông tin",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Từng học sinh, quan hệ, người xác nhận, thời điểm, giới hạn",
+    "actions": "Xác minh/thu hồi quan hệ; cập nhật link liên quan theo quyền",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C054"
+    ]
+  },
+  {
+    "id": "SC23",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/parent-access",
+    "title": "Quyền tra cứu phụ huynh",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Một dòng mỗi link/giám hộ/học sinh/năm, hạn, phạm vi, lượt mở",
+    "actions": "Cấp link, cấp lại, thu hồi, xem lịch sử dùng link; không khẳng định danh tính người mở",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C055"
+    ]
+  },
+  {
+    "id": "SC24",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/parent-access/:accessId",
+    "title": "Chi tiết quyền tra cứu",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Người được cấp, học sinh, năm, mục được xem, hạn, nhật ký link",
+    "actions": "Thu hồi/cấp lại; QR chỉ hiện khi cấp mới hoặc bản demo cho phép",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C055"
+    ]
+  },
+  {
+    "id": "SC25",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/parent-access/:accessId/preview",
+    "title": "Xem trước trang phụ huynh",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "ParentShell trong khung xem trước có nhãn nội bộ",
+    "actions": "Chỉ dữ liệu công bố; không cấp thêm quyền cho phụ huynh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C055"
+    ]
+  },
+  {
+    "id": "SC26",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/imports",
+    "title": "Trung tâm nhập dữ liệu",
+    "refs": [
+      "R03",
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Chọn học sinh/giáo viên/lớp/lịch; template và lịch sử nhập",
+    "actions": "Chọn file demo, mở wizard; không nối dữ liệu hệ thống trước",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C072"
+    ]
+  },
+  {
+    "id": "SC27",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/imports/new",
+    "title": "Nhập danh sách bằng file",
+    "refs": [
+      "R06",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Tệp → ghép cột → kiểm tra → xem trước → nhập",
+    "actions": "Parse thật CSV/XLSX cục bộ, đánh lỗi từng dòng, không mặc định thay danh sách",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C072"
+    ]
+  },
+  {
+    "id": "SC28",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/imports/:importId",
+    "title": "Kết quả nhập",
+    "refs": [
+      "R06",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Số thêm/cập nhật/bỏ qua/lỗi, lỗi tải được, batch id",
+    "actions": "Tải file lỗi, quay danh sách; nhập lại không nhân đôi",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C072"
+    ]
+  },
+  {
+    "id": "SC29",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/conduct-rules",
+    "title": "Nội quy và phiên bản",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Bộ nội quy, ngày hiệu lực, bản nháp/đã ban hành",
+    "actions": "Tạo bản mới, xem chi tiết; không sửa bản đã áp dụng ngầm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C062"
+    ]
+  },
+  {
+    "id": "SC30",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/conduct-rules/:ruleSetId",
+    "title": "Soạn bộ nội quy",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Nhóm cộng/trừ, điểm gốc, giới hạn, xếp loại, lịch hiệu lực",
+    "actions": "Thêm quy tắc, thử tính mẫu, xem thay đổi, ban hành",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C062"
+    ]
+  },
+  {
+    "id": "SC31",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/publication-policy",
+    "title": "Quy trình chốt và công bố",
+    "refs": [
+      "R08",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Quyền chốt/công bố, hạn, duyệt tùy chọn, mục phụ huynh được xem",
+    "actions": "Lưu mock với giải thích tác động; không tự công bố dữ liệu cũ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC32",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/timetable",
+    "title": "Lịch toàn trường",
+    "refs": [
+      "R03",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Lọc lớp/giáo viên/phòng/tuần, grid lịch và ngày hiệu lực",
+    "actions": "Đổi tiết, phát hiện xung đột, xem trước/công bố theo quyền",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C067"
+    ]
+  },
+  {
+    "id": "SC33",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/announcements",
+    "title": "Thông báo nhà trường",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nháp/chờ công bố/đã công bố/đã thu hồi, người nhận",
+    "actions": "Soạn mới, sửa nháp, xem bản công bố, thu hồi",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "SC34",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/announcements/new",
+    "title": "Soạn thông báo trường",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Editor, ảnh/tệp, đối tượng trường/khối/lớp/học sinh, xem trước",
+    "actions": "Lưu nháp, công bố hoặc đặt lịch mô phỏng; không gửi Zalo/email thật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "SC35",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/announcements/:announcementId",
+    "title": "Chi tiết thông báo trường",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung, đối tượng, trạng thái, lịch sử, phiên bản chỉnh sửa",
+    "actions": "Sửa theo trạng thái, xem trước, công bố/thu hồi",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "SC36",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/publications",
+    "title": "Trung tâm rà soát và công bố",
+    "refs": [
+      "R08",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Theo lớp/kỳ/loại dữ liệu; chờ rà soát, đã chốt, đã công bố",
+    "actions": "Mở lớp/bản, xử lý có quyền; không chốt hàng loạt thiếu kiểm tra",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC37",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/reports",
+    "title": "Trung tâm báo cáo trường",
+    "refs": [
+      "R02",
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Chuyên cần, thi đua, hoạt động, tiến độ lớp, sử dụng link",
+    "actions": "Lọc đúng phạm vi và mở báo cáo; không báo cáo học lực nếu module chưa bật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C074"
+    ]
+  },
+  {
+    "id": "SC38",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/reports/:reportType",
+    "title": "Xem báo cáo trường",
+    "refs": [
+      "R02",
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Bộ lọc năm/kỳ/lớp, KPI, biểu đồ, bảng, drill-down",
+    "actions": "Xuất CSV/XLSX, in/lưu PDF; số liệu có mẫu số và thời điểm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C074"
+    ]
+  },
+  {
+    "id": "SC39",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/exports",
+    "title": "Các bản xuất dữ liệu",
+    "refs": [
+      "P04",
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Công việc xuất mock, trạng thái, file tải, người tạo, hạn mẫu",
+    "actions": "Tải file thực cục bộ, hủy việc đang mô phỏng; không báo gửi mail",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC40",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/audit",
+    "title": "Nhật ký nhà trường",
+    "refs": [
+      "R07",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Lọc đối tượng/người/thời điểm; trước/sau và lý do",
+    "actions": "Xem chi tiết theo quyền, không sửa/xóa nhật ký trong UI",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C032"
+    ]
+  },
+  {
+    "id": "SC41",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/settings",
+    "title": "Cài đặt hiển thị và chia sẻ",
+    "refs": [
+      "R02",
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Ngôn ngữ, giờ, mẫu báo cáo, mặc định hạn link và trường chia sẻ",
+    "actions": "Lưu mẫu cấu hình; thông số là đề xuất, không kết luận tuân thủ pháp luật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC42",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/support",
+    "title": "Hỗ trợ và ủy quyền hỗ trợ",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Yêu cầu của trường, phạm vi hỗ trợ, ngày hết hạn",
+    "actions": "Tạo yêu cầu mock, cho phép/thu hồi hỗ trợ, mở chi tiết",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SC43",
+    "group": "Quản trị nhà trường",
+    "scope": "core",
+    "route": "/school/:schoolId/support/:ticketId",
+    "title": "Chi tiết hỗ trợ của trường",
+    "refs": [
+      "R01",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Yêu cầu, phản hồi mẫu, grant giới hạn, lịch sử",
+    "actions": "Ghi cập nhật mock, thu hồi quyền hỗ trợ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "TE01",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId",
+    "title": "Việc cần làm của giáo viên",
+    "refs": [
+      "R05"
+    ],
+    "basis": "reference",
+    "layout": "Lớp được giao, sĩ số và dữ liệu nhất quán, tác vụ hôm nay, lịch",
+    "actions": "Vào đúng lớp/tiết, rà soát; không chat phụ huynh",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "TE02",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId/classes",
+    "title": "Lớp học của tôi",
+    "refs": [
+      "R05"
+    ],
+    "basis": "derived",
+    "layout": "Cards lớp gắn chủ nhiệm hoặc bộ môn, năm và lịch gần nhất",
+    "actions": "Mở ClassWorkspace, lọc phân công còn hiệu lực",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "TE03",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId/schedule",
+    "title": "Lịch dạy của tôi",
+    "refs": [
+      "R05",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Lịch ngày/tuần theo giáo viên đang dùng demo",
+    "actions": "Mở tiết, chuyển vào điểm danh đúng lớp/tiết",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049",
+      "C067"
+    ]
+  },
+  {
+    "id": "TE04",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId/tasks",
+    "title": "Việc cần xử lý",
+    "refs": [
+      "R05"
+    ],
+    "basis": "derived",
+    "layout": "Hạn chốt, bản ghi cần rà soát, minh chứng cần bổ sung",
+    "actions": "Mở việc, lọc; trạng thái lấy từ cùng dữ liệu nghiệp vụ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049"
+    ]
+  },
+  {
+    "id": "TE05",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId/announcements",
+    "title": "Thông báo dành cho giáo viên",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Tin nội bộ/công bố theo phạm vi, đã đọc/chưa đọc",
+    "actions": "Xem, đánh dấu đọc; không xem thông báo của trường khác",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049",
+      "C071"
+    ]
+  },
+  {
+    "id": "TE06",
+    "group": "Giáo viên",
+    "scope": "core",
+    "route": "/teacher/:schoolId/reports",
+    "title": "Báo cáo được phép",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Danh sách báo cáo theo lớp được giao, ngữ cảnh chủ nhiệm/bộ môn",
+    "actions": "Mở báo cáo lớp đúng scope, xuất dữ liệu mẫu được phép",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C049",
+      "C074"
+    ]
+  },
+  {
+    "id": "CL01",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId",
+    "title": "Tổng quan lớp",
+    "refs": [
+      "R06",
+      "R05"
+    ],
+    "basis": "derived",
+    "layout": "Header lớp, KPI, công việc, lịch, tổ/sơ đồ thu gọn",
+    "actions": "Điều hướng vào nhóm việc; shell thay theo ngữ cảnh giáo viên/nhà trường",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL02",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/students",
+    "title": "Học sinh trong lớp",
+    "refs": [
+      "R06"
+    ],
+    "basis": "reference",
+    "layout": "Roster, tổ, chức vụ, liên hệ tối thiểu, sơ đồ preview",
+    "actions": "Xem chi tiết, tìm, đổi tổ/chuyển lớp theo quyền",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "CL03",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/students/:studentId",
+    "title": "Hồ sơ học sinh trong phạm vi lớp",
+    "refs": [
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Dùng StudentProfile chung nhưng ẩn trường không thuộc quyền bộ môn",
+    "actions": "Xem lịch sử được phép; không thêm quyền vì dùng cùng component",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C053"
+    ]
+  },
+  {
+    "id": "CL04",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/attendance",
+    "title": "Điểm danh theo ngày/tiết",
+    "refs": [
+      "R08"
+    ],
+    "basis": "reference",
+    "layout": "Bộ chọn ngày/buổi/tiết, bảng 5 trạng thái có chưa điểm danh",
+    "actions": "Ghi theo dòng/bulk xác nhận, ghi chú, lưu mock, công bố theo quyền",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C058"
+    ]
+  },
+  {
+    "id": "CL05",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/attendance/weekly",
+    "title": "Chuyên cần theo tuần",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Ma trận học sinh × ngày/tiết, chú giải, tổng trạng thái",
+    "actions": "Mở bản ngày, lọc, xem lịch sử sửa, xuất",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C058"
+    ]
+  },
+  {
+    "id": "CL06",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/conduct",
+    "title": "Ghi nhận thi đua",
+    "refs": [
+      "R08"
+    ],
+    "basis": "reference",
+    "layout": "Chọn học sinh, quy tắc, điểm, lý do, sự kiện nguồn, lịch sử",
+    "actions": "Ghi nhận, loại trùng, chỉnh nháp có version",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C062"
+    ]
+  },
+  {
+    "id": "CL07",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/conduct/weekly",
+    "title": "Tổng hợp thi đua tuần",
+    "refs": [
+      "R08"
+    ],
+    "basis": "reference",
+    "layout": "Bảng điểm gốc/cộng/trừ/tổng, trạng thái rà soát/chốt/công bố",
+    "actions": "Mở giải trình từng em, chuyển rà soát, không tự công bố khi lưu",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C062"
+    ]
+  },
+  {
+    "id": "CL08",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/conduct/review",
+    "title": "Rà soát và chốt tuần",
+    "refs": [
+      "R08",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Việc thiếu, trùng, ghi nhận chờ duyệt, preview bảng công bố",
+    "actions": "Duyệt/yêu cầu sửa; chốt và công bố khi đủ quyền/điều kiện",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C062"
+    ]
+  },
+  {
+    "id": "CL09",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/publications",
+    "title": "Lịch sử kết quả công bố",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Kỳ, phiên bản, thời điểm, người công bố, trạng thái",
+    "actions": "Mở snapshot; không tự tính lại từ bộ nội quy hiện tại",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL10",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/publications/:publicationId",
+    "title": "Bản kết quả đã công bố",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Bảng snapshot, giải thích quy tắc theo phiên bản, lịch sử sửa",
+    "actions": "In/xuất, tạo đề nghị điều chỉnh; không sửa trực tiếp bản cũ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL11",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/adjustments",
+    "title": "Điều chỉnh sau chốt",
+    "refs": [
+      "R08",
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Danh sách đề nghị, lý do, trước/sau, chờ duyệt/đã công bố",
+    "actions": "Đề nghị, duyệt, công bố lại; giữ bản cũ đến khi bản mới công bố",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL12",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/rules",
+    "title": "Nội quy áp dụng tại lớp",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Bản hiệu lực, cách tính, ví dụ, thời hạn nhập",
+    "actions": "Xem; chỉ chỉnh/tạo bản riêng nếu trường cấp quyền cụ thể",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL13",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/groups",
+    "title": "Tổ và chức vụ",
+    "refs": [
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Nhóm học sinh, chức vụ, hiệu lực, danh sách chưa phân tổ",
+    "actions": "Kéo chuyển hoặc chọn bằng bàn phím; không cấp tài khoản học sinh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C065"
+    ]
+  },
+  {
+    "id": "CL14",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/seating",
+    "title": "Sơ đồ lớp",
+    "refs": [
+      "R06"
+    ],
+    "basis": "derived",
+    "layout": "Editor bố trí bàn, ghế trống, chưa có chỗ, hướng bảng, phiên bản",
+    "actions": "Đổi chỗ, đổi tổ, hoàn tác trước lưu, chọn ngày áp dụng; có thay thế thao tác kéo",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C066"
+    ]
+  },
+  {
+    "id": "CL15",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/timetable",
+    "title": "Lịch học của lớp",
+    "refs": [
+      "R03",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Grid tuần, lịch ngày mobile, nháp/công bố, ngày áp dụng",
+    "actions": "Đổi tiết/giáo viên/phòng theo quyền, check trùng, xem trước",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C067"
+    ]
+  },
+  {
+    "id": "CL16",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/duties",
+    "title": "Lịch trực nhật",
+    "refs": [
+      "R06",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Ngày/tuần, tổ/học sinh, nhiệm vụ, thay đổi",
+    "actions": "Phân công, đổi lịch, công bố; parent chỉ thấy việc của con",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C068"
+    ]
+  },
+  {
+    "id": "CL17",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/activities",
+    "title": "Hoạt động lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "reference",
+    "layout": "Cards/list, hạn, tiến độ theo đúng số người được giao, trạng thái",
+    "actions": "Tạo, lọc, mở hoạt động, xem thiếu minh chứng",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C069"
+    ]
+  },
+  {
+    "id": "CL18",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/activities/new",
+    "title": "Tạo hoạt động",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung, học sinh/tổ được giao, thời hạn, yêu cầu minh chứng",
+    "actions": "Lưu nháp, giao hoạt động/công bố; không tự cộng điểm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C069"
+    ]
+  },
+  {
+    "id": "CL19",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/activities/:activityId",
+    "title": "Chi tiết hoạt động",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Tab thông tin/tiến độ/minh chứng/lịch sử, danh sách người được giao",
+    "actions": "Giáo viên ghi nhận/tải minh chứng, duyệt/yêu cầu bổ sung",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C069"
+    ]
+  },
+  {
+    "id": "CL20",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/evidence",
+    "title": "Minh chứng của lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Gallery + table, người học, hoạt động, người tải giáo viên, trạng thái",
+    "actions": "Upload mock cục bộ, preview, duyệt, từ chối có lý do; parent không upload",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C070"
+    ]
+  },
+  {
+    "id": "CL21",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/announcements",
+    "title": "Thông báo lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Danh sách nháp/đã công bố/thu hồi, đối tượng và hiệu lực",
+    "actions": "Soạn, mở chi tiết, công bố trong đúng lớp",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "CL22",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/announcements/new",
+    "title": "Soạn thông báo lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Composer dùng chung, lớp hiện tại cố định, chọn em cụ thể nếu riêng tư",
+    "actions": "Xem trước parent, lưu nháp/công bố; không chọn trường khác",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "CL23",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/announcements/:announcementId",
+    "title": "Chi tiết thông báo lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung, audience, lịch sử, trạng thái, tệp",
+    "actions": "Sửa/thu hồi theo quyền; không cho parent xem ghi chú nội bộ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "CL24",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/files",
+    "title": "Tệp lớp",
+    "refs": [
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Tài liệu chung và quyền chia sẻ, loại, dung lượng, chủ thể",
+    "actions": "Upload/preview/download cục bộ, archive; không thư viện công khai ảnh học sinh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "CL25",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/reports",
+    "title": "Báo cáo lớp",
+    "refs": [
+      "R08",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Chuyên cần, thi đua, hoạt động, chọn em/kỳ",
+    "actions": "Tạo báo cáo đúng lớp/phạm vi; không bảng điểm học tập nếu chưa bật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C074"
+    ]
+  },
+  {
+    "id": "CL26",
+    "group": "Không gian làm việc của lớp — dùng chung theo quyền",
+    "scope": "core",
+    "route": "/classroom/:schoolId/:yearId/:classId/reports/:reportType",
+    "title": "Chi tiết báo cáo lớp",
+    "refs": [
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Filter, bảng/chart, preview bản in, nguồn dữ liệu và bản công bố",
+    "actions": "Tải CSV/XLSX, in/lưu PDF không sidebar; parent nhận đúng dữ liệu con",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C074"
+    ]
+  },
+  {
+    "id": "PA01",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/access",
+    "title": "Mở đường dẫn riêng",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Trang mở quyền demo, trạng thái link; không form đăng nhập/đăng ký",
+    "actions": "Vào context một học sinh/một trường/một năm học từ link demo",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064"
+    ]
+  },
+  {
+    "id": "PA02",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/overview",
+    "title": "Thông tin của con",
+    "refs": [
+      "R10"
+    ],
+    "basis": "reference",
+    "layout": "Hồ sơ tối thiểu, giáo viên, chuyên cần, thi đua đã công bố, lịch, thông báo",
+    "actions": "Đi vào chi tiết từng module; không danh sách cả lớp, không chọn tài khoản",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064"
+    ]
+  },
+  {
+    "id": "PA03",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/attendance",
+    "title": "Chuyên cần của con",
+    "refs": [
+      "R10",
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Calendar/ngày/tuần, trạng thái được công bố, giải thích",
+    "actions": "Đổi kỳ trong phạm vi cấp; không coi thiếu dữ liệu là có mặt",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C058"
+    ]
+  },
+  {
+    "id": "PA04",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/conduct",
+    "title": "Thi đua đã công bố của con",
+    "refs": [
+      "R10",
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Kỳ, tổng điểm, giải thích cộng/trừ, bản điều chỉnh",
+    "actions": "Mở kỳ; không bảng xếp hạng cả lớp, không kết quả chưa công bố",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C062"
+    ]
+  },
+  {
+    "id": "PA05",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/conduct/:periodId",
+    "title": "Chi tiết kỳ thi đua của con",
+    "refs": [
+      "R10",
+      "R08"
+    ],
+    "basis": "derived",
+    "layout": "Snapshot đúng học sinh, thời điểm, ghi nhận được phép chia sẻ",
+    "actions": "Xem bản cập nhật, in/download nếu được cấp",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C062"
+    ]
+  },
+  {
+    "id": "PA06",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/timetable",
+    "title": "Lịch học của con",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Lịch hôm nay/tuần, thay đổi đã công bố, môn và liên hệ công việc",
+    "actions": "Đổi ngày/tuần trong năm được cấp, mở tiết",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C067"
+    ]
+  },
+  {
+    "id": "PA07",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/duties",
+    "title": "Nhiệm vụ trực nhật của con",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ ngày và việc được giao cho chính con",
+    "actions": "Xem lịch; không thay người làm hoặc lộ danh sách gia đình",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C068"
+    ]
+  },
+  {
+    "id": "PA08",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/activities",
+    "title": "Hoạt động của con",
+    "refs": [
+      "R10",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Hoạt động liên quan, hạn, trạng thái đã được công bố",
+    "actions": "Mở chi tiết; không nút nộp bài, upload hay nhắn tin",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C069"
+    ]
+  },
+  {
+    "id": "PA09",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/activities/:activityId",
+    "title": "Chi tiết hoạt động của con",
+    "refs": [
+      "R10",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung, tình trạng, minh chứng của con được phép chia sẻ",
+    "actions": "Xem/tải đúng file được cấp; không gallery học sinh khác",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C069"
+    ]
+  },
+  {
+    "id": "PA10",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/announcements",
+    "title": "Thông báo dành cho gia đình",
+    "refs": [
+      "R10",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ thông báo có audience bao gồm học sinh này và đang công bố",
+    "actions": "Đọc chi tiết, tìm trong dữ liệu của mình; không sửa",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C071"
+    ]
+  },
+  {
+    "id": "PA11",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/announcements/:announcementId",
+    "title": "Chi tiết thông báo phụ huynh",
+    "refs": [
+      "R10",
+      "R09"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung công bố, ngày, người/đơn vị gửi, tệp cho phép",
+    "actions": "Xem tài liệu, quay lại; link thu hồi không hiện nội dung cũ ở lần đọc mới",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C071"
+    ]
+  },
+  {
+    "id": "PA12",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/teachers",
+    "title": "Giáo viên phụ trách",
+    "refs": [
+      "R10",
+      "A01"
+    ],
+    "basis": "reference",
+    "layout": "Chủ nhiệm và bộ môn của lớp, liên hệ công việc được phép",
+    "actions": "Mở card/chi tiết liên hệ; không chat nội bộ, không số riêng chưa được phép",
+    "status": "not_started",
+    "evidence_status": "concept_only",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064",
+      "C049"
+    ]
+  },
+  {
+    "id": "PA13",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/documents",
+    "title": "Tài liệu và báo cáo được chia sẻ",
+    "refs": [
+      "R10",
+      "R07"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ bản công bố có quyền tải của con",
+    "actions": "Preview, in/tải dữ liệu giả; trạng thái bị thu hồi rõ ràng",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064"
+    ]
+  },
+  {
+    "id": "PA14",
+    "group": "Tra cứu phụ huynh — chỉ đọc",
+    "scope": "core",
+    "route": "/p/:schoolSlug/access-unavailable",
+    "title": "Link không sử dụng được",
+    "refs": [
+      "P04",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Hết hạn/bị thu hồi/không hợp lệ/trường tạm dừng/thiếu quyền; thông điệp phù hợp",
+    "actions": "Hướng dẫn liên hệ đầu mối công khai; không tiết lộ hồ sơ khi token không hợp lệ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C075",
+      "C029",
+      "C064"
+    ]
+  },
+  {
+    "id": "SY01",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/schools/:schoolSlug",
+    "title": "Trang công khai trường",
+    "refs": [
+      "R02",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Tên/logo, liên hệ chính thức, thông báo công khai",
+    "actions": "Xem tin; tuyệt đối không công cụ chọn học sinh để xem điểm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY02",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/schools/:schoolSlug/announcements/:announcementId",
+    "title": "Tin công khai của trường",
+    "refs": [
+      "R09",
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ bản public không chứa hồ sơ cá nhân",
+    "actions": "Đọc tin, quay lại trường; guard không trả tin riêng tư",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031",
+      "C071"
+    ]
+  },
+  {
+    "id": "SY03",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/privacy",
+    "title": "Thông tin quyền riêng tư",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Nội dung mẫu cần chủ dự án duyệt, mục liên hệ",
+    "actions": "Điều hướng anchor; không bịa chứng nhận/tuân thủ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY04",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/terms",
+    "title": "Điều kiện sử dụng",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Bản nháp nội dung để duyệt; không điều khoản thanh toán",
+    "actions": "Đọc; đánh dấu nội dung pháp lý chưa được thẩm định",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY05",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/access-denied",
+    "title": "Không có quyền",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Bối cảnh không tiết lộ dữ liệu bị cấm",
+    "actions": "Về trang hợp lệ hoặc chọn trường được cấp",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY06",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/school-suspended",
+    "title": "Trường tạm dừng",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Giải thích vận hành, đầu mối công khai, không liên quan thanh toán",
+    "actions": "Chuyển trường khác nếu có quyền; không nút ghi dữ liệu",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY07",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/maintenance",
+    "title": "Bảo trì mô phỏng",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Trạng thái, không đưa ETA vô căn cứ",
+    "actions": "Thử lại mock, về nơi an toàn",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "SY08",
+    "group": "Trang công khai và trạng thái hệ thống",
+    "scope": "core",
+    "route": "/*",
+    "title": "Không tìm thấy và ranh giới lỗi",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Next not-found/error boundaries; trang không tìm thấy + retry lỗi",
+    "actions": "Quay lại, retry; không trace kỹ thuật hay dữ liệu nhạy cảm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV01",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/demo",
+    "title": "Chọn vai trò và kịch bản demo",
+    "refs": [
+      "P01"
+    ],
+    "basis": "derived",
+    "layout": "Vai trò nền tảng/trường/GVCN/GVBM/phụ huynh, hai trường, reset seed",
+    "actions": "Điều hướng context; cảnh báo đây không phải đăng nhập bảo mật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV02",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/references",
+    "title": "Thư viện ảnh tham chiếu",
+    "refs": [
+      "P01"
+    ],
+    "basis": "derived",
+    "layout": "Liệt kê 15 ảnh theo manifest, phân loại và cảnh báo sai khác",
+    "actions": "Xem ảnh đầy đủ; không đưa gallery này vào menu người dùng",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV03",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/sitemap",
+    "title": "Sitemap triển khai",
+    "refs": [
+      "P01"
+    ],
+    "basis": "derived",
+    "layout": "Cây route tự sinh từ registry, quyền và trạng thái task thật",
+    "actions": "Nhảy vào route với tham số fixture hợp lệ",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV04",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/checklist",
+    "title": "Checklist giao diện",
+    "refs": [
+      "P02"
+    ],
+    "basis": "derived",
+    "layout": "Screens/components/overlays/states theo registry, tiến độ có bằng chứng",
+    "actions": "Lọc thiếu ảnh/chưa dựng/chưa QA; không copy con số 84/18 của ảnh",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV05",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/components",
+    "title": "Thư viện component",
+    "refs": [
+      "P03"
+    ],
+    "basis": "derived",
+    "layout": "Token, component, biến thể, keyboard/mobile examples",
+    "actions": "Tương tác với component, show code/API nếu Agent có làm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV06",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/states",
+    "title": "Trạng thái và tương tác",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Loading/empty/error/forbidden/conflict/link unavailable + mọi overlay",
+    "actions": "Chọn kịch bản, thao tác retry/confirm/cancel để kiểm tra",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "DV07",
+    "group": "Bộ công cụ nghiệm thu — chỉ môi trường demo",
+    "scope": "internal",
+    "route": "/preview/flows",
+    "title": "Các luồng nghiệp vụ demo",
+    "refs": [
+      "P04"
+    ],
+    "basis": "derived",
+    "layout": "Từng bước một tuần hoạt động và cấp/thu hồi link",
+    "actions": "Chạy walkthrough bằng cùng seed và repository mock",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "EX01",
+    "group": "Mở rộng chỉ dựng khi được bật rõ ràng",
+    "scope": "optional",
+    "route": "/school/:schoolId/academic-results",
+    "title": "Kết quả học tập tổng hợp",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Tách dữ liệu điểm môn khỏi thi đua; badge Ngoài phạm vi mặc định",
+    "actions": "Chỉ làm nếu ENABLE_ACADEMIC_RESULTS_PREVIEW được chủ dự án đồng ý",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "EX02",
+    "group": "Mở rộng chỉ dựng khi được bật rõ ràng",
+    "scope": "optional",
+    "route": "/classroom/:schoolId/:yearId/:classId/academic-results",
+    "title": "Kết quả môn được phân công",
+    "refs": [
+      "R10",
+      "R04"
+    ],
+    "basis": "derived",
+    "layout": "Môn/kỳ đúng phân công, nháp và công bố",
+    "actions": "Không suy ra toàn quyền môn từ quyền chủ nhiệm",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  },
+  {
+    "id": "EX03",
+    "group": "Mở rộng chỉ dựng khi được bật rõ ràng",
+    "scope": "optional",
+    "route": "/p/:schoolSlug/academic-results",
+    "title": "Kết quả học tập đã công bố của con",
+    "refs": [
+      "R10"
+    ],
+    "basis": "derived",
+    "layout": "Chỉ xem tổng hợp môn/kỳ, không tạo học bạ chính thức",
+    "actions": "Ẩn toàn bộ menu/route mặc định; có state module chưa bật",
+    "status": "not_started",
+    "evidence_status": "not_individually_designed",
+    "component_ids": [
+      "C001",
+      "C006",
+      "C044",
+      "C042",
+      "C043",
+      "C004",
+      "C023",
+      "C031"
+    ]
+  }
+]

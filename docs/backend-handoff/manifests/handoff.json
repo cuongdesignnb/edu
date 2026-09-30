@@ -1,0 +1,16 @@
+{
+  "product": "EduManage backend handoff",
+  "version": "1.0",
+  "status": "SPECIFICATION_AND_DEPLOYMENT_TEMPLATES_NOT_IMPLEMENTED_APP",
+  "local_gateway": "127.0.0.1:18763",
+  "database": "PostgreSQL 17",
+  "tables": 75,
+  "foreign_keys": 222,
+  "api_operations": 264,
+  "api_paths": 207,
+  "frontend_mapping": 128,
+  "static_checks": 44,
+  "runtime_deployed": false,
+  "entrypoint": "AGENT-BACKEND.md",
+  "archive_root": "backend-handoff/"
+}

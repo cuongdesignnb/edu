@@ -1,0 +1,1257 @@
+erDiagram
+    identity_users {
+        uuid id PK
+        text email_normalized
+        text display_name
+        text password_hash
+        text status
+        integer authz_version
+        timestamptz password_changed_at
+        timestamptz email_verified_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_staff_sessions {
+        uuid id PK
+        uuid user_id
+        text token_hash
+        text csrf_hash
+        timestamptz last_seen_at
+        timestamptz idle_expires_at
+        timestamptz absolute_expires_at
+        timestamptz revoked_at
+        text user_agent_summary
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_auth_challenges {
+        uuid id PK
+        uuid user_id
+        text email_normalized
+        text purpose
+        text token_hash
+        timestamptz expires_at
+        timestamptz consumed_at
+        integer attempts
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_parent_sessions {
+        uuid id PK
+        uuid school_id
+        uuid access_link_id
+        text token_hash
+        text csrf_hash
+        timestamptz last_seen_at
+        timestamptz idle_expires_at
+        timestamptz absolute_expires_at
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_rate_limit_buckets {
+        uuid id PK
+        text bucket_hash
+        timestamptz window_start
+        integer hits
+        timestamptz expires_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_mail_outbox {
+        uuid id PK
+        uuid user_id
+        uuid school_id
+        text template_key
+        text encrypted_payload
+        text dedupe_key
+        text status
+        integer attempts
+        timestamptz run_after
+        timestamptz lease_until
+        text lease_owner
+        timestamptz sent_at
+        text last_error_code
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_schools {
+        uuid id PK
+        text code
+        text slug
+        text name
+        text status
+        text timezone
+        text public_contact_email
+        text public_contact_phone
+        text public_address
+        text logo_object_key
+        jsonb settings
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_operator_grants {
+        uuid id PK
+        uuid user_id
+        text action_code
+        timestamptz valid_from
+        timestamptz valid_until
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_settings {
+        uuid id PK
+        text key
+        jsonb value
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_support_tickets {
+        uuid id PK
+        uuid school_id
+        uuid requester_id
+        uuid assignee_id
+        text subject
+        text description
+        text status
+        text priority
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_support_messages {
+        uuid id PK
+        uuid ticket_id
+        uuid author_id
+        text body
+        timestamptz created_at
+    }
+    platform_support_access {
+        uuid id PK
+        uuid school_id
+        uuid ticket_id
+        uuid operator_id
+        uuid approved_by_user_id
+        uuid class_id
+        textArray allowed_actions
+        text reason
+        text status
+        timestamptz valid_from
+        timestamptz valid_until
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_audit_events {
+        uuid id PK
+        uuid actor_id
+        uuid school_id
+        text action
+        text target_type
+        uuid target_id
+        text request_id
+        jsonb redacted_diff
+        timestamptz created_at
+    }
+    platform_operation_runs {
+        uuid id PK
+        text kind
+        text status
+        timestamptz started_at
+        timestamptz finished_at
+        jsonb summary
+        text artifact_checksum
+        text artifact_location_redacted
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    platform_public_school_content {
+        uuid id PK
+        uuid school_id
+        uuid announcement_id
+        integer revision
+        text title
+        text sanitized_html
+        timestamptz published_at
+        timestamptz withdrawn_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_memberships {
+        uuid id PK
+        uuid school_id
+        uuid user_id
+        text staff_code
+        text work_display_name
+        text department
+        text work_email
+        text work_phone
+        boolean share_work_contact
+        text status
+        timestamptz joined_at
+        timestamptz ended_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_roles {
+        uuid id PK
+        uuid school_id
+        text code
+        text label
+        boolean system_role
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_role_permissions {
+        uuid id PK
+        uuid school_id
+        uuid role_id
+        text action_code
+        textArray allowed_scopes
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_role_grants {
+        uuid id PK
+        uuid school_id
+        uuid member_id
+        uuid role_id
+        text scope_type
+        uuid class_id
+        uuid subject_id
+        timestamptz valid_from
+        timestamptz valid_until
+        timestamptz revoked_at
+        uuid granted_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_staff_invitations {
+        uuid id PK
+        uuid school_id
+        text email_normalized
+        text token_hash
+        jsonb proposed_assignments
+        text status
+        timestamptz expires_at
+        uuid invited_by
+        timestamptz accepted_at
+        uuid accepted_user_id
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_grade_levels {
+        uuid id PK
+        uuid school_id
+        text code
+        text name
+        integer sort_order
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_subjects {
+        uuid id PK
+        uuid school_id
+        text code
+        text name
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_rooms {
+        uuid id PK
+        uuid school_id
+        text code
+        text name
+        integer capacity
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_academic_years {
+        uuid id PK
+        uuid school_id
+        text code
+        text name
+        date starts_on
+        date ends_on
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_terms {
+        uuid id PK
+        uuid school_id
+        uuid year_id
+        text code
+        text name
+        date starts_on
+        date ends_on
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_school_weeks {
+        uuid id PK
+        uuid school_id
+        uuid year_id
+        uuid term_id
+        integer week_number
+        date starts_on
+        date ends_on
+        timestamptz input_deadline
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_classes {
+        uuid id PK
+        uuid school_id
+        uuid year_id
+        uuid grade_level_id
+        text code
+        text name
+        integer capacity
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_calendar_events {
+        uuid id PK
+        uuid school_id
+        uuid year_id
+        uuid class_id
+        text title
+        text kind
+        date starts_on
+        date ends_on
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_teaching_assignments {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid member_id
+        uuid role_grant_id
+        uuid subject_id
+        text kind
+        date starts_on
+        date ends_on
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_students {
+        uuid id PK
+        uuid school_id
+        text student_code
+        text full_name
+        date date_of_birth
+        text preferred_name
+        text status
+        text internal_note
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_enrollments {
+        uuid id PK
+        uuid school_id
+        uuid student_id
+        uuid class_id
+        uuid year_id
+        date starts_on
+        date ends_on
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_guardians {
+        uuid id PK
+        uuid school_id
+        text full_name
+        text phone
+        text email
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_guardian_relationships {
+        uuid id PK
+        uuid school_id
+        uuid student_id
+        uuid guardian_id
+        text relationship_label
+        boolean is_primary
+        boolean can_receive_info
+        text status
+        uuid verified_by
+        timestamptz verified_at
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_parent_access_links {
+        uuid id PK
+        uuid school_id
+        uuid student_id
+        uuid year_id
+        uuid relationship_id
+        text token_hash
+        textArray allowed_sections
+        boolean allow_download
+        timestamptz expires_at
+        timestamptz revoked_at
+        text revoke_reason
+        uuid issued_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_parent_access_events {
+        uuid id PK
+        uuid school_id
+        uuid access_link_id
+        text event_kind
+        text request_id
+        text ip_daily_hash
+        text device_summary
+        text section
+        timestamptz created_at
+    }
+    app_transfer_requests {
+        uuid id PK
+        uuid school_id
+        uuid student_id
+        uuid from_enrollment_id
+        uuid to_class_id
+        date effective_on
+        text reason
+        text status
+        uuid requested_by
+        uuid decided_by
+        timestamptz applied_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_handover_requests {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid from_assignment_id
+        uuid to_member_id
+        date effective_on
+        text reason
+        jsonb checklist
+        text status
+        uuid requested_by
+        uuid decided_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_rollover_batches {
+        uuid id PK
+        uuid school_id
+        uuid source_year_id
+        uuid target_year_id
+        jsonb plan
+        text plan_hash
+        text status
+        uuid requested_by
+        timestamptz applied_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_class_groups {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        text name
+        integer sort_order
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_class_positions {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        text code
+        text name
+        boolean single_holder
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_group_memberships {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid group_id
+        uuid enrollment_id
+        date starts_on
+        date ends_on
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_position_assignments {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid position_id
+        uuid enrollment_id
+        date starts_on
+        date ends_on
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_seating_plans {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        integer revision
+        date effective_on
+        text status
+        jsonb layout
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_seat_assignments {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid plan_id
+        text seat_key
+        uuid enrollment_id
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_rule_sets {
+        uuid id PK
+        uuid school_id
+        text name
+        integer revision
+        numeric_10_2 base_points
+        numeric_10_2 minimum_points
+        numeric_10_2 maximum_points
+        text status
+        timestamptz issued_at
+        uuid issued_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_conduct_rules {
+        uuid id PK
+        uuid school_id
+        uuid rule_set_id
+        text code
+        text label
+        text group_name
+        text value_mode
+        numeric_10_2 default_delta
+        numeric_10_2 minimum_delta
+        numeric_10_2 maximum_delta
+        integer max_occurrences_per_day
+        boolean reason_required
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_rule_thresholds {
+        uuid id PK
+        uuid school_id
+        uuid rule_set_id
+        text label
+        numeric_10_2 minimum_score
+        integer sort_order
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_class_rule_periods {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid rule_set_id
+        date starts_on
+        date ends_on
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_attendance_sessions {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        date session_date
+        text granularity
+        text slot_key
+        uuid lesson_id
+        text status
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_attendance_records {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid session_id
+        uuid enrollment_id
+        text status
+        integer late_minutes
+        text public_note
+        text internal_note
+        uuid recorded_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_conduct_periods {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        uuid week_id
+        uuid rule_set_id
+        text status
+        integer data_version
+        timestamptz input_deadline
+        timestamptz locked_at
+        uuid locked_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_conduct_records {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid period_id
+        uuid rule_set_id
+        uuid rule_id
+        uuid enrollment_id
+        numeric_10_2 delta_snapshot
+        text rule_label_snapshot
+        text public_reason
+        text internal_note
+        timestamptz occurred_at
+        text status
+        text source_kind
+        text source_key
+        uuid supersedes_id
+        uuid recorded_by
+        uuid approved_by
+        timestamptz approved_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_adjustment_requests {
+        uuid id PK
+        uuid school_id
+        uuid period_id
+        uuid baseline_publication_id
+        text reason
+        jsonb proposed_changes
+        text status
+        uuid requested_by
+        uuid decided_by
+        timestamptz decided_at
+        timestamptz applied_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_timetable_versions {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        integer revision
+        date starts_on
+        date ends_on
+        text status
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_timetable_entries {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid timetable_id
+        uuid subject_id
+        uuid member_id
+        uuid room_id
+        integer weekday
+        integer period_number
+        time starts_at_local
+        time ends_at_local
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_lesson_occurrences {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid timetable_id
+        uuid subject_id
+        uuid member_id
+        uuid room_id
+        timestamptz starts_at
+        timestamptz ends_at
+        text status
+        text change_reason
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_duty_schedules {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        date starts_on
+        date ends_on
+        text status
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_duty_assignments {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid schedule_id
+        uuid enrollment_id
+        date duty_date
+        text task
+        text status
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_activities {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        text title
+        text description
+        timestamptz due_at
+        text status
+        boolean evidence_required
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_activity_participants {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid activity_id
+        uuid enrollment_id
+        text status
+        text review_note
+        uuid reviewed_by
+        timestamptz reviewed_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_files {
+        uuid id PK
+        uuid school_id
+        text object_key
+        text original_name
+        text content_type
+        bigint byte_size
+        text sha256
+        text status
+        text storage_driver
+        uuid uploaded_by
+        timestamptz expires_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_evidence {
+        uuid id PK
+        uuid school_id
+        uuid participant_id
+        uuid file_id
+        uuid submitted_by
+        text caption
+        text status
+        uuid reviewed_by
+        timestamptz reviewed_at
+        text review_reason
+        boolean share_with_guardian
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_announcements {
+        uuid id PK
+        uuid school_id
+        uuid year_id
+        uuid class_id
+        text title
+        text sanitized_html
+        text status
+        timestamptz scheduled_at
+        uuid created_by
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_announcement_targets {
+        uuid id PK
+        uuid school_id
+        uuid announcement_id
+        text audience_kind
+        uuid grade_id
+        uuid class_id
+        uuid student_id
+        uuid member_id
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_file_links {
+        uuid id PK
+        uuid school_id
+        uuid file_id
+        uuid student_id
+        uuid class_id
+        uuid activity_id
+        uuid announcement_id
+        boolean share_with_guardian
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_publication_revisions {
+        uuid id PK
+        uuid school_id
+        uuid class_id
+        uuid year_id
+        text kind
+        uuid conduct_period_id
+        uuid attendance_session_id
+        uuid timetable_id
+        uuid duty_schedule_id
+        uuid activity_id
+        uuid announcement_id
+        integer revision
+        text status
+        integer source_version
+        text content_hash
+        jsonb staff_snapshot
+        uuid created_by
+        timestamptz published_at
+        uuid published_by
+        timestamptz withdrawn_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_parent_publication_items {
+        uuid id PK
+        uuid school_id
+        uuid publication_id
+        uuid student_id
+        uuid year_id
+        text section
+        jsonb payload
+        timestamptz created_at
+    }
+    app_parent_document_items {
+        uuid id PK
+        uuid school_id
+        uuid student_id
+        uuid year_id
+        uuid file_id
+        uuid publication_id
+        text title
+        boolean download_allowed
+        timestamptz published_at
+        timestamptz revoked_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_import_jobs {
+        uuid id PK
+        uuid school_id
+        text kind
+        uuid file_id
+        uuid requested_by
+        jsonb column_mapping
+        text preview_hash
+        text status
+        jsonb summary
+        timestamptz completed_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_import_rows {
+        uuid id PK
+        uuid school_id
+        uuid import_id
+        integer row_number
+        jsonb normalized_data
+        text status
+        jsonb errors
+        text business_key
+        uuid result_id
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_export_jobs {
+        uuid id PK
+        uuid school_id
+        uuid requested_by
+        uuid class_id
+        text report_type
+        text format
+        jsonb filters
+        text status
+        uuid file_id
+        timestamptz expires_at
+        timestamptz completed_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_notifications {
+        uuid id PK
+        uuid school_id
+        uuid member_id
+        text kind
+        text title
+        text target_kind
+        uuid target_id
+        timestamptz read_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_audit_events {
+        uuid id PK
+        uuid school_id
+        uuid actor_user_id
+        text actor_kind
+        text action
+        text target_type
+        uuid target_id
+        text request_id
+        text reason
+        jsonb redacted_before
+        jsonb redacted_after
+        timestamptz created_at
+    }
+    app_outbox_events {
+        uuid id PK
+        uuid school_id
+        text kind
+        text dedupe_key
+        jsonb payload
+        text status
+        integer attempts
+        timestamptz run_after
+        timestamptz lease_until
+        text lease_owner
+        timestamptz processed_at
+        text last_error_code
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    app_idempotency_keys {
+        uuid id PK
+        uuid school_id
+        uuid actor_user_id
+        text operation_id
+        text key_hash
+        text request_hash
+        text status
+        integer response_status
+        jsonb response_metadata
+        timestamptz expires_at
+        timestamptz created_at
+        integer version
+        timestamptz updated_at
+    }
+    identity_users ||--o{ identity_staff_sessions : "user_id"
+    identity_users ||--o{ identity_auth_challenges : "user_id"
+    platform_schools ||--o{ identity_parent_sessions : "school_id"
+    app_parent_access_links ||--o{ identity_parent_sessions : "school_id,access_link_id"
+    identity_users ||--o{ identity_mail_outbox : "user_id"
+    platform_schools ||--o{ identity_mail_outbox : "school_id"
+    identity_users ||--o{ platform_operator_grants : "user_id"
+    platform_schools ||--o{ platform_support_tickets : "school_id"
+    identity_users ||--o{ platform_support_tickets : "requester_id"
+    identity_users ||--o{ platform_support_tickets : "assignee_id"
+    platform_support_tickets ||--o{ platform_support_messages : "ticket_id"
+    identity_users ||--o{ platform_support_messages : "author_id"
+    platform_schools ||--o{ platform_support_access : "school_id"
+    platform_support_tickets ||--o{ platform_support_access : "ticket_id"
+    identity_users ||--o{ platform_support_access : "operator_id"
+    identity_users ||--o{ platform_support_access : "approved_by_user_id"
+    app_classes ||--o{ platform_support_access : "school_id,class_id"
+    identity_users ||--o{ platform_audit_events : "actor_id"
+    platform_schools ||--o{ platform_audit_events : "school_id"
+    platform_schools ||--o{ platform_public_school_content : "school_id"
+    app_announcements ||--o{ platform_public_school_content : "school_id,announcement_id"
+    platform_schools ||--o{ app_memberships : "school_id"
+    identity_users ||--o{ app_memberships : "user_id"
+    platform_schools ||--o{ app_roles : "school_id"
+    platform_schools ||--o{ app_role_permissions : "school_id"
+    app_roles ||--o{ app_role_permissions : "school_id,role_id"
+    platform_schools ||--o{ app_role_grants : "school_id"
+    app_memberships ||--o{ app_role_grants : "school_id,member_id"
+    app_roles ||--o{ app_role_grants : "school_id,role_id"
+    app_classes ||--o{ app_role_grants : "school_id,class_id"
+    app_subjects ||--o{ app_role_grants : "school_id,subject_id"
+    identity_users ||--o{ app_role_grants : "granted_by"
+    platform_schools ||--o{ app_staff_invitations : "school_id"
+    identity_users ||--o{ app_staff_invitations : "invited_by"
+    identity_users ||--o{ app_staff_invitations : "accepted_user_id"
+    platform_schools ||--o{ app_grade_levels : "school_id"
+    platform_schools ||--o{ app_subjects : "school_id"
+    platform_schools ||--o{ app_rooms : "school_id"
+    platform_schools ||--o{ app_academic_years : "school_id"
+    platform_schools ||--o{ app_terms : "school_id"
+    app_academic_years ||--o{ app_terms : "school_id,year_id"
+    platform_schools ||--o{ app_school_weeks : "school_id"
+    app_academic_years ||--o{ app_school_weeks : "school_id,year_id"
+    app_terms ||--o{ app_school_weeks : "school_id,term_id,year_id"
+    platform_schools ||--o{ app_classes : "school_id"
+    app_academic_years ||--o{ app_classes : "school_id,year_id"
+    app_grade_levels ||--o{ app_classes : "school_id,grade_level_id"
+    platform_schools ||--o{ app_calendar_events : "school_id"
+    app_academic_years ||--o{ app_calendar_events : "school_id,year_id"
+    app_classes ||--o{ app_calendar_events : "school_id,class_id,year_id"
+    platform_schools ||--o{ app_teaching_assignments : "school_id"
+    app_classes ||--o{ app_teaching_assignments : "school_id,class_id"
+    app_memberships ||--o{ app_teaching_assignments : "school_id,member_id"
+    app_role_grants ||--o{ app_teaching_assignments : "school_id,role_grant_id"
+    app_subjects ||--o{ app_teaching_assignments : "school_id,subject_id"
+    platform_schools ||--o{ app_students : "school_id"
+    platform_schools ||--o{ app_enrollments : "school_id"
+    app_students ||--o{ app_enrollments : "school_id,student_id"
+    app_classes ||--o{ app_enrollments : "school_id,class_id,year_id"
+    platform_schools ||--o{ app_guardians : "school_id"
+    platform_schools ||--o{ app_guardian_relationships : "school_id"
+    app_students ||--o{ app_guardian_relationships : "school_id,student_id"
+    app_guardians ||--o{ app_guardian_relationships : "school_id,guardian_id"
+    identity_users ||--o{ app_guardian_relationships : "verified_by"
+    platform_schools ||--o{ app_parent_access_links : "school_id"
+    app_students ||--o{ app_parent_access_links : "school_id,student_id"
+    app_academic_years ||--o{ app_parent_access_links : "school_id,year_id"
+    identity_users ||--o{ app_parent_access_links : "issued_by"
+    app_guardian_relationships ||--o{ app_parent_access_links : "school_id,relationship_id,student_id"
+    platform_schools ||--o{ app_parent_access_events : "school_id"
+    app_parent_access_links ||--o{ app_parent_access_events : "school_id,access_link_id"
+    platform_schools ||--o{ app_transfer_requests : "school_id"
+    app_students ||--o{ app_transfer_requests : "school_id,student_id"
+    app_enrollments ||--o{ app_transfer_requests : "school_id,from_enrollment_id"
+    app_classes ||--o{ app_transfer_requests : "school_id,to_class_id"
+    identity_users ||--o{ app_transfer_requests : "requested_by"
+    identity_users ||--o{ app_transfer_requests : "decided_by"
+    platform_schools ||--o{ app_handover_requests : "school_id"
+    app_classes ||--o{ app_handover_requests : "school_id,class_id"
+    app_teaching_assignments ||--o{ app_handover_requests : "school_id,from_assignment_id"
+    app_memberships ||--o{ app_handover_requests : "school_id,to_member_id"
+    identity_users ||--o{ app_handover_requests : "requested_by"
+    identity_users ||--o{ app_handover_requests : "decided_by"
+    platform_schools ||--o{ app_rollover_batches : "school_id"
+    app_academic_years ||--o{ app_rollover_batches : "school_id,source_year_id"
+    app_academic_years ||--o{ app_rollover_batches : "school_id,target_year_id"
+    identity_users ||--o{ app_rollover_batches : "requested_by"
+    platform_schools ||--o{ app_class_groups : "school_id"
+    app_classes ||--o{ app_class_groups : "school_id,class_id"
+    platform_schools ||--o{ app_class_positions : "school_id"
+    app_classes ||--o{ app_class_positions : "school_id,class_id"
+    platform_schools ||--o{ app_group_memberships : "school_id"
+    app_class_groups ||--o{ app_group_memberships : "school_id,group_id,class_id"
+    app_enrollments ||--o{ app_group_memberships : "school_id,enrollment_id,class_id"
+    platform_schools ||--o{ app_position_assignments : "school_id"
+    app_class_positions ||--o{ app_position_assignments : "school_id,position_id,class_id"
+    app_enrollments ||--o{ app_position_assignments : "school_id,enrollment_id,class_id"
+    platform_schools ||--o{ app_seating_plans : "school_id"
+    app_classes ||--o{ app_seating_plans : "school_id,class_id"
+    identity_users ||--o{ app_seating_plans : "created_by"
+    platform_schools ||--o{ app_seat_assignments : "school_id"
+    app_seating_plans ||--o{ app_seat_assignments : "school_id,plan_id,class_id"
+    app_enrollments ||--o{ app_seat_assignments : "school_id,enrollment_id,class_id"
+    platform_schools ||--o{ app_rule_sets : "school_id"
+    identity_users ||--o{ app_rule_sets : "issued_by"
+    platform_schools ||--o{ app_conduct_rules : "school_id"
+    app_rule_sets ||--o{ app_conduct_rules : "school_id,rule_set_id"
+    platform_schools ||--o{ app_rule_thresholds : "school_id"
+    app_rule_sets ||--o{ app_rule_thresholds : "school_id,rule_set_id"
+    platform_schools ||--o{ app_class_rule_periods : "school_id"
+    app_classes ||--o{ app_class_rule_periods : "school_id,class_id"
+    app_rule_sets ||--o{ app_class_rule_periods : "school_id,rule_set_id"
+    platform_schools ||--o{ app_attendance_sessions : "school_id"
+    app_classes ||--o{ app_attendance_sessions : "school_id,class_id,year_id"
+    app_lesson_occurrences ||--o{ app_attendance_sessions : "school_id,lesson_id"
+    identity_users ||--o{ app_attendance_sessions : "created_by"
+    platform_schools ||--o{ app_attendance_records : "school_id"
+    app_attendance_sessions ||--o{ app_attendance_records : "school_id,session_id,class_id"
+    app_enrollments ||--o{ app_attendance_records : "school_id,enrollment_id,class_id"
+    identity_users ||--o{ app_attendance_records : "recorded_by"
+    platform_schools ||--o{ app_conduct_periods : "school_id"
+    app_classes ||--o{ app_conduct_periods : "school_id,class_id,year_id"
+    app_school_weeks ||--o{ app_conduct_periods : "school_id,week_id,year_id"
+    app_rule_sets ||--o{ app_conduct_periods : "school_id,rule_set_id"
+    identity_users ||--o{ app_conduct_periods : "locked_by"
+    platform_schools ||--o{ app_conduct_records : "school_id"
+    app_conduct_periods ||--o{ app_conduct_records : "school_id,period_id,class_id"
+    app_enrollments ||--o{ app_conduct_records : "school_id,enrollment_id,class_id"
+    app_conduct_periods ||--o{ app_conduct_records : "school_id,period_id,rule_set_id"
+    app_conduct_rules ||--o{ app_conduct_records : "school_id,rule_id,rule_set_id"
+    app_conduct_records ||--o{ app_conduct_records : "school_id,supersedes_id"
+    identity_users ||--o{ app_conduct_records : "recorded_by"
+    identity_users ||--o{ app_conduct_records : "approved_by"
+    platform_schools ||--o{ app_adjustment_requests : "school_id"
+    app_conduct_periods ||--o{ app_adjustment_requests : "school_id,period_id"
+    app_publication_revisions ||--o{ app_adjustment_requests : "school_id,baseline_publication_id"
+    identity_users ||--o{ app_adjustment_requests : "requested_by"
+    identity_users ||--o{ app_adjustment_requests : "decided_by"
+    platform_schools ||--o{ app_timetable_versions : "school_id"
+    app_classes ||--o{ app_timetable_versions : "school_id,class_id,year_id"
+    identity_users ||--o{ app_timetable_versions : "created_by"
+    platform_schools ||--o{ app_timetable_entries : "school_id"
+    app_timetable_versions ||--o{ app_timetable_entries : "school_id,timetable_id,class_id"
+    app_subjects ||--o{ app_timetable_entries : "school_id,subject_id"
+    app_memberships ||--o{ app_timetable_entries : "school_id,member_id"
+    app_rooms ||--o{ app_timetable_entries : "school_id,room_id"
+    platform_schools ||--o{ app_lesson_occurrences : "school_id"
+    app_timetable_versions ||--o{ app_lesson_occurrences : "school_id,timetable_id,class_id"
+    app_subjects ||--o{ app_lesson_occurrences : "school_id,subject_id"
+    app_memberships ||--o{ app_lesson_occurrences : "school_id,member_id"
+    app_rooms ||--o{ app_lesson_occurrences : "school_id,room_id"
+    platform_schools ||--o{ app_duty_schedules : "school_id"
+    app_classes ||--o{ app_duty_schedules : "school_id,class_id,year_id"
+    identity_users ||--o{ app_duty_schedules : "created_by"
+    platform_schools ||--o{ app_duty_assignments : "school_id"
+    app_duty_schedules ||--o{ app_duty_assignments : "school_id,schedule_id,class_id"
+    app_enrollments ||--o{ app_duty_assignments : "school_id,enrollment_id,class_id"
+    platform_schools ||--o{ app_activities : "school_id"
+    app_classes ||--o{ app_activities : "school_id,class_id,year_id"
+    identity_users ||--o{ app_activities : "created_by"
+    platform_schools ||--o{ app_activity_participants : "school_id"
+    app_activities ||--o{ app_activity_participants : "school_id,activity_id,class_id"
+    app_enrollments ||--o{ app_activity_participants : "school_id,enrollment_id,class_id"
+    identity_users ||--o{ app_activity_participants : "reviewed_by"
+    platform_schools ||--o{ app_files : "school_id"
+    identity_users ||--o{ app_files : "uploaded_by"
+    platform_schools ||--o{ app_evidence : "school_id"
+    app_activity_participants ||--o{ app_evidence : "school_id,participant_id"
+    app_files ||--o{ app_evidence : "school_id,file_id"
+    identity_users ||--o{ app_evidence : "submitted_by"
+    identity_users ||--o{ app_evidence : "reviewed_by"
+    platform_schools ||--o{ app_announcements : "school_id"
+    app_academic_years ||--o{ app_announcements : "school_id,year_id"
+    app_classes ||--o{ app_announcements : "school_id,class_id,year_id"
+    identity_users ||--o{ app_announcements : "created_by"
+    platform_schools ||--o{ app_announcement_targets : "school_id"
+    app_announcements ||--o{ app_announcement_targets : "school_id,announcement_id"
+    app_grade_levels ||--o{ app_announcement_targets : "school_id,grade_id"
+    app_classes ||--o{ app_announcement_targets : "school_id,class_id"
+    app_students ||--o{ app_announcement_targets : "school_id,student_id"
+    app_memberships ||--o{ app_announcement_targets : "school_id,member_id"
+    platform_schools ||--o{ app_file_links : "school_id"
+    app_files ||--o{ app_file_links : "school_id,file_id"
+    app_students ||--o{ app_file_links : "school_id,student_id"
+    app_classes ||--o{ app_file_links : "school_id,class_id"
+    app_activities ||--o{ app_file_links : "school_id,activity_id"
+    app_announcements ||--o{ app_file_links : "school_id,announcement_id"
+    platform_schools ||--o{ app_publication_revisions : "school_id"
+    app_conduct_periods ||--o{ app_publication_revisions : "school_id,conduct_period_id"
+    app_attendance_sessions ||--o{ app_publication_revisions : "school_id,attendance_session_id"
+    app_timetable_versions ||--o{ app_publication_revisions : "school_id,timetable_id"
+    app_duty_schedules ||--o{ app_publication_revisions : "school_id,duty_schedule_id"
+    app_activities ||--o{ app_publication_revisions : "school_id,activity_id"
+    app_announcements ||--o{ app_publication_revisions : "school_id,announcement_id"
+    app_classes ||--o{ app_publication_revisions : "school_id,class_id"
+    app_academic_years ||--o{ app_publication_revisions : "school_id,year_id"
+    identity_users ||--o{ app_publication_revisions : "created_by"
+    identity_users ||--o{ app_publication_revisions : "published_by"
+    platform_schools ||--o{ app_parent_publication_items : "school_id"
+    app_publication_revisions ||--o{ app_parent_publication_items : "school_id,publication_id,year_id"
+    app_students ||--o{ app_parent_publication_items : "school_id,student_id"
+    platform_schools ||--o{ app_parent_document_items : "school_id"
+    app_students ||--o{ app_parent_document_items : "school_id,student_id"
+    app_academic_years ||--o{ app_parent_document_items : "school_id,year_id"
+    app_files ||--o{ app_parent_document_items : "school_id,file_id"
+    app_publication_revisions ||--o{ app_parent_document_items : "school_id,publication_id"
+    platform_schools ||--o{ app_import_jobs : "school_id"
+    app_files ||--o{ app_import_jobs : "school_id,file_id"
+    identity_users ||--o{ app_import_jobs : "requested_by"
+    platform_schools ||--o{ app_import_rows : "school_id"
+    app_import_jobs ||--o{ app_import_rows : "school_id,import_id"
+    platform_schools ||--o{ app_export_jobs : "school_id"
+    identity_users ||--o{ app_export_jobs : "requested_by"
+    app_classes ||--o{ app_export_jobs : "school_id,class_id"
+    app_files ||--o{ app_export_jobs : "school_id,file_id"
+    platform_schools ||--o{ app_notifications : "school_id"
+    app_memberships ||--o{ app_notifications : "school_id,member_id"
+    platform_schools ||--o{ app_audit_events : "school_id"
+    identity_users ||--o{ app_audit_events : "actor_user_id"
+    platform_schools ||--o{ app_outbox_events : "school_id"
+    platform_schools ||--o{ app_idempotency_keys : "school_id"
+    identity_users ||--o{ app_idempotency_keys : "actor_user_id"

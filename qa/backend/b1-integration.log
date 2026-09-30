@@ -1,0 +1,23 @@
+ Container edumanage_backend_test-postgres-1 Running 
+ Container edumanage_backend_test-postgres-1 Waiting 
+ Container edumanage_backend_test-postgres-1 Healthy 
+ Container edumanage_backend_test-runner-run-f7e92e402fd2 Creating 
+ Container edumanage_backend_test-runner-run-f7e92e402fd2 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (350.874793ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (9.889697ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.9337ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (4.380397ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (112.717461ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (43.381577ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (116.747033ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (68.911187ms)
+✔ BE21 parent runtime role cannot select raw student rows (13.442015ms)
+✔ B0 health ready checks actual migrations, database and private storage (13.589534ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1160.750294

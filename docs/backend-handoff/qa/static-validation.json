@@ -1,0 +1,242 @@
+{
+  "checked_at": "2026-09-30",
+  "scope": "static handoff checks + rendering only",
+  "summary": "PASS_STATIC",
+  "table_count": 75,
+  "fk_count": 222,
+  "api_operations": 264,
+  "api_paths": 207,
+  "frontend_items": 128,
+  "checks": [
+    {
+      "name": "DB_TABLE_NAMES_UNIQUE",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "FK_COLUMNS_TYPES_TARGET_UNIQUES",
+      "status": "PASS",
+      "detail": "222 foreign keys checked"
+    },
+    {
+      "name": "SQL_TABLES_MATCH_MODEL",
+      "status": "PASS",
+      "detail": "75 tables"
+    },
+    {
+      "name": "DBML_TABLES_MATCH_MODEL",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "SQL_FKS_MATCH_MODEL",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "RLS_ALL_TENANT_TABLES_DECLARED",
+      "status": "PASS",
+      "detail": "60 tables; declaration check only"
+    },
+    {
+      "name": "NO_DESTRUCTIVE_BASELINE_DROP",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "OPENAPI_LOCAL_REF_RESOLUTION",
+      "status": "PASS",
+      "detail": "300 schemas; not official OpenAPI validator"
+    },
+    {
+      "name": "OPENAPI_REQUIRED_FIELDS_EXIST",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "OPENAPI_OPERATION_ID_UNIQUE",
+      "status": "PASS",
+      "detail": "264 operations, 207 paths"
+    },
+    {
+      "name": "OPENAPI_PATH_PARAMETERS",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "OPENAPI_REGISTRY_MATCH",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "FRONTEND_REGISTRY_IDS_COVERED",
+      "status": "PASS",
+      "detail": "128 input screen/view IDs"
+    },
+    {
+      "name": "FRONTEND_OPERATION_REFS_RESOLVE",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "NO_ACADEMIC_OPTIONAL_APIS",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "ROLE_ACTIONS_ALLOWLIST",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_local_LOOPBACK_ONLY",
+      "status": "PASS",
+      "detail": "[('gateway', '127.0.0.1:${APP_PORT:-18763}:8080')]"
+    },
+    {
+      "name": "COMPOSE_local_DEPENDENCY_NAMES",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_local_SECRET_NAMES",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_local_PG_INTERNAL",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_local_NO_SOCKET",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_production_LOOPBACK_ONLY",
+      "status": "PASS",
+      "detail": "[('gateway', '127.0.0.1:${APP_PORT:-18763}:8080')]"
+    },
+    {
+      "name": "COMPOSE_production_DEPENDENCY_NAMES",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_production_SECRET_NAMES",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_production_PG_INTERNAL",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_production_NO_SOCKET",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "COMPOSE_PRODUCTION_NO_BUILD",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "PYTHON_SYNTAX_preflight.py",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "PYTHON_SYNTAX_prepare-local.py",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "PYTHON_SYNTAX_smoke-local.py",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "PYTHON_SYNTAX_prepare-production-secrets.py",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_dev-up.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_prod-up.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_common.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_seed-local.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_dev-down.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_backup.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "BASH_SYNTAX_init-db.sh",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "SVG_EXPECTED_COUNT",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "DIAGRAM_HTML_EMBEDS_ALL_SVGS",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "DIAGRAM_HTML_NO_EXTERNAL_SCRIPTS",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "DIAGRAM_BROWSER_PREVIEWS_EXIST",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "DOCUMENT_LINK_TARGETS_EXIST",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "name": "NO_SECRETS_PACKAGED",
+      "status": "PASS",
+      "detail": ""
+    }
+  ],
+  "not_run": [
+    "PostgreSQL migration execution",
+    "Database/RLS fixture integration tests",
+    "Official OpenAPI validator (package unavailable)",
+    "Docker Compose config/build/up (Docker unavailable)",
+    "Application unit/contract/E2E tests (source implementation not provided)",
+    "Performance benchmark",
+    "Production aaPanel deployment",
+    "Backup restore drill"
+  ]
+}

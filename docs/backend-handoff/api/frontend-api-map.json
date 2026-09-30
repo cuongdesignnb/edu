@@ -1,0 +1,1631 @@
+[
+  {
+    "screen_id": "AU01",
+    "frontend_route": "/login",
+    "title": "Đăng nhập nhân sự",
+    "scope": "core",
+    "api_operation_ids": [
+      "getCsrf",
+      "login",
+      "getMyContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU02",
+    "frontend_route": "/forgot-password",
+    "title": "Quên mật khẩu",
+    "scope": "core",
+    "api_operation_ids": [
+      "getCsrf",
+      "forgotPassword"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU03",
+    "frontend_route": "/reset-password",
+    "title": "Đặt lại mật khẩu",
+    "scope": "core",
+    "api_operation_ids": [
+      "getCsrf",
+      "resetPassword"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU04",
+    "frontend_route": "/invitations/:inviteId",
+    "title": "Nhận lời mời nhân sự",
+    "scope": "core",
+    "api_operation_ids": [
+      "getCsrf",
+      "inspectInvitation",
+      "acceptInvitation",
+      "declineInvitation"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU05",
+    "frontend_route": "/choose-school",
+    "title": "Chọn không gian làm việc",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMyContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU06",
+    "frontend_route": "/account/profile",
+    "title": "Hồ sơ cá nhân nhân sự",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMyProfile",
+      "updateMyProfile"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU07",
+    "frontend_route": "/account/security",
+    "title": "Bảo mật và phiên demo",
+    "scope": "core",
+    "api_operation_ids": [
+      "logout",
+      "changePassword",
+      "listMySessions",
+      "revokeMySession"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU08",
+    "frontend_route": "/account/no-access",
+    "title": "Chưa được phân công / bị thu hồi quyền",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMyContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU09",
+    "frontend_route": "/notifications",
+    "title": "Trung tâm thông báo nhân sự",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMyNotifications",
+      "readMyNotification"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "AU10",
+    "frontend_route": "/help",
+    "title": "Hướng dẫn sử dụng",
+    "scope": "core",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "PL01",
+    "frontend_route": "/platform",
+    "title": "Tổng quan nền tảng",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPlatformOverview",
+      "listPlatformSchools"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL02",
+    "frontend_route": "/platform/schools",
+    "title": "Danh sách trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listPlatformSchools",
+      "setSchoolStatus"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL03",
+    "frontend_route": "/platform/schools/new",
+    "title": "Tạo trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "createSchool",
+      "inviteSchoolAdmin"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL04",
+    "frontend_route": "/platform/schools/:schoolId",
+    "title": "Hồ sơ trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPlatformSchool",
+      "updatePlatformSchool",
+      "setSchoolStatus"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL05",
+    "frontend_route": "/platform/schools/:schoolId/admins",
+    "title": "Quản trị trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolAdmins",
+      "inviteSchoolAdmin",
+      "revokeSchoolAdmin"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL06",
+    "frontend_route": "/platform/support",
+    "title": "Yêu cầu hỗ trợ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listPlatformTickets"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL07",
+    "frontend_route": "/platform/support/:ticketId",
+    "title": "Chi tiết yêu cầu hỗ trợ",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPlatformTicket",
+      "updatePlatformTicket",
+      "listPlatformTicketMessages",
+      "postPlatformTicketMessage"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL08",
+    "frontend_route": "/platform/support-access",
+    "title": "Quyền hỗ trợ tạm thời",
+    "scope": "core",
+    "api_operation_ids": [
+      "listPlatformSupportAccess"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL09",
+    "frontend_route": "/platform/audit",
+    "title": "Nhật ký nền tảng",
+    "scope": "core",
+    "api_operation_ids": [
+      "listPlatformAudit"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL10",
+    "frontend_route": "/platform/operations",
+    "title": "Tình trạng vận hành",
+    "scope": "core",
+    "api_operation_ids": [
+      "listOperations"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PL11",
+    "frontend_route": "/platform/settings",
+    "title": "Cấu hình nền tảng",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPlatformSettings",
+      "updatePlatformSettings"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC01",
+    "frontend_route": "/school/:schoolId",
+    "title": "Tổng quan trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolOverview"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC02",
+    "frontend_route": "/school/:schoolId/profile",
+    "title": "Thông tin và nhận diện trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolProfile",
+      "updateSchoolProfile",
+      "uploadFile"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC03",
+    "frontend_route": "/school/:schoolId/academic-years",
+    "title": "Danh sách năm học",
+    "scope": "core",
+    "api_operation_ids": [
+      "listYears",
+      "createYear",
+      "getYear",
+      "updateYear"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC04",
+    "frontend_route": "/school/:schoolId/academic-years/new",
+    "title": "Thiết lập năm học",
+    "scope": "core",
+    "api_operation_ids": [
+      "listYears",
+      "createYear",
+      "getYear",
+      "updateYear"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC05",
+    "frontend_route": "/school/:schoolId/academic-years/:yearId",
+    "title": "Chi tiết năm học",
+    "scope": "core",
+    "api_operation_ids": [
+      "listYears",
+      "createYear",
+      "getYear",
+      "updateYear",
+      "listTerms",
+      "createTerm",
+      "getTerm",
+      "updateTerm",
+      "listWeeks",
+      "createWeek",
+      "getWeek",
+      "updateWeek",
+      "activateYear"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC06",
+    "frontend_route": "/school/:schoolId/academic-years/:yearId/calendar",
+    "title": "Học kỳ, tuần và ngày nghỉ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listTerms",
+      "createTerm",
+      "getTerm",
+      "updateTerm",
+      "listWeeks",
+      "createWeek",
+      "getWeek",
+      "updateWeek",
+      "listCalendarEvents",
+      "createCalendarEvent",
+      "getCalendarEvent",
+      "updateCalendarEvent",
+      "publishCalendarEvent"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC07",
+    "frontend_route": "/school/:schoolId/academic-years/:yearId/rollover",
+    "title": "Kết thúc năm và chuẩn bị năm mới",
+    "scope": "core",
+    "api_operation_ids": [
+      "archiveYear",
+      "createRollover",
+      "getRollover",
+      "validateRollover",
+      "commitRollover"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC08",
+    "frontend_route": "/school/:schoolId/dictionaries",
+    "title": "Danh mục khối, môn, phòng",
+    "scope": "core",
+    "api_operation_ids": [
+      "listDictionary",
+      "createDictionary",
+      "updateDictionary"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC09",
+    "frontend_route": "/school/:schoolId/classes",
+    "title": "Danh sách lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClasss",
+      "createClass",
+      "getClass",
+      "updateClass",
+      "activateClass",
+      "archiveClass"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC10",
+    "frontend_route": "/school/:schoolId/teachers",
+    "title": "Danh sách giáo viên",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMembers",
+      "suspendMember",
+      "reactivateMember",
+      "listInvitations",
+      "inviteStaff",
+      "revokeInvitation"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC11",
+    "frontend_route": "/school/:schoolId/teachers/:memberId",
+    "title": "Hồ sơ và phân công giáo viên",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMember",
+      "updateMember",
+      "suspendMember",
+      "reactivateMember",
+      "revokeGrant",
+      "listAssignments",
+      "revokeAssignment"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC12",
+    "frontend_route": "/school/:schoolId/assignments",
+    "title": "Ma trận phân công",
+    "scope": "core",
+    "api_operation_ids": [
+      "previewGrant",
+      "createGrant",
+      "listAssignments",
+      "createAssignment",
+      "revokeAssignment"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC13",
+    "frontend_route": "/school/:schoolId/roles",
+    "title": "Mẫu quyền nhà trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listRoles",
+      "createRole"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC14",
+    "frontend_route": "/school/:schoolId/roles/:roleId",
+    "title": "Chi tiết mẫu quyền",
+    "scope": "core",
+    "api_operation_ids": [
+      "getRole",
+      "updateRole",
+      "previewGrant",
+      "createGrant",
+      "revokeGrant"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC15",
+    "frontend_route": "/school/:schoolId/handovers",
+    "title": "Bàn giao giáo viên chủ nhiệm",
+    "scope": "core",
+    "api_operation_ids": [
+      "listHandovers",
+      "createHandover",
+      "approveHandover"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC16",
+    "frontend_route": "/school/:schoolId/students",
+    "title": "Danh sách học sinh",
+    "scope": "core",
+    "api_operation_ids": [
+      "listStudents"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC17",
+    "frontend_route": "/school/:schoolId/students/new",
+    "title": "Thêm học sinh",
+    "scope": "core",
+    "api_operation_ids": [
+      "createStudent",
+      "createEnrollment"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC18",
+    "frontend_route": "/school/:schoolId/students/:studentId",
+    "title": "Hồ sơ học sinh",
+    "scope": "core",
+    "api_operation_ids": [
+      "getStudent",
+      "listStudentEnrollments",
+      "createGuardian",
+      "listRelationships",
+      "createRelationship",
+      "issueParentAccess"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC19",
+    "frontend_route": "/school/:schoolId/students/:studentId/edit",
+    "title": "Sửa học sinh",
+    "scope": "core",
+    "api_operation_ids": [
+      "getStudent",
+      "updateStudent"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC20",
+    "frontend_route": "/school/:schoolId/transfers",
+    "title": "Chuyển lớp và trạng thái theo học",
+    "scope": "core",
+    "api_operation_ids": [
+      "createEnrollment",
+      "listTransfers",
+      "createTransfer",
+      "approveTransfer",
+      "rejectTransfer"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC21",
+    "frontend_route": "/school/:schoolId/guardians",
+    "title": "Người giám hộ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listGuardians",
+      "createGuardian"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC22",
+    "frontend_route": "/school/:schoolId/guardians/:guardianId",
+    "title": "Quan hệ và quyền nhận thông tin",
+    "scope": "core",
+    "api_operation_ids": [
+      "getGuardian",
+      "updateGuardian",
+      "listRelationships",
+      "createRelationship",
+      "verifyRelationship",
+      "revokeRelationship"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC23",
+    "frontend_route": "/school/:schoolId/parent-access",
+    "title": "Quyền tra cứu phụ huynh",
+    "scope": "core",
+    "api_operation_ids": [
+      "listParentAccess",
+      "issueParentAccess"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC24",
+    "frontend_route": "/school/:schoolId/parent-access/:accessId",
+    "title": "Chi tiết quyền tra cứu",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentAccess",
+      "revokeParentAccess",
+      "reissueParentAccess",
+      "listParentAccessEvents"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC25",
+    "frontend_route": "/school/:schoolId/parent-access/:accessId/preview",
+    "title": "Xem trước trang phụ huynh",
+    "scope": "core",
+    "api_operation_ids": [
+      "previewParent"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC26",
+    "frontend_route": "/school/:schoolId/imports",
+    "title": "Trung tâm nhập dữ liệu",
+    "scope": "core",
+    "api_operation_ids": [
+      "listImports"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC27",
+    "frontend_route": "/school/:schoolId/imports/new",
+    "title": "Nhập danh sách bằng file",
+    "scope": "core",
+    "api_operation_ids": [
+      "uploadFile",
+      "createImport",
+      "validateImport",
+      "listImportRows",
+      "commitImport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC28",
+    "frontend_route": "/school/:schoolId/imports/:importId",
+    "title": "Kết quả nhập",
+    "scope": "core",
+    "api_operation_ids": [
+      "getImport",
+      "listImportRows",
+      "cancelImport",
+      "downloadImportErrors"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC29",
+    "frontend_route": "/school/:schoolId/conduct-rules",
+    "title": "Nội quy và phiên bản",
+    "scope": "core",
+    "api_operation_ids": [
+      "listRuleSets",
+      "createRuleSet"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC30",
+    "frontend_route": "/school/:schoolId/conduct-rules/:ruleSetId",
+    "title": "Soạn bộ nội quy",
+    "scope": "core",
+    "api_operation_ids": [
+      "createRuleSet",
+      "getRuleSet",
+      "updateRuleSet",
+      "issueRuleSet",
+      "simulateRules"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC31",
+    "frontend_route": "/school/:schoolId/publication-policy",
+    "title": "Quy trình chốt và công bố",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolSettings",
+      "updateSchoolSettings"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC32",
+    "frontend_route": "/school/:schoolId/timetable",
+    "title": "Lịch toàn trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolLessons",
+      "createTimetable",
+      "validateTimetable",
+      "publishTimetable"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC33",
+    "frontend_route": "/school/:schoolId/announcements",
+    "title": "Thông báo nhà trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolAnnouncements",
+      "createSchoolAnnouncement",
+      "getSchoolAnnouncement",
+      "updateSchoolAnnouncement",
+      "publishSchoolAnnouncement",
+      "scheduleSchoolAnnouncement",
+      "withdrawSchoolAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC34",
+    "frontend_route": "/school/:schoolId/announcements/new",
+    "title": "Soạn thông báo trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolAnnouncements",
+      "createSchoolAnnouncement",
+      "getSchoolAnnouncement",
+      "updateSchoolAnnouncement",
+      "publishSchoolAnnouncement",
+      "scheduleSchoolAnnouncement",
+      "withdrawSchoolAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC35",
+    "frontend_route": "/school/:schoolId/announcements/:announcementId",
+    "title": "Chi tiết thông báo trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolAnnouncements",
+      "createSchoolAnnouncement",
+      "getSchoolAnnouncement",
+      "updateSchoolAnnouncement",
+      "publishSchoolAnnouncement",
+      "scheduleSchoolAnnouncement",
+      "withdrawSchoolAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC36",
+    "frontend_route": "/school/:schoolId/publications",
+    "title": "Trung tâm rà soát và công bố",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolPublications",
+      "withdrawPublication"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC37",
+    "frontend_route": "/school/:schoolId/reports",
+    "title": "Trung tâm báo cáo trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolReport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC38",
+    "frontend_route": "/school/:schoolId/reports/:reportType",
+    "title": "Xem báo cáo trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolReport",
+      "createExport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC39",
+    "frontend_route": "/school/:schoolId/exports",
+    "title": "Các bản xuất dữ liệu",
+    "scope": "core",
+    "api_operation_ids": [
+      "listExports",
+      "createExport",
+      "getExport",
+      "downloadExport",
+      "cancelExport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC40",
+    "frontend_route": "/school/:schoolId/audit",
+    "title": "Nhật ký nhà trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolAudit"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC41",
+    "frontend_route": "/school/:schoolId/settings",
+    "title": "Cài đặt hiển thị và chia sẻ",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolSettings",
+      "updateSchoolSettings"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC42",
+    "frontend_route": "/school/:schoolId/support",
+    "title": "Hỗ trợ và ủy quyền hỗ trợ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSchoolTickets",
+      "createTicket",
+      "listSchoolSupportAccess",
+      "createSupportAccess"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SC43",
+    "frontend_route": "/school/:schoolId/support/:ticketId",
+    "title": "Chi tiết hỗ trợ của trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolTicket",
+      "listSchoolMessages",
+      "postSchoolMessage",
+      "listSchoolSupportAccess",
+      "createSupportAccess",
+      "approveSupportAccess",
+      "revokeSupportAccess"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE01",
+    "frontend_route": "/teacher/:schoolId",
+    "title": "Việc cần làm của giáo viên",
+    "scope": "core",
+    "api_operation_ids": [
+      "getTeacherOverview"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE02",
+    "frontend_route": "/teacher/:schoolId/classes",
+    "title": "Lớp học của tôi",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMyClasses"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE03",
+    "frontend_route": "/teacher/:schoolId/schedule",
+    "title": "Lịch dạy của tôi",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMySchedule"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE04",
+    "frontend_route": "/teacher/:schoolId/tasks",
+    "title": "Việc cần xử lý",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMyTasks"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE05",
+    "frontend_route": "/teacher/:schoolId/announcements",
+    "title": "Thông báo dành cho giáo viên",
+    "scope": "core",
+    "api_operation_ids": [
+      "listMyNotifications",
+      "readMyNotification",
+      "listTeacherAnnouncements"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "TE06",
+    "frontend_route": "/teacher/:schoolId/reports",
+    "title": "Báo cáo được phép",
+    "scope": "core",
+    "api_operation_ids": [
+      "getSchoolReport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL01",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId",
+    "title": "Tổng quan lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "getClassOverview"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL02",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/students",
+    "title": "Học sinh trong lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassStudents"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL03",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/students/:studentId",
+    "title": "Hồ sơ học sinh trong phạm vi lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "createTransfer",
+      "getClassStudent"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL04",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/attendance",
+    "title": "Điểm danh theo ngày/tiết",
+    "scope": "core",
+    "api_operation_ids": [
+      "listAttendanceSessions",
+      "createAttendanceSession",
+      "getAttendanceSession",
+      "saveAttendanceRecords",
+      "publishAttendance",
+      "reopenAttendance"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL05",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/attendance/weekly",
+    "title": "Chuyên cần theo tuần",
+    "scope": "core",
+    "api_operation_ids": [
+      "listAttendanceSessions",
+      "getAttendanceSummary"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL06",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/conduct",
+    "title": "Ghi nhận thi đua",
+    "scope": "core",
+    "api_operation_ids": [
+      "createConductPeriod",
+      "listConductRecords",
+      "createConductRecord",
+      "updateConductRecord"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL07",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/conduct/weekly",
+    "title": "Tổng hợp thi đua tuần",
+    "scope": "core",
+    "api_operation_ids": [
+      "listConductPeriods",
+      "createConductPeriod",
+      "getConductSummary"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL08",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/conduct/review",
+    "title": "Rà soát và chốt tuần",
+    "scope": "core",
+    "api_operation_ids": [
+      "approveConductRecord",
+      "excludeConductRecord",
+      "reviewConductPeriod",
+      "lockConductPeriod",
+      "publishConductPeriod",
+      "lockAndPublishConduct"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL09",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/publications",
+    "title": "Lịch sử kết quả công bố",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassPublications"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL10",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/publications/:publicationId",
+    "title": "Bản kết quả đã công bố",
+    "scope": "core",
+    "api_operation_ids": [
+      "getClassPublication",
+      "withdrawPublication"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL11",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/adjustments",
+    "title": "Điều chỉnh sau chốt",
+    "scope": "core",
+    "api_operation_ids": [
+      "listAdjustments",
+      "createAdjustment",
+      "approveAdjustment",
+      "rejectAdjustment",
+      "applyAdjustment"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL12",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/rules",
+    "title": "Nội quy áp dụng tại lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "getClassRules",
+      "applyClassRules"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL13",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/groups",
+    "title": "Tổ và chức vụ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listGroups",
+      "createGroup",
+      "listPositions",
+      "createPosition",
+      "updateGroup",
+      "updatePosition",
+      "listPositionAssignments",
+      "endPositionAssignment",
+      "assignGroup",
+      "assignPosition"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL14",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/seating",
+    "title": "Sơ đồ lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listSeatingPlans",
+      "createSeatingPlan",
+      "getSeatingPlan",
+      "updateSeatingPlan",
+      "activateSeatingPlan"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL15",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/timetable",
+    "title": "Lịch học của lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassTimetables",
+      "createTimetable",
+      "getTimetable",
+      "updateTimetable",
+      "validateTimetable",
+      "publishTimetable"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL16",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/duties",
+    "title": "Lịch trực nhật",
+    "scope": "core",
+    "api_operation_ids": [
+      "listDuties",
+      "createDuty",
+      "updateDuty",
+      "publishDuty"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL17",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/activities",
+    "title": "Hoạt động lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listActivities"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL18",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/activities/new",
+    "title": "Tạo hoạt động",
+    "scope": "core",
+    "api_operation_ids": [
+      "createActivity",
+      "assignActivity"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL19",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/activities/:activityId",
+    "title": "Chi tiết hoạt động",
+    "scope": "core",
+    "api_operation_ids": [
+      "getActivity",
+      "updateActivity",
+      "setParticipantStatus",
+      "listParticipants",
+      "assignActivity",
+      "publishActivity",
+      "listEvidence",
+      "createEvidence",
+      "reviewEvidence"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL20",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/evidence",
+    "title": "Minh chứng của lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listEvidence",
+      "createEvidence",
+      "reviewEvidence",
+      "uploadFile",
+      "downloadFile"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL21",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/announcements",
+    "title": "Thông báo lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassAnnouncements",
+      "createClassAnnouncement",
+      "getClassAnnouncement",
+      "updateClassAnnouncement",
+      "publishClassAnnouncement",
+      "scheduleClassAnnouncement",
+      "withdrawClassAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL22",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/announcements/new",
+    "title": "Soạn thông báo lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassAnnouncements",
+      "createClassAnnouncement",
+      "getClassAnnouncement",
+      "updateClassAnnouncement",
+      "publishClassAnnouncement",
+      "scheduleClassAnnouncement",
+      "withdrawClassAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL23",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/announcements/:announcementId",
+    "title": "Chi tiết thông báo lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassAnnouncements",
+      "createClassAnnouncement",
+      "getClassAnnouncement",
+      "updateClassAnnouncement",
+      "publishClassAnnouncement",
+      "scheduleClassAnnouncement",
+      "withdrawClassAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL24",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/files",
+    "title": "Tệp lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "listClassFiles",
+      "uploadFile",
+      "getFile",
+      "downloadFile",
+      "archiveFile",
+      "createFileLink"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL25",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/reports",
+    "title": "Báo cáo lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "getClassReport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "CL26",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/reports/:reportType",
+    "title": "Chi tiết báo cáo lớp",
+    "scope": "core",
+    "api_operation_ids": [
+      "getClassReport",
+      "createExport",
+      "downloadExport"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA01",
+    "frontend_route": "/p/:schoolSlug/access",
+    "title": "Mở đường dẫn riêng",
+    "scope": "core",
+    "api_operation_ids": [
+      "getCsrf",
+      "exchangeParentLink",
+      "getParentContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA02",
+    "frontend_route": "/p/:schoolSlug/overview",
+    "title": "Thông tin của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentOverview"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA03",
+    "frontend_route": "/p/:schoolSlug/attendance",
+    "title": "Chuyên cần của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentAttendance"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA04",
+    "frontend_route": "/p/:schoolSlug/conduct",
+    "title": "Thi đua đã công bố của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "listParentConduct"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA05",
+    "frontend_route": "/p/:schoolSlug/conduct/:periodId",
+    "title": "Chi tiết kỳ thi đua của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentConduct"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA06",
+    "frontend_route": "/p/:schoolSlug/timetable",
+    "title": "Lịch học của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentTimetable"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA07",
+    "frontend_route": "/p/:schoolSlug/duties",
+    "title": "Nhiệm vụ trực nhật của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentDuties"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA08",
+    "frontend_route": "/p/:schoolSlug/activities",
+    "title": "Hoạt động của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "listParentActivities"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA09",
+    "frontend_route": "/p/:schoolSlug/activities/:activityId",
+    "title": "Chi tiết hoạt động của con",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentActivity"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA10",
+    "frontend_route": "/p/:schoolSlug/announcements",
+    "title": "Thông báo dành cho gia đình",
+    "scope": "core",
+    "api_operation_ids": [
+      "listParentAnnouncements"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA11",
+    "frontend_route": "/p/:schoolSlug/announcements/:announcementId",
+    "title": "Chi tiết thông báo phụ huynh",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA12",
+    "frontend_route": "/p/:schoolSlug/teachers",
+    "title": "Giáo viên phụ trách",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentTeachers"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA13",
+    "frontend_route": "/p/:schoolSlug/documents",
+    "title": "Tài liệu và báo cáo được chia sẻ",
+    "scope": "core",
+    "api_operation_ids": [
+      "listParentDocuments",
+      "downloadParentDocument"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "PA14",
+    "frontend_route": "/p/:schoolSlug/access-unavailable",
+    "title": "Link không sử dụng được",
+    "scope": "core",
+    "api_operation_ids": [
+      "getParentContext",
+      "endParentSession"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY01",
+    "frontend_route": "/schools/:schoolSlug",
+    "title": "Trang công khai trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPublicSchool"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY02",
+    "frontend_route": "/schools/:schoolSlug/announcements/:announcementId",
+    "title": "Tin công khai của trường",
+    "scope": "core",
+    "api_operation_ids": [
+      "getPublicAnnouncement"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY03",
+    "frontend_route": "/privacy",
+    "title": "Thông tin quyền riêng tư",
+    "scope": "core",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Trang chính sách cần chủ dự án duyệt, nội dung tĩnh.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "SY04",
+    "frontend_route": "/terms",
+    "title": "Điều kiện sử dụng",
+    "scope": "core",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Điều kiện sử dụng tĩnh, không billing.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "SY05",
+    "frontend_route": "/access-denied",
+    "title": "Không có quyền",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMyContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY06",
+    "frontend_route": "/school-suspended",
+    "title": "Trường tạm dừng",
+    "scope": "core",
+    "api_operation_ids": [
+      "getMyContext"
+    ],
+    "no_business_api_reason": "",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY07",
+    "frontend_route": "/maintenance",
+    "title": "Bảo trì mô phỏng",
+    "scope": "core",
+    "api_operation_ids": [
+      "healthReady"
+    ],
+    "no_business_api_reason": "Frontend boundary cho 503/maintenance; healthReady cung cấp tín hiệu.",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "SY08",
+    "frontend_route": "/*",
+    "title": "Không tìm thấy và ranh giới lỗi",
+    "scope": "core",
+    "api_operation_ids": [
+      "healthReady"
+    ],
+    "no_business_api_reason": "Not-found/error boundary frontend, xử lý status từ API.",
+    "integration_status": "not_started"
+  },
+  {
+    "screen_id": "DV01",
+    "frontend_route": "/demo",
+    "title": "Chọn vai trò và kịch bản demo",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV02",
+    "frontend_route": "/preview/references",
+    "title": "Thư viện ảnh tham chiếu",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV03",
+    "frontend_route": "/preview/sitemap",
+    "title": "Sitemap triển khai",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV04",
+    "frontend_route": "/preview/checklist",
+    "title": "Checklist giao diện",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV05",
+    "frontend_route": "/preview/components",
+    "title": "Thư viện component",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV06",
+    "frontend_route": "/preview/states",
+    "title": "Trạng thái và tương tác",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "DV07",
+    "frontend_route": "/preview/flows",
+    "title": "Các luồng nghiệp vụ demo",
+    "scope": "internal",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Không đưa UI lab/demo vào API thật.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "EX01",
+    "frontend_route": "/school/:schoolId/academic-results",
+    "title": "Kết quả học tập tổng hợp",
+    "scope": "optional",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "EX02",
+    "frontend_route": "/classroom/:schoolId/:yearId/:classId/academic-results",
+    "title": "Kết quả môn được phân công",
+    "scope": "optional",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+    "integration_status": "not_required"
+  },
+  {
+    "screen_id": "EX03",
+    "frontend_route": "/p/:schoolSlug/academic-results",
+    "title": "Kết quả học tập đã công bố của con",
+    "scope": "optional",
+    "api_operation_ids": [],
+    "no_business_api_reason": "Mở rộng tắt mặc định, ngoài hợp đồng core.",
+    "integration_status": "not_required"
+  }
+]

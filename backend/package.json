@@ -1,0 +1,41 @@
+{
+  "name": "edumanage-backend",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src tests scripts",
+    "start": "node dist/main.js",
+    "worker": "node dist/worker.js",
+    "migrate": "node dist/cli.js migrate",
+    "test": "node --test tests/unit/*.test.mjs",
+    "test:integration": "node --test --test-concurrency=1 tests/integration/*.test.mjs",
+    "test:contract": "node --test tests/contract/*.test.mjs",
+    "contract:generate": "node scripts/generate-contract.mjs"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.1.2",
+    "@nestjs/common": "12.1.1",
+    "@nestjs/core": "12.1.1",
+    "@nestjs/platform-fastify": "12.1.1",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "argon2": "0.45.1",
+    "decimal.js": "10.6.0",
+    "fastify": "5.12.5",
+    "pg": "8.23.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "@types/node": "24.10.13",
+    "@types/pg": "8.23.1",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.57.1",
+    "yaml": "2.9.1"
+  }
+}
