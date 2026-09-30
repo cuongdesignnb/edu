@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 76,
+  "candidateCount": 80,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3155,7 +3155,17 @@
         "yearId?: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "assignmentMatrix",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3168,7 +3178,17 @@
         "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "previewAssignment",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3181,7 +3201,17 @@
         "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID; validFrom: string; validTo?: string; reason?: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "assign",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",
@@ -3195,7 +3225,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "staffRepo",
+        "method": "revokeAssignment",
+        "file": "src/lib/repositories/connected/staff.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "staffRepo",

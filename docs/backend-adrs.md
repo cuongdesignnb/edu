@@ -911,3 +911,37 @@ PostgreSQL integration with zero skipped, **19/19** backend contract/unit and
 their repaired causes are retained in the implementation report. Runtime is
 283 operations/345 schemas and 76 unactivated candidates. These checks do not
 certify frontend activation, E2E, final Docker, restart, backup/restore or load.
+
+## ADR-046 — Dated assignment previews and purpose-bound matrix metadata
+
+SC12/SC14 now have explicit native read models. `getStaffAssignmentMatrix`
+requires current School-scoped `assignment.read`; it does not lend `member.read`,
+year/dictionary reads or a role catalog. SQL limits the projection to the selected
+school/year before ordering and reads actual subject colors, class versions and
+nullable assignment cells. Cells keep source assignment/grant date windows,
+membership/identity/role state and server-derived current access. A missing year
+stays null. Archived display retains the agreed inclusive year-end-minus-62-days
+reference; authorization always uses the current grant. More than 200 subjects or
+2,000 classes fails explicitly rather than silently truncating. Member profile
+navigation requires its independent `canViewMembers` authority.
+
+`previewStaffAssignment` is a CSRF-protected POST marked `x-read-only`. It uses a
+read-only repeatable-read transaction, current `assignment.manage`, the same
+dated proposal validation and delegation expiry ceilings as assignment creation,
+and real SQL overlap checks. It returns exact native action codes for the proposed
+class/subject; held subject-A actions do not imply subject-B rights. The request
+does not persist grants, assignments, audit or idempotent command acknowledgements.
+Repeated previews always reauthorize, including when supplied the same retry key.
+The generated client retains this semantic read flag, sends CSRF and treats
+transport failure as a read error without issuing a mutation acknowledgement.
+
+The preview returns the member/class versions actually reviewed. AssignmentCreate
+accepts optional source versions for existing server-managed class/handover
+workflows; when supplied, the server rejects changed sources before writes. The
+connected staff save requires both reviewed versions and sends them without a
+fresh GET that would overwrite the user's review. Revocation uses the displayed
+assignment version and preserves original dates. Native exclusive ends become
+inclusive display dates only in the adapter; browser time never truncates history.
+
+These four adapter methods remain candidates until native UI date/version/action
+handling and the shared connected provider/facade are activated and browser-tested.

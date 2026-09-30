@@ -1,0 +1,29 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (0.8721ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (10.1171ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (5.0661ms)
+✔ login rejects spoofed role, school and unknown fields (1.7187ms)
+✔ private user DTO rejects secrets and unknown properties (4.8536ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2038ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (19.6649ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (8.4653ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (16.4303ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.6703ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (12.7938ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.3441ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.3344ms)
+✔ grant action and class scope stay together (0.7425ms)
+✔ subject grants never authorize management without explicit subject policy (0.1278ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1083ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1245ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.1616ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.8758ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.4662ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (79.6347ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 414.8531

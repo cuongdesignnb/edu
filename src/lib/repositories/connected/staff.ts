@@ -2,10 +2,13 @@ import type {ApiSchemas} from '../../api/generated';
 import {http,captureStaffAccess} from '../../api/client';
 import {apiList,apiPage} from '../../api/lists';
 import {serverNowISO} from '../../api/session';
+import {inclusiveDate} from '../../api/dates';
+import {year} from './organization-mapping';
 import type {ID,Membership} from '../../model/types';
 import type {Ctx,ListQuery} from '../core';
 import {RepoError} from '../errors';
 import {commandReason,displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
+import {assignment,assignmentBody,type StaffAssignmentInput} from './assignment-mapping';
 
 /** Native lifecycle replies retain nullable metadata and exact grant time windows. */
 export function staffMembership(row:ApiSchemas['Member'],schoolId:ID){
@@ -33,6 +36,30 @@ function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
     invitationStatus:row.kind==='INVITATION'?'pending' as const:undefined,expiresAt:requiredValue(row.expiresAt,'expiresAt'),avatarTone:row.kind==='INVITATION'?'amber':'blue'};
 }
 export const connectedStaffRepo=withStaffAccess({
+  async assignmentMatrix(_ctx:Ctx,schoolId:ID,yearId?:ID){
+    const view=(await http('getStaffAssignmentMatrix',{params:{schoolId},query:{yearId}})).data;
+    const statuses={ACTIVE:'active',SUSPENDED:'suspended',ENDED:'revoked',INVITED:'invited'} as const;
+    const cell=(row:ApiSchemas['StaffAssignmentCell']|null)=>row===null?null:{...row,membershipId:requiredId(row.memberId),membershipStatus:row.memberStatus,memberStatus:statuses[row.memberStatus],
+      validFrom:row.startsOn,validTo:row.endsOn===null?null:inclusiveDate(row.endsOn),version:displayedVersion(row.version)};
+    return {year:view.year===null?null:year(requiredValue(view.year,'year'),schoolId),referenceDate:requiredValue(view.referenceDate,'referenceDate'),
+      subjects:requiredValue(view.subjects,'subjects').map(s=>({id:requiredId(s.id),schoolId,name:s.name,code:s.code,color:requiredValue(s.color,'color'),version:s.version,status:s.status.toLowerCase()})),
+      rows:requiredValue(view.rows,'rows').map(r=>({...r,status:r.status.toLowerCase(),homeroom:cell(requiredValue(r.homeroom,'homeroom')),
+        bySubject:Object.fromEntries(Object.entries(requiredValue(r.bySubject,'bySubject')).map(([id,a])=>[id,cell(a)])),conflicts:requiredValue(r.conflicts,'conflicts')})),
+      canAssign:requiredValue(view.canAssign,'canAssign'),canViewMembers:requiredValue(view.canViewMembers,'canViewMembers')};
+  },
+  async previewAssignment(_ctx:Ctx,schoolId:ID,input:StaffAssignmentInput){
+    const view=(await formResult(http('previewStaffAssignment',{params:{schoolId},body:assignmentBody(input)}),{memberId:'membershipId',startsOn:'validFrom',endsOn:'validTo',expectedMemberVersion:'memberVersion',expectedClassVersion:'classVersion'})).data;
+    return {...view,memberVersion:displayedVersion(view.memberVersion),classVersion:displayedVersion(view.classVersion),scope:requiredValue(view.scopeName,'scopeName'),
+      added:requiredValue(view.added,'added'),kept:requiredValue(view.kept,'kept'),notIncluded:requiredValue(view.notIncluded,'notIncluded'),warnings:requiredValue(view.warnings,'warnings'),
+      validFrom:requiredValue(view.startsOn,'startsOn'),validTo:inclusiveDate(requiredValue(view.endsOn,'endsOn'))};
+  },
+  async assign(_ctx:Ctx,schoolId:ID,input:StaffAssignmentInput){
+    const result=await formResult(http('createAssignment',{params:{schoolId},body:assignmentBody(input,true)}),{memberId:'membershipId',startsOn:'validFrom',endsOn:'validTo',expectedMemberVersion:'memberVersion',expectedClassVersion:'classVersion'});
+    return assignment(result.data,schoolId);
+  },
+  async revokeAssignment(_ctx:Ctx,schoolId:ID,assignmentId:ID,reason:string,version?:number){
+    return assignment((await http('revokeAssignment',{params:{schoolId,assignmentId},body:{expectedVersion:displayedVersion(version),reason:commandReason(reason)}})).data,schoolId);
+  },
   async member(_ctx:Ctx,schoolId:ID,membershipId:ID){
     const access=captureStaffAccess(),view=(await http('getMemberDetails',{params:{schoolId,memberId:membershipId}})).data;access.assertCurrent();
     const row=requiredValue(view.member,'member'),membership=staffMembership(row,schoolId),canViewHistory=requiredValue(view.canViewHistory,'canViewHistory');

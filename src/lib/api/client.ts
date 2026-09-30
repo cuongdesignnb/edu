@@ -86,17 +86,17 @@ function urlFor<K extends OperationId>(id:K,options:ApiOptions<K>){
   return path+(query.size?'?'+query.toString():'');
 }
 async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{response:Response;hash?:string;epoch:number;identity:number}>{
-  const op=apiOperations[id],read=op.method==='GET',headers:Record<string,string>={Accept:'application/json'},epoch=accessEpoch,identity=authEpoch;
+  const op=apiOperations[id],read=op.readOnly,headers:Record<string,string>={Accept:'application/json'},epoch=accessEpoch,identity=authEpoch;
   const url=urlFor(id,options);
   if(options.body!==undefined&&options.multipart)throw new RepoError('VALIDATION','Yêu cầu chứa hai kiểu nội dung.');
   let body:BodyInit|undefined,hash:string|undefined;
   if(options.multipart)body=options.multipart;else if(options.body!==undefined){body=JSON.stringify(options.body);headers['Content-Type']='application/json';}
   if(options.parentViewId)headers['X-Parent-View']=options.parentViewId;
   if(options.supportAccessId)headers['X-Support-Access']=options.supportAccessId;
-  if(!read){
+  if(op.method!=='GET'){
     headers['X-CSRF-Token']=op.auth==='staff'?await sessionCsrf():op.auth==='parent'?options.parentCsrf??'':await csrfBootstrap();
     if(!headers['X-CSRF-Token'])throw new RepoError('REVOKED','Phiên tra cứu chưa được mở.');
-    hash=await fingerprint({id,params:options.params,query:options.query,body:options.multipart?formIdentity(options.multipart):options.body});headers['Idempotency-Key']=retryKey(hash,options.idempotencyKey);
+    if(!read){hash=await fingerprint({id,params:options.params,query:options.query,body:options.multipart?formIdentity(options.multipart):options.body});headers['Idempotency-Key']=retryKey(hash,options.idempotencyKey);}
   }
   if(op.auth==='staff')assertStaffAccess(epoch,identity);
   let response:Response;
@@ -116,16 +116,16 @@ async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{
 }
 export async function http<K extends OperationId>(id:K,options:ApiOptions<K>={}):Promise<ApiEnvelope<ApiData<K>>>{
   const {response,hash,epoch,identity}=await send(id,options);let result:ApiEnvelope<ApiData<K>>;
-  try{result=await response.json() as ApiEnvelope<ApiData<K>>;}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.');}
+  try{result=await response.json() as ApiEnvelope<ApiData<K>>;}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.');}
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
-  if(!result||typeof result!=='object'||!Object.hasOwn(result,'data')||typeof result.requestId!=='string')throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Phản hồi API không đúng hợp đồng.');
+  if(!result||typeof result!=='object'||!Object.hasOwn(result,'data')||typeof result.requestId!=='string')throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Phản hồi API không đúng hợp đồng.');
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(hash)retries.delete(hash);if(hash&&apiOperations[id].auth==='staff')mutationListeners.forEach(fn=>fn());return result;
 }
 export async function download<K extends OperationId>(id:K,options:ApiOptions<K>={}):Promise<{blob:Blob;filename:string}>{
   const {response,hash,epoch,identity}=await send(id,options),disposition=response.headers.get('content-disposition')??'';let filename='download';
   const encoded=/filename\*=UTF-8''([^;]+)/i.exec(disposition);if(encoded)try{filename=decodeURIComponent(encoded[1]).replace(/[\x00-\x1f\x7f<>:"/\\|?*]/g,'_');}catch{/* Safe filename remains. */}
-  let blob:Blob;try{blob=await response.blob();}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].method==='GET'?'READ_ERROR':'NETWORK','Tệp chưa được tải đầy đủ. Vui lòng thử lại.');}
+  let blob:Blob;try{blob=await response.blob();}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Tệp chưa được tải đầy đủ. Vui lòng thử lại.');}
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(hash)retries.delete(hash);if(hash&&apiOperations[id].auth==='staff')mutationListeners.forEach(fn=>fn());return {blob,filename};
 }

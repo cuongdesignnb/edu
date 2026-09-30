@@ -29842,6 +29842,184 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/assignments/preview:
+    post:
+      operationId: previewStaffAssignment
+      tags:
+        - Staff
+      summary: previewStaffAssignment
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC14
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignmentCreate"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffAssignmentPreviewResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-read-only: true
+  /schools/{schoolId}/assignment-matrix:
+    get:
+      operationId: getStaffAssignmentMatrix
+      tags:
+        - Staff
+      summary: getStaffAssignmentMatrix
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC12
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffAssignmentMatrixResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -32042,6 +32220,12 @@ components:
           type: string
           minLength: 5
           maxLength: 4000
+        expectedMemberVersion:
+          type: integer
+          minimum: 1
+        expectedClassVersion:
+          type: integer
+          minimum: 1
       required:
         - classId
         - memberId
@@ -39955,6 +40139,287 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/MemberDetails"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    StaffAssignmentPreview:
+      type: object
+      properties:
+        memberId:
+          type: string
+          format: uuid
+        memberVersion:
+          type: integer
+          minimum: 1
+        classId:
+          type: string
+          format: uuid
+        classVersion:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          enum:
+            - HOMEROOM
+            - SUBJECT
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        scopeName:
+          type: string
+        referenceDate:
+          type: string
+          format: date
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+        grantStartsAt:
+          type: string
+          format: date-time
+        grantEndsAt:
+          type: string
+          format: date-time
+        added:
+          type: array
+          items:
+            type: string
+        kept:
+          type: array
+          items:
+            type: string
+        notIncluded:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+      required:
+        - memberId
+        - memberVersion
+        - classId
+        - classVersion
+        - kind
+        - subjectId
+        - scopeName
+        - referenceDate
+        - startsOn
+        - endsOn
+        - grantStartsAt
+        - grantEndsAt
+        - added
+        - kept
+        - notIncluded
+        - warnings
+      additionalProperties: false
+    StaffAssignmentPreviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/StaffAssignmentPreview"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    StaffAssignmentCell:
+      type: object
+      properties:
+        assignmentId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        memberId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        memberStatus:
+          type: string
+          enum:
+            - INVITED
+            - ACTIVE
+            - SUSPENDED
+            - ENDED
+        identityActive:
+          type: boolean
+        roleActive:
+          type: boolean
+        kind:
+          type: string
+          enum:
+            - HOMEROOM
+            - SUBJECT
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+        grantStartsAt:
+          type: string
+          format: date-time
+        grantEndsAt:
+          type: string
+          format: date-time
+          nullable: true
+        accessActive:
+          type: boolean
+      required:
+        - assignmentId
+        - version
+        - memberId
+        - name
+        - memberStatus
+        - identityActive
+        - roleActive
+        - kind
+        - subjectId
+        - startsOn
+        - endsOn
+        - grantStartsAt
+        - grantEndsAt
+        - accessActive
+      additionalProperties: false
+    StaffMatrixSubject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        code:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - ARCHIVED
+        color:
+          type: string
+          pattern: ^#[0-9a-fA-F]{6}$
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - code
+        - name
+        - status
+        - color
+      additionalProperties: false
+    StaffAssignmentMatrixRow:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        className:
+          type: string
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+            - ARCHIVED
+        homeroom:
+          anyOf:
+            - $ref: "#/components/schemas/StaffAssignmentCell"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        bySubject:
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: "#/components/schemas/StaffAssignmentCell"
+              - type: object
+                nullable: true
+                enum:
+                  - null
+        conflicts:
+          type: array
+          items:
+            type: string
+      required:
+        - classId
+        - version
+        - className
+        - status
+        - homeroom
+        - bySubject
+        - conflicts
+      additionalProperties: false
+    StaffAssignmentMatrix:
+      type: object
+      properties:
+        year:
+          anyOf:
+            - $ref: "#/components/schemas/Year"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        referenceDate:
+          type: string
+          format: date
+        subjects:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/StaffMatrixSubject"
+        rows:
+          type: array
+          maxItems: 2000
+          items:
+            $ref: "#/components/schemas/StaffAssignmentMatrixRow"
+        canAssign:
+          type: boolean
+        canViewMembers:
+          type: boolean
+      required:
+        - year
+        - referenceDate
+        - subjects
+        - rows
+        - canAssign
+        - canViewMembers
+      additionalProperties: false
+    StaffAssignmentMatrixResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/StaffAssignmentMatrix"
         requestId:
           type: string
       required:

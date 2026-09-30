@@ -54,7 +54,7 @@ export interface ApiSchemas {
   "ClassCreate": { "homeroomMemberId"?: string; "homeroomStartsOn"?: string; "homeroomReason"?: string; "roomId"?: (string) | null; "motto"?: (string) | null; "yearId": string; "gradeLevelId": string; "code": string; "name": string; "capacity": number; };
   "ClassPatch": { "status"?: "DRAFT"; "homeroomMemberId"?: string; "homeroomStartsOn"?: string; "homeroomReason"?: string; "gradeLevelId"?: string; "roomId"?: (string) | null; "motto"?: (string) | null; "expectedVersion": number; "name"?: string; "capacity"?: number; };
   "Assignment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "memberId": (string) | null; "roleGrantId": (string) | null; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt"?: (string) | null; };
-  "AssignmentCreate": { "classId": string; "memberId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: string; "startsOn": string; "endsOn"?: (string) | null; "reason"?: string; };
+  "AssignmentCreate": { "classId": string; "memberId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: string; "startsOn": string; "endsOn"?: (string) | null; "reason"?: string; "expectedMemberVersion"?: number; "expectedClassVersion"?: number; };
   "Handover": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "fromAssignmentId": (string) | null; "toMemberId": (string) | null; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "APPLIED" | "REJECTED"; };
   "HandoverCreate": { "classId": string; "fromAssignmentId": string; "toMemberId": string; "effectiveOn": string; "reason": string; };
   "RolloverItem": { "studentId": (string) | null; "fromClassId": (string) | null; "toClassId"?: (string) | null; "decision": "PROMOTED" | "REPEATED" | "LEFT" | "GRADUATED"; };
@@ -345,6 +345,13 @@ export interface ApiSchemas {
   "MemberAssignmentDetails": { "id": string; "version": number; "classId": string; "className": string; "yearName": string; "memberId": string; "roleGrantId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "subjectName": (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt": (string) | null; "grantValidFrom": string; "grantValidUntil": (string) | null; "grantRevokedAt": (string) | null; "roleLabel": string; "roleStatus": "ACTIVE" | "ARCHIVED"; "createdAt": string; "createdBy": (string) | null; "createdByName": (string) | null; "live": boolean; };
   "MemberDetails": { "member": ApiSchemas["Member"]; "referenceDate": string; "joinedOn": (string) | null; "accessActive": boolean; "otherSchools": number; "assignments": (Array<ApiSchemas["MemberAssignmentDetails"]>) | null; "roleChoices": (Array<ApiSchemas["MemberRoleChoice"]>) | null; "canAssign": boolean; "canSuspend": boolean; "canRole": boolean; "canViewHistory": boolean; "isSelf": boolean; };
   "MemberDetailsResponse": { "data": ApiSchemas["MemberDetails"]; "requestId": string; };
+  "StaffAssignmentPreview": { "memberId": string; "memberVersion": number; "classId": string; "classVersion": number; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "scopeName": string; "referenceDate": string; "startsOn": string; "endsOn": string; "grantStartsAt": string; "grantEndsAt": string; "added": Array<string>; "kept": Array<string>; "notIncluded": Array<string>; "warnings": Array<string>; };
+  "StaffAssignmentPreviewResponse": { "data": ApiSchemas["StaffAssignmentPreview"]; "requestId": string; };
+  "StaffAssignmentCell": { "assignmentId": string; "version": number; "memberId": string; "name": string; "memberStatus": "INVITED" | "ACTIVE" | "SUSPENDED" | "ENDED"; "identityActive": boolean; "roleActive": boolean; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "startsOn": string; "endsOn": (string) | null; "grantStartsAt": string; "grantEndsAt": (string) | null; "accessActive": boolean; };
+  "StaffMatrixSubject": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "code": string; "name": string; "status": "ACTIVE" | "ARCHIVED"; "color": string; };
+  "StaffAssignmentMatrixRow": { "classId": string; "version": number; "className": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "homeroom": (ApiSchemas["StaffAssignmentCell"] | (null) | null); "bySubject": { [key: string]: (ApiSchemas["StaffAssignmentCell"] | (null) | null); }; "conflicts": Array<string>; };
+  "StaffAssignmentMatrix": { "year": (ApiSchemas["Year"] | (null) | null); "referenceDate": string; "subjects": Array<ApiSchemas["StaffMatrixSubject"]>; "rows": Array<ApiSchemas["StaffAssignmentMatrixRow"]>; "canAssign": boolean; "canViewMembers": boolean; };
+  "StaffAssignmentMatrixResponse": { "data": ApiSchemas["StaffAssignmentMatrix"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -355,7 +362,8 @@ export const apiOperations = {
     "request": null,
     "response": "Health",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": true
   },
   "healthReady": {
     "method": "GET",
@@ -364,7 +372,8 @@ export const apiOperations = {
     "request": null,
     "response": "Health",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": true
   },
   "getCsrf": {
     "method": "GET",
@@ -373,7 +382,8 @@ export const apiOperations = {
     "request": null,
     "response": "Csrf",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": true
   },
   "login": {
     "method": "POST",
@@ -382,7 +392,8 @@ export const apiOperations = {
     "request": "LoginRequest",
     "response": "LoginResult",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": false
   },
   "logout": {
     "method": "POST",
@@ -391,7 +402,8 @@ export const apiOperations = {
     "request": null,
     "response": "Ack",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": false
   },
   "forgotPassword": {
     "method": "POST",
@@ -400,7 +412,8 @@ export const apiOperations = {
     "request": "ForgotPasswordRequest",
     "response": "Ack",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": false
   },
   "resetPassword": {
     "method": "POST",
@@ -409,7 +422,8 @@ export const apiOperations = {
     "request": "ResetPasswordRequest",
     "response": "Ack",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": false
   },
   "changePassword": {
     "method": "POST",
@@ -418,7 +432,8 @@ export const apiOperations = {
     "request": "ChangePasswordRequest",
     "response": "Ack",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": false
   },
   "getMyContext": {
     "method": "GET",
@@ -427,7 +442,8 @@ export const apiOperations = {
     "request": null,
     "response": "Context",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": true
   },
   "getMyProfile": {
     "method": "GET",
@@ -436,7 +452,8 @@ export const apiOperations = {
     "request": null,
     "response": "User",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": true
   },
   "updateMyProfile": {
     "method": "PATCH",
@@ -445,7 +462,8 @@ export const apiOperations = {
     "request": "ProfilePatch",
     "response": "User",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": false
   },
   "listMySessions": {
     "method": "GET",
@@ -454,7 +472,8 @@ export const apiOperations = {
     "request": null,
     "response": "StaffSession",
     "list": true,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": true
   },
   "revokeMySession": {
     "method": "POST",
@@ -463,7 +482,8 @@ export const apiOperations = {
     "request": null,
     "response": "Ack",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": false
   },
   "inspectInvitation": {
     "method": "POST",
@@ -472,7 +492,8 @@ export const apiOperations = {
     "request": "InviteTokenRequest",
     "response": "Invitation",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": false
   },
   "acceptInvitation": {
     "method": "POST",
@@ -481,7 +502,8 @@ export const apiOperations = {
     "request": "AcceptInviteRequest",
     "response": "Ack",
     "list": false,
-    "permission": "invitation"
+    "permission": "invitation",
+    "readOnly": false
   },
   "declineInvitation": {
     "method": "POST",
@@ -490,7 +512,8 @@ export const apiOperations = {
     "request": "InviteTokenRequest",
     "response": "Ack",
     "list": false,
-    "permission": "invitation"
+    "permission": "invitation",
+    "readOnly": false
   },
   "listMyNotifications": {
     "method": "GET",
@@ -499,7 +522,8 @@ export const apiOperations = {
     "request": null,
     "response": "Notification",
     "list": true,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": true
   },
   "readMyNotification": {
     "method": "POST",
@@ -508,7 +532,8 @@ export const apiOperations = {
     "request": null,
     "response": "Ack",
     "list": false,
-    "permission": "session"
+    "permission": "session",
+    "readOnly": false
   },
   "getPlatformOverview": {
     "method": "GET",
@@ -517,7 +542,8 @@ export const apiOperations = {
     "request": null,
     "response": "Dashboard",
     "list": false,
-    "permission": "platform.read"
+    "permission": "platform.read",
+    "readOnly": true
   },
   "listPlatformSchools": {
     "method": "GET",
@@ -526,7 +552,8 @@ export const apiOperations = {
     "request": null,
     "response": "School",
     "list": true,
-    "permission": "platform.schools.read"
+    "permission": "platform.schools.read",
+    "readOnly": true
   },
   "createSchool": {
     "method": "POST",
@@ -535,7 +562,8 @@ export const apiOperations = {
     "request": "SchoolCreate",
     "response": "School",
     "list": false,
-    "permission": "platform.schools.manage"
+    "permission": "platform.schools.manage",
+    "readOnly": false
   },
   "getPlatformSchool": {
     "method": "GET",
@@ -544,7 +572,8 @@ export const apiOperations = {
     "request": null,
     "response": "School",
     "list": false,
-    "permission": "platform.schools.read"
+    "permission": "platform.schools.read",
+    "readOnly": true
   },
   "updatePlatformSchool": {
     "method": "PATCH",
@@ -553,7 +582,8 @@ export const apiOperations = {
     "request": "SchoolPatch",
     "response": "School",
     "list": false,
-    "permission": "platform.schools.manage"
+    "permission": "platform.schools.manage",
+    "readOnly": false
   },
   "setSchoolStatus": {
     "method": "POST",
@@ -562,7 +592,8 @@ export const apiOperations = {
     "request": "SchoolStatusCommand",
     "response": "School",
     "list": false,
-    "permission": "platform.schools.manage"
+    "permission": "platform.schools.manage",
+    "readOnly": false
   },
   "listSchoolAdmins": {
     "method": "GET",
@@ -571,7 +602,8 @@ export const apiOperations = {
     "request": null,
     "response": "Member",
     "list": true,
-    "permission": "platform.admins.manage"
+    "permission": "platform.admins.manage",
+    "readOnly": true
   },
   "inviteSchoolAdmin": {
     "method": "POST",
@@ -580,7 +612,8 @@ export const apiOperations = {
     "request": "PlatformAdminInviteRequest",
     "response": "Invitation",
     "list": false,
-    "permission": "platform.admins.manage"
+    "permission": "platform.admins.manage",
+    "readOnly": false
   },
   "revokeSchoolAdmin": {
     "method": "POST",
@@ -589,7 +622,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Ack",
     "list": false,
-    "permission": "platform.admins.manage"
+    "permission": "platform.admins.manage",
+    "readOnly": false
   },
   "listPlatformTickets": {
     "method": "GET",
@@ -598,7 +632,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportTicket",
     "list": true,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": true
   },
   "getPlatformTicket": {
     "method": "GET",
@@ -607,7 +642,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportTicket",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": true
   },
   "updatePlatformTicket": {
     "method": "PATCH",
@@ -616,7 +652,8 @@ export const apiOperations = {
     "request": "SupportTicketPatch",
     "response": "SupportTicket",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": false
   },
   "listPlatformTicketMessages": {
     "method": "GET",
@@ -625,7 +662,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportMessage",
     "list": true,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": true
   },
   "postPlatformTicketMessage": {
     "method": "POST",
@@ -634,7 +672,8 @@ export const apiOperations = {
     "request": "MessageCreate",
     "response": "SupportMessage",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": false
   },
   "listPlatformSupportAccess": {
     "method": "GET",
@@ -643,7 +682,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportAccess",
     "list": true,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": true
   },
   "listPlatformAudit": {
     "method": "GET",
@@ -652,7 +692,8 @@ export const apiOperations = {
     "request": null,
     "response": "AuditEvent",
     "list": true,
-    "permission": "platform.audit"
+    "permission": "platform.audit",
+    "readOnly": true
   },
   "listOperations": {
     "method": "GET",
@@ -661,7 +702,8 @@ export const apiOperations = {
     "request": null,
     "response": "OperationRun",
     "list": true,
-    "permission": "platform.operations"
+    "permission": "platform.operations",
+    "readOnly": true
   },
   "getPlatformSettings": {
     "method": "GET",
@@ -670,7 +712,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformSettings",
     "list": false,
-    "permission": "platform.settings"
+    "permission": "platform.settings",
+    "readOnly": true
   },
   "updatePlatformSettings": {
     "method": "PATCH",
@@ -679,7 +722,8 @@ export const apiOperations = {
     "request": "PlatformSettingsPatch",
     "response": "PlatformSettings",
     "list": false,
-    "permission": "platform.settings"
+    "permission": "platform.settings",
+    "readOnly": false
   },
   "getSchoolOverview": {
     "method": "GET",
@@ -688,7 +732,8 @@ export const apiOperations = {
     "request": null,
     "response": "Dashboard",
     "list": false,
-    "permission": "school.read"
+    "permission": "school.read",
+    "readOnly": true
   },
   "getSchoolProfile": {
     "method": "GET",
@@ -697,7 +742,8 @@ export const apiOperations = {
     "request": null,
     "response": "School",
     "list": false,
-    "permission": "school.read"
+    "permission": "school.read",
+    "readOnly": true
   },
   "updateSchoolProfile": {
     "method": "PATCH",
@@ -706,7 +752,8 @@ export const apiOperations = {
     "request": "SchoolPatch",
     "response": "School",
     "list": false,
-    "permission": "school.settings"
+    "permission": "school.settings",
+    "readOnly": false
   },
   "listYears": {
     "method": "GET",
@@ -715,7 +762,8 @@ export const apiOperations = {
     "request": null,
     "response": "Year",
     "list": true,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "createYear": {
     "method": "POST",
@@ -724,7 +772,8 @@ export const apiOperations = {
     "request": "YearCreate",
     "response": "Year",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "getYear": {
     "method": "GET",
@@ -733,7 +782,8 @@ export const apiOperations = {
     "request": null,
     "response": "Year",
     "list": false,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "updateYear": {
     "method": "PATCH",
@@ -742,7 +792,8 @@ export const apiOperations = {
     "request": "YearPatch",
     "response": "Year",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "listTerms": {
     "method": "GET",
@@ -751,7 +802,8 @@ export const apiOperations = {
     "request": null,
     "response": "Term",
     "list": true,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "createTerm": {
     "method": "POST",
@@ -760,7 +812,8 @@ export const apiOperations = {
     "request": "TermCreate",
     "response": "Term",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "getTerm": {
     "method": "GET",
@@ -769,7 +822,8 @@ export const apiOperations = {
     "request": null,
     "response": "Term",
     "list": false,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "updateTerm": {
     "method": "PATCH",
@@ -778,7 +832,8 @@ export const apiOperations = {
     "request": "TermPatch",
     "response": "Term",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "listWeeks": {
     "method": "GET",
@@ -787,7 +842,8 @@ export const apiOperations = {
     "request": null,
     "response": "Week",
     "list": true,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "createWeek": {
     "method": "POST",
@@ -796,7 +852,8 @@ export const apiOperations = {
     "request": "WeekCreate",
     "response": "Week",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "getWeek": {
     "method": "GET",
@@ -805,7 +862,8 @@ export const apiOperations = {
     "request": null,
     "response": "Week",
     "list": false,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "updateWeek": {
     "method": "PATCH",
@@ -814,7 +872,8 @@ export const apiOperations = {
     "request": "WeekPatch",
     "response": "Week",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "listCalendarEvents": {
     "method": "GET",
@@ -823,7 +882,8 @@ export const apiOperations = {
     "request": null,
     "response": "CalendarEvent",
     "list": true,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "createCalendarEvent": {
     "method": "POST",
@@ -832,7 +892,8 @@ export const apiOperations = {
     "request": "CalendarEventCreate",
     "response": "CalendarEvent",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "getCalendarEvent": {
     "method": "GET",
@@ -841,7 +902,8 @@ export const apiOperations = {
     "request": null,
     "response": "CalendarEvent",
     "list": false,
-    "permission": "year.read"
+    "permission": "year.read",
+    "readOnly": true
   },
   "updateCalendarEvent": {
     "method": "PATCH",
@@ -850,7 +912,8 @@ export const apiOperations = {
     "request": "CalendarEventPatch",
     "response": "CalendarEvent",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "listClasss": {
     "method": "GET",
@@ -859,7 +922,8 @@ export const apiOperations = {
     "request": null,
     "response": "Class",
     "list": true,
-    "permission": "class.read"
+    "permission": "class.read",
+    "readOnly": true
   },
   "createClass": {
     "method": "POST",
@@ -868,7 +932,8 @@ export const apiOperations = {
     "request": "ClassCreate",
     "response": "Class",
     "list": false,
-    "permission": "class.manage"
+    "permission": "class.manage",
+    "readOnly": false
   },
   "getClass": {
     "method": "GET",
@@ -877,7 +942,8 @@ export const apiOperations = {
     "request": null,
     "response": "Class",
     "list": false,
-    "permission": "class.read"
+    "permission": "class.read",
+    "readOnly": true
   },
   "updateClass": {
     "method": "PATCH",
@@ -886,7 +952,8 @@ export const apiOperations = {
     "request": "ClassPatch",
     "response": "Class",
     "list": false,
-    "permission": "class.manage"
+    "permission": "class.manage",
+    "readOnly": false
   },
   "activateYear": {
     "method": "POST",
@@ -895,7 +962,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Year",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "archiveYear": {
     "method": "POST",
@@ -904,7 +972,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Year",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "activateClass": {
     "method": "POST",
@@ -913,7 +982,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Class",
     "list": false,
-    "permission": "class.manage"
+    "permission": "class.manage",
+    "readOnly": false
   },
   "archiveClass": {
     "method": "POST",
@@ -922,7 +992,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Class",
     "list": false,
-    "permission": "class.manage"
+    "permission": "class.manage",
+    "readOnly": false
   },
   "publishCalendarEvent": {
     "method": "POST",
@@ -931,7 +1002,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "CalendarEvent",
     "list": false,
-    "permission": "calendar.publish"
+    "permission": "calendar.publish",
+    "readOnly": false
   },
   "listDictionary": {
     "method": "GET",
@@ -940,7 +1012,8 @@ export const apiOperations = {
     "request": null,
     "response": "DictionaryItem",
     "list": true,
-    "permission": "dictionary.read"
+    "permission": "dictionary.read",
+    "readOnly": true
   },
   "createDictionary": {
     "method": "POST",
@@ -949,7 +1022,8 @@ export const apiOperations = {
     "request": "DictionaryCreate",
     "response": "DictionaryItem",
     "list": false,
-    "permission": "dictionary.manage"
+    "permission": "dictionary.manage",
+    "readOnly": false
   },
   "updateDictionary": {
     "method": "PATCH",
@@ -958,7 +1032,8 @@ export const apiOperations = {
     "request": "DictionaryItemPatch",
     "response": "DictionaryItem",
     "list": false,
-    "permission": "dictionary.manage"
+    "permission": "dictionary.manage",
+    "readOnly": false
   },
   "createRollover": {
     "method": "POST",
@@ -967,7 +1042,8 @@ export const apiOperations = {
     "request": "RolloverCreate",
     "response": "Rollover",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "getRollover": {
     "method": "GET",
@@ -976,7 +1052,8 @@ export const apiOperations = {
     "request": null,
     "response": "Rollover",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": true
   },
   "validateRollover": {
     "method": "POST",
@@ -985,7 +1062,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Rollover",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "commitRollover": {
     "method": "POST",
@@ -994,7 +1072,8 @@ export const apiOperations = {
     "request": "PlanCommit",
     "response": "Rollover",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": false
   },
   "listMembers": {
     "method": "GET",
@@ -1003,7 +1082,8 @@ export const apiOperations = {
     "request": null,
     "response": "Member",
     "list": true,
-    "permission": "member.read"
+    "permission": "member.read",
+    "readOnly": true
   },
   "getMember": {
     "method": "GET",
@@ -1012,7 +1092,8 @@ export const apiOperations = {
     "request": null,
     "response": "Member",
     "list": false,
-    "permission": "member.read"
+    "permission": "member.read",
+    "readOnly": true
   },
   "updateMember": {
     "method": "PATCH",
@@ -1021,7 +1102,8 @@ export const apiOperations = {
     "request": "MemberPatch",
     "response": "Member",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "suspendMember": {
     "method": "POST",
@@ -1030,7 +1112,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Member",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "reactivateMember": {
     "method": "POST",
@@ -1039,7 +1122,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Member",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "listInvitations": {
     "method": "GET",
@@ -1048,7 +1132,8 @@ export const apiOperations = {
     "request": null,
     "response": "Invitation",
     "list": true,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": true
   },
   "inviteStaff": {
     "method": "POST",
@@ -1057,7 +1142,8 @@ export const apiOperations = {
     "request": "InviteRequest",
     "response": "Invitation",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "revokeInvitation": {
     "method": "POST",
@@ -1066,7 +1152,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Invitation",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "listRoles": {
     "method": "GET",
@@ -1075,7 +1162,8 @@ export const apiOperations = {
     "request": null,
     "response": "Role",
     "list": true,
-    "permission": "role.read"
+    "permission": "role.read",
+    "readOnly": true
   },
   "getRole": {
     "method": "GET",
@@ -1084,7 +1172,8 @@ export const apiOperations = {
     "request": null,
     "response": "Role",
     "list": false,
-    "permission": "role.read"
+    "permission": "role.read",
+    "readOnly": true
   },
   "createRole": {
     "method": "POST",
@@ -1093,7 +1182,8 @@ export const apiOperations = {
     "request": "RoleCreate",
     "response": "Role",
     "list": false,
-    "permission": "role.manage"
+    "permission": "role.manage",
+    "readOnly": false
   },
   "updateRole": {
     "method": "PATCH",
@@ -1102,7 +1192,8 @@ export const apiOperations = {
     "request": "RolePatch",
     "response": "Role",
     "list": false,
-    "permission": "role.manage"
+    "permission": "role.manage",
+    "readOnly": false
   },
   "previewGrant": {
     "method": "POST",
@@ -1111,7 +1202,8 @@ export const apiOperations = {
     "request": "GrantRequest",
     "response": "PermissionPreview",
     "list": false,
-    "permission": "grant.manage"
+    "permission": "grant.manage",
+    "readOnly": false
   },
   "createGrant": {
     "method": "POST",
@@ -1120,7 +1212,8 @@ export const apiOperations = {
     "request": "GrantRequest",
     "response": "GrantView",
     "list": false,
-    "permission": "grant.manage"
+    "permission": "grant.manage",
+    "readOnly": false
   },
   "revokeGrant": {
     "method": "POST",
@@ -1129,7 +1222,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Ack",
     "list": false,
-    "permission": "grant.manage"
+    "permission": "grant.manage",
+    "readOnly": false
   },
   "listAssignments": {
     "method": "GET",
@@ -1138,7 +1232,8 @@ export const apiOperations = {
     "request": null,
     "response": "Assignment",
     "list": true,
-    "permission": "assignment.read"
+    "permission": "assignment.read",
+    "readOnly": true
   },
   "createAssignment": {
     "method": "POST",
@@ -1147,7 +1242,8 @@ export const apiOperations = {
     "request": "AssignmentCreate",
     "response": "Assignment",
     "list": false,
-    "permission": "assignment.manage"
+    "permission": "assignment.manage",
+    "readOnly": false
   },
   "revokeAssignment": {
     "method": "POST",
@@ -1156,7 +1252,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Assignment",
     "list": false,
-    "permission": "assignment.manage"
+    "permission": "assignment.manage",
+    "readOnly": false
   },
   "listHandovers": {
     "method": "GET",
@@ -1165,7 +1262,8 @@ export const apiOperations = {
     "request": null,
     "response": "Handover",
     "list": true,
-    "permission": "assignment.manage"
+    "permission": "assignment.manage",
+    "readOnly": true
   },
   "createHandover": {
     "method": "POST",
@@ -1174,7 +1272,8 @@ export const apiOperations = {
     "request": "HandoverCreate",
     "response": "Handover",
     "list": false,
-    "permission": "assignment.manage"
+    "permission": "assignment.manage",
+    "readOnly": false
   },
   "approveHandover": {
     "method": "POST",
@@ -1183,7 +1282,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Handover",
     "list": false,
-    "permission": "assignment.manage"
+    "permission": "assignment.manage",
+    "readOnly": false
   },
   "listStudents": {
     "method": "GET",
@@ -1192,7 +1292,8 @@ export const apiOperations = {
     "request": null,
     "response": "Student",
     "list": true,
-    "permission": "student.read"
+    "permission": "student.read",
+    "readOnly": true
   },
   "createStudent": {
     "method": "POST",
@@ -1201,7 +1302,8 @@ export const apiOperations = {
     "request": "StudentCreate",
     "response": "Student",
     "list": false,
-    "permission": "student.manage"
+    "permission": "student.manage",
+    "readOnly": false
   },
   "getStudent": {
     "method": "GET",
@@ -1210,7 +1312,8 @@ export const apiOperations = {
     "request": null,
     "response": "StudentDetail",
     "list": false,
-    "permission": "student.read"
+    "permission": "student.read",
+    "readOnly": true
   },
   "updateStudent": {
     "method": "PATCH",
@@ -1219,7 +1322,8 @@ export const apiOperations = {
     "request": "StudentPatch",
     "response": "Student",
     "list": false,
-    "permission": "student.manage"
+    "permission": "student.manage",
+    "readOnly": false
   },
   "listStudentEnrollments": {
     "method": "GET",
@@ -1228,7 +1332,8 @@ export const apiOperations = {
     "request": null,
     "response": "Enrollment",
     "list": true,
-    "permission": "student.read"
+    "permission": "student.read",
+    "readOnly": true
   },
   "createEnrollment": {
     "method": "POST",
@@ -1237,7 +1342,8 @@ export const apiOperations = {
     "request": "EnrollmentCreate",
     "response": "Enrollment",
     "list": false,
-    "permission": "student.manage"
+    "permission": "student.manage",
+    "readOnly": false
   },
   "listTransfers": {
     "method": "GET",
@@ -1246,7 +1352,8 @@ export const apiOperations = {
     "request": null,
     "response": "Transfer",
     "list": true,
-    "permission": "student.transfer"
+    "permission": "student.transfer",
+    "readOnly": true
   },
   "createTransfer": {
     "method": "POST",
@@ -1255,7 +1362,8 @@ export const apiOperations = {
     "request": "TransferCreate",
     "response": "Transfer",
     "list": false,
-    "permission": "student.transfer.request"
+    "permission": "student.transfer.request",
+    "readOnly": false
   },
   "approveTransfer": {
     "method": "POST",
@@ -1264,7 +1372,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Transfer",
     "list": false,
-    "permission": "student.transfer"
+    "permission": "student.transfer",
+    "readOnly": false
   },
   "rejectTransfer": {
     "method": "POST",
@@ -1273,7 +1382,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Transfer",
     "list": false,
-    "permission": "student.transfer"
+    "permission": "student.transfer",
+    "readOnly": false
   },
   "listGuardians": {
     "method": "GET",
@@ -1282,7 +1392,8 @@ export const apiOperations = {
     "request": null,
     "response": "Guardian",
     "list": true,
-    "permission": "guardian.read"
+    "permission": "guardian.read",
+    "readOnly": true
   },
   "createGuardian": {
     "method": "POST",
@@ -1291,7 +1402,8 @@ export const apiOperations = {
     "request": "GuardianCreate",
     "response": "Guardian",
     "list": false,
-    "permission": "guardian.manage"
+    "permission": "guardian.manage",
+    "readOnly": false
   },
   "getGuardian": {
     "method": "GET",
@@ -1300,7 +1412,8 @@ export const apiOperations = {
     "request": null,
     "response": "Guardian",
     "list": false,
-    "permission": "guardian.read"
+    "permission": "guardian.read",
+    "readOnly": true
   },
   "updateGuardian": {
     "method": "PATCH",
@@ -1309,7 +1422,8 @@ export const apiOperations = {
     "request": "GuardianPatch",
     "response": "Guardian",
     "list": false,
-    "permission": "guardian.manage"
+    "permission": "guardian.manage",
+    "readOnly": false
   },
   "listRelationships": {
     "method": "GET",
@@ -1318,7 +1432,8 @@ export const apiOperations = {
     "request": null,
     "response": "Relationship",
     "list": true,
-    "permission": "guardian.read"
+    "permission": "guardian.read",
+    "readOnly": true
   },
   "createRelationship": {
     "method": "POST",
@@ -1327,7 +1442,8 @@ export const apiOperations = {
     "request": "RelationshipCreate",
     "response": "Relationship",
     "list": false,
-    "permission": "guardian.manage"
+    "permission": "guardian.manage",
+    "readOnly": false
   },
   "verifyRelationship": {
     "method": "POST",
@@ -1336,7 +1452,8 @@ export const apiOperations = {
     "request": "VerifyRelationship",
     "response": "Relationship",
     "list": false,
-    "permission": "guardian.verify"
+    "permission": "guardian.verify",
+    "readOnly": false
   },
   "revokeRelationship": {
     "method": "POST",
@@ -1345,7 +1462,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Relationship",
     "list": false,
-    "permission": "guardian.verify"
+    "permission": "guardian.verify",
+    "readOnly": false
   },
   "listParentAccess": {
     "method": "GET",
@@ -1354,7 +1472,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAccess",
     "list": true,
-    "permission": "parent_access.manage"
+    "permission": "parent_access.manage",
+    "readOnly": true
   },
   "issueParentAccess": {
     "method": "POST",
@@ -1363,7 +1482,8 @@ export const apiOperations = {
     "request": "ParentAccessCreate",
     "response": "ParentAccessIssued",
     "list": false,
-    "permission": "parent_access.issue"
+    "permission": "parent_access.issue",
+    "readOnly": false
   },
   "getParentAccess": {
     "method": "GET",
@@ -1372,7 +1492,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAccess",
     "list": false,
-    "permission": "parent_access.manage"
+    "permission": "parent_access.manage",
+    "readOnly": true
   },
   "revokeParentAccess": {
     "method": "POST",
@@ -1381,7 +1502,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "ParentAccess",
     "list": false,
-    "permission": "parent_access.revoke"
+    "permission": "parent_access.revoke",
+    "readOnly": false
   },
   "reissueParentAccess": {
     "method": "POST",
@@ -1390,7 +1512,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "ParentAccessIssued",
     "list": false,
-    "permission": "parent_access.issue"
+    "permission": "parent_access.issue",
+    "readOnly": false
   },
   "listParentAccessEvents": {
     "method": "GET",
@@ -1399,7 +1522,8 @@ export const apiOperations = {
     "request": null,
     "response": "AccessEvent",
     "list": true,
-    "permission": "parent_access.manage"
+    "permission": "parent_access.manage",
+    "readOnly": true
   },
   "previewParent": {
     "method": "GET",
@@ -1408,7 +1532,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentOverview",
     "list": false,
-    "permission": "parent_access.preview"
+    "permission": "parent_access.preview",
+    "readOnly": true
   },
   "getTeacherOverview": {
     "method": "GET",
@@ -1417,7 +1542,8 @@ export const apiOperations = {
     "request": null,
     "response": "Dashboard",
     "list": false,
-    "permission": "teacher.self"
+    "permission": "teacher.self",
+    "readOnly": true
   },
   "listMyClasses": {
     "method": "GET",
@@ -1426,7 +1552,8 @@ export const apiOperations = {
     "request": null,
     "response": "Class",
     "list": true,
-    "permission": "teacher.self"
+    "permission": "teacher.self",
+    "readOnly": true
   },
   "listMySchedule": {
     "method": "GET",
@@ -1435,7 +1562,8 @@ export const apiOperations = {
     "request": null,
     "response": "Lesson",
     "list": true,
-    "permission": "teacher.self"
+    "permission": "teacher.self",
+    "readOnly": true
   },
   "listMyTasks": {
     "method": "GET",
@@ -1444,7 +1572,8 @@ export const apiOperations = {
     "request": null,
     "response": "Task",
     "list": true,
-    "permission": "teacher.self"
+    "permission": "teacher.self",
+    "readOnly": true
   },
   "listTeacherAnnouncements": {
     "method": "GET",
@@ -1453,7 +1582,8 @@ export const apiOperations = {
     "request": null,
     "response": "Announcement",
     "list": true,
-    "permission": "teacher.self"
+    "permission": "teacher.self",
+    "readOnly": true
   },
   "getClassOverview": {
     "method": "GET",
@@ -1462,7 +1592,8 @@ export const apiOperations = {
     "request": null,
     "response": "Dashboard",
     "list": false,
-    "permission": "class.read"
+    "permission": "class.read",
+    "readOnly": true
   },
   "listClassStudents": {
     "method": "GET",
@@ -1471,7 +1602,8 @@ export const apiOperations = {
     "request": null,
     "response": "Student",
     "list": true,
-    "permission": "student.read"
+    "permission": "student.read",
+    "readOnly": true
   },
   "getClassStudent": {
     "method": "GET",
@@ -1480,7 +1612,8 @@ export const apiOperations = {
     "request": null,
     "response": "StudentDetail",
     "list": false,
-    "permission": "student.read"
+    "permission": "student.read",
+    "readOnly": true
   },
   "listGroups": {
     "method": "GET",
@@ -1489,7 +1622,8 @@ export const apiOperations = {
     "request": null,
     "response": "Group",
     "list": true,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": true
   },
   "createGroup": {
     "method": "POST",
@@ -1498,7 +1632,8 @@ export const apiOperations = {
     "request": "GroupCreate",
     "response": "Group",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "listPositions": {
     "method": "GET",
@@ -1507,7 +1642,8 @@ export const apiOperations = {
     "request": null,
     "response": "Position",
     "list": true,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": true
   },
   "createPosition": {
     "method": "POST",
@@ -1516,7 +1652,8 @@ export const apiOperations = {
     "request": "PositionCreate",
     "response": "Position",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "listSeatingPlans": {
     "method": "GET",
@@ -1525,7 +1662,8 @@ export const apiOperations = {
     "request": null,
     "response": "SeatingPlan",
     "list": true,
-    "permission": "seating.manage"
+    "permission": "seating.manage",
+    "readOnly": true
   },
   "createSeatingPlan": {
     "method": "POST",
@@ -1534,7 +1672,8 @@ export const apiOperations = {
     "request": "SeatingCreate",
     "response": "SeatingPlan",
     "list": false,
-    "permission": "seating.manage"
+    "permission": "seating.manage",
+    "readOnly": false
   },
   "updateGroup": {
     "method": "PATCH",
@@ -1543,7 +1682,8 @@ export const apiOperations = {
     "request": "GroupPatch",
     "response": "Group",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "updatePosition": {
     "method": "PATCH",
@@ -1552,7 +1692,8 @@ export const apiOperations = {
     "request": "PositionPatch",
     "response": "Position",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "listPositionAssignments": {
     "method": "GET",
@@ -1561,7 +1702,8 @@ export const apiOperations = {
     "request": null,
     "response": "PositionAssignment",
     "list": true,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": true
   },
   "endPositionAssignment": {
     "method": "POST",
@@ -1570,7 +1712,8 @@ export const apiOperations = {
     "request": "EndPositionAssignment",
     "response": "PositionAssignment",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "assignGroup": {
     "method": "POST",
@@ -1579,7 +1722,8 @@ export const apiOperations = {
     "request": "GroupAssign",
     "response": "Ack",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "assignPosition": {
     "method": "POST",
@@ -1588,7 +1732,8 @@ export const apiOperations = {
     "request": "PositionAssign",
     "response": "PositionAssignment",
     "list": false,
-    "permission": "group.manage"
+    "permission": "group.manage",
+    "readOnly": false
   },
   "getSeatingPlan": {
     "method": "GET",
@@ -1597,7 +1742,8 @@ export const apiOperations = {
     "request": null,
     "response": "SeatingPlan",
     "list": false,
-    "permission": "class.read"
+    "permission": "class.read",
+    "readOnly": true
   },
   "updateSeatingPlan": {
     "method": "PATCH",
@@ -1606,7 +1752,8 @@ export const apiOperations = {
     "request": "SeatingSave",
     "response": "SeatingPlan",
     "list": false,
-    "permission": "seating.manage"
+    "permission": "seating.manage",
+    "readOnly": false
   },
   "activateSeatingPlan": {
     "method": "POST",
@@ -1615,7 +1762,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "SeatingPlan",
     "list": false,
-    "permission": "seating.manage"
+    "permission": "seating.manage",
+    "readOnly": false
   },
   "listAttendanceSessions": {
     "method": "GET",
@@ -1624,7 +1772,8 @@ export const apiOperations = {
     "request": null,
     "response": "AttendanceSession",
     "list": true,
-    "permission": "attendance.read"
+    "permission": "attendance.read",
+    "readOnly": true
   },
   "createAttendanceSession": {
     "method": "POST",
@@ -1633,7 +1782,8 @@ export const apiOperations = {
     "request": "AttendanceCreate",
     "response": "AttendanceSession",
     "list": false,
-    "permission": "attendance.record"
+    "permission": "attendance.record",
+    "readOnly": false
   },
   "getAttendanceSession": {
     "method": "GET",
@@ -1642,7 +1792,8 @@ export const apiOperations = {
     "request": null,
     "response": "AttendanceSession",
     "list": false,
-    "permission": "attendance.read"
+    "permission": "attendance.read",
+    "readOnly": true
   },
   "saveAttendanceRecords": {
     "method": "PATCH",
@@ -1651,7 +1802,8 @@ export const apiOperations = {
     "request": "AttendanceBulk",
     "response": "AttendanceSession",
     "list": false,
-    "permission": "attendance.record"
+    "permission": "attendance.record",
+    "readOnly": false
   },
   "getAttendanceSummary": {
     "method": "GET",
@@ -1660,7 +1812,8 @@ export const apiOperations = {
     "request": null,
     "response": "AttendanceSummary",
     "list": false,
-    "permission": "attendance.read"
+    "permission": "attendance.read",
+    "readOnly": true
   },
   "publishAttendance": {
     "method": "POST",
@@ -1669,7 +1822,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "attendance.publish"
+    "permission": "attendance.publish",
+    "readOnly": false
   },
   "reopenAttendance": {
     "method": "POST",
@@ -1678,7 +1832,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "AttendanceSession",
     "list": false,
-    "permission": "attendance.reopen"
+    "permission": "attendance.reopen",
+    "readOnly": false
   },
   "listRuleSets": {
     "method": "GET",
@@ -1687,7 +1842,8 @@ export const apiOperations = {
     "request": null,
     "response": "RuleSet",
     "list": true,
-    "permission": "rules.read"
+    "permission": "rules.read",
+    "readOnly": true
   },
   "createRuleSet": {
     "method": "POST",
@@ -1696,7 +1852,8 @@ export const apiOperations = {
     "request": "RuleSetCreate",
     "response": "RuleSet",
     "list": false,
-    "permission": "rules.manage"
+    "permission": "rules.manage",
+    "readOnly": false
   },
   "getRuleSet": {
     "method": "GET",
@@ -1705,7 +1862,8 @@ export const apiOperations = {
     "request": null,
     "response": "RuleSet",
     "list": false,
-    "permission": "rules.read"
+    "permission": "rules.read",
+    "readOnly": true
   },
   "updateRuleSet": {
     "method": "PATCH",
@@ -1714,7 +1872,8 @@ export const apiOperations = {
     "request": "RuleSetPatch",
     "response": "RuleSet",
     "list": false,
-    "permission": "rules.manage"
+    "permission": "rules.manage",
+    "readOnly": false
   },
   "issueRuleSet": {
     "method": "POST",
@@ -1723,7 +1882,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "RuleSet",
     "list": false,
-    "permission": "rules.issue"
+    "permission": "rules.issue",
+    "readOnly": false
   },
   "simulateRules": {
     "method": "POST",
@@ -1732,7 +1892,8 @@ export const apiOperations = {
     "request": "RuleSimulation",
     "response": "RuleSimulationResult",
     "list": false,
-    "permission": "rules.read"
+    "permission": "rules.read",
+    "readOnly": false
   },
   "getClassRules": {
     "method": "GET",
@@ -1741,7 +1902,8 @@ export const apiOperations = {
     "request": null,
     "response": "RuleSet",
     "list": false,
-    "permission": "rules.read"
+    "permission": "rules.read",
+    "readOnly": true
   },
   "applyClassRules": {
     "method": "POST",
@@ -1750,7 +1912,8 @@ export const apiOperations = {
     "request": "ClassRulesApply",
     "response": "Ack",
     "list": false,
-    "permission": "rules.apply"
+    "permission": "rules.apply",
+    "readOnly": false
   },
   "listConductPeriods": {
     "method": "GET",
@@ -1759,7 +1922,8 @@ export const apiOperations = {
     "request": null,
     "response": "ConductPeriod",
     "list": true,
-    "permission": "conduct.read"
+    "permission": "conduct.read",
+    "readOnly": true
   },
   "createConductPeriod": {
     "method": "POST",
@@ -1768,7 +1932,8 @@ export const apiOperations = {
     "request": "ConductPeriodCreate",
     "response": "ConductPeriod",
     "list": false,
-    "permission": "conduct.record"
+    "permission": "conduct.record",
+    "readOnly": false
   },
   "getConductSummary": {
     "method": "GET",
@@ -1777,7 +1942,8 @@ export const apiOperations = {
     "request": null,
     "response": "ConductSummary",
     "list": false,
-    "permission": "conduct.read"
+    "permission": "conduct.read",
+    "readOnly": true
   },
   "listConductRecords": {
     "method": "GET",
@@ -1786,7 +1952,8 @@ export const apiOperations = {
     "request": null,
     "response": "ConductRecord",
     "list": true,
-    "permission": "conduct.read"
+    "permission": "conduct.read",
+    "readOnly": true
   },
   "createConductRecord": {
     "method": "POST",
@@ -1795,7 +1962,8 @@ export const apiOperations = {
     "request": "ConductRecordCreate",
     "response": "ConductRecord",
     "list": false,
-    "permission": "conduct.record"
+    "permission": "conduct.record",
+    "readOnly": false
   },
   "updateConductRecord": {
     "method": "PATCH",
@@ -1804,7 +1972,8 @@ export const apiOperations = {
     "request": "ConductRecordPatch",
     "response": "ConductRecord",
     "list": false,
-    "permission": "conduct.record"
+    "permission": "conduct.record",
+    "readOnly": false
   },
   "approveConductRecord": {
     "method": "POST",
@@ -1813,7 +1982,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "ConductRecord",
     "list": false,
-    "permission": "conduct.review"
+    "permission": "conduct.review",
+    "readOnly": false
   },
   "excludeConductRecord": {
     "method": "POST",
@@ -1822,7 +1992,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "ConductRecord",
     "list": false,
-    "permission": "conduct.review"
+    "permission": "conduct.review",
+    "readOnly": false
   },
   "reviewConductPeriod": {
     "method": "GET",
@@ -1831,7 +2002,8 @@ export const apiOperations = {
     "request": null,
     "response": "ReviewResult",
     "list": false,
-    "permission": "conduct.review"
+    "permission": "conduct.review",
+    "readOnly": true
   },
   "lockConductPeriod": {
     "method": "POST",
@@ -1840,7 +2012,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "ConductPeriod",
     "list": false,
-    "permission": "conduct.lock"
+    "permission": "conduct.lock",
+    "readOnly": false
   },
   "publishConductPeriod": {
     "method": "POST",
@@ -1849,7 +2022,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "conduct.publish"
+    "permission": "conduct.publish",
+    "readOnly": false
   },
   "lockAndPublishConduct": {
     "method": "POST",
@@ -1858,7 +2032,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "conduct.lock+conduct.publish"
+    "permission": "conduct.lock+conduct.publish",
+    "readOnly": false
   },
   "listAdjustments": {
     "method": "GET",
@@ -1867,7 +2042,8 @@ export const apiOperations = {
     "request": null,
     "response": "Adjustment",
     "list": true,
-    "permission": "conduct.adjust.request"
+    "permission": "conduct.adjust.request",
+    "readOnly": true
   },
   "createAdjustment": {
     "method": "POST",
@@ -1876,7 +2052,8 @@ export const apiOperations = {
     "request": "AdjustmentCreate",
     "response": "Adjustment",
     "list": false,
-    "permission": "conduct.adjust.request"
+    "permission": "conduct.adjust.request",
+    "readOnly": false
   },
   "approveAdjustment": {
     "method": "POST",
@@ -1885,7 +2062,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Adjustment",
     "list": false,
-    "permission": "conduct.adjust.approve"
+    "permission": "conduct.adjust.approve",
+    "readOnly": false
   },
   "rejectAdjustment": {
     "method": "POST",
@@ -1894,7 +2072,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Adjustment",
     "list": false,
-    "permission": "conduct.adjust.approve"
+    "permission": "conduct.adjust.approve",
+    "readOnly": false
   },
   "applyAdjustment": {
     "method": "POST",
@@ -1903,7 +2082,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "conduct.adjust.approve+conduct.publish"
+    "permission": "conduct.adjust.approve+conduct.publish",
+    "readOnly": false
   },
   "listSchoolPublications": {
     "method": "GET",
@@ -1912,7 +2092,8 @@ export const apiOperations = {
     "request": null,
     "response": "Publication",
     "list": true,
-    "permission": "publication.read"
+    "permission": "publication.read",
+    "readOnly": true
   },
   "listClassPublications": {
     "method": "GET",
@@ -1921,7 +2102,8 @@ export const apiOperations = {
     "request": null,
     "response": "Publication",
     "list": true,
-    "permission": "publication.read"
+    "permission": "publication.read",
+    "readOnly": true
   },
   "getClassPublication": {
     "method": "GET",
@@ -1930,7 +2112,8 @@ export const apiOperations = {
     "request": null,
     "response": "PublicationDetail",
     "list": false,
-    "permission": "publication.read"
+    "permission": "publication.read",
+    "readOnly": true
   },
   "withdrawPublication": {
     "method": "POST",
@@ -1939,7 +2122,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Publication",
     "list": false,
-    "permission": "publication.withdraw"
+    "permission": "publication.withdraw",
+    "readOnly": false
   },
   "listSchoolLessons": {
     "method": "GET",
@@ -1948,7 +2132,8 @@ export const apiOperations = {
     "request": null,
     "response": "Lesson",
     "list": true,
-    "permission": "schedule.read"
+    "permission": "schedule.read",
+    "readOnly": true
   },
   "listClassTimetables": {
     "method": "GET",
@@ -1957,7 +2142,8 @@ export const apiOperations = {
     "request": null,
     "response": "Timetable",
     "list": true,
-    "permission": "schedule.read"
+    "permission": "schedule.read",
+    "readOnly": true
   },
   "createTimetable": {
     "method": "POST",
@@ -1966,7 +2152,8 @@ export const apiOperations = {
     "request": "TimetableCreate",
     "response": "Timetable",
     "list": false,
-    "permission": "schedule.manage"
+    "permission": "schedule.manage",
+    "readOnly": false
   },
   "getTimetable": {
     "method": "GET",
@@ -1975,7 +2162,8 @@ export const apiOperations = {
     "request": null,
     "response": "Timetable",
     "list": false,
-    "permission": "schedule.read"
+    "permission": "schedule.read",
+    "readOnly": true
   },
   "updateTimetable": {
     "method": "PATCH",
@@ -1984,7 +2172,8 @@ export const apiOperations = {
     "request": "TimetablePatch",
     "response": "Timetable",
     "list": false,
-    "permission": "schedule.manage"
+    "permission": "schedule.manage",
+    "readOnly": false
   },
   "validateTimetable": {
     "method": "POST",
@@ -1993,7 +2182,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "ScheduleConflicts",
     "list": false,
-    "permission": "schedule.manage"
+    "permission": "schedule.manage",
+    "readOnly": false
   },
   "publishTimetable": {
     "method": "POST",
@@ -2002,7 +2192,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "schedule.publish"
+    "permission": "schedule.publish",
+    "readOnly": false
   },
   "listDuties": {
     "method": "GET",
@@ -2011,7 +2202,8 @@ export const apiOperations = {
     "request": null,
     "response": "DutySchedule",
     "list": true,
-    "permission": "duty.read"
+    "permission": "duty.read",
+    "readOnly": true
   },
   "createDuty": {
     "method": "POST",
@@ -2020,7 +2212,8 @@ export const apiOperations = {
     "request": "DutyCreate",
     "response": "DutySchedule",
     "list": false,
-    "permission": "duty.manage"
+    "permission": "duty.manage",
+    "readOnly": false
   },
   "updateDuty": {
     "method": "PATCH",
@@ -2029,7 +2222,8 @@ export const apiOperations = {
     "request": "DutySchedulePatch",
     "response": "DutySchedule",
     "list": false,
-    "permission": "duty.manage"
+    "permission": "duty.manage",
+    "readOnly": false
   },
   "publishDuty": {
     "method": "POST",
@@ -2038,7 +2232,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "duty.publish"
+    "permission": "duty.publish",
+    "readOnly": false
   },
   "listActivities": {
     "method": "GET",
@@ -2047,7 +2242,8 @@ export const apiOperations = {
     "request": null,
     "response": "Activity",
     "list": true,
-    "permission": "activity.read"
+    "permission": "activity.read",
+    "readOnly": true
   },
   "createActivity": {
     "method": "POST",
@@ -2056,7 +2252,8 @@ export const apiOperations = {
     "request": "ActivityCreate",
     "response": "Activity",
     "list": false,
-    "permission": "activity.manage"
+    "permission": "activity.manage",
+    "readOnly": false
   },
   "getActivity": {
     "method": "GET",
@@ -2065,7 +2262,8 @@ export const apiOperations = {
     "request": null,
     "response": "Activity",
     "list": false,
-    "permission": "activity.read"
+    "permission": "activity.read",
+    "readOnly": true
   },
   "updateActivity": {
     "method": "PATCH",
@@ -2074,7 +2272,8 @@ export const apiOperations = {
     "request": "ActivityPatch",
     "response": "Activity",
     "list": false,
-    "permission": "activity.manage"
+    "permission": "activity.manage",
+    "readOnly": false
   },
   "setParticipantStatus": {
     "method": "POST",
@@ -2083,7 +2282,8 @@ export const apiOperations = {
     "request": "ParticipantStatusCommand",
     "response": "Participant",
     "list": false,
-    "permission": "activity.review"
+    "permission": "activity.review",
+    "readOnly": false
   },
   "listParticipants": {
     "method": "GET",
@@ -2092,7 +2292,8 @@ export const apiOperations = {
     "request": null,
     "response": "Participant",
     "list": true,
-    "permission": "activity.read"
+    "permission": "activity.read",
+    "readOnly": true
   },
   "assignActivity": {
     "method": "POST",
@@ -2101,7 +2302,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "Activity",
     "list": false,
-    "permission": "activity.manage"
+    "permission": "activity.manage",
+    "readOnly": false
   },
   "publishActivity": {
     "method": "POST",
@@ -2110,7 +2312,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "activity.publish"
+    "permission": "activity.publish",
+    "readOnly": false
   },
   "listEvidence": {
     "method": "GET",
@@ -2119,7 +2322,8 @@ export const apiOperations = {
     "request": null,
     "response": "Evidence",
     "list": true,
-    "permission": "evidence.read"
+    "permission": "evidence.read",
+    "readOnly": true
   },
   "createEvidence": {
     "method": "POST",
@@ -2128,7 +2332,8 @@ export const apiOperations = {
     "request": "EvidenceCreate",
     "response": "Evidence",
     "list": false,
-    "permission": "evidence.manage"
+    "permission": "evidence.manage",
+    "readOnly": false
   },
   "reviewEvidence": {
     "method": "POST",
@@ -2137,7 +2342,8 @@ export const apiOperations = {
     "request": "ReviewEvidence",
     "response": "Evidence",
     "list": false,
-    "permission": "evidence.review"
+    "permission": "evidence.review",
+    "readOnly": false
   },
   "listClassFiles": {
     "method": "GET",
@@ -2146,7 +2352,8 @@ export const apiOperations = {
     "request": null,
     "response": "File",
     "list": true,
-    "permission": "file.read"
+    "permission": "file.read",
+    "readOnly": true
   },
   "uploadFile": {
     "method": "POST",
@@ -2155,7 +2362,8 @@ export const apiOperations = {
     "request": "UploadRequest",
     "response": "File",
     "list": false,
-    "permission": "file.upload"
+    "permission": "file.upload",
+    "readOnly": false
   },
   "getFile": {
     "method": "GET",
@@ -2164,7 +2372,8 @@ export const apiOperations = {
     "request": null,
     "response": "File",
     "list": false,
-    "permission": "file.read"
+    "permission": "file.read",
+    "readOnly": true
   },
   "downloadFile": {
     "method": "GET",
@@ -2173,7 +2382,8 @@ export const apiOperations = {
     "request": null,
     "response": "File",
     "list": false,
-    "permission": "file.download"
+    "permission": "file.download",
+    "readOnly": true
   },
   "archiveFile": {
     "method": "POST",
@@ -2182,7 +2392,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "File",
     "list": false,
-    "permission": "file.manage"
+    "permission": "file.manage",
+    "readOnly": false
   },
   "createFileLink": {
     "method": "POST",
@@ -2191,7 +2402,8 @@ export const apiOperations = {
     "request": "FileLinkCreate",
     "response": "Ack",
     "list": false,
-    "permission": "file.manage"
+    "permission": "file.manage",
+    "readOnly": false
   },
   "listSchoolAnnouncements": {
     "method": "GET",
@@ -2200,7 +2412,8 @@ export const apiOperations = {
     "request": null,
     "response": "Announcement",
     "list": true,
-    "permission": "announcement.read"
+    "permission": "announcement.read",
+    "readOnly": true
   },
   "createSchoolAnnouncement": {
     "method": "POST",
@@ -2209,7 +2422,8 @@ export const apiOperations = {
     "request": "AnnouncementCreate",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.manage"
+    "permission": "announcement.manage",
+    "readOnly": false
   },
   "getSchoolAnnouncement": {
     "method": "GET",
@@ -2218,7 +2432,8 @@ export const apiOperations = {
     "request": null,
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.read"
+    "permission": "announcement.read",
+    "readOnly": true
   },
   "updateSchoolAnnouncement": {
     "method": "PATCH",
@@ -2227,7 +2442,8 @@ export const apiOperations = {
     "request": "AnnouncementPatch",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.manage"
+    "permission": "announcement.manage",
+    "readOnly": false
   },
   "publishSchoolAnnouncement": {
     "method": "POST",
@@ -2236,7 +2452,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "scheduleSchoolAnnouncement": {
     "method": "POST",
@@ -2245,7 +2462,8 @@ export const apiOperations = {
     "request": "SchedulePublish",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "withdrawSchoolAnnouncement": {
     "method": "POST",
@@ -2254,7 +2472,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "listClassAnnouncements": {
     "method": "GET",
@@ -2263,7 +2482,8 @@ export const apiOperations = {
     "request": null,
     "response": "Announcement",
     "list": true,
-    "permission": "announcement.read"
+    "permission": "announcement.read",
+    "readOnly": true
   },
   "createClassAnnouncement": {
     "method": "POST",
@@ -2272,7 +2492,8 @@ export const apiOperations = {
     "request": "AnnouncementCreate",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.manage"
+    "permission": "announcement.manage",
+    "readOnly": false
   },
   "getClassAnnouncement": {
     "method": "GET",
@@ -2281,7 +2502,8 @@ export const apiOperations = {
     "request": null,
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.read"
+    "permission": "announcement.read",
+    "readOnly": true
   },
   "updateClassAnnouncement": {
     "method": "PATCH",
@@ -2290,7 +2512,8 @@ export const apiOperations = {
     "request": "AnnouncementPatch",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.manage"
+    "permission": "announcement.manage",
+    "readOnly": false
   },
   "publishClassAnnouncement": {
     "method": "POST",
@@ -2299,7 +2522,8 @@ export const apiOperations = {
     "request": "PublishCommand",
     "response": "Publication",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "scheduleClassAnnouncement": {
     "method": "POST",
@@ -2308,7 +2532,8 @@ export const apiOperations = {
     "request": "SchedulePublish",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "withdrawClassAnnouncement": {
     "method": "POST",
@@ -2317,7 +2542,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Announcement",
     "list": false,
-    "permission": "announcement.publish"
+    "permission": "announcement.publish",
+    "readOnly": false
   },
   "listImports": {
     "method": "GET",
@@ -2326,7 +2552,8 @@ export const apiOperations = {
     "request": null,
     "response": "ImportJob",
     "list": true,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": true
   },
   "createImport": {
     "method": "POST",
@@ -2335,7 +2562,8 @@ export const apiOperations = {
     "request": "ImportCreate",
     "response": "ImportJob",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": false
   },
   "getImport": {
     "method": "GET",
@@ -2344,7 +2572,8 @@ export const apiOperations = {
     "request": null,
     "response": "ImportJob",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": true
   },
   "validateImport": {
     "method": "POST",
@@ -2353,7 +2582,8 @@ export const apiOperations = {
     "request": "ImportMapping",
     "response": "ImportJob",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": false
   },
   "listImportRows": {
     "method": "GET",
@@ -2362,7 +2592,8 @@ export const apiOperations = {
     "request": null,
     "response": "ImportRow",
     "list": true,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": true
   },
   "commitImport": {
     "method": "POST",
@@ -2371,7 +2602,8 @@ export const apiOperations = {
     "request": "PlanCommit",
     "response": "ImportJob",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": false
   },
   "cancelImport": {
     "method": "POST",
@@ -2380,7 +2612,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "ImportJob",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": false
   },
   "downloadImportErrors": {
     "method": "GET",
@@ -2389,7 +2622,8 @@ export const apiOperations = {
     "request": null,
     "response": "File",
     "list": false,
-    "permission": "import.manage"
+    "permission": "import.manage",
+    "readOnly": true
   },
   "getSchoolReport": {
     "method": "GET",
@@ -2398,7 +2632,8 @@ export const apiOperations = {
     "request": null,
     "response": "Report",
     "list": false,
-    "permission": "report.read"
+    "permission": "report.read",
+    "readOnly": true
   },
   "getClassReport": {
     "method": "GET",
@@ -2407,7 +2642,8 @@ export const apiOperations = {
     "request": null,
     "response": "Report",
     "list": false,
-    "permission": "report.read"
+    "permission": "report.read",
+    "readOnly": true
   },
   "listExports": {
     "method": "GET",
@@ -2416,7 +2652,8 @@ export const apiOperations = {
     "request": null,
     "response": "ExportJob",
     "list": true,
-    "permission": "report.export"
+    "permission": "report.export",
+    "readOnly": true
   },
   "createExport": {
     "method": "POST",
@@ -2425,7 +2662,8 @@ export const apiOperations = {
     "request": "ExportCreate",
     "response": "ExportJob",
     "list": false,
-    "permission": "report.export"
+    "permission": "report.export",
+    "readOnly": false
   },
   "getExport": {
     "method": "GET",
@@ -2434,7 +2672,8 @@ export const apiOperations = {
     "request": null,
     "response": "ExportJob",
     "list": false,
-    "permission": "report.export"
+    "permission": "report.export",
+    "readOnly": true
   },
   "downloadExport": {
     "method": "GET",
@@ -2443,7 +2682,8 @@ export const apiOperations = {
     "request": null,
     "response": "File",
     "list": false,
-    "permission": "report.export"
+    "permission": "report.export",
+    "readOnly": true
   },
   "cancelExport": {
     "method": "POST",
@@ -2452,7 +2692,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "ExportJob",
     "list": false,
-    "permission": "report.export"
+    "permission": "report.export",
+    "readOnly": false
   },
   "listSchoolAudit": {
     "method": "GET",
@@ -2461,7 +2702,8 @@ export const apiOperations = {
     "request": null,
     "response": "AuditEvent",
     "list": true,
-    "permission": "audit.read"
+    "permission": "audit.read",
+    "readOnly": true
   },
   "getSchoolSettings": {
     "method": "GET",
@@ -2470,7 +2712,8 @@ export const apiOperations = {
     "request": null,
     "response": "Settings",
     "list": false,
-    "permission": "school.settings"
+    "permission": "school.settings",
+    "readOnly": true
   },
   "updateSchoolSettings": {
     "method": "PATCH",
@@ -2479,7 +2722,8 @@ export const apiOperations = {
     "request": "SettingsPatch",
     "response": "Settings",
     "list": false,
-    "permission": "school.settings"
+    "permission": "school.settings",
+    "readOnly": false
   },
   "listSchoolTickets": {
     "method": "GET",
@@ -2488,7 +2732,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportTicket",
     "list": true,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": true
   },
   "createTicket": {
     "method": "POST",
@@ -2497,7 +2742,8 @@ export const apiOperations = {
     "request": "TicketCreate",
     "response": "SupportTicket",
     "list": false,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": false
   },
   "getSchoolTicket": {
     "method": "GET",
@@ -2506,7 +2752,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportTicket",
     "list": false,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": true
   },
   "listSchoolMessages": {
     "method": "GET",
@@ -2515,7 +2762,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportMessage",
     "list": true,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": true
   },
   "postSchoolMessage": {
     "method": "POST",
@@ -2524,7 +2772,8 @@ export const apiOperations = {
     "request": "MessageCreate",
     "response": "SupportMessage",
     "list": false,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": false
   },
   "listSchoolSupportAccess": {
     "method": "GET",
@@ -2533,7 +2782,8 @@ export const apiOperations = {
     "request": null,
     "response": "SupportAccess",
     "list": true,
-    "permission": "support.approve"
+    "permission": "support.approve",
+    "readOnly": true
   },
   "createSupportAccess": {
     "method": "POST",
@@ -2542,7 +2792,8 @@ export const apiOperations = {
     "request": "SupportAccessCreate",
     "response": "SupportAccess",
     "list": false,
-    "permission": "support.approve"
+    "permission": "support.approve",
+    "readOnly": false
   },
   "approveSupportAccess": {
     "method": "POST",
@@ -2551,7 +2802,8 @@ export const apiOperations = {
     "request": "VersionCommand",
     "response": "SupportAccess",
     "list": false,
-    "permission": "support.approve"
+    "permission": "support.approve",
+    "readOnly": false
   },
   "revokeSupportAccess": {
     "method": "POST",
@@ -2560,7 +2812,8 @@ export const apiOperations = {
     "request": "SupportAccessRevoke",
     "response": "SupportAccess",
     "list": false,
-    "permission": "support.approve"
+    "permission": "support.approve",
+    "readOnly": false
   },
   "exchangeParentLink": {
     "method": "POST",
@@ -2569,7 +2822,8 @@ export const apiOperations = {
     "request": "ParentExchange",
     "response": "ParentContext",
     "list": false,
-    "permission": "link.token"
+    "permission": "link.token",
+    "readOnly": false
   },
   "getParentContext": {
     "method": "GET",
@@ -2578,7 +2832,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentContext",
     "list": false,
-    "permission": "parent.context"
+    "permission": "parent.context",
+    "readOnly": true
   },
   "endParentSession": {
     "method": "POST",
@@ -2587,7 +2842,8 @@ export const apiOperations = {
     "request": null,
     "response": "Ack",
     "list": false,
-    "permission": "parent.context"
+    "permission": "parent.context",
+    "readOnly": false
   },
   "getParentOverview": {
     "method": "GET",
@@ -2596,7 +2852,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentOverview",
     "list": false,
-    "permission": "parent.overview"
+    "permission": "parent.overview",
+    "readOnly": true
   },
   "getParentAttendance": {
     "method": "GET",
@@ -2605,7 +2862,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAttendance",
     "list": true,
-    "permission": "parent.attendance"
+    "permission": "parent.attendance",
+    "readOnly": true
   },
   "listParentConduct": {
     "method": "GET",
@@ -2614,7 +2872,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentConduct",
     "list": true,
-    "permission": "parent.conduct"
+    "permission": "parent.conduct",
+    "readOnly": true
   },
   "getParentConduct": {
     "method": "GET",
@@ -2623,7 +2882,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentConduct",
     "list": false,
-    "permission": "parent.conduct"
+    "permission": "parent.conduct",
+    "readOnly": true
   },
   "getParentTimetable": {
     "method": "GET",
@@ -2632,7 +2892,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentLesson",
     "list": true,
-    "permission": "parent.timetable"
+    "permission": "parent.timetable",
+    "readOnly": true
   },
   "getParentDuties": {
     "method": "GET",
@@ -2641,7 +2902,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentDuty",
     "list": true,
-    "permission": "parent.duties"
+    "permission": "parent.duties",
+    "readOnly": true
   },
   "listParentActivities": {
     "method": "GET",
@@ -2650,7 +2912,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentActivity",
     "list": true,
-    "permission": "parent.activities"
+    "permission": "parent.activities",
+    "readOnly": true
   },
   "getParentActivity": {
     "method": "GET",
@@ -2659,7 +2922,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentActivity",
     "list": false,
-    "permission": "parent.activities"
+    "permission": "parent.activities",
+    "readOnly": true
   },
   "listParentAnnouncements": {
     "method": "GET",
@@ -2668,7 +2932,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAnnouncement",
     "list": true,
-    "permission": "parent.announcements"
+    "permission": "parent.announcements",
+    "readOnly": true
   },
   "getParentAnnouncement": {
     "method": "GET",
@@ -2677,7 +2942,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAnnouncement",
     "list": false,
-    "permission": "parent.announcements"
+    "permission": "parent.announcements",
+    "readOnly": true
   },
   "getParentTeachers": {
     "method": "GET",
@@ -2686,7 +2952,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentTeacher",
     "list": true,
-    "permission": "parent.teachers"
+    "permission": "parent.teachers",
+    "readOnly": true
   },
   "listParentDocuments": {
     "method": "GET",
@@ -2695,7 +2962,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentDocument",
     "list": true,
-    "permission": "parent.documents"
+    "permission": "parent.documents",
+    "readOnly": true
   },
   "downloadParentDocument": {
     "method": "GET",
@@ -2704,7 +2972,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentDocument",
     "list": false,
-    "permission": "parent.documents"
+    "permission": "parent.documents",
+    "readOnly": true
   },
   "getPublicSchool": {
     "method": "GET",
@@ -2713,7 +2982,8 @@ export const apiOperations = {
     "request": null,
     "response": "PublicSchool",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": true
   },
   "getPublicAnnouncement": {
     "method": "GET",
@@ -2722,7 +2992,8 @@ export const apiOperations = {
     "request": null,
     "response": "ParentAnnouncement",
     "list": false,
-    "permission": "public"
+    "permission": "public",
+    "readOnly": true
   },
   "getRolloverPreview": {
     "method": "GET",
@@ -2731,7 +3002,8 @@ export const apiOperations = {
     "request": null,
     "response": "RolloverPreview",
     "list": false,
-    "permission": "year.manage"
+    "permission": "year.manage",
+    "readOnly": true
   },
   "getPlatformSchoolOptions": {
     "method": "GET",
@@ -2740,7 +3012,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformSchoolOptions",
     "list": false,
-    "permission": "platform.schools.read"
+    "permission": "platform.schools.read",
+    "readOnly": true
   },
   "checkPlatformSchoolIdentity": {
     "method": "GET",
@@ -2749,7 +3022,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformSchoolIdentity",
     "list": false,
-    "permission": "platform.schools.manage"
+    "permission": "platform.schools.manage",
+    "readOnly": true
   },
   "listSchoolAdminInvitations": {
     "method": "GET",
@@ -2758,7 +3032,8 @@ export const apiOperations = {
     "request": null,
     "response": "Invitation",
     "list": true,
-    "permission": "platform.admins.manage"
+    "permission": "platform.admins.manage",
+    "readOnly": true
   },
   "revokePlatformAdminInvitation": {
     "method": "POST",
@@ -2767,7 +3042,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Invitation",
     "list": false,
-    "permission": "platform.admins.manage"
+    "permission": "platform.admins.manage",
+    "readOnly": false
   },
   "getPlatformSupportOptions": {
     "method": "GET",
@@ -2776,7 +3052,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformSupportOptions",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": true
   },
   "requestPlatformSupportAccess": {
     "method": "POST",
@@ -2785,7 +3062,8 @@ export const apiOperations = {
     "request": "PlatformSupportAccessRequest",
     "response": "SupportAccess",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": false
   },
   "relinquishPlatformSupportAccess": {
     "method": "POST",
@@ -2794,7 +3072,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "SupportAccess",
     "list": false,
-    "permission": "platform.support"
+    "permission": "platform.support",
+    "readOnly": false
   },
   "getPlatformAuditOptions": {
     "method": "GET",
@@ -2803,7 +3082,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformAuditOptions",
     "list": false,
-    "permission": "platform.audit"
+    "permission": "platform.audit",
+    "readOnly": true
   },
   "getSchoolSupportSummary": {
     "method": "GET",
@@ -2812,7 +3092,8 @@ export const apiOperations = {
     "request": null,
     "response": "SchoolSupportSummary",
     "list": false,
-    "permission": "support.manage"
+    "permission": "support.manage",
+    "readOnly": true
   },
   "getSchoolAuditOptions": {
     "method": "GET",
@@ -2821,7 +3102,8 @@ export const apiOperations = {
     "request": null,
     "response": "SchoolAuditOptions",
     "list": false,
-    "permission": "audit.read"
+    "permission": "audit.read",
+    "readOnly": true
   },
   "getPlatformOperationsOverview": {
     "method": "GET",
@@ -2830,7 +3112,8 @@ export const apiOperations = {
     "request": null,
     "response": "PlatformOperationsOverview",
     "list": false,
-    "permission": "platform.operations"
+    "permission": "platform.operations",
+    "readOnly": true
   },
   "replaceMemberSchoolRoles": {
     "method": "POST",
@@ -2839,7 +3122,8 @@ export const apiOperations = {
     "request": "MemberRolesReplace",
     "response": "MemberSchoolRoles",
     "list": false,
-    "permission": "role.manage"
+    "permission": "role.manage",
+    "readOnly": false
   },
   "endMember": {
     "method": "POST",
@@ -2848,7 +3132,8 @@ export const apiOperations = {
     "request": "ReasonCommand",
     "response": "Member",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "inviteSchoolStaff": {
     "method": "POST",
@@ -2857,7 +3142,8 @@ export const apiOperations = {
     "request": "SchoolStaffInvite",
     "response": "Invitation",
     "list": false,
-    "permission": "member.manage"
+    "permission": "member.manage",
+    "readOnly": false
   },
   "listStaffDirectory": {
     "method": "GET",
@@ -2866,7 +3152,8 @@ export const apiOperations = {
     "request": null,
     "response": "StaffDirectoryRow",
     "list": true,
-    "permission": "member.read"
+    "permission": "member.read",
+    "readOnly": true
   },
   "getStaffDirectorySummary": {
     "method": "GET",
@@ -2875,7 +3162,8 @@ export const apiOperations = {
     "request": null,
     "response": "StaffDirectorySummary",
     "list": false,
-    "permission": "member.read"
+    "permission": "member.read",
+    "readOnly": true
   },
   "getMemberDetails": {
     "method": "GET",
@@ -2884,7 +3172,8 @@ export const apiOperations = {
     "request": null,
     "response": "MemberDetails",
     "list": false,
-    "permission": "member.read"
+    "permission": "member.read",
+    "readOnly": true
   },
   "listMemberHistory": {
     "method": "GET",
@@ -2893,7 +3182,28 @@ export const apiOperations = {
     "request": null,
     "response": "AuditEvent",
     "list": true,
-    "permission": "member.read+audit.read"
+    "permission": "member.read+audit.read",
+    "readOnly": true
+  },
+  "previewStaffAssignment": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/assignments/preview",
+    "auth": "staff",
+    "request": "AssignmentCreate",
+    "response": "StaffAssignmentPreview",
+    "list": false,
+    "permission": "assignment.manage",
+    "readOnly": true
+  },
+  "getStaffAssignmentMatrix": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/assignment-matrix",
+    "auth": "staff",
+    "request": null,
+    "response": "StaffAssignmentMatrix",
+    "list": false,
+    "permission": "assignment.read",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

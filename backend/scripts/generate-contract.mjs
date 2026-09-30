@@ -289,6 +289,24 @@ spec.components.schemas.MemberDetailsResponse=object({data:{$ref:'#/components/s
 extendOperation('getMember','getMemberDetails','/schools/{schoolId}/members/{memberId}/details','member.read','MemberDetails',false,['SC11']);
 extendOperation('listSchoolAudit','listMemberHistory','/schools/{schoolId}/members/{memberId}/history','member.read+audit.read','AuditEvent',true,['SC11']);
 spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters=spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters.filter(p=>p.in==='path'||['limit','cursor','sort','dir'].includes(p.name));
+// ADR-046: an assignment preview uses the same dated proposal and delegation
+// policy as saving, without borrowing role.manage or caching obsolete authority.
+Object.assign(spec.components.schemas.AssignmentCreate.properties,{expectedMemberVersion:{type:'integer',minimum:1},expectedClassVersion:{type:'integer',minimum:1}});
+spec.components.schemas.StaffAssignmentPreview=object({memberId:uuid,memberVersion:{type:'integer',minimum:1},classId:uuid,classVersion:{type:'integer',minimum:1},kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectId:{...uuid,nullable:true},scopeName:label,
+  referenceDate:{type:'string',format:'date'},startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date'},grantStartsAt:timestamp,grantEndsAt:timestamp,
+  ...Object.fromEntries(['added','kept','notIncluded','warnings'].map(name=>[name,{type:'array',items:label}]))});
+spec.components.schemas.StaffAssignmentPreviewResponse=object({data:{$ref:'#/components/schemas/StaffAssignmentPreview'},requestId:label});
+extendOperation('createAssignment','previewStaffAssignment','/schools/{schoolId}/assignments/preview','assignment.manage','StaffAssignmentPreview',false,['SC14'],undefined,'AssignmentCreate');
+const assignmentPreviewOp=spec.paths['/schools/{schoolId}/assignments/preview'].post;
+assignmentPreviewOp['x-read-only']=true;
+assignmentPreviewOp.responses['200']=assignmentPreviewOp.responses['201'];delete assignmentPreviewOp.responses['201'];
+spec.components.schemas.StaffAssignmentCell=object({assignmentId:uuid,version:{type:'integer',minimum:1},memberId:uuid,name:label,memberStatus:structuredClone(spec.components.schemas.Member.properties.status),identityActive:{type:'boolean'},roleActive:{type:'boolean'},kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectId:{...uuid,nullable:true},startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date',nullable:true},grantStartsAt:timestamp,grantEndsAt:{...timestamp,nullable:true},accessActive:{type:'boolean'}});
+const nullableMatrixRef=name=>({anyOf:[{$ref:'#/components/schemas/'+name},{type:'object',nullable:true,enum:[null]}]});
+spec.components.schemas.StaffMatrixSubject=object({id:uuid,version:{type:'integer',minimum:1},createdAt:timestamp,updatedAt:timestamp,code:label,name:label,status:{type:'string',enum:['ACTIVE','ARCHIVED']},color:{type:'string',pattern:'^#[0-9a-fA-F]{6}$'}});
+spec.components.schemas.StaffAssignmentMatrixRow=object({classId:uuid,version:{type:'integer',minimum:1},className:label,status:structuredClone(spec.components.schemas.Class.properties.status),homeroom:nullableMatrixRef('StaffAssignmentCell'),bySubject:{type:'object',additionalProperties:nullableMatrixRef('StaffAssignmentCell')},conflicts:{type:'array',items:label}});
+spec.components.schemas.StaffAssignmentMatrix=object({year:nullableMatrixRef('Year'),referenceDate:{type:'string',format:'date'},subjects:{type:'array',maxItems:200,items:{$ref:'#/components/schemas/StaffMatrixSubject'}},rows:{type:'array',maxItems:2000,items:{$ref:'#/components/schemas/StaffAssignmentMatrixRow'}},canAssign:{type:'boolean'},canViewMembers:{type:'boolean'}});
+spec.components.schemas.StaffAssignmentMatrixResponse=object({data:{$ref:'#/components/schemas/StaffAssignmentMatrix'},requestId:label});
+extendOperation('getMember','getStaffAssignmentMatrix','/schools/{schoolId}/assignment-matrix','assignment.read','StaffAssignmentMatrix',false,['SC12'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));
@@ -322,7 +340,7 @@ const resolvedOperations = operations.map(op => {
   const actual = spec.paths[op.path.replace(/^\/api\/v1/, '')]?.[op.method.toLowerCase()]
     ?? spec.paths[op.path]?.[op.method.toLowerCase()];
   if (!actual || actual.operationId !== op.id) throw new Error(`Registry mismatch ${op.id}`);
-  return { ...op, ...(op.id==='revokeSupportAccess'?{request:'SupportAccessRevoke'}:{}),parameters: actual.parameters ?? [], requestBody: actual.requestBody,
+  return { ...op, readOnly:op.method==='GET'||actual['x-read-only']===true,...(op.id==='revokeSupportAccess'?{request:'SupportAccessRevoke'}:{}),parameters: actual.parameters ?? [], requestBody: actual.requestBody,
     responses: actual.responses };
 });
 await fs.mkdir(path.join(root, 'backend/src/generated'), { recursive: true });

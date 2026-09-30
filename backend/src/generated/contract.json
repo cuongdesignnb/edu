@@ -2915,6 +2915,14 @@
           "type": "string",
           "minLength": 5,
           "maxLength": 4000
+        },
+        "expectedMemberVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expectedClassVersion": {
+          "type": "integer",
+          "minimum": 1
         }
       },
       "required": [
@@ -13595,6 +13603,394 @@
         "requestId"
       ],
       "additionalProperties": false
+    },
+    "StaffAssignmentPreview": {
+      "type": "object",
+      "properties": {
+        "memberId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "memberVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "HOMEROOM",
+            "SUBJECT"
+          ]
+        },
+        "subjectId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "scopeName": {
+          "type": "string"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "grantStartsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "grantEndsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "added": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kept": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notIncluded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "memberId",
+        "memberVersion",
+        "classId",
+        "classVersion",
+        "kind",
+        "subjectId",
+        "scopeName",
+        "referenceDate",
+        "startsOn",
+        "endsOn",
+        "grantStartsAt",
+        "grantEndsAt",
+        "added",
+        "kept",
+        "notIncluded",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "StaffAssignmentPreviewResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/StaffAssignmentPreview"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "StaffAssignmentCell": {
+      "type": "object",
+      "properties": {
+        "assignmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memberId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "memberStatus": {
+          "type": "string",
+          "enum": [
+            "INVITED",
+            "ACTIVE",
+            "SUSPENDED",
+            "ENDED"
+          ]
+        },
+        "identityActive": {
+          "type": "boolean"
+        },
+        "roleActive": {
+          "type": "boolean"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "HOMEROOM",
+            "SUBJECT"
+          ]
+        },
+        "subjectId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "grantStartsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "grantEndsAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "accessActive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "assignmentId",
+        "version",
+        "memberId",
+        "name",
+        "memberStatus",
+        "identityActive",
+        "roleActive",
+        "kind",
+        "subjectId",
+        "startsOn",
+        "endsOn",
+        "grantStartsAt",
+        "grantEndsAt",
+        "accessActive"
+      ],
+      "additionalProperties": false
+    },
+    "StaffMatrixSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "code",
+        "name",
+        "status",
+        "color"
+      ],
+      "additionalProperties": false
+    },
+    "StaffAssignmentMatrixRow": {
+      "type": "object",
+      "properties": {
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "className": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "homeroom": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/StaffAssignmentCell"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "bySubject": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StaffAssignmentCell"
+              },
+              {
+                "type": "object",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            ]
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "classId",
+        "version",
+        "className",
+        "status",
+        "homeroom",
+        "bySubject",
+        "conflicts"
+      ],
+      "additionalProperties": false
+    },
+    "StaffAssignmentMatrix": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/Year"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "subjects": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/components/schemas/StaffMatrixSubject"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/StaffAssignmentMatrixRow"
+          }
+        },
+        "canAssign": {
+          "type": "boolean"
+        },
+        "canViewMembers": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "year",
+        "referenceDate",
+        "subjects",
+        "rows",
+        "canAssign",
+        "canViewMembers"
+      ],
+      "additionalProperties": false
+    },
+    "StaffAssignmentMatrixResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/StaffAssignmentMatrix"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -13613,6 +14009,7 @@
       "async_job": false,
       "frontend_ids": [],
       "description": "Tiến trình API còn sống",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -13732,6 +14129,7 @@
       "async_job": false,
       "frontend_ids": [],
       "description": "DB, schema và storage sẵn sàng",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -13857,6 +14255,7 @@
         "PA01"
       ],
       "description": "Cấp token CSRF bootstrap",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -13978,6 +14377,7 @@
         "AU01"
       ],
       "description": "Đăng nhập nhân sự thật",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -14119,6 +14519,7 @@
         "AU07"
       ],
       "description": "Thu hồi phiên hiện tại",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -14250,6 +14651,7 @@
         "AU02"
       ],
       "description": "Tiếp nhận yêu cầu khôi phục, trả thông điệp chung",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -14391,6 +14793,7 @@
         "AU03"
       ],
       "description": "Đổi mật khẩu bằng token dùng một lần",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -14532,6 +14935,7 @@
         "AU07"
       ],
       "description": "Đổi mật khẩu có xác minh mật khẩu cũ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -14677,6 +15081,7 @@
         "SY06"
       ],
       "description": "Danh tính và quyền còn hiệu lực",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -14798,6 +15203,7 @@
         "AU06"
       ],
       "description": "Hồ sơ cá nhân",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -14919,6 +15325,7 @@
         "AU06"
       ],
       "description": "Sửa hồ sơ cá nhân",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -15060,6 +15467,7 @@
         "AU07"
       ],
       "description": "Danh sách phiên của chính mình",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -15208,6 +15616,7 @@
         "AU07"
       ],
       "description": "Kết thúc một phiên của chính mình",
+      "readOnly": false,
       "parameters": [
         {
           "name": "sessionId",
@@ -15349,6 +15758,7 @@
         "AU04"
       ],
       "description": "Xem thông tin tối thiểu bằng token lời mời",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -15490,6 +15900,7 @@
         "AU04"
       ],
       "description": "Nếu email đã có danh tính: yêu cầu đăng nhập đúng email trước khi nhận, không cho newPassword ghi đè danh tính cũ.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -15631,6 +16042,7 @@
         "AU04"
       ],
       "description": "Từ chối lời mời còn hiệu lực",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -15773,6 +16185,7 @@
         "TE05"
       ],
       "description": "Thông báo của chính nhân sự theo trường được cấp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -15950,6 +16363,7 @@
         "TE05"
       ],
       "description": "Đánh dấu thông báo đã đọc",
+      "readOnly": false,
       "parameters": [
         {
           "name": "notificationId",
@@ -16091,6 +16505,7 @@
         "PL01"
       ],
       "description": "KPI vận hành đã tổng hợp, không hồ sơ học sinh",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -16213,6 +16628,7 @@
         "PL02"
       ],
       "description": "Danh sách trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -16388,6 +16804,7 @@
         "PL03"
       ],
       "description": "Tạo không gian trường ở trạng thái nháp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -16529,6 +16946,7 @@
         "PL04"
       ],
       "description": "Hồ sơ vận hành trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -16661,6 +17079,7 @@
         "PL04"
       ],
       "description": "Sửa hồ sơ vận hành trường",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -16824,6 +17243,7 @@
         "PL04"
       ],
       "description": "Kích hoạt/tạm dừng, không xóa dữ liệu",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -16986,6 +17406,7 @@
         "PL05"
       ],
       "description": "Các quản trị trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -17145,6 +17566,7 @@
         "PL05"
       ],
       "description": "Mời quản trị trường đầu tiên/kế tiếp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -17307,6 +17729,7 @@
         "PL05"
       ],
       "description": "Thu hồi vai trò quản trị, không bỏ quản trị cuối",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -17479,6 +17902,7 @@
         "PL06"
       ],
       "description": "Danh sách yêu cầu hỗ trợ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -17657,6 +18081,7 @@
         "PL07"
       ],
       "description": "Chi tiết yêu cầu, không tự mở hồ sơ trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "ticketId",
@@ -17789,6 +18214,7 @@
         "PL07"
       ],
       "description": "Phân công và cập nhật trạng thái hỗ trợ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "ticketId",
@@ -17940,6 +18366,7 @@
         "PL07"
       ],
       "description": "Trao đổi hỗ trợ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "ticketId",
@@ -18098,6 +18525,7 @@
         "PL07"
       ],
       "description": "Thêm phản hồi hỗ trợ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "ticketId",
@@ -18249,6 +18677,7 @@
         "PL08"
       ],
       "description": "Ủy quyền đã được trường xác nhận",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -18450,6 +18879,7 @@
         "PL09"
       ],
       "description": "Nhật ký vận hành đã che dữ liệu nhạy cảm",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -18644,6 +19074,7 @@
         "PL10"
       ],
       "description": "Chỉ kết quả vận hành thực, không nút shell/restore",
+      "readOnly": true,
       "parameters": [
         {
           "name": "limit",
@@ -18806,6 +19237,7 @@
         "PL11"
       ],
       "description": "Cấu hình nhận diện nền tảng",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -18927,6 +19359,7 @@
         "PL11"
       ],
       "description": "Sửa nhận diện, không sửa secret qua UI",
+      "readOnly": false,
       "parameters": [
         {
           "name": "X-CSRF-Token",
@@ -19068,6 +19501,7 @@
         "SC01"
       ],
       "description": "Tổng quan đúng một trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -19208,6 +19642,7 @@
         "SC02"
       ],
       "description": "Thông tin trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -19349,6 +19784,7 @@
         "SC02"
       ],
       "description": "Sửa nhận diện và liên hệ công khai",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -19513,6 +19949,7 @@
         "SC05"
       ],
       "description": "Danh sách Year",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -19693,6 +20130,7 @@
         "SC05"
       ],
       "description": "Tạo Year",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -19857,6 +20295,7 @@
         "SC05"
       ],
       "description": "Chi tiết Year",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -20010,6 +20449,7 @@
         "SC05"
       ],
       "description": "Sửa Year có version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -20183,6 +20623,7 @@
         "SC06"
       ],
       "description": "Danh sách Term",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -20360,6 +20801,7 @@
         "SC06"
       ],
       "description": "Tạo Term",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -20523,6 +20965,7 @@
         "SC06"
       ],
       "description": "Chi tiết Term",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -20675,6 +21118,7 @@
         "SC06"
       ],
       "description": "Sửa Term có version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -20848,6 +21292,7 @@
         "SC06"
       ],
       "description": "Danh sách Week",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -21033,6 +21478,7 @@
         "SC06"
       ],
       "description": "Tạo Week",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -21196,6 +21642,7 @@
         "SC06"
       ],
       "description": "Chi tiết Week",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -21348,6 +21795,7 @@
         "SC06"
       ],
       "description": "Sửa Week có version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -21520,6 +21968,7 @@
         "SC06"
       ],
       "description": "Danh sách CalendarEvent",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -21687,6 +22136,7 @@
         "SC06"
       ],
       "description": "Tạo CalendarEvent",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -21849,6 +22299,7 @@
         "SC06"
       ],
       "description": "Chi tiết CalendarEvent",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -21991,6 +22442,7 @@
         "SC06"
       ],
       "description": "Sửa CalendarEvent có version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -22163,6 +22615,7 @@
         "SC09"
       ],
       "description": "Danh sách Class",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -22376,6 +22829,7 @@
         "SC09"
       ],
       "description": "Tạo Class",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -22538,6 +22992,7 @@
         "SC09"
       ],
       "description": "Chi tiết Class",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -22689,6 +23144,7 @@
         "SC09"
       ],
       "description": "Sửa Class có version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -22861,6 +23317,7 @@
         "SC05"
       ],
       "description": "Kích hoạt năm học",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -23033,6 +23490,7 @@
         "SC07"
       ],
       "description": "Lưu trữ năm học sau kiểm tra dữ liệu",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -23205,6 +23663,7 @@
         "SC09"
       ],
       "description": "Kích hoạt lớp đủ điều kiện",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -23377,6 +23836,7 @@
         "SC09"
       ],
       "description": "Lưu trữ lớp, không xóa lịch sử",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -23549,6 +24009,7 @@
         "SC06"
       ],
       "description": "Công bố mốc lịch công khai không PII",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -23721,6 +24182,7 @@
         "SC08"
       ],
       "description": "Khối/môn/phòng theo whitelist",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -23912,6 +24374,7 @@
         "SC08"
       ],
       "description": "Thêm mục danh mục",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -24087,6 +24550,7 @@
         "SC08"
       ],
       "description": "Sửa/ngừng dùng danh mục",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -24272,6 +24736,7 @@
         "SC07"
       ],
       "description": "Lập kế hoạch sang năm mới",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -24444,6 +24909,7 @@
         "SC07"
       ],
       "description": "Xem trước tác động từng học sinh",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -24586,6 +25052,7 @@
         "SC07"
       ],
       "description": "Kiểm tra kế hoạch và cấp preview hash",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -24758,6 +25225,7 @@
         "SC07"
       ],
       "description": "Áp dụng kế hoạch đã duyệt qua job",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -24930,6 +25398,7 @@
         "SC10"
       ],
       "description": "Danh sách nhân sự thuộc trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -25107,6 +25576,7 @@
         "SC11"
       ],
       "description": "Hồ sơ công tác và phân công",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -25258,6 +25728,7 @@
         "SC11"
       ],
       "description": "Sửa hồ sơ công tác, không đổi email danh tính",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -25431,6 +25902,7 @@
         "SC11"
       ],
       "description": "Ngừng quyền tại trường, giữ các trường khác",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -25604,6 +26076,7 @@
         "SC11"
       ],
       "description": "Khôi phục thành viên, không tự khôi phục grant cũ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -25776,6 +26249,7 @@
         "SC10"
       ],
       "description": "Lời mời trong trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -25934,6 +26408,7 @@
         "SC10"
       ],
       "description": "Mời nhân sự đúng email đã xác minh",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -26096,6 +26571,7 @@
         "SC10"
       ],
       "description": "Thu hồi lời mời",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -26268,6 +26744,7 @@
         "SC13"
       ],
       "description": "Danh sách mẫu quyền",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -26435,6 +26912,7 @@
         "SC14"
       ],
       "description": "Ma trận mẫu quyền",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -26586,6 +27064,7 @@
         "SC13"
       ],
       "description": "Tạo mẫu quyền trong tập quyền được giao",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -26748,6 +27227,7 @@
         "SC14"
       ],
       "description": "Sửa mẫu quyền, tăng authz version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -26921,6 +27401,7 @@
         "SC14"
       ],
       "description": "Xem quyền thêm/bớt, không tự nâng quyền",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -27084,6 +27565,7 @@
         "SC14"
       ],
       "description": "Cấp một grant với action và scope gắn nhau",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -27247,6 +27729,7 @@
         "SC14"
       ],
       "description": "Thu hồi quyền ở lần đọc/ghi kế tiếp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -27420,6 +27903,7 @@
         "SC12"
       ],
       "description": "Ma trận phân công theo lớp/môn",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -27605,6 +28089,7 @@
         "SC12"
       ],
       "description": "Giao nhiệm vụ và cấp grant trong một transaction",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -27768,6 +28253,7 @@
         "SC12"
       ],
       "description": "Kết thúc phân công đồng thời thu hồi grant",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -27940,6 +28426,7 @@
         "SC15"
       ],
       "description": "Danh sách bàn giao",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -28098,6 +28585,7 @@
         "SC15"
       ],
       "description": "Tạo bàn giao có thời điểm và checklist",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -28260,6 +28748,7 @@
         "SC15"
       ],
       "description": "Duyệt bàn giao và lịch thực hiện",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -28432,6 +28921,7 @@
         "SC16"
       ],
       "description": "Học sinh được phép xem theo scope",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -28608,6 +29098,7 @@
         "SC17"
       ],
       "description": "Thêm học sinh và enrollment đầu nếu có",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -28771,6 +29262,7 @@
         "SC19"
       ],
       "description": "Hồ sơ có chiếu trường dữ liệu theo quyền",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -28913,6 +29405,7 @@
         "SC19"
       ],
       "description": "Sửa hồ sơ không dùng tên làm khóa",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -29085,6 +29578,7 @@
         "SC18"
       ],
       "description": "Lịch sử theo học",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -29254,6 +29748,7 @@
         "SC20"
       ],
       "description": "Xếp học sinh vào lớp có khoảng ngày",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -29416,6 +29911,7 @@
         "SC20"
       ],
       "description": "Chuyển lớp hoặc ngừng theo học",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -29575,6 +30071,7 @@
         "CL03"
       ],
       "description": "Đề nghị chuyển lớp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -29737,6 +30234,7 @@
         "SC20"
       ],
       "description": "Duyệt chuyển, chuyển đúng thời điểm hiệu lực",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -29909,6 +30407,7 @@
         "SC20"
       ],
       "description": "Từ chối có lý do",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -30081,6 +30580,7 @@
         "SC21"
       ],
       "description": "Người giám hộ của học sinh thuộc quyền",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -30240,6 +30740,7 @@
         "SC18"
       ],
       "description": "Thêm người giám hộ, không tạo user",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -30411,6 +30912,7 @@
         "SC22"
       ],
       "description": "Thông tin người giám hộ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -30553,6 +31055,7 @@
         "SC22"
       ],
       "description": "Sửa liên hệ người giám hộ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -30726,6 +31229,7 @@
         "SC22"
       ],
       "description": "Quan hệ với từng học sinh",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -30903,6 +31407,7 @@
         "SC22"
       ],
       "description": "Liên kết học sinh/người giám hộ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -31065,6 +31570,7 @@
         "SC22"
       ],
       "description": "Xác nhận quyền nhận thông tin",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -31237,6 +31743,7 @@
         "SC22"
       ],
       "description": "Thu hồi quan hệ và quyền link liên quan",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -31409,6 +31916,7 @@
         "SC23"
       ],
       "description": "Danh sách quyền tra cứu, không trả token gốc",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -31568,6 +32076,7 @@
         "SC23"
       ],
       "description": "Phát hành link, chỉ hiển thị secret một lần",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -31730,6 +32239,7 @@
         "SC24"
       ],
       "description": "Phạm vi và hạn quyền tra cứu",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -31872,6 +32382,7 @@
         "SC24"
       ],
       "description": "Thu hồi link/phiên cho lần truy cập kế tiếp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -32044,6 +32555,7 @@
         "SC24"
       ],
       "description": "Thu hồi cũ và cấp mới, không khôi phục token",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -32216,6 +32728,7 @@
         "SC24"
       ],
       "description": "Lịch sử dùng link không khẳng định người mở",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -32384,6 +32897,7 @@
         "SC25"
       ],
       "description": "Không giả cookie phụ huynh; cùng serializer published-only; viewId preview không trao quyền tra cứu thật.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -32526,6 +33040,7 @@
         "TE01"
       ],
       "description": "Việc hôm nay",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -32666,6 +33181,7 @@
         "TE02"
       ],
       "description": "Lớp đang được phân công",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -32832,6 +33348,7 @@
         "TE03"
       ],
       "description": "Lịch dạy của chính giáo viên",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33014,6 +33531,7 @@
         "TE04"
       ],
       "description": "Công việc suy ra từ dữ liệu thật",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33202,6 +33720,7 @@
         "TE05"
       ],
       "description": "Thông báo liên quan nhân sự",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33368,6 +33887,7 @@
         "CL01"
       ],
       "description": "Dashboard lớp đúng nhiệm vụ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33518,6 +34038,7 @@
         "CL02"
       ],
       "description": "Roster lớp được phân công",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33686,6 +34207,7 @@
         "CL03"
       ],
       "description": "StudentProfile được cắt đúng phạm vi",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -33838,6 +34360,7 @@
         "CL13"
       ],
       "description": "Danh sách Group",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -34014,6 +34537,7 @@
         "CL13"
       ],
       "description": "Tạo Group",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -34186,6 +34710,7 @@
         "CL13"
       ],
       "description": "Danh sách Position",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -34354,6 +34879,7 @@
         "CL13"
       ],
       "description": "Tạo Position",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -34526,6 +35052,7 @@
         "CL14"
       ],
       "description": "Danh sách SeatingPlan",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -34694,6 +35221,7 @@
         "CL14"
       ],
       "description": "Tạo SeatingPlan",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -34866,6 +35394,7 @@
         "CL13"
       ],
       "description": "Sửa tên/thứ tự tổ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -35048,6 +35577,7 @@
         "CL13"
       ],
       "description": "Sửa nhãn chức vụ chưa ảnh hưởng lịch sử",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -35230,6 +35760,7 @@
         "CL13"
       ],
       "description": "Lịch sử người giữ chức vụ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -35422,6 +35953,7 @@
         "CL13"
       ],
       "description": "Kết thúc chức vụ có ngày hiệu lực",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -35604,6 +36136,7 @@
         "CL13"
       ],
       "description": "Chuyển tổ có ngày hiệu lực",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -35776,6 +36309,7 @@
         "CL13"
       ],
       "description": "Giao chức vụ không cấp user",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -35948,6 +36482,7 @@
         "CL14"
       ],
       "description": "Phiên bản sơ đồ và chỗ ngồi",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -36100,6 +36635,7 @@
         "CL14"
       ],
       "description": "Lưu sơ đồ nháp có kiểm tra trùng chỗ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -36282,6 +36818,7 @@
         "CL14"
       ],
       "description": "Áp dụng sơ đồ đúng ngày",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -36465,6 +37002,7 @@
         "CL05"
       ],
       "description": "Danh sách buổi/tiết điểm danh",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -36649,6 +37187,7 @@
         "CL04"
       ],
       "description": "Tạo buổi/tiết với UNMARKED, không mặc định có mặt",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -36821,6 +37360,7 @@
         "CL04"
       ],
       "description": "Bảng điểm danh hiện tại",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -36973,6 +37513,7 @@
         "CL04"
       ],
       "description": "Lưu nhiều dòng nguyên tử với version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -37155,6 +37696,7 @@
         "CL05"
       ],
       "description": "Tổng hợp đúng mẫu số ngày hoặc tiết",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -37335,6 +37877,7 @@
         "CL04"
       ],
       "description": "Chốt và công bố snapshot chuyên cần",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -37517,6 +38060,7 @@
         "CL04"
       ],
       "description": "Mở lại để điều chỉnh, giữ snapshot cũ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -37699,6 +38243,7 @@
         "SC29"
       ],
       "description": "Phiên bản nội quy",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -37858,6 +38403,7 @@
         "SC30"
       ],
       "description": "Tạo nội quy nháp mới",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -38020,6 +38566,7 @@
         "SC30"
       ],
       "description": "Chi tiết bộ nội quy và mốc xếp loại",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -38162,6 +38709,7 @@
         "SC30"
       ],
       "description": "Sửa bản nháp, không sửa bản đã ban hành",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -38334,6 +38882,7 @@
         "SC30"
       ],
       "description": "Ban hành bản mới",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -38506,6 +39055,7 @@
         "SC30"
       ],
       "description": "Chỉ trả kết quả thử công thức; không tạo học sinh, kỳ hay publication giả.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -38668,6 +39218,7 @@
         "CL12"
       ],
       "description": "Bản nội quy theo giai đoạn lớp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -38810,6 +39361,7 @@
         "CL12"
       ],
       "description": "Gán nội quy từ đầu một tuần chưa mở",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -38982,6 +39534,7 @@
         "CL07"
       ],
       "description": "Danh sách kỳ thi đua",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -39151,6 +39704,7 @@
         "CL07"
       ],
       "description": "Mở kỳ và đóng băng bản nội quy dùng để tính",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -39323,6 +39877,7 @@
         "CL07"
       ],
       "description": "Tổng hợp có giải trình từng điểm",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -39475,6 +40030,7 @@
         "CL06"
       ],
       "description": "Lịch sử ghi nhận",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -39661,6 +40217,7 @@
         "CL06"
       ],
       "description": "Ghi sự kiện, điểm tính tại server",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -39833,6 +40390,7 @@
         "CL06"
       ],
       "description": "Sửa nháp trong thời hạn, kiểm tra version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -40015,6 +40573,7 @@
         "CL08"
       ],
       "description": "Duyệt một ghi nhận",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -40197,6 +40756,7 @@
         "CL08"
       ],
       "description": "Loại sự kiện trùng/sai có lý do",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -40379,6 +40939,7 @@
         "CL08"
       ],
       "description": "Rà soát điều kiện chốt, không ghi thay đổi",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -40531,6 +41092,7 @@
         "CL08"
       ],
       "description": "Khóa kỳ khi không còn dữ liệu chưa rà soát",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -40713,6 +41275,7 @@
         "CL08"
       ],
       "description": "Công bố bản đã chốt theo source version",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -40895,6 +41458,7 @@
         "CL08"
       ],
       "description": "Chốt và công bố nguyên tử khi đủ hai quyền",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -41077,6 +41641,7 @@
         "CL11"
       ],
       "description": "Yêu cầu điều chỉnh sau chốt",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -41245,6 +41810,7 @@
         "CL11"
       ],
       "description": "Đề nghị điều chỉnh không sửa bản công bố cũ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -41417,6 +41983,7 @@
         "CL11"
       ],
       "description": "Duyệt thay đổi với baseline còn hiện hành",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -41599,6 +42166,7 @@
         "CL11"
       ],
       "description": "Từ chối điều chỉnh có lý do",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -41781,6 +42349,7 @@
         "CL11"
       ],
       "description": "Áp dụng và phát hành revision mới nguyên tử",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -41963,6 +42532,7 @@
         "SC36"
       ],
       "description": "Trung tâm rà soát và công bố",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -42139,6 +42709,7 @@
         "CL09"
       ],
       "description": "Các revision của lớp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -42307,6 +42878,7 @@
         "CL10"
       ],
       "description": "Snapshot bất biến, không tính lại",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -42460,6 +43032,7 @@
         "CL10"
       ],
       "description": "Thu hồi đúng bản và projection",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -42632,6 +43205,7 @@
         "SC32"
       ],
       "description": "Lịch toàn trường theo lớp/giáo viên/phòng",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -42833,6 +43407,7 @@
         "CL15"
       ],
       "description": "Lịch sử phiên bản thời khóa biểu",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -43002,6 +43577,7 @@
         "SC32"
       ],
       "description": "Soạn phiên bản thời khóa biểu",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -43174,6 +43750,7 @@
         "CL15"
       ],
       "description": "Grid thời khóa biểu",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -43326,6 +43903,7 @@
         "CL15"
       ],
       "description": "Sửa phiên bản nháp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -43509,6 +44087,7 @@
         "SC32"
       ],
       "description": "Kiểm tra trùng lớp/người/phòng và phân công",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -43692,6 +44271,7 @@
         "SC32"
       ],
       "description": "Tạo lịch thực tế và công bố đúng giai đoạn",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -43874,6 +44454,7 @@
         "CL16"
       ],
       "description": "Lịch trực nhật của lớp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -44042,6 +44623,7 @@
         "CL16"
       ],
       "description": "Tạo lịch trực nhật",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -44214,6 +44796,7 @@
         "CL16"
       ],
       "description": "Sửa lịch trực nhật nháp",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -44396,6 +44979,7 @@
         "CL16"
       ],
       "description": "Công bố từng việc cho đúng học sinh",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -44578,6 +45162,7 @@
         "CL17"
       ],
       "description": "Hoạt động lớp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -44753,6 +45338,7 @@
         "CL18"
       ],
       "description": "Tạo hoạt động và danh sách được giao",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -44925,6 +45511,7 @@
         "CL19"
       ],
       "description": "Chi tiết hoạt động",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -45077,6 +45664,7 @@
         "CL19"
       ],
       "description": "Sửa hoạt động theo trạng thái",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -45259,6 +45847,7 @@
         "CL19"
       ],
       "description": "Xác nhận hoàn thành/bổ sung/miễn nhiệm vụ, có lý do",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -45451,6 +46040,7 @@
         "CL19"
       ],
       "description": "Tiến độ từng người được giao",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -45637,6 +46227,7 @@
         "CL19"
       ],
       "description": "Giao hoạt động, không tự cộng điểm",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -45819,6 +46410,7 @@
         "CL19"
       ],
       "description": "Công bố tình trạng riêng của từng học sinh",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -46002,6 +46594,7 @@
         "CL19"
       ],
       "description": "Minh chứng trong phạm vi lớp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -46195,6 +46788,7 @@
         "CL19"
       ],
       "description": "Giáo viên ghi nhận file đã kiểm tra",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -46368,6 +46962,7 @@
         "CL19"
       ],
       "description": "Duyệt hoặc yêu cầu bổ sung minh chứng",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -46550,6 +47145,7 @@
         "CL24"
       ],
       "description": "Tệp của lớp theo quyền gắn file",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -46721,6 +47317,7 @@
         "SC27"
       ],
       "description": "Stream file vào vùng riêng; không base64 DB",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -46883,6 +47480,7 @@
         "CL24"
       ],
       "description": "Metadata tệp không trả storage key",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -47026,6 +47624,7 @@
         "CL20"
       ],
       "description": "Stream tệp có kiểm tra quyền tại thời điểm tải",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -47169,6 +47768,7 @@
         "CL24"
       ],
       "description": "Ngừng dùng tệp, không xóa ngay file lịch sử",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -47341,6 +47941,7 @@
         "CL24"
       ],
       "description": "Gắn file đúng đối tượng và quyền chia sẻ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -47505,6 +48106,7 @@
         "SC35"
       ],
       "description": "Danh sách thông báo theo scope",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -47680,6 +48282,7 @@
         "SC35"
       ],
       "description": "Soạn thông báo nháp đúng audience",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -47844,6 +48447,7 @@
         "SC35"
       ],
       "description": "Chi tiết thông báo",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -47988,6 +48592,7 @@
         "SC35"
       ],
       "description": "Sửa bản nháp, sanitized HTML",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -48162,6 +48767,7 @@
         "SC35"
       ],
       "description": "Công bố đúng tập người nhận",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -48336,6 +48942,7 @@
         "SC35"
       ],
       "description": "Lên lịch job công bố phía server",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -48510,6 +49117,7 @@
         "SC35"
       ],
       "description": "Thu hồi thông báo và bản chiếu công khai",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -48684,6 +49292,7 @@
         "CL23"
       ],
       "description": "Danh sách thông báo theo scope",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -48869,6 +49478,7 @@
         "CL23"
       ],
       "description": "Soạn thông báo nháp đúng audience",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -49043,6 +49653,7 @@
         "CL23"
       ],
       "description": "Chi tiết thông báo",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -49197,6 +49808,7 @@
         "CL23"
       ],
       "description": "Sửa bản nháp, sanitized HTML",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -49381,6 +49993,7 @@
         "CL23"
       ],
       "description": "Công bố đúng tập người nhận",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -49565,6 +50178,7 @@
         "CL23"
       ],
       "description": "Lên lịch job công bố phía server",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -49749,6 +50363,7 @@
         "CL23"
       ],
       "description": "Thu hồi thông báo và bản chiếu công khai",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -49931,6 +50546,7 @@
         "SC26"
       ],
       "description": "Lịch sử import",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -50098,6 +50714,7 @@
         "SC27"
       ],
       "description": "Tạo job import từ file READY",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -50260,6 +50877,7 @@
         "SC28"
       ],
       "description": "Tiến độ và kết quả nhập",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -50411,6 +51029,7 @@
         "SC27"
       ],
       "description": "Ghép cột, kiểm tra từng dòng, chưa ghi thật",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -50584,6 +51203,7 @@
         "SC28"
       ],
       "description": "Preview và lỗi từng dòng",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -50752,6 +51372,7 @@
         "SC27"
       ],
       "description": "Nhập từ preview hash đã duyệt, retry an toàn",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -50924,6 +51545,7 @@
         "SC28"
       ],
       "description": "Dừng job chưa commit, không đảo giao dịch đã hoàn tất",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -51096,6 +51718,7 @@
         "SC28"
       ],
       "description": "Tải CSV lỗi chống formula injection",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -51241,6 +51864,7 @@
         "TE06"
       ],
       "description": "Báo cáo School đúng phạm vi",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -51460,6 +52084,7 @@
         "CL26"
       ],
       "description": "Báo cáo Class đúng phạm vi",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -51688,6 +52313,7 @@
         "SC39"
       ],
       "description": "Các job xuất người dùng được phép xem",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -51848,6 +52474,7 @@
         "CL26"
       ],
       "description": "Xuất bất đồng bộ, chụp phạm vi và kiểm tra lại khi chạy",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -52010,6 +52637,7 @@
         "SC39"
       ],
       "description": "Trạng thái job xuất",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -52163,6 +52791,7 @@
         "CL26"
       ],
       "description": "Tải file chưa hết hạn sau khi kiểm tra quyền lại",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -52316,6 +52945,7 @@
         "SC39"
       ],
       "description": "Hủy job xuất",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -52488,6 +53118,7 @@
         "SC40"
       ],
       "description": "Nhật ký trường, không sửa/xóa",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -52688,6 +53319,7 @@
         "SC41"
       ],
       "description": "Cấu hình chia sẻ và quy trình",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -52830,6 +53462,7 @@
         "SC41"
       ],
       "description": "Sửa cấu hình không tự mở dữ liệu quá khứ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -52992,6 +53625,7 @@
         "SC42"
       ],
       "description": "Yêu cầu hỗ trợ của trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -53172,6 +53806,7 @@
         "SC42"
       ],
       "description": "Tạo yêu cầu hỗ trợ không kèm hồ sơ nhạy cảm",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -53334,6 +53969,7 @@
         "SC43"
       ],
       "description": "Chi tiết yêu cầu của trường",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -53476,6 +54112,7 @@
         "SC43"
       ],
       "description": "Trao đổi hỗ trợ",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -53644,6 +54281,7 @@
         "SC43"
       ],
       "description": "Thêm phản hồi",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -53817,6 +54455,7 @@
         "SC43"
       ],
       "description": "Phạm vi hỗ trợ được cấp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -54021,6 +54660,7 @@
         "SC43"
       ],
       "description": "Trường tạo đề nghị cấp quyền hỗ trợ chỉ đọc",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -54183,6 +54823,7 @@
         "SC43"
       ],
       "description": "Quản trị trường duyệt quyền có hạn",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -54355,6 +54996,7 @@
         "SC43"
       ],
       "description": "Thu hồi hỗ trợ",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -54527,6 +55169,7 @@
         "PA01"
       ],
       "description": "Không nhận studentId/yearId từ client. Tra school slug → hash token → grant/relationship/year → tạo phiên. Không log body, không consume bằng GET/link preview.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -54677,6 +55320,7 @@
         "PA14"
       ],
       "description": "Ngữ cảnh một học sinh đã được cấp",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -54818,6 +55462,7 @@
         "PA14"
       ],
       "description": "Kết thúc phiên chỉ đọc, không thu hồi grant",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -54968,6 +55613,7 @@
         "PA02"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: overview",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55109,6 +55755,7 @@
         "PA03"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: attendance",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55292,6 +55939,7 @@
         "PA04"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: conduct",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55459,6 +56107,7 @@
         "PA05"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: conduct",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55610,6 +56259,7 @@
         "PA06"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: timetable",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55793,6 +56443,7 @@
         "PA07"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: duties",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -55976,6 +56627,7 @@
         "PA08"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: activities",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56143,6 +56795,7 @@
         "PA09"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: activities",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56294,6 +56947,7 @@
         "PA10"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: announcements",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56461,6 +57115,7 @@
         "PA11"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: announcements",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56612,6 +57267,7 @@
         "PA12"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: teachers",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56779,6 +57435,7 @@
         "PA13"
       ],
       "description": "Chỉ dữ liệu đã công bố của con: documents",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -56946,6 +57603,7 @@
         "PA13"
       ],
       "description": "Chỉ tải file của con có allowDownload",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -57098,6 +57756,7 @@
         "SY01"
       ],
       "description": "Trang trường không chứa danh sách học sinh",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -57228,6 +57887,7 @@
         "SY02"
       ],
       "description": "Chỉ bản tin public đã công bố",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolSlug",
@@ -57368,6 +58028,7 @@
         "SC07"
       ],
       "description": "Minimal end-year roster under current school year.manage; no family/contact fields.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -57511,6 +58172,7 @@
         "PL03"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -57632,6 +58294,7 @@
         "PL03"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "code",
@@ -57771,6 +58434,7 @@
         "PL05"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -57928,6 +58592,7 @@
         "PL05"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -58081,6 +58746,7 @@
         "PL08"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -58212,6 +58878,7 @@
         "PL08"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -58353,6 +59020,7 @@
         "PL08"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "supportAccessId",
@@ -58494,6 +59162,7 @@
         "PL09"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -58616,6 +59285,7 @@
         "O34"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -58747,6 +59417,7 @@
         "O35"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -58878,6 +59549,7 @@
         "PL10"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [],
       "responses": {
         "200": {
@@ -58999,6 +59671,7 @@
         "SC11"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -59149,6 +59822,7 @@
         "SC11"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -59299,6 +59973,7 @@
         "SC10"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
       "parameters": [
         {
           "name": "schoolId",
@@ -59440,6 +60115,7 @@
         "SC10"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -59637,6 +60313,7 @@
         "SC10"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -59768,6 +60445,7 @@
         "SC11"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -59908,6 +60586,7 @@
         "SC11"
       ],
       "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
       "parameters": [
         {
           "name": "schoolId",
@@ -59953,6 +60632,288 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuditEventPage"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewStaffAssignment",
+      "method": "POST",
+      "path": "/api/v1/schools/{schoolId}/assignments/preview",
+      "title": "previewStaffAssignment",
+      "tag": "Staff",
+      "permission": "assignment.manage",
+      "scope": "school",
+      "request": "AssignmentCreate",
+      "response": "StaffAssignmentPreview",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC14"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssignmentCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffAssignmentPreviewResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getStaffAssignmentMatrix",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/assignment-matrix",
+      "title": "getStaffAssignmentMatrix",
+      "tag": "Staff",
+      "permission": "assignment.read",
+      "scope": "school",
+      "request": null,
+      "response": "StaffAssignmentMatrix",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC12"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffAssignmentMatrixResponse"
               }
             }
           }

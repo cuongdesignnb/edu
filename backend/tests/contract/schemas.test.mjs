@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,283);assert.equal(new Set(operations.map(op=>op.id)).size,283);
+  assert.equal(operations.length,285);assert.equal(new Set(operations.map(op=>op.id)).size,285);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
 });
 test('atomic school roles require a displayed version and unique explicit role IDs without actor authority',()=>{
@@ -55,4 +55,15 @@ test('member profile separates denied panels and exact native authority without 
   assert.equal(operations.find(op=>op.id==='listMemberHistory').permission,'member.read+audit.read');
   const choice={id,version:1,label:'Vai trò',code:'REAL',systemRole:false,canDelegate:false,delegationUntil:null};validateSchema('MemberRoleChoice',choice,true);
   assert.throws(()=>validateSchema('MemberRoleChoice',{...choice,permissions:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+});
+test('assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a';validateSchema('AssignmentCreate',{memberId:id,classId:id,kind:'HOMEROOM',startsOn:'2026-10-01',expectedClassVersion:4,expectedMemberVersion:2});
+  for(const field of ['actorId','schoolId','roleId','scopeType'])assert.throws(()=>validateSchema('AssignmentCreate',{memberId:id,classId:id,kind:'HOMEROOM',startsOn:'2026-10-01',[field]:id}),error=>error.status===422);
+  const op=operations.find(op=>op.id==='previewStaffAssignment');assert.equal(op.method,'POST');assert.equal(op.permission,'assignment.manage');assert.equal(op.readOnly,true);assert.equal(operations.find(op=>op.id==='createAssignment').readOnly,false);
+});
+test('assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={year:null,referenceDate:'2026-10-01',subjects:[],rows:[],canAssign:false,canViewMembers:false};validateSchema('StaffAssignmentMatrix',value,true);
+  validateSchema('StaffAssignmentMatrixRow',{classId:id,version:1,className:'Lớp giả',status:'ACTIVE',homeroom:null,bySubject:{[id]:null},conflicts:[]},true);
+  for(const field of ['students','memberEmails','rolePermissions'])assert.throws(()=>validateSchema('StaffAssignmentMatrix',{...value,[field]:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  assert.equal(operations.find(op=>op.id==='getStaffAssignmentMatrix').permission,'assignment.read');
 });

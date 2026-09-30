@@ -8,6 +8,7 @@ import { Problem,validation,notFound } from '../../common/problem';
 import { InvitationsService,invitationDto } from '../identity/invitations.service';
 import {staffDirectory,staffDirectorySummary} from './staff-directory';
 import {memberDetails,memberHistory} from './member-details';
+import {assignmentMatrix} from './assignment-matrix';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -32,8 +33,8 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
-      'previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
+    for(const id of ['getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+      'previewStaffAssignment','previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
   }
@@ -44,11 +45,12 @@ export class StaffService {
     if(c.query.purpose&&!picker&&!exportDirectory)validation('purpose','Mục đích danh sách không hợp lệ');
     const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,picker?'assignment.manage':exportDirectory?'member.read+report.export':c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
     const work=async(tx:Transaction):Promise<Result>=>{
-      if(c.operation.method!=='GET')await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
+      if(c.operation.method!=='GET'&&op!=='previewStaffAssignment')await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
       if(op==='listStaffDirectory'||op==='getStaffDirectorySummary'){
         const grants=await this.policy.grants(tx,c.principal!.userId,schoolId);
         return op==='listStaffDirectory'?staffDirectory(tx,c,grants):{data:await staffDirectorySummary(tx,schoolId,grants)};
       }
+      if(op==='getStaffAssignmentMatrix')return {data:await assignmentMatrix(tx,c,await this.policy.grants(tx,c.principal!.userId,schoolId))};
       if(op==='listMembers'){
         if(picker)return listResource(tx,pickerResource,schoolId,c.query,undefined,c.principal!.userId);
         const result=await listResource(tx,resource('member'),schoolId,c.query,undefined,c.principal!.userId);
@@ -89,6 +91,7 @@ export class StaffService {
       if(op==='getRole')return {data:await this.role(tx,schoolId,c.params.roleId!)};
       if(op==='createRole'||op==='updateRole')return {data:await this.saveRole(tx,c),status:op==='createRole'?201:200};
       if(op==='listAssignments')return listResource(tx,assignmentResource,schoolId,c.query,c.principal!.support?.classId?{sql:'t.class_id=$1',values:[c.principal!.support.classId]}:undefined,c.principal!.userId);
+      if(op==='previewStaffAssignment')return {data:await this.previewAssignment(tx,c)};
       if(op==='createAssignment'){
         const data=await this.createAssignment(tx,c,c.body);await audit(tx,c,'assignment',String(data.id));return {data,status:201};
       }
@@ -134,7 +137,8 @@ export class StaffService {
       await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='' WHERE dedupe_key=$1 AND status IN ('PENDING','FAILED')",[`invitation:${row.id}`]);
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
     };
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getMemberDetails','listMemberHistory'].includes(op)});
+    if(op==='previewStaffAssignment')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:true});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
     return this.commands.execute(c,authorize,work);
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
@@ -252,10 +256,14 @@ export class StaffService {
     }
     await audit(tx,c,'role',String(row!.id),{version:row!.version});return this.role(tx,schoolId,String(row!.id));
   }
-  async createAssignment(tx:Transaction,c:RequestContext,body:Record<string,unknown>){
+  private async prepareAssignment(tx:Transaction,c:RequestContext,body:Record<string,unknown>,lock=false){
     const schoolId=c.params.schoolId!;
-    await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
-    const cls=await getResource(tx,resource('class'),schoolId,String(body.classId),true);
+    if(body.kind==='SUBJECT'&&!body.subjectId)validation('subjectId','Chọn môn được phân công');
+    if(body.kind==='HOMEROOM'&&body.subjectId)validation('subjectId','Phân công chủ nhiệm không gắn môn');
+    const cls=await getResource(tx,resource('class'),schoolId,String(body.classId),lock);
+    const member=await getResource(tx,resource('member'),schoolId,String(body.memberId));
+    if(body.expectedClassVersion!==undefined)this.version(cls,body.expectedClassVersion);
+    if(body.expectedMemberVersion!==undefined)this.version(member,body.expectedMemberVersion);
     const year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
     const starts=String(body.startsOn),ends=body.endsOn?String(body.endsOn):String(year.ends_on);
     if(starts<String(year.starts_on)||starts>=ends||ends>String(year.ends_on)||year.status==='ARCHIVED'||cls.status==='ARCHIVED')validation('startsOn','Khoảng phân công không thuộc năm/lớp đang quản lý');
@@ -267,7 +275,36 @@ export class StaffService {
       $3::date::timestamp AT TIME ZONE timezone AS valid_until FROM platform.schools WHERE id=$1`,[schoolId,starts,ends]);
     const grantBody={memberId:body.memberId,roleId:role.id,scopeType:body.kind==='HOMEROOM'?'CLASS':'SUBJECT',
       classId:body.classId,...(body.subjectId?{subjectId:body.subjectId}:{}),validFrom:iso(dates!.valid_from),validUntil:iso(dates!.valid_until)};
-    await this.validateGrant(tx,c,grantBody);
+    const proposal=await this.validateGrant(tx,c,grantBody);
+    return {cls,member,year,starts,ends,current,dates:dates!,role:proposal.role,actions:proposal.actions,grantBody};
+  }
+  private async previewAssignment(tx:Transaction,c:RequestContext){
+    const schoolId=c.params.schoolId!,body=c.body,p=await this.prepareAssignment(tx,c,body);
+    // Preview is read-only and never replays an old authorized result: both the
+    // proposal and current action/scope/time ceiling are checked on every call.
+    const conflict=await one(tx,`SELECT id FROM app.teaching_assignments WHERE school_id=$1 AND revoked_at IS NULL
+      AND daterange(starts_on,ends_on,'[)') && daterange($5::date,$6::date,'[)') AND (
+       ($4='HOMEROOM' AND kind='HOMEROOM' AND (class_id=$2 OR (member_id=$3 AND year_id=$7)))
+       OR ($4='SUBJECT' AND kind='SUBJECT' AND class_id=$2 AND subject_id=$8)) LIMIT 1`,
+    [schoolId,body.classId,body.memberId,body.kind,p.starts,p.ends,p.cls.year_id,body.subjectId??null]);
+    if(conflict)throw new Problem(409,'SCHEDULE_CONFLICT');
+    const current=await this.policy.grants(tx,String(p.member.user_id),schoolId),scope={schoolId,classId:String(body.classId),subjectId:body.subjectId as string|undefined,allowSubject:body.kind==='SUBJECT'};
+    const held=new Set(current.flatMap(g=>g.actions.filter(action=>grantAllows(g,action,scope,p.current))));
+    const homeroom=body.kind==='SUBJECT'?(await one<{id:string}>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code='HOMEROOM' AND status='ACTIVE'",[schoolId])):undefined;
+    const excluded=homeroom?(await this.rolePermissions(tx,schoolId,homeroom.id)).filter(a=>a.scopes.includes('CLASS')&&!p.actions.includes(a.action)).map(a=>a.action):[];
+    const subject=body.subjectId?await getResource(tx,resource('subject'),schoolId,String(body.subjectId)):undefined;
+    const warnings=[];if(p.starts>p.current)warnings.push('Quyền chỉ có hiệu lực từ ngày bắt đầu phân công.');
+    const settings=(await one<{settings:{homeroomMayPublish?:boolean}}>(tx,'SELECT settings FROM platform.schools WHERE id=$1',[schoolId]))!.settings;
+    if(body.kind==='HOMEROOM'&&settings.homeroomMayPublish===false)warnings.push('Trường đang tắt quyền công bố của giáo viên chủ nhiệm.');
+    return {memberId:p.member.id,memberVersion:p.member.version,classId:p.cls.id,classVersion:p.cls.version,kind:body.kind,
+      subjectId:body.subjectId??null,scopeName:String(p.cls.name)+(subject?' — '+String(subject.name):''),referenceDate:p.current,
+      startsOn:p.starts,endsOn:p.ends,grantStartsAt:iso(p.dates.valid_from),grantEndsAt:iso(p.dates.valid_until),
+      added:p.actions.filter(a=>!held.has(a)),kept:p.actions.filter(a=>held.has(a)),notIncluded:excluded,warnings};
+  }
+  async createAssignment(tx:Transaction,c:RequestContext,body:Record<string,unknown>){
+    const schoolId=c.params.schoolId!;
+    await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
+    const {cls,starts,ends,dates,role,grantBody}=await this.prepareAssignment(tx,c,body,true);
     const grant=await one<{id:string}>(tx,`INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,class_id,subject_id,valid_from,valid_until,granted_by)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,[schoolId,body.memberId,role.id,grantBody.scopeType,body.classId,body.subjectId??null,dates!.valid_from,dates!.valid_until,c.principal!.userId]);
     const row=await one<Row>(tx,`INSERT INTO app.teaching_assignments(school_id,class_id,year_id,member_id,role_grant_id,subject_id,kind,starts_on,ends_on)

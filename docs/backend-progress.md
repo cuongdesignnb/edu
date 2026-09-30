@@ -92,8 +92,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | createGrant | SC12, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | revokeGrant | SC11, SC14 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; ADR-041/042; 32 migrations/checksums/replay verified; qa/backend/b6-staff-integration-complete.log 103/103 exit0, zero skipped; unit-contract-final 17/17 and frontend-unit-complete 88/88; TypeScript/scoped lint exit0; candidates unactivated |
 | listAssignments | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/support-read-integration.log |
-| createAssignment | SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| revokeAssignment | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
+| createAssignment | SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
+| revokeAssignment | SC11, SC12 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks; B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
 | listHandovers | SC15 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | createHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | approveHandover | SC15 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
@@ -287,6 +287,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getStaffDirectorySummary | SC10 | TESTED | ADR-043; 33 migrations/checksums/replay and ICU runtime verified; qa/backend/b6-directory-integration-final.log 107/107 exit0, zero skipped; directory-unit-contract 18/18 and frontend-unit 94/94; TypeScript/scoped lint exit0; teachers candidate unactivated |
 | getMemberDetails | SC11 | TESTED | qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS. |
 | listMemberHistory | SC11 | TESTED | qa/backend/b6-member-integration.log: 113/113 exit0, zero skipped; 34 migrations/checksums/replay; member profile/SQL aggregate, native time/grants, permission-separated history, >100 membership notification keysets; backend 19/19 contract/unit, frontend 99/99 API unit; TypeScript/scoped lint exit0; no frontend activation, browser, deploy/drill/load PASS. |
+| previewStaffAssignment | SC14 | TESTED | B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
+| getStaffAssignmentMatrix | SC12 | TESTED | B6 assignment: PostgreSQL 118/118 zero skipped; preview read-only/current delegation, source-version rollback, matrix minimal authority; qa/backend/b6-assignment-integration.log |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|
