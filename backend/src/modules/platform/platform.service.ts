@@ -7,13 +7,14 @@ import { roleTemplates } from '../../common/contract';
 import { Problem,notFound,validation } from '../../common/problem';
 import {validateSchoolWebsite} from '../../common/school-website';
 import { InvitationsService } from '../identity/invitations.service';
-import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,type OperationalCounts } from './platform-data';
+import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,operationView,type OperationalCounts } from './platform-data';
+import {operationsOverview} from './operations-overview';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class PlatformService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOperationsOverview','getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async school(tx:Transaction,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${lock?' FOR UPDATE':''}`,[id]);if(!row)notFound();return row;}
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async inviteAdmin(tx:Transaction,c:RequestContext,schoolId:string,input:Record<string,unknown>){
@@ -68,9 +69,9 @@ export class PlatformService {
         const result=await listResource(tx,platformAuditResource,null,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},{sql:predicates.join(' AND '),values},c.principal!.userId);return {...result,data:result.data.map(auditView)};
       }
       if(op==='listOperations'){
-        const result=await listResource(tx,operationResource,null,{...c.query,sort:c.query.sort??'id'},undefined,c.principal!.userId),safe=new Set(['durationMs','schemaRevision','migrations','rows','files','byteSize','checksum','errorCode','readers','writers','p95ReadMs','p95WriteMs','errorRate']);
-        result.data=result.data.map(item=>{if(item.startedAt===null)delete item.startedAt;if(item.finishedAt===null)delete item.finishedAt;item.summary=Object.fromEntries(Object.entries(item.summary as Record<string,unknown>).filter(([key,value])=>safe.has(key)&&(value===null||['string','number','boolean'].includes(typeof value))));return item;});return result;
+        const result=await listResource(tx,operationResource,null,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);return {...result,data:result.data.map(operationView)};
       }
+      if(op==='getPlatformOperationsOverview')return {data:await operationsOverview(this.db,tx)};
       if(['getPlatformSettings','updatePlatformSettings'].includes(op)){
         const settings=(await one<Row>(tx,`SELECT * FROM platform.settings WHERE key='business_ui'${op==='updatePlatformSettings'?' FOR UPDATE':''}`))!;
         if(op==='getPlatformSettings')return {data:platformSettings(settings)};

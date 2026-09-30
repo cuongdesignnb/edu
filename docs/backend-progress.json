@@ -420,7 +420,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/platform-integration.log"
+        "qa/backend/platform-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2788,7 +2789,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending"
+        "qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2824,7 +2826,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2835,7 +2838,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2846,7 +2850,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2857,7 +2862,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2868,7 +2874,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/support-integration.log"
+        "qa/backend/support-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2881,7 +2888,8 @@
       "status": "TESTED",
       "evidence": [
         "qa/backend/support-integration.log",
-        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
+        "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2906,7 +2914,8 @@
       "status": "TESTED",
       "evidence": [
         "qa/backend/support-integration.log",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -2918,7 +2927,8 @@
       "status": "TESTED",
       "evidence": [
         "qa/backend/support-integration.log",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
       ]
     },
     {
@@ -3224,6 +3234,40 @@
       "evidence": [
         "qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets"
       ]
+    },
+    {
+      "operationId": "getSchoolSupportSummary",
+      "screenIds": [
+        "O33",
+        "O34"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
+      ]
+    },
+    {
+      "operationId": "getSchoolAuditOptions",
+      "screenIds": [
+        "O35"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
+      ]
+    },
+    {
+      "operationId": "getPlatformOperationsOverview",
+      "screenIds": [
+        "PL10"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending."
+      ]
     }
   ],
   "screens": [
@@ -3473,7 +3517,8 @@
       "screenId": "PL10",
       "scope": "core",
       "operationIds": [
-        "listOperations"
+        "listOperations",
+        "getPlatformOperationsOverview"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

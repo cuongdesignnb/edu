@@ -7,12 +7,13 @@ import { Problem,notFound,validation } from '../../common/problem';
 import { platformAudit } from '../platform/platform-data';
 import { ticketResource,messageResource,supportResource,supportActions,operatorSql,supportRow,supportText } from './support-data';
 import {platformSupportOptions} from './support-options';
+import {schoolSupportSummary} from './school-support-summary';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class SupportService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformSupportOptions','requestPlatformSupportAccess','relinquishPlatformSupportAccess','listPlatformTickets','getPlatformTicket','updatePlatformTicket','listPlatformTicketMessages','postPlatformTicketMessage','listPlatformSupportAccess','listSchoolTickets','createTicket','getSchoolTicket','listSchoolMessages','postSchoolMessage','listSchoolSupportAccess','createSupportAccess','approveSupportAccess','revokeSupportAccess'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getSchoolSupportSummary','getPlatformSupportOptions','requestPlatformSupportAccess','relinquishPlatformSupportAccess','listPlatformTickets','getPlatformTicket','updatePlatformTicket','listPlatformTicketMessages','postPlatformTicketMessage','listPlatformSupportAccess','listSchoolTickets','createTicket','getSchoolTicket','listSchoolMessages','postSchoolMessage','listSchoolSupportAccess','createSupportAccess','approveSupportAccess','revokeSupportAccess'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private platform(c:RequestContext){return c.operation.path.startsWith('/api/v1/platform/');}
   private async schoolAuthority(tx:Transaction,c:RequestContext,action:string):Promise<Grant[]>{
     const schoolId=c.params.schoolId!,member=await one(tx,"SELECT m.id FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id WHERE m.school_id=$1 AND m.user_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL",[schoolId,c.principal!.userId]);if(!member)notFound();
@@ -51,6 +52,10 @@ export class SupportService {
     const op=c.operation.id,global=this.platform(c),schoolId=global&&op!=='requestPlatformSupportAccess'?null:c.params.schoolId!,authorize=(tx:Transaction)=>this.authorize(tx,c);
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='getPlatformSupportOptions')return {data:await platformSupportOptions(tx,c.query.schoolId)};
+      if(op==='getSchoolSupportSummary'){
+        const grants=await this.policy.grants(tx,c.principal!.userId,schoolId!),canApprove=grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes('support.approve'));
+        return {data:await schoolSupportSummary(tx,schoolId!,canApprove)};
+      }
       if(op==='relinquishPlatformSupportAccess'){
         const row=await one<Row>(tx,'SELECT * FROM platform.support_access WHERE id=$1 AND operator_id=$2 FOR UPDATE',[c.params.supportAccessId,c.principal!.userId]);if(!row)notFound();this.version(row,c.body.expectedVersion);
         if(!['REQUESTED','APPROVED'].includes(String(row.status))||new Date(row.valid_until as Date).getTime()<=Date.now())throw new Problem(409,'SUPPORT_ACCESS_UNAVAILABLE');
@@ -74,7 +79,8 @@ export class SupportService {
         const row=await this.grant(tx,c);this.version(row,c.body.expectedVersion);
         if(op==='approveSupportAccess'){if(row.status!=='REQUESTED'||new Date(row.valid_until as Date).getTime()<=Date.now())throw new Problem(409,'SUPPORT_ACCESS_UNAVAILABLE');await this.consent(tx,c,row);await tx.query("UPDATE platform.support_access SET status='APPROVED',approved_by_user_id=$3 WHERE school_id=$1 AND id=$2",[schoolId,row.id,c.principal!.userId]);}
         else{const reject=c.body.decision==='REJECT';if(reject?row.status!=='REQUESTED':!['REQUESTED','APPROVED'].includes(String(row.status)))throw new Problem(409,'INVALID_STATE');await tx.query('UPDATE platform.support_access SET status=$3,revoked_at=now() WHERE school_id=$1 AND id=$2',[schoolId,row.id,reject?'REJECTED':'REVOKED']);}
-        const view=await supportRow(tx,schoolId!,String(row.id));await this.log(tx,c,'support-access',String(row.id),schoolId!,String(view.status));return {data:view};
+        const reason=op==='revokeSupportAccess'?this.text(c.body.reason,'reason',3):undefined;
+        const view=await supportRow(tx,schoolId!,String(row.id));await this.log(tx,c,'support-access',String(row.id),schoolId!,String(view.status),reason);return {data:view};
       }
       if(op==='createTicket'){
         const row=(await one<Row>(tx,'INSERT INTO platform.support_tickets(school_id,requester_id,subject,description,priority) VALUES($1,$2,$3,$4,$5) RETURNING *',[schoolId,c.principal!.userId,this.text(c.body.subject,'subject',5),this.text(c.body.description,'description',10),c.body.priority]))!;await this.log(tx,c,'ticket',String(row.id),schoolId!,'OPEN');return {data:await this.ticketView(tx,row),status:201};

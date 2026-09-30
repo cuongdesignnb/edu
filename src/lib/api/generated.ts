@@ -175,7 +175,7 @@ export interface ApiSchemas {
   "MessageCreate": { "body": string; };
   "SupportAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "schoolId": (string) | null; "ticketId": (string) | null; "operatorId": (string) | null; "classId"?: (string) | null; "allowedActions": Array<string>; "reason": string; "status": "REQUESTED" | "APPROVED" | "REVOKED" | "REJECTED"; "validFrom": string; "validUntil": string; "requestedById"?: string; "approvedById"?: string; "operatorName"?: string; "approverName"?: (string) | null; "requesterName"?: (string) | null; "schoolName"?: string; "effective"?: boolean; "revokedAt"?: (string) | null; "viewStatus"?: "requested" | "active" | "expired" | "revoked" | "declined" | "inactive"; };
   "SupportAccessCreate": { "ticketId": string; "operatorId": string; "classId"?: string; "allowedActions": Array<string>; "reason": string; "validFrom": string; "validUntil": string; };
-  "OperationRun": { "id": (string) | null; "kind": string; "status": "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED"; "startedAt"?: string; "finishedAt"?: string; "summary"?: { [key: string]: unknown; }; };
+  "OperationRun": { "id": (string) | null; "kind": string; "status": "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED"; "startedAt"?: string; "finishedAt"?: string; "summary"?: { [key: string]: unknown; }; "createdAt"?: string; };
   "PublicSchool": { "name": string; "slug": string; "publicAddress"?: string; "publicContactEmail"?: string; "publicContactPhone"?: string; "announcements": Array<ApiSchemas["ParentAnnouncement"]>; };
   "HealthResponse": { "data": ApiSchemas["Health"]; "requestId": string; };
   "CsrfResponse": { "data": ApiSchemas["Csrf"]; "requestId": string; };
@@ -326,6 +326,13 @@ export interface ApiSchemas {
   "PlatformAuditOptions": { "actors": Array<{ "id": string; "name": string; }>; };
   "PlatformSupportOptionsResponse": { "data": ApiSchemas["PlatformSupportOptions"]; "requestId": string; };
   "PlatformAuditOptionsResponse": { "data": ApiSchemas["PlatformAuditOptions"]; "requestId": string; };
+  "SchoolSupportSummary": { "queue": { "total": number; "open": number; "inProgress": number; "waitingSchool": number; "resolved": number; "high": number; }; "grants": ({ "total": number; "requested": number; "active": number; "expired": number; "revoked": number; "declined": number; "inactive": number; }) | null; "canApprove": boolean; };
+  "SchoolAuditOptions": { "actors": Array<{ "id": string; "name": string; }>; "entityTypes": Array<string>; };
+  "SchoolSupportSummaryResponse": { "data": ApiSchemas["SchoolSupportSummary"]; "requestId": string; };
+  "SchoolAuditOptionsResponse": { "data": ApiSchemas["SchoolAuditOptions"]; "requestId": string; };
+  "PlatformOperationService": { "key": "api" | "database" | "parent" | "storage" | "worker" | "mail"; "state": "operational" | "degraded" | "unknown" | "local"; "note": string; "observedAt": (string) | null; };
+  "PlatformOperationsOverview": { "checkedAt": string; "services": Array<ApiSchemas["PlatformOperationService"]>; "backups": Array<ApiSchemas["OperationRun"]>; "backupTotal": number; "storageFreeBytes": (number) | null; "mail": { "failed": number; "pending": number; }; "store": { "schema": string; "migratedAt": (string) | null; "migrations": number; "schools": number; "users": number; "auditEvents": number; }; "checklist": { "noAdmin": number; "drafts": number; "expiringAdminInvitations": number; "pendingAdminInvitations": number; "highTickets": number; "unassignedTickets": number; "activeGrants": number; "requestedGrants": number; }; };
+  "PlatformOperationsOverviewResponse": { "data": ApiSchemas["PlatformOperationsOverview"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -2785,6 +2792,33 @@ export const apiOperations = {
     "response": "PlatformAuditOptions",
     "list": false,
     "permission": "platform.audit"
+  },
+  "getSchoolSupportSummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/support-summary",
+    "auth": "staff",
+    "request": null,
+    "response": "SchoolSupportSummary",
+    "list": false,
+    "permission": "support.manage"
+  },
+  "getSchoolAuditOptions": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/audit-options",
+    "auth": "staff",
+    "request": null,
+    "response": "SchoolAuditOptions",
+    "list": false,
+    "permission": "audit.read"
+  },
+  "getPlatformOperationsOverview": {
+    "method": "GET",
+    "path": "/api/v1/platform/operations-overview",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformOperationsOverview",
+    "list": false,
+    "permission": "platform.operations"
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 62,
+  "candidateCount": 69,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1390,7 +1390,17 @@
         "ctx: Ctx"
       ],
       "returnType": "Promise<OperationsView>",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "platformExtraRepo",
+        "method": "operations",
+        "file": "src/lib/repositories/connected/platform.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "platformExtraRepo",
@@ -3523,7 +3533,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "overview",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "supportRepo",
@@ -3536,7 +3556,17 @@
         "ticketId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "ticket",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "supportRepo",
@@ -3549,7 +3579,17 @@
         "input: { title: string; body: string; priority: SupportTicket[\"priority\"] }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "createTicket",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "supportRepo",
@@ -3563,7 +3603,17 @@
         "text: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "addUpdate",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "supportRepo",
@@ -3577,7 +3627,17 @@
         "decision: \"approve\" | \"decline\" | \"revoke\""
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "decideGrant",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "supportRepo",
@@ -3590,7 +3650,17 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "supportRepo",
+        "method": "audit",
+        "file": "src/lib/repositories/connected/support.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "teacherExtraRepo",

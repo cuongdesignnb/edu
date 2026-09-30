@@ -83,6 +83,18 @@ export const connectedPlatformRepo=withStaffAccess({
 });
 
 export const connectedPlatformExtraRepo=withStaffAccess({
+  async operations(_ctx:Ctx){
+    const value=(await http('getPlatformOperationsOverview')).data,c=value.checklist;
+    const names:Record<string,{name:string;description:string}>={api:{name:'Ứng dụng web / API',description:'API đã xác thực cho lần kiểm tra hiện tại'},database:{name:'PostgreSQL',description:'Schema, checksum và quyền runtime'},parent:{name:'Cổng phụ huynh qua link',description:'Kết nối cơ sở dữ liệu bằng role riêng'},storage:{name:'Lưu trữ tệp',description:'Kho tệp riêng trên máy chủ'},worker:{name:'Xử lý nền',description:'Vòng xử lý thực tế và kết nối cơ sở dữ liệu'},mail:{name:'Gửi email',description:'Kết quả gửi thư và cấu hình hiện tại'}};
+    return {simulated:false as const,checkedAt:value.checkedAt,services:value.services.map(service=>({...service,...names[service.key]})),backups:value.backups.map(backup=>({id:requiredId(backup.id),kind:backup.kind,state:backup.status.toLowerCase() as 'queued'|'running'|'succeeded'|'failed',at:requiredValue(backup.createdAt,'createdAt'),startedAt:backup.startedAt,finishedAt:backup.finishedAt,summary:backup.summary})),backupTotal:value.backupTotal,store:value.store,storageFreeBytes:value.storageFreeBytes,mail:value.mail,checklist:[
+      {key:'no-admin',label:'Trường đang hoạt động chưa có quản trị',count:c.noAdmin,tone:c.noAdmin?'attention' as const:'ok' as const,href:'/platform/schools',hint:'Tính từ quản trị mặc định còn hiệu lực, nhân sự và tài khoản đang hoạt động.'},
+      {key:'drafts',label:'Trường chờ kích hoạt',count:c.drafts,tone:c.drafts?'attention' as const:'ok' as const,href:'/platform/schools',hint:'Số trường đang ở trạng thái nháp.'},
+      {key:'inv',label:'Lời mời quản trị sắp hết hạn (3 ngày)',count:c.expiringAdminInvitations,tone:c.expiringAdminInvitations?'attention' as const:'ok' as const,href:'/platform/schools',hint:`${c.pendingAdminInvitations} lời mời quản trị đang chờ và còn hạn.`},
+      {key:'tickets-high',label:'Yêu cầu hỗ trợ ưu tiên cao chưa xong',count:c.highTickets,tone:c.highTickets?'attention' as const:'ok' as const,href:'/platform/support',hint:'Không gồm yêu cầu đã xử lý hoặc đã đóng.'},
+      {key:'tickets-unassigned',label:'Yêu cầu chưa phân công',count:c.unassignedTickets,tone:c.unassignedTickets?'attention' as const:'ok' as const,href:'/platform/support',hint:'Phân công người xử lý trong mục Yêu cầu hỗ trợ.'},
+      {key:'grants',label:'Quyền hỗ trợ đang hiệu lực',count:c.activeGrants,tone:'ok' as const,href:'/platform/support-access',hint:`${c.requestedGrants} đề nghị còn hạn đang chờ nhà trường cho phép.`},
+    ]};
+  },
   async checkSchoolIdentity(_ctx:Ctx,code:string,slug:string){return (await http('checkPlatformSchoolIdentity',{query:{code,slug}})).data;},
   async operators(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.operators;},
   async ticketStats(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.queue;},

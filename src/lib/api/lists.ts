@@ -1,4 +1,4 @@
-import {http,type ApiOptions,type ApiEnvelope} from './client';
+import {http,captureStaffAccess,type ApiOptions,type ApiEnvelope} from './client';
 import type {ApiData,ApiItem,ApiListId} from './generated';
 import type {ListQuery,Page} from '../repositories/core';
 import {RepoError} from '../repositories/errors';
@@ -13,9 +13,12 @@ function rows<K extends ApiListId>(result:ApiEnvelope<ApiData<K>>):Array<ApiItem
 }
 /** Lists are already scoped and filtered in SQL. Never filter an unscoped tenant dataset here. */
 export async function apiList<K extends ApiListId>(id:K,options:ApiOptions<K>={},maximum=1000):Promise<Array<ApiItem<K>>>{
+  const access=captureStaffAccess();
   const items:Array<ApiItem<K>>=[];let cursor:string|undefined;const visited=new Set<string>();
   do{
+    access.assertCurrent();
     const result=await http(id,{...options,query:{...options.query,limit:100,cursor}}),batch=rows(result);
+    access.assertCurrent();
     if((result.page?.total??0)>maximum||items.length+batch.length>maximum)throw new RepoError('VALIDATION','Danh sách vượt giới hạn đọc. Hãy thu hẹp bộ lọc.',{details:{maximum}});
     items.push(...batch);
     if(!result.page?.hasMore)return items;
@@ -26,12 +29,15 @@ export async function apiList<K extends ApiListId>(id:K,options:ApiOptions<K>={}
 }
 /** Numbered UI pages advance server keysets; the server applies every filter and sort. */
 export async function apiPage<K extends ApiListId,T extends {id:string}>(id:K,options:ApiOptions<K>,q:ListQuery,map:(item:ApiItem<K>)=>T):Promise<Page<T>>{
+  const access=captureStaffAccess();
   const pageSize=q.pageSize??10,target=q.page??1;
   if(!Number.isInteger(pageSize)||pageSize<1||pageSize>100||!Number.isInteger(target)||target<1||target>1000)throw new RepoError('VALIDATION','Trang dữ liệu không hợp lệ.');
   let cursor:string|undefined,page=1;
   const visited=new Set<string>();
   while(true){
+    access.assertCurrent();
     const result=await http(id,{...options,query:{...options.query,limit:pageSize,cursor}}),batch=rows(result);
+    access.assertCurrent();
     const total=result.page?.total;
     if(!result.page||typeof total!=='number')throw new RepoError('READ_ERROR','API chưa trả tổng số kết quả của danh sách.');
     if(page===target||!result.page.hasMore){

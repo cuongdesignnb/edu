@@ -621,3 +621,70 @@ Executed evidence: b6-support-ui-integration-final.log is 94/94, zero skipped,
 The earlier 93/94 fixture failure is retained. Runtime is 273 operations/326 schemas;
 62 adapter candidates remain unactivated. Browser, final deployment and B7 drills
 are not certified by these checks.
+
+## ADR-038 — School support and audit UI use independent native permissions
+
+The existing school support overview mixes tickets and temporary access decisions.
+`support.manage` authorizes ticket metadata and conversation only; the supplied
+`support.approve` permission still controls listing and deciding access grants.
+getSchoolSupportSummary returns exact SQL ticket totals and explicit null grant
+totals when consent authority is unavailable. Native adapter pages execute status,
+priority and grant-display filters in SQL. Ticket details request grants only when
+the server confirms the current consent permission. Approval still independently
+checks delegation ceilings, source version, expiry and prohibition of self consent.
+Decline/revoke require the displayed version and a validated human reason, which
+is recorded in both authorized audit projections. Appending a message remains an
+idempotent append, with the existing atomic WAITING_SCHOOL → IN_PROGRESS transition.
+
+getSchoolAuditOptions returns actual historical school actor IDs/names and target
+types under audit.read, bounded to 1,000 each with a visible limit error. These
+IDs enable the existing exact actor filter; they are not directory/contact DTOs.
+listSchoolAudit applies actor, target type and inclusive whole-date filters before
+keyset pagination, using the school's persisted timezone. Current permission and
+tenant context remain mandatory; private/unknown diff fields are omitted and
+unknown historical prior values are not fabricated. Cursor identity includes the
+filters. School suspension continues to allow support metadata/consent as already
+specified, while ordinary audit reads remain suspended.
+
+apiList/apiPage now bind the complete multi-page read to one staff identity and
+access revision, checking between requests. A login/scope change cannot combine
+rows from successive owners. This also covers session notification pagination.
+
+## ADR-039 — PL10 displays operational evidence and actual backup records
+
+getPlatformOperationsOverview is purpose-bound to current platform.operations.
+It reports schema/checksum/runtime-role/FORCE-RLS checks, a parent DB connection
+probe and an actual private-storage write/remove/free-space probe. Unknown or
+failed probes are explicit states. SMTP configuration alone is not successful
+delivery: only recent SMTP acknowledgements qualify, failed jobs remain visible,
+and local file mail is identified separately. No secret, raw payload or connection
+string is returned.
+
+Migration 031 adds minimal worker-cycle evidence. Only edu_worker can insert or
+update it; edu_app can read and edu_parent has no access. WorkerRunner records its
+cycle after actual queue/mail/DB work completes; a failed dependency cannot renew
+the evidence. Worker state requires at least one healthy cycle within 60 seconds,
+otherwise it is degraded or unknown. This is process-cycle evidence, not a claim
+that every queued business job succeeded or every worker replica is healthy.
+The existing container heartbeat remains after the same successful cycle.
+
+A guarded SECURITY DEFINER aggregate returns only counts for current school
+administrators and pending/expiring single default-admin invitations. It verifies
+the authenticated operator's current platform.operations grant, retains FORCE RLS,
+selects each explicit school and restores the prior tenant context. It returns no
+names, membership IDs, invitation emails or pupil data. Remaining operational
+counts execute directly in SQL and do not borrow directory/support permissions.
+
+Backups are the ten most recent actual BACKUP operation records with full total,
+including queued/running/failed states. No daily/weekly success or retention is
+invented. Artifact paths and unknown metadata are omitted; checksum/error/revision
+values are validated before projection. This GET does not initiate backup/restore.
+The final requested drills and their verified CLI records remain B7 work.
+
+Executed evidence is 97/97 PostgreSQL integration, zero skipped, with 31 migration
+checksums/replay verified; 69/69 frontend and 15/15 backend contract/unit, with
+TypeScript and scoped lint exit0. First PostgreSQL run was 94/97 and its log is
+retained. Fresh retained synthetic-school fixtures preserve the existing timezone
+lock and avoid unrelated historical choice limits. Native runtime is 276
+operations/333 schemas. These adapter
+candidates remain unactivated; browser and final Docker acceptance are pending.

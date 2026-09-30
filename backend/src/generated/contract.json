@@ -9120,6 +9120,10 @@
           "type": "object",
           "properties": {},
           "additionalProperties": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [
@@ -12581,6 +12585,376 @@
       "properties": {
         "data": {
           "$ref": "#/components/schemas/PlatformAuditOptions"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "SchoolSupportSummary": {
+      "type": "object",
+      "properties": {
+        "queue": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "open": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inProgress": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "waitingSchool": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resolved": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "high": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "total",
+            "open",
+            "inProgress",
+            "waitingSchool",
+            "resolved",
+            "high"
+          ],
+          "additionalProperties": false
+        },
+        "grants": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requested": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "active": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expired": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "revoked": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "declined": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inactive": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "total",
+            "requested",
+            "active",
+            "expired",
+            "revoked",
+            "declined",
+            "inactive"
+          ],
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "canApprove": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "queue",
+        "grants",
+        "canApprove"
+      ],
+      "additionalProperties": false
+    },
+    "SchoolAuditOptions": {
+      "type": "object",
+      "properties": {
+        "actors": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "entityTypes": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "actors",
+        "entityTypes"
+      ],
+      "additionalProperties": false
+    },
+    "SchoolSupportSummaryResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/SchoolSupportSummary"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "SchoolAuditOptionsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/SchoolAuditOptions"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformOperationService": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": [
+            "api",
+            "database",
+            "parent",
+            "storage",
+            "worker",
+            "mail"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "operational",
+            "degraded",
+            "unknown",
+            "local"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "key",
+        "state",
+        "note",
+        "observedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformOperationsOverview": {
+      "type": "object",
+      "properties": {
+        "checkedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "services": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/components/schemas/PlatformOperationService"
+          }
+        },
+        "backups": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/components/schemas/OperationRun"
+          }
+        },
+        "backupTotal": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storageFreeBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "mail": {
+          "type": "object",
+          "properties": {
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pending": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "failed",
+            "pending"
+          ],
+          "additionalProperties": false
+        },
+        "store": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "migratedAt": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "migrations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "schools": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "users": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "auditEvents": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "schema",
+            "migratedAt",
+            "migrations",
+            "schools",
+            "users",
+            "auditEvents"
+          ],
+          "additionalProperties": false
+        },
+        "checklist": {
+          "type": "object",
+          "properties": {
+            "noAdmin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "drafts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expiringAdminInvitations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pendingAdminInvitations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "highTickets": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unassignedTickets": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "activeGrants": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "requestedGrants": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "noAdmin",
+            "drafts",
+            "expiringAdminInvitations",
+            "pendingAdminInvitations",
+            "highTickets",
+            "unassignedTickets",
+            "activeGrants",
+            "requestedGrants"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "checkedAt",
+        "services",
+        "backups",
+        "backupTotal",
+        "storageFreeBytes",
+        "mail",
+        "store",
+        "checklist"
+      ],
+      "additionalProperties": false
+    },
+    "PlatformOperationsOverviewResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/PlatformOperationsOverview"
         },
         "requestId": {
           "type": "string"
@@ -51529,6 +51903,38 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "actorId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "targetType",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "name": "from",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "to",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
         }
       ],
       "responses": {
@@ -56474,7 +56880,7 @@
         "PL02",
         "PL03"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [],
       "responses": {
         "200": {
@@ -56595,7 +57001,7 @@
       "frontend_ids": [
         "PL03"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "code",
@@ -56734,7 +57140,7 @@
         "PL04",
         "PL05"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "schoolId",
@@ -56891,7 +57297,7 @@
       "frontend_ids": [
         "PL05"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "schoolId",
@@ -57044,7 +57450,7 @@
         "PL07",
         "PL08"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "schoolId",
@@ -57175,7 +57581,7 @@
         "PL07",
         "PL08"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "schoolId",
@@ -57316,7 +57722,7 @@
       "frontend_ids": [
         "PL08"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [
         {
           "name": "supportAccessId",
@@ -57457,7 +57863,7 @@
       "frontend_ids": [
         "PL09"
       ],
-      "description": "Platform operational metadata under current native authority; no pupil data.",
+      "description": "Operational metadata under current native authority; no pupil or family data.",
       "parameters": [],
       "responses": {
         "200": {
@@ -57466,6 +57872,390 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PlatformAuditOptionsResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getSchoolSupportSummary",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/support-summary",
+      "title": "getSchoolSupportSummary",
+      "tag": "Support",
+      "permission": "support.manage",
+      "scope": "school",
+      "request": null,
+      "response": "SchoolSupportSummary",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "O33",
+        "O34"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchoolSupportSummaryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getSchoolAuditOptions",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/audit-options",
+      "title": "getSchoolAuditOptions",
+      "tag": "Audit",
+      "permission": "audit.read",
+      "scope": "school",
+      "request": null,
+      "response": "SchoolAuditOptions",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "O35"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchoolAuditOptionsResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getPlatformOperationsOverview",
+      "method": "GET",
+      "path": "/api/v1/platform/operations-overview",
+      "title": "getPlatformOperationsOverview",
+      "tag": "Platform",
+      "permission": "platform.operations",
+      "scope": "platform",
+      "request": null,
+      "response": "PlatformOperationsOverview",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "PL10"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "parameters": [],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformOperationsOverviewResponse"
               }
             }
           }

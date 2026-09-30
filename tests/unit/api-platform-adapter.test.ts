@@ -14,6 +14,11 @@ beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(refr
 afterEach(()=>{authenticationChanged();vi.unstubAllGlobals();});
 
 describe('platform school adapter candidates',()=>{
+  it('shows only observed operational states and actual backup records without simulated schedules',async()=>{
+    const value={checkedAt:'2026-09-30T00:00:00Z',services:[{key:'worker',state:'unknown',note:'Chưa nhận heartbeat',observedAt:null},{key:'mail',state:'local',note:'Thư cục bộ',observedAt:null}],backups:[{id,kind:'BACKUP',status:'FAILED',createdAt:'2026-09-29T00:00:00Z',summary:{errorCode:'BACKUP_FAILED'}}],backupTotal:12,storageFreeBytes:null,mail:{failed:1,pending:2},store:{schema:'031-operations-health.sql',migratedAt:'2026-09-29T00:00:00Z',migrations:31,schools:2,users:60,auditEvents:34},checklist:{noAdmin:1,drafts:2,expiringAdminInvitations:3,pendingAdminInvitations:4,highTickets:5,unassignedTickets:6,activeGrants:7,requestedGrants:8}};
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope(value)).mockResolvedValueOnce(envelope({...value,backups:[],backupTotal:0}));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedPlatformExtraRepo.operations(ctx);expect(result.simulated).toBe(false);expect(result.services[0]).toMatchObject({state:'unknown',observedAt:null});expect(result.backups).toEqual([{id,kind:'BACKUP',state:'failed',at:'2026-09-29T00:00:00Z',startedAt:undefined,finishedAt:undefined,summary:{errorCode:'BACKUP_FAILED'}}]);expect(result.backupTotal).toBe(12);expect(result.store).not.toHaveProperty('seededAt');expect(result.checklist[0].count).toBe(1);expect((await connectedPlatformExtraRepo.operations(ctx)).backups).toEqual([]);expect(fetcher.mock.calls[0][0]).toBe('/api/v1/platform/operations-overview');
+  });
   it('submits the school and first administrator once and retries the exact uncertain command',async()=>{
     const fetcher=vi.fn().mockRejectedValueOnce(new Error('lost response')).mockResolvedValueOnce(envelope(school));vi.stubGlobal('fetch',fetcher);
     await expect(connectedPlatformRepo.createSchool(ctx,input)).rejects.toMatchObject({code:'NETWORK'});

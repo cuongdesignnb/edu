@@ -210,12 +210,12 @@ spec.components.schemas.PlatformSchoolIdentity=object({codeTaken:{type:'boolean'
 for(const name of ['PlatformSchoolOptions','PlatformSchoolIdentity'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
 function extendOperation(templateId,id,path,permission,response,list,screenIds,parameters,request){
   const template=operations.find(op=>op.id===templateId),operation=structuredClone(spec.paths[template.path.replace(/^\/api\/v1/,'')][template.method.toLowerCase()]);
-  Object.assign(operation,{operationId:id,summary:id,description:'Platform operational metadata under current native authority; no pupil data.','x-permission':permission,'x-frontend-screen-ids':screenIds});
+  Object.assign(operation,{operationId:id,summary:id,description:'Operational metadata under current native authority; no pupil or family data.','x-permission':permission,'x-frontend-screen-ids':screenIds});
   operation.parameters=parameters??[...Array.from(path.matchAll(/\{([^}]+)\}/g),match=>({name:match[1],in:'path',required:true,schema:uuid})),...operation.parameters.filter(p=>p.in!=='header'&&p.in!=='path')];
   for(const [status,result]of Object.entries(operation.responses))if(/^2\d\d$/.test(status)&&result.content?.['application/json'])result.content['application/json'].schema={$ref:'#/components/schemas/'+response+(list?'Page':'Response')};
   if(request)operation.requestBody.content['application/json'].schema={$ref:'#/components/schemas/'+request};
   spec.paths[path]??={};spec.paths[path][template.method.toLowerCase()]=operation;
-  operations.push({...template,id,path:'/api/v1'+path,title:operation.summary,tag:'Platform',scope:path.includes('{schoolId}')?'school':'platform',permission,response,list,request:request??template.request,frontend_ids:screenIds,description:operation.description});
+  operations.push({...template,id,path:'/api/v1'+path,title:operation.summary,tag:path.startsWith('/platform/')?'Platform':template.tag,scope:path.includes('{schoolId}')?'school':'platform',permission,response,list,request:request??template.request,frontend_ids:screenIds,description:operation.description});
 }
 extendOperation('getPlatformSchool','getPlatformSchoolOptions','/platform/school-options','platform.schools.read','PlatformSchoolOptions',false,['PL02','PL03'],[]);
 extendOperation('getPlatformSchool','checkPlatformSchoolIdentity','/platform/school-identity','platform.schools.manage','PlatformSchoolIdentity',false,['PL03'],['code','slug'].map(name=>({name,in:'query',schema:{type:'string',maxLength:name==='code'?16:40}})));
@@ -242,6 +242,20 @@ extendOperation('revokeSupportAccess','relinquishPlatformSupportAccess','/platfo
 extendOperation('getPlatformSchool','getPlatformAuditOptions','/platform/audit-options','platform.audit','PlatformAuditOptions',false,['PL09'],[]);
 const platformAudit=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId==='listPlatformAudit');
 platformAudit.parameters.push({name:'actorId',in:'query',schema:uuid},...['from','to'].map(name=>({name,in:'query',schema:{type:'string',format:'date'}})));
+// ADR-038: school support and audit projections keep independent consent/read authority.
+spec.components.schemas.SchoolSupportSummary=object({queue:structuredClone(spec.components.schemas.PlatformSupportOptions.properties.queue),grants:{...structuredClone(spec.components.schemas.PlatformSupportOptions.properties.grants),nullable:true},canApprove:{type:'boolean'}});
+spec.components.schemas.SchoolAuditOptions=object({actors:structuredClone(spec.components.schemas.PlatformAuditOptions.properties.actors),entityTypes:{type:'array',maxItems:1000,items:label}});
+for(const name of ['SchoolSupportSummary','SchoolAuditOptions'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+extendOperation('getSchoolTicket','getSchoolSupportSummary','/schools/{schoolId}/support-summary','support.manage','SchoolSupportSummary',false,['O33','O34']);
+extendOperation('listSchoolAudit','getSchoolAuditOptions','/schools/{schoolId}/audit-options','audit.read','SchoolAuditOptions',false,['O35'],[{name:'schoolId',in:'path',required:true,schema:uuid}]);
+const schoolAudit=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId==='listSchoolAudit');
+schoolAudit.parameters.push({name:'actorId',in:'query',schema:uuid},{name:'targetType',in:'query',schema:{type:'string',maxLength:100}},...['from','to'].map(name=>({name,in:'query',schema:{type:'string',format:'date'}})));
+// ADR-039: observed service probes, worker-cycle evidence and actual backup runs.
+spec.components.schemas.OperationRun.properties.createdAt={type:'string',format:'date-time'};
+spec.components.schemas.PlatformOperationService=object({key:{type:'string',enum:['api','database','parent','storage','worker','mail']},state:{type:'string',enum:['operational','degraded','unknown','local']},note:label,observedAt:{type:'string',format:'date-time',nullable:true}});
+spec.components.schemas.PlatformOperationsOverview=object({checkedAt:{type:'string',format:'date-time'},services:{type:'array',minItems:6,maxItems:6,items:{$ref:'#/components/schemas/PlatformOperationService'}},backups:{type:'array',maxItems:10,items:{$ref:'#/components/schemas/OperationRun'}},backupTotal:count,storageFreeBytes:{...count,nullable:true},mail:object({failed:count,pending:count}),store:object({schema:label,migratedAt:{type:'string',format:'date-time',nullable:true},migrations:count,schools:count,users:count,auditEvents:count}),checklist:object(Object.fromEntries(['noAdmin','drafts','expiringAdminInvitations','pendingAdminInvitations','highTickets','unassignedTickets','activeGrants','requestedGrants'].map(name=>[name,count])))});
+spec.components.schemas.PlatformOperationsOverviewResponse=object({data:{$ref:'#/components/schemas/PlatformOperationsOverview'},requestId:label});
+extendOperation('getPlatformSchool','getPlatformOperationsOverview','/platform/operations-overview','platform.operations','PlatformOperationsOverview',false,['PL10'],[]);
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

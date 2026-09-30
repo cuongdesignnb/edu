@@ -22,6 +22,7 @@ interface Mail extends Row {id:string;school_id:string|null;template_key:string;
 export type JobHandler=(job:Job,guard:(tx:Transaction)=>Promise<void>)=>Promise<void>;
 export class WorkerRunner {
   readonly owner=crypto.randomUUID();
+  private readonly startedAt=new Date();
   private readonly handlers=new Map<string,JobHandler>();
   constructor(readonly db=new Database('worker')){
     const policy=new Permissions(db),commands=new Commands(db),files=new FilesService(db,policy,commands);
@@ -124,6 +125,8 @@ export class WorkerRunner {
       await Promise.all(jobs.map(job=>this.run(job)));processed+=jobs.length;
     }
     const mail=await this.mailClaim();if(mail){await this.deliver(mail);processed++;}
+    await this.db.app.query(`INSERT INTO platform.runtime_heartbeats(worker_id,started_at,last_healthy_at,processed_jobs)
+      VALUES($1,$2,now(),$3) ON CONFLICT(worker_id) DO UPDATE SET last_healthy_at=excluded.last_healthy_at,processed_jobs=excluded.processed_jobs`,[this.owner,this.startedAt,processed]);
     return processed;
   }
   async close(){await this.db.onApplicationShutdown();}

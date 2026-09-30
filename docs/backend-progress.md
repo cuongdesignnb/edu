@@ -38,7 +38,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | postPlatformTicketMessage | PL07 | TESTED | qa/backend/support-integration.log |
 | listPlatformSupportAccess | PL08 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | listPlatformAudit | PL09 | TESTED | qa/backend/platform-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
-| listOperations | PL10 | TESTED | qa/backend/platform-integration.log |
+| listOperations | PL10 | TESTED | qa/backend/platform-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | getPlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | updatePlatformSettings | PL11 | TESTED | qa/backend/platform-integration.log |
 | getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log; qa/backend/b6-school-overview-integration-isolated.log: 90/90 PostgreSQL checks; independent SCHOOL totals, null unavailable panels, six-row SQL preview with full count and current revocation |
@@ -238,18 +238,18 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getExport | SC39 | TESTED | qa/backend/reports-integration.log |
 | downloadExport | SC39, CL26 | TESTED | qa/backend/reports-integration.log |
 | cancelExport | SC39 | TESTED | qa/backend/reports-integration.log |
-| listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
+| listSchoolAudit | SC40 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | getSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending; qa/backend/support-read-integration.log |
 | updateSchoolSettings | SC31, SC41 | TESTED | qa/backend/settings-integration.log: 60/60 exit0; qa/backend/settings-unit-contract.log: 12/12 exit0; migration021 applied/replayed; UI pending |
-| listSchoolTickets | SC42 | TESTED | qa/backend/support-integration.log |
-| createTicket | SC42 | TESTED | qa/backend/support-integration.log |
-| getSchoolTicket | SC43 | TESTED | qa/backend/support-integration.log |
-| listSchoolMessages | SC43 | TESTED | qa/backend/support-integration.log |
-| postSchoolMessage | SC43 | TESTED | qa/backend/support-integration.log |
-| listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| listSchoolTickets | SC42 | TESTED | qa/backend/support-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| createTicket | SC42 | TESTED | qa/backend/support-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| getSchoolTicket | SC43 | TESTED | qa/backend/support-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| listSchoolMessages | SC43 | TESTED | qa/backend/support-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| postSchoolMessage | SC43 | TESTED | qa/backend/support-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| listSchoolSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | createSupportAccess | SC42, SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
-| approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
-| revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log |
+| approveSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| revokeSupportAccess | SC43 | TESTED | qa/backend/support-integration.log; qa/backend/support-read-integration.log; 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 | exchangeParentLink | PA01 | TESTED | qa/backend/parent-integration.log |
 | getParentContext | PA01, PA14 | TESTED | qa/backend/parent-integration.log |
 | endParentSession | PA14 | TESTED | qa/backend/parent-integration.log |
@@ -277,6 +277,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | requestPlatformSupportAccess | PL07, PL08 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | relinquishPlatformSupportAccess | PL08 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
 | getPlatformAuditOptions | PL09 | TESTED | qa/backend/b6-support-ui-integration-final.log: 94/94 PostgreSQL, 30 migrations, SQL support choices/states/counts, atomic message/status save, same-school own-operator consent request/relinquish, current replay revocation and actor/local-date keysets |
+| getSchoolSupportSummary | O33, O34 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| getSchoolAuditOptions | O35 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
+| getPlatformOperationsOverview | PL10 | TESTED | 97/97 actual PostgreSQL integration, 31 migrations/checksums/replay; qa/backend/b6-school-operations-integration-final.log; backend 15/15 unit-contract; frontend 69/69 unit; UI activation/E2E still pending. |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

@@ -1,0 +1,17 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-scope-guard.test.ts (3 tests) 4ms
+ ✓ tests/unit/api-lists-fragments.test.ts (6 tests) 15ms
+ ✓ tests/unit/api-client.test.ts (10 tests) 37ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 30ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 49ms
+ ✓ tests/unit/api-platform-adapter.test.ts (11 tests) 35ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 40ms
+ ✓ tests/unit/api-school-adapter.test.ts (16 tests) 47ms
+
+ Test Files  8 passed (8)
+      Tests  68 passed (68)
+   Start at  19:40:39
+   Duration  744ms (transform 683ms, setup 433ms, collect 1.50s, tests 257ms, environment 2ms, prepare 986ms)
+
