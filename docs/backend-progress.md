@@ -41,7 +41,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listOperations | PL10 | NOT_STARTED |  |
 | getPlatformSettings | PL11 | NOT_STARTED |  |
 | updatePlatformSettings | PL11 | NOT_STARTED |  |
-| getSchoolOverview | SC01 | NOT_STARTED |  |
+| getSchoolOverview | SC01 | TESTED | qa/backend/dashboards-integration.log |
 | getSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | updateSchoolProfile | SC02 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | listYears | SC03, SC04, SC05 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
@@ -122,12 +122,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | reissueParentAccess | SC24 | TESTED | qa/backend/parent-integration.log |
 | listParentAccessEvents | SC24 | TESTED | qa/backend/parent-integration.log |
 | previewParent | SC25 | TESTED | qa/backend/parent-integration.log |
-| getTeacherOverview | TE01 | NOT_STARTED |  |
-| listMyClasses | TE02 | NOT_STARTED |  |
-| listMySchedule | TE03 | NOT_STARTED |  |
-| listMyTasks | TE04 | NOT_STARTED |  |
-| listTeacherAnnouncements | TE05 | NOT_STARTED |  |
-| getClassOverview | CL01 | NOT_STARTED |  |
+| getTeacherOverview | TE01 | TESTED | qa/backend/dashboards-integration.log |
+| listMyClasses | TE02 | TESTED | qa/backend/dashboards-integration.log |
+| listMySchedule | TE03 | TESTED | qa/backend/dashboards-integration.log |
+| listMyTasks | TE04 | TESTED | qa/backend/dashboards-integration.log |
+| listTeacherAnnouncements | TE05 | TESTED | qa/backend/dashboards-integration.log |
+| getClassOverview | CL01 | TESTED | qa/backend/dashboards-integration.log |
 | listClassStudents | CL02 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | getClassStudent | CL03 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | listGroups | CL13 | TESTED | qa/backend/classroom-integration.log: 44/44 executed, exit0; source/date/history/race and negative scope checks |
@@ -292,7 +292,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL09 | core | PARTIAL | NOT_STARTED |  |
 | PL10 | core | PARTIAL | NOT_STARTED |  |
 | PL11 | core | PARTIAL | NOT_STARTED |  |
-| SC01 | core | PARTIAL | NOT_STARTED |  |
+| SC01 | core | TESTED | NOT_STARTED |  |
 | SC02 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC03 | core | IMPLEMENTED | NOT_STARTED |  |
 | SC04 | core | IMPLEMENTED | NOT_STARTED |  |
@@ -335,13 +335,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC41 | core | TESTED | NOT_STARTED |  |
 | SC42 | core | PARTIAL | NOT_STARTED |  |
 | SC43 | core | PARTIAL | NOT_STARTED |  |
-| TE01 | core | PARTIAL | NOT_STARTED |  |
-| TE02 | core | PARTIAL | NOT_STARTED |  |
-| TE03 | core | PARTIAL | NOT_STARTED |  |
-| TE04 | core | PARTIAL | NOT_STARTED |  |
-| TE05 | core | PARTIAL | NOT_STARTED |  |
+| TE01 | core | TESTED | NOT_STARTED |  |
+| TE02 | core | TESTED | NOT_STARTED |  |
+| TE03 | core | TESTED | NOT_STARTED |  |
+| TE04 | core | TESTED | NOT_STARTED |  |
+| TE05 | core | TESTED | NOT_STARTED |  |
 | TE06 | core | PARTIAL | NOT_STARTED |  |
-| CL01 | core | PARTIAL | NOT_STARTED |  |
+| CL01 | core | TESTED | NOT_STARTED |  |
 | CL02 | core | TESTED | NOT_STARTED |  |
 | CL03 | core | TESTED | NOT_STARTED |  |
 | CL04 | core | TESTED | NOT_STARTED |  |

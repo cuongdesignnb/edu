@@ -5,13 +5,13 @@ import { Permissions,grantAllows } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation,notFound } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
-import { timetableResource,dutyResource,lessonResource,timetableDto,dutyDto,range,validateEntries,occurrences,conflicts,type Entry,type DutyInput,type GroupDutyInput } from './schedule-data';
+import { timetableResource,dutyResource,lessonResource,lessonReadResource,timetableDto,dutyDto,range,validateEntries,occurrences,conflicts,type Entry,type DutyInput,type GroupDutyInput } from './schedule-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class ScheduleService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolLessons','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolLessons','listMySchedule','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,allowed=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,allowSubject:c.operation.permission==='schedule.read',date:c.body.startsOn as string|undefined});
     const cls=await getResource(tx,resource('class'),schoolId,classId,c.operation.method!=='GET'),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
@@ -23,7 +23,7 @@ export class ScheduleService {
     const row=await one<Row>(tx,`SELECT * FROM ${r.table} WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.classId,id]);if(!row)notFound();return row;
   }
   private async handle(c:RequestContext):Promise<Result>{
-    if(c.operation.id==='listSchoolLessons')return this.lessons(c);
+    if(['listSchoolLessons','listMySchedule'].includes(c.operation.id))return this.lessons(c);
     const authorize=(tx:Transaction)=>this.context(tx,c),work=async(tx:Transaction):Promise<Result>=>{
       const ctx=await authorize(tx),op=c.operation.id,isDuty=op.includes('Duty')||op==='listDuties',r=isDuty?dutyResource:timetableResource;
       const readableDraft=ctx.grants.some(g=>grantAllows(g,isDuty?'duty.manage':'schedule.manage',{schoolId:ctx.schoolId,classId:ctx.classId},ctx.today));
@@ -148,10 +148,21 @@ export class ScheduleService {
   }
   private async lessons(c:RequestContext){
     const schoolId=c.params.schoolId!;return this.db.transaction(async tx=>{
-      const access=await this.policy.collection(tx,c.principal!,'schedule.read',schoolId,true),values:unknown[]=[],where:string[]=[];
+      const own=c.operation.id==='listMySchedule',access=await this.policy.collection(tx,c.principal!,'schedule.read',schoolId,true),values:unknown[]=[],where:string[]=[];
+      if(own){
+        const self=await this.policy.collection(tx,c.principal!,'teacher.self',schoolId,true),member=(await one<{id:string}>(tx,"SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2 AND status='ACTIVE' AND ended_at IS NULL",[schoolId,c.principal!.userId]))!;
+        if(c.query.memberId&&c.query.memberId!==member.id)notFound();
+        values.push(member.id);where.push(`t.member_id=$${values.length}`);
+        if(!self.all){values.push(self.classIds);where.push(`t.class_id=ANY($${values.length}::uuid[])`);}
+        values.push(access.today);const today=`$${values.length}::date`;
+        where.push(`EXISTS(SELECT 1 FROM app.teaching_assignments a JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now()) JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
+          WHERE a.school_id=t.school_id AND a.class_id=t.class_id AND a.member_id=t.member_id AND a.revoked_at IS NULL AND a.starts_on<=${today} AND (a.ends_on IS NULL OR a.ends_on>${today}) AND (a.kind='HOMEROOM' OR a.subject_id=t.subject_id)
+          AND a.starts_on<=(t.starts_at AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))::date AND (a.ends_on IS NULL OR a.ends_on>(t.starts_at AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))::date))`);
+      }
       if(!access.all){
         const scopes=access.grants.filter(g=>g.class_id&&grantAllows(g,'schedule.read',{schoolId,classId:g.class_id,allowSubject:true},access.today));
         const parts=scopes.map(g=>{values.push(g.class_id);let part=`t.class_id=$${values.length}`;
+          if(own&&g.scope_type==='SUBJECT'){values.push(g.subject_id);part+=` AND t.subject_id=$${values.length}`;}
           if(g.starts_on){values.push(g.starts_on);part+=` AND (t.starts_at AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))::date >=$${values.length}`;}
           if(g.ends_on){values.push(g.ends_on);part+=` AND (t.starts_at AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))::date <$${values.length}`;}return `(${part})`;});
         where.push('('+parts.join(' OR ')+')');
@@ -159,7 +170,7 @@ export class ScheduleService {
       if(c.query.from){values.push(c.query.from);where.push(`t.starts_at >= ($${values.length}::date::timestamp AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))`);}
       if(c.query.to){values.push(c.query.to);where.push(`t.starts_at < ($${values.length}::date::timestamp AT TIME ZONE (SELECT timezone FROM platform.schools WHERE id=t.school_id))`);}
       if(c.query.from&&c.query.to&&c.query.from>=c.query.to)validation('to','Khoảng ngày không hợp lệ');
-      const extra:Predicate={sql:where.join(' AND '),values};return listResource(tx,lessonResource,schoolId,c.query,extra,c.principal!.userId);
-    },{schoolId});
+      const extra:Predicate={sql:where.join(' AND '),values};return listResource(tx,lessonReadResource,schoolId,c.query,extra,c.principal!.userId);
+    },{schoolId,readOnly:true});
   }
 }

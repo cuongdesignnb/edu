@@ -397,8 +397,10 @@
         "SC01"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "getSchoolProfile",
@@ -1345,8 +1347,10 @@
         "TE01"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "listMyClasses",
@@ -1354,8 +1358,10 @@
         "TE02"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "listMySchedule",
@@ -1363,8 +1369,10 @@
         "TE03"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "listMyTasks",
@@ -1372,8 +1380,10 @@
         "TE04"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "listTeacherAnnouncements",
@@ -1381,8 +1391,10 @@
         "TE05"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "getClassOverview",
@@ -1390,8 +1402,10 @@
         "CL01"
       ],
       "milestone": null,
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/dashboards-integration.log"
+      ]
     },
     {
       "operationId": "listClassStudents",
@@ -3224,7 +3238,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "SC02",
@@ -3833,7 +3847,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE02",
@@ -3844,7 +3858,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE03",
@@ -3855,7 +3869,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE04",
@@ -3866,7 +3880,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE05",
@@ -3879,7 +3893,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "TE06",
@@ -3901,7 +3915,7 @@
       "staticReason": "",
       "status": "NOT_STARTED",
       "evidence": [],
-      "apiStatus": "PARTIAL"
+      "apiStatus": "TESTED"
     },
     {
       "screenId": "CL02",

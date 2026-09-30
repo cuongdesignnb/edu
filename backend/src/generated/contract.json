@@ -741,6 +741,32 @@
           "type": "string",
           "format": "uuid",
           "nullable": true
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "className": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "string",
+          "enum": [
+            "danger",
+            "warning",
+            "info",
+            "neutral"
+          ]
+        },
+        "lessonId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [
@@ -771,6 +797,14 @@
         "asOf": {
           "type": "string",
           "format": "date-time"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
         }
       },
       "required": [
@@ -1956,7 +1990,45 @@
         },
         "studentCount": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "nullable": true
+        },
+        "myAssignments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "HOMEROOM",
+                  "SUBJECT"
+                ]
+              },
+              "subjectId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "startsOn": {
+                "type": "string",
+                "format": "date"
+              },
+              "endsOn": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "startsOn"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -5904,6 +5976,23 @@
             "SCHEDULED",
             "CANCELLED"
           ]
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "className": {
+          "type": "string"
+        },
+        "subjectName": {
+          "type": "string"
+        },
+        "teacherName": {
+          "type": "string"
+        },
+        "roomName": {
+          "type": "string",
+          "nullable": true
         },
         "periodNumber": {
           "type": "integer",
@@ -15925,6 +16014,14 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -29164,6 +29261,14 @@
             "format": "uuid",
             "nullable": true
           }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -29321,6 +29426,14 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -29480,6 +29593,30 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "from",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "to",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
         }
       ],
       "responses": {
@@ -29637,6 +29774,36 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "kind",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "attendance",
+              "conduct",
+              "evidence",
+              "announcement",
+              "groups"
+            ]
+          }
+        },
+        {
+          "name": "classId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],
@@ -29796,6 +29963,14 @@
             "type": "string",
             "maxLength": 100
           }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       ],
       "responses": {
@@ -29937,6 +30112,14 @@
             "type": "string",
             "format": "uuid",
             "nullable": true
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       ],

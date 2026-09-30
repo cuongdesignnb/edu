@@ -27,6 +27,18 @@ for(const name of ['Settings','SettingsPatch'])Object.assign(spec.components.sch
 // ADR-022: personal notifications carry only a currently authorized target.
 Object.assign(spec.components.schemas.Notification.properties,{body:{type:'string',maxLength:2000},schoolName:{type:'string'},classId:{type:'string',format:'uuid'},accessible:{type:'boolean'}});
 spec.paths['/me/notifications'].get.parameters.push({name:'schoolId',in:'query',schema:{type:'string',format:'uuid'}},{name:'kind',in:'query',schema:{type:'string',enum:['task','announcement','system','permission']}},{name:'unread',in:'query',schema:{type:'boolean'}});
+// ADR-023: dashboard counts and teacher cards use the same current authorization.
+Object.assign(spec.components.schemas.Dashboard.properties,{referenceDate:{type:'string',format:'date'},yearId:{type:'string',format:'uuid'}});
+Object.assign(spec.components.schemas.Task.properties,{yearId:{type:'string',format:'uuid'},className:{type:'string'},detail:{type:'string'},status:{type:'string'},tone:{type:'string',enum:['danger','warning','info','neutral']},lessonId:{type:'string',format:'uuid'}});
+spec.components.schemas.Task.properties.dueAt.nullable=true;
+Object.assign(spec.components.schemas.Class.properties,{studentCount:{type:'integer',minimum:0,nullable:true},myAssignments:{type:'array',items:{type:'object',properties:{id:{type:'string',format:'uuid'},kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectId:{type:'string',format:'uuid'},startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date'}},required:['id','kind','startsOn'],additionalProperties:false}}});
+Object.assign(spec.components.schemas.Lesson.properties,{yearId:{type:'string',format:'uuid'},className:{type:'string'},subjectName:{type:'string'},teacherName:{type:'string'},roomName:{type:'string',nullable:true}});
+for(const id of ['getSchoolOverview','getTeacherOverview','getClassOverview','listMyClasses','listMyTasks','listMySchedule','listTeacherAnnouncements']){
+  const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
+  if(!op.parameters.some(p=>p.name==='yearId'))op.parameters.push({name:'yearId',in:'query',schema:{type:'string',format:'uuid'}});
+  if(id==='listMyTasks')op.parameters.push({name:'kind',in:'query',schema:{type:'string',enum:['attendance','conduct','evidence','announcement','groups']}},{name:'classId',in:'query',schema:{type:'string',format:'uuid'}});
+  if(id==='listMySchedule')for(const name of ['from','to'])if(!op.parameters.some(p=>p.name===name))op.parameters.push({name,in:'query',schema:{type:'string',format:'date'}});
+}
 // ADR-004: expose lifecycle metadata needed by the existing assignment UI.
 spec.components.schemas.Assignment.properties.revokedAt = { type:'string',format:'date-time',nullable:true };
 spec.components.schemas.AssignmentCreate.properties.reason={type:'string',minLength:5,maxLength:4000};

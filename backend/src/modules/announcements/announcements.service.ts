@@ -20,7 +20,7 @@ function version(row:Row,expected:unknown,source=false){const n=Number(source?ro
 @Injectable()
 export class AnnouncementsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService,private readonly files:FilesService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolAnnouncements','createSchoolAnnouncement','getSchoolAnnouncement','updateSchoolAnnouncement','publishSchoolAnnouncement','scheduleSchoolAnnouncement','withdrawSchoolAnnouncement','listClassAnnouncements','createClassAnnouncement','getClassAnnouncement','updateClassAnnouncement','publishClassAnnouncement','scheduleClassAnnouncement','withdrawClassAnnouncement','getPublicSchool','getPublicAnnouncement'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolAnnouncements','listTeacherAnnouncements','createSchoolAnnouncement','getSchoolAnnouncement','updateSchoolAnnouncement','publishSchoolAnnouncement','scheduleSchoolAnnouncement','withdrawSchoolAnnouncement','listClassAnnouncements','createClassAnnouncement','getClassAnnouncement','updateClassAnnouncement','publishClassAnnouncement','scheduleClassAnnouncement','withdrawClassAnnouncement','getPublicSchool','getPublicAnnouncement'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async row(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.announcements WHERE school_id=$1 AND id=$2${c.params.classId?' AND class_id=$3':''} AND discarded_at IS NULL${lock?' FOR UPDATE':''}`,c.params.classId?[c.params.schoolId,c.params.announcementId,c.params.classId]:[c.params.schoolId,c.params.announcementId]);if(!row)notFound();return row;}
   private async view(tx:Transaction,row:Row,includeInternal=true){
     const value=dto(r,row);if(value.internalNote===null||!includeInternal)delete value.internalNote;
@@ -63,12 +63,18 @@ export class AnnouncementsService {
     for(const fileId of fileIds)await tx.query('INSERT INTO app.file_links(school_id,announcement_id,file_id,share_with_guardian) VALUES($1,$2,$3,true)',[c.params.schoolId,id,fileId]);
   }
   private async readPredicate(tx:Transaction,c:RequestContext):Promise<ReadScope>{
-    const schoolId=c.params.schoolId!,scope=await this.policy.collection(tx,c.principal!,'announcement.read',schoolId,true),classes=c.params.classId?[c.params.classId]:scope.classIds;
+    const schoolId=c.params.schoolId!,publishedOnly=c.operation.id==='listTeacherAnnouncements',scope=await this.policy.collection(tx,c.principal!,'announcement.read',schoolId,true);
+    let classes=c.params.classId?[c.params.classId]:scope.classIds;
+    if(publishedOnly){const self=await this.policy.collection(tx,c.principal!,'teacher.self',schoolId,true);let own=self.classIds;
+      if(self.all)own=(await tx.query<{class_id:string}>(`SELECT DISTINCT a.class_id FROM app.teaching_assignments a JOIN app.memberships m ON m.school_id=a.school_id AND m.id=a.member_id AND m.user_id=$2
+        JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now()) JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
+        WHERE a.school_id=$1 AND a.revoked_at IS NULL AND a.starts_on<=$3 AND (a.ends_on IS NULL OR a.ends_on>$3)`,[schoolId,c.principal!.userId,self.today])).rows.map(a=>a.class_id);
+      classes=scope.all?own:classes.filter(id=>own.includes(id));}
     if(c.params.classId)await this.policy.require(tx,c.principal!,'announcement.read',{schoolId,classId:c.params.classId,allowSubject:true});
     const member=(await one<{id:string}>(tx,"SELECT id FROM app.memberships WHERE school_id=$1 AND user_id=$2 AND status='ACTIVE' AND ended_at IS NULL",[schoolId,c.principal!.userId]))!;
-    const manageAll=scope.grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes('announcement.manage'));
-    if(scope.all&&!c.params.classId)return {all:true,internal:manageAll,classIds:[],fullClassIds:[],manageClassIds:[],memberId:member.id,predicate:{sql:`t.discarded_at IS NULL AND NOT EXISTS(SELECT 1 FROM app.announcements newer WHERE newer.school_id=t.school_id AND newer.root_id=t.root_id AND newer.discarded_at IS NULL AND (newer.created_at,newer.id)>(t.created_at,t.id))`,values:[]}};
-    const full=classes.filter(classId=>scope.grants.some(g=>grantAllows(g,'announcement.read',{schoolId,classId},scope.today))),manage=classes.filter(classId=>scope.grants.some(g=>grantAllows(g,'announcement.manage',{schoolId,classId},scope.today)));
+    const manageAll=!publishedOnly&&scope.grants.some(g=>g.scope_type==='SCHOOL'&&g.actions.includes('announcement.manage'));
+    if(scope.all&&!c.params.classId&&!publishedOnly)return {all:true,internal:manageAll,classIds:[],fullClassIds:[],manageClassIds:[],memberId:member.id,predicate:{sql:`t.discarded_at IS NULL AND NOT EXISTS(SELECT 1 FROM app.announcements newer WHERE newer.school_id=t.school_id AND newer.root_id=t.root_id AND newer.discarded_at IS NULL AND (newer.created_at,newer.id)>(t.created_at,t.id))`,values:[]}};
+    const full=classes.filter(classId=>scope.grants.some(g=>grantAllows(g,'announcement.read',{schoolId,classId},scope.today))),manage=publishedOnly?[]:classes.filter(classId=>scope.grants.some(g=>grantAllows(g,'announcement.manage',{schoolId,classId},scope.today)));
     return {all:false,internal:manageAll,classIds:classes,fullClassIds:full,manageClassIds:manage,memberId:member.id,predicate:{sql:`t.discarded_at IS NULL AND (
       (t.class_id=ANY($1::uuid[]) AND NOT EXISTS(SELECT 1 FROM app.announcements newer WHERE newer.school_id=t.school_id AND newer.root_id=t.root_id AND newer.discarded_at IS NULL AND (newer.created_at,newer.id)>(t.created_at,t.id))) OR
       (EXISTS(SELECT 1 FROM app.publication_revisions p WHERE p.school_id=t.school_id AND p.announcement_id=t.id AND p.status='PUBLISHED') AND (t.audience<>'FAMILIES' OR cardinality($3::uuid[])>0) AND EXISTS(

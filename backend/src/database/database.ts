@@ -19,12 +19,12 @@ export class Database implements OnApplicationShutdown {
     });
   }
   async transaction<T>(fn: (tx: Transaction) => Promise<T>, context: {
-    schoolId?: string; userId?: string; parentSessionId?: string; parent?: boolean;
+    schoolId?: string; userId?: string; parentSessionId?: string; parent?: boolean;readOnly?:boolean;
   } = {}): Promise<T> {
     const connection = await (context.parent ? this.parent : this.app).connect();
     let destroyed = false;
     try {
-      await connection.query('BEGIN');
+      await connection.query(context.readOnly?'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY':'BEGIN');
       // Empty values override any accidentally retained session setting as well.
       await connection.query(`SELECT set_config('app.school_id',$1,true),
         set_config('app.authenticated_user_id',$2,true),set_config('app.parent_session_id',$3,true),set_config('app.adjustment_id','',true)`,

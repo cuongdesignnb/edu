@@ -31,6 +31,13 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
 
+## Dashboard and teacher route checks
+
+- Seven supplied dashboard/teacher operations implemented and exercised against retained PostgreSQL test data; implemented API coverage is now 229/264.
+- Actual suite: 65/65 integration tests, exit0 in qa/backend/dashboards-integration.log; 12/12 unit/contract tests, exit0 in dashboards-unit-contract.log; build/typecheck/lint exit0.
+- Tested current role/assignment revocation, mixed homeroom/subject scopes, real counts, signed pagination and filter binding, own dated lesson schedules, published announcement revisions across draft edits, and attendance publication tasks after publish/withdraw/settings changes.
+- Twenty-two migrations remain applied and checksum-verified; these are read projections and require no new migration. Connected UI, platform/support, reports/exports, final local deployment and operational drills remain incomplete.
+
 ## Actual foundation checks — 2026-09-30
 
 - Node image: `node:24.21.0-bookworm-slim`, digest
