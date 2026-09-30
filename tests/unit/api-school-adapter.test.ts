@@ -3,13 +3,14 @@ import {connectedSchoolRepo} from '@/lib/repositories/connected/school';
 import type {Ctx} from '@/lib/repositories/core';
 import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
 import {inclusiveDate,exclusiveDate} from '@/lib/api/dates';
+import {uiActions} from '@/lib/api/permissions';
 
-vi.mock('@/lib/api/session',()=>({refreshStaffContext:vi.fn().mockResolvedValue({})}));
+vi.mock('@/lib/api/session',()=>({refreshStaffContext:vi.fn().mockResolvedValue({}),serverToday:vi.fn(()=> '2026-09-30')}));
 vi.mock('@/lib/api/permissions',()=>({uiActions:vi.fn(()=>new Set(['school.profile.edit','school.settings.edit','dictionary.manage']))}));
 const schoolId='00000000-0000-4000-8000-000000000001',itemId='00000000-0000-4000-8000-000000000002';
 const ctx={} as Ctx;
-const envelope=(data:unknown)=>new Response(JSON.stringify({data,requestId:'adapter-test'}),{headers:{'content-type':'application/json'}});
-beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');});
+const envelope=(data:unknown)=>new Response(JSON.stringify({data,requestId:'adapter-test',...(Array.isArray(data)?{page:{limit:100,hasMore:false,nextCursor:null,total:data.length}}:{})}),{headers:{'content-type':'application/json'}});
+beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(uiActions).mockReturnValue(new Set(['school.profile.edit','school.settings.edit','dictionary.manage']));});
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 
 describe('school API adapter candidates',()=>{
@@ -59,5 +60,26 @@ describe('school API adapter candidates',()=>{
   });
   it('converts date-only leap-year and month boundaries independently of local timezone',()=>{
     expect(exclusiveDate('2028-02-29')).toBe('2028-03-01');expect(inclusiveDate('2028-03-01')).toBe('2028-02-29');expect(exclusiveDate('2028-12-31')).toBe('2029-01-01');expect(()=>exclusiveDate('2026-02-29')).toThrow();
+  });
+  it('loads purpose-bound picker metadata without retaining staff contacts or grants',async()=>{
+    vi.mocked(uiActions).mockReturnValue(new Set(['class.manage','assignment.manage']));
+    const fetcher=vi.fn().mockImplementation((url:string)=>{
+      const path=new URL(url,'https://api-test.invalid').pathname;
+      if(path.endsWith('/academic-years'))return Promise.resolve(envelope([{id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'DRAFT',version:1}]));
+      if(path.endsWith('/members'))return Promise.resolve(envelope([{id:itemId,userId:schoolId,workDisplayName:'Nhân sự API',department:'Tổ API',homeroomOf:['10A1'],workPhone:'unexpected-contact',grants:[{actions:['unexpected']}]}]));
+      return Promise.resolve(envelope([{id:itemId,name:'Danh mục API',code:'10',status:'ACTIVE',version:1,gradeLevel:10}]));
+    });vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.formOptions(ctx,schoolId);expect(result.canAssign).toBe(true);expect(result.teachers?.[0]).toEqual({membershipId:itemId,userId:schoolId,name:'Nhân sự API',department:'Tổ API',homeroomOf:['10A1']});expect(fetcher).toHaveBeenCalledTimes(5);
+    for(const [url]of fetcher.mock.calls)expect(new URL(url,'https://api-test.invalid').searchParams.get('purpose')).toMatch(/^(class|assignment)-picker$/);
+  });
+  it('does not fetch assignment metadata when the context only permits class management',async()=>{
+    vi.mocked(uiActions).mockReturnValue(new Set(['class.manage']));const fetcher=vi.fn().mockImplementation((url:string)=>Promise.resolve(envelope(new URL(url,'https://api-test.invalid').pathname.endsWith('/academic-years')?[{id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'DRAFT',version:1}]:[])));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.formOptions(ctx,schoolId);expect(result.canAssign).toBe(false);expect(result.teachers).toBeUndefined();expect(result.subjects).toBeUndefined();expect(fetcher).toHaveBeenCalledTimes(3);expect(fetcher.mock.calls.some(([url])=>String(url).includes('/members'))).toBe(false);
+  });
+  it('looks up one week through a server date filter and rejects an ignored filter',async()=>{
+    const yearRow={id:itemId,name:'2026–2027',code:'2026-2027',startsOn:'2026-09-01',endsOn:'2027-06-01',status:'ACTIVE',version:1},weekRow={id:itemId,yearId:itemId,termId:schoolId,weekNumber:5,startsOn:'2026-09-28',endsOn:'2026-10-05',inputDeadlineDay:'2026-10-05',locked:false,version:1};
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope([yearRow])).mockResolvedValueOnce(envelope([weekRow]));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.weekOf(ctx,schoolId,'2026-09-30');expect(result?.index).toBe(5);expect(result?.endDate).toBe('2026-10-04');expect(result?.isCurrent).toBe(true);expect(fetcher.mock.calls[1][0]).toContain('onDate=2026-09-30');
+    fetcher.mockResolvedValueOnce(envelope([yearRow])).mockResolvedValueOnce(envelope([weekRow,{...weekRow,id:schoolId}]));await expect(connectedSchoolRepo.weekOf(ctx,schoolId,'2026-09-30')).rejects.toMatchObject({code:'VALIDATION',details:{maximum:1}});
   });
 });

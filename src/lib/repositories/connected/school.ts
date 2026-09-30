@@ -77,6 +77,13 @@ export const connectedSchoolRepo={
     if(!yearId)return [];
     return (await apiList('listClasss',{params:{schoolId},query:{yearId,sort:'name'}},200)).map(row=>({id:requiredId(row.id),name:row.name,status:row.status.toLowerCase() as 'draft'|'active'|'archived',gradeId:requiredId(row.gradeLevelId)}));
   },
+  async formOptions(_ctx:Ctx,schoolId:ID){
+    const context=await refreshStaffContext(),actions=uiActions(context,{schoolId}),canAssign=actions.has('assignment.manage'),canManageClasses=actions.has('class.manage');
+    if(!canAssign&&!canManageClasses)throw new RepoError('FORBIDDEN');
+    const purpose=canManageClasses?'class-picker' as const:'assignment-picker' as const;
+    const [years,grades,rooms,subjects,teachers]=await Promise.all([apiList('listYears',{params:{schoolId},query:{purpose,sort:'startsOn',dir:'desc'}},100),apiList('listDictionary',{params:{schoolId,dictionary:'grades'},query:{purpose,sort:'code'}},100),apiList('listDictionary',{params:{schoolId,dictionary:'rooms'},query:{purpose,sort:'code'}},500),canAssign?apiList('listDictionary',{params:{schoolId,dictionary:'subjects'},query:{purpose:'assignment-picker',sort:'code'}},500):undefined,canAssign?apiList('listMembers',{params:{schoolId},query:{purpose:'assignment-picker',sort:'workDisplayName'}},500):undefined]);
+    return {years:years.map(y=>year(y,schoolId)),grades:grades.map(g=>dictionary(g,schoolId)),rooms:rooms.map(r=>dictionary(r,schoolId)),subjects:subjects?.map(s=>dictionary(s,schoolId)),teachers:teachers?.map(m=>({membershipId:requiredId(m.id),userId:requiredId(m.userId),name:m.workDisplayName,department:m.department??'',homeroomOf:requiredValue(m.homeroomOf,'homeroomOf')})),canAssign,canManageClasses};
+  },
   async saveClass(_ctx:Ctx,schoolId:ID,input:{id?:ID;yearId:ID;gradeId:ID;name:string;capacity:number;roomId?:ID;motto?:string;homeroomMembershipId?:ID;version?:number}){
     const name=input.name.trim().toUpperCase(),body={name,gradeLevelId:input.gradeId,capacity:input.capacity,roomId:input.roomId??null,motto:input.motto,homeroomMemberId:input.homeroomMembershipId};
     const write=input.id?http('updateClass',{params:{schoolId,classId:input.id},body:{...body,expectedVersion:version(input.version)}}):http('createClass',{params:{schoolId},body:{...body,code:name,yearId:input.yearId}});
@@ -90,5 +97,9 @@ export const connectedSchoolRepo={
     const [value,weekRows,holidayRows,classes,grades,context]=await Promise.all([http('getYear',{params:{schoolId,yearId}}),apiList('listWeeks',{params:{schoolId},query:{yearId,sort:'weekNumber'}},110),apiList('listCalendarEvents',{params:{schoolId},query:{yearId,status:'PUBLISHED',sort:'startsOn'}},100),apiList('listClasss',{params:{schoolId},query:{yearId,sort:'name'}},200),apiList('listDictionary',{params:{schoolId,dictionary:'grades'}},100),refreshStaffContext()]);
     const rows=classes.map(c=>classRow(c,schoolId)),gradeRows=grades.map(g=>dictionary(g,schoolId)),actions=uiActions(context,{schoolId});
     return {year:year(value.data,schoolId),terms:requiredValue(value.data.terms,'terms').map(t=>term(t,schoolId)),weeks:weekRows.map(w=>week(w,schoolId,serverToday(schoolId))),holidays:holidayRows.map(h=>holiday(h,schoolId)),grades:gradeRows,classesByGrade:gradeRows.map(grade=>({grade,classes:rows.filter(row=>row.gradeId===grade.id)})).filter(group=>group.classes.length||group.grade.status==='active'),assignedHomeroom:rows.filter(c=>c.homeroomName).length,totalClasses:rows.length,canManage:actions.has('year.manage'),canManageClasses:actions.has('class.manage')};
+  },
+  async weekOf(_ctx:Ctx,schoolId:ID,date:string){
+    const [years]=await Promise.all([apiList('listYears',{params:{schoolId},query:{status:'ACTIVE'}},100),refreshStaffContext()]),yearId=years[0]?.id;if(!yearId)return null;
+    const rows=await apiList('listWeeks',{params:{schoolId},query:{yearId,onDate:date}},1);return rows.length?week(rows[0],schoolId,serverToday(schoolId)):null;
   },
 };

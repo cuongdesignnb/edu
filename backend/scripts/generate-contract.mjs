@@ -28,6 +28,12 @@ Object.assign(spec.components.schemas.Week.properties,{inputDeadlineDay:{type:'s
 Object.assign(spec.components.schemas.Class.properties,{yearName:{type:'string'},gradeName:{type:'string'},roomCode:{type:'string',nullable:true},homeroomName:{type:'string',nullable:true},homeroomUserId:{type:'string',format:'uuid'},homeroomMemberId:{type:'string',format:'uuid'},subjectTeacherCount:{type:'integer',minimum:0},hasTimetable:{type:'boolean'},inactiveAssignmentCount:{type:'integer',minimum:0},referenceDate:{type:'string',format:'date'}});
 const classList=Object.values(spec.paths).map(p=>p.get).find(op=>op?.operationId==='listClasss');
 classList.parameters.push(...['homeroomMemberId','homeroomUserId'].map(name=>({name,in:'query',schema:{type:'string',format:'uuid'}})),{name:'homeroom',in:'query',schema:{type:'string',enum:['none']}});
+for(const id of ['listMembers','listDictionary','listYears','listClasss']){
+  const operation=Object.values(spec.paths).map(p=>p.get).find(op=>op?.operationId===id);
+  operation.parameters.push({name:'purpose',in:'query',schema:{type:'string',enum:id==='listMembers'?['assignment-picker']:['class-picker','assignment-picker']}});
+}
+spec.components.schemas.Member.properties.homeroomOf={type:'array',items:{type:'string'}};
+Object.values(spec.paths).map(p=>p.get).find(op=>op?.operationId==='listWeeks').parameters.push({name:'onDate',in:'query',schema:{type:'string',format:'date'}});
 // ADR-021: preserve the existing school display/sharing settings form.
 for(const name of ['Settings','SettingsPatch'])Object.assign(spec.components.schemas[name].properties,{
   reportHeader:{type:'string',minLength:1,maxLength:200},shareTeacherPhone:{type:'boolean'},shareTeacherEmail:{type:'boolean'},contactHours:{type:'string',maxLength:120}

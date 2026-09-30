@@ -425,3 +425,25 @@ The full 87/87 suite passes with populated parent, expiry/revoke and multitab
 checks. The no-context query measured 5.527 ms, EXPLAIN execution 0.022 ms and zero
 rows. This diagnostic is not a concurrency or p95 acceptance result. Migration
 checksums/replay and the raw-row 42501 denial were also actually tested.
+
+## ADR-032 — purpose-bound organization pickers and explicit list completion
+
+Class and assignment forms need minimal reference data under their current write
+authority. Optional purpose queries authorize class-picker through class.manage,
+and assignment-picker through assignment.manage. Ordinary directory endpoints
+retain their existing read permission. Picker SQL excludes archived years/classes
+and inactive dictionaries/members before pagination/counting. Assignment subjects
+exclude the product's reserved non-teaching codes. Member pickers allow only work
+labels and current homeroom labels; they never return login/work email, telephone,
+roles, grants or student counts. Class-scoped authority stays class-scoped.
+
+listWeeks accepts a validated onDate and applies the half-open week interval in
+SQL. The frontend uses actual school time and never chooses a synthetic current
+week. Every connected list requires valid PageInfo; an absent pagination envelope
+is a read error, not a fabricated empty/complete list.
+
+Executed evidence: qa/backend/b6-form-pickers-integration-final.log contains
+88/88 PostgreSQL checks, exit0, zero skipped, including unknown purpose, foreign
+school, immediate revocation and onDate boundary/invalid-date checks. Backend
+unit/contract checks are 12/12. Frontend unit checks are 31/31, with typecheck/lint
+exit0. The 36 candidate methods remain unactivated and are not browser acceptance.

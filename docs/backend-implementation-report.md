@@ -31,6 +31,12 @@ Port 18763 had no listener in initial inspection; repeat immediately before up.
 No runtime test is PASS unless its command has actually completed successfully.
 No real student data used. Production not deployed.
 
+## B6 purpose-bound form pickers checkpoint
+
+- The latest actual PostgreSQL run is **88/88**, exit0, zero skipped, in qa/backend/b6-form-pickers-integration-final.log. All 30 migration checksums/replay were verified. The earlier 88/88 log predates the additional onDate boundary assertions; the final run includes them. Docker runner build, backend TypeScript/lint, 12 backend unit/contract and 31 frontend unit checks completed with exit0.
+- Minimal year/class/dictionary/member form pickers use the corresponding current class.manage or assignment.manage authority. Ordinary read endpoints still deny a write-only role. Picker queries filter in SQL before pagination, redact contacts/grants/private counts, exclude inactive or archived choices and immediately deny revoked authority. The week selector queries a strictly validated day in SQL using the half-open interval.
+- The connected list helper rejects missing or inconsistent PageInfo rather than treating an incomplete response as an empty or finished list. School adapter candidates now include formOptions and weekOf: **36 candidate methods**, 22 school methods. All **231 legacy methods and 118 core screen acceptance remain pending activation**. Dashboard and rollover composition, final Docker URL, restart, backup/restore, SMTP/process-kill and load acceptance remain outstanding. Production is not deployed.
+
 ## B6 atomic organization workflows and parent denial checkpoint
 
 - The latest actual PostgreSQL suite is **87/87**, exit0, zero skipped, in qa/backend/b6-organization-rls-integration.log. Migration 030 applied and checksum replay verified; all 30 migrations are applied. Backend build/typecheck/lint and 12 unit/contract checks exit0. Frontend TypeScript, scoped lint and 27 unit checks exit0; ten school adapter checks use synthetic fetch responses and do not certify browser workflows.

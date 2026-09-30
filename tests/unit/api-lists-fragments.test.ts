@@ -15,6 +15,10 @@ describe('server keysets and one-use link fragments',()=>{
     vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(page([{id:'actual'}],5000,'next')));await expect(apiList('listClasss',{params:{schoolId}},1000)).rejects.toMatchObject({code:'VALIDATION',details:{maximum:1000}});
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue(page([{id:'actual'}],2,'repeated')));await expect(apiList('listClasss',{params:{schoolId}},1000)).rejects.toMatchObject({code:'READ_ERROR'});
   });
+  it('does not treat a truncated response without page metadata as a complete empty list',async()=>{
+    const fetcher=vi.fn().mockResolvedValue(new Response(JSON.stringify({data:[],requestId:'truncated-list'})));vi.stubGlobal('fetch',fetcher);
+    await expect(apiList('listClasss',{params:{schoolId}})).rejects.toMatchObject({code:'READ_ERROR'});expect(fetcher).toHaveBeenCalledTimes(1);
+  });
   it('removes invitation credentials from URL history and never persists them',()=>{
     const id='unique-invitation-fixture',location={pathname:`/invitations/${id}`,search:'',hash:'#token=secret-fixture&school=truong-test'},replaceState=vi.fn().mockImplementation(()=>{location.hash='';}),setItem=vi.fn();
     vi.stubGlobal('window',{location,history:{state:null,replaceState},localStorage:{setItem},sessionStorage:{setItem}});

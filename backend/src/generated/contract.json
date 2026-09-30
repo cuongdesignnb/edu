@@ -1174,6 +1174,12 @@
             "$ref": "#/components/schemas/GrantView"
           }
         },
+        "homeroomOf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "loginEmail": {
           "type": "string",
           "format": "email"
@@ -17466,6 +17472,17 @@
           }
         },
         {
+          "name": "purpose",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "class-picker",
+              "assignment-picker"
+            ]
+          }
+        },
+        {
           "name": "X-Support-Access",
           "in": "header",
           "schema": {
@@ -18799,6 +18816,14 @@
           }
         },
         {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
           "name": "X-Support-Access",
           "in": "header",
           "schema": {
@@ -20128,6 +20153,17 @@
             "type": "string",
             "enum": [
               "none"
+            ]
+          }
+        },
+        {
+          "name": "purpose",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "class-picker",
+              "assignment-picker"
             ]
           }
         },
@@ -21657,6 +21693,17 @@
           }
         },
         {
+          "name": "purpose",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "class-picker",
+              "assignment-picker"
+            ]
+          }
+        },
+        {
           "name": "X-Support-Access",
           "in": "header",
           "schema": {
@@ -22839,6 +22886,16 @@
           "schema": {
             "type": "string",
             "maxLength": 100
+          }
+        },
+        {
+          "name": "purpose",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "assignment-picker"
+            ]
           }
         },
         {

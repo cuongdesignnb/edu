@@ -5,6 +5,10 @@ import {RepoError} from '../repositories/errors';
 
 function rows<K extends ApiListId>(result:ApiEnvelope<ApiData<K>>):Array<ApiItem<K>>{
   if(!Array.isArray(result.data))throw new RepoError('READ_ERROR','Danh sách API không đúng hợp đồng.');
+  const page=result.page;
+  if(!page||typeof page.hasMore!=='boolean'||!Number.isInteger(page.limit)||page.limit<1||page.limit>100||
+    (page.nextCursor!==null&&typeof page.nextCursor!=='string')||(!page.hasMore&&page.nextCursor!==null)||
+    (page.total!==undefined&&(!Number.isInteger(page.total)||page.total<0))||result.data.length>page.limit)throw new RepoError('READ_ERROR','API chưa trả thông tin phân trang hợp lệ.');
   return result.data as Array<ApiItem<K>>;
 }
 /** Lists are already scoped and filtered in SQL. Never filter an unscoped tenant dataset here. */

@@ -12,6 +12,14 @@ const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_
 const assignmentResource:Resource={table:'app.teaching_assignments',fields:{...meta,classId:'class_id',memberId:'member_id',roleGrantId:'role_grant_id',kind:'kind',subjectId:'subject_id',startsOn:'starts_on',endsOn:'ends_on',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{classId:'class_id',memberId:'member_id'}};
 const roleResource:Resource={table:'app.roles',fields:{...meta,code:'code',label:'label',systemRole:'system_role'},writeFields:[],search:['code','label'],filters:{}};
 const inviteResource:Resource={table:'app.staff_invitations',fields:{...meta,email:'email_normalized',expiresAt:'expires_at',status:'status'},writeFields:[],search:['email_normalized'],filters:{status:'status'}};
+const pickerResource:Resource={...resource('member'),table:`(SELECT m.*,
+  coalesce((SELECT array_agg(c.name ORDER BY c.name,c.id) FROM app.teaching_assignments a JOIN app.classes c ON c.school_id=a.school_id AND c.id=a.class_id
+    JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+    JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
+    WHERE a.school_id=m.school_id AND a.member_id=m.id AND a.kind='HOMEROOM' AND a.revoked_at IS NULL
+    AND a.starts_on<=(now() AT TIME ZONE s.timezone)::date AND (a.ends_on IS NULL OR a.ends_on>(now() AT TIME ZONE s.timezone)::date)),ARRAY[]::text[]) AS homeroom_names
+  FROM app.memberships m JOIN platform.schools s ON s.id=m.school_id JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE'
+  WHERE m.status='ACTIVE' AND m.ended_at IS NULL)`,fields:{...meta,userId:'user_id',staffCode:'staff_code',workDisplayName:'work_display_name',shareWorkContact:'share_work_contact',department:'department',status:'status',homeroomOf:'homeroom_names'},filters:{},search:['work_display_name','staff_code']};
 interface PermissionInput {action:string;scopes:string[]}
 @Injectable()
 export class StaffService {
@@ -25,10 +33,13 @@ export class StaffService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
-    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
+    const picker=op==='listMembers'&&c.query.purpose==='assignment-picker';
+    if(c.query.purpose&&!picker)validation('purpose','Mục đích danh sách không hợp lệ');
+    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,picker?'assignment.manage':c.operation.permission,{schoolId,...(op==='listAssignments'&&c.principal!.support?.classId?{classId:c.principal!.support.classId}:{})});
     const work=async(tx:Transaction):Promise<Result>=>{
       if(c.operation.method!=='GET')await tx.query('SELECT id FROM platform.schools WHERE id=$1 FOR UPDATE',[schoolId]);
       if(op==='listMembers'){
+        if(picker)return listResource(tx,pickerResource,schoolId,c.query,undefined,c.principal!.userId);
         const result=await listResource(tx,resource('member'),schoolId,c.query,undefined,c.principal!.userId);
         for(const member of result.data)member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);
         return result;

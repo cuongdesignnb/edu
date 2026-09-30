@@ -37,7 +37,10 @@ export class OrganizationService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const entry=registry[c.operation.id]!,r=resource(entry.kind),schoolId=c.params.schoolId!,id=entry.id?c.params[entry.id]:undefined;
+    const picker=c.query.purpose;
+    if(picker&&(entry.mode!=='list'||!['year','class'].includes(entry.kind)||!['class-picker','assignment-picker'].includes(picker)))validation('purpose','Mục đích danh sách không hợp lệ');
     const authorize=async(tx:Transaction)=>{
+      if(picker)return entry.kind==='class'?this.permissions.collection(tx,c.principal!,picker==='class-picker'?'class.manage':'assignment.manage',schoolId):this.permissions.require(tx,c.principal!,picker==='class-picker'?'class.manage':'assignment.manage',{schoolId});
       if(entry.kind==='year'&&c.body.copyRules)await this.permissions.require(tx,c.principal!,'rules.read+rules.manage',{schoolId});
       if(entry.kind==='class'&&c.body.homeroomMemberId)await this.permissions.require(tx,c.principal!,'assignment.manage',{schoolId});
       if(entry.mode==='list'&&entry.kind==='class')return this.permissions.collection(tx,c.principal!,'class.read',schoolId,true);
@@ -48,12 +51,22 @@ export class OrganizationService {
     };
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{
       const allowed=await authorize(tx);
-      const view=organizationRead(entry.kind,schoolId,allowed.grants,allowed.today,entry.mode==='list');
+      const view=picker?{resource:r,bindings:[]}:organizationRead(entry.kind,schoolId,allowed.grants,allowed.today,entry.mode==='list');
       if(entry.mode==='get')return {data:dto(view.resource,await getResource(tx,view.resource,schoolId,id!,false,view.bindings))};
       const classes=entry.kind==='class'?allowed as unknown as {all:boolean;classIds:string[]}:undefined;
       const extra={sql:'',values:[] as unknown[]};
       if(classes&&!classes.all){extra.sql='t.id=ANY($1::uuid[])';extra.values.push(classes.classIds);}
-      if(entry.kind==='class'&&c.query.homeroom==='none')extra.sql+=(extra.sql?' AND ':'')+'t.homeroom_member_id IS NULL';
+      if(picker){
+        if(c.query.homeroom||c.query.homeroomMemberId||c.query.homeroomUserId)validation('homeroom','Bộ chọn lớp không trả dữ liệu chủ nhiệm');
+        extra.sql+=(extra.sql?' AND ':'')+"t.status<>'ARCHIVED'";
+        if(entry.kind==='class')extra.sql+=" AND EXISTS(SELECT 1 FROM app.academic_years y WHERE y.school_id=t.school_id AND y.id=t.year_id AND y.status<>'ARCHIVED')";
+      }
+      if(entry.kind==='class'&&!picker&&c.query.homeroom==='none')extra.sql+=(extra.sql?' AND ':'')+'t.homeroom_member_id IS NULL';
+      if(entry.kind==='week'&&c.query.onDate){
+        const date=c.query.onDate,parsed=new Date(`${date}T00:00:00Z`);
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date)validation('onDate','Ngày chưa hợp lệ');
+        extra.values.push(date);extra.sql+=(extra.sql?' AND ':'')+`t.starts_on<=$${extra.values.length}::date AND t.ends_on>$${extra.values.length}::date`;
+      }
       return listResource(tx,view.resource,schoolId,c.query,extra,c.principal!.userId,view.bindings);
     },{schoolId});
     return this.commands.execute(c,authorize,async tx=>{
@@ -151,11 +164,14 @@ export class OrganizationService {
     const kind={grades:'grade',subjects:'subject',rooms:'room'}[c.params.dictionary! as 'grades'|'subjects'|'rooms'];
     if(!kind)throw new Problem(404,'RESOURCE_NOT_FOUND');
     const r=resource(kind),schoolId=c.params.schoolId!,id=c.params.itemId;
-    const authorize=(tx:Transaction)=>this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId});
+    const picker=c.query.purpose;
+    if(picker&&(c.operation.method!=='GET'||!['class-picker','assignment-picker'].includes(picker)||(picker==='class-picker'&&kind==='subject')))validation('purpose','Mục đích danh sách không hợp lệ');
+    const authorize=(tx:Transaction)=>this.permissions.require(tx,c.principal!,picker?picker==='class-picker'?'class.manage':'assignment.manage':c.operation.permission,{schoolId});
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);
       const use=kind==='grade'?`EXISTS(SELECT 1 FROM app.classes c WHERE c.school_id=d.school_id AND c.grade_level_id=d.id)`:
         kind==='subject'?`EXISTS(SELECT 1 FROM app.teaching_assignments a WHERE a.school_id=d.school_id AND a.subject_id=d.id) OR EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=d.school_id AND l.subject_id=d.id)`:
         `EXISTS(SELECT 1 FROM app.classes c WHERE c.school_id=d.school_id AND c.room_id=d.id) OR EXISTS(SELECT 1 FROM app.lesson_occurrences l WHERE l.school_id=d.school_id AND l.room_id=d.id)`;
+      if(picker)return listResource(tx,r,schoolId,c.query,{sql:"t.status='ACTIVE'"+(kind==='subject'?" AND upper(t.code) NOT IN ('CHAOCO','SHL')":''),values:[]},c.principal!.userId);
       return listResource(tx,{...r,table:`(SELECT d.*,(${use}) AS in_use FROM ${r.table} d)`,fields:{...r.fields,inUse:'in_use'}},schoolId,c.query,undefined,c.principal!.userId);
     },{schoolId});
     return this.commands.execute(c,authorize,async tx=>{

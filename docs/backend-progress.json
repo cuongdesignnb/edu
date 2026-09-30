@@ -486,7 +486,8 @@
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
         "qa/backend/support-read-integration.log",
-        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata"
+        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata",
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
       ]
     },
     {
@@ -599,7 +600,8 @@
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/support-read-integration.log",
-        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata"
+        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata",
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
       ]
     },
     {
@@ -700,7 +702,8 @@
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
         "qa/backend/support-read-integration.log",
-        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata"
+        "qa/backend/b6-organization-rls-integration.log: 87/87; migration030 fast parent denial; atomic year/calendar/homeroom and authorized SQL metadata",
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
       ]
     },
     {
@@ -811,7 +814,8 @@
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/support-read-integration.log",
-        "qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage"
+        "qa/backend/b6-organization-integration-final.log: 84/84 PostgreSQL checks; migration029 persisted form fields and scoped dictionary usage",
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
       ]
     },
     {
@@ -895,7 +899,8 @@
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
         "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
-        "qa/backend/support-read-integration.log"
+        "qa/backend/support-read-integration.log",
+        "qa/backend/b6-form-pickers-integration-final.log: 88/88 PostgreSQL checks; purpose-bound redacted write-authority pickers, immediate revocation and onDate SQL boundaries"
       ]
     },
     {

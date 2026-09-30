@@ -3762,6 +3762,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: purpose
+          in: query
+          schema:
+            type: string
+            enum:
+              - class-picker
+              - assignment-picker
         - name: X-Support-Access
           in: header
           schema:
@@ -4623,6 +4630,11 @@ paths:
             type: string
             format: uuid
             nullable: true
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
         - name: X-Support-Access
           in: header
           schema:
@@ -5478,6 +5490,13 @@ paths:
             type: string
             enum:
               - none
+        - name: purpose
+          in: query
+          schema:
+            type: string
+            enum:
+              - class-picker
+              - assignment-picker
         - name: X-Support-Access
           in: header
           schema:
@@ -6466,6 +6485,13 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: purpose
+          in: query
+          schema:
+            type: string
+            enum:
+              - class-picker
+              - assignment-picker
         - name: X-Support-Access
           in: header
           schema:
@@ -7233,6 +7259,12 @@ paths:
           schema:
             type: string
             maxLength: 100
+        - name: purpose
+          in: query
+          schema:
+            type: string
+            enum:
+              - assignment-picker
         - name: X-Support-Access
           in: header
           schema:
@@ -28910,6 +28942,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/GrantView"
+        homeroomOf:
+          type: array
+          items:
+            type: string
         loginEmail:
           type: string
           format: email
