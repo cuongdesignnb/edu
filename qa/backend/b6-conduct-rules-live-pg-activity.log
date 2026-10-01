@@ -1,0 +1,8 @@
+ application_name | state  | wait_event_type | wait_event |    query_age    
+------------------+--------+-----------------+------------+-----------------
+ edumanage_app    | idle   | Client          | ClientRead | 00:00:07.129314
+ edumanage_app    | idle   | Client          | ClientRead | 00:00:04.16492
+ edumanage_app    | idle   | Client          | ClientRead | 00:00:00.20146
+ edumanage_worker | active |                 |            | 00:00:00.060933
+(4 rows)
+

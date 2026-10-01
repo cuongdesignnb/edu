@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList, Plus, Eye, CheckCircle2, FileEdit, Archive, Info, Camera } from "lucide-react";
-import { conductRepo } from "@/lib/repositories";
+import { conductRepo,RepoError } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime } from "@/lib/formatters";
 import { DataTable, type Column } from "@/components/data/table";
@@ -29,13 +29,13 @@ export function RuleSetList({ schoolId }: { schoolId: string }) {
   const base = `/school/${schoolId}/conduct-rules`;
   const [create, setCreate] = useState(false);
   const [from, setFrom] = useState("");
-  const newCmd = useCommand((ctx, fromId: string) => conductRepo.newRuleSetVersion(ctx, schoolId, fromId), { success: (r) => `Đã tạo bản nháp ${r.name}`, onSuccess: (r) => { setCreate(false); router.push(`${base}/${r.id}`); } });
+  const newCmd = useCommand((ctx, fromId: string) => {if(!fromId&&q.data?.items.length===0)return conductRepo.createRuleSetDraft(ctx,schoolId,q.data.applicationHash);const source=q.data?.items.find(r=>r.id===fromId)?.source;if(!source)throw new RepoError('CONFLICT','Hãy tải lại phiên bản nội quy trước khi sao chép.');return conductRepo.newRuleSetVersion(ctx, schoolId, fromId,source);}, { success: (r) => `Đã tạo bản nháp ${r.name}`, onSuccess: (r) => { setCreate(false); router.push(`${base}/${r.id}`); } });
   return (
     <QueryState query={q} skeleton="table">
       {(d) => {
         const draft = d.items.find((r) => r.status === "draft");
         const current = d.items.find((r) => r.isCurrent);
-        const upcoming = d.items.filter((r) => r.status === "published" && current && r.effectiveFrom > (current.effectiveFrom ?? "")).length;
+        const upcoming = d.items.filter((r) => r.status === "published" && current && r.effectiveFrom && r.effectiveFrom > (current.effectiveFrom ?? "")).length;
         const columns: Column<Row>[] = [
           { key: "name", header: "Bộ nội quy", cell: (r) => <div className="min-w-[220px]"><p className="font-semibold text-ink">{r.name}</p><p className="text-[12.5px] text-muted">Bản {r.versionNo} · {r.rules.length} quy định · điểm gốc {r.baseScore}</p></div> },
           { key: "status", header: "Trạng thái", cell: (r) => <div className="flex flex-wrap gap-1.5"><StatusBadge status={r.status} map={RULESET_STATUS} />{r.isCurrent && <Badge tone="info">Đang áp dụng hôm nay</Badge>}</div> },
@@ -67,9 +67,9 @@ export function RuleSetList({ schoolId }: { schoolId: string }) {
             </Card>
             <ConfirmDialog open={create} onOpenChange={setCreate} title="Tạo bản nội quy mới" confirmLabel="Tạo bản nháp" busy={newCmd.pending}
               error={newCmd.error?.code === "VALIDATION" ? newCmd.error.message : undefined}
-              consequence="Bản mới là bản nháp sao chép từ phiên bản được chọn, ngày hiệu lực dự kiến sau 7 ngày. Bản nháp chưa ảnh hưởng tới lớp nào cho đến khi được ban hành."
-              onConfirm={async () => { if (from) await newCmd.run(from); }}>
-              <SelectField label="Sao chép từ phiên bản" value={from} onChange={(e) => setFrom(e.target.value)} options={d.items.filter((r) => r.status !== "draft").map((r) => ({ value: r.id, label: `Bản ${r.versionNo} — ${r.name} (${RULESET_STATUS[r.status].label})` }))} />
+              consequence={d.items.length?"Bản mới là bản nháp sao chép từ phiên bản được chọn, ngày hiệu lực dự kiến sau 7 ngày. Bản nháp chưa ảnh hưởng tới lớp nào cho đến khi được ban hành.":"Tạo bản nháp nội quy đầu tiên để soạn quy định, xếp loại và chọn ngày hiệu lực. Bản nháp chưa ảnh hưởng tới lớp nào."}
+              onConfirm={async () => { if (from||d.items.length===0) await newCmd.run(from); }}>
+              {d.items.length>0&&<SelectField label="Sao chép từ phiên bản" value={from} onChange={(e) => setFrom(e.target.value)} options={d.items.filter((r) => r.status !== "draft").map((r) => ({ value: r.id, label: `Bản ${r.versionNo} — ${r.name} (${RULESET_STATUS[r.status].label})` }))} />}
             </ConfirmDialog>
           </div>
         );

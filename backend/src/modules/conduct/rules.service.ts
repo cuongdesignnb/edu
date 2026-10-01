@@ -7,6 +7,7 @@ import { Problem,validation } from '../../common/problem';
 import { points,ruleDelta,score } from './scoring';
 import Decimal from 'decimal.js';
 import type { RequestContext,Result,Handler } from '../../api.router';
+import {ruleWorkspace,ruleWorkspaceOperations} from './rule-workspace';
 const r:Resource={table:'app.rule_sets',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',name:'name',revision:'revision',basePoints:'base_points',minimumPoints:'minimum_points',maximumPoints:'maximum_points',status:'status'},writeFields:['name','basePoints','minimumPoints','maximumPoints'],search:['name'],filters:{status:'status'}};
 export async function loadRules(tx:Transaction,schoolId:string,id:string){return {
   rules:(await tx.query<Row>('SELECT * FROM app.conduct_rules WHERE school_id=$1 AND rule_set_id=$2 ORDER BY code,id',[schoolId,id])).rows,
@@ -17,8 +18,9 @@ function ruleDto(rule:Row){return {id:rule.id,code:rule.code,label:rule.label,gr
 @Injectable()
 export class RulesService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listRuleSets','createRuleSet','getRuleSet','updateRuleSet','issueRuleSet','simulateRules','getClassRules','applyClassRules'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
-  private async detail(tx:Transaction,schoolId:string,id:string){const row=await getResource(tx,r,schoolId,id),items=await loadRules(tx,schoolId,id);
+  handlers():Record<string,Handler>{return Object.fromEntries(['listRuleSets','createRuleSet','getRuleSet','updateRuleSet','issueRuleSet','simulateRules','getClassRules','applyClassRules',...ruleWorkspaceOperations].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  private async activeRuleSet(tx:Transaction,schoolId:string,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.rule_sets WHERE school_id=$1 AND id=$2 AND discarded_at IS NULL${lock?' FOR UPDATE':''}`,[schoolId,id]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
+  private async detail(tx:Transaction,schoolId:string,id:string){const row=await this.activeRuleSet(tx,schoolId,id),items=await loadRules(tx,schoolId,id);
     return {...dto(r,row),rules:items.rules.map(ruleDto),thresholds:items.thresholds.map(t=>({label:t.label,minimumScore:t.minimum_score}))};}
   private async readable(tx:Transaction,c:RequestContext,id?:string){
     const schoolId=c.params.schoolId!,allowed=await this.policy.collection(tx,c.principal!,'rules.read',schoolId,true);
@@ -31,13 +33,18 @@ export class RulesService {
     if(row.minimum_points!==null&&row.maximum_points!==null&&row.minimum_points!==undefined&&row.maximum_points!==undefined&&new Decimal(String(row.minimum_points)).gt(String(row.maximum_points)))validation('maximumPoints','Giới hạn lớn nhất thấp hơn nhỏ nhất');}
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
+    if(ruleWorkspaceOperations.includes(op)){
+      const authorize=(tx:Transaction)=>c.operation.method==='GET'?this.policy.collection(tx,c.principal!,'rules.read',schoolId,true):this.policy.require(tx,c.principal!,c.operation.permission,{schoolId});
+      const work=(tx:Transaction)=>ruleWorkspace(tx,this.policy,c);
+      return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
+    }
     const authorize=async(tx:Transaction)=>{
       if(['listRuleSets','getRuleSet','simulateRules'].includes(op))return this.readable(tx,c,op==='listRuleSets'?undefined:c.params.ruleSetId??String(c.body.ruleSetId));
       return this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId:c.params.classId,allowSubject:op==='getClassRules'});
     };
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='listRuleSets'){
-        const ids=await this.readable(tx,c);return listResource(tx,r,schoolId,c.query,ids?{sql:"t.id=ANY($1::uuid[]) AND t.status<>'DRAFT'",values:[ids]}:undefined,c.principal!.userId);
+        const ids=await this.readable(tx,c);return listResource(tx,r,schoolId,c.query,ids?{sql:"t.id=ANY($1::uuid[]) AND t.status<>'DRAFT' AND t.discarded_at IS NULL",values:[ids]}:{sql:'t.discarded_at IS NULL',values:[]},c.principal!.userId);
       }
       if(op==='getRuleSet')return {data:await this.detail(tx,schoolId,c.params.ruleSetId!)};
       if(op==='getClassRules'){
@@ -46,7 +53,7 @@ export class RulesService {
         if(!period)throw new Problem(404,'RULE_SET_NOT_APPLIED');return {data:await this.detail(tx,schoolId,String(period.rule_set_id))};
       }
       if(op==='simulateRules'){
-        const rs=await getResource(tx,r,schoolId,String(c.body.ruleSetId)),items=await loadRules(tx,schoolId,String(rs.id));
+        const rs=await this.activeRuleSet(tx,schoolId,String(c.body.ruleSetId)),items=await loadRules(tx,schoolId,String(rs.id));
         const deltas=(c.body.events as {ruleId:string;manualDelta?:string}[]).map(event=>{const rule=items.rules.find(rule=>rule.id===event.ruleId);if(!rule)validation('ruleId','Quy tắc không thuộc bản nội quy');return ruleDelta(rule,event.manualDelta);});
         return {data:{...score(rs,deltas,items.thresholds),appliedRuleCount:deltas.length}};
       }
@@ -55,8 +62,9 @@ export class RulesService {
         const classId=c.params.classId!,cls=await getResource(tx,resource('class'),schoolId,classId,true),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
         if(cls.version!==c.body.expectedClassVersion)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(cls.version));
         if(cls.status==='ARCHIVED'||year.status==='ARCHIVED')throw new Problem(409,'YEAR_ARCHIVED');
-        const ruleSet=await getResource(tx,r,schoolId,String(c.body.ruleSetId));if(ruleSet.status!=='ISSUED')throw new Problem(422,'RULE_SET_NOT_ISSUED');
+        const ruleSet=await this.activeRuleSet(tx,schoolId,String(c.body.ruleSetId));if(ruleSet.status!=='ISSUED')throw new Problem(422,'RULE_SET_NOT_ISSUED');
         const start=String(c.body.startsOn),end=c.body.endsOn??year.ends_on;
+        if(ruleSet.effective_from&&start<String(ruleSet.effective_from))validation('startsOn','Trước ngày hiệu lực đã ban hành');
         if(start<String(year.starts_on)||String(end)>String(year.ends_on)||start>=String(end))validation('startsOn','Ngoài năm học');
         const week=await one<Row>(tx,'SELECT id FROM app.school_weeks WHERE school_id=$1 AND year_id=$2 AND starts_on=$3',[schoolId,year.id,start]);if(!week)validation('startsOn','Chỉ thay nội quy ở đầu tuần');
         const today=(await this.policy.require(tx,c.principal!,'rules.apply',{schoolId,classId})).today;
@@ -74,7 +82,7 @@ export class RulesService {
         const revision=await one<{next:number}>(tx,'SELECT coalesce(max(revision),0)+1 AS next FROM app.rule_sets WHERE school_id=$1',[schoolId]);
         const data=await insertResource(tx,r,schoolId,c.body,{revision:revision!.next});await audit(tx,c,'ruleSet',String(data.id));return {data:await this.detail(tx,schoolId,String(data.id)),status:201};
       }
-      const current=await getResource(tx,r,schoolId,c.params.ruleSetId!,true);
+      const current=await this.activeRuleSet(tx,schoolId,c.params.ruleSetId!,true);
       if(current.version!==c.body.expectedVersion)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(current.version));
       if(current.status!=='DRAFT')throw new Problem(409,'RULE_SET_IMMUTABLE');
       if(op==='issueRuleSet'){

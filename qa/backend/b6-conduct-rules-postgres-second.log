@@ -1,0 +1,61 @@
+ Container edumanage_backend_test-runner-run-f9f39f4afbd1 Creating 
+ Container edumanage_backend_test-runner-run-f9f39f4afbd1 Created 
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (470.291822ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (621.578246ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (976.069699ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1192.832823ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (610.680257ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (298.624227ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (582.659591ms)
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (362.808919ms)
+✔ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (664.396476ms)
+✔ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (363.715681ms)
+✖ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (313.562992ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 9
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7242.257935
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3798:1
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (362.808919ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:resource_not_found","title":"RESOURCE_NOT_FOUND","status":404,"code":"RESOURCE_NOT_FOUND","requestId":"c1e8c462-09ac-4ed5-8053-b98f516a1928"}
+  
+  404 !== 201
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3807:267)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3843:1
+✖ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (313.562992ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:resource_not_found","title":"RESOURCE_NOT_FOUND","status":404,"code":"RESOURCE_NOT_FOUND","requestId":"1be60e67-a067-4d11-b7c0-6a4de53d98b6"}
+  
+  404 !== 201
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3850:157)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

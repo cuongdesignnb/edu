@@ -73,7 +73,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,372);assert.equal(new Set(operations.map(op=>op.id )).size,372);
+  assert.equal(operations.length,379);assert.equal(new Set(operations.map(op=>op.id )).size,379);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-conduct-rules.test.ts (7 tests) 24ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  05:52:29
+   Duration  811ms (transform 343ms, setup 35ms, collect 473ms, tests 24ms, environment 0ms, prepare 100ms)
+
+EXIT_CODE=0

@@ -1,0 +1,2 @@
+{"base":"600c3fd","oldOperations":372,"newOperations":379,"addedOperations":["getRuleWorkspaceDirectory","getRuleWorkspaceDetail","createRuleWorkspace","copyRuleWorkspace","saveRuleWorkspace","issueRuleWorkspace","discardRuleWorkspace"],"changedExistingOperations":[],"oldSchemas":525,"newSchemas":539,"changedExistingSchemas":[]}
+EXIT_CODE=0

@@ -1,0 +1,2 @@
+{"prefix":"b6-conduct-rules-acceptance","kind":"BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E","startedAt":"2026-10-01T23:12:21.952Z","host":"127.0.0.1","port":18763,"selectedFiles":["tests/native-ui-contract/conduct-rules-contract.spec.ts"],"portFreeBefore":true,"ownedNextPid":14040,"playwrightExitCode":0,"ownedNextTerminationRequested":true,"ownedNextClosed":true,"ownedNextExit":{"code":null,"signal":"SIGTERM"},"portFreeAfter":true,"finishedAt":"2026-10-01T23:12:27.442Z","exitCode":0}
+EXIT_CODE=0

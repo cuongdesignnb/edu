@@ -1,0 +1,165 @@
+{
+  "recordedAtUtc": "2026-10-01T23:13:14.196Z",
+  "baseCommit": "600c3fd8d1bd06cdfafd3a6b700982b91d6cbcc6",
+  "sourceState": "current uncommitted checkpoint; tested runner images immutable",
+  "currentRunnerImage": "sha256:34e80332167b4788a1bcb992e9e0c5c7705b4b114705150cb4149e98216e8448",
+  "contract": {
+    "operations": 379,
+    "schemas": 539,
+    "addedOperations": [
+      "getRuleWorkspaceDirectory",
+      "getRuleWorkspaceDetail",
+      "createRuleWorkspace",
+      "copyRuleWorkspace",
+      "saveRuleWorkspace",
+      "issueRuleWorkspace",
+      "discardRuleWorkspace"
+    ],
+    "changedExistingOperations": [],
+    "changedExistingSchemas": []
+  },
+  "migrations": {
+    "status": "PASS",
+    "count": 50,
+    "freshDatabase": "edumanage_clean_20261002_0601_local",
+    "firstApplied": 50,
+    "replayApplied": 0,
+    "rolesSafe": true,
+    "forceRls": true,
+    "logs": [
+      "b6-conduct-rules-clean-migrate-first.log",
+      "b6-conduct-rules-clean-migrate-replay.log",
+      "b6-conduct-rules-clean-verify.log"
+    ]
+  },
+  "postgresAffected": {
+    "status": "PASS",
+    "tests": 12,
+    "pass": 12,
+    "fail": 0,
+    "durationMs": 8010.485561,
+    "log": "b6-conduct-rules-postgres-acceptance.log"
+  },
+  "postgresFullPriorSnapshot": {
+    "status": "PASS",
+    "tests": 228,
+    "pass": 228,
+    "fail": 0,
+    "durationMs": 533132.142812,
+    "log": "b6-conduct-rules-full-postgres.log",
+    "runnerImage": "sha256:3a970d7fbee874004fd5bb541cc7d1a24295b21f03f6778df5f494caf247696c",
+    "scope": "Full228 before final scoped counters/manual zero changes; not the final229 file"
+  },
+  "postgresFullCurrent": {
+    "status": "NOT_RUN",
+    "tests": 229,
+    "reason": "The final class-scoped metadata/manual zero changes are covered by affected12/12; the complete current229 suite has not run."
+  },
+  "backendUnitContract": {
+    "status": "PASS",
+    "tests": 64,
+    "pass": 64,
+    "fail": 0,
+    "durationMs": 1086.8946,
+    "log": "b6-conduct-rules-backend-unit-contract-acceptance.log"
+  },
+  "frontendUnit": {
+    "status": "PASS",
+    "tests": 432,
+    "files": 54,
+    "apiTests": 391,
+    "historicalSyntheticTests": 41,
+    "durationSeconds": 10.89,
+    "log": "b6-conduct-rules-frontend-full-unit-final.log"
+  },
+  "browser": {
+    "status": "PASS",
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "tests": 4,
+    "durationMs": 4439.87,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "results": "b6-conduct-rules-acceptance-browser-results-final.json",
+    "ownedNextPid": 14040,
+    "ownedNextClosed": true,
+    "screenshots": [
+      "b6-conduct-rules-acceptance-desktop.png",
+      "b6-conduct-rules-acceptance-mobile.png"
+    ]
+  },
+  "frontend": {
+    "nativeCandidates": 175,
+    "activatedNative": 175,
+    "legacyTotal": 231,
+    "connectedLegacy": 155,
+    "remainingLegacy": 76,
+    "mockFallbackInConnectedMode": false,
+    "core": {
+      "total": 118,
+      "statuses": {
+        "IMPLEMENTED": 81,
+        "STATIC_UNVERIFIED": 3,
+        "NOT_STARTED": 34
+      },
+      "wholeScreenPostgresBrowserAccepted": 0
+    }
+  },
+  "operationStatuses": {
+    "TESTED": 367,
+    "IMPLEMENTED": 12
+  },
+  "dockerLocal": {
+    "url": "http://127.0.0.1:18763",
+    "releaseStatus": "NOT_SERVING",
+    "rootDeployScriptsMerge": "NOT_DONE"
+  },
+  "preservedFailures": [
+    {
+      "log": "b6-conduct-rules-postgres-initial.log",
+      "tests": 11,
+      "pass": 7,
+      "fail": 4
+    },
+    {
+      "log": "b6-conduct-rules-postgres-second.log",
+      "tests": 11,
+      "pass": 9,
+      "fail": 2
+    },
+    {
+      "log": "b6-conduct-rules-postgres-final.log",
+      "tests": 11,
+      "pass": 10,
+      "fail": 1
+    },
+    {
+      "log": "b6-conduct-rules-postgres-scope-final.log",
+      "tests": 12,
+      "pass": 11,
+      "fail": 1
+    },
+    {
+      "log": "b6-conduct-rules-backend-unit-contract.log",
+      "tests": 64,
+      "pass": 63,
+      "fail": 1
+    }
+  ],
+  "remaining": [
+    "76 legacy repository methods",
+    "34 core screens and3 static verifications",
+    "full current229 integration regression",
+    "whole current PostgreSQL browser E2E",
+    "root deploy/scripts and Docker release",
+    "restart database/file/worker persistence",
+    "physical backup/restore and failure drills",
+    "release100-reader/10-writer load measurement"
+  ],
+  "productionDeployed": false,
+  "volumeDeleted": false,
+  "databaseDeleted": false,
+  "otherProjectChanged": false,
+  "userZipStaged": false,
+  "goalStatus": "ACTIVE"
+}

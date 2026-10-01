@@ -525,6 +525,20 @@ export interface ApiSchemas {
   "PublicSchoolWorkspaceResponse": { "data": ApiSchemas["PublicSchoolWorkspace"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "PublicNewsWorkspace": { "school": { "name": string; "slug": string; }; "news": { "id": string; "title": string; "summary": string; "publishedAt": string; "body": Array<{ "type": "p" | "h" | "li"; "text": string; }>; "source": ApiSchemas["PublicNewsSource"]; "attachments": Array<{ "id": string; "name": string; "mime": string; "size": number; }>; }; };
   "PublicNewsWorkspaceResponse": { "data": ApiSchemas["PublicNewsWorkspace"]; "requestId": string; };
+  "RuleWorkspaceSource": { "id": string; "version": number; "applicationHash": string; };
+  "RuleWorkspaceRule": { "id": string; "code": string; "label": string; "points": number; "category": string; "icon": string; "shareWithParent": boolean; "attendanceLink": ("late" | "unexcused" | null) | null; "valueMode": "FIXED" | "MANUAL"; "minimumDelta": (number) | null; "maximumDelta": (number) | null; "reasonRequired": boolean; "maxOccurrencesPerDay": (number) | null; };
+  "RuleWorkspaceBand": { "min": number; "label": string; "tone": "neutral" | "success" | "info" | "warning" | "danger"; };
+  "RuleWorkspaceItem": { "schoolId": string; "id": string; "name": string; "versionNo": number; "status": "draft" | "published" | "retired"; "effectiveFrom": (string) | null; "effectiveTo": (string) | null; "baseScore": number; "cap": (number) | null; "floor": (number) | null; "rules": Array<ApiSchemas["RuleWorkspaceRule"]>; "bands": Array<ApiSchemas["RuleWorkspaceBand"]>; "entryDeadlineDays": (number) | null; "createdBy": (string) | null; "createdByName": (string) | null; "publishedAt": (string) | null; "version": number; "source": ApiSchemas["RuleWorkspaceSource"]; "isCurrent": boolean; "usedBySnapshots": number; "canManage": boolean; "canIssue": boolean; };
+  "RuleWorkspaceDirectory": { "schoolId": string; "today": string; "items": Array<ApiSchemas["RuleWorkspaceItem"]>; "canManage": boolean; "applicationHash": string; };
+  "RuleWorkspaceCreate": { "applicationHash": string; };
+  "RuleWorkspaceDetail": { "ruleSet": ApiSchemas["RuleWorkspaceItem"]; "previous": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "usedBySnapshots": number; "canManage": boolean; "earliestEffective": string; };
+  "RuleWorkspaceSave": { "source": ApiSchemas["RuleWorkspaceSource"]; "name": string; "baseScore": number; "cap": (number) | null; "floor": (number) | null; "rules": Array<ApiSchemas["RuleWorkspaceRule"]>; "bands": Array<ApiSchemas["RuleWorkspaceBand"]>; "effectiveFrom": string; "entryDeadlineDays": number; };
+  "RuleWorkspaceAction": { "source": ApiSchemas["RuleWorkspaceSource"]; };
+  "RuleWorkspaceDiscard": { "id": string; "discarded": boolean; };
+  "RuleWorkspaceDetailResponse": { "data": ApiSchemas["RuleWorkspaceDetail"]; "requestId": string; };
+  "RuleWorkspaceItemResponse": { "data": ApiSchemas["RuleWorkspaceItem"]; "requestId": string; };
+  "RuleWorkspaceDiscardResponse": { "data": ApiSchemas["RuleWorkspaceDiscard"]; "requestId": string; };
+  "RuleWorkspaceDirectoryResponse": { "data": ApiSchemas["RuleWorkspaceDirectory"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4247,6 +4261,76 @@ export const apiOperations = {
     "list": false,
     "permission": "public",
     "readOnly": true
+  },
+  "getRuleWorkspaceDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "RuleWorkspaceDirectory",
+    "list": false,
+    "permission": "rules.read",
+    "readOnly": true
+  },
+  "getRuleWorkspaceDetail": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/{ruleSetId}",
+    "auth": "staff",
+    "request": null,
+    "response": "RuleWorkspaceDetail",
+    "list": false,
+    "permission": "rules.read",
+    "readOnly": true
+  },
+  "createRuleWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/create",
+    "auth": "staff",
+    "request": "RuleWorkspaceCreate",
+    "response": "RuleWorkspaceItem",
+    "list": false,
+    "permission": "rules.manage",
+    "readOnly": false
+  },
+  "copyRuleWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/{ruleSetId}/copy",
+    "auth": "staff",
+    "request": "RuleWorkspaceAction",
+    "response": "RuleWorkspaceItem",
+    "list": false,
+    "permission": "rules.manage",
+    "readOnly": false
+  },
+  "saveRuleWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/{ruleSetId}/save",
+    "auth": "staff",
+    "request": "RuleWorkspaceSave",
+    "response": "RuleWorkspaceItem",
+    "list": false,
+    "permission": "rules.manage",
+    "readOnly": false
+  },
+  "issueRuleWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/{ruleSetId}/issue",
+    "auth": "staff",
+    "request": "RuleWorkspaceAction",
+    "response": "RuleWorkspaceItem",
+    "list": false,
+    "permission": "rules.issue+rules.apply",
+    "readOnly": false
+  },
+  "discardRuleWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/rule-workspace/{ruleSetId}/discard",
+    "auth": "staff",
+    "request": "RuleWorkspaceAction",
+    "response": "RuleWorkspaceDiscard",
+    "list": false,
+    "permission": "rules.manage",
+    "readOnly": false
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

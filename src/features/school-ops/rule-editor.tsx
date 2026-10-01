@@ -3,7 +3,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { Plus, Trash2, Save, Send, Calculator, GitCompare, ListChecks, SlidersHorizontal, Lock, Info, Copy, Minus } from "lucide-react";
-import type { ConductRule, GradeBand, RuleSet } from "@/lib/model/types";
+import type { ConductRule } from "@/lib/model/types";
+import type {RuleItem,RuleEditorRule} from '@/lib/repositories/connected/conduct';
 import { conductRepo, type RepoError } from "@/lib/repositories";
 import { useCommand } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, fmtPoints } from "@/lib/formatters";
@@ -20,11 +21,11 @@ import { RULESET_STATUS } from "./rule-sets";
 type Data = Awaited<ReturnType<typeof conductRepo.ruleSet>>;
 const CATEGORIES: ConductRule["category"][] = ["Chuyên cần", "Nề nếp", "Học tập", "Phong trào"];
 
-interface Form { name: string; baseScore?: number; cap?: number; floor?: number; rules: ConductRule[]; bands: GradeBand[]; effectiveFrom?: string; entryDeadlineDays?: number }
-const toForm = (r: RuleSet): Form => ({ name: r.name, baseScore: r.baseScore, cap: r.cap, floor: r.floor, rules: r.rules.map((x) => ({ ...x })), bands: r.bands.map((b) => ({ ...b })), effectiveFrom: r.effectiveFrom, entryDeadlineDays: r.entryDeadlineDays });
+interface Form { name: string; baseScore?: number; cap?: number; floor?: number; rules: RuleEditorRule[]; bands: RuleItem['bands']; effectiveFrom?: string; entryDeadlineDays?: number }
+const toForm = (r: RuleItem): Form => ({ name: r.name, baseScore: r.baseScore, cap: r.cap, floor: r.floor, rules: r.rules.map((x) => ({ ...x })), bands: r.bands.map((b) => ({ ...b })), effectiveFrom: r.effectiveFrom, entryDeadlineDays: r.entryDeadlineDays });
 
 /** Diff of a version vs the previous published version (rules + scoring). */
-function diffOf(prev: RuleSet | null, cur: Form) {
+function diffOf(prev: RuleItem | null, cur: Form) {
   if (!prev) return [];
   const out: { kind: "add" | "remove" | "change"; text: string }[] = [];
   for (const r of cur.rules) {
@@ -58,7 +59,8 @@ function Simulator({ form }: { form: Form }) {
     return init;
   });
   const picked = form.rules.flatMap((r) => Array.from({ length: counts[r.id] ?? 0 }, () => r));
-  const res = form.baseScore !== undefined ? conductRepo.simulate({ baseScore: form.baseScore, cap: form.cap, floor: form.floor, bands: form.bands }, picked.map((r) => r.points)) : null;
+  const sampleValid=[form.baseScore,...picked.map(r=>r.points),...form.bands.map(b=>b.min)].every(v=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v*100-Math.round(v*100))<0.00001)&&[form.cap,form.floor].every(v=>v===undefined||Number.isFinite(v)&&Math.abs(v*100-Math.round(v*100))<0.00001);
+  const res = sampleValid&&form.baseScore !== undefined ? conductRepo.simulate({ baseScore: form.baseScore, cap: form.cap, floor: form.floor, bands: form.bands }, picked.map((r) => r.points)) : null;
   const expr = res ? `${form.baseScore} ${picked.map((r) => (r.points < 0 ? `− ${Math.abs(r.points)}` : `+ ${r.points}`)).join(" ")} = ${res.raw}` : "—";
   const step = (id: string, d: number) => setCounts((c) => ({ ...c, [id]: Math.max(0, Math.min(9, (c[id] ?? 0) + d)) }));
   return (
@@ -101,23 +103,22 @@ export function RuleSetEditor({ schoolId, data }: { schoolId: string; data: Data
   const base = `/school/${schoolId}/conduct-rules`;
   const onErr = (e: RepoError) => { if (e.code === "VALIDATION") setErrors(e.fieldErrors ?? { form: e.message }); };
 
-  const payload = () => ({ name: f.name, baseScore: f.baseScore ?? NaN, cap: f.cap, floor: f.floor, rules: f.rules.map((r) => ({ ...r, code: r.code.trim().toUpperCase(), label: r.label.trim() })), bands: f.bands, effectiveFrom: f.effectiveFrom ?? "", entryDeadlineDays: f.entryDeadlineDays ?? 0, version: rs.version });
+  const payload = () => ({ source:rs.source,name: f.name, baseScore: f.baseScore ?? NaN, cap: f.cap, floor: f.floor, rules: f.rules.map((r) => ({ ...r, code: r.code.trim().toUpperCase(), label: r.label.trim() })), bands: f.bands, effectiveFrom: f.effectiveFrom ?? "", entryDeadlineDays: f.entryDeadlineDays ?? NaN, version: rs.version });
   const save = useCommand((ctx) => conductRepo.saveRuleSetDraft(ctx, schoolId, rs.id, payload()), { success: "Đã lưu bản nháp nội quy", onError: onErr });
   const publish = useCommand(async (ctx) => {
     const saved = dirty ? await conductRepo.saveRuleSetDraft(ctx, schoolId, rs.id, payload()) : rs;
-    void saved;
-    return conductRepo.publishRuleSet(ctx, schoolId, rs.id);
+    return conductRepo.publishRuleSet(ctx, schoolId, rs.id, saved.source);
   }, { success: "Đã ban hành nội quy", onError: onErr, onSuccess: () => { setDone(true); setDlg(null); } });
-  const remove = useCommand((ctx) => conductRepo.deleteRuleSetDraft(ctx, schoolId, rs.id), { success: "Đã xóa bản nháp nội quy", onSuccess: () => { setDone(true); router.push(base); } });
-  const copy = useCommand((ctx) => conductRepo.newRuleSetVersion(ctx, schoolId, rs.id), { success: (r) => `Đã tạo bản nháp ${r.name}`, onSuccess: (r) => router.push(`${base}/${r.id}`) });
+  const remove = useCommand((ctx) => conductRepo.deleteRuleSetDraft(ctx, schoolId, rs.id, rs.source), { success: "Đã xóa bản nháp nội quy", onSuccess: () => { setDone(true); router.push(base); } });
+  const copy = useCommand((ctx) => conductRepo.newRuleSetVersion(ctx, schoolId, rs.id, rs.source), { success: (r) => `Đã tạo bản nháp ${r.name}`, onSuccess: (r) => router.push(`${base}/${r.id}`) });
   const saveNow = useCallback(async () => { const r = await save.run(); if (r) setErrors({}); return !!r; }, [save]);
   useUnsavedChanges(dirty, saveNow);
 
-  const setRule = (i: number, patch: Partial<ConductRule>) => setF((x) => ({ ...x, rules: x.rules.map((r, j) => (j === i ? { ...r, ...patch } : r)) }));
+  const setRule = (i: number, patch: Partial<RuleEditorRule>) => setF((x) => ({ ...x, rules: x.rules.map((r, j) => (j === i ? { ...r, ...patch } : r)) }));
   const addRule = () => setF((x) => {
     let n = x.rules.length + 1;
     while (x.rules.some((r) => r.id === `rule-${n}` || r.code === `QD${String(n).padStart(2, "0")}`)) n++;
-    return { ...x, rules: [...x.rules, { id: `rule-${n}`, code: `QD${String(n).padStart(2, "0")}`, label: "", points: -5, category: "Nề nếp", icon: "alert", shareWithParent: true }] };
+    return { ...x, rules: [...x.rules, { id: crypto.randomUUID(), code: `QD${String(n).padStart(2, "0")}`, label: "", points: -5, category: "Nề nếp", icon: "alert", shareWithParent: true,attendanceLink:undefined,valueMode:'FIXED',minimumDelta:null,maximumDelta:null,reasonRequired:true,maxOccurrencesPerDay:null }] };
   });
   const diff = diffOf(data.previous, f);
   const err = (k: string) => errors[k];
@@ -131,9 +132,9 @@ export function RuleSetEditor({ schoolId, data }: { schoolId: string; data: Data
         actions={editable ? <>
           <Button variant="danger-soft" icon={<Trash2 className="size-4" />} onClick={() => setDlg("delete")}>Xóa bản nháp</Button>
           <Button icon={<Save className="size-4" />} loading={save.pending} onClick={() => saveNow()}>Lưu nháp</Button>
-          <Button variant="primary" icon={<Send className="size-4" />} onClick={() => setDlg("publish")}>Ban hành</Button>
-        </> : can("rules.manage") ? <Button variant="primary" icon={<Copy className="size-4" />} onClick={() => setDlg("copy")}>Tạo bản mới từ bản này</Button> : undefined} />
-      {!editable && <Callout tone="neutral" icon={<Lock />} title="Phiên bản này không sửa trực tiếp">{rs.status === "draft" ? "Bạn không có quyền ban hành nội quy — chỉ xem." : "Nội quy đã ban hành không bị sửa ngầm. Để thay đổi, tạo bản mới có ngày hiệu lực từ hôm nay trở đi."}{rs.publishedAt ? ` Ban hành lúc ${fmtDateTime(rs.publishedAt)}.` : ""}</Callout>}
+          <Button variant="primary" icon={<Send className="size-4" />} disabled={!rs.canIssue} onClick={() => setDlg("publish")}>Ban hành</Button>
+        </> : rs.canIssue ? <Button variant="primary" icon={<Send className="size-4" />} onClick={()=>setDlg('publish')}>Ban hành</Button> : can("rules.manage") ? <Button variant="primary" icon={<Copy className="size-4" />} onClick={() => setDlg("copy")}>Tạo bản mới từ bản này</Button> : undefined} />
+      {!editable && <Callout tone="neutral" icon={<Lock />} title="Phiên bản này không sửa trực tiếp">{rs.status === "draft" ? rs.canIssue?"Bạn chỉ có quyền ban hành bản nháp đã soạn; kiểm tra nội dung trước khi ban hành.":"Bạn không có quyền soạn bản nháp — chỉ xem." : "Nội quy đã ban hành không bị sửa ngầm. Để thay đổi, tạo bản mới có ngày hiệu lực từ hôm nay trở đi."}{rs.publishedAt ? ` Ban hành lúc ${fmtDateTime(rs.publishedAt)}.` : ""}</Callout>}
       <ErrorSummary errors={errors} labels={{ name: "Tên", baseScore: "Điểm gốc", cap: "Điểm trần", floor: "Điểm sàn", effectiveFrom: "Ngày hiệu lực", rules: "Quy định", form: "Biểu mẫu" }} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="min-w-0 space-y-5">
@@ -189,13 +190,14 @@ export function RuleSetEditor({ schoolId, data }: { schoolId: string; data: Data
             </div>
           </Card>
           <Card>
-            <CardHeader title="Xếp loại theo tổng điểm" icon={<ListChecks className="size-5" />} subtitle="Mức thấp nhất áp dụng cho mọi điểm còn lại." />
+            <CardHeader title="Xếp loại theo tổng điểm" icon={<ListChecks className="size-5" />} subtitle="Mức thấp nhất áp dụng cho mọi điểm còn lại." action={editable&&<Button size="sm" icon={<Plus className="size-4" />} disabled={f.bands.length>=50} onClick={()=>setF({...f,bands:[...f.bands,{min:0,label:'Mức mới',tone:'info'}]})}>Thêm mức</Button>} />
             <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2 xl:grid-cols-4">
               {f.bands.map((b, i) => (
                 <div key={i} className="rounded-xl border border-line p-3">
                   <Badge tone={b.tone}>{b.label}</Badge>
                   {editable ? <div className="mt-2 space-y-2">
                     <input className={inputCls} aria-label={`Tên mức ${i + 1}`} value={b.label} onChange={(e) => setF({ ...f, bands: f.bands.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })} />
+                    <Button size="sm" variant="ghost" disabled={f.bands.length<=1} icon={<Trash2 className="size-3.5" />} onClick={()=>setF({...f,bands:f.bands.filter((_,j)=>j!==i)})}>Xóa mức</Button>
                     {b.min > -999 ? <label className="flex items-center gap-2 text-[13px] text-body">Từ<input className={clsx(inputCls, "w-20 text-right")} inputMode="numeric" aria-label={`Điểm tối thiểu mức ${b.label}`} value={b.min} onChange={(e) => setF({ ...f, bands: f.bands.map((x, j) => (j === i ? { ...x, min: Number(e.target.value) || 0 } : x)) })} />điểm</label> : <p className="text-[13px] text-muted">Các điểm còn lại</p>}
                   </div> : <p className="mt-2 text-[13px] text-body">{b.min > -999 ? `Từ ${b.min} điểm` : "Các điểm còn lại"}</p>}
                 </div>
@@ -225,7 +227,7 @@ export function RuleSetEditor({ schoolId, data }: { schoolId: string; data: Data
       <ConfirmDialog open={dlg === "copy"} onOpenChange={(o) => !o && setDlg(null)} title="Tạo bản mới từ bản này" object={rs.name} confirmLabel="Tạo bản nháp" busy={copy.pending}
         error={copy.error?.code === "VALIDATION" ? copy.error.message : undefined}
         consequence="Tạo bản nháp sao chép từ phiên bản này. Bản đã ban hành giữ nguyên. Mỗi thời điểm chỉ có một bản nháp." onConfirm={async () => { await copy.run(); }} />
-      <ConflictDialog error={save.error ?? publish.error} onClose={() => { save.reset(); publish.reset(); }} onReload={() => window.location.reload()} />
+      <ConflictDialog error={save.error ?? publish.error ?? remove.error ?? copy.error} onClose={() => { save.reset(); publish.reset(); remove.reset(); copy.reset(); }} onReload={() => window.location.reload()} />
     </div>
   );
 }

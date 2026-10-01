@@ -38,6 +38,6 @@ export async function publicConductItems(tx:Transaction,p:Row,revision:number,ad
     const ids=data.enrollments.filter(e=>e.student_id===student.studentId).map(e=>e.id);
     return {studentId:String(student.studentId),section:'conduct',schema:'ParentConduct',payload:{periodId:p.id,periodLabel:`Tuần ${p.week_number}`,revision,
       basePoints:student.basePoints,bonusPoints:student.bonusPoints,penaltyPoints:student.penaltyPoints,finalPoints:student.finalPoints,classification:student.classification,
-      lines:data.records.filter(r=>ids.includes(r.enrollment_id)&&r.status==='APPROVED').map(r=>({label:r.rule_label_snapshot,delta:r.delta_snapshot,occurredAt:iso(r.occurred_at as Date),reason:r.public_reason})),publishedAt:iso(at),adjusted}};
+      lines:data.records.filter(r=>ids.includes(r.enrollment_id)&&r.status==='APPROVED'&&r.share_with_parent_snapshot!==false).map(r=>({label:r.rule_label_snapshot,delta:r.delta_snapshot,occurredAt:iso(r.occurred_at as Date),reason:r.public_reason})),publishedAt:iso(at),adjusted}};
   })};
 }

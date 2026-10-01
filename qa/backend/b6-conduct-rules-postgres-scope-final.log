@@ -1,0 +1,44 @@
+ Container edumanage_backend_test-runner-run-4affd5987f93 Creating 
+ Container edumanage_backend_test-runner-run-4affd5987f93 Created 
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (447.609181ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (588.796004ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (988.70673ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1137.052126ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (593.494137ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (295.104703ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (581.970774ms)
+✔ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (572.363549ms)
+✖ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (435.905164ms)
+✔ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (356.751047ms)
+✔ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (313.266872ms)
+✔ B6 native rule workspace preserves canonical bounded manual rules with a zero default during an unrelated editor save (256.906709ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7419.579943
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3820:1
+✖ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (435.905164ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:review_blocked","title":"REVIEW_BLOCKED","status":422,"code":"REVIEW_BLOCKED","requestId":"6847fe8f-a8de-4eab-8f71-a15e338916de"}
+  
+  422 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3827:321)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 422,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

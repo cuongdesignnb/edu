@@ -1,5 +1,29 @@
 # Backend implementation decisions
 
+## ADR-093 — Native school rule editor, declared source and atomic future application
+
+The existing SC29/SC30 editor requires metadata absent from the canonical rule-set DTO. Migration050 adds explicit effective date, entry deadline, creator, icon, parent-detail sharing and classification tone. Existing issued rules are not rewritten: unknown metadata stays null, and canonical application ranges provide actual dates. The first school rule draft is a persisted configuration with no invented records; administrators can add rules and classification levels through the existing editor design.
+
+Seven new operations and14 schemas implement directory, detail, first draft, copy, save, issue and discard. The contract audit proves all372 existing operations and525 existing schemas remain identical. School/class/subject readers receive only currently readable rule versions; class counters, application ranges and earliest dates are scoped in SQL. Every mutation carries the displayed rule version and a digest of actual class/year/calendar/application/period state. Commands authorize before idempotent replay and serialize with the existing school lock. Changing classes/calendar/pinned periods makes the displayed source stale. A dirty issue uses the save acknowledgement's source, without fetching a newer version before writing.
+
+Issuance requires independent school-wide rules.issue and rules.apply. The command validates every eligible current class before writing, applies the revision only at an actual week boundary and rejects already initialized future periods. Previous pinned periods and immutable issued rules remain intact. A manager may save without issue rights; an issuer may issue the displayed draft without editing it. The UI now reflects both distinctions, and rule administration is independent of year-directory access.
+
+Discard tombstones an unused draft and preserves its records/audit trail; DELETE remains revoked on rule_sets. Canonical get/edit/issue/simulate paths reject tombstones too. The first integration attempt exposed enum/null and nullable-ref validator errors; subsequent checks exposed a canonical helper selecting too few columns to recognize tombstones. These were repaired without bypassing successful JSON response validation. The invalid empty-roster test fixture was repaired by enrolling a real synthetic pupil, preserving REVIEW_BLOCKED in production.
+
+## ADR-094 — Frozen parent-detail choice, deadlines and bounded manual rule roundtrips
+
+Migration050 captures share_with_parent_snapshot from the actual rule on INSERT and makes the snapshot immutable. Parent publication totals remain the real server scores; an approved rule marked private contributes to the score while its label, reason and individual line are omitted from the child projection. Existing published payloads are never rewritten. Entry deadline is enforced against the school's actual local date on canonical record creation, with the already reviewed locked adjustment path retaining its separate authorization. Unknown pre-existing deadlines remain null rather than receiving a fabricated limit.
+
+The native editor preserves canonical MANUAL mode, bounds, reason and occurrence fields during unrelated edits. A bounded manual rule may have a zero default; FIXED rules still require a nonzero signed delta. Illustration of a user's draft is a pure, non-persisting integer-cent calculation; saved scores, classifications and parent projections come from PostgreSQL. No connected fallback imports a demo repository or returns synthetic success on failure.
+
+## ADR-095 — Current rule checkpoint evidence and exact regression scope
+
+Current affected PostgreSQL12/12 passed after the final class-counter/manual-rule fixes, including two-class issuance, restricted counters/dates, issue-only versus manage-only grants, fresh expiry/revocation, source races, week boundaries, pinned future periods, immutable sharing and actual entry deadlines. Backend unit/contracts64/64, frontend432/432 (391 API cases plus41 historical synthetic tests), builds/types/lint and four controlled Edge checks passed; final desktop/mobile screenshots were inspected. Browser checks are INTERCEPTED_API_NOT_POSTGRES_E2E.
+
+The full228-case PostgreSQL run passed on immutable image sha256:3a970d7fbee874004fd5bb541cc7d1a24295b21f03f6778df5f494caf247696c in533132.142812ms, before the final scoped-metadata/manual-rule changes. Its log is preserved as evidence for that source snapshot. The current integration file contains229 tests; its final affected12 checks ran, but the full229 was NOT_RUN. This checkpoint does not label the final whole suite PASS. Initial7/11,9/11,10/11 and scoped11/12 failures, the first unit registry-count failure and failed browser setup runs are retained.
+
+A separate pristine database edumanage_clean_20261002_0601_local applied50 migrations, replayed with0 changes and passed safe-role/FORCE RLS/checksum verification. No old migration was changed. The owned browser server was closed; final OS18763 listener count is0. Root deploy/scripts, the Docker release at127.0.0.1:18763, real PostgreSQL browser E2E, restart persistence, backup/restore and load measurements remain pending. No volume or database was deleted, no other project changed, no production deployment or push occurred, and the user's ZIP remains unstaged. The full goal stays active.
+
 ## ADR-001 — Invalid OpenAPI empty required arrays
 
 Official `@apidevtools/swagger-parser` validation of the supplied 3.0.3 design

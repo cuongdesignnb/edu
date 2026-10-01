@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:15688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\conduct-rules-contract.spec.ts:21:5 › native rule list creates the first real draft and dirty issue sends the acknowledged saved source (1.3s)
+  ok 2 tests\native-ui-contract\conduct-rules-contract.spec.ts:22:5 › read-only native rules preserve decimal example and hide write controls on mobile (555ms)
+  ok 3 tests\native-ui-contract\conduct-rules-contract.spec.ts:23:5 › native rule outage retries real directory and version conflicts keep the draft without issuing it (980ms)
+  ok 4 tests\native-ui-contract\conduct-rules-contract.spec.ts:24:5 › independent issue permission allows a displayed draft to be issued without exposing edit or delete controls (620ms)
+
+  4 passed (4.4s)

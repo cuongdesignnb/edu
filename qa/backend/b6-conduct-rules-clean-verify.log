@@ -1,0 +1,4 @@
+ Container edumanage_backend_test-runner-run-1dbcc6318826 Creating 
+ Container edumanage_backend_test-runner-run-1dbcc6318826 Created 
+{"schemaRevision":"050-rule-workspace-metadata.sql","migrations":50,"rolesSafe":true,"forceRls":true}
+EXIT_CODE=0

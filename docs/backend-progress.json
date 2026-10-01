@@ -4426,6 +4426,95 @@
       "evidence": [
         "qa/backend/b6-public-announcements-postgres-final.log: 10/10 PostgreSQL; current PUBLIC snapshots/file scopes and migration049 verified; browser contracts separate."
       ]
+    },
+    {
+      "operationId": "getRuleWorkspaceDirectory",
+      "screenIds": [
+        "SC29"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getRuleWorkspaceDetail",
+      "screenIds": [
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "copyRuleWorkspace",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "saveRuleWorkspace",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "issueRuleWorkspace",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "discardRuleWorkspace",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "createRuleWorkspace",
+      "screenIds": [
+        "SC29",
+        "SC30"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
+        "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5264,11 +5353,20 @@
       "scope": "core",
       "operationIds": [
         "listRuleSets",
-        "createRuleSet"
+        "createRuleSet",
+        "getRuleWorkspaceDirectory",
+        "copyRuleWorkspace",
+        "saveRuleWorkspace",
+        "issueRuleWorkspace",
+        "discardRuleWorkspace",
+        "createRuleWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native rule workspace and facade wired to PostgreSQL API with explicit displayed sources. Controlled Edge3/3 browser contracts and screenshots; true PostgreSQL browser E2E remains NOT_RUN.",
+        "Final rule editor scope: dirty save-then-issue acknowledgement and independent issue-only UI, first draft and additional classification levels; current PostgreSQL12/12, controlled Edge4/4. Browser uses intercepted API; actual PostgreSQL whole-screen E2E remains NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5279,11 +5377,20 @@
         "getRuleSet",
         "updateRuleSet",
         "issueRuleSet",
-        "simulateRules"
+        "simulateRules",
+        "getRuleWorkspaceDetail",
+        "copyRuleWorkspace",
+        "saveRuleWorkspace",
+        "issueRuleWorkspace",
+        "discardRuleWorkspace",
+        "createRuleWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native rule workspace and facade wired to PostgreSQL API with explicit displayed sources. Controlled Edge3/3 browser contracts and screenshots; true PostgreSQL browser E2E remains NOT_RUN.",
+        "Final rule editor scope: dirty save-then-issue acknowledgement and independent issue-only UI, first draft and additional classification levels; current PostgreSQL12/12, controlled Edge4/4. Browser uses intercepted API; actual PostgreSQL whole-screen E2E remains NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {

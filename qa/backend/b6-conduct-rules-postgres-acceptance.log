@@ -1,0 +1,23 @@
+ Container edumanage_backend_test-runner-run-1b920c9983de Creating 
+ Container edumanage_backend_test-runner-run-1b920c9983de Created 
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (451.449225ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (640.335982ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (1024.999947ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1225.314043ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (611.691775ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (303.621996ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (584.724586ms)
+✔ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (613.027235ms)
+✔ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (756.583442ms)
+✔ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (356.822449ms)
+✔ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (310.58497ms)
+✔ B6 native rule workspace preserves canonical bounded manual rules with a zero default during an unrelated editor save (359.51896ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8010.485561
+EXIT_CODE=0

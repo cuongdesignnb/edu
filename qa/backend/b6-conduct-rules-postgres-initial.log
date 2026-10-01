@@ -1,0 +1,99 @@
+ Container edumanage_backend_test-runner-run-51621de1f117 Creating 
+ Container edumanage_backend_test-runner-run-51621de1f117 Created 
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (482.102393ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (591.700411ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (1014.207033ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1169.95886ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (618.643884ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (331.343063ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (590.018089ms)
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (213.957344ms)
+✖ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (276.959357ms)
+✖ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (176.663058ms)
+✖ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (191.079443ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 7
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6474.15711
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3798:1
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (213.957344ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:validation_error","title":"VALIDATION_ERROR","status":422,"code":"VALIDATION_ERROR","requestId":"fc29a6e8-9616-4f6b-9339-4276407116e2","fieldErrors":[{"path":"/rules/0/attendanceLink","code":"enum","message":"Dữ liệu không hợp lệ"}]}
+  
+  422 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3799:101)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 422,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3819:1
+✖ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (276.959357ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"0e36c4e4-54b9-4f43-8a5e-d1214e6dc6fb"}
+  
+  500 !== 200
+  
+      at Object.get (file:///srv/api/tests/integration/foundation.test.mjs:3792:136)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3821:89)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 500,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3832:1
+✖ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (176.663058ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:validation_error","title":"VALIDATION_ERROR","status":422,"code":"VALIDATION_ERROR","requestId":"79508946-d92f-48a7-89d0-f220ebfbd0ce","fieldErrors":[{"path":"/rules/0/attendanceLink","code":"enum","message":"Dữ liệu không hợp lệ"}]}
+  
+  422 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3833:145)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 422,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3843:1
+✖ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (191.079443ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"0da1238a-dddb-4e65-986a-677bb7f7a45f"}
+  
+  500 !== 200
+  
+      at Object.get (file:///srv/api/tests/integration/foundation.test.mjs:3792:136)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3845:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 500,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

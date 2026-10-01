@@ -38587,6 +38587,669 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace:
+    get:
+      operationId: getRuleWorkspaceDirectory
+      tags:
+        - Conduct
+      summary: getRuleWorkspaceDirectory
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/{ruleSetId}:
+    get:
+      operationId: getRuleWorkspaceDetail
+      tags:
+        - Conduct
+      summary: getRuleWorkspaceDetail
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceDetailResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/create:
+    post:
+      operationId: createRuleWorkspace
+      tags:
+        - Conduct
+      summary: createRuleWorkspace
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleWorkspaceCreate"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/{ruleSetId}/copy:
+    post:
+      operationId: copyRuleWorkspace
+      tags:
+        - Conduct
+      summary: copyRuleWorkspace
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleWorkspaceAction"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/{ruleSetId}/save:
+    post:
+      operationId: saveRuleWorkspace
+      tags:
+        - Conduct
+      summary: saveRuleWorkspace
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleWorkspaceSave"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/{ruleSetId}/issue:
+    post:
+      operationId: issueRuleWorkspace
+      tags:
+        - Conduct
+      summary: issueRuleWorkspace
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.issue+rules.apply
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleWorkspaceAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/rule-workspace/{ruleSetId}/discard:
+    post:
+      operationId: discardRuleWorkspace
+      tags:
+        - Conduct
+      summary: discardRuleWorkspace
+      description: Native rule editor with persisted metadata, displayed versions,
+        immutable issued rules, tombstoned unused drafts and atomic future class
+        application.
+      x-permission: rules.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC29
+        - SC30
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: ruleSetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleWorkspaceAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuleWorkspaceDiscardResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -57766,6 +58429,405 @@ components:
           type: string
       required:
         - data
+        - requestId
+      additionalProperties: false
+    RuleWorkspaceSource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        applicationHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+        - id
+        - version
+        - applicationHash
+      additionalProperties: false
+    RuleWorkspaceRule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        points:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        category:
+          type: string
+          minLength: 1
+          maxLength: 200
+        icon:
+          type: string
+          minLength: 1
+          maxLength: 80
+        shareWithParent:
+          type: boolean
+        attendanceLink:
+          type: string
+          enum:
+            - late
+            - unexcused
+            - null
+          nullable: true
+        valueMode:
+          type: string
+          enum:
+            - FIXED
+            - MANUAL
+        minimumDelta:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        maximumDelta:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        reasonRequired:
+          type: boolean
+        maxOccurrencesPerDay:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+        - id
+        - code
+        - label
+        - points
+        - category
+        - icon
+        - shareWithParent
+        - attendanceLink
+        - valueMode
+        - minimumDelta
+        - maximumDelta
+        - reasonRequired
+        - maxOccurrencesPerDay
+      additionalProperties: false
+    RuleWorkspaceBand:
+      type: object
+      properties:
+        min:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        tone:
+          type: string
+          enum:
+            - neutral
+            - success
+            - info
+            - warning
+            - danger
+      required:
+        - min
+        - label
+        - tone
+      additionalProperties: false
+    RuleWorkspaceItem:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        versionNo:
+          type: integer
+          minimum: 1
+        status:
+          type: string
+          enum:
+            - draft
+            - published
+            - retired
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        effectiveTo:
+          type: string
+          format: date
+          nullable: true
+        baseScore:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        cap:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        floor:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceRule"
+          maxItems: 200
+        bands:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceBand"
+          maxItems: 50
+        entryDeadlineDays:
+          type: integer
+          minimum: 0
+          maximum: 365
+          nullable: true
+        createdBy:
+          type: string
+          format: uuid
+          nullable: true
+        createdByName:
+          type: string
+          nullable: true
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        source:
+          $ref: "#/components/schemas/RuleWorkspaceSource"
+        isCurrent:
+          type: boolean
+        usedBySnapshots:
+          type: integer
+          minimum: 0
+        canManage:
+          type: boolean
+        canIssue:
+          type: boolean
+      required:
+        - schoolId
+        - id
+        - name
+        - versionNo
+        - status
+        - effectiveFrom
+        - effectiveTo
+        - baseScore
+        - cap
+        - floor
+        - rules
+        - bands
+        - entryDeadlineDays
+        - createdBy
+        - createdByName
+        - publishedAt
+        - version
+        - source
+        - isCurrent
+        - usedBySnapshots
+        - canManage
+        - canIssue
+      additionalProperties: false
+    RuleWorkspaceDirectory:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceItem"
+          maxItems: 100
+        canManage:
+          type: boolean
+        applicationHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+        - schoolId
+        - today
+        - items
+        - canManage
+        - applicationHash
+      additionalProperties: false
+    RuleWorkspaceCreate:
+      type: object
+      properties:
+        applicationHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+        - applicationHash
+      additionalProperties: false
+    RuleWorkspaceDetail:
+      type: object
+      properties:
+        ruleSet:
+          $ref: "#/components/schemas/RuleWorkspaceItem"
+        previous:
+          oneOf:
+            - $ref: "#/components/schemas/RuleWorkspaceItem"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        usedBySnapshots:
+          type: integer
+          minimum: 0
+        canManage:
+          type: boolean
+        earliestEffective:
+          type: string
+          format: date
+      required:
+        - ruleSet
+        - previous
+        - usedBySnapshots
+        - canManage
+        - earliestEffective
+      additionalProperties: false
+    RuleWorkspaceSave:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/RuleWorkspaceSource"
+        name:
+          type: string
+          minLength: 5
+          maxLength: 200
+        baseScore:
+          type: number
+          minimum: 0
+          maximum: 1000
+        cap:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        floor:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceRule"
+          maxItems: 200
+        bands:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceBand"
+          maxItems: 50
+          minItems: 1
+        effectiveFrom:
+          type: string
+          format: date
+        entryDeadlineDays:
+          type: integer
+          minimum: 0
+          maximum: 365
+      required:
+        - source
+        - name
+        - baseScore
+        - cap
+        - floor
+        - rules
+        - bands
+        - effectiveFrom
+        - entryDeadlineDays
+      additionalProperties: false
+    RuleWorkspaceAction:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/RuleWorkspaceSource"
+      required:
+        - source
+      additionalProperties: false
+    RuleWorkspaceDiscard:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        discarded:
+          type: boolean
+      required:
+        - id
+        - discarded
+      additionalProperties: false
+    RuleWorkspaceDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/RuleWorkspaceDetail"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    RuleWorkspaceItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/RuleWorkspaceItem"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    RuleWorkspaceDiscardResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/RuleWorkspaceDiscard"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    RuleWorkspaceDirectoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/RuleWorkspaceDirectory"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
         - requestId
       additionalProperties: false
   securitySchemes:

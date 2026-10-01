@@ -1,0 +1,96 @@
+✔ native rule schema accepts absent actual metadata and no previous revision without bypassing JSON response validation (28.2382ms)
+✔ native rule commands require a displayed source and preserve independent manage issue apply rights with exact success statuses (10.7008ms)
+✔ public workspaces expose exact published projections and no staff or parent authentication (24.2316ms)
+✔ existing synchronous auth invitation position message and publication handlers have actual success schemas (1.1695ms)
+✔ native duty and attendance acknowledgements declare their actual HTTP200 without changing explicit HTTP201 creation (0.3362ms)
+✔ teacher announcement reads require a displayed published source and actual HTTP200 receipts (11.1344ms)
+✔ native announcement acknowledgements have an actual HTTP200 response schema and independent manage/publication permissions (3.5247ms)
+✔ native attendance commands require displayed null or existing source versions and exclude private or subject rights overrides (7.5501ms)
+✔ staff preview context has a minimal context schema and independent school authority (7.2047ms)
+✔ class workspace header has exact year routing and explicitly permits absent independent period metadata (18.3111ms)
+✔ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (13.9391ms)
+✔ native organization seating save requires the displayed revision and rejects actor or scope authority in its body (2.6036ms)
+✔ one-pupil class attendance accepts valid empty public notes and excludes private source fields (4.3534ms)
+✔ class roster purposes retain exact year scope and transfer requests accept only an optional displayed enrollment version (1.7441ms)
+✔ native duty commands retain exact displayed source and publication versions without actor authority or silent group expansion (4.9929ms)
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.8723ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (6.9469ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (5.6535ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (7.5304ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (3.3386ms)
+✔ login rejects spoofed role, school and unknown fields (0.8008ms)
+✔ private user DTO rejects secrets and unknown properties (3.4214ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2326ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (16.4087ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (7.8715ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (19.4331ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (1.8349ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (8.108ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (2.0061ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (17.1832ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (14.3532ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (11.5765ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (23.5363ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (29.791ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (27.9902ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (6.6216ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (0.6471ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (7.9701ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (4.1593ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (9.5341ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (7.3529ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (4.6743ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (20.6908ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (8.0111ms)
+✔ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (18.805ms)
+✔ native announcement semantic blocks round trip Vietnamese plaintext and line breaks without HTML execution (6.9198ms)
+✔ native legacy HTML projection sanitizes executable tags and preserves real headings and list text only (1.2044ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.8336ms)
+✔ JSON acknowledgements validate their actual status and never send undeclared or private payloads (17.1086ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.7642ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (22.6018ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.6227ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.5849ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.7884ms)
+✔ grant action and class scope stay together (0.8438ms)
+✔ subject grants never authorize management without explicit subject policy (0.1401ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1176ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1265ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.1676ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (4.759ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.6133ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (2.9057ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (1.4599ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (101.5745ms)
+ℹ tests 64
+ℹ suites 0
+ℹ pass 63
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 653.1456
+
+✖ failing tests:
+
+test at tests\contract\schemas.test.mjs:75:1
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.8723ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  379 !== 372
+  
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:76:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 379,
+    expected: 372,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+EXIT_CODE=1

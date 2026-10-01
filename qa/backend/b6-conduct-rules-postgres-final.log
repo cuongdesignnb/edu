@@ -1,0 +1,43 @@
+ Container edumanage_backend_test-runner-run-b2eb709d573f Creating 
+ Container edumanage_backend_test-runner-run-b2eb709d573f Created 
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (497.62921ms)
+✔ B3 rule sets require explicit points, immutable issuance and effective week application (1202.397667ms)
+✔ B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source (2486.54629ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (2171.312853ms)
+✔ B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview (1665.657358ms)
+✔ B3 a simultaneous conduct record and lock/publish has one source winner (635.540443ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (1297.744854ms)
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (1113.237887ms)
+✔ B6 native rule workspace separates management issuance and current dated class readers and rejects source races (1629.223825ms)
+✔ B6 native rule workspace validates week boundaries atomically and refuses to replace an initialized future period (898.823808ms)
+✔ B6 native rule entry deadline is enforced by actual school date even on canonical record commands (727.373548ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15087.924965
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3798:1
+✖ B6 native rule workspace persists real editor fields issues all current classes and freezes private-detail projections (1113.237887ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 404
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3816:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 404,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

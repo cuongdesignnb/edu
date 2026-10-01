@@ -1,0 +1,126 @@
+
+Running 3 tests using 1 worker
+
+(node:28724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 tests\native-ui-contract\conduct-rules-contract.spec.ts:20:5 › native rule list creates the first real draft and dirty issue sends the acknowledged saved source (10.6s)
+(node:35008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 tests\native-ui-contract\conduct-rules-contract.spec.ts:21:5 › read-only native rules preserve decimal example and hide write controls on mobile (10.5s)
+(node:46800) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 tests\native-ui-contract\conduct-rules-contract.spec.ts:22:5 › native rule outage retries real directory and version conflicts keep the draft without issuing it (10.6s)
+
+
+  1) tests\native-ui-contract\conduct-rules-contract.spec.ts:20:5 › native rule list creates the first real draft and dirty issue sends the acknowledged saved source 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Chưa có bộ nội quy', { exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Chưa có bộ nội quy', { exact: true }) with timeout 10000ms
+      - waiting for getByText('Chưa có bộ nội quy', { exact: true })
+
+
+      18 |  s.unexpected.push(path);return r.fulfill({status:404,json:{code:'RESOURCE_NOT_FOUND'}});
+      19 | });}
+    > 20 | test('native rule list creates the first real draft and dirty issue sends the acknowledged saved source',async({page})=>{const s=state();await routes(page,s);await page.goto(web);await expect(page.getByText('Chưa có bộ nội quy',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Tạo bản mới',exact:true}).click();await page.getByRole('button',{name:'Tạo bản nháp',exact:true}).click();await expect(page.getByLabel(/^Tên bộ nội quy/)).toHaveValue('Nội quy từ API');await page.getByLabel(/^Tên bộ nội quy/).fill('Nội quy đã sửa từ giao diện');await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByText('Phiên bản này không sửa trực tiếp',{exact:true})).toBeVisible();expect(s.calls.map(c=>c.path.split('/').at(-1))).toEqual(['create','save','issue']);expect((s.calls[2].body.source as {version:number}).version).toBe(2);expect(s.issued).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+         |                                                                                                                                                                                                                                                    ^
+      21 | test('read-only native rules preserve decimal example and hide write controls on mobile',async({page})=>{const s=state();s.mode='read';s.created=true;s.issued=true;await page.setViewportSize({width:390,height:844});await routes(page,s);await page.goto(web+'/'+rsId);await expect(page.getByRole('heading',{name:'Nội quy từ API',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Lưu nháp',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Ban hành',exact:true})).toHaveCount(0);await expect(page.getByText('Chi tiết',{exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.calls).toHaveLength(0);expect(s.unexpected).toEqual([]);});
+      22 | test('native rule outage retries real directory and version conflicts keep the draft without issuing it',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(web);await expect(page.getByRole('button',{name:'Thử lại',exact:true})).toBeVisible();s.mode='ready';s.created=true;await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByText('Nội quy từ API',{exact:true}).first()).toBeVisible();await page.goto(web+'/'+rsId);await page.getByLabel(/^Tên bộ nội quy/).fill('Bản nháp giữ sau xung đột');s.mode='conflict';await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByRole('heading',{name:'Dữ liệu đã thay đổi',exact:true})).toBeVisible();expect(s.calls).toHaveLength(1);expect(s.calls[0].path).toMatch(/\/save$/);expect(s.issued).toBe(false);expect(s.unexpected).toEqual([]);});
+      23 |
+        at D:\Edu\tests\native-ui-contract\conduct-rules-contract.spec.ts:20:244
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-f354d-e-acknowledged-saved-source\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-f354d-e-acknowledged-saved-source\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-f354d-e-acknowledged-saved-source\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-f354d-e-acknowledged-saved-source\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests\native-ui-contract\conduct-rules-contract.spec.ts:21:5 › read-only native rules preserve decimal example and hide write controls on mobile 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Nội quy từ API', exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Nội quy từ API', exact: true }) with timeout 10000ms
+      - waiting for getByRole('heading', { name: 'Nội quy từ API', exact: true })
+
+
+      19 | });}
+      20 | test('native rule list creates the first real draft and dirty issue sends the acknowledged saved source',async({page})=>{const s=state();await routes(page,s);await page.goto(web);await expect(page.getByText('Chưa có bộ nội quy',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Tạo bản mới',exact:true}).click();await page.getByRole('button',{name:'Tạo bản nháp',exact:true}).click();await expect(page.getByLabel(/^Tên bộ nội quy/)).toHaveValue('Nội quy từ API');await page.getByLabel(/^Tên bộ nội quy/).fill('Nội quy đã sửa từ giao diện');await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByText('Phiên bản này không sửa trực tiếp',{exact:true})).toBeVisible();expect(s.calls.map(c=>c.path.split('/').at(-1))).toEqual(['create','save','issue']);expect((s.calls[2].body.source as {version:number}).version).toBe(2);expect(s.issued).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+    > 21 | test('read-only native rules preserve decimal example and hide write controls on mobile',async({page})=>{const s=state();s.mode='read';s.created=true;s.issued=true;await page.setViewportSize({width:390,height:844});await routes(page,s);await page.goto(web+'/'+rsId);await expect(page.getByRole('heading',{name:'Nội quy từ API',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Lưu nháp',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Ban hành',exact:true})).toHaveCount(0);await expect(page.getByText('Chi tiết',{exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.calls).toHaveLength(0);expect(s.unexpected).toEqual([]);});
+         |                                                                                                                                                                                                                                                                                                                                                      ^
+      22 | test('native rule outage retries real directory and version conflicts keep the draft without issuing it',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(web);await expect(page.getByRole('button',{name:'Thử lại',exact:true})).toBeVisible();s.mode='ready';s.created=true;await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByText('Nội quy từ API',{exact:true}).first()).toBeVisible();await page.goto(web+'/'+rsId);await page.getByLabel(/^Tên bộ nội quy/).fill('Bản nháp giữ sau xung đột');s.mode='conflict';await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByRole('heading',{name:'Dữ liệu đã thay đổi',exact:true})).toBeVisible();expect(s.calls).toHaveLength(1);expect(s.calls[0].path).toMatch(/\/save$/);expect(s.issued).toBe(false);expect(s.unexpected).toEqual([]);});
+      23 |
+        at D:\Edu\tests\native-ui-contract\conduct-rules-contract.spec.ts:21:342
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-rea-1407a-de-write-controls-on-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-rea-1407a-de-write-controls-on-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-rea-1407a-de-write-controls-on-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-rea-1407a-de-write-controls-on-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests\native-ui-contract\conduct-rules-contract.spec.ts:22:5 › native rule outage retries real directory and version conflicts keep the draft without issuing it 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Thử lại', exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Thử lại', exact: true }) with timeout 10000ms
+      - waiting for getByRole('button', { name: 'Thử lại', exact: true })
+
+
+      20 | test('native rule list creates the first real draft and dirty issue sends the acknowledged saved source',async({page})=>{const s=state();await routes(page,s);await page.goto(web);await expect(page.getByText('Chưa có bộ nội quy',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Tạo bản mới',exact:true}).click();await page.getByRole('button',{name:'Tạo bản nháp',exact:true}).click();await expect(page.getByLabel(/^Tên bộ nội quy/)).toHaveValue('Nội quy từ API');await page.getByLabel(/^Tên bộ nội quy/).fill('Nội quy đã sửa từ giao diện');await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByText('Phiên bản này không sửa trực tiếp',{exact:true})).toBeVisible();expect(s.calls.map(c=>c.path.split('/').at(-1))).toEqual(['create','save','issue']);expect((s.calls[2].body.source as {version:number}).version).toBe(2);expect(s.issued).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+      21 | test('read-only native rules preserve decimal example and hide write controls on mobile',async({page})=>{const s=state();s.mode='read';s.created=true;s.issued=true;await page.setViewportSize({width:390,height:844});await routes(page,s);await page.goto(web+'/'+rsId);await expect(page.getByRole('heading',{name:'Nội quy từ API',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Lưu nháp',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Ban hành',exact:true})).toHaveCount(0);await expect(page.getByText('Chi tiết',{exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.calls).toHaveLength(0);expect(s.unexpected).toEqual([]);});
+    > 22 | test('native rule outage retries real directory and version conflicts keep the draft without issuing it',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(web);await expect(page.getByRole('button',{name:'Thử lại',exact:true})).toBeVisible();s.mode='ready';s.created=true;await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByText('Nội quy từ API',{exact:true}).first()).toBeVisible();await page.goto(web+'/'+rsId);await page.getByLabel(/^Tên bộ nội quy/).fill('Bản nháp giữ sau xung đột');s.mode='conflict';await page.getByRole('button',{name:'Ban hành',exact:true}).first().click();await page.getByRole('dialog').getByRole('button',{name:'Ban hành',exact:true}).click();await expect(page.getByRole('heading',{name:'Dữ liệu đã thay đổi',exact:true})).toBeVisible();expect(s.calls).toHaveLength(1);expect(s.calls[0].path).toMatch(/\/save$/);expect(s.issued).toBe(false);expect(s.unexpected).toEqual([]);});
+         |                                                                                                                                                                                                                                                                       ^
+      23 |
+        at D:\Edu\tests\native-ui-contract\conduct-rules-contract.spec.ts:22:263
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-bdf2c-he-draft-without-issuing-it\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-bdf2c-he-draft-without-issuing-it\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-bdf2c-he-draft-without-issuing-it\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-conduct-rules-verified-browser-artifacts-final\conduct-rules-contract-nat-bdf2c-he-draft-without-issuing-it\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    tests\native-ui-contract\conduct-rules-contract.spec.ts:20:5 › native rule list creates the first real draft and dirty issue sends the acknowledged saved source 
+    tests\native-ui-contract\conduct-rules-contract.spec.ts:21:5 › read-only native rules preserve decimal example and hide write controls on mobile 
+    tests\native-ui-contract\conduct-rules-contract.spec.ts:22:5 › native rule outage retries real directory and version conflicts keep the draft without issuing it 

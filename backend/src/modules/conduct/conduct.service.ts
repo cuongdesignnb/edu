@@ -51,6 +51,7 @@ export class ConductService {
     const scoped=await this.createScope(tx,c,body,options.authority),rule=await one<Row>(tx,'SELECT * FROM app.conduct_rules WHERE school_id=$1 AND rule_set_id=$2 AND id=$3',[schoolId,p.rule_set_id,body.ruleId]);if(!rule)validation('ruleId','Không thuộc bản nội quy đã cố định cho kỳ');
     if(rule.value_mode==='MANUAL'&&!scoped.broad)throw new Problem(404,'RESOURCE_NOT_FOUND');
     if(scoped.date<String(p.starts_on)||scoped.date>=String(p.ends_on)||new Date(String(body.occurredAt)).getTime()>Date.now())validation('occurredAt','Ngoài tuần hoặc sự kiện chưa xảy ra');
+    if(!options.locked){const deadline=await one<{expired:boolean}>(tx,`SELECT r.entry_deadline_days IS NOT NULL AND ((now() AT TIME ZONE s.timezone)::date-$3::date)>r.entry_deadline_days AS expired FROM app.rule_sets r JOIN platform.schools s ON s.id=r.school_id WHERE r.school_id=$1 AND r.id=$2`,[schoolId,p.rule_set_id,scoped.date]);if(deadline?.expired)throw new Problem(409,'ENTRY_DEADLINE_PASSED');}
     const enrollment=await getResource(tx,resource('enrollment'),schoolId,String(body.enrollmentId));
     if(enrollment.class_id!==classId||enrollment.year_id!==p.year_id||enrollment.status==='CANCELLED'||scoped.date<String(enrollment.starts_on)||(enrollment.ends_on&&scoped.date>=String(enrollment.ends_on)))validation('enrollmentId','Học sinh không thuộc lớp tại ngày sự kiện');
     let key=`manual:${body.clientEventId}`;const sourceId=body.sourceId as string|undefined;

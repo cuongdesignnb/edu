@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 167,
-  "activatedCandidateCount": 167,
-  "activatedLegacyMethodCount": 148,
+  "candidateCount": 175,
+  "activatedCandidateCount": 175,
+  "activatedLegacyMethodCount": 155,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1081,7 +1081,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "ruleSets",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1094,7 +1104,17 @@
         "ruleSetId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "ruleSet",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1107,7 +1127,17 @@
         "fromId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "newRuleSetVersion",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1121,7 +1151,17 @@
         "patch: { name: string; baseScore: number; cap?: number; floor?: number; rules: ConductRule[]; bands: RuleSet[\"bands\"]; effectiveFrom: string; entryDeadlineDays: number; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "saveRuleSetDraft",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1134,7 +1174,17 @@
         "ruleSetId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "publishRuleSet",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1147,7 +1197,17 @@
         "ruleSetId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "deleteRuleSetDraft",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1439,7 +1499,17 @@
         "points: number[]"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "simulate",
+        "file": "src/lib/repositories/connected/conduct.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentExtraRepo",
@@ -4603,6 +4673,16 @@
       "repository": "classroomRepo",
       "method": "createPosition",
       "file": "src/lib/repositories/connected/classroom.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "conductRepo",
+      "method": "createRuleSetDraft",
+      "file": "src/lib/repositories/connected/conduct.ts",
       "status": "IMPLEMENTED",
       "activated": true,
       "evidence": [
