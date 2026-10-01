@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 116,
-  "activatedCandidateCount": 116,
-  "activatedLegacyMethodCount": 104,
+  "candidateCount": 117,
+  "activatedCandidateCount": 117,
+  "activatedLegacyMethodCount": 105,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1312,7 +1312,17 @@
         "weekStart: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "timetable",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",

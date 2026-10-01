@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,316);assert.equal(new Set(operations.map(op=>op.id)).size,316);
+  assert.equal(operations.length,318);assert.equal(new Set(operations.map(op=>op.id)).size,318);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -181,4 +181,10 @@ test('parent duty schedule exposes only concrete published tasks with explicit s
  const item={date:'2026-10-01',task:'Quét lớp',status:'ASSIGNED',publishedAt:'2026-10-01T01:00:00Z'},value={today:'2026-10-01',year:{startsOn:'2026-09-01',endsOn:'2027-06-01'},items:[item]};validateSchema('ParentDutySchedule',value,true);
  for(const bad of [{...value,studentId:'private'},{...value,items:[{...item,groupStudents:['Bạn khác']}]},{...value,items:[{...item,status:'PUBLISHED'}]},{...value,items:Array.from({length:5001},()=>item)}])assert.throws(()=>validateSchema('ParentDutySchedule',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  assert.equal(operations.find(op=>op.id==='getParentDutySchedule').permission,'parent.duties');assert.equal(operations.find(op=>op.id==='previewParentDutySchedule').permission,'parent_access.preview');
+});
+
+test('parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields',()=>{
+ const lesson={date:'2026-10-05',startsAt:'2026-10-05T01:00:00Z',endsAt:'2026-10-05T01:45:00Z',startsAtLocal:'08:00',endsAtLocal:'08:45',periodNumber:null,subjectName:'Toán',teacherName:'Giáo viên',roomName:null,status:'SCHEDULED',changeNote:null},day={date:'2026-10-05',holidayNames:[],lessons:[lesson]},value={weekStart:'2026-10-05',today:'2026-10-05',timezone:'Asia/Ho_Chi_Minh',year:{startsOn:'2026-09-01',endsOn:'2027-06-01'},weekNumber:null,days:[day]};validateSchema('ParentTimetableWeek',value,true);
+ for(const bad of [{...value,studentId:'private'},{...value,days:[{...day,lessons:[{...lesson,memberId:'private'}]}]},{...value,days:[{...day,lessons:[{...lesson,periodNumber:0}]}]},{...value,days:[{...day,lessons:[{...lesson,status:'DRAFT'}]}]},{...value,days:[{...day,lessons:[{...lesson,startsAtLocal:'25:00'}]}]}])assert.throws(()=>validateSchema('ParentTimetableWeek',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+ assert.equal(operations.find(op=>op.id==='getParentTimetableWeek').permission,'parent.timetable');assert.equal(operations.find(op=>op.id==='previewParentTimetableWeek').permission,'parent_access.preview');
 });

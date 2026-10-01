@@ -1438,3 +1438,11 @@ Evidence: qa/backend/b6-parent-daily-checks.json records PostgreSQL165, backend 
 - The existing upcoming/past cards retain their layout. The count says tasks because a date may contain several duties, and past dates do not imply completion. Actual DONE/CANCELLED values come from the current published snapshot. Controlled desktop/mobile and ownership/revocation browser evidence remains separate from PostgreSQL UI E2E.
 
 Actual checks and the initial reproduced failure are recorded in qa/backend/b6-parent-duties-checks.json. Only PA07 gains source IMPLEMENTED status. Full-goal/B7 release acceptance remains incomplete.
+
+## ADR-070 — parent timetable week uses pinned lesson metadata and the school calendar
+
+- PA06 receives a bounded Monday week clipped to the granted academic year. The own current school/child/year/timetable context gates both published lesson items and minimal school/class holiday labels. Dated enrollment restrictions apply to each lesson. No raw lesson, publication snapshot, staff identifier or other child's timetable is exposed; edu_parent retains no raw table privilege. One read-only snapshot supplies the purpose response.
+- Period numbers are matched against the immutable publication's lesson snapshot rather than inferred from ordering or a mutable source row. Missing/ambiguous metadata remains nullable. Work labels/status/change reasons remain the published facts. Local clock labels use the actual school timezone and are checked by the native parser against UTC instants. No current staff/browser clock, borrowed attendance authority or generated lesson fills missing data.
+- All dates in the academic week, including Sunday, remain visible. Empty dates say no lessons have been published. Published holidays and lessons are both retained if present; no cancellation is inferred from a calendar label. The existing cards/navigation and changed/cancelled callout remain. Explicit staff preview retains independent current purpose scope, without adopting the parent cookie, and composite owner checks cover both reads.
+
+Actual PostgreSQL, contract/unit, type/lint/build, controlled browser and screenshot evidence is recorded in qa/backend/b6-parent-week-checks.json. Only PA06 gains source IMPLEMENTED status; real PostgreSQL browser E2E and B7/full-goal acceptance remain incomplete.

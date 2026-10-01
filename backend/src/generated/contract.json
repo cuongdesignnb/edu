@@ -14786,6 +14786,173 @@
       ],
       "additionalProperties": false
     },
+    "ParentTimetableWeekLesson": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "startsAtLocal": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "endsAtLocal": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "periodNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "nullable": true
+        },
+        "subjectName": {
+          "type": "string"
+        },
+        "teacherName": {
+          "type": "string"
+        },
+        "roomName": {
+          "type": "string",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "CANCELLED"
+          ]
+        },
+        "changeNote": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [
+        "date",
+        "startsAt",
+        "endsAt",
+        "startsAtLocal",
+        "endsAtLocal",
+        "periodNumber",
+        "subjectName",
+        "teacherName",
+        "roomName",
+        "status",
+        "changeNote"
+      ],
+      "additionalProperties": false
+    },
+    "ParentTimetableWeekDay": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "holidayNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lessons": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/ParentTimetableWeekLesson"
+          }
+        }
+      },
+      "required": [
+        "date",
+        "holidayNames",
+        "lessons"
+      ],
+      "additionalProperties": false
+    },
+    "ParentTimetableWeek": {
+      "type": "object",
+      "properties": {
+        "weekStart": {
+          "type": "string",
+          "format": "date"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "year": {
+          "type": "object",
+          "properties": {
+            "startsOn": {
+              "type": "string",
+              "format": "date"
+            },
+            "endsOn": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "required": [
+            "startsOn",
+            "endsOn"
+          ],
+          "additionalProperties": false
+        },
+        "weekNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "nullable": true
+        },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "items": {
+            "$ref": "#/components/schemas/ParentTimetableWeekDay"
+          }
+        }
+      },
+      "required": [
+        "weekStart",
+        "today",
+        "timezone",
+        "year",
+        "weekNumber",
+        "days"
+      ],
+      "additionalProperties": false
+    },
+    "ParentTimetableWeekResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ParentTimetableWeek"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
     "ParentTeacherDirectoryEntry": {
       "type": "object",
       "properties": {
@@ -66314,6 +66481,298 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ParentAttendanceMonthResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getParentTimetableWeek",
+      "method": "GET",
+      "path": "/api/v1/parent/{schoolSlug}/timetable-week",
+      "title": "getParentTimetableWeek",
+      "tag": "Parent",
+      "permission": "parent.timetable",
+      "scope": "parent",
+      "request": null,
+      "response": "ParentTimetableWeek",
+      "list": false,
+      "auth": "parent",
+      "async_job": false,
+      "frontend_ids": [
+        "PA06"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        {
+          "name": "week",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentTimetableWeekResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewParentTimetableWeek",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/timetable-week",
+      "title": "previewParentTimetableWeek",
+      "tag": "ParentAccess",
+      "permission": "parent_access.preview",
+      "scope": "school",
+      "request": null,
+      "response": "ParentTimetableWeek",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC25",
+        "PA06"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "accessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "week",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentTimetableWeekResponse"
               }
             }
           }

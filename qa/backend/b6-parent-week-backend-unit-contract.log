@@ -1,0 +1,51 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (1.1423ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (7.4773ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (7.127ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (8.3034ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (3.3346ms)
+✔ login rejects spoofed role, school and unknown fields (0.8588ms)
+✔ private user DTO rejects secrets and unknown properties (2.6122ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.1893ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (16.9609ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (4.2363ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (13.489ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (1.7116ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (8.3546ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.5822ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (13.1781ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (9.0544ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (8.4632ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (24.7882ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (27.3921ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (14.5953ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (3.8004ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (3.5312ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (4.5647ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (3.222ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (8.3574ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (5.5384ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (3.2615ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.3357ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (11.7001ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.3736ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.3737ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.4012ms)
+✔ grant action and class scope stay together (1.1416ms)
+✔ subject grants never authorize management without explicit subject policy (0.1769ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1915ms)
+✔ a custom class grant authorizes only its delegated action and class (0.2065ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.2467ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.3533ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.2886ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (2.3058ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (1.0172ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (88.3337ms)
+ℹ tests 42
+ℹ suites 0
+ℹ pass 42
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1674.9564
+exitCode=0

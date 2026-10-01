@@ -320,6 +320,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentTeacherDirectory | SC25, PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
 | getParentDutySchedule | PA07 | TESTED | qa/backend/b6-parent-duties-checks.json |
 | previewParentDutySchedule | SC25, PA07 | TESTED | qa/backend/b6-parent-duties-checks.json |
+| getParentTimetableWeek | PA06 | TESTED | qa/backend/b6-parent-week-checks.json |
+| previewParentTimetableWeek | SC25, PA06 | TESTED | qa/backend/b6-parent-week-checks.json |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -424,7 +426,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA03 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-attendance-checks.json; qa/backend/b6-parent-daily-checks.json |
 | PA04 | core | TESTED | NOT_STARTED |  |  |
 | PA05 | core | TESTED | NOT_STARTED |  |  |
-| PA06 | core | TESTED | NOT_STARTED |  |  |
+| PA06 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-week-checks.json |
 | PA07 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-duties-checks.json |
 | PA08 | core | TESTED | NOT_STARTED |  |  |
 | PA09 | core | TESTED | NOT_STARTED |  |  |

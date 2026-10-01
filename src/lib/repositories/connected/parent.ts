@@ -6,6 +6,7 @@ import {RepoError,isRepoError} from '../errors';
 import {nativeParentAttendance} from './parent-attendance';
 import {nativeParentTeachers} from './parent-teachers';
 import {nativeParentDuties} from './parent-duties';
+import {nativeParentTimetable} from './parent-timetable';
 import {nativeParentContext} from './parent-context';
 
 /** Public reads use only a non-bearer view ID. A raw fragment is accepted only by open. */
@@ -67,6 +68,17 @@ export const connectedParentRepo={
     }
     const owner=captureParentSession(slug,key.viewId);
     try{const {data}=await http('getParentTeacherDirectory',{params:{schoolSlug:slug},parentViewId:owner.viewId,signal:owner.signal});owner.assertCurrent();return nativeParentTeachers(data,context);}
+    catch(error){owner.assertCurrent();const reason=terminal(error);if(reason)owner.fail(reason);throw error;}
+  },
+  async timetable(key:ParentKey,slug:string,week:string){
+    const composite='preview' in key?captureStaffAccess():null;
+    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();
+    if('preview' in key){const {ctx,schoolId,accessId}=key.preview,owner=composite!;ctx.staffOwner?.assertCurrent();owner.assertCurrent();
+      try{const {data}=await http('previewParentTimetableWeek',{params:{schoolId,accessId},query:{week}});ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentTimetable(data,context,week);}
+      catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
+    }
+    const owner=captureParentSession(slug,key.viewId);
+    try{const {data}=await http('getParentTimetableWeek',{params:{schoolSlug:slug},query:{week},parentViewId:owner.viewId,signal:owner.signal});owner.assertCurrent();return nativeParentTimetable(data,context,week);}
     catch(error){owner.assertCurrent();const reason=terminal(error);if(reason)owner.fail(reason);throw error;}
   },
   async duties(key:ParentKey,slug:string){

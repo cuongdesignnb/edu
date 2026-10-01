@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-8a17bea13d56 Creating
+ Container edumanage_backend_test-runner-run-8a17bea13d56 Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (451.962905ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (67.339703ms)
+✔ B6 parent timetable week keeps pinned published period/status/work labels, own holiday calendar and independent preview through replacement and withdrawal (3048.87075ms)
+✔ B6 parent timetable week SQL denies foreign/current-section contexts and raw sources, clips the year and follows transfer or link revocation (838.635461ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5247.311086
+exitCode=0

@@ -17,7 +17,7 @@ const events:Resource={table:'app.parent_access_events',fields:{id:'id',accessLi
 @Injectable()
 export class ParentAccessService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly parent:ParentService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listParentAccess','issueParentAccess','getParentAccess','revokeParentAccess','reissueParentAccess','listParentAccessEvents','previewParent','previewParentAttendanceMonth','previewParentTeacherDirectory','previewParentDutySchedule','getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess','listParentAccessDirectory','getParentAccessDirectorySummary','getParentAccessDetails','listParentAccessHistory'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listParentAccess','issueParentAccess','getParentAccess','revokeParentAccess','reissueParentAccess','listParentAccessEvents','previewParent','previewParentAttendanceMonth','previewParentTeacherDirectory','previewParentDutySchedule','previewParentTimetableWeek','getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess','listParentAccessDirectory','getParentAccessDirectorySummary','getParentAccessDetails','listParentAccessHistory'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async get(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.parent_access_links WHERE school_id=$1 AND id=$2${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.accessId]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async scope(tx:Transaction,c:RequestContext,studentId:string,yearId:string,action:string){
     const schoolId=c.params.schoolId!,scope=await this.policy.collection(tx,c.principal!,action,schoolId);
@@ -42,7 +42,7 @@ export class ParentAccessService {
       const target=op==='issueParentAccess'||op==='issueReviewedParentAccess'?{student_id:c.body.studentId,year_id:c.body.yearId}:await this.get(tx,c);
       return this.scope(tx,c,String(target.student_id),String(target.year_id),c.operation.permission);
     };
-    if(op==='previewParent'||op==='previewParentAttendanceMonth'||op==='previewParentTeacherDirectory'||op==='previewParentDutySchedule'){
+    if(op==='previewParent'||op==='previewParentAttendanceMonth'||op==='previewParentTeacherDirectory'||op==='previewParentDutySchedule'||op==='previewParentTimetableWeek'){
       await this.db.transaction(authorize,{schoolId});return this.parent.preview(c,schoolId,c.params.accessId!);
     }
     const work=async(tx:Transaction):Promise<Result>=>{

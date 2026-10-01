@@ -366,6 +366,10 @@ export interface ApiSchemas {
   "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
   "ParentAttendanceMonth": { "granularity": "DAILY"; "month": string; "yearStart": string; "yearEnd": string; "today": string; "days": Array<{ "date": string; "weekday": number; "holidayNames": Array<string>; "sessions": Array<ApiSchemas["ParentAttendance"]>; "status": "unmarked" | "present" | "late" | "excused" | "unexcused" | "mixed" | "future" | "holiday" | "not_published"; }>; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; };
   "ParentAttendanceMonthResponse": { "data": ApiSchemas["ParentAttendanceMonth"]; "requestId": string; };
+  "ParentTimetableWeekLesson": { "date": string; "startsAt": string; "endsAt": string; "startsAtLocal": string; "endsAtLocal": string; "periodNumber": (number) | null; "subjectName": string; "teacherName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeNote": (string) | null; };
+  "ParentTimetableWeekDay": { "date": string; "holidayNames": Array<string>; "lessons": Array<ApiSchemas["ParentTimetableWeekLesson"]>; };
+  "ParentTimetableWeek": { "weekStart": string; "today": string; "timezone": string; "year": { "startsOn": string; "endsOn": string; }; "weekNumber": (number) | null; "days": Array<ApiSchemas["ParentTimetableWeekDay"]>; };
+  "ParentTimetableWeekResponse": { "data": ApiSchemas["ParentTimetableWeek"]; "requestId": string; };
   "ParentTeacherDirectoryEntry": { "kind": "HOMEROOM" | "SUBJECT"; "displayName": string; "subjectName": (string) | null; "workEmail": (string) | null; "workPhone": (string) | null; "weekdays": Array<number>; };
   "ParentTeacherDirectory": { "today": string; "classLabel": (string) | null; "contactHours": (string) | null; "teachers": Array<ApiSchemas["ParentTeacherDirectoryEntry"]>; };
   "ParentTeacherDirectoryResponse": { "data": ApiSchemas["ParentTeacherDirectory"]; "requestId": string; };
@@ -3369,6 +3373,26 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentAttendanceMonth",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentTimetableWeek": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/timetable-week",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentTimetableWeek",
+    "list": false,
+    "permission": "parent.timetable",
+    "readOnly": true
+  },
+  "previewParentTimetableWeek": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/timetable-week",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentTimetableWeek",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

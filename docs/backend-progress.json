@@ -3751,6 +3751,29 @@
       "evidence": [
         "qa/backend/b6-parent-duties-checks.json"
       ]
+    },
+    {
+      "operationId": "getParentTimetableWeek",
+      "screenIds": [
+        "PA06"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-week-checks.json"
+      ]
+    },
+    {
+      "operationId": "previewParentTimetableWeek",
+      "screenIds": [
+        "SC25",
+        "PA06"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-week-checks.json"
+      ]
     }
   ],
   "screens": [
@@ -4522,7 +4545,8 @@
         "previewParent",
         "previewParentAttendanceMonth",
         "previewParentTeacherDirectory",
-        "previewParentDutySchedule"
+        "previewParentDutySchedule",
+        "previewParentTimetableWeek"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5293,11 +5317,15 @@
       "screenId": "PA06",
       "scope": "core",
       "operationIds": [
-        "getParentTimetable"
+        "getParentTimetable",
+        "getParentTimetableWeek",
+        "previewParentTimetableWeek"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-week-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {

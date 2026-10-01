@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-timetable-adapter.test.ts (6 tests) 41ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  15:53:51
+   Duration  553ms (transform 137ms, setup 39ms, collect 151ms, tests 41ms, environment 0ms, prepare 109ms)
+
+exitCode=0

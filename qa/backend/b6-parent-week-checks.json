@@ -1,0 +1,175 @@
+{
+  "phase": "B6 native PA06 bounded published weekly timetable; partial goal checkpoint",
+  "previousCommit": "6b1b4e9a95e29e3ae66104e966ff1b49d3d93173",
+  "backend": {
+    "contractOperations": 318,
+    "schemas": 434,
+    "operationStatus": {
+      "IMPLEMENTED": 12,
+      "TESTED": 306
+    },
+    "migrations": 41,
+    "runnerImage": "sha256:cddbabe3a15fffaf690f925c6ba15d2e3f4e0e35936db3846627883345088f89",
+    "postgresFull": {
+      "tests": 169,
+      "pass": 169,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 510986.61505,
+      "log": "b6-parent-week-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 5247.311086,
+      "log": "b6-parent-week-integration-selected.log"
+    },
+    "unitContract": {
+      "tests": 42,
+      "pass": 42,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1674.9564,
+      "log": "b6-parent-week-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-week-backend-types.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-week-backend-lint-final.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-week-integration-syntax.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 308,
+      "fail": 0,
+      "skipped": 0,
+      "files": 36,
+      "durationSeconds": 10.97,
+      "apiCases": 267,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-week-frontend-unit-full.log"
+    },
+    "selected": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 0.553,
+      "log": "b6-parent-week-frontend-selected.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-week-frontend-types-with-tests.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-week-frontend-lint.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-week-frontend-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 67,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 69080.811,
+    "newCases": 3,
+    "log": "b6-parent-week-browser-final.log",
+    "results": "b6-parent-week-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-week",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T08:59:42.123Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 40880,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T09:00:52.283Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-week-parent-timetable-desktop.png",
+      "b6-parent-week-parent-timetable-mobile.png"
+    ]
+  },
+  "failedRunsThisCheckpoint": [],
+  "sourceInventory": {
+    "nativeCandidates": 117,
+    "activatedCandidates": 117,
+    "matchedLegacyMethods": 105,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 126,
+    "log": "b6-parent-week-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 52,
+    "NOT_STARTED": 63,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA06"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T15:59:38.4158846+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T16:01:11.0144582+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T16:07:47.4581639+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "implementedBehavior": [
+    "A guard requires the exact current parent school/child/year/timetable context, with dated enrollment class for each published lesson.",
+    "Period numbers use the immutable publication lesson snapshot; absent or ambiguous numbers remain null. Work labels, cancellation and change reasons remain published facts.",
+    "The complete clipped academic week includes Sunday and only actual scoped published holiday labels, without borrowing attendance permission or raw-source privileges.",
+    "Local labels use the actual school timezone and the adapter verifies them against UTC instants; no browser/staff clock or inferred lesson fills missing data.",
+    "One read-only snapshot supplies the bounded purpose response. Independent staff preview never adopts parent cookies, and current composite owner checks prevent older receipts entering another view."
+  ]
+}
