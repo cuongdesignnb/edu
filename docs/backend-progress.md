@@ -329,6 +329,14 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentDocument | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
 | previewParentDocumentView | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
 | previewParentDocumentDownload | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| getParentPublishedActivityDirectory | PA08, PA09 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| previewParentPublishedActivityDirectory | SC25, PA08, PA09 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| getParentPublishedActivity | PA08, PA09 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| previewParentPublishedActivity | SC25, PA08, PA09 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| getParentPublishedAnnouncementDirectory | PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| previewParentPublishedAnnouncementDirectory | SC25, PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| getParentPublishedAnnouncement | PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| previewParentPublishedAnnouncement | SC25, PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -435,10 +443,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA05 | core | TESTED | NOT_STARTED |  |  |
 | PA06 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-week-checks.json |
 | PA07 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-duties-checks.json |
-| PA08 | core | TESTED | NOT_STARTED |  |  |
-| PA09 | core | TESTED | NOT_STARTED |  |  |
-| PA10 | core | TESTED | NOT_STARTED |  |  |
-| PA11 | core | TESTED | NOT_STARTED |  |  |
+| PA08 | core | TESTED | IMPLEMENTED |  | Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E. |
+| PA09 | core | TESTED | IMPLEMENTED |  | Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E. |
+| PA10 | core | TESTED | IMPLEMENTED |  | Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E. |
+| PA11 | core | TESTED | IMPLEMENTED |  | Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E. |
 | PA12 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-teachers-checks.json |
 | PA13 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-documents-checks.json |
 | PA14 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |

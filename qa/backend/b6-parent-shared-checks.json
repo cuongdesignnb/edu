@@ -1,0 +1,210 @@
+{
+  "phase": "B6 PA08-PA11 native pinned published activities/announcements; partial goal checkpoint",
+  "previousCommit": "30489ad4ac97499949591ee329c07dd9c6c03cea",
+  "backend": {
+    "contractOperations": 333,
+    "schemas": 447,
+    "operationStatus": {
+      "IMPLEMENTED": 12,
+      "TESTED": 321
+    },
+    "migrations": 43,
+    "runnerImage": "sha256:a89bf7a81e033532258519bac05d44d573278f0e590c2551cdb4e457081523aa",
+    "postgresFull": {
+      "tests": 173,
+      "pass": 173,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 593362.478198,
+      "log": "b6-parent-shared-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 5593.128773,
+      "log": "b6-parent-shared-integration-selected-reviewed.log"
+    },
+    "unitContract": {
+      "tests": 44,
+      "pass": 44,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 456.7041,
+      "log": "b6-parent-shared-backend-unit-contract-reviewed.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-shared-backend-types-reviewed.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-shared-backend-lint-final.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-shared-integration-syntax-reviewed.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 325,
+      "fail": 0,
+      "skipped": 0,
+      "files": 38,
+      "durationSeconds": 10.89,
+      "apiCases": 284,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-shared-frontend-unit-full.log"
+    },
+    "selected": {
+      "pass": 9,
+      "fail": 0,
+      "durationSeconds": 0.698,
+      "log": "b6-parent-shared-frontend-selected.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-shared-frontend-types-final.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-shared-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-shared-frontend-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 74,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 78719.46699999999,
+    "newCases": 4,
+    "log": "b6-parent-shared-browser-final.log",
+    "results": "b6-parent-shared-browser-results-final.json",
+    "run": {
+      "prefix": "b6-parent-shared",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T09:56:35.668Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 26752,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T09:57:55.461Z",
+      "exitCode": 0
+    },
+    "inspectedScreenshots": [
+      "b6-parent-shared-parent-activities-desktop.png",
+      "b6-parent-shared-parent-activity-detail.png",
+      "b6-parent-shared-parent-announcements-desktop.png",
+      "b6-parent-shared-parent-announcement-detail.png",
+      "b6-parent-shared-parent-activities-mobile.png",
+      "b6-parent-shared-parent-announcements-mobile.png"
+    ]
+  },
+  "initialFailures": [
+    {
+      "kind": "nullable-enum schema error",
+      "result": {
+        "tests": 44,
+        "pass": 43,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 490.8145,
+        "log": "b6-parent-shared-backend-unit-contract.log"
+      },
+      "reason": "nullable did not expand enum; explicit null now appears in both pinned nullable enums and the unchanged test passes."
+    },
+    {
+      "kind": "integration cookie fixture errors",
+      "result": {
+        "tests": 5,
+        "pass": 3,
+        "fail": 2,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 4618.170763,
+        "log": "b6-parent-shared-integration-selected.log"
+      },
+      "runnerImage": "sha256:36c32e805464c0a83041f0834dc322d442ff56a211862331627b284ef3a915f6",
+      "reason": "Opening a second parent link with the first parent cookie correctly revoked the previous session. The fixture now removes that cookie before independent simulated browser exchanges. Application exchange still revokes the replaced session."
+    }
+  ],
+  "sourceInventory": {
+    "nativeCandidates": 124,
+    "activatedCandidates": 124,
+    "matchedLegacyMethods": 111,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 120,
+    "log": "b6-parent-shared-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 57,
+    "NOT_STARTED": 58,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA08",
+      "PA09",
+      "PA10",
+      "PA11"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T16:56:18.2520885+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T16:58:49.3376119+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T17:04:54.1258268+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "implementedBehavior": [
+    "Complete bounded own-child/year current published directories and details; pinned nullable metadata never comes from edited sources or replacement drafts.",
+    "Minimal SQL display metadata denies foreign contexts and raw sources; independent staff preview never changes parent cookies.",
+    "Batch current attachments retain independent documents view/download rights and disappear on withdrawal or document revocation.",
+    "Rich formatting is retained only after a strict tag/no-attributes guard; escaped markup remains text and active/unknown markup stays an error.",
+    "Parent/staff owners are captured before composite reads, so delayed older receipts/errors cannot return content or clear a newer child."
+  ]
+}

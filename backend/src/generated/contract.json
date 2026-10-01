@@ -14922,6 +14922,267 @@
       ],
       "additionalProperties": false
     },
+    "ParentSharedActivity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
+        },
+        "dueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentStatus": {
+          "type": "string",
+          "enum": [
+            "ASSIGNED",
+            "SUBMITTED",
+            "NEEDS_REVISION",
+            "APPROVED",
+            "EXCUSED"
+          ]
+        },
+        "publicReviewNote": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
+        },
+        "documents": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/ParentDocumentEntry"
+          }
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "activityStatus": {
+          "type": "string",
+          "enum": [
+            "ASSIGNED",
+            "CLOSED",
+            null
+          ],
+          "nullable": true
+        },
+        "illustration": {
+          "type": "string",
+          "enum": [
+            "trophy",
+            "stem",
+            "clean",
+            "book",
+            "heart",
+            null
+          ],
+          "nullable": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "dueOn": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "dueAt",
+        "studentStatus",
+        "publicReviewNote",
+        "documents",
+        "publishedAt",
+        "activityStatus",
+        "illustration",
+        "updatedAt",
+        "timezone",
+        "dueOn"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedAnnouncement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sanitizedHtml": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "senderLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "documents": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/ParentDocumentEntry"
+          }
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
+        },
+        "scopeKinds": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "SCHOOL",
+              "GRADE",
+              "CLASS",
+              "STUDENT"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "sanitizedHtml",
+        "publishedAt",
+        "senderLabel",
+        "documents",
+        "summary",
+        "scopeKinds"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedActivityDirectory": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/ParentSharedActivity"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedActivityResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ParentSharedActivity"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedActivityDirectoryResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ParentSharedActivityDirectory"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedAnnouncementDirectory": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/ParentSharedAnnouncement"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedAnnouncementResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ParentSharedAnnouncement"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ParentSharedAnnouncementDirectoryResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ParentSharedAnnouncementDirectory"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
     "ParentTimetableWeekLesson": {
       "type": "object",
       "properties": {
@@ -67635,6 +67896,1146 @@
               "schema": {
                 "type": "string",
                 "format": "binary"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getParentPublishedActivityDirectory",
+      "method": "GET",
+      "path": "/api/v1/parent/{schoolSlug}/activities/published",
+      "title": "getParentPublishedActivityDirectory",
+      "tag": "Parent",
+      "permission": "parent.activities",
+      "scope": "parent",
+      "request": null,
+      "response": "ParentSharedActivityDirectory",
+      "list": false,
+      "auth": "parent",
+      "async_job": false,
+      "frontend_ids": [
+        "PA08",
+        "PA09"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedActivityDirectoryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewParentPublishedActivityDirectory",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/activities/published",
+      "title": "previewParentPublishedActivityDirectory",
+      "tag": "ParentAccess",
+      "permission": "parent_access.preview",
+      "scope": "school",
+      "request": null,
+      "response": "ParentSharedActivityDirectory",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC25",
+        "PA08",
+        "PA09"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "accessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedActivityDirectoryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getParentPublishedActivity",
+      "method": "GET",
+      "path": "/api/v1/parent/{schoolSlug}/activities/{activityId}/published",
+      "title": "getParentPublishedActivity",
+      "tag": "Parent",
+      "permission": "parent.activities",
+      "scope": "parent",
+      "request": null,
+      "response": "ParentSharedActivity",
+      "list": false,
+      "auth": "parent",
+      "async_job": false,
+      "frontend_ids": [
+        "PA08",
+        "PA09"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        {
+          "name": "activityId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedActivityResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewParentPublishedActivity",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/activities/{activityId}/published",
+      "title": "previewParentPublishedActivity",
+      "tag": "ParentAccess",
+      "permission": "parent_access.preview",
+      "scope": "school",
+      "request": null,
+      "response": "ParentSharedActivity",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC25",
+        "PA08",
+        "PA09"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "accessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "activityId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedActivityResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getParentPublishedAnnouncementDirectory",
+      "method": "GET",
+      "path": "/api/v1/parent/{schoolSlug}/announcements/published",
+      "title": "getParentPublishedAnnouncementDirectory",
+      "tag": "Parent",
+      "permission": "parent.announcements",
+      "scope": "parent",
+      "request": null,
+      "response": "ParentSharedAnnouncementDirectory",
+      "list": false,
+      "auth": "parent",
+      "async_job": false,
+      "frontend_ids": [
+        "PA10",
+        "PA11"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedAnnouncementDirectoryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewParentPublishedAnnouncementDirectory",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/announcements/published",
+      "title": "previewParentPublishedAnnouncementDirectory",
+      "tag": "ParentAccess",
+      "permission": "parent_access.preview",
+      "scope": "school",
+      "request": null,
+      "response": "ParentSharedAnnouncementDirectory",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC25",
+        "PA10",
+        "PA11"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "accessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedAnnouncementDirectoryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getParentPublishedAnnouncement",
+      "method": "GET",
+      "path": "/api/v1/parent/{schoolSlug}/announcements/{announcementId}/published",
+      "title": "getParentPublishedAnnouncement",
+      "tag": "Parent",
+      "permission": "parent.announcements",
+      "scope": "parent",
+      "request": null,
+      "response": "ParentSharedAnnouncement",
+      "list": false,
+      "auth": "parent",
+      "async_job": false,
+      "frontend_ids": [
+        "PA10",
+        "PA11"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        {
+          "name": "announcementId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedAnnouncementResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "previewParentPublishedAnnouncement",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/announcements/{announcementId}/published",
+      "title": "previewParentPublishedAnnouncement",
+      "tag": "ParentAccess",
+      "permission": "parent_access.preview",
+      "scope": "school",
+      "request": null,
+      "response": "ParentSharedAnnouncement",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC25",
+        "PA10",
+        "PA11"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "accessId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "announcementId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentSharedAnnouncementResponse"
               }
             }
           }

@@ -1,4 +1,5 @@
 import type {Ctx} from '../core';
+import type {ApiSchemas} from '../../api/generated';
 import {http,download,captureStaffAccess} from '../../api/client';
 import {keepOwnedBlob} from '../../api/owned-blobs';
 import {beginParentExchange,captureParentSession} from '../../api/parent-session';
@@ -10,6 +11,7 @@ import {nativeParentDuties} from './parent-duties';
 import {nativeParentTimetable} from './parent-timetable';
 import {nativeParentContext} from './parent-context';
 import {nativeParentDocuments,nativeParentDocument} from './parent-documents';
+import {nativeParentActivity,nativeParentAnnouncement,nativeParentActivities,nativeParentAnnouncements} from './parent-shared';
 
 /** Public reads use only a non-bearer view ID. A raw fragment is accepted only by open. */
 export type ParentKey={viewId:string}|{preview:{ctx:Ctx;schoolId:string;accessId:string}};
@@ -47,7 +49,24 @@ async function documentFile(key:ParentKey,slug:string,id:string,forDownload:bool
    return {...bytes,file,owner:{kind:'preview' in key?'staff' as const:'parent' as const,assertCurrent}};
  }catch(error){assertCurrent();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
 }
+async function sharedContent(key:ParentKey,slug:string,section:'activities'|'announcements',id?:string){
+ const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
+ const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
+ try{
+   const context=await connectedParentRepo.context(key,slug);current();
+   if(section==='activities'){
+     const result='preview' in key?id?await http('previewParentPublishedActivity',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,activityId:id}}):await http('previewParentPublishedActivityDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):id?await http('getParentPublishedActivity',{params:{schoolSlug:slug,activityId:id},parentViewId:parent!.viewId,signal:parent!.signal}):await http('getParentPublishedActivityDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
+     current();return id?nativeParentActivity(result.data as ApiSchemas['ParentSharedActivity'],context,id):nativeParentActivities(result.data as ApiSchemas['ParentSharedActivityDirectory'],context);
+   }
+   const result='preview' in key?id?await http('previewParentPublishedAnnouncement',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,announcementId:id}}):await http('previewParentPublishedAnnouncementDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):id?await http('getParentPublishedAnnouncement',{params:{schoolSlug:slug,announcementId:id},parentViewId:parent!.viewId,signal:parent!.signal}):await http('getParentPublishedAnnouncementDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
+   current();return id?nativeParentAnnouncement(result.data as ApiSchemas['ParentSharedAnnouncement'],context,id):nativeParentAnnouncements(result.data as ApiSchemas['ParentSharedAnnouncementDirectory'],context);
+ }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
+}
 export const connectedParentRepo={
+  async activities(key:ParentKey,slug:string){return sharedContent(key,slug,'activities') as Promise<ReturnType<typeof nativeParentActivity>[]>;},
+  async activity(key:ParentKey,slug:string,id:string){return sharedContent(key,slug,'activities',id) as Promise<ReturnType<typeof nativeParentActivity>>;},
+  async announcements(key:ParentKey,slug:string){return sharedContent(key,slug,'announcements') as Promise<ReturnType<typeof nativeParentAnnouncement>[]>;},
+  async announcement(key:ParentKey,slug:string,id:string){return sharedContent(key,slug,'announcements',id) as Promise<ReturnType<typeof nativeParentAnnouncement>>;},
   async documents(key:ParentKey,slug:string){
     const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
     const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();

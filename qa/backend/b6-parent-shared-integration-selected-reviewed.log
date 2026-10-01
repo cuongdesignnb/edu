@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-d0f157ec32ea Creating
+ Container edumanage_backend_test-runner-run-d0f157ec32ea Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (516.279538ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (72.543495ms)
+✔ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (1152.593207ms)
+✔ B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal (1153.351303ms)
+✔ B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights (1839.323727ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5593.128773
+exitCode=0

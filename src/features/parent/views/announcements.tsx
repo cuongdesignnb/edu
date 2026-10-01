@@ -11,7 +11,6 @@ import { fmtBytes, fmtDate, fmtDateTime, matches } from "@/lib/formatters";
 import { PState, usePRead, useHref, ParentHeader, ParentPage } from "./common";
 import { useFileViewer, useSafeDownload } from "./file-viewer";
 
-const SCOPE: Record<string, string> = { school: "Toàn trường", grade: "Khối lớp", class: "Lớp của con", student: "Riêng gia đình" };
 
 /** PA10 — announcements whose audience includes this student; local search only. */
 export function ParentAnnouncementsView() {
@@ -39,8 +38,8 @@ export function ParentAnnouncementsView() {
                       <span className="block font-semibold text-ink group-hover:text-primary-strong">{a.title}</span>
                       <span className="mt-0.5 line-clamp-2 block text-[13px] text-muted">{a.summary}</span>
                       <span className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
-                        <Badge tone="info" dot={false}>{SCOPE[a.scope] ?? a.scope}</Badge><span>{a.from}</span><span aria-hidden>·</span><span>{fmtDate(a.publishedAt)}</span>
-                        {a.attachments > 0 && <span className="inline-flex items-center gap-1"><Paperclip className="size-3.5" aria-hidden />{a.attachments} tệp</span>}
+                        {a.scopeLabels.map(scope=><Badge key={scope} tone="info" dot={false}>{scope}</Badge>)}<span>{a.from}</span><span aria-hidden>·</span><span>{fmtDate(a.publishedAt)}</span>
+                        {a.attachments.length > 0 && <span className="inline-flex items-center gap-1"><Paperclip className="size-3.5" aria-hidden />{a.attachments.length} tệp</span>}
                       </span>
                     </span>
                     <ChevronRight className="mt-1 size-4 flex-none text-faint" aria-hidden />
@@ -66,13 +65,9 @@ export function ParentAnnouncementDetailView({ announcementId }: { announcementI
       <PState query={q} skeleton="detail" backHref={href("announcements")} backLabel="Về danh sách thông báo">
         {(a) => (
           <>
-            <ParentHeader title={a.title} back={{ href: href("announcements"), label: "Thông báo" }} subtitle={`${a.from ?? "Nhà trường"} · Công bố ${fmtDateTime(a.publishedAt)}`} />
+            <ParentHeader title={a.title} back={{ href: href("announcements"), label: "Thông báo" }} subtitle={`${a.from} · Công bố ${fmtDateTime(a.publishedAt)}`} />
             <Card className="card-pad">
-              <article className="max-w-3xl space-y-3 text-[15px] leading-relaxed text-body">
-                {a.body.map((b, i) => b.type === "h" ? <h2 key={i} className="pt-1 text-[17px] font-bold text-ink">{b.text}</h2>
-                  : b.type === "li" ? <p key={i} className="flex gap-2 pl-2"><span aria-hidden>•</span><span>{b.text}</span></p>
-                    : <p key={i}>{b.text}</p>)}
-              </article>
+              <article className="max-w-3xl space-y-3 text-[15px] leading-relaxed text-body [&_h2]:pt-1 [&_h2]:text-[17px] [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:list-disc [&_ol]:list-decimal [&_li]:ml-5 [&_blockquote]:border-l-2 [&_blockquote]:border-line [&_blockquote]:pl-3" dangerouslySetInnerHTML={{__html:a.bodyHtml}}/>
             </Card>
             <Card>
               <CardHeader icon={<Paperclip className="size-5" />} title="Tệp đính kèm" subtitle={a.attachments.length ? `${a.attachments.length} tệp được chia sẻ` : undefined} />
@@ -81,11 +76,11 @@ export function ParentAnnouncementDetailView({ announcementId }: { announcementI
                   {a.attachments.map((f) => (
                     <li key={f.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
                       <span className="min-w-0 flex-1"><span className="block truncate font-medium text-ink">{f.name}</span><span className="text-[12px] text-muted">{fmtBytes(f.size)}</span></span>
-                      <div className="flex gap-2">{viewer.button(f)}<Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={() => download(f.id)} aria-label={`Tải ${f.name}`}>Tải</Button></div>
+                      <div className="flex gap-2">{f.viewAllowed&&viewer.button(f)}{f.downloadAllowed&&<Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={() => download(f.id)} aria-label={`Tải ${f.name}`}>Tải</Button>}</div>
                     </li>
                   ))}
                 </ul>
-              ) : <EmptyState compact title="Thông báo không có tệp đính kèm" />}
+              ) : <EmptyState compact title="Chưa có tệp đính kèm được chia sẻ" />}
             </Card>
             {viewer.node}
           </>

@@ -1,0 +1,19 @@
+{
+  "prefix": "b6-parent-shared",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T09:56:35.668Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "portFreeBefore": true,
+  "ownedNextPid": 26752,
+  "playwrightExitCode": 0,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T09:57:55.461Z",
+  "exitCode": 0
+}

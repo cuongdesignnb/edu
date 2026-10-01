@@ -385,6 +385,24 @@ for(const [id,suffix,response,binary] of [['previewParentDocumentDirectory','doc
  spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix].get.description='Independent current staff preview authority, same published document and view/download rights without changing parent cookies.';
 }
 
+// Native PA08-PA11 use pinned publication metadata and independent document capabilities.
+const parentDocumentEntries={type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentDocumentEntry'}};
+spec.components.schemas.ParentSharedActivity=object({...structuredClone(spec.components.schemas.ParentActivity.properties),id:{type:'string',format:'uuid'},description:{...structuredClone(spec.components.schemas.ParentActivity.properties.description),nullable:true},publicReviewNote:{...structuredClone(spec.components.schemas.ParentActivity.properties.publicReviewNote),nullable:true},documents:parentDocumentEntries,activityStatus:{type:'string',enum:['ASSIGNED','CLOSED',null],nullable:true},illustration:{type:'string',enum:['trophy','stem','clean','book','heart',null],nullable:true},updatedAt:{...timestamp,nullable:true},timezone:{type:'string',minLength:1,maxLength:100},dueOn:studentDate});
+spec.components.schemas.ParentSharedAnnouncement=object({...structuredClone(spec.components.schemas.ParentAnnouncement.properties),id:{type:'string',format:'uuid'},documents:parentDocumentEntries,summary:{type:'string',maxLength:4000,nullable:true},scopeKinds:{type:'array',maxItems:5,uniqueItems:true,items:{type:'string',enum:['PUBLIC','SCHOOL','GRADE','CLASS','STUDENT']}}});
+for(const [section,singular,response,screens]of [['activities','activity','ParentSharedActivity',['PA08','PA09']],['announcements','announcement','ParentSharedAnnouncement',['PA10','PA11']]]){
+ const directory=response+'Directory';spec.components.schemas[directory]=object({items:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/'+response}}});
+ for(const name of [response,directory])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+ const upper=singular[0].toUpperCase()+singular.slice(1);
+ for(const detail of [false,true]){
+  const suffix=detail?section+'/{'+singular+'Id}/published':section+'/published',publicId=detail?'getParentPublished'+upper:'getParentPublished'+upper+'Directory',previewId=detail?'previewParentPublished'+upper:'previewParentPublished'+upper+'Directory';
+  const params=[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}},...(detail?[{name:singular+'Id',in:'path',required:true,schema:uuid}]:[])];
+  extendOperation('getParentContext',publicId,'/parent/{schoolSlug}/'+suffix,'parent.'+section,detail?response:directory,false,screens,params);operations.find(value=>value.id===publicId).scope='parent';
+  spec.paths['/parent/{schoolSlug}/'+suffix].get.description='Only own-child/year current published content and pinned display metadata; documents keep their independent current module and download rights.';
+  extendOperation('previewParent',previewId,'/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix,'parent_access.preview',detail?response:directory,false,['SC25',...screens],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid},...(detail?[{name:singular+'Id',in:'path',required:true,schema:uuid}]:[])]);
+  spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix].get.description='Independent current staff preview authority; same published serializer, no cookie change, raw sources, roster or recipient IDs.';
+ }
+}
+
 // Native PA06 reads published lesson metadata and calendar within its independent section.
 spec.components.schemas.ParentTimetableWeekLesson=object({date:studentDate,startsAt:timestamp,endsAt:timestamp,startsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},endsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},periodNumber:{type:'integer',minimum:1,nullable:true},subjectName:label,teacherName:label,roomName:nullableLabel,status:{type:'string',enum:['SCHEDULED','CANCELLED']},changeNote:nullableLabel});
 spec.components.schemas.ParentTimetableWeekDay=object({date:studentDate,holidayNames:{type:'array',items:label},lessons:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentTimetableWeekLesson'}}});

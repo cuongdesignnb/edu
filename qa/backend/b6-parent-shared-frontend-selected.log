@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-shared-adapter.test.ts (9 tests) 59ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  16:53:14
+   Duration  698ms (transform 191ms, setup 45ms, collect 228ms, tests 59ms, environment 0ms, prepare 128ms)
+
+exitCode=0

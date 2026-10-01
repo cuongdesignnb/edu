@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 120,
-  "activatedCandidateCount": 120,
-  "activatedLegacyMethodCount": 107,
+  "candidateCount": 124,
+  "activatedCandidateCount": 124,
+  "activatedLegacyMethodCount": 111,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1356,7 +1356,17 @@
         "slug: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "activities",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",
@@ -1369,7 +1379,17 @@
         "activityId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "activity",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",
@@ -1382,7 +1402,17 @@
         "q = \"\""
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "announcements",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",
@@ -1395,7 +1425,17 @@
         "id: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "announcement",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",

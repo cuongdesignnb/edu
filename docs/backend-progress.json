@@ -3861,6 +3861,106 @@
       "evidence": [
         "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
       ]
+    },
+    {
+      "operationId": "getParentPublishedActivityDirectory",
+      "screenIds": [
+        "PA08",
+        "PA09"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedActivityDirectory",
+      "screenIds": [
+        "SC25",
+        "PA08",
+        "PA09"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "getParentPublishedActivity",
+      "screenIds": [
+        "PA08",
+        "PA09"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedActivity",
+      "screenIds": [
+        "SC25",
+        "PA08",
+        "PA09"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "getParentPublishedAnnouncementDirectory",
+      "screenIds": [
+        "PA10",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedAnnouncementDirectory",
+      "screenIds": [
+        "SC25",
+        "PA10",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "getParentPublishedAnnouncement",
+      "screenIds": [
+        "PA10",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedAnnouncement",
+      "screenIds": [
+        "SC25",
+        "PA10",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
+      ]
     }
   ],
   "screens": [
@@ -4637,7 +4737,11 @@
         "previewParentDocumentDirectory",
         "previewParentDocument",
         "previewParentDocumentView",
-        "previewParentDocumentDownload"
+        "previewParentDocumentDownload",
+        "previewParentPublishedActivityDirectory",
+        "previewParentPublishedActivity",
+        "previewParentPublishedAnnouncementDirectory",
+        "previewParentPublishedAnnouncement"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5438,11 +5542,17 @@
       "screenId": "PA08",
       "scope": "core",
       "operationIds": [
-        "listParentActivities"
+        "listParentActivities",
+        "getParentPublishedActivityDirectory",
+        "previewParentPublishedActivityDirectory",
+        "getParentPublishedActivity",
+        "previewParentPublishedActivity"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5452,22 +5562,34 @@
         "getParentActivity",
         "getParentDocumentDirectory",
         "getParentDocument",
-        "viewParentDocument"
+        "viewParentDocument",
+        "getParentPublishedActivityDirectory",
+        "previewParentPublishedActivityDirectory",
+        "getParentPublishedActivity",
+        "previewParentPublishedActivity"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
       "screenId": "PA10",
       "scope": "core",
       "operationIds": [
-        "listParentAnnouncements"
+        "listParentAnnouncements",
+        "getParentPublishedAnnouncementDirectory",
+        "previewParentPublishedAnnouncementDirectory",
+        "getParentPublishedAnnouncement",
+        "previewParentPublishedAnnouncement"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5477,11 +5599,17 @@
         "getParentAnnouncement",
         "getParentDocumentDirectory",
         "getParentDocument",
-        "viewParentDocument"
+        "viewParentDocument",
+        "getParentPublishedAnnouncementDirectory",
+        "previewParentPublishedAnnouncementDirectory",
+        "getParentPublishedAnnouncement",
+        "previewParentPublishedAnnouncement"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -1,0 +1,35 @@
+ Container edumanage_backend_test-runner-run-fe33b999dde4 Creating
+ Container edumanage_backend_test-runner-run-fe33b999dde4 Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (458.344655ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (78.304235ms)
+✔ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (994.140651ms)
+✖ B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal (803.373653ms)
+✖ B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights (1436.299646ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4618.170763
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3091:1
+✖ B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal (803.373653ms)
+  TypeError: Cannot read properties of null (reading 'activityStatus')
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3104:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/integration/foundation.test.mjs:3114:1
+✖ B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights (1436.299646ms)
+  TypeError: Cannot read properties of undefined (reading 'documents')
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3128:237)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+exitCode=1

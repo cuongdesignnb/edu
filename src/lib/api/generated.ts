@@ -371,6 +371,14 @@ export interface ApiSchemas {
   "ParentDocumentDirectory": { "files": Array<ApiSchemas["ParentDocumentEntry"]>; "reports": Array<ApiSchemas["ParentDocumentReport"]>; };
   "ParentDocumentEntryResponse": { "data": ApiSchemas["ParentDocumentEntry"]; "requestId": string; };
   "ParentDocumentDirectoryResponse": { "data": ApiSchemas["ParentDocumentDirectory"]; "requestId": string; };
+  "ParentSharedActivity": { "id": string; "title": string; "description": (string) | null; "dueAt": string; "studentStatus": "ASSIGNED" | "SUBMITTED" | "NEEDS_REVISION" | "APPROVED" | "EXCUSED"; "publicReviewNote": (string) | null; "documents": Array<ApiSchemas["ParentDocumentEntry"]>; "publishedAt": string; "activityStatus": ("ASSIGNED" | "CLOSED" | null) | null; "illustration": ("trophy" | "stem" | "clean" | "book" | "heart" | null) | null; "updatedAt": (string) | null; "timezone": string; "dueOn": string; };
+  "ParentSharedAnnouncement": { "id": string; "title": string; "sanitizedHtml": string; "publishedAt": string; "senderLabel": string; "documents": Array<ApiSchemas["ParentDocumentEntry"]>; "summary": (string) | null; "scopeKinds": Array<"PUBLIC" | "SCHOOL" | "GRADE" | "CLASS" | "STUDENT">; };
+  "ParentSharedActivityDirectory": { "items": Array<ApiSchemas["ParentSharedActivity"]>; };
+  "ParentSharedActivityResponse": { "data": ApiSchemas["ParentSharedActivity"]; "requestId": string; };
+  "ParentSharedActivityDirectoryResponse": { "data": ApiSchemas["ParentSharedActivityDirectory"]; "requestId": string; };
+  "ParentSharedAnnouncementDirectory": { "items": Array<ApiSchemas["ParentSharedAnnouncement"]>; };
+  "ParentSharedAnnouncementResponse": { "data": ApiSchemas["ParentSharedAnnouncement"]; "requestId": string; };
+  "ParentSharedAnnouncementDirectoryResponse": { "data": ApiSchemas["ParentSharedAnnouncementDirectory"]; "requestId": string; };
   "ParentTimetableWeekLesson": { "date": string; "startsAt": string; "endsAt": string; "startsAtLocal": string; "endsAtLocal": string; "periodNumber": (number) | null; "subjectName": string; "teacherName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeNote": (string) | null; };
   "ParentTimetableWeekDay": { "date": string; "holidayNames": Array<string>; "lessons": Array<ApiSchemas["ParentTimetableWeekLesson"]>; };
   "ParentTimetableWeek": { "weekStart": string; "today": string; "timezone": string; "year": { "startsOn": string; "endsOn": string; }; "weekNumber": (number) | null; "days": Array<ApiSchemas["ParentTimetableWeekDay"]>; };
@@ -3448,6 +3456,86 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "BinaryFile",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedActivityDirectory": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/activities/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedActivityDirectory",
+    "list": false,
+    "permission": "parent.activities",
+    "readOnly": true
+  },
+  "previewParentPublishedActivityDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/activities/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedActivityDirectory",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedActivity": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/activities/{activityId}/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedActivity",
+    "list": false,
+    "permission": "parent.activities",
+    "readOnly": true
+  },
+  "previewParentPublishedActivity": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/activities/{activityId}/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedActivity",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedAnnouncementDirectory": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/announcements/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedAnnouncementDirectory",
+    "list": false,
+    "permission": "parent.announcements",
+    "readOnly": true
+  },
+  "previewParentPublishedAnnouncementDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/announcements/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedAnnouncementDirectory",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedAnnouncement": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/announcements/{announcementId}/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedAnnouncement",
+    "list": false,
+    "permission": "parent.announcements",
+    "readOnly": true
+  },
+  "previewParentPublishedAnnouncement": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/announcements/{announcementId}/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedAnnouncement",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

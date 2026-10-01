@@ -31498,6 +31498,734 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/activities/published:
+    get:
+      operationId: getParentPublishedActivityDirectory
+      tags:
+        - Parent
+      summary: getParentPublishedActivityDirectory
+      description: Only own-child/year current published content and pinned display
+        metadata; documents keep their independent current module and download
+        rights.
+      x-permission: parent.activities
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA08
+        - PA09
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedActivityDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/activities/published:
+    get:
+      operationId: previewParentPublishedActivityDirectory
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedActivityDirectory
+      description: Independent current staff preview authority; same published
+        serializer, no cookie change, raw sources, roster or recipient IDs.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA08
+        - PA09
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedActivityDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/activities/{activityId}/published:
+    get:
+      operationId: getParentPublishedActivity
+      tags:
+        - Parent
+      summary: getParentPublishedActivity
+      description: Only own-child/year current published content and pinned display
+        metadata; documents keep their independent current module and download
+        rights.
+      x-permission: parent.activities
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA08
+        - PA09
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedActivityResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/activities/{activityId}/published:
+    get:
+      operationId: previewParentPublishedActivity
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedActivity
+      description: Independent current staff preview authority; same published
+        serializer, no cookie change, raw sources, roster or recipient IDs.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA08
+        - PA09
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedActivityResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/announcements/published:
+    get:
+      operationId: getParentPublishedAnnouncementDirectory
+      tags:
+        - Parent
+      summary: getParentPublishedAnnouncementDirectory
+      description: Only own-child/year current published content and pinned display
+        metadata; documents keep their independent current module and download
+        rights.
+      x-permission: parent.announcements
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA10
+        - PA11
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedAnnouncementDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/announcements/published:
+    get:
+      operationId: previewParentPublishedAnnouncementDirectory
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedAnnouncementDirectory
+      description: Independent current staff preview authority; same published
+        serializer, no cookie change, raw sources, roster or recipient IDs.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA10
+        - PA11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedAnnouncementDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/announcements/{announcementId}/published:
+    get:
+      operationId: getParentPublishedAnnouncement
+      tags:
+        - Parent
+      summary: getParentPublishedAnnouncement
+      description: Only own-child/year current published content and pinned display
+        metadata; documents keep their independent current module and download
+        rights.
+      x-permission: parent.announcements
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA10
+        - PA11
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+        - name: announcementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedAnnouncementResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/announcements/{announcementId}/published:
+    get:
+      operationId: previewParentPublishedAnnouncement
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedAnnouncement
+      description: Independent current staff preview authority; same published
+        serializer, no cookie change, raw sources, roster or recipient IDs.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA10
+        - PA11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: announcementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedAnnouncementResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /parent/{schoolSlug}/timetable-week:
     get:
       operationId: getParentTimetableWeek
@@ -45017,6 +45745,203 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ParentDocumentDirectory"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentSharedActivity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 4000
+          nullable: true
+        dueAt:
+          type: string
+          format: date-time
+        studentStatus:
+          type: string
+          enum:
+            - ASSIGNED
+            - SUBMITTED
+            - NEEDS_REVISION
+            - APPROVED
+            - EXCUSED
+        publicReviewNote:
+          type: string
+          maxLength: 4000
+          nullable: true
+        documents:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentDocumentEntry"
+        publishedAt:
+          type: string
+          format: date-time
+        activityStatus:
+          type: string
+          enum:
+            - ASSIGNED
+            - CLOSED
+            - null
+          nullable: true
+        illustration:
+          type: string
+          enum:
+            - trophy
+            - stem
+            - clean
+            - book
+            - heart
+            - null
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 100
+        dueOn:
+          type: string
+          format: date
+      required:
+        - id
+        - title
+        - description
+        - dueAt
+        - studentStatus
+        - publicReviewNote
+        - documents
+        - publishedAt
+        - activityStatus
+        - illustration
+        - updatedAt
+        - timezone
+        - dueOn
+      additionalProperties: false
+    ParentSharedAnnouncement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sanitizedHtml:
+          type: string
+          maxLength: 4000
+        publishedAt:
+          type: string
+          format: date-time
+        senderLabel:
+          type: string
+          minLength: 1
+          maxLength: 200
+        documents:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentDocumentEntry"
+        summary:
+          type: string
+          maxLength: 4000
+          nullable: true
+        scopeKinds:
+          type: array
+          maxItems: 5
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - PUBLIC
+              - SCHOOL
+              - GRADE
+              - CLASS
+              - STUDENT
+      required:
+        - id
+        - title
+        - sanitizedHtml
+        - publishedAt
+        - senderLabel
+        - documents
+        - summary
+        - scopeKinds
+      additionalProperties: false
+    ParentSharedActivityDirectory:
+      type: object
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentSharedActivity"
+      required:
+        - items
+      additionalProperties: false
+    ParentSharedActivityResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedActivity"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentSharedActivityDirectoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedActivityDirectory"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentSharedAnnouncementDirectory:
+      type: object
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentSharedAnnouncement"
+      required:
+        - items
+      additionalProperties: false
+    ParentSharedAnnouncementResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedAnnouncement"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentSharedAnnouncementDirectoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedAnnouncementDirectory"
         requestId:
           type: string
       required:
