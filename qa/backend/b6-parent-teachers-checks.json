@@ -1,0 +1,210 @@
+{
+  "phase": "B6 native current parent teacher directory and independent staff preview; partial goal checkpoint",
+  "previousCommit": "629dba47198b44eb9e2352fbd592a36e0f228ac8",
+  "backend": {
+    "contractOperations": 314,
+    "schemas": 428,
+    "operationStatus": {
+      "TESTED": 302,
+      "IMPLEMENTED": 12
+    },
+    "migrations": 38,
+    "runnerImage": "sha256:555bf8938954d376da324c9ccced1a7ef58b8cb6edfac7d9825747a074e22743",
+    "postgresFull": {
+      "pass": 164,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 569425.672058,
+      "log": "b6-parent-teachers-integration-full.log"
+    },
+    "postgresSelected": {
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 8800.505495,
+      "log": "b6-parent-teachers-integration-selected-reviewed.log",
+      "cases": "BE01, B4 private documents/work contacts, B5 settings and the two new native teacher cases"
+    },
+    "unitContract": {
+      "pass": 38,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 494.3139,
+      "log": "b6-parent-teachers-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-teachers-backend-types-initial.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-teachers-backend-lint-reviewed.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-teachers-integration-syntax-reviewed.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 296,
+      "fail": 0,
+      "files": 34,
+      "durationSeconds": 10.95,
+      "apiCases": 255,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-teachers-frontend-unit-full.log"
+    },
+    "selectedReviewed": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 0.433,
+      "log": "b6-parent-teachers-frontend-selected-reviewed.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-teachers-frontend-types-browser.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-teachers-frontend-lint.log"
+    },
+    "browserTestLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-teachers-browser-lint-reviewed.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-teachers-frontend-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 60,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 78094.411,
+    "newCases": 3,
+    "log": "b6-parent-teachers-browser-final.log",
+    "results": "b6-parent-teachers-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-teachers",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T07:53:16.970Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 28220,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T07:54:36.170Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-teachers-parent-teachers-desktop.png",
+      "b6-parent-teachers-parent-teachers-mobile.png"
+    ],
+    "staffPreviewBrowser": "NOT_RUN"
+  },
+  "initialFailures": [
+    {
+      "log": "b6-parent-teachers-frontend-selected-initial.log",
+      "pass": 5,
+      "fail": 1,
+      "durationSeconds": 0.757,
+      "reason": "Stale parent owner correctly throws CONFLICT/PARENT_CONTEXT_CHANGED; the new test incorrectly expected FORBIDDEN. Assertion corrected."
+    },
+    {
+      "log": "b6-parent-teachers-frontend-types-initial.log",
+      "exitCode": 2,
+      "reason": "Incomplete staff Ctx assertion in the test; replaced by explicit actor/today/now/current staff owner."
+    },
+    {
+      "log": "b6-parent-teachers-integration-selected-initial.log",
+      "loaderPass": 0,
+      "loaderFail": 1,
+      "durationMs": 49.767193,
+      "sqlCasesRun": 0,
+      "runnerImage": "sha256:0be15b9d1e10155d09e0f8d893681998016bd417686e846b42dd608193dc82f2",
+      "reason": "await schoolToday() was placed inside a non-async transaction callback in the new test; failed while loading the file before migration/business tests. Moved date retrieval outside the callback and checked syntax before rebuilding."
+    },
+    {
+      "log": "b6-parent-teachers-initial-browser-final.log",
+      "pass": 59,
+      "fail": 1,
+      "skipped": 0,
+      "flaky": 0,
+      "durationMs": 75797.65800000001,
+      "reason": "The focus test dispatched non-bubbling visibilitychange on document; the library listens on window. Corrected the test target and reran the entire suite; runtime source unchanged."
+    }
+  ],
+  "sourceInventory": {
+    "nativeCandidates": 115,
+    "activatedCandidates": 115,
+    "matchedLegacyMethods": 103,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 128,
+    "log": "b6-parent-teachers-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 50,
+    "NOT_STARTED": 65,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updated": [
+      "PA12"
+    ],
+    "limitation": "Source status plus intercepted browser evidence do not certify PostgreSQL browser acceptance"
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T14:50:42.5346556+07:00",
+    "port": 18763,
+    "listeners": []
+  },
+  "portBeforeReviewed": {
+    "checkedAt": "2026-10-01T14:53:04.2788602+07:00",
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T14:55:20.1671982+07:00",
+    "listeners": []
+  },
+  "scope": [
+    "Exact current own-child/school/year/teachers session and enrollment plus active identity/membership/assignment/role/grant scope/time; no raw membership privileges",
+    "Work contact sharing requires the current member flag and school setting; identity contacts and raw internal IDs are excluded",
+    "Minimal weekdays derive only from actual scheduled lesson IDs in the current published combined timetable snapshot and within enrollment/assignment/grant/year time bounds; draft or withdrawn schedules add no weekday",
+    "Absent current class/assignments, work contacts, public school contacts and contact hours remain explicit absent values",
+    "Public/staff composite ownership, stale response rejection and focus/30-second revalidation keep private views current without adopting a preview parent cookie"
+  ],
+  "reviewGap": "The preceding monthly attendance purpose endpoint needs an explicit DAILY source filter; published LESSON facts must not enter the same denominator. This mixed-granularity case is not yet tested or fixed at this checkpoint.",
+  "notRunOrIncomplete": [
+    "Attendance month DAILY/LESSON separation fix and its PostgreSQL test",
+    "Real PostgreSQL browser E2E",
+    "Remaining parent content and full staff preview",
+    "Other remaining frontend facades",
+    "Final deploy/scripts root merge and release Docker URL",
+    "Restart-data acceptance",
+    "Physical backup/restore acceptance",
+    "Release workload/CPU/RSS/pool performance acceptance",
+    "Production deployment"
+  ],
+  "safety": {
+    "removedVolumes": false,
+    "otherProjectProcessesTouched": false,
+    "productionDeployed": false,
+    "goalComplete": false,
+    "currentLocalUrlServing": false
+  }
+}

@@ -3699,6 +3699,29 @@
       "evidence": [
         "qa/backend/b6-parent-attendance-integration-full.log"
       ]
+    },
+    {
+      "operationId": "getParentTeacherDirectory",
+      "screenIds": [
+        "PA12"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-teachers-integration-full.log"
+      ]
+    },
+    {
+      "operationId": "previewParentTeacherDirectory",
+      "screenIds": [
+        "SC25",
+        "PA12"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-teachers-integration-full.log"
+      ]
     }
   ],
   "screens": [
@@ -4468,7 +4491,8 @@
       "scope": "core",
       "operationIds": [
         "previewParent",
-        "previewParentAttendanceMonth"
+        "previewParentAttendanceMonth",
+        "previewParentTeacherDirectory"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5304,11 +5328,15 @@
       "screenId": "PA12",
       "scope": "core",
       "operationIds": [
-        "getParentTeachers"
+        "getParentTeachers",
+        "getParentTeacherDirectory",
+        "previewParentTeacherDirectory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-teachers-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {

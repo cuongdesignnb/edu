@@ -366,6 +366,9 @@ export interface ApiSchemas {
   "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
   "ParentAttendanceMonth": { "month": string; "yearStart": string; "yearEnd": string; "today": string; "days": Array<{ "date": string; "weekday": number; "holidayNames": Array<string>; "sessions": Array<ApiSchemas["ParentAttendance"]>; "status": "unmarked" | "present" | "late" | "excused" | "unexcused" | "mixed" | "future" | "holiday" | "not_published"; }>; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; };
   "ParentAttendanceMonthResponse": { "data": ApiSchemas["ParentAttendanceMonth"]; "requestId": string; };
+  "ParentTeacherDirectoryEntry": { "kind": "HOMEROOM" | "SUBJECT"; "displayName": string; "subjectName": (string) | null; "workEmail": (string) | null; "workPhone": (string) | null; "weekdays": Array<number>; };
+  "ParentTeacherDirectory": { "today": string; "classLabel": (string) | null; "contactHours": (string) | null; "teachers": Array<ApiSchemas["ParentTeacherDirectoryEntry"]>; };
+  "ParentTeacherDirectoryResponse": { "data": ApiSchemas["ParentTeacherDirectory"]; "requestId": string; };
   "StudentYear": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "startsOn": string; "endsOn": string; };
   "StudentDirectoryClass": { "id": string; "version": number; "yearId": string; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; };
   "StudentDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "dateOfBirth": (string) | null; "gender": ("Nam" | "Nữ" | null) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "enrollmentId": string; "enrollmentVersion": number; "classId": string; "className": string; "yearId": string; "yearName": string; "enrollmentInEffect": boolean; "guardianCount": (number) | null; "verifiedGuardians": (number) | null; "activeLinks": (number) | null; };
@@ -3364,6 +3367,26 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentAttendanceMonth",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentTeacherDirectory": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/teacher-directory",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentTeacherDirectory",
+    "list": false,
+    "permission": "parent.teachers",
+    "readOnly": true
+  },
+  "previewParentTeacherDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/teacher-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentTeacherDirectory",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

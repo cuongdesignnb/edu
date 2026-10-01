@@ -366,6 +366,17 @@ spec.paths['/parent/{schoolSlug}/attendance-month'].get.description=parentMonthO
 extendOperation('previewParent','previewParentAttendanceMonth','/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month','parent_access.preview','ParentAttendanceMonth',false,['SC25','PA03'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid},{name:'month',in:'query',required:true,schema:{type:'string',pattern:'^\\d{4}-(0[1-9]|1[0-2])$'}}]);
 spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month'].get.description='Internal staff preview of the same published child/year attendance month; requires independent current preview authority and never changes parent cookies.';
 
+// Native PA12 returns no internal staff identifiers or identity contacts.
+spec.components.schemas.ParentTeacherDirectoryEntry=object({kind:{type:'string',enum:['HOMEROOM','SUBJECT']},displayName:label,subjectName:nullableLabel,workEmail:nullableLabel,workPhone:nullableLabel,weekdays:{type:'array',maxItems:7,uniqueItems:true,items:{type:'integer',minimum:1,maximum:7}}});
+spec.components.schemas.ParentTeacherDirectory=object({today:studentDate,classLabel:nullableLabel,contactHours:nullableLabel,teachers:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentTeacherDirectoryEntry'}}});
+spec.components.schemas.ParentTeacherDirectoryResponse=object({data:{$ref:'#/components/schemas/ParentTeacherDirectory'},requestId:label});
+extendOperation('getParentContext','getParentTeacherDirectory','/parent/{schoolSlug}/teacher-directory','parent.teachers','ParentTeacherDirectory',false,['PA12'],[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}}]);
+operations.find(value=>value.id==='getParentTeacherDirectory').scope='parent';
+spec.paths['/parent/{schoolSlug}/teacher-directory'].get.description='Only current own-child/year class assignments, permitted work contacts and weekdays from the current published timetable; no identity contacts or raw staff identifiers.';
+extendOperation('previewParent','previewParentTeacherDirectory','/schools/{schoolId}/parent-access/{accessId}/preview/teacher-directory','parent_access.preview','ParentTeacherDirectory',false,['SC25','PA12'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid}]);
+spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/teacher-directory'].get.description='Current independent staff preview authority; same permitted teacher serializer without changing parent cookies.';
+
+
 
 
 spec.components.schemas.StudentYear=object({id:uuid,version:versionPositive,name:label,status:structuredClone(spec.components.schemas.Year.properties.status),startsOn:studentDate,endsOn:studentDate});

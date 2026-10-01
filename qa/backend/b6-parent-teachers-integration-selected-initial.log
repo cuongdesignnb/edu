@@ -1,0 +1,34 @@
+ Container edumanage_backend_test-runner-run-ed960ba0ee96 Creating
+ Container edumanage_backend_test-runner-run-ed960ba0ee96 Created
+file:///srv/api/tests/integration/foundation.test.mjs:2962
+ const ended=await db.transaction(tx=>tx.query('UPDATE app.enrollments SET ends_on=$3 WHERE school_id=$1 AND id=$2',[schoolA,f.enrollments[0].id,await schoolToday()]),{schoolId:schoolA});assert.equal(ended.rowCount,1);assert.equal((await read()).classLabel,null);assert.deepEqual((await read()).teachers,[]);
+                                                                                                                                                 ^^^^^
+
+SyntaxError: Unexpected reserved word
+    at compileSourceTextModule (node:internal/modules/esm/utils:319:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:89:18)
+    at #translate (node:internal/modules/esm/loader:438:20)
+    at afterLoad (node:internal/modules/esm/loader:506:29)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:511:12)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:564:36)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32
+    at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+
+Node.js v24.21.0
+✖ tests/integration/foundation.test.mjs (41.334328ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49.767193
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1:1
+✖ tests/integration/foundation.test.mjs (41.334328ms)
+  'test failed'

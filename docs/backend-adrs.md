@@ -1416,3 +1416,10 @@ Actual frontend284 and controlled Edge53 are recorded in qa/backend/b6-parent-in
 - The native adapter validates every day/session/total before exposing data, keeps view and staff ownership over composite reads, and rejects stale identity results without clearing a newer view. Preview never adopts a parent session. Existing cards/calendar and navigation through the actual current month are preserved.
 
 Actual PostgreSQL162, backend unit/contracts37, frontend290 and intercepted Edge57 are recorded in qa/backend/b6-parent-attendance-checks.json, including initial failed checks and corrected reruns. Only PA03 is source IMPLEMENTED; real PostgreSQL UI E2E and B7 release gates remain pending. No retained volume was removed.
+
+## ADR-067 — parent teacher purpose metadata follows live assignments and explicit work sharing
+
+- A SECURITY DEFINER function requires the exact current own-child/year/teachers session and returns only work display names, assignment kind, subject label, permitted work contacts and scoped weekday metadata. School/class/subject grant scope, identity/membership/role status and all effective dates apply. Internal identity contacts and raw staff IDs remain private; edu_parent retains no raw membership-table privilege.
+- Weekdays come from actual scheduled lesson IDs pinned by the current published combined timetable snapshot, with current source time bounds. A teacher-only link receives minimal teacher schedule metadata without authority to read the timetable. Missing current assignments, contacts and hours remain absent. Native cards preserve the established layout and composite parent/staff ownership; periodic/focus reads recheck changing shares and access.
+
+Actual PostgreSQL164, backend unit/contracts38, frontend296 and intercepted Edge60 are recorded in qa/backend/b6-parent-teachers-checks.json with initial failures and corrected reruns. Only PA12 is source IMPLEMENTED. The review also identified a separate pending DAILY/LESSON month-denominator correction; no release acceptance or full-goal completion is inferred.

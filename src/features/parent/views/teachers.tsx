@@ -24,7 +24,7 @@ export function ParentTeachersView() {
   const q = usePRead(["teachers"], (k, s) => parentRepo.teachers(k, s));
   return (
     <ParentPage>
-      <ParentHeader title="Giáo viên phụ trách" subtitle={`Giáo viên chủ nhiệm và giáo viên bộ môn lớp ${p.context.className}`} />
+      <ParentHeader title="Giáo viên phụ trách" subtitle="Giáo viên đang được phân công cho lớp hiện tại của con" />
       <PState query={q}>
         {(d) => (
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
@@ -45,7 +45,7 @@ export function ParentTeachersView() {
                       </div>
                     </div>
                   </div>
-                ) : <EmptyState compact title="Lớp chưa có giáo viên chủ nhiệm được phân công" />}
+                ) : <EmptyState compact title="Chưa có giáo viên chủ nhiệm đang phụ trách con" />}
               </Card>
               <Card>
                 <CardHeader className="rounded-t-[14px] border-b border-line bg-gradient-to-r from-[#e6f7f0] to-white !py-3" icon={<BookOpen className="size-5 !text-success" />} title="Giáo viên bộ môn"
@@ -56,8 +56,8 @@ export function ParentTeachersView() {
                       <table className="table text-[13.5px]">
                         <thead><tr><th>Môn học</th><th>Giáo viên</th><th>Liên hệ</th><th>Thời gian dạy</th></tr></thead>
                         <tbody>
-                          {d.subjects.map((s) => (
-                            <tr key={s.subject + s.name}>
+                          {d.subjects.map((s,index) => (
+                            <tr key={`${s.subject}:${s.name}:${index}`}>
                               <td><span className="inline-flex items-center gap-2 font-medium text-ink"><span className="size-2.5 rounded-sm" style={{ background: s.subjectColor ?? "var(--color-primary)" }} aria-hidden />{s.subject}</span></td>
                               <td className="whitespace-nowrap">{s.name}</td>
                               <td><Contact phone={s.phone} email={s.email} /></td>
@@ -68,8 +68,8 @@ export function ParentTeachersView() {
                       </table>
                     </div>
                     <ul className="divide-y divide-line sm:hidden">
-                      {d.subjects.map((s) => (
-                        <li key={s.subject + s.name} className="px-4 py-3 text-[13.5px]">
+                      {d.subjects.map((s,index) => (
+                        <li key={`${s.subject}:${s.name}:${index}`} className="px-4 py-3 text-[13.5px]">
                           <p className="flex items-center gap-2 font-semibold text-ink"><span className="size-2.5 rounded-sm" style={{ background: s.subjectColor ?? "var(--color-primary)" }} aria-hidden />{s.subject}</p>
                           <p className="text-body">{s.name} · <span className="text-muted">{s.days || "—"}</span></p>
                           <div className="mt-1 text-body"><Contact phone={s.phone} email={s.email} /></div>

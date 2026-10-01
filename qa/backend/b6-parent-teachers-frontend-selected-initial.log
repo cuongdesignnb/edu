@@ -1,0 +1,38 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ❯ tests/unit/api-parent-teachers-adapter.test.ts (6 tests | 1 failed) 43ms
+   ✓ Native parent teacher minimal display and current owner > retains only actual work contacts and published weekdays; absent school contacts/hours remain absent 7ms
+   ✓ Native parent teacher minimal display and current owner > rejects private fields, another class/date, invalid or unordered weekdays and invented assignment shape 3ms
+   ✓ Native parent teacher minimal display and current owner > public composite context and teacher reads carry only their exact view header and accept real contact suppression 10ms
+   × Native parent teacher minimal display and current owner > slow older public teacher receipts cannot expose old contacts or clear a newly adopted child 17ms
+     → expected RepoError: Phiên tra cứu đã đổi. Mở lại l… { …(3) } to match object { code: 'FORBIDDEN' }
+(4 matching properties omitted from actual)
+   ✓ Native parent teacher minimal display and current owner > section denial retains its view; invalid current session clears it 3ms
+   ✓ Native parent teacher minimal display and current owner > preview uses current independent staff/access scope without adopting or borrowing public view credentials 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-parent-teachers-adapter.test.ts > Native parent teacher minimal display and current owner > slow older public teacher receipts cannot expose old contacts or clear a newly adopted child
+AssertionError: expected RepoError: Phiên tra cứu đã đổi. Mở lại l… { …(3) } to match object { code: 'FORBIDDEN' }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "FORBIDDEN",
++ RepoError {
++   "code": "CONFLICT",
+  }
+
+ ❯ tests/unit/api-parent-teachers-adapter.test.ts:29:104
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  14:46:54
+   Duration  757ms (transform 159ms, setup 41ms, collect 183ms, tests 43ms, environment 0ms, prepare 102ms)

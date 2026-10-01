@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,312);assert.equal(new Set(operations.map(op=>op.id)).size,312);
+  assert.equal(operations.length,314);assert.equal(new Set(operations.map(op=>op.id)).size,314);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -169,4 +169,10 @@ test('parent attendance month preserves real session/holiday counts and rejects 
  const row={month:'2026-10',yearStart:'2026-09',yearEnd:'2027-05',today:'2026-10-01',days:[{date:'2026-10-01',weekday:4,holidayNames:[],sessions:[],status:'not_published'}],totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0}};
  assert.doesNotThrow(()=>validateSchema('ParentAttendanceMonth',row,true));
  for(const value of [{...row,studentId:'63000000-0000-4000-8000-000000000001'},{...row,days:[{...row.days[0],status:'invented-present'}]},{...row,totals:{...row.totals,marked:-1}}])assert.throws(()=>validateSchema('ParentAttendanceMonth',value,true));
+});
+
+test('parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity',()=>{
+ const teacher={kind:'SUBJECT',displayName:'Giáo viên công tác',subjectName:'Toán',workEmail:null,workPhone:null,weekdays:[1,3,7]},value={today:'2026-10-01',classLabel:'6A',contactHours:null,teachers:[teacher]};validateSchema('ParentTeacherDirectory',value,true);
+ for(const bad of [{...value,studentId:'private'},{...value,teachers:[{...teacher,userId:'private'}]},{...value,teachers:[{...teacher,weekdays:[1,1]}]},{...value,teachers:[{...teacher,weekdays:[0]}]},{...value,teachers:[{...teacher,kind:'ADMIN'}]}])assert.throws(()=>validateSchema('ParentTeacherDirectory',bad,true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+ assert.equal(operations.find(op=>op.id==='getParentTeacherDirectory').permission,'parent.teachers');assert.equal(operations.find(op=>op.id==='previewParentTeacherDirectory').permission,'parent_access.preview');
 });

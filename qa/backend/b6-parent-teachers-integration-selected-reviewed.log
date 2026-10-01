@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-6998ee15b3a8 Creating
+ Container edumanage_backend_test-runner-run-6998ee15b3a8 Created
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (688.856333ms)
+✔ B4 private documents stream only with both download rights, and teacher contact projections use shared work fields (2665.244701ms)
+✔ B5 school settings persist with version guards, affect only new link expiry and suppress work contacts without changing old link permissions (2609.911091ms)
+✔ B6 parent teacher directory uses own live class assignments, shared work fields and only current published schedule weekdays (1243.123696ms)
+✔ B6 parent teacher SQL denies foreign or missing context, honors current enrollment/grant/contact changes and never grants raw memberships (619.747429ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8800.505495

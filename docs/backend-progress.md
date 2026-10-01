@@ -316,6 +316,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listParentAccessHistory | SC24 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
 | getParentAttendanceMonth | PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log |
 | previewParentAttendanceMonth | SC25, PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log |
+| getParentTeacherDirectory | PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
+| previewParentTeacherDirectory | SC25, PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -426,7 +428,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA09 | core | TESTED | NOT_STARTED |  |  |
 | PA10 | core | TESTED | NOT_STARTED |  |  |
 | PA11 | core | TESTED | NOT_STARTED |  |  |
-| PA12 | core | TESTED | NOT_STARTED |  |  |
+| PA12 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-teachers-checks.json |
 | PA13 | core | TESTED | NOT_STARTED |  |  |
 | PA14 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | SY01 | core | TESTED | NOT_STARTED |  |  |

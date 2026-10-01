@@ -1,0 +1,3 @@
+tests/unit/api-parent-teachers-adapter.test.ts(36,21): error TS2352: Conversion of type '{ schoolId: string; staffOwner: { epoch: number; assertCurrent(): void; }; }' to type 'Ctx' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ schoolId: string; staffOwner: { epoch: number; assertCurrent(): void; }; }' is missing the following properties from type 'Ctx': actor, today, now
+exitCode=2
