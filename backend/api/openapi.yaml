@@ -31021,6 +31021,180 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/duty-schedule:
+    get:
+      operationId: getParentDutySchedule
+      tags:
+        - Parent
+      summary: getParentDutySchedule
+      description: Complete bounded own-child/year published duties, fixed at
+        publication and restricted to the enrollment class on each date. No
+        group roster or internal identifiers.
+      x-permission: parent.duties
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA07
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentDutyScheduleResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule:
+    get:
+      operationId: previewParentDutySchedule
+      tags:
+        - ParentAccess
+      summary: previewParentDutySchedule
+      description: Independent current staff preview authority; same bounded child
+        duty schedule without changing parent cookies.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA07
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentDutyScheduleResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/student-directory:
     get:
       operationId: listStudentDirectory
@@ -36333,6 +36507,10 @@ components:
           maxLength: 4000
         status:
           type: string
+          enum:
+            - ASSIGNED
+            - DONE
+            - CANCELLED
         publishedAt:
           type: string
           format: date-time
@@ -43970,6 +44148,46 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ParentTeacherDirectory"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentDutySchedule:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        year:
+          type: object
+          properties:
+            startsOn:
+              type: string
+              format: date
+            endsOn:
+              type: string
+              format: date
+          required:
+            - startsOn
+            - endsOn
+          additionalProperties: false
+        items:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/ParentDuty"
+      required:
+        - today
+        - year
+        - items
+      additionalProperties: false
+    ParentDutyScheduleResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentDutySchedule"
         requestId:
           type: string
       required:

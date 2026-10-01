@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 115,
-  "activatedCandidateCount": 115,
-  "activatedLegacyMethodCount": 103,
+  "candidateCount": 116,
+  "activatedCandidateCount": 116,
+  "activatedLegacyMethodCount": 104,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1324,7 +1324,17 @@
         "slug: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "duties",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",

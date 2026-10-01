@@ -1,0 +1,33 @@
+ Container edumanage_backend_test-runner-run-0806b178c674 Creating
+ Container edumanage_backend_test-runner-run-0806b178c674 Created
+✖ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (1326.60074ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2140.049449
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:2987:1
+✖ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (1326.60074ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 1
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2996:115)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exitCode=1

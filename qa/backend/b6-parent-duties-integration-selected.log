@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-9956a561c9e1 Creating
+ Container edumanage_backend_test-runner-run-9956a561c9e1 Created
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (653.82614ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (2332.152487ms)
+✔ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (1790.255315ms)
+✔ B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal (2118.139041ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7808.307434
+exitCode=0

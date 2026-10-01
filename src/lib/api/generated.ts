@@ -87,7 +87,7 @@ export interface ApiSchemas {
   "PointLine": { "label": string; "delta": string; "occurredAt": string; "reason": string; };
   "ParentConduct": { "periodId": (string) | null; "periodLabel": string; "revision": number; "basePoints": string; "bonusPoints": string; "penaltyPoints": string; "finalPoints": string; "classification": (string) | null; "lines": Array<ApiSchemas["PointLine"]>; "publishedAt": string; "adjusted": boolean; };
   "ParentLesson": { "date": string; "startsAt": string; "endsAt": string; "subjectName": string; "teacherName": string; "roomName"?: string; "changeNote"?: string; "status"?: "SCHEDULED" | "CANCELLED"; };
-  "ParentDuty": { "date": string; "task": string; "status": string; "publishedAt": string; };
+  "ParentDuty": { "date": string; "task": string; "status": "ASSIGNED" | "DONE" | "CANCELLED"; "publishedAt": string; };
   "ParentActivity": { "id": (string) | null; "title": string; "description"?: string; "dueAt": string; "studentStatus": "ASSIGNED" | "SUBMITTED" | "NEEDS_REVISION" | "APPROVED" | "EXCUSED"; "publicReviewNote"?: string; "documents"?: Array<ApiSchemas["ParentDocument"]>; "publishedAt": string; };
   "ParentAnnouncement": { "id": (string) | null; "title": string; "sanitizedHtml": string; "publishedAt": string; "senderLabel": string; "documents": Array<ApiSchemas["ParentDocument"]>; };
   "ParentDocument": { "id": (string) | null; "title": string; "contentType": string; "byteSize": number; "downloadAllowed": boolean; "publishedAt": string; };
@@ -369,6 +369,8 @@ export interface ApiSchemas {
   "ParentTeacherDirectoryEntry": { "kind": "HOMEROOM" | "SUBJECT"; "displayName": string; "subjectName": (string) | null; "workEmail": (string) | null; "workPhone": (string) | null; "weekdays": Array<number>; };
   "ParentTeacherDirectory": { "today": string; "classLabel": (string) | null; "contactHours": (string) | null; "teachers": Array<ApiSchemas["ParentTeacherDirectoryEntry"]>; };
   "ParentTeacherDirectoryResponse": { "data": ApiSchemas["ParentTeacherDirectory"]; "requestId": string; };
+  "ParentDutySchedule": { "today": string; "year": { "startsOn": string; "endsOn": string; }; "items": Array<ApiSchemas["ParentDuty"]>; };
+  "ParentDutyScheduleResponse": { "data": ApiSchemas["ParentDutySchedule"]; "requestId": string; };
   "StudentYear": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "startsOn": string; "endsOn": string; };
   "StudentDirectoryClass": { "id": string; "version": number; "yearId": string; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; };
   "StudentDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "dateOfBirth": (string) | null; "gender": ("Nam" | "Nữ" | null) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "enrollmentId": string; "enrollmentVersion": number; "classId": string; "className": string; "yearId": string; "yearName": string; "enrollmentInEffect": boolean; "guardianCount": (number) | null; "verifiedGuardians": (number) | null; "activeLinks": (number) | null; };
@@ -3387,6 +3389,26 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentTeacherDirectory",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentDutySchedule": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/duty-schedule",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentDutySchedule",
+    "list": false,
+    "permission": "parent.duties",
+    "readOnly": true
+  },
+  "previewParentDutySchedule": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentDutySchedule",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

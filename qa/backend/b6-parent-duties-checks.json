@@ -1,0 +1,220 @@
+{
+  "phase": "B6 native PA07 and dated enrollment filtering; partial goal checkpoint",
+  "previousCommit": "a1b7cc54a600240283e79746899fc352c0087881",
+  "backend": {
+    "contractOperations": 316,
+    "schemas": 430,
+    "operationStatus": {
+      "IMPLEMENTED": 12,
+      "TESTED": 304
+    },
+    "migrations": 40,
+    "runnerImage": "sha256:bdbf79fd9db809f254f730dfbc97f134ef030cafb01751610df7f3c4a95f5e2f",
+    "postgresFull": {
+      "tests": 167,
+      "pass": 167,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 497180.31235,
+      "log": "b6-parent-duties-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 4097.21988,
+      "log": "b6-parent-duties-integration-reviewed.log"
+    },
+    "postgresFirstSelected": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 7808.307434,
+      "log": "b6-parent-duties-integration-selected.log"
+    },
+    "unitContract": {
+      "tests": 39,
+      "pass": 39,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1464.2467,
+      "log": "b6-parent-duties-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-duties-backend-types.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-duties-backend-lint-final.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-duties-integration-syntax-reviewed.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 302,
+      "fail": 0,
+      "skipped": 0,
+      "files": 35,
+      "durationSeconds": 11.64,
+      "apiCases": 261,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-duties-frontend-unit-full.log"
+    },
+    "selected": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 0.625,
+      "log": "b6-parent-duties-frontend-selected.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-duties-frontend-types-reviewed.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-duties-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-duties-frontend-build-final.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 64,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 70068.11600000001,
+    "newCases": 3,
+    "log": "b6-parent-duties-browser-final.log",
+    "results": "b6-parent-duties-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-duties",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T08:35:17.893Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 41780,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T08:36:29.174Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-duties-parent-duties-desktop.png",
+      "b6-parent-duties-parent-duties-mobile.png"
+    ],
+    "earlierSuccessfulRun": {
+      "pass": 64,
+      "fail": 0,
+      "durationMs": 72946.691,
+      "reasonForRerun": "Corrected the card count to tasks rather than sessions, and added multiple tasks on one date to the browser fixture.",
+      "results": "b6-parent-duties-initial-browser-results-final.json"
+    }
+  },
+  "failedRunsThisCheckpoint": [
+    {
+      "kind": "EXPECTED_REGRESSION_REPRODUCTION",
+      "result": {
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 2140.049449,
+        "log": "b6-parent-duties-initial-transfer-regression.log"
+      },
+      "runnerImage": "sha256:d2da3db2c4015e16cd647d9c7f0823bb6d47381ba4f1b27c576bcb90fd4bed88",
+      "reason": "The old-class future duty remained visible after the approved transfer cutoff, before migration040 and the HTTP read guard."
+    },
+    {
+      "kind": "INITIAL_FULL_INTEGRATION",
+      "result": {
+        "tests": 167,
+        "pass": 166,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 527829.540731,
+        "log": "b6-parent-duties-integration-full-initial.log"
+      },
+      "runnerImage": "sha256:a2ba6fc82cb953de46344618e6706325037e0bb2004cd156582824b79e109bd2",
+      "reason": "Route inventory still expected314 after adding two operations. All166 other cases passed. The assertion was corrected to316, followed by the actual reviewed selected and full reruns."
+    }
+  ],
+  "sourceInventory": {
+    "nativeCandidates": 116,
+    "activatedCandidates": 116,
+    "matchedLegacyMethods": 104,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 127,
+    "log": "b6-parent-duties-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 51,
+    "NOT_STARTED": 64,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA07"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T15:35:13.8326915+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T15:36:56.1536039+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T15:49:39.8590343+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "implementedBehavior": [
+    "The current own-child/year/session and actual enrollment class on each dated item apply before HTTP counts/pagination.",
+    "Fixed group targets and immutable old publication rows remain retained; changing a later group membership does not recalculate them.",
+    "The complete bounded purpose duty read uses one read-only snapshot and validates minimal actual published status/date/task data.",
+    "Staff preview retains independent current authorization and does not adopt parent cookies.",
+    "Native composite reads assert current parent/staff ownership; absent or malformed data never falls back to mock."
+  ]
+}

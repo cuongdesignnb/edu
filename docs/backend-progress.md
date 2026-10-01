@@ -257,8 +257,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getParentAttendance | PA03 | TESTED | qa/backend/parent-integration.log |
 | listParentConduct | PA04 | TESTED | qa/backend/parent-integration.log |
 | getParentConduct | PA05 | TESTED | qa/backend/parent-integration.log |
-| getParentTimetable | PA06 | TESTED | qa/backend/parent-integration.log |
-| getParentDuties | PA07 | TESTED | qa/backend/parent-integration.log |
+| getParentTimetable | PA06 | TESTED | qa/backend/parent-integration.log; qa/backend/b6-parent-duties-checks.json |
+| getParentDuties | PA07 | TESTED | qa/backend/parent-integration.log; qa/backend/b6-parent-duties-checks.json |
 | listParentActivities | PA08 | TESTED | qa/backend/parent-integration.log |
 | getParentActivity | PA09 | TESTED | qa/backend/parent-integration.log |
 | listParentAnnouncements | PA10 | TESTED | qa/backend/parent-integration.log |
@@ -318,6 +318,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentAttendanceMonth | SC25, PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log; backend/migrations/039-parent-daily-attendance-source.sql; qa/backend/b6-parent-daily-integration-full.log |
 | getParentTeacherDirectory | PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
 | previewParentTeacherDirectory | SC25, PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
+| getParentDutySchedule | PA07 | TESTED | qa/backend/b6-parent-duties-checks.json |
+| previewParentDutySchedule | SC25, PA07 | TESTED | qa/backend/b6-parent-duties-checks.json |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -423,7 +425,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA04 | core | TESTED | NOT_STARTED |  |  |
 | PA05 | core | TESTED | NOT_STARTED |  |  |
 | PA06 | core | TESTED | NOT_STARTED |  |  |
-| PA07 | core | TESTED | NOT_STARTED |  |  |
+| PA07 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-duties-checks.json |
 | PA08 | core | TESTED | NOT_STARTED |  |  |
 | PA09 | core | TESTED | NOT_STARTED |  |  |
 | PA10 | core | TESTED | NOT_STARTED |  |  |

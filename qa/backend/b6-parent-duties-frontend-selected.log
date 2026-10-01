@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-duties-adapter.test.ts (6 tests) 35ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  15:29:09
+   Duration  625ms (transform 157ms, setup 42ms, collect 177ms, tests 35ms, environment 0ms, prepare 116ms)
+
+exitCode=0

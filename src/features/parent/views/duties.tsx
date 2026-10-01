@@ -15,11 +15,11 @@ function DutyList({ items, past }: { items: Duty[]; past?: boolean }) {
   if (!items.length) return <EmptyState compact title={past ? "Chưa có buổi trực nhật đã qua" : "Chưa có lịch trực nhật sắp tới"} description={past ? undefined : "Lịch của con sẽ hiện khi giáo viên công bố phân công."} />;
   return (
     <ul className="divide-y divide-line">
-      {items.map((d) => (
-        <li key={d.id} className={clsx("flex flex-wrap items-center gap-3 px-5 py-3", past && "opacity-80")}>
+      {items.map((d,index) => (
+        <li key={`${d.date}:${d.task}:${index}`} className={clsx("flex flex-wrap items-center gap-3 px-5 py-3", past && "opacity-80")}>
           <span className={clsx("icon-tile icon-tile-sm", past ? "tone-neutral" : "tone-green")} aria-hidden><NavIcon name="broom" className="size-4" /></span>
-          <span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{d.task}</span><span className="text-[12.5px] text-muted">{fmtDateLong(d.date)}{d.groupName ? ` · ${d.groupName}` : ""}</span></span>
-          <Badge tone={past ? "neutral" : "info"}>{past ? "Đã qua" : "Sắp tới"}</Badge>
+          <span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{d.task}</span><span className="text-[12.5px] text-muted">{fmtDateLong(d.date)}</span></span>
+          <Badge tone={d.status==='DONE'?'success':past||d.status==='CANCELLED'?"neutral":"info"}>{d.status==='DONE'?'Hoàn thành':d.status==='CANCELLED'?'Đã hủy':past?'Đã qua':'Sắp tới'}</Badge>
         </li>
       ))}
     </ul>
@@ -38,8 +38,8 @@ export function ParentDutiesView() {
           const past = list.filter((d) => !d.upcoming).reverse();
           return (
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <Card><CardHeader icon={<NavIcon name="broom" className="size-5" />} title="Sắp tới" subtitle={`${up.length} buổi`} /><DutyList items={up} /></Card>
-              <Card><CardHeader icon={<NavIcon name="calendarCheck" className="size-5" />} title="Đã qua" subtitle={`${past.length} buổi`} /><DutyList items={past} past /></Card>
+              <Card><CardHeader icon={<NavIcon name="broom" className="size-5" />} title="Sắp tới" subtitle={`${up.length} nhiệm vụ`} /><DutyList items={up} /></Card>
+              <Card><CardHeader icon={<NavIcon name="calendarCheck" className="size-5" />} title="Đã qua" subtitle={`${past.length} nhiệm vụ`} /><DutyList items={past} past /></Card>
               <Callout tone="info" icon={<Info />} className="lg:col-span-2">Trang chỉ để gia đình nắm lịch. Việc đổi lịch hoặc thay người trực do giáo viên chủ nhiệm sắp xếp tại lớp.</Callout>
             </div>
           );

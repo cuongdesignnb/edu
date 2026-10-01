@@ -1430,3 +1430,11 @@ Actual PostgreSQL164, backend unit/contracts38, frontend296 and intercepted Edge
 - Month wire metadata explicitly requires DAILY; native parsing rejects missing or lesson markers and retains the existing display. The actual PostgreSQL test verifies3 canonical records versus2 monthly daily records, same staff preview, independent withdrawal, false foreign/missing-context source checks and raw-table denial.
 
 Evidence: qa/backend/b6-parent-daily-checks.json records PostgreSQL165, backend unit/contracts38, frontend296 and intercepted Edge61. This resolves the review gap noted in ADR067; full goal and B7 release gates remain incomplete.
+
+## ADR-069 — parent duties keep fixed targets within dated class enrollment
+
+- The actual transfer regression reproduced an old-class future duty remaining visible after the enrollment cutoff. Migration040 adds a guard requiring exact current parent school/child/year/section authority, the own published projection and an enrollment in the publication class on that item's date. Attendance, timetable and duty HTTP reads apply it before counting and paging; old enrollment history remains visible before the cutoff. Immutable publication rows are retained. Group membership is not re-evaluated, preserving the approved fixed targets after a later group move.
+- PA07 uses a complete bounded purpose read in one read-only PostgreSQL snapshot, expands all batch items and rejects more than5000 items. It exposes actual task/date/published status and school/year metadata without source IDs, group names or other pupils. Independent staff preview uses the same serializer and never adopts the public parent cookie. The native adapter checks allowlists, dates/year/status and current composite parent or staff ownership before display.
+- The existing upcoming/past cards retain their layout. The count says tasks because a date may contain several duties, and past dates do not imply completion. Actual DONE/CANCELLED values come from the current published snapshot. Controlled desktop/mobile and ownership/revocation browser evidence remains separate from PostgreSQL UI E2E.
+
+Actual checks and the initial reproduced failure are recorded in qa/backend/b6-parent-duties-checks.json. Only PA07 gains source IMPLEMENTED status. Full-goal/B7 release acceptance remains incomplete.

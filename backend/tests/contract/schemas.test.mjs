@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,314);assert.equal(new Set(operations.map(op=>op.id)).size,314);
+  assert.equal(operations.length,316);assert.equal(new Set(operations.map(op=>op.id)).size,316);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -175,4 +175,10 @@ test('parent teacher directory requires explicit nullable work metadata and mini
  const teacher={kind:'SUBJECT',displayName:'Giáo viên công tác',subjectName:'Toán',workEmail:null,workPhone:null,weekdays:[1,3,7]},value={today:'2026-10-01',classLabel:'6A',contactHours:null,teachers:[teacher]};validateSchema('ParentTeacherDirectory',value,true);
  for(const bad of [{...value,studentId:'private'},{...value,teachers:[{...teacher,userId:'private'}]},{...value,teachers:[{...teacher,weekdays:[1,1]}]},{...value,teachers:[{...teacher,weekdays:[0]}]},{...value,teachers:[{...teacher,kind:'ADMIN'}]}])assert.throws(()=>validateSchema('ParentTeacherDirectory',bad,true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
  assert.equal(operations.find(op=>op.id==='getParentTeacherDirectory').permission,'parent.teachers');assert.equal(operations.find(op=>op.id==='previewParentTeacherDirectory').permission,'parent_access.preview');
+});
+
+test('parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata',()=>{
+ const item={date:'2026-10-01',task:'Quét lớp',status:'ASSIGNED',publishedAt:'2026-10-01T01:00:00Z'},value={today:'2026-10-01',year:{startsOn:'2026-09-01',endsOn:'2027-06-01'},items:[item]};validateSchema('ParentDutySchedule',value,true);
+ for(const bad of [{...value,studentId:'private'},{...value,items:[{...item,groupStudents:['Bạn khác']}]},{...value,items:[{...item,status:'PUBLISHED'}]},{...value,items:Array.from({length:5001},()=>item)}])assert.throws(()=>validateSchema('ParentDutySchedule',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+ assert.equal(operations.find(op=>op.id==='getParentDutySchedule').permission,'parent.duties');assert.equal(operations.find(op=>op.id==='previewParentDutySchedule').permission,'parent_access.preview');
 });

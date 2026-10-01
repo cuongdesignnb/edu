@@ -376,6 +376,16 @@ spec.paths['/parent/{schoolSlug}/teacher-directory'].get.description='Only curre
 extendOperation('previewParent','previewParentTeacherDirectory','/schools/{schoolId}/parent-access/{accessId}/preview/teacher-directory','parent_access.preview','ParentTeacherDirectory',false,['SC25','PA12'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid}]);
 spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/teacher-directory'].get.description='Current independent staff preview authority; same permitted teacher serializer without changing parent cookies.';
 
+// PA07 keeps concrete child targets and reads the complete dated publication schedule.
+spec.components.schemas.ParentDutySchedule=object({today:studentDate,year:object({startsOn:studentDate,endsOn:studentDate}),items:{type:'array',maxItems:5000,items:{$ref:'#/components/schemas/ParentDuty'}}});
+spec.components.schemas.ParentDutyScheduleResponse=object({data:{$ref:'#/components/schemas/ParentDutySchedule'},requestId:label});
+spec.components.schemas.ParentDuty.properties.status={type:'string',enum:['ASSIGNED','DONE','CANCELLED']};
+extendOperation('getParentContext','getParentDutySchedule','/parent/{schoolSlug}/duty-schedule','parent.duties','ParentDutySchedule',false,['PA07'],[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}}]);
+operations.find(value=>value.id==='getParentDutySchedule').scope='parent';
+spec.paths['/parent/{schoolSlug}/duty-schedule'].get.description='Complete bounded own-child/year published duties, fixed at publication and restricted to the enrollment class on each date. No group roster or internal identifiers.';
+extendOperation('previewParent','previewParentDutySchedule','/schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule','parent_access.preview','ParentDutySchedule',false,['SC25','PA07'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid}]);
+spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule'].get.description='Independent current staff preview authority; same bounded child duty schedule without changing parent cookies.';
+
 
 
 

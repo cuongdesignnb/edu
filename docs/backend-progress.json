@@ -3045,7 +3045,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/parent-integration.log"
+        "qa/backend/parent-integration.log",
+        "qa/backend/b6-parent-duties-checks.json"
       ]
     },
     {
@@ -3056,7 +3057,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/parent-integration.log"
+        "qa/backend/parent-integration.log",
+        "qa/backend/b6-parent-duties-checks.json"
       ]
     },
     {
@@ -3725,6 +3727,29 @@
       "status": "TESTED",
       "evidence": [
         "qa/backend/b6-parent-teachers-integration-full.log"
+      ]
+    },
+    {
+      "operationId": "getParentDutySchedule",
+      "screenIds": [
+        "PA07"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-duties-checks.json"
+      ]
+    },
+    {
+      "operationId": "previewParentDutySchedule",
+      "screenIds": [
+        "SC25",
+        "PA07"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-duties-checks.json"
       ]
     }
   ],
@@ -4496,7 +4521,8 @@
       "operationIds": [
         "previewParent",
         "previewParentAttendanceMonth",
-        "previewParentTeacherDirectory"
+        "previewParentTeacherDirectory",
+        "previewParentDutySchedule"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5278,11 +5304,15 @@
       "screenId": "PA07",
       "scope": "core",
       "operationIds": [
-        "getParentDuties"
+        "getParentDuties",
+        "getParentDutySchedule",
+        "previewParentDutySchedule"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-duties-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {

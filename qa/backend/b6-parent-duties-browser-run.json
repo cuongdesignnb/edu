@@ -1,0 +1,19 @@
+{
+  "prefix": "b6-parent-duties",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T08:35:17.893Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "portFreeBefore": true,
+  "ownedNextPid": 41780,
+  "playwrightExitCode": 0,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T08:36:29.174Z",
+  "exitCode": 0
+}

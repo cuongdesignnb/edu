@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-83b482f74eb8 Creating
+ Container edumanage_backend_test-runner-run-83b482f74eb8 Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (422.541317ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (66.356902ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (981.93133ms)
+✔ B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff (754.253083ms)
+✔ B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal (1044.502302ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4097.21988
+exitCode=0
