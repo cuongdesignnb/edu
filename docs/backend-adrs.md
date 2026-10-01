@@ -1423,3 +1423,10 @@ Actual PostgreSQL162, backend unit/contracts37, frontend290 and intercepted Edge
 - Weekdays come from actual scheduled lesson IDs pinned by the current published combined timetable snapshot, with current source time bounds. A teacher-only link receives minimal teacher schedule metadata without authority to read the timetable. Missing current assignments, contacts and hours remain absent. Native cards preserve the established layout and composite parent/staff ownership; periodic/focus reads recheck changing shares and access.
 
 Actual PostgreSQL164, backend unit/contracts38, frontend296 and intercepted Edge60 are recorded in qa/backend/b6-parent-teachers-checks.json with initial failures and corrected reruns. Only PA12 is source IMPLEMENTED. The review also identified a separate pending DAILY/LESSON month-denominator correction; no release acceptance or full-goal completion is inferred.
+
+## ADR-068 — monthly parent attendance uses the actual DAILY source cohort
+
+- PA03's morning/afternoon denominator excludes lesson attendance. A scope-guarded SQL predicate uses actual source granularity and own current published parent projection before pagination/counting. It does not infer a cohort from display labels or alter immutable published data. Canonical attendance still exposes allowed lesson facts separately.
+- Month wire metadata explicitly requires DAILY; native parsing rejects missing or lesson markers and retains the existing display. The actual PostgreSQL test verifies3 canonical records versus2 monthly daily records, same staff preview, independent withdrawal, false foreign/missing-context source checks and raw-table denial.
+
+Evidence: qa/backend/b6-parent-daily-checks.json records PostgreSQL165, backend unit/contracts38, frontend296 and intercepted Edge61. This resolves the review gap noted in ADR067; full goal and B7 release gates remain incomplete.

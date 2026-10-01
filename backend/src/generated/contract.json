@@ -14637,6 +14637,12 @@
     "ParentAttendanceMonth": {
       "type": "object",
       "properties": {
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "DAILY"
+          ]
+        },
         "month": {
           "type": "string",
           "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
@@ -14749,6 +14755,7 @@
         }
       },
       "required": [
+        "granularity",
         "month",
         "yearStart",
         "yearEnd",
@@ -66066,7 +66073,7 @@
       "frontend_ids": [
         "PA03"
       ],
-      "description": "Actual published attendance sessions and holiday labels for only the current parent child/year/module; missing days never infer attendance.",
+      "description": "Actual published DAILY attendance sessions and holiday labels for only the current parent child/year/module; missing days never infer attendance.",
       "readOnly": true,
       "parameters": [
         {

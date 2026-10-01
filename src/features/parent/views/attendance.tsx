@@ -90,6 +90,7 @@ export function ParentAttendanceView() {
                 </Card>
                 <Callout tone="info" icon={<Info />} title="Cách đọc lịch chuyên cần">
                   <ul className="list-disc space-y-1 pl-4">
+                    <li>Điểm danh tiết học được thống kê riêng, không cộng vào tỷ lệ chuyên cần theo buổi.</li>
                     <li>Mỗi ô giữ các buổi và ghi chú đã công bố của ngày đó; tổng hợp đếm theo buổi.</li>
                     <li>“Chưa công bố” nghĩa là giáo viên chưa công bố điểm danh — không có nghĩa là con có mặt hay vắng.</li>
                     <li>Chỉ xem được các tháng trong năm học được cấp qua link.</li>

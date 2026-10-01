@@ -3685,7 +3685,9 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-parent-attendance-integration-full.log"
+        "qa/backend/b6-parent-attendance-integration-full.log",
+        "backend/migrations/039-parent-daily-attendance-source.sql",
+        "qa/backend/b6-parent-daily-integration-full.log"
       ]
     },
     {
@@ -3697,7 +3699,9 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-parent-attendance-integration-full.log"
+        "qa/backend/b6-parent-attendance-integration-full.log",
+        "backend/migrations/039-parent-daily-attendance-source.sql",
+        "qa/backend/b6-parent-daily-integration-full.log"
       ]
     },
     {
@@ -5232,7 +5236,8 @@
       "staticReason": "",
       "status": "IMPLEMENTED",
       "evidence": [
-        "qa/backend/b6-parent-attendance-checks.json"
+        "qa/backend/b6-parent-attendance-checks.json",
+        "qa/backend/b6-parent-daily-checks.json"
       ],
       "apiStatus": "TESTED"
     },

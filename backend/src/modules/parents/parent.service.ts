@@ -74,9 +74,10 @@ export class ParentService {
     },{schoolId:String(school.id)});
     setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(28800,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:await this.context(p)};
   }
-  private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string}){
+  private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string},dailyOnly=false){
     this.allow(p,section);if(query.sort&&!['id','createdAt','publishedAt'].includes(query.sort))validation('sort','Chỉ sắp xếp theo thời gian công bố');
     const values:unknown[]=[p.studentId,p.yearId,section],where=['t.student_id=$1','t.year_id=$2','t.section=$3'];
+    if(dailyOnly){if(section!=='attendance')throw new Problem(500,'PARENT_ATTENDANCE_SOURCE_INVALID');where.push('app.parent_attendance_is_daily(t.school_id,t.student_id,t.year_id,t.publication_id)');}
     if(detail){values.push(detail.id);where.push(`t.payload->>'${detail.key}'=$${values.length}`);}
     for(const bound of ['from','to'])if(query[bound]){if(!/^\d{4}-\d{2}-\d{2}$/.test(query[bound]!))validation(bound,'Ngày ISO bắt buộc');values.push(query[bound]);where.push(`t.payload->>'date'${bound==='from'?'>=':'<'}$${values.length}`);}
     const result=await this.db.transaction(async tx=>{
@@ -95,7 +96,7 @@ export class ParentService {
   }
   private async attendanceMonth(p:ParentPrincipal,month:unknown){
     this.allow(p,'attendance');const bounds=attendanceMonthBounds(p.link,month),records:Parameters<typeof parentAttendanceMonth>[3]=[];let cursor:string|undefined;const visited=new Set<string>();
-    do{const result=await this.published(p,'attendance',{from:bounds.from,to:bounds.to,limit:'100',...(cursor?{cursor}:{})});
+    do{const result=await this.published(p,'attendance',{from:bounds.from,to:bounds.to,limit:'100',...(cursor?{cursor}:{})},undefined,true);
       if(!Array.isArray(result.data))throw new Problem(500,'PARENT_ATTENDANCE_SOURCE_INVALID');
       for(const value of result.data){validateSchema('ParentAttendance',value,true);records.push(value as unknown as Parameters<typeof parentAttendanceMonth>[3][number]);}
       if(records.length>1000)throw new Problem(422,'PARENT_MONTH_TOO_LARGE');

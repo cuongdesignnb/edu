@@ -166,9 +166,9 @@ test('parent context metadata distinguishes year, link and session bounds withou
 
 
 test('parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states',()=>{
- const row={month:'2026-10',yearStart:'2026-09',yearEnd:'2027-05',today:'2026-10-01',days:[{date:'2026-10-01',weekday:4,holidayNames:[],sessions:[],status:'not_published'}],totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0}};
+ const row={granularity:'DAILY',month:'2026-10',yearStart:'2026-09',yearEnd:'2027-05',today:'2026-10-01',days:[{date:'2026-10-01',weekday:4,holidayNames:[],sessions:[],status:'not_published'}],totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0}};
  assert.doesNotThrow(()=>validateSchema('ParentAttendanceMonth',row,true));
- for(const value of [{...row,studentId:'63000000-0000-4000-8000-000000000001'},{...row,days:[{...row.days[0],status:'invented-present'}]},{...row,totals:{...row.totals,marked:-1}}])assert.throws(()=>validateSchema('ParentAttendanceMonth',value,true));
+ for(const value of [{...row,granularity:'LESSON'},{...row,granularity:undefined},{...row,studentId:'63000000-0000-4000-8000-000000000001'},{...row,days:[{...row.days[0],status:'invented-present'}]},{...row,totals:{...row.totals,marked:-1}}])assert.throws(()=>validateSchema('ParentAttendanceMonth',value,true));
 });
 
 test('parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity',()=>{

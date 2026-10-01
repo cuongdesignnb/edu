@@ -1,0 +1,46 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (1.1899ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (8.3175ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (8.5757ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (9.7748ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (4.3313ms)
+✔ login rejects spoofed role, school and unknown fields (0.929ms)
+✔ private user DTO rejects secrets and unknown properties (2.8865ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2002ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (21.4108ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (5.0006ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (15.4713ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (1.7981ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (9.3921ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.8375ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (14.2219ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (15.3463ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (8.6227ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (23.1204ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (31.9433ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (16.6833ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (3.436ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (3.4992ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (4.5771ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (2.7045ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (3.8401ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.3394ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (13.6557ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.4057ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.509ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.4775ms)
+✔ grant action and class scope stay together (0.8483ms)
+✔ subject grants never authorize management without explicit subject policy (0.1289ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1126ms)
+✔ a custom class grant authorizes only its delegated action and class (0.133ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.2062ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (3.1113ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.3709ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (87.4186ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 474.4608

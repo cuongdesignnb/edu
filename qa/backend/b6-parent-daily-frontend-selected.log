@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-attendance-adapter.test.ts (6 tests) 86ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  15:04:56
+   Duration  882ms (transform 218ms, setup 53ms, collect 253ms, tests 86ms, environment 0ms, prepare 138ms)

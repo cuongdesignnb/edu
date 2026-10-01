@@ -1,0 +1,169 @@
+{
+  "phase": "B6 correction: PA03 DAILY attendance denominator excludes LESSON; partial goal checkpoint",
+  "previousCommit": "2b657dcfff42a6b135d0f0fe84d227a7bf88ab62",
+  "backend": {
+    "contractOperations": 314,
+    "schemas": 428,
+    "operationStatus": {
+      "TESTED": 302,
+      "IMPLEMENTED": 12
+    },
+    "migrations": 39,
+    "runnerImage": "sha256:a65cea43d5645def1e45dc74f9f082def4303d7baea80db5490a0bb423414e45",
+    "postgresFull": {
+      "pass": 165,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 500918.314676,
+      "log": "b6-parent-daily-integration-full.log"
+    },
+    "postgresSelected": {
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 6082.953377,
+      "log": "b6-parent-daily-integration-selected.log",
+      "cases": "BE01, two existing monthly/calendar security cases and real mixed DAILY/LESSON publication workflow"
+    },
+    "unitContract": {
+      "pass": 38,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 474.4608,
+      "log": "b6-parent-daily-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-daily-backend-types.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-daily-backend-lint.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-daily-integration-syntax.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 296,
+      "fail": 0,
+      "files": 34,
+      "durationSeconds": 10.57,
+      "apiCases": 255,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-daily-frontend-unit-full.log"
+    },
+    "selected": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 0.882,
+      "log": "b6-parent-daily-frontend-selected.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-daily-frontend-types.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-daily-frontend-lint.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-daily-frontend-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 61,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 68393.832,
+    "newCases": 1,
+    "log": "b6-parent-daily-browser-final.log",
+    "results": "b6-parent-daily-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-daily",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T08:07:35.837Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 2428,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T08:08:45.378Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-daily-parent-attendance-desktop.png",
+      "b6-parent-daily-parent-attendance-mobile.png"
+    ]
+  },
+  "failedRunsThisCheckpoint": [],
+  "sourceInventory": {
+    "nativeCandidates": 115,
+    "activatedCandidates": 115,
+    "matchedLegacyMethods": 103,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 128,
+    "log": "b6-parent-daily-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 50,
+    "NOT_STARTED": 65,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA03"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T15:07:20.5751748+07:00",
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T15:10:04.5366083+07:00",
+    "listeners": []
+  },
+  "resolvedReviewGap": {
+    "source": "b6-parent-teachers-checks.json",
+    "issue": "DAILY and LESSON must not share the PA03 monthly denominator",
+    "actualProof": "Two published DAILY sessions (present/late) plus one published LESSON (unexcused) for the same child/date remain three rows in the canonical attendance API, but the month and staff preview contain only two marked DAILY sessions and zero lesson absences; withdrawing one DAILY source changes the monthly denominator to one. Raw source table SELECT remains denied."
+  },
+  "scope": [
+    "A SECURITY DEFINER boolean checks exact current parent scope, own published child/year projection and actual attendance source granularity before SQL count/pagination; no display-label inference",
+    "Existing migrations and immutable publications are unchanged; new migration039 adds only the guarded source predicate",
+    "Month response requires granularity DAILY; native parsing rejects missing/LESSON markers before display; original morning/afternoon business and calendar/cards are preserved",
+    "Canonical attendance API retains its own published LESSON facts; they are not deleted or combined into the monthly denominator"
+  ],
+  "notRunOrIncomplete": [
+    "Real PostgreSQL browser E2E",
+    "Remaining parent content and full staff preview",
+    "Other remaining frontend facades",
+    "Final deploy/scripts root merge and release Docker URL",
+    "Restart-data acceptance",
+    "Physical backup/restore acceptance",
+    "Release workload/CPU/RSS/pool performance acceptance",
+    "Production deployment"
+  ],
+  "safety": {
+    "removedVolumes": false,
+    "otherProjectProcessesTouched": false,
+    "productionDeployed": false,
+    "goalComplete": false,
+    "currentLocalUrlServing": false
+  }
+}

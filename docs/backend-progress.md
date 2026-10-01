@@ -314,8 +314,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getParentAccessDirectorySummary | SC23 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
 | getParentAccessDetails | SC24 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
 | listParentAccessHistory | SC24 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
-| getParentAttendanceMonth | PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log |
-| previewParentAttendanceMonth | SC25, PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log |
+| getParentAttendanceMonth | PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log; backend/migrations/039-parent-daily-attendance-source.sql; qa/backend/b6-parent-daily-integration-full.log |
+| previewParentAttendanceMonth | SC25, PA03 | TESTED | qa/backend/b6-parent-attendance-integration-full.log; backend/migrations/039-parent-daily-attendance-source.sql; qa/backend/b6-parent-daily-integration-full.log |
 | getParentTeacherDirectory | PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
 | previewParentTeacherDirectory | SC25, PA12 | TESTED | qa/backend/b6-parent-teachers-integration-full.log |
 
@@ -419,7 +419,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL26 | core | TESTED | NOT_STARTED |  |  |
 | PA01 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | PA02 | core | TESTED | NOT_STARTED |  |  |
-| PA03 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-attendance-checks.json |
+| PA03 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-attendance-checks.json; qa/backend/b6-parent-daily-checks.json |
 | PA04 | core | TESTED | NOT_STARTED |  |  |
 | PA05 | core | TESTED | NOT_STARTED |  |  |
 | PA06 | core | TESTED | NOT_STARTED |  |  |

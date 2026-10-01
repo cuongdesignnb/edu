@@ -17,5 +17,5 @@ export function parentAttendanceMonth(link:Row,month:string,calendar:CalendarDay
  const totals={present:0,late:0,excused:0,unexcused:0,unmarked:0,published:records.length,marked:0};
  for(const value of records){totals[value.status.toLowerCase() as 'present'|'late'|'excused'|'unexcused'|'unmarked']++;if(value.status!=='UNMARKED')totals.marked++;}
  const days=calendar.map(value=>{const sessions=records.filter(record=>record.date===value.date).sort((a,b)=>a.slotLabel.localeCompare(b.slotLabel,'vi')||a.publishedAt.localeCompare(b.publishedAt));const actual=new Set(sessions.map(record=>record.status.toLowerCase()));return {...value,weekday:(new Date(`${value.date}T00:00:00Z`).getUTCDay()+6)%7+1,sessions,status:sessions.length?actual.size===1?[...actual][0]:'mixed':value.date>today?'future':value.holidayNames.length?'holiday':'not_published'};});
- return {month,yearStart:String(link.year_starts_on).slice(0,7),yearEnd:day(String(link.year_ends_on),-1).slice(0,7),today,days,totals};
+ return {granularity:'DAILY' as const,month,yearStart:String(link.year_starts_on).slice(0,7),yearEnd:day(String(link.year_ends_on),-1).slice(0,7),today,days,totals};
 }

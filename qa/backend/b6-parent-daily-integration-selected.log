@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-runner-run-f25abafcb99e Creating
+ Container edumanage_backend_test-runner-run-f25abafcb99e Created
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (774.252762ms)
+✔ B6 parent attendance month exposes only real child sessions and published scoped holiday labels without borrowing overview (1648.336625ms)
+✔ B6 parent attendance calendar SQL function checks exact child/year/school/current session and cannot expose raw calendar tables (704.037167ms)
+✔ B6 parent monthly denominator includes only actual own DAILY publications and keeps LESSON attendance separate (1069.932656ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6082.953377

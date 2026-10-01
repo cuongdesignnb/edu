@@ -8,8 +8,8 @@ const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ
 function allowed(value:object,fields:string[]){if(!value||Object.keys(value).some(key=>!fields.includes(key)))throw invalid();}
 /** Only actual published sessions/calendar facts enter display; all counts are checked. */
 export function nativeParentAttendance(value:ApiSchemas['ParentAttendanceMonth'],context:Context,month:string){
- allowed(value,['month','yearStart','yearEnd','today','days','totals']);
- if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||value.month!==month||value.yearStart!==context.year.startsOn.slice(0,7)||value.yearEnd!==dateDays(context.year.endsOn,-1).slice(0,7)||value.today!==context.today||!Array.isArray(value.days))throw invalid();
+ allowed(value,['granularity','month','yearStart','yearEnd','today','days','totals']);
+ if(value.granularity!=='DAILY'||!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||value.month!==month||value.yearStart!==context.year.startsOn.slice(0,7)||value.yearEnd!==dateDays(context.year.endsOn,-1).slice(0,7)||value.today!==context.today||!Array.isArray(value.days))throw invalid();
  const first=month+'-01',next=new Date(`${first}T00:00:00Z`);next.setUTCMonth(next.getUTCMonth()+1);
  const from=first>context.year.startsOn?first:context.year.startsOn,to=next.toISOString().slice(0,10)<context.year.endsOn?next.toISOString().slice(0,10):context.year.endsOn;
  if(from>=to||value.days.length!==(Date.parse(to)-Date.parse(from))/86400000)throw invalid();
