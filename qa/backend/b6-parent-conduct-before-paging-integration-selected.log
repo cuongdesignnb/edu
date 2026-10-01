@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-e49ad550b17f Creating
+ Container edumanage_backend_test-runner-run-e49ad550b17f Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (591.919943ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (99.107322ms)
+✔ B6 parent conduct display pins published own decimals and metadata and exposes only the same child revision history through adjustment and withdrawal (1334.68864ms)
+✔ B6 parent conduct metadata and history deny wrong school child year section session, raw sources and revoked relationships (909.990483ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3855.699591
+exitCode=0

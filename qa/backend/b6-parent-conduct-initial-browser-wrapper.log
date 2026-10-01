@@ -1,0 +1,2 @@
+{"prefix":"b6-parent-conduct","kind":"BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E","startedAt":"2026-10-01T10:18:46.308Z","host":"127.0.0.1","port":18763,"portFreeBefore":true,"ownedNextPid":27420,"playwrightExitCode":1,"ownedNextTerminationRequested":true,"ownedNextClosed":true,"ownedNextExit":{"code":null,"signal":"SIGTERM"},"portFreeAfter":true,"finishedAt":"2026-10-01T10:22:27.256Z","exitCode":1}
+exitCode=1

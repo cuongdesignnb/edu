@@ -1,0 +1,322 @@
+{
+  "phase": "B6 PA04/PA05 pinned published conduct and own private revision history; partial goal checkpoint",
+  "previousCommit": "cf9908dc4e420aa2bb5189f44c181ea20f134ebd",
+  "backend": {
+    "contractOperations": 337,
+    "schemas": 454,
+    "operationStatus": {
+      "IMPLEMENTED": 12,
+      "TESTED": 325
+    },
+    "migrations": 44,
+    "runnerImage": "sha256:cf820b361bd7f2a403a8a5100d3cfe9d5da46584be761d73722f2dd03033cb54",
+    "postgresFull": {
+      "tests": 176,
+      "pass": 176,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 608276.617449,
+      "log": "b6-parent-conduct-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 3315.570197,
+      "log": "b6-parent-conduct-integration-selected.log"
+    },
+    "unitContract": {
+      "tests": 45,
+      "pass": 45,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 478.5082,
+      "log": "b6-parent-conduct-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-conduct-backend-types.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-conduct-backend-lint.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-conduct-integration-syntax.log"
+    },
+    "contractSemanticDiff": {
+      "changedExistingSchemas": [
+        "PublicationDetail"
+      ],
+      "newSchemas": 7,
+      "changedExistingOperations": [],
+      "newOperations": 4,
+      "log": "b6-parent-conduct-contract-diff.log"
+    },
+    "platformCountDiagnostic": {
+      "kind": "INDIVIDUAL_SYNTHETIC_READS_NOT_RELEASE_WORKLOAD",
+      "before": [
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "jit": "on",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "firstMs": 4867.87463,
+          "secondMs": 4044.5666840000004,
+          "firstRows": 1,
+          "secondRows": 1,
+          "total": 2500,
+          "countExecutionMs": 4764.032,
+          "countTotalCost": 56356.75,
+          "countJit": null
+        },
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "jit": "off",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "firstMs": 4718.986093999998,
+          "secondMs": 4311.7886819999985,
+          "firstRows": 1,
+          "secondRows": 1,
+          "total": 2500,
+          "countExecutionMs": 4003.466,
+          "countTotalCost": 56356.75,
+          "countJit": null
+        },
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "restoredJit": "on",
+          "statementTimeout": "5s"
+        }
+      ],
+      "after": [
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "jit": "on",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "firstMs": 33.937903999999946,
+          "secondMs": 11.663716999999963,
+          "firstRows": 1,
+          "secondRows": 1,
+          "total": 2573,
+          "minimalBaseCount": true,
+          "countExecutionMs": 0.352,
+          "countTotalCost": 139.17,
+          "countJit": null
+        },
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "jit": "off",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "firstMs": 11.272453999999982,
+          "secondMs": 12.510707999999966,
+          "firstRows": 1,
+          "secondRows": 1,
+          "total": 2573,
+          "minimalBaseCount": true,
+          "countExecutionMs": 0.595,
+          "countTotalCost": 139.17,
+          "countJit": null
+        },
+        {
+          "kind": "platform-list-read-only-diagnostic",
+          "restoredJit": "on",
+          "statementTimeout": "5s"
+        }
+      ],
+      "beforeLog": "b6-parent-conduct-platform-probe-before.log",
+      "afterLog": "b6-parent-conduct-platform-probe-after.log",
+      "regression": "b6-parent-conduct-integration-selected.log",
+      "fullFailure": {
+        "tests": 175,
+        "pass": 174,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 644299.201199,
+        "log": "b6-parent-conduct-integration-full-initial.log"
+      }
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 334,
+      "fail": 0,
+      "skipped": 0,
+      "files": 39,
+      "durationSeconds": 13.16,
+      "apiCases": 293,
+      "historicalSyntheticRegressions": 41,
+      "newConductCases": 9,
+      "log": "b6-parent-conduct-frontend-full.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-conduct-frontend-types-final.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-conduct-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-conduct-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 77,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 82792.531,
+    "newCases": 3,
+    "log": "b6-parent-conduct-browser-final.log",
+    "results": "b6-parent-conduct-browser-results-final.json",
+    "run": {
+      "prefix": "b6-parent-conduct",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T10:29:01.354Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 44308,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T10:30:25.231Z",
+      "exitCode": 0
+    },
+    "inspectedScreenshots": [
+      "b6-parent-conduct-parent-conduct-desktop.png",
+      "b6-parent-conduct-parent-conduct-detail.png",
+      "b6-parent-conduct-parent-conduct-mobile.png",
+      "b6-parent-conduct-parent-conduct-print.png"
+    ]
+  },
+  "initialFailures": [
+    {
+      "kind": "frontend JSX syntax",
+      "log": "b6-parent-conduct-frontend-types.log",
+      "exitCode": 2,
+      "reason": "An extra object brace in the grade action prop caused TS1005; the JSX was corrected and later types/build passed."
+    },
+    {
+      "kind": "browser accessible-name selector",
+      "stats": {
+        "startTime": "2026-10-01T10:18:47.367Z",
+        "duration": 219830.70200000002,
+        "expected": 74,
+        "skipped": 0,
+        "unexpected": 3,
+        "flaky": 0
+      },
+      "results": "b6-parent-conduct-browser-results-initial.json",
+      "run": "b6-parent-conduct-initial-browser-run.json",
+      "reason": "The score is aria-hidden and cannot be part of the link accessible-name selector. The corrected test uses the actual visible week label; UI remains unchanged."
+    },
+    {
+      "kind": "frontend dependency scan timeout",
+      "log": "b6-parent-conduct-frontend-after-totals-initial.log",
+      "pass": 333,
+      "fail": 1,
+      "timeoutMs": 5000,
+      "reason": "The full dependency scan exceeded5s while type check ran concurrently. The unchanged suite was rerun without a concurrent frontend type/build process; assertions and timeout were not relaxed."
+    }
+  ],
+  "postgresInitialFailure": {
+    "result": {
+      "tests": 175,
+      "pass": 174,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 644299.201199,
+      "log": "b6-parent-conduct-integration-full-initial.log"
+    },
+    "runnerImage": "sha256:a3df24ab870cf948c13a197454bb8772a21664faade2c996895551ecc246c2f4",
+    "reason": "The second platform-school page returnedHTTP500 when unsearched totals invoked all2500 school display aggregates under the unchanged5s timeout. JIT diagnostics did not materially improve it. Base-cohort counts remove that unnecessary work; page metadata, text search and authorization retain the existing projection."
+  },
+  "priorPassingBrowser": {
+    "stats": {
+      "startTime": "2026-10-01T10:23:15.133Z",
+      "duration": 83482.76,
+      "expected": 77,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "results": "b6-parent-conduct-before-totals-browser-results-final.json",
+    "reason": "Reran after adding actual finalized bonus/penalty and pinned score-limit explanation to the existing table, with a capped official-total browser check."
+  },
+  "sourceInventory": {
+    "nativeCandidates": 126,
+    "activatedCandidates": 126,
+    "matchedLegacyMethods": 113,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 118,
+    "log": "b6-parent-conduct-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 59,
+    "NOT_STARTED": 56,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA04",
+      "PA05"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T17:28:40.1499099+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T17:33:14.3956171+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T17:46:02.2293856+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "implementedBehavior": [
+    "Independent current conduct section; complete bounded own-child/year published directory or one period, with pinned class/rule/week/timezone and explicit null historical absence.",
+    "Minimal SQL own revision history requires a current published own item and denies foreign context, raw sources, superseded current handles, withdrawn results or revoked relationship.",
+    "Official base/bonus/penalty/total remain decimal strings. Shared line dates use pinned school timezone; score bounds remain publication facts. The UI displays finalized aggregates and official total without recomputing or exposing hidden reasons.",
+    "Composite owners are captured before context/content; older receipts/errors cannot expose content or clear a newer child. Independent scoped previews do not adopt parent cookies."
+  ]
+}

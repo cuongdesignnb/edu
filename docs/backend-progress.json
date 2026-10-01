@@ -3961,6 +3961,56 @@
       "evidence": [
         "qa/backend/b6-parent-shared-integration-selected-reviewed.log"
       ]
+    },
+    {
+      "operationId": "getParentPublishedConductDirectory",
+      "screenIds": [
+        "PA04",
+        "PA05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence."
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedConductDirectory",
+      "screenIds": [
+        "SC25",
+        "PA04",
+        "PA05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence."
+      ]
+    },
+    {
+      "operationId": "getParentPublishedConduct",
+      "screenIds": [
+        "PA04",
+        "PA05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence."
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedConduct",
+      "screenIds": [
+        "SC25",
+        "PA04",
+        "PA05"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence."
+      ]
     }
   ],
   "screens": [
@@ -4741,7 +4791,9 @@
         "previewParentPublishedActivityDirectory",
         "previewParentPublishedActivity",
         "previewParentPublishedAnnouncementDirectory",
-        "previewParentPublishedAnnouncement"
+        "previewParentPublishedAnnouncement",
+        "previewParentPublishedConductDirectory",
+        "previewParentPublishedConduct"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5490,22 +5542,34 @@
       "screenId": "PA04",
       "scope": "core",
       "operationIds": [
-        "listParentConduct"
+        "listParentConduct",
+        "getParentPublishedConductDirectory",
+        "previewParentPublishedConductDirectory",
+        "getParentPublishedConduct",
+        "previewParentPublishedConduct"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native published conduct list/detail preserve official decimal aggregates, pinned nullable class/rule/week/timezone, actual shared public lines and own current history; exact parent/staff composite ownership. qa/backend/b6-parent-conduct-frontend-full.log: 334/334 including 9 conduct adapter checks; changed lint/types/build exit0; controlled Edge 77/77 including capped total, print/mobile, malformed history, withdrawal and revoke. Intercepted API browser checks are not PostgreSQL E2E or full-screen release acceptance."
+      ],
       "apiStatus": "TESTED"
     },
     {
       "screenId": "PA05",
       "scope": "core",
       "operationIds": [
-        "getParentConduct"
+        "getParentConduct",
+        "getParentPublishedConductDirectory",
+        "previewParentPublishedConductDirectory",
+        "getParentPublishedConduct",
+        "previewParentPublishedConduct"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native published conduct list/detail preserve official decimal aggregates, pinned nullable class/rule/week/timezone, actual shared public lines and own current history; exact parent/staff composite ownership. qa/backend/b6-parent-conduct-frontend-full.log: 334/334 including 9 conduct adapter checks; changed lint/types/build exit0; controlled Edge 77/77 including capped total, print/mobile, malformed history, withdrawal and revoke. Intercepted API browser checks are not PostgreSQL E2E or full-screen release acceptance."
+      ],
       "apiStatus": "TESTED"
     },
     {

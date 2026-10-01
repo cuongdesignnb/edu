@@ -1,0 +1,2 @@
+{"changedExistingSchemas": ["PublicationDetail"], "addedSchemas": ["ConductPublicationDisplay", "ParentPublishedPointLine", "ParentConductRevision", "ParentSharedConduct", "ParentSharedConductDirectory", "ParentSharedConductResponse", "ParentSharedConductDirectoryResponse"], "changedExistingOperations": []}
+exitCode=0

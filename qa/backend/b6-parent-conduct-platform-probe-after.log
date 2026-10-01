@@ -1,0 +1,6 @@
+ Container edumanage_backend_test-runner-run-1122d835283b Creating
+ Container edumanage_backend_test-runner-run-1122d835283b Created
+{"kind":"platform-list-read-only-diagnostic","jit":"on","originalJit":"on","statementTimeout":"5s","firstMs":33.937903999999946,"secondMs":11.663716999999963,"firstRows":1,"secondRows":1,"total":2573,"minimalBaseCount":true,"countExecutionMs":0.352,"countTotalCost":139.17,"countJit":null}
+{"kind":"platform-list-read-only-diagnostic","jit":"off","originalJit":"on","statementTimeout":"5s","firstMs":11.272453999999982,"secondMs":12.510707999999966,"firstRows":1,"secondRows":1,"total":2573,"minimalBaseCount":true,"countExecutionMs":0.595,"countTotalCost":139.17,"countJit":null}
+{"kind":"platform-list-read-only-diagnostic","restoredJit":"on","statementTimeout":"5s"}
+exitCode=0

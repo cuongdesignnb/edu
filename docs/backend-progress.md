@@ -337,6 +337,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentPublishedAnnouncementDirectory | SC25, PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
 | getParentPublishedAnnouncement | PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
 | previewParentPublishedAnnouncement | SC25, PA10, PA11 | TESTED | qa/backend/b6-parent-shared-integration-selected-reviewed.log |
+| getParentPublishedConductDirectory | PA04, PA05 | TESTED | qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence. |
+| previewParentPublishedConductDirectory | SC25, PA04, PA05 | TESTED | qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence. |
+| getParentPublishedConduct | PA04, PA05 | TESTED | qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence. |
+| previewParentPublishedConduct | SC25, PA04, PA05 | TESTED | qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -439,8 +443,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA01 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | PA02 | core | TESTED | NOT_STARTED |  |  |
 | PA03 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-attendance-checks.json; qa/backend/b6-parent-daily-checks.json |
-| PA04 | core | TESTED | NOT_STARTED |  |  |
-| PA05 | core | TESTED | NOT_STARTED |  |  |
+| PA04 | core | TESTED | IMPLEMENTED |  | Native published conduct list/detail preserve official decimal aggregates, pinned nullable class/rule/week/timezone, actual shared public lines and own current history; exact parent/staff composite ownership. qa/backend/b6-parent-conduct-frontend-full.log: 334/334 including 9 conduct adapter checks; changed lint/types/build exit0; controlled Edge 77/77 including capped total, print/mobile, malformed history, withdrawal and revoke. Intercepted API browser checks are not PostgreSQL E2E or full-screen release acceptance. |
+| PA05 | core | TESTED | IMPLEMENTED |  | Native published conduct list/detail preserve official decimal aggregates, pinned nullable class/rule/week/timezone, actual shared public lines and own current history; exact parent/staff composite ownership. qa/backend/b6-parent-conduct-frontend-full.log: 334/334 including 9 conduct adapter checks; changed lint/types/build exit0; controlled Edge 77/77 including capped total, print/mobile, malformed history, withdrawal and revoke. Intercepted API browser checks are not PostgreSQL E2E or full-screen release acceptance. |
 | PA06 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-week-checks.json |
 | PA07 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-duties-checks.json |
 | PA08 | core | TESTED | IMPLEMENTED |  | Native PA08–PA11 source, strict adapters, 9 selected unit cases and four intercepted Edge cases in qa/backend/b6-parent-shared-checks.json; this does not certify real PostgreSQL browser E2E. |

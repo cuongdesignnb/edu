@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,333);assert.equal(new Set(operations.map(op=>op.id )).size,333);
+  assert.equal(operations.length,337);assert.equal(new Set(operations.map(op=>op.id )).size,337);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -203,4 +203,10 @@ test('parent shared content keeps pinned nullable metadata and independent attac
  for(const value of [{...announcement,recipients:[id]},{...announcement,internalNote:'private'},{...announcement,scopeKinds:['STUDENT','STUDENT']},{...announcement,scopeKinds:['STAFF']}])assert.throws(()=>validateSchema('ParentSharedAnnouncement',value,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  for(const [type,value]of [['ParentSharedActivityDirectory',activity],['ParentSharedAnnouncementDirectory',announcement]])assert.throws(()=>validateSchema(type,{items:Array.from({length:1001},()=>value)},true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  for(const section of ['Activity','Announcement'])for(const ending of ['','Directory']){assert.equal(operations.find(o=>o.id==='getParentPublished'+section+ending).permission,'parent.'+(section==='Activity'?'activities':'announcements'));assert.equal(operations.find(o=>o.id==='previewParentPublished'+section+ending).permission,'parent_access.preview');}
+});
+
+test('parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity',()=>{
+ const periodId='da72b470-4b45-4f5f-b89d-179c0cdf454a',publishedAt='2026-10-01T01:00:00Z',value={periodId,periodLabel:'Tuần 5',revision:1,basePoints:'80.10',bonusPoints:'0.20',penaltyPoints:'0.00',finalPoints:'80.30',classification:null,lines:[],publishedAt,adjusted:false,weekNumber:null,startsOn:null,endsOn:null,classLabel:null,ruleSetName:null,ruleSetRevision:null,minimumPoints:null,maximumPoints:null,timezone:'Asia/Ho_Chi_Minh',history:[{revision:1,publishedAt,total:'80.30',classification:null,current:true}]};validateSchema('ParentSharedConduct',value,true);
+ for(const bad of [{...value,studentId:periodId},{...value,ruleSetId:periodId},{...value,rank:1},{...value,history:[{...value.history[0],staffSnapshot:{}}]},{...value,lines:[{label:'Nguồn',delta:'0.20',occurredAt:publishedAt,reason:'Công khai',date:'2026-10-01',internalNote:'private'}]},{...value,history:Array.from({length:1001},()=>value.history[0])}])assert.throws(()=>validateSchema('ParentSharedConduct',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+ for(const id of ['getParentPublishedConduct','getParentPublishedConductDirectory'])assert.equal(operations.find(o=>o.id===id).permission,'parent.conduct');for(const id of ['previewParentPublishedConduct','previewParentPublishedConductDirectory'])assert.equal(operations.find(o=>o.id===id).permission,'parent_access.preview');
 });

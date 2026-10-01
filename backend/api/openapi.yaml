@@ -32226,6 +32226,368 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/conduct/published:
+    get:
+      operationId: getParentPublishedConductDirectory
+      tags:
+        - Parent
+      summary: getParentPublishedConductDirectory
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent.conduct
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA04
+        - PA05
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedConductDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/conduct/published:
+    get:
+      operationId: previewParentPublishedConductDirectory
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedConductDirectory
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA04
+        - PA05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedConductDirectoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /parent/{schoolSlug}/conduct/{periodId}/published:
+    get:
+      operationId: getParentPublishedConduct
+      tags:
+        - Parent
+      summary: getParentPublishedConduct
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent.conduct
+      x-scope: parent
+      x-frontend-screen-ids:
+        - PA04
+        - PA05
+      x-implementation-status: not_started
+      security:
+        - ParentCookie: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+        - name: periodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedConductResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/preview/conduct/{periodId}/published:
+    get:
+      operationId: previewParentPublishedConduct
+      tags:
+        - ParentAccess
+      summary: previewParentPublishedConduct
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent_access.preview
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC25
+        - PA04
+        - PA05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: periodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentSharedConductResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /parent/{schoolSlug}/timetable-week:
     get:
       operationId: getParentTimetableWeek
@@ -39543,6 +39905,8 @@ components:
           items:
             $ref: "#/components/schemas/Lesson"
           maxItems: 10000
+        conductDisplay:
+          $ref: "#/components/schemas/ConductPublicationDisplay"
       required:
         - publication
       additionalProperties: false
@@ -45942,6 +46306,227 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ParentSharedAnnouncementDirectory"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductPublicationDisplay:
+      type: object
+      properties:
+        weekNumber:
+          type: integer
+          minimum: 1
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+        classLabel:
+          type: string
+        ruleSetName:
+          type: string
+        ruleSetRevision:
+          type: integer
+          minimum: 1
+        minimumPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+          nullable: true
+        maximumPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+          nullable: true
+        timezone:
+          type: string
+      required:
+        - weekNumber
+        - startsOn
+        - endsOn
+        - classLabel
+        - ruleSetName
+        - ruleSetRevision
+        - minimumPoints
+        - maximumPoints
+        - timezone
+      additionalProperties: false
+    ParentPublishedPointLine:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        delta:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        occurredAt:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          maxLength: 4000
+        date:
+          type: string
+          format: date
+      required:
+        - label
+        - delta
+        - occurredAt
+        - reason
+        - date
+      additionalProperties: false
+    ParentConductRevision:
+      type: object
+      properties:
+        revision:
+          type: integer
+          minimum: 1
+        publishedAt:
+          type: string
+          format: date-time
+        total:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        classification:
+          type: string
+          nullable: true
+        current:
+          type: boolean
+      required:
+        - revision
+        - publishedAt
+        - total
+        - classification
+        - current
+      additionalProperties: false
+    ParentSharedConduct:
+      type: object
+      properties:
+        periodId:
+          type: string
+          format: uuid
+        periodLabel:
+          type: string
+          minLength: 1
+          maxLength: 200
+        revision:
+          type: integer
+          minimum: 1
+        basePoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        bonusPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        penaltyPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        finalPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+        classification:
+          type: string
+          nullable: true
+        lines:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentPublishedPointLine"
+        publishedAt:
+          type: string
+          format: date-time
+        adjusted:
+          type: boolean
+        weekNumber:
+          type: integer
+          minimum: 1
+          nullable: true
+        startsOn:
+          type: string
+          format: date
+          nullable: true
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+        classLabel:
+          type: string
+          nullable: true
+        ruleSetName:
+          type: string
+          nullable: true
+        ruleSetRevision:
+          type: integer
+          minimum: 1
+          nullable: true
+        minimumPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+          nullable: true
+        maximumPoints:
+          type: string
+          pattern: ^-?\d{1,8}(\.\d{1,2})?$
+          nullable: true
+        timezone:
+          type: string
+        history:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentConductRevision"
+      required:
+        - periodId
+        - periodLabel
+        - revision
+        - basePoints
+        - bonusPoints
+        - penaltyPoints
+        - finalPoints
+        - classification
+        - lines
+        - publishedAt
+        - adjusted
+        - weekNumber
+        - startsOn
+        - endsOn
+        - classLabel
+        - ruleSetName
+        - ruleSetRevision
+        - minimumPoints
+        - maximumPoints
+        - timezone
+        - history
+      additionalProperties: false
+    ParentSharedConductDirectory:
+      type: object
+      properties:
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/ParentSharedConduct"
+      required:
+        - items
+      additionalProperties: false
+    ParentSharedConductResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedConduct"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentSharedConductDirectoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentSharedConductDirectory"
         requestId:
           type: string
       required:

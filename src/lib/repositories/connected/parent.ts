@@ -12,6 +12,7 @@ import {nativeParentTimetable} from './parent-timetable';
 import {nativeParentContext} from './parent-context';
 import {nativeParentDocuments,nativeParentDocument} from './parent-documents';
 import {nativeParentActivity,nativeParentAnnouncement,nativeParentActivities,nativeParentAnnouncements} from './parent-shared';
+import {nativeParentConduct,nativeParentConductDirectory} from './parent-conduct';
 
 /** Public reads use only a non-bearer view ID. A raw fragment is accepted only by open. */
 export type ParentKey={viewId:string}|{preview:{ctx:Ctx;schoolId:string;accessId:string}};
@@ -62,7 +63,18 @@ async function sharedContent(key:ParentKey,slug:string,section:'activities'|'ann
    current();return id?nativeParentAnnouncement(result.data as ApiSchemas['ParentSharedAnnouncement'],context,id):nativeParentAnnouncements(result.data as ApiSchemas['ParentSharedAnnouncementDirectory'],context);
  }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
 }
+async function publishedConduct(key:ParentKey,slug:string,id?:string){
+ const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
+ const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
+ try{
+   const context=await connectedParentRepo.context(key,slug);current();
+   const result='preview' in key?id?await http('previewParentPublishedConduct',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,periodId:id}}):await http('previewParentPublishedConductDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):id?await http('getParentPublishedConduct',{params:{schoolSlug:slug,periodId:id},parentViewId:parent!.viewId,signal:parent!.signal}):await http('getParentPublishedConductDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
+   current();return id?nativeParentConduct(result.data as ApiSchemas['ParentSharedConduct'],context,id):nativeParentConductDirectory(result.data as ApiSchemas['ParentSharedConductDirectory'],context);
+ }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
+}
 export const connectedParentRepo={
+  async conductList(key:ParentKey,slug:string){return publishedConduct(key,slug) as Promise<ReturnType<typeof nativeParentConduct>[]>;},
+  async conductDetail(key:ParentKey,slug:string,id:string){return publishedConduct(key,slug,id) as Promise<ReturnType<typeof nativeParentConduct>>;},
   async activities(key:ParentKey,slug:string){return sharedContent(key,slug,'activities') as Promise<ReturnType<typeof nativeParentActivity>[]>;},
   async activity(key:ParentKey,slug:string,id:string){return sharedContent(key,slug,'activities',id) as Promise<ReturnType<typeof nativeParentActivity>>;},
   async announcements(key:ParentKey,slug:string){return sharedContent(key,slug,'announcements') as Promise<ReturnType<typeof nativeParentAnnouncement>[]>;},

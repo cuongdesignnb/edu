@@ -31,11 +31,11 @@ export function ParentConductListView() {
                     <Link href={href(`conduct/${c.periodId}`)} className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#f7fbff] sm:gap-4">
                       <span className="flex size-12 flex-none flex-col items-center justify-center rounded-full bg-pastel-amber text-warning-text" aria-hidden><span className="text-[17px] font-extrabold leading-none">{c.total}</span><span className="text-[9.5px] font-semibold">điểm</span></span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-semibold text-ink">Tuần {c.weekIndex}</span>
-                        <span className="block text-[12.5px] text-muted"><span className="sm:after:content-['_·_']">{fmtDate(c.startDate)} – {fmtDate(c.endDate)}</span><span className="block sm:inline">Công bố {fmtDateTime(c.publishedAt)}</span></span>
+                        <span className="block font-semibold text-ink">{c.periodLabel}</span>
+                        <span className="block text-[12.5px] text-muted"><>{c.startDate&&c.endDate&&<span className="sm:after:content-['_·_']">{fmtDate(c.startDate)} – {fmtDate(c.endDate)}</span>}</><span className="block sm:inline">Công bố {fmtDateTime(c.publishedAt)}</span></span>
                       </span>
                       <span className="flex flex-none flex-wrap items-center justify-end gap-1.5">
-                        <Badge tone={GRADE_TONE(c.gradeTone)}>{c.grade}</Badge>
+                        {c.grade!==null&&<Badge tone={GRADE_TONE(c.gradeTone)}>{c.grade}</Badge>}
                         {c.adjusted && <Badge tone="purple">Đã điều chỉnh</Badge>}
                       </span>
                       <ChevronRight className="size-4 flex-none text-faint" aria-hidden />
@@ -54,7 +54,7 @@ export function ParentConductListView() {
 
 const PRINT_CSS = `@media print { header, aside, nav, footer, [role="status"], .demo-banner { display: none !important; } main { padding: 0 !important; } }`;
 
-/** PA05 — one published week: base + items = total, rule version, version history, print view. */
+/** PA05 — official published score, shared lines, pinned rule and own revision history. */
 export function ParentConductDetailView({ periodId }: { periodId: string }) {
   const p = useParent();
   const href = useHref();
@@ -65,18 +65,18 @@ export function ParentConductDetailView({ periodId }: { periodId: string }) {
       <PState query={q} skeleton="detail" backHref={href("conduct")} backLabel="Về danh sách tuần">
         {(c) => (
           <>
-            <ParentHeader title={`Kết quả thi đua tuần ${c.weekIndex}`} subtitle={`${fmtDate(c.startDate)} – ${fmtDate(c.endDate)} · Lớp ${c.className ?? p.context.className}`}
+            <ParentHeader title={`Kết quả thi đua · ${c.periodLabel}`} subtitle={[c.startDate&&c.endDate?`${fmtDate(c.startDate)} – ${fmtDate(c.endDate)}`:null,c.className?`Lớp ${c.className}`:null].filter(Boolean).join(" · ")}
               back={{ href: href("conduct"), label: "Thi đua đã công bố" }}
               actions={<Button icon={<Printer className="size-4" />} onClick={() => window.print()}>In / lưu PDF</Button>} />
             <div className="print-only mb-2 text-[13px]">
               <p className="font-bold">{p.context.school.name}</p>
-              <p>Học sinh: {p.context.student.fullName} · Lớp {c.className ?? p.context.className} · Năm học {p.context.yearLabel}</p>
+              <p>Học sinh: {p.context.student.fullName} {c.className&&<>· Lớp {c.className}</>} · Năm học {p.context.yearLabel}</p>
               <p>Bản công bố {c.versionNo} lúc {fmtDateTime(c.publishedAt)}</p>
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
               <Card>
-                <CardHeader icon={<Award className="size-5" />} title="Cách tính điểm" subtitle={`Quy chế: ${c.ruleSetName} (phiên bản ${c.ruleSetVersionNo})`}
-                  action={<Badge tone={GRADE_TONE(c.gradeTone)}>{c.grade}</Badge>} />
+                <CardHeader icon={<Award className="size-5" />} title="Cách tính điểm" subtitle={c.ruleSetName?`Quy chế: ${c.ruleSetName}${c.ruleSetVersionNo?` (phiên bản ${c.ruleSetVersionNo})`:""}`:undefined}
+                  action={c.grade!==null&&<Badge tone={GRADE_TONE(c.gradeTone)}>{c.grade}</Badge>} />
                 <div className="px-5 pb-5">
                   <div className="table-wrap">
                     <table className="table text-[13.5px]">
@@ -85,21 +85,21 @@ export function ParentConductDetailView({ periodId }: { periodId: string }) {
                         <tr><td className="font-medium text-ink">Điểm nền</td><td>—</td><td className="num font-semibold tabular-nums">{c.base}</td></tr>
                         {c.items.map((i, idx) => (
                           <tr key={idx}>
-                            <td><span className="inline-flex items-center gap-2">{i.points >= 0 ? <CheckCircle2 className="size-4 text-success" aria-hidden /> : <MinusCircle className="size-4 text-danger" aria-hidden />}{i.label}</span></td>
+                            <td><span className="inline-flex items-center gap-2">{Number(i.points) >= 0 ? <CheckCircle2 className="size-4 text-success" aria-hidden /> : <MinusCircle className="size-4 text-danger" aria-hidden />}{i.label}</span>{i.reason&&<span className="mt-0.5 block text-[12.5px] text-muted">{i.reason}</span>}</td>
                             <td className="whitespace-nowrap">{fmtDate(i.date)}</td>
-                            <td className={clsx("num font-semibold tabular-nums", i.points >= 0 ? "text-success-text" : "text-danger-text")}>{fmtPoints(i.points)}</td>
+                            <td className={clsx("num font-semibold tabular-nums", Number(i.points) >= 0 ? "text-success-text" : "text-danger-text")}>{fmtPoints(Number(i.points))}</td>
                           </tr>
                         ))}
                         {c.items.length === 0 && <tr><td colSpan={3} className="text-muted">Không có ghi nhận cộng/trừ được chia sẻ trong tuần.</td></tr>}
                       </tbody>
                       <tfoot>
-                        <tr><td className="pt-3 font-bold text-ink" colSpan={2}>Tổng điểm (điểm nền {c.base} {fmtPoints(c.plus)} {fmtPoints(-Math.abs(c.minus))})</td><td className="num pt-3 text-[18px] font-extrabold tabular-nums text-ink">{c.total}</td></tr>
+                        <tr><td colSpan={2}>Tổng cộng điểm đã chốt</td><td className="num font-semibold tabular-nums text-success-text">{c.plus}</td></tr>
+                        <tr><td colSpan={2}>Tổng trừ điểm đã chốt</td><td className="num font-semibold tabular-nums text-danger-text">{c.minus}</td></tr>
+                        <tr><td className="pt-3 font-bold text-ink" colSpan={2}>Tổng điểm chính thức đã công bố</td><td className="num pt-3 text-[18px] font-extrabold tabular-nums text-ink">{c.total}</td></tr>
                       </tfoot>
                     </table>
                   </div>
-                  {c.items.length > 0 && c.plus - Math.abs(c.minus) !== c.items.reduce((s, i) => s + i.points, 0) && (
-                    <p className="mt-2 text-[12.5px] text-muted">Một số ghi nhận nội bộ không được chia sẻ chi tiết; tổng điểm vẫn là kết quả chính thức đã công bố.</p>
-                  )}
+                  <p className="mt-3 text-[12.5px] text-muted">Các dòng trên là ghi nhận được nhà trường chia sẻ. Tổng cộng/trừ và tổng chính thức lấy từ bản công bố.{c.minimum!==null&&<> Điểm tối thiểu: {c.minimum}.</>}{c.maximum!==null&&<> Điểm tối đa: {c.maximum}.</>}</p>
                 </div>
               </Card>
               <div className="flex flex-col gap-4">

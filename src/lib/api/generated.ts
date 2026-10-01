@@ -127,7 +127,7 @@ export interface ApiSchemas {
   "ReviewResult": { "period": ApiSchemas["ConductPeriod"]; "canLock": boolean; "blockers": Array<{ "code": string; "message": string; "recordId"?: (string) | null; }>; "summary": ApiSchemas["ConductSummary"]; };
   "PublishCommand": { "expectedSourceVersion": number; "expectedPublicationId"?: (string) | null; "reason"?: string; };
   "Publication": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "CONDUCT" | "ATTENDANCE" | "TIMETABLE" | "DUTY" | "ACTIVITY" | "ANNOUNCEMENT"; "sourceId": (string) | null; "classId"?: (string) | null; "yearId": (string) | null; "revision": number; "sourceVersion": number; "status": "READY" | "PUBLISHED" | "SUPERSEDED" | "WITHDRAWN"; "publishedAt"?: (string) | null; "contentHash": string; };
-  "PublicationDetail": { "publication": ApiSchemas["Publication"]; "conduct"?: ApiSchemas["ConductSummary"]; "attendance"?: ApiSchemas["AttendanceSession"]; "timetable"?: ApiSchemas["Timetable"]; "activity"?: ApiSchemas["Activity"]; "announcement"?: ApiSchemas["Announcement"]; "duty"?: ApiSchemas["DutySchedule"]; "lessons"?: Array<ApiSchemas["Lesson"]>; };
+  "PublicationDetail": { "publication": ApiSchemas["Publication"]; "conduct"?: ApiSchemas["ConductSummary"]; "attendance"?: ApiSchemas["AttendanceSession"]; "timetable"?: ApiSchemas["Timetable"]; "activity"?: ApiSchemas["Activity"]; "announcement"?: ApiSchemas["Announcement"]; "duty"?: ApiSchemas["DutySchedule"]; "lessons"?: Array<ApiSchemas["Lesson"]>; "conductDisplay"?: ApiSchemas["ConductPublicationDisplay"]; };
   "Adjustment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "periodId": (string) | null; "baselinePublicationId": (string) | null; "reason": string; "status": "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; "proposedChanges": Array<{ "recordId": (string) | null; "action": "EXCLUDE" | "REPLACE"; "replacement"?: ApiSchemas["ConductRecordCreate"]; }>; "preview"?: { "before": ApiSchemas["ConductSummary"]; "after": ApiSchemas["ConductSummary"]; }; "decisionReason"?: string; "resultPublicationId"?: string; };
   "AdjustmentCreate": { "periodId": string; "baselinePublicationId": string; "reason": string; "proposedChanges": Array<{ "recordId": string; "action": "EXCLUDE" | "REPLACE"; "replacement"?: ApiSchemas["ConductRecordCreate"]; }>; };
   "TimetableEntry": { "id"?: (string) | null; "weekday": number; "periodNumber": number; "subjectId": (string) | null; "memberId": (string) | null; "roomId"?: (string) | null; "startsAtLocal": string; "endsAtLocal": string; };
@@ -379,6 +379,13 @@ export interface ApiSchemas {
   "ParentSharedAnnouncementDirectory": { "items": Array<ApiSchemas["ParentSharedAnnouncement"]>; };
   "ParentSharedAnnouncementResponse": { "data": ApiSchemas["ParentSharedAnnouncement"]; "requestId": string; };
   "ParentSharedAnnouncementDirectoryResponse": { "data": ApiSchemas["ParentSharedAnnouncementDirectory"]; "requestId": string; };
+  "ConductPublicationDisplay": { "weekNumber": number; "startsOn": string; "endsOn": string; "classLabel": string; "ruleSetName": string; "ruleSetRevision": number; "minimumPoints": (string) | null; "maximumPoints": (string) | null; "timezone": string; };
+  "ParentPublishedPointLine": { "label": string; "delta": string; "occurredAt": string; "reason": string; "date": string; };
+  "ParentConductRevision": { "revision": number; "publishedAt": string; "total": string; "classification": (string) | null; "current": boolean; };
+  "ParentSharedConduct": { "periodId": string; "periodLabel": string; "revision": number; "basePoints": string; "bonusPoints": string; "penaltyPoints": string; "finalPoints": string; "classification": (string) | null; "lines": Array<ApiSchemas["ParentPublishedPointLine"]>; "publishedAt": string; "adjusted": boolean; "weekNumber": (number) | null; "startsOn": (string) | null; "endsOn": (string) | null; "classLabel": (string) | null; "ruleSetName": (string) | null; "ruleSetRevision": (number) | null; "minimumPoints": (string) | null; "maximumPoints": (string) | null; "timezone": string; "history": Array<ApiSchemas["ParentConductRevision"]>; };
+  "ParentSharedConductDirectory": { "items": Array<ApiSchemas["ParentSharedConduct"]>; };
+  "ParentSharedConductResponse": { "data": ApiSchemas["ParentSharedConduct"]; "requestId": string; };
+  "ParentSharedConductDirectoryResponse": { "data": ApiSchemas["ParentSharedConductDirectory"]; "requestId": string; };
   "ParentTimetableWeekLesson": { "date": string; "startsAt": string; "endsAt": string; "startsAtLocal": string; "endsAtLocal": string; "periodNumber": (number) | null; "subjectName": string; "teacherName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeNote": (string) | null; };
   "ParentTimetableWeekDay": { "date": string; "holidayNames": Array<string>; "lessons": Array<ApiSchemas["ParentTimetableWeekLesson"]>; };
   "ParentTimetableWeek": { "weekStart": string; "today": string; "timezone": string; "year": { "startsOn": string; "endsOn": string; }; "weekNumber": (number) | null; "days": Array<ApiSchemas["ParentTimetableWeekDay"]>; };
@@ -3536,6 +3543,46 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentSharedAnnouncement",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedConductDirectory": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/conduct/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedConductDirectory",
+    "list": false,
+    "permission": "parent.conduct",
+    "readOnly": true
+  },
+  "previewParentPublishedConductDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/conduct/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedConductDirectory",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedConduct": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/conduct/{periodId}/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentSharedConduct",
+    "list": false,
+    "permission": "parent.conduct",
+    "readOnly": true
+  },
+  "previewParentPublishedConduct": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/conduct/{periodId}/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentSharedConduct",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

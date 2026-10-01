@@ -1,0 +1,156 @@
+▲ Next.js 16.3.6 (Turbopack)
+✓ Running next.config.ts took 30ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+  Finished TypeScript in 17.5s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/36) ...
+  Generating static pages using 15 workers (9/36)
+  Generating static pages using 15 workers (18/36)
+  Generating static pages using 15 workers (27/36)
+✓ Generating static pages using 15 workers (36/36) in 530ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /access-denied
+├ ○ /account
+├ ○ /account/no-access
+├ ○ /account/profile
+├ ○ /account/security
+├ ○ /choose-school
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/[activityId]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/[activityId]/edit
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/new
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/adjustments
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/[announcementId]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/[announcementId]/edit
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/new
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/attendance
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/attendance/weekly
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct/review
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct/weekly
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/duties
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/evidence
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/files
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/groups
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/publications
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/publications/[publicationId]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/reports
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/reports/[reportType]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/rules
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/seating
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/students
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/students/[studentId]
+├ ƒ /classroom/[schoolId]/[yearId]/[classId]/timetable
+├ ○ /demo
+├ ○ /forgot-password
+├ ○ /help
+├ ○ /icon.svg
+├ ƒ /invitations/[inviteId]
+├ ○ /login
+├ ○ /maintenance
+├ ○ /notifications
+├ ƒ /p/[schoolSlug]
+├ ƒ /p/[schoolSlug]/access
+├ ƒ /p/[schoolSlug]/access-unavailable
+├ ƒ /p/[schoolSlug]/activities
+├ ƒ /p/[schoolSlug]/activities/[activityId]
+├ ƒ /p/[schoolSlug]/announcements
+├ ƒ /p/[schoolSlug]/announcements/[announcementId]
+├ ƒ /p/[schoolSlug]/attendance
+├ ƒ /p/[schoolSlug]/conduct
+├ ƒ /p/[schoolSlug]/conduct/[periodId]
+├ ƒ /p/[schoolSlug]/documents
+├ ƒ /p/[schoolSlug]/duties
+├ ƒ /p/[schoolSlug]/overview
+├ ƒ /p/[schoolSlug]/teachers
+├ ƒ /p/[schoolSlug]/timetable
+├ ○ /platform
+├ ○ /platform/audit
+├ ○ /platform/operations
+├ ○ /platform/schools
+├ ƒ /platform/schools/[schoolId]
+├ ƒ /platform/schools/[schoolId]/admins
+├ ○ /platform/schools/new
+├ ○ /platform/settings
+├ ○ /platform/support
+├ ○ /platform/support-access
+├ ƒ /platform/support/[ticketId]
+├ ○ /preview
+├ ○ /preview/checklist
+├ ○ /preview/components
+├ ○ /preview/crash
+├ ○ /preview/flows
+├ ○ /preview/references
+├ ○ /preview/sitemap
+├ ○ /preview/states
+├ ○ /privacy
+├ ○ /reset-password
+├ ○ /school-suspended
+├ ƒ /school/[schoolId]
+├ ƒ /school/[schoolId]/academic-years
+├ ƒ /school/[schoolId]/academic-years/[yearId]
+├ ƒ /school/[schoolId]/academic-years/[yearId]/calendar
+├ ƒ /school/[schoolId]/academic-years/[yearId]/rollover
+├ ƒ /school/[schoolId]/academic-years/new
+├ ƒ /school/[schoolId]/announcements
+├ ƒ /school/[schoolId]/announcements/[announcementId]
+├ ƒ /school/[schoolId]/announcements/[announcementId]/edit
+├ ƒ /school/[schoolId]/announcements/new
+├ ƒ /school/[schoolId]/assignments
+├ ƒ /school/[schoolId]/audit
+├ ƒ /school/[schoolId]/classes
+├ ƒ /school/[schoolId]/conduct-rules
+├ ƒ /school/[schoolId]/conduct-rules/[ruleSetId]
+├ ƒ /school/[schoolId]/dictionaries
+├ ƒ /school/[schoolId]/exports
+├ ƒ /school/[schoolId]/guardians
+├ ƒ /school/[schoolId]/guardians/[guardianId]
+├ ƒ /school/[schoolId]/handovers
+├ ƒ /school/[schoolId]/imports
+├ ƒ /school/[schoolId]/imports/[importId]
+├ ƒ /school/[schoolId]/imports/new
+├ ƒ /school/[schoolId]/parent-access
+├ ƒ /school/[schoolId]/parent-access/[accessId]
+├ ƒ /school/[schoolId]/parent-access/[accessId]/preview/[[...view]]
+├ ƒ /school/[schoolId]/profile
+├ ƒ /school/[schoolId]/publication-policy
+├ ƒ /school/[schoolId]/publications
+├ ƒ /school/[schoolId]/reports
+├ ƒ /school/[schoolId]/reports/[reportType]
+├ ƒ /school/[schoolId]/roles
+├ ƒ /school/[schoolId]/roles/[roleId]
+├ ƒ /school/[schoolId]/settings
+├ ƒ /school/[schoolId]/students
+├ ƒ /school/[schoolId]/students/[studentId]
+├ ƒ /school/[schoolId]/students/[studentId]/edit
+├ ƒ /school/[schoolId]/students/new
+├ ƒ /school/[schoolId]/support
+├ ƒ /school/[schoolId]/support/[ticketId]
+├ ƒ /school/[schoolId]/teachers
+├ ƒ /school/[schoolId]/teachers/[memberId]
+├ ƒ /school/[schoolId]/timetable
+├ ƒ /school/[schoolId]/transfers
+├ ƒ /schools/[schoolSlug]
+├ ƒ /schools/[schoolSlug]/announcements/[announcementId]
+├ ƒ /teacher/[schoolId]
+├ ƒ /teacher/[schoolId]/announcements
+├ ƒ /teacher/[schoolId]/classes
+├ ƒ /teacher/[schoolId]/reports
+├ ƒ /teacher/[schoolId]/schedule
+├ ƒ /teacher/[schoolId]/tasks
+└ ○ /terms
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+exitCode=0

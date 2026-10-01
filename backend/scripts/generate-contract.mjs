@@ -403,6 +403,21 @@ for(const [section,singular,response,screens]of [['activities','activity','Paren
  }
 }
 
+// PA04/PA05 minimal pinned conduct display and published own-child history.
+const conductDecimal=structuredClone(spec.components.schemas.ParentConduct.properties.finalPoints),nullableConductDecimal={...conductDecimal,nullable:true};
+spec.components.schemas.ConductPublicationDisplay=object({weekNumber:{type:'integer',minimum:1},startsOn:studentDate,endsOn:studentDate,classLabel:label,ruleSetName:label,ruleSetRevision:{type:'integer',minimum:1},minimumPoints:nullableConductDecimal,maximumPoints:nullableConductDecimal,timezone:label});
+spec.components.schemas.PublicationDetail.properties.conductDisplay={$ref:'#/components/schemas/ConductPublicationDisplay'};
+spec.components.schemas.ParentPublishedPointLine=object({...structuredClone(spec.components.schemas.PointLine.properties),date:studentDate});
+spec.components.schemas.ParentConductRevision=object({revision:{type:'integer',minimum:1},publishedAt:timestamp,total:conductDecimal,classification:nullableLabel,current:{type:'boolean'}});
+spec.components.schemas.ParentSharedConduct=object({...structuredClone(spec.components.schemas.ParentConduct.properties),periodId:{type:'string',format:'uuid'},lines:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentPublishedPointLine'}},weekNumber:{type:'integer',minimum:1,nullable:true},startsOn:{...studentDate,nullable:true},endsOn:{...studentDate,nullable:true},classLabel:nullableLabel,ruleSetName:nullableLabel,ruleSetRevision:{type:'integer',minimum:1,nullable:true},minimumPoints:nullableConductDecimal,maximumPoints:nullableConductDecimal,timezone:label,history:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentConductRevision'}}});
+spec.components.schemas.ParentSharedConductDirectory=object({items:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentSharedConduct'}}});
+for(const name of ['ParentSharedConduct','ParentSharedConductDirectory'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+for(const detail of [false,true]){
+ const suffix=detail?'conduct/{periodId}/published':'conduct/published',response=detail?'ParentSharedConduct':'ParentSharedConductDirectory',publicId=detail?'getParentPublishedConduct':'getParentPublishedConductDirectory',previewId=detail?'previewParentPublishedConduct':'previewParentPublishedConductDirectory';
+ extendOperation('getParentContext',publicId,'/parent/{schoolSlug}/'+suffix,'parent.conduct',response,false,['PA04','PA05'],[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}},...(detail?[{name:'periodId',in:'path',required:true,schema:uuid}]:[])]);operations.find(value=>value.id===publicId).scope='parent';
+ extendOperation('previewParent',previewId,'/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix,'parent_access.preview',response,false,['SC25','PA04','PA05'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid},...(detail?[{name:'periodId',in:'path',required:true,schema:uuid}]:[])]);
+}
+
 // Native PA06 reads published lesson metadata and calendar within its independent section.
 spec.components.schemas.ParentTimetableWeekLesson=object({date:studentDate,startsAt:timestamp,endsAt:timestamp,startsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},endsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},periodNumber:{type:'integer',minimum:1,nullable:true},subjectName:label,teacherName:label,roomName:nullableLabel,status:{type:'string',enum:['SCHEDULED','CANCELLED']},changeNote:nullableLabel});
 spec.components.schemas.ParentTimetableWeekDay=object({date:studentDate,holidayNames:{type:'array',items:label},lessons:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentTimetableWeekLesson'}}});

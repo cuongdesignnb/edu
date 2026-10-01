@@ -28,7 +28,13 @@ export function version(row:Row,expected:unknown){if(row.version!==expected)thro
 export function reason(value:unknown,min=5){if(typeof value!=='string'||value.trim().length<min)validation('reason',`Lý do cần ít nhất ${min} ký tự`);return value.trim();}
 export async function publicConductItems(tx:Transaction,p:Row,revision:number,adjusted=false){
   const data=await conductSummary(tx,p),at=(await one<{at:Date}>(tx,'SELECT now() AS at'))!.at;
-  return {snapshot:{conduct:data.summary},items:data.summary.students.map(student=>{
+  const display=await one<Row>(tx,`SELECT r.name,r.revision,r.minimum_points,r.maximum_points,c.name AS class_label,sc.timezone
+    FROM app.rule_sets r JOIN app.classes c ON c.school_id=r.school_id AND c.id=$3 JOIN platform.schools sc ON sc.id=r.school_id
+    WHERE r.school_id=$1 AND r.id=$2`,[p.school_id,p.rule_set_id,p.class_id]);
+  if(!display)throw new Problem(409,'RULE_SET_UNAVAILABLE');
+  const conductDisplay={weekNumber:p.week_number,startsOn:p.starts_on,endsOn:p.ends_on,classLabel:display.class_label,
+    ruleSetName:display.name,ruleSetRevision:display.revision,minimumPoints:display.minimum_points,maximumPoints:display.maximum_points,timezone:display.timezone};
+  return {snapshot:{conduct:data.summary,conductDisplay},items:data.summary.students.map(student=>{
     const ids=data.enrollments.filter(e=>e.student_id===student.studentId).map(e=>e.id);
     return {studentId:String(student.studentId),section:'conduct',schema:'ParentConduct',payload:{periodId:p.id,periodLabel:`Tuần ${p.week_number}`,revision,
       basePoints:student.basePoints,bonusPoints:student.bonusPoints,penaltyPoints:student.penaltyPoints,finalPoints:student.finalPoints,classification:student.classification,
