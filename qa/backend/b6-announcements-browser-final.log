@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:28484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\announcement-contract.spec.ts:21:5 › class list and detail use exact source and publication POST while history retains real identifiers (1.2s)
+  ok 2 tests\native-ui-contract\announcement-contract.spec.ts:22:5 › read-only class announcement access hides edit publish compose private history and estimate on mobile (804ms)
+  ok 3 tests\native-ui-contract\announcement-contract.spec.ts:23:5 › composer retains plaintext and displayed year/class versions through conflict without a blind retry (643ms)
+  ok 4 tests\native-ui-contract\announcement-contract.spec.ts:24:5 › class list outage shows retry and hides compose instead of returning an empty announcement list (549ms)
+
+  4 passed (4.3s)

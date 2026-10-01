@@ -1,0 +1,7 @@
+
+D:\Edu\backend\scripts\generate-contract.mjs
+  729:12  error  'path' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+EXIT_CODE=1

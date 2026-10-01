@@ -1,0 +1,85 @@
+{
+  "baselineCommit": "04a7d4e2732e7093e0716e2f8ff17e7af5d07221",
+  "contract": {
+    "operations": 367,
+    "schemas": 511,
+    "statuses": {
+      "TESTED": 355,
+      "IMPLEMENTED": 12
+    },
+    "allExistingContractSemanticsUnchanged": true,
+    "nativeAnnouncementPostSuccessSchema": "HTTP200 enforced by runtime validator"
+  },
+  "frontend": {
+    "nativeCandidates": 162,
+    "activatedCandidates": 162,
+    "legacyMethods": 231,
+    "activatedLegacyMethods": 144,
+    "pendingLegacyMethods": 87,
+    "coreScreenSourceStatuses": {
+      "IMPLEMENTED": 76,
+      "STATIC_UNVERIFIED": 3,
+      "NOT_STARTED": 39
+    }
+  },
+  "actualTests": {
+    "postgresNativeAndWorker": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 5125.422302,
+      "log": "b6-announcements-postgres-http-final.log"
+    },
+    "backendUnitContract": {
+      "passed": 57,
+      "failed": 0,
+      "durationMs": 502.1508
+    },
+    "frontendUnit": {
+      "passed": 414,
+      "files": 51,
+      "durationSeconds": 10.46,
+      "apiTests": 373,
+      "historicalSyntheticTests": 41
+    },
+    "browser": {
+      "startTime": "2026-10-01T21:24:33.183Z",
+      "duration": 4343.986999999999,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browserKind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "desktopMobileScreenshotsInspected": true
+  },
+  "earlierRegressionRun": {
+    "log": "b6-announcements-postgres-initial.log",
+    "total": 9,
+    "passedCanonicalAnnouncementCases": 6,
+    "failedNewNativeCases": 3,
+    "wholeRunPassed": false
+  },
+  "ownedNext": {
+    "pid": 10852,
+    "closed": true,
+    "portFreeAfter": true
+  },
+  "migrations": {
+    "existingCount": 47,
+    "newCount": 0,
+    "replayInThisCheckpoint": "NOT_RUN"
+  },
+  "wholePostgresBrowserE2E": "NOT_RUN",
+  "fullCurrentPostgresRegression": "NOT_RUN",
+  "dockerReleaseServing": false,
+  "dockerReleaseUrl": "http://127.0.0.1:18763",
+  "backupRestoreReleaseDrill": "NOT_RUN",
+  "restartPersistenceReleaseDrill": "NOT_RUN",
+  "releasePerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "realStudentDataUsed": false,
+  "volumesDeleted": false,
+  "unrelatedProjectsChanged": false,
+  "otherNativeActionSuccessStatusMetadataAudit": "PENDING before full contract acceptance"
+}

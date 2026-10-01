@@ -1,0 +1,7 @@
+
+D:\Edu\backend\src\modules\announcements\announcements.service.ts
+  99:57  error  'list' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+EXIT_CODE=1

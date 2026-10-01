@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { UploadCloud, FileText, FileWarning, Download, AlertCircle, Ban } from "lucide-react";
 import type { FileAsset } from "@/lib/model/types";
 import { getBlob,RepoError,errorMessage } from "@/lib/repositories";
+import { download } from "@/lib/api/client";
 import { downloadBlob } from "@/lib/export";
 import { fmtBytes } from "@/lib/formatters";
 import { Button } from "./button";
@@ -41,7 +42,13 @@ export function FileDropzone({ accept, maxBytes, multiple, onFiles, label = "Ké
   );
 }
 
-type PreviewSource = Pick<FileAsset, "name" | "mime" | "size"> & Partial<Pick<FileAsset,"source">>;
+export type StaffFileSource={kind:'staff_api';schoolId:string;fileId:string;owner:{assertCurrent:()=>void}};
+type PreviewSource = Pick<FileAsset, "name" | "mime" | "size"> & {source?:FileAsset['source']|StaffFileSource};
+async function actualBlob(file:PreviewSource){
+  if(file.source?.kind==='staff_api'){const s=file.source;s.owner.assertCurrent();const value=await download('downloadFile',{params:{schoolId:s.schoolId,fileId:s.fileId}});s.owner.assertCurrent();if(value.blob.type!==file.mime||value.blob.size!==file.size)throw new RepoError('READ_ERROR','Nội dung tệp không khớp thông tin đã tải.');return value.blob;}
+  if(file.source?.kind==='blob')return getBlob(file.source.blobKey);
+  throw new RepoError('READ_ERROR','Tệp chưa có nội dung được xác nhận từ API.');
+}
 
 /** Resolve an object URL for a stored blob; revoked on unmount (no leaks). */
 export function useFileUrl(file?: PreviewSource | null) {
@@ -57,7 +64,7 @@ export function useFileUrl(file?: PreviewSource | null) {
       setMissing(true);
       return;
     }
-    getBlob(file.source.blobKey).then((b) => {
+    actualBlob(file).then((b) => {
       if (!alive) return;
       if (!b) { setMissing(true); return; }
       revoke = URL.createObjectURL(b);
@@ -69,8 +76,8 @@ export function useFileUrl(file?: PreviewSource | null) {
 }
 
 export async function downloadFileAsset(file: PreviewSource) {
-  if (file.source?.kind === "blob") {
-    const b = await getBlob(file.source.blobKey);
+  if (file.source?.kind === "blob"||file.source?.kind==='staff_api') {
+    const b = await actualBlob(file);
     if (b) downloadBlob(b, file.name);
     return !!b;
   }

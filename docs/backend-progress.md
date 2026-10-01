@@ -362,6 +362,15 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getClassAttendanceHistory | CL06 | TESTED | qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN. |
 | saveClassAttendanceSheet | CL04 | TESTED | qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN. |
 | publishClassAttendanceSheet | CL04 | TESTED | qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN. |
+| getAnnouncementDirectory | SC33 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| getClassAnnouncementDirectory | CL21 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| getAnnouncementWorkspaceDetail | SC35, CL23 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| getAnnouncementComposeWorkspace | SC34, CL22 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| estimateAnnouncementAudience | SC34, CL22 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| saveAnnouncementWorkspace | SC33, SC34, SC35, CL21, CL22, CL23 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| publishAnnouncementWorkspace | SC33, SC34, SC35, CL21, CL22, CL23 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| withdrawAnnouncementWorkspace | SC33, SC34, SC35, CL21, CL22, CL23 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
+| discardAnnouncementWorkspace | SC33, SC34, SC35, CL21, CL22, CL23 | TESTED | qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -418,9 +427,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC30 | core | TESTED | NOT_STARTED |  |  |
 | SC31 | core | TESTED | NOT_STARTED |  |  |
 | SC32 | core | TESTED | NOT_STARTED |  |  |
-| SC33 | core | TESTED | NOT_STARTED |  |  |
-| SC34 | core | TESTED | NOT_STARTED |  |  |
-| SC35 | core | TESTED | NOT_STARTED |  |  |
+| SC33 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
+| SC34 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
+| SC35 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
 | SC36 | core | TESTED | NOT_STARTED |  |  |
 | SC37 | core | TESTED | NOT_STARTED |  |  |
 | SC38 | core | TESTED | NOT_STARTED |  |  |
@@ -455,9 +464,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL18 | core | TESTED | NOT_STARTED |  |  |
 | CL19 | core | TESTED | NOT_STARTED |  |  |
 | CL20 | core | TESTED | NOT_STARTED |  |  |
-| CL21 | core | TESTED | NOT_STARTED |  |  |
-| CL22 | core | TESTED | NOT_STARTED |  |  |
-| CL23 | core | TESTED | NOT_STARTED |  |  |
+| CL21 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
+| CL22 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
+| CL23 | core | TESTED | IMPLEMENTED |  | Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN. |
 | CL24 | core | TESTED | NOT_STARTED |  |  |
 | CL25 | core | TESTED | NOT_STARTED |  |  |
 | CL26 | core | TESTED | NOT_STARTED |  |  |

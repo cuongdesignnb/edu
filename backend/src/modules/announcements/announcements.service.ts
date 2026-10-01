@@ -11,6 +11,7 @@ import { FilesService } from '../files/files.service';
 import { announcementHtml } from './html';
 import { notifyMany } from '../notifications/notify';
 import type { Handler,RequestContext,ActorContext,Result } from '../../api.router';
+import {announcementWorkspace,announcementWorkspaceCommand} from './announcement-workspace';
 
 const r:Resource={table:'app.announcements',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',rootId:'root_id',yearId:'year_id',classId:'class_id',title:'title',sanitizedHtml:'sanitized_html',status:'status',scheduledAt:'scheduled_at',dataVersion:'data_version',summary:'summary',audience:'audience',internalNote:'internal_note',discardedAt:'discarded_at'},writeFields:[],search:['title','summary'],filters:{status:'status',yearId:'year_id'}};
 interface Audience {kind:'PUBLIC'|'SCHOOL'|'GRADE'|'CLASS'|'STUDENT'|'STAFF';id?:string}
@@ -20,7 +21,7 @@ function version(row:Row,expected:unknown,source=false){const n=Number(source?ro
 @Injectable()
 export class AnnouncementsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService,private readonly files:FilesService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolAnnouncements','listTeacherAnnouncements','createSchoolAnnouncement','getSchoolAnnouncement','updateSchoolAnnouncement','publishSchoolAnnouncement','scheduleSchoolAnnouncement','withdrawSchoolAnnouncement','listClassAnnouncements','createClassAnnouncement','getClassAnnouncement','updateClassAnnouncement','publishClassAnnouncement','scheduleClassAnnouncement','withdrawClassAnnouncement','getPublicSchool','getPublicAnnouncement'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['listSchoolAnnouncements','listTeacherAnnouncements','createSchoolAnnouncement','getSchoolAnnouncement','updateSchoolAnnouncement','publishSchoolAnnouncement','scheduleSchoolAnnouncement','withdrawSchoolAnnouncement','listClassAnnouncements','createClassAnnouncement','getClassAnnouncement','updateClassAnnouncement','publishClassAnnouncement','scheduleClassAnnouncement','withdrawClassAnnouncement','getPublicSchool','getPublicAnnouncement'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),...Object.fromEntries(['getAnnouncementDirectory','getClassAnnouncementDirectory','getAnnouncementWorkspaceDetail','getAnnouncementComposeWorkspace','estimateAnnouncementAudience'].map(id=>[id,(c:RequestContext)=>announcementWorkspace(this.db,this.policy,this,c)])),...Object.fromEntries(['saveAnnouncementWorkspace','publishAnnouncementWorkspace','withdrawAnnouncementWorkspace','discardAnnouncementWorkspace'].map(id=>[id,(c:RequestContext)=>announcementWorkspaceCommand(this.db,this.policy,this.commands,this,c)]))};}
   private async row(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.announcements WHERE school_id=$1 AND id=$2${c.params.classId?' AND class_id=$3':''} AND discarded_at IS NULL${lock?' FOR UPDATE':''}`,c.params.classId?[c.params.schoolId,c.params.announcementId,c.params.classId]:[c.params.schoolId,c.params.announcementId]);if(!row)notFound();return row;}
   private async view(tx:Transaction,row:Row,includeInternal=true){
     const value=dto(r,row);if(value.internalNote===null||!includeInternal)delete value.internalNote;
@@ -62,7 +63,7 @@ export class AnnouncementsService {
     for(const t of targets)await tx.query(`INSERT INTO app.announcement_targets(school_id,announcement_id,audience_kind${targetColumns[t.kind]?','+targetColumns[t.kind]:''}) VALUES($1,$2,$3${targetColumns[t.kind]?',$4':''})`,targetColumns[t.kind]?[c.params.schoolId,id,t.kind,t.id]:[c.params.schoolId,id,t.kind]);
     for(const fileId of fileIds)await tx.query('INSERT INTO app.file_links(school_id,announcement_id,file_id,share_with_guardian) VALUES($1,$2,$3,true)',[c.params.schoolId,id,fileId]);
   }
-  private async readPredicate(tx:Transaction,c:RequestContext):Promise<ReadScope>{
+  async readPredicate(tx:Transaction,c:RequestContext):Promise<ReadScope>{
     const schoolId=c.params.schoolId!,publishedOnly=c.operation.id==='listTeacherAnnouncements',scope=await this.policy.collection(tx,c.principal!,'announcement.read',schoolId,true);
     let classes=c.params.classId?[c.params.classId]:scope.classIds;
     if(publishedOnly){const self=await this.policy.collection(tx,c.principal!,'teacher.self',schoolId,true);let own=self.classIds;
@@ -84,7 +85,7 @@ export class AnnouncementsService {
         OR (target.audience_kind='GRADE' AND EXISTS(SELECT 1 FROM app.classes cls WHERE cls.school_id=t.school_id AND cls.id=ANY(CASE WHEN t.audience='FAMILIES' THEN $3::uuid[] ELSE $2::uuid[] END) AND cls.grade_level_id=target.grade_id AND cls.year_id=t.year_id))
         OR (target.audience_kind='STUDENT' AND EXISTS(SELECT 1 FROM app.enrollments e WHERE e.school_id=t.school_id AND e.student_id=target.student_id AND e.class_id=ANY($3::uuid[]) AND e.year_id=t.year_id AND e.status<>'CANCELLED'))))))`,values:[manage,classes,full,member.id]}};
   }
-  private async readView(tx:Transaction,row:Row,read:ReadScope){
+  async readView(tx:Transaction,row:Row,read:ReadScope){
     const manages=read.internal||read.manageClassIds.includes(String(row.class_id)),value=await this.view(tx,row,manages);
     if(read.all||manages)return value;
     const cls=(await tx.query<Row>('SELECT id,grade_level_id FROM app.classes WHERE school_id=$1 AND id=ANY($2::uuid[])',[row.school_id,read.classIds])).rows;
@@ -95,9 +96,25 @@ export class AnnouncementsService {
   private async cancelJobs(tx:Transaction,schoolId:string,id:string,preserveLease=false){await tx.query(`UPDATE app.outbox_events SET status='CANCELLED',lease_owner=NULL,lease_until=NULL WHERE school_id=$1 AND kind='PUBLISH_ANNOUNCEMENT' AND payload->>'announcementId'=$2 AND status IN (${preserveLease?"'PENDING','FAILED'":"'PENDING','FAILED','LEASED'"})`,[schoolId,id]);}
   private async handle(c:RequestContext):Promise<Result>{
     if(c.operation.id.startsWith('getPublic'))return this.public(c);
-    const schoolId=c.params.schoolId!,op=c.operation.id,list=op.startsWith('list');
+    const schoolId=c.params.schoolId!,op=c.operation.id;
     const authorize=async(tx:Transaction)=>c.operation.method==='GET'?this.readPredicate(tx,c):this.scope(tx,c,op.startsWith('create')?undefined:await this.row(tx,c));
-    const work=async(tx:Transaction):Promise<Result>=>{
+    const work=(tx:Transaction)=>this.applyInTransaction(tx,c);
+    return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
+  }
+  async validateWorkspaceTargets(tx:Transaction,c:ActorContext,yearId:string,classId:string|undefined,targets:Audience[],audience:string,today:string){return this.targets(tx,c,yearId,classId,targets,audience,today);}
+  async workspaceFiles(tx:Transaction,c:RequestContext,classId?:string){
+    const schoolId=c.params.schoolId!,access=await this.policy.collection(tx,c.principal!,'file.read',schoolId,true),family=access.classIds.filter(id=>access.grants.some(g=>grantAllows(g,'guardian.read',{schoolId,classId:id},access.today)));
+    const rows=(await tx.query<Row>(`SELECT f.id,f.original_name,f.content_type,f.byte_size,f.version,f.upload_class_id,EXISTS(SELECT 1 FROM app.file_links l WHERE l.school_id=f.school_id AND l.file_id=f.id AND l.student_id IS NOT NULL) AS private
+      FROM app.files f WHERE f.school_id=$1 AND f.purpose='CLASS_DOCUMENT' AND f.status='READY' AND (f.expires_at IS NULL OR f.expires_at>now()) AND ($6::uuid IS NULL OR f.upload_class_id IS NULL OR f.upload_class_id=$6)
+      AND ($7::boolean OR (f.uploaded_by=$2 AND f.upload_class_id=ANY($3::uuid[])) OR EXISTS(SELECT 1 FROM app.file_links l LEFT JOIN app.activities a ON a.school_id=l.school_id AND a.id=l.activity_id LEFT JOIN app.announcements n ON n.school_id=l.school_id AND n.id=l.announcement_id
+       WHERE l.school_id=f.school_id AND l.file_id=f.id AND (l.class_id=ANY($3::uuid[]) OR a.class_id=ANY($3::uuid[]) OR n.class_id=ANY($3::uuid[]) OR EXISTS(SELECT 1 FROM app.enrollments e WHERE e.school_id=l.school_id AND e.student_id=l.student_id AND e.class_id=ANY($5::uuid[]) AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4)))))
+      AND NOT EXISTS(SELECT 1 FROM app.file_links l WHERE l.school_id=f.school_id AND l.file_id=f.id AND l.student_id IS NOT NULL AND ($6::uuid IS NULL OR NOT EXISTS(SELECT 1 FROM app.enrollments e WHERE e.school_id=l.school_id AND e.student_id=l.student_id AND e.class_id=$6 AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4))))
+      ORDER BY f.original_name,f.id LIMIT 1001`,[schoolId,c.principal!.userId,access.classIds,access.today,family,classId??null,access.all])).rows;
+    if(rows.length>1000)throw new Problem(422,'ANNOUNCEMENT_WORKSPACE_LIMIT');return rows.map(f=>({id:f.id,name:f.original_name,mime:f.content_type,size:Number(f.byte_size),version:Number(f.version),share:f.private?'student_parent':f.upload_class_id?'class_parent':'school_parent'}));
+  }
+  /** Internal use: native composer/discard/schedule and publish share one school-locked transaction. */
+  async applyInTransaction(tx:Transaction,c:RequestContext):Promise<Result>{
+      const schoolId=c.params.schoolId!,op=c.operation.id,list=op.startsWith('list');
       if(list){const read=await this.readPredicate(tx,c),result=await listResource(tx,r,schoolId,c.query,read.predicate,c.principal!.userId),data=[];for(const item of result.data){const row=await one<Row>(tx,'SELECT * FROM app.announcements WHERE school_id=$1 AND id=$2',[schoolId,item.id]);data.push(await this.readView(tx,row!,read));}return {...result,data};}
       let row=op.startsWith('create')?undefined:await this.row(tx,c,c.operation.method!=='GET');
       if(op.startsWith('get')){const read=await this.readPredicate(tx,c);const filtered=await listResource(tx,r,schoolId,{limit:'1'},{sql:`t.id=$1 AND (${read.predicate.sql.replace(/\$(\d+)/g,(_,n)=>'$'+(Number(n)+1))})`,values:[row!.id,...read.predicate.values]},c.principal!.userId);if(!filtered.data.length)notFound();return {data:await this.readView(tx,row!,read)};}
@@ -130,8 +147,6 @@ export class AnnouncementsService {
         await tx.query("INSERT INTO app.outbox_events(school_id,kind,dedupe_key,payload,run_after) VALUES($1,'PUBLISH_ANNOUNCEMENT',$2,$3,$4)",[schoolId,`announcement:${row.id}:${row.version}`,{announcementId:row.id,userId:c.principal!.userId,sourceVersion:row.data_version},row.scheduled_at]);await audit(tx,c,'announcement',String(row.id),{status:'SCHEDULED'});return {data:await this.view(tx,row)};
       }
       return {data:await this.publish(tx,c,row!)};
-    };
-    return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
   }
   private async publish(tx:Transaction,c:ActorContext,row:Row,preserveLease=false){
     const ctx=await this.scope(tx,c,row);version(row,c.body.expectedSourceVersion,true);

@@ -3,9 +3,10 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ban, CalendarClock, Download, Eye, History, Info, Lock, Megaphone, Paperclip, PenLine, Plus, School, Send, Trash2, Users } from "lucide-react";
+import { announcementEstimateLine } from '@/lib/repositories/connected/announcements';
 import { announcementsRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
-import { fmtDateTime, fmtNumber } from "@/lib/formatters";
+import { fmtDateTime } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { ActivitySectionTabs } from "@/features/activities/shared";
 import { AnnouncementComposer, ParentPreview, type AnnouncementDetail } from "@/features/announcements/composer";
@@ -33,10 +34,10 @@ function scopeText(a: Pick<Own, "scope" | "scopeLabel">) {
 
 /** CL21 — class announcements: own (draft / scheduled / published / withdrawn) + "Từ nhà trường". */
 export function ClassAnnouncementsPage() {
-  const { schoolId, classId, base, header, can, readOnly } = useClassroom();
-  const allowed = can("announcement.class");
-  const q = useRepo(["class-announcements", classId], (ctx) => announcementsRepo.classList(ctx, schoolId, classId), { enabled: allowed });
-  const canCompose = allowed && !readOnly;
+  const { schoolId, yearId, classId, base, header, readOnly } = useClassroom();
+  const allowed = header.nativeActions.includes("announcement.read");
+  const q = useRepo(["class-announcements", schoolId, yearId, classId], (ctx) => announcementsRepo.classList(ctx, schoolId, yearId, classId), { enabled: allowed });
+  const canCompose = allowed && !readOnly && q.data?.canCompose === true;
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Thông báo lớp" subtitle={<>Thông báo gửi gia đình học sinh lớp {header.class.name} — chỉ trong lớp này</>}
@@ -77,7 +78,7 @@ function ListBody({ d }: { d: ListData }) {
                   <p className="line-clamp-2 text-[13px] text-muted">{a.summary}</p>
                   <p className="mt-1 text-[12.5px] text-body">Đối tượng: {scopeText(a)} · {a.audienceLabel}</p>
                   <p className="text-[12px] text-muted">
-                    {a.status === "published" && a.publishedAt ? `Công bố ${fmtDateTime(a.publishedAt)}` : a.status === "scheduled" && a.scheduledAt ? `Hẹn công bố ${fmtDateTime(a.scheduledAt)} (mô phỏng)` : a.status === "withdrawn" && a.withdrawnAt ? `Thu hồi ${fmtDateTime(a.withdrawnAt)}` : `Cập nhật ${fmtDateTime(a.updatedAt)}`} · {a.createdByName}
+                    {a.status === "published" && a.publishedAt ? `Công bố ${fmtDateTime(a.publishedAt)}` : a.status === "scheduled" && a.scheduledAt ? `Hẹn công bố ${fmtDateTime(a.scheduledAt)}` : a.status === "withdrawn" && a.withdrawnAt ? `Thu hồi ${fmtDateTime(a.withdrawnAt)}` : `Cập nhật ${fmtDateTime(a.updatedAt)}`} · {a.createdByName}
                   </p>
                 </div>
                 <StatusBadge status={a.status} map={PUBLICATION_STATUS} />
@@ -111,10 +112,10 @@ function ListBody({ d }: { d: ListData }) {
 
 /** CL22 — composer in class mode (whole class or students of this class only). Edit when announcementId is given. */
 export function ClassAnnouncementComposePage({ announcementId }: { announcementId?: string }) {
-  const { schoolId, classId, base, can, readOnly } = useClassroom();
+  const { schoolId, yearId, classId, base, header, readOnly } = useClassroom();
   const router = useRouter();
-  const allowed = can("announcement.class") && !readOnly;
-  const q = useRepo(["announcement", schoolId, announcementId ?? "new"], (ctx) => (announcementId ? announcementsRepo.detail(ctx, schoolId, announcementId) : Promise.resolve(null)), { enabled: allowed });
+  const allowed = header.nativeActions.includes("announcement.manage") && !readOnly;
+  const q = useRepo(["announcement", schoolId, yearId, classId, announcementId ?? "new"], (ctx) => (announcementId ? announcementsRepo.detail(ctx, schoolId, announcementId, {yearId,classId}) : Promise.resolve(null)), { enabled: allowed });
   const title = announcementId ? "Sửa thông báo lớp" : "Soạn thông báo lớp";
   const back = announcementId ? `${base}/announcements/${announcementId}` : `${base}/announcements`;
   return (
@@ -123,9 +124,9 @@ export function ClassAnnouncementComposePage({ announcementId }: { announcementI
         crumbs={[{ label: "Thông báo", href: `${base}/announcements` }, { label: title }]} actions={<ButtonLink href={back} variant="ghost">Hủy</ButtonLink>} />
       {!allowed ? <div className="card"><DeniedState message={readOnly ? "Năm học đã lưu trữ — không soạn thông báo." : "Bạn không được phân công gửi thông báo cho lớp này."} /></div> : (
         <QueryState query={q} skeleton="form">
-          {(a) => a && (a.originClassId !== classId || (a.status !== "draft" && a.status !== "scheduled" && a.status !== "published"))
+          {(a) => a && (a.originClassId !== classId || (!a.canEdit || (a.status !== "draft" && a.status !== "scheduled" && a.status !== "published")))
             ? <div className="card"><DeniedState message={a.originClassId !== classId ? "Thông báo này không thuộc lớp hiện tại." : "Thông báo đã thu hồi — hãy tạo thông báo mới."} /></div>
-            : <AnnouncementComposer key={a?.version ?? "new"} schoolId={schoolId} origin="class" classId={classId} announcement={a ?? undefined} onDone={(id) => router.push(`${base}/announcements/${id}`)} />}
+            : <AnnouncementComposer key={a?.version ?? "new"} schoolId={schoolId} yearId={yearId} origin="class" classId={classId} announcement={a ?? undefined} onDone={(id) => router.push(`${base}/announcements/${id}`)} />}
         </QueryState>
       )}
     </div>
@@ -134,9 +135,9 @@ export function ClassAnnouncementComposePage({ announcementId }: { announcementI
 
 /** CL23 — class announcement detail: content, audience, estimate, status, history, attachments, internal note; edit / publish / withdraw / delete draft (O29, O31). */
 export function ClassAnnouncementDetailPage({ announcementId }: { announcementId: string }) {
-  const { schoolId, classId, base, can } = useClassroom();
-  const allowed = can("announcement.class");
-  const q = useRepo(["announcement", schoolId, announcementId], (ctx) => announcementsRepo.detail(ctx, schoolId, announcementId), { enabled: allowed });
+  const { schoolId, yearId, classId, base, header } = useClassroom();
+  const allowed = header.nativeActions.includes("announcement.read");
+  const q = useRepo(["announcement", schoolId, yearId, classId, announcementId], (ctx) => announcementsRepo.detail(ctx, schoolId, announcementId, {yearId,classId}), { enabled: allowed });
   return (
     <div className="page">
       <ClassHeader variant="compact" title={q.data?.title ?? "Chi tiết thông báo"} crumbs={[{ label: "Thông báo", href: `${base}/announcements` }, { label: q.data?.title ?? "Chi tiết" }]}
@@ -155,15 +156,11 @@ function DetailBody({ a }: { a: AnnouncementDetail }) {
   const router = useRouter();
   const [dlg, setDlg] = useState<"publish" | "withdraw" | "delete" | null>(null);
   const [preview, setPreview] = useState(false);
-  const publish = useCommand((ctx) => announcementsRepo.save(ctx, schoolId, {
-    id: a.id, origin: a.origin, originClassId: a.originClassId, title: a.title, summary: a.summary, body: a.body, audience: a.audience, scope: a.scope, isPublic: false,
-    attachmentIds: a.attachmentIds, internalNote: a.internalNote, action: "publish", version: a.version,
-  }), { success: "Đã công bố thông báo lớp", onSuccess: () => setDlg(null) });
-  const withdraw = useCommand((ctx, reason: string) => announcementsRepo.withdraw(ctx, schoolId, a.id, reason), { success: "Đã thu hồi thông báo", onSuccess: () => setDlg(null) });
-  const remove = useCommand((ctx) => announcementsRepo.deleteDraft(ctx, schoolId, a.id), { success: "Đã xóa bản nháp", onSuccess: () => router.push(`${base}/announcements`) });
+  const publish = useCommand((ctx) => announcementsRepo.publish(ctx, schoolId, a.source), { success: "Đã công bố thông báo lớp", onSuccess: () => setDlg(null) });
+  const withdraw = useCommand((ctx, reason: string) => announcementsRepo.withdraw(ctx, schoolId, a.source, reason), { success: "Đã thu hồi thông báo", onSuccess: () => setDlg(null) });
+  const remove = useCommand((ctx) => announcementsRepo.deleteDraft(ctx, schoolId, a.source), { success: "Đã xóa bản nháp", onSuccess: () => router.push(`${base}/announcements`) });
   const canEdit = a.canEdit && !readOnly;
-  const est = a.estimate;
-  const estimateLine = a.audience === "staff" ? `${fmtNumber(est.staff)} nhân sự` : `${fmtNumber(est.students)} gia đình học sinh · ${fmtNumber(est.activeLinks)} link tra cứu đang hiệu lực${est.staff ? ` · ${fmtNumber(est.staff)} nhân sự` : ""}`;
+  const estimateLine = announcementEstimateLine(a.estimate, a.audience);
   const files = a.attachments.filter(Boolean) as NonNullable<AnnouncementDetail["attachments"][number]>[];
   const audience = a.scope.type === "class" ? `Lớp ${a.className}` : `Riêng ${a.scopeLabel.replace(/^Riêng: /, "")}`;
   return (
@@ -171,12 +168,12 @@ function DetailBody({ a }: { a: AnnouncementDetail }) {
       <div className="flex flex-wrap gap-2">
         <Button icon={<Eye className="size-4" />} onClick={() => setPreview(true)}>Xem như phụ huynh</Button>
         {canEdit && (a.status === "draft" || a.status === "scheduled") && <ButtonLink href={`${base}/announcements/${a.id}/edit`} icon={<PenLine className="size-4" />}>Sửa</ButtonLink>}
-        {canEdit && a.status === "draft" && <Button variant="danger-soft" icon={<Trash2 className="size-4" />} onClick={() => setDlg("delete")}>Xóa nháp</Button>}
-        {canEdit && (a.status === "published" || a.status === "scheduled") && <Button variant="danger-soft" icon={<Ban className="size-4" />} onClick={() => setDlg("withdraw")}>Thu hồi</Button>}
-        {canEdit && (a.status === "draft" || a.status === "scheduled") && <Button variant="primary" icon={<Send className="size-4" />} onClick={() => setDlg("publish")}>Công bố ngay</Button>}
+        {a.canDelete && a.status === "draft" && <Button variant="danger-soft" icon={<Trash2 className="size-4" />} onClick={() => setDlg("delete")}>Xóa nháp</Button>}
+        {a.canWithdraw && !readOnly && (a.status === "published" || a.status === "scheduled") && <Button variant="danger-soft" icon={<Ban className="size-4" />} onClick={() => setDlg("withdraw")}>Thu hồi</Button>}
+        {a.canPublish && (a.status === "draft" || a.status === "scheduled") && <Button variant="primary" icon={<Send className="size-4" />} onClick={() => setDlg("publish")}>Công bố ngay</Button>}
       </div>
       {a.status === "withdrawn" && <Callout tone="danger" icon={<Ban />} title={`Đã thu hồi lúc ${fmtDateTime(a.withdrawnAt)}`}>Lý do: {a.withdrawReason}. Gia đình không còn thấy thông báo ở lần mở trang tiếp theo.</Callout>}
-      {a.status === "scheduled" && <Callout tone="info" icon={<CalendarClock />} title={`Đã đặt lịch công bố lúc ${fmtDateTime(a.scheduledAt)} (mô phỏng)`}>Lịch hẹn chỉ mô phỏng theo đồng hồ demo; không có máy chủ tự gửi.</Callout>}
+      {a.status === "scheduled" && <Callout tone="info" icon={<CalendarClock />} title={`Đã đặt lịch công bố lúc ${fmtDateTime(a.scheduledAt)}`}>Máy chủ sẽ kiểm tra lại quyền và người nhận khi đến lịch công bố.</Callout>}
       {a.status === "draft" && <Callout tone="neutral" icon={<Info />} title="Bản nháp — gia đình chưa thấy">Công bố để gia đình trong phạm vi thấy ở lần mở link tra cứu tiếp theo.</Callout>}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-5">
@@ -191,15 +188,15 @@ function DetailBody({ a }: { a: AnnouncementDetail }) {
               {files.length ? <ul className="space-y-2">{files.map((f) => (
                 <li key={f.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line px-3 py-2">
                   <Paperclip className="size-4 text-primary" aria-hidden /><span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{f.name}</span>
-                  <Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={() => downloadFileAsset(f)}>Tải xuống</Button>
+                  <Button size="sm" variant="ghost" icon={<Download className="size-4" />} disabled={!f.canDownload} onClick={() => downloadFileAsset(f)}>Tải xuống</Button>
                 </li>
               ))}</ul> : <p className="text-sm text-muted">Không có tệp đính kèm.</p>}
             </div>
           </Card>
-          <Card>
+          {a.historyView !== null && <Card>
             <CardHeader title="Lịch sử" icon={<History className="size-5" />} subtitle="Chỉ đọc." />
-            <div className="px-6 pb-5"><Timeline items={[...a.historyView].reverse().map((h, i) => ({ id: `${i}`, at: h.at, title: h.action, actor: h.byName, tone: h.action.startsWith("Thu hồi") ? "red" : h.action.startsWith("Công bố") ? "green" : "blue" }))} /></div>
-          </Card>
+            <div className="px-6 pb-5"><Timeline items={[...a.historyView].reverse().map((h) => ({ id: h.id, at: h.at, title: h.action, actor: h.byName, tone: h.action.startsWith("Thu hồi") ? "red" : h.action.startsWith("Công bố") ? "green" : "blue" }))} /></div>
+          </Card>}
         </div>
         <div className="min-w-0 space-y-5">
           <Card>
@@ -214,12 +211,12 @@ function DetailBody({ a }: { a: AnnouncementDetail }) {
               {a.publishedAt && <InfoRow label="Công bố lúc">{fmtDateTime(a.publishedAt)}</InfoRow>}
               <InfoRow label="Phiên bản">{a.version}</InfoRow>
             </dl>
-            <p className="border-t border-line px-5 py-3 text-[12.5px] text-muted">Ước tính từ dữ liệu demo. Không gửi email/Zalo thật; gia đình xem qua link tra cứu.</p>
+            <p className="border-t border-line px-5 py-3 text-[12.5px] text-muted">Ước tính từ học sinh đang học và link hiện có. Không gửi email/Zalo thật; gia đình xem qua link tra cứu.</p>
           </Card>
-          <Card className="border-dashed">
+          {a.canViewInternal && <Card className="border-dashed">
             <CardHeader title="Ghi chú nội bộ" icon={<Lock className="size-5" />} action={<Badge tone="neutral">Nội bộ — phụ huynh không thấy</Badge>} />
             <p className="px-5 pb-5 text-sm text-body">{a.internalNote || "Không có ghi chú."}</p>
-          </Card>
+          </Card>}
         </div>
       </div>
       <Modal open={preview} onOpenChange={setPreview} title="Xem trước như phụ huynh" size="md" footer={<Button onClick={() => setPreview(false)}>Đóng</Button>}

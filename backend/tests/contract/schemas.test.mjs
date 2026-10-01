@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('native announcement acknowledgements have an actual HTTP200 response schema and independent manage/publication permissions',()=>{
+ for(const id of ['estimateAnnouncementAudience','saveAnnouncementWorkspace','publishAnnouncementWorkspace','withdrawAnnouncementWorkspace','discardAnnouncementWorkspace']){const op=operations.find(o=>o.id===id);assert.equal(op.auth,'staff');assert.equal(op.method,'POST');assert.equal(op.scope,'school');assert.equal(op.responses['200'].content['application/json'].schema.$ref,`#/components/schemas/${op.response}Response`);assert.equal(op.responses['201'],undefined);assert.equal(op.permission,['publishAnnouncementWorkspace','withdrawAnnouncementWorkspace'].includes(id)?'announcement.publish':'announcement.manage');}
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={id,rootId:id,yearId:id,classId:null,version:1,dataVersion:1,publicationId:null},v={source};validateSchema('AnnouncementWorkspaceAction',v);for(const bad of [{...v,role:'SCHOOL_ADMIN'},{source:{...source,version:0}},{source:{...source,actorId:id}}])assert.throws(()=>validateSchema('AnnouncementWorkspaceAction',bad));
+});
 test('native attendance commands require displayed null or existing source versions and exclude private or subject rights overrides',()=>{
  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={classVersion:1,rosterHash:'a'.repeat(64),sessionId:null,version:null,dataVersion:null,publicationId:null},value={date:'2026-10-02',slot:'morning',source,entries:[{studentId:id,recordVersion:null,status:'UNMARKED',note:''}],linkConduct:false};validateSchema('ClassAttendanceSave',value);
  for(const bad of [{...value,role:'HOMEROOM'},{...value,schoolId:id},{...value,entries:[{...value.entries[0],internalNote:'PRIVATE'}]},{...value,source:{...source,version:0}},{...value,source:{classVersion:1}},{...value,reason:'x'}])assert.throws(()=>validateSchema('ClassAttendanceSave',bad));
@@ -50,7 +54,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,358);assert.equal(new Set(operations.map(op=>op.id )).size,358);
+  assert.equal(operations.length,367);assert.equal(new Set(operations.map(op=>op.id )).size,367);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

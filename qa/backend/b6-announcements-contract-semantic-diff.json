@@ -1,0 +1,35 @@
+{
+  "baselineCommit": "04a7d4e2732e7093e0716e2f8ff17e7af5d07221",
+  "changedExistingSchemas": [],
+  "newSchemas": [
+    "AnnouncementWorkspaceSource",
+    "AnnouncementWorkspaceItem",
+    "AnnouncementDirectory",
+    "AnnouncementDirectoryResponse",
+    "AnnouncementComposeWorkspace",
+    "AnnouncementAudienceInput",
+    "AnnouncementAudienceEstimate",
+    "AnnouncementWorkspaceSave",
+    "AnnouncementWorkspaceAction",
+    "AnnouncementWorkspaceWithdraw",
+    "AnnouncementWorkspaceReceipt",
+    "AnnouncementWorkspaceItemResponse",
+    "AnnouncementComposeWorkspaceResponse",
+    "AnnouncementAudienceEstimateResponse",
+    "AnnouncementWorkspaceReceiptResponse"
+  ],
+  "changedExistingOperations": [],
+  "newOperations": [
+    "getAnnouncementDirectory",
+    "getClassAnnouncementDirectory",
+    "getAnnouncementWorkspaceDetail",
+    "getAnnouncementComposeWorkspace",
+    "estimateAnnouncementAudience",
+    "saveAnnouncementWorkspace",
+    "publishAnnouncementWorkspace",
+    "withdrawAnnouncementWorkspace",
+    "discardAnnouncementWorkspace"
+  ],
+  "rolesUnchanged": true,
+  "permissionsUnchanged": true
+}

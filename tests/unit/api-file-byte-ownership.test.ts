@@ -1,0 +1,13 @@
+import {it,expect,vi,beforeEach,afterEach} from 'vitest';
+import {downloadFileAsset,type StaffFileSource} from '@/components/ui/file';
+import {authenticationChanged,authorizationChanged,captureStaffAccess} from '@/lib/api/client';
+import {downloadBlob} from '@/lib/export';
+vi.mock('@/lib/export',()=>({downloadBlob:vi.fn()}));
+const schoolId='6c000000-0000-4000-8000-000000000001',fileId='6c000000-0000-4000-8000-000000000002';
+const file=()=>({name:'Thông báo.pdf',mime:'application/pdf',size:3,source:{kind:'staff_api',schoolId,fileId,owner:captureStaffAccess()} as StaffFileSource});
+const response=()=>new Response('PDF',{headers:{'Content-Type':'application/pdf','Content-Disposition':"attachment; filename*=UTF-8''Thong-bao.pdf"}});
+beforeEach(()=>{authenticationChanged();vi.mocked(downloadBlob).mockClear();});afterEach(()=>vi.unstubAllGlobals());
+it('fetches real bytes only for the selected attachment and verifies MIME size before download',async()=>{const fetch=vi.fn<typeof globalThis.fetch>(async()=>response());vi.stubGlobal('fetch',fetch);expect(await downloadFileAsset(file())).toBe(true);expect(fetch.mock.calls).toHaveLength(1);expect(String(fetch.mock.calls[0][0])).toContain(`/schools/${schoolId}/files/${fileId}/download`);expect(downloadBlob).toHaveBeenCalledTimes(1);});
+it('rejects a stale file owner before requesting bytes under another authority',async()=>{const selected=file(),fetch=vi.fn<typeof globalThis.fetch>(async()=>response());vi.stubGlobal('fetch',fetch);authorizationChanged();await expect(downloadFileAsset(selected)).rejects.toThrow();expect(fetch).not.toHaveBeenCalled();expect(downloadBlob).not.toHaveBeenCalled();});
+it('discards delayed attachment bytes when the staff scope changes before the response arrives',async()=>{let done!:(r:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(r=>{done=r;})));const pending=downloadFileAsset(file());await vi.waitFor(()=>expect(done).toBeTypeOf('function'));authorizationChanged();done(response());await expect(pending).rejects.toThrow();expect(downloadBlob).not.toHaveBeenCalled();});
+it('propagates download failures and mismatched content without manufactured or cached bytes',async()=>{for(const value of [new Response(JSON.stringify({code:'RESOURCE_NOT_FOUND'}),{status:404}),new Response('wrong',{headers:{'Content-Type':'application/pdf'}})]){vi.stubGlobal('fetch',vi.fn(async()=>value));await expect(downloadFileAsset(file())).rejects.toThrow();}expect(downloadBlob).not.toHaveBeenCalled();});

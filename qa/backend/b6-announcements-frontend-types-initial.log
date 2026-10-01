@@ -1,0 +1,36 @@
+src/features/announcements/composer.tsx(165,10): error TS2322: Type '{ type: "school"; } | { type: "grade"; gradeIds: string[]; } | { type: "class"; classIds: string[]; } | { type: "student"; studentIds: string[]; } | { type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+  Type '{ type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+    Types of property 'type' are incompatible.
+      Type '"mixed"' is not assignable to type '"student" | "school" | "class" | "grade"'.
+src/features/announcements/composer.tsx(188,103): error TS2554: Expected 5 arguments, but got 4.
+src/features/announcements/composer.tsx(193,5): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type '{ source: { id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; } | null; yearId: string; yearVersion: number; ... 12 more ...; scheduledAt?: string | undefined; }'.
+src/features/announcements/composer.tsx(270,91): error TS2367: This comparison appears to be unintentional because the types '"school_parent" | "class_parent" | "student_parent"' and '"class_parents"' have no overlap.
+src/features/announcements/detail.tsx(25,137): error TS2322: Type '{ type: "school"; } | { type: "grade"; gradeIds: string[]; } | { type: "class"; classIds: string[]; } | { type: "student"; studentIds: string[]; } | { type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+  Type '{ type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+    Types of property 'type' are incompatible.
+      Type '"mixed"' is not assignable to type '"student" | "school" | "class" | "grade"'.
+src/features/announcements/detail.tsx(28,98): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; }'.
+src/features/announcements/detail.tsx(29,83): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; }'.
+src/features/announcements/detail.tsx(32,62): error TS18047: 'est' is possibly 'null'.
+src/features/announcements/detail.tsx(32,98): error TS18047: 'est' is possibly 'null'.
+src/features/announcements/detail.tsx(32,145): error TS18047: 'est' is possibly 'null'.
+src/features/announcements/detail.tsx(32,183): error TS18047: 'est' is possibly 'null'.
+src/features/announcements/detail.tsx(32,211): error TS18047: 'est' is possibly 'null'.
+src/features/announcements/school-list.tsx(26,95): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; }'.
+src/features/announcements/school-list.tsx(44,172): error TS18047: 'r.estimate' is possibly 'null'.
+src/features/announcements/school-list.tsx(44,215): error TS18047: 'r.estimate' is possibly 'null'.
+src/features/class-comms/announcements.tsx(38,82): error TS2554: Expected 4 arguments, but got 3.
+src/features/class-comms/announcements.tsx(159,137): error TS2322: Type '{ type: "school"; } | { type: "grade"; gradeIds: string[]; } | { type: "class"; classIds: string[]; } | { type: "student"; studentIds: string[]; } | { type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+  Type '{ type: "mixed"; targets: { kind: "SCHOOL" | "CLASS" | "PUBLIC" | "GRADE" | "STUDENT" | "STAFF"; id?: string | undefined; }[]; }' is not assignable to type 'AnnouncementScope'.
+    Types of property 'type' are incompatible.
+      Type '"mixed"' is not assignable to type '"student" | "school" | "class" | "grade"'.
+src/features/class-comms/announcements.tsx(162,98): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; }'.
+src/features/class-comms/announcements.tsx(163,83): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ id: string; rootId: string; yearId: string; classId: string | null; version: number; dataVersion: number; publicationId: string | null; }'.
+src/features/class-comms/announcements.tsx(166,62): error TS18047: 'est' is possibly 'null'.
+src/features/class-comms/announcements.tsx(166,98): error TS18047: 'est' is possibly 'null'.
+src/features/class-comms/announcements.tsx(166,145): error TS18047: 'est' is possibly 'null'.
+src/features/class-comms/announcements.tsx(166,191): error TS18047: 'est' is possibly 'null'.
+src/features/class-comms/announcements.tsx(166,219): error TS18047: 'est' is possibly 'null'.
+src/features/class-comms/announcements.tsx(201,61): error TS2488: Type '{ byName: string | undefined; reason: string | undefined; id: string; at: string; action: string; }[] | null' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/features/preview/components/ex-inputs.tsx(173,57): error TS2740: Type '{ grades: Grade[]; classes: ClassRoom[]; students: { id: string; fullName: string; code: string; }[]; files: { id: string; name: string; share: FileShare; }[]; }' is missing the following properties from type '{ schoolId: string; yearId: string; classId: string | null; today: string; serverNow: string; yearVersion: number; classVersion: number | null; readOnly: boolean; canPublish: boolean; canSelectStudents: boolean; grades: { ...; }[]; classes: { ...; }[]; students: { ...; }[]; files: { ...; }[]; }': "schoolId", "yearId", "classId", "today", and 6 more.
+EXIT_CODE=2

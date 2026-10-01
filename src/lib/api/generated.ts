@@ -496,6 +496,21 @@ export interface ApiSchemas {
   "ClassAttendanceWeekResponse": { "data": ApiSchemas["ClassAttendanceWeek"]; "requestId": string; };
   "ClassAttendanceHistoryResponse": { "data": ApiSchemas["ClassAttendanceHistory"]; "requestId": string; };
   "ClassAttendanceReceiptResponse": { "data": ApiSchemas["ClassAttendanceReceipt"]; "requestId": string; };
+  "AnnouncementWorkspaceSource": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; };
+  "AnnouncementWorkspaceItem": { "schoolId": string; "id": string; "rootId": string; "yearId": string; "yearVersion": number; "classVersion": (number) | null; "origin": "school" | "class"; "originClassId": (string) | null; "className": (string) | null; "title": string; "summary": string; "body": Array<{ "type": "p" | "h" | "li"; "text": string; }>; "audience": "all" | "staff" | "families"; "scope": ({ "type": "school"; } | { "type": "grade"; "gradeIds": Array<string>; } | { "type": "class"; "classIds": Array<string>; } | { "type": "student"; "studentIds": Array<string>; } | { "type": "mixed"; "targets": Array<{ "kind": "PUBLIC" | "SCHOOL" | "GRADE" | "CLASS" | "STUDENT" | "STAFF"; "id"?: string; }>; }); "scopeLabel": string; "audienceLabel": string; "isPublic": boolean; "status": "draft" | "scheduled" | "published" | "withdrawn"; "createdAt": string; "updatedAt": string; "createdByName": (string) | null; "scheduledAt": (string) | null; "publishedAt": (string) | null; "withdrawnAt": (string) | null; "withdrawReason": (string) | null; "internalNote": (string) | null; "version": number; "source": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; }; "canEdit": boolean; "canPublish": boolean; "canViewInternal": boolean; "canWithdraw": boolean; "canDelete": boolean; "readOnly": boolean; "scheduleState": (string) | null; "scheduleErrorCode": (string) | null; "estimate": ({ "students": number; "activeLinks": (number) | null; "staff": number; }) | null; "attachmentIds": Array<string>; "attachments": Array<{ "id": string; "name": string; "mime": string; "size": number; "version": number; "canDownload": boolean; }>; "historyView": (Array<{ "id": string; "at": string; "action": string; "byName": (string) | null; "reason": (string) | null; }>) | null; };
+  "AnnouncementDirectory": { "schoolId": string; "yearId": (string) | null; "classId": (string) | null; "today": string; "items": Array<ApiSchemas["AnnouncementWorkspaceItem"]>; "counts": { "draft": number; "scheduled": number; "published": number; "withdrawn": number; }; "canCompose": boolean; };
+  "AnnouncementDirectoryResponse": { "data": ApiSchemas["AnnouncementDirectory"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "AnnouncementComposeWorkspace": { "schoolId": string; "yearId": string; "classId": (string) | null; "timezone": string; "today": string; "serverNow": string; "yearVersion": number; "classVersion": (number) | null; "readOnly": boolean; "canPublish": boolean; "canSelectStudents": boolean; "grades": Array<{ "id": string; "name": string; }>; "classes": Array<{ "id": string; "name": string; "gradeId": string; }>; "students": Array<{ "id": string; "fullName": string; "code": string; }>; "files": Array<{ "id": string; "name": string; "mime": string; "size": number; "version": number; "share": "school_parent" | "class_parent" | "student_parent"; }>; };
+  "AnnouncementAudienceInput": { "yearId": string; "classId": (string) | null; "scope": ({ "type": "school"; } | { "type": "grade"; "gradeIds": Array<string>; } | { "type": "class"; "classIds": Array<string>; } | { "type": "student"; "studentIds": Array<string>; }); "audience": "all" | "staff" | "families"; "isPublic": boolean; };
+  "AnnouncementAudienceEstimate": { "schoolId": string; "yearId": string; "classId": (string) | null; "scope": ({ "type": "school"; } | { "type": "grade"; "gradeIds": Array<string>; } | { "type": "class"; "classIds": Array<string>; } | { "type": "student"; "studentIds": Array<string>; }); "audience": "all" | "staff" | "families"; "isPublic": boolean; "counts": { "students": number; "activeLinks": (number) | null; "staff": number; }; };
+  "AnnouncementWorkspaceSave": { "yearId": string; "classId": (string) | null; "scope": ({ "type": "school"; } | { "type": "grade"; "gradeIds": Array<string>; } | { "type": "class"; "classIds": Array<string>; } | { "type": "student"; "studentIds": Array<string>; }); "audience": "all" | "staff" | "families"; "isPublic": boolean; "source": ({ "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; }) | null; "expectedYearVersion": number; "expectedClassVersion": (number) | null; "title": string; "summary": string; "body": Array<{ "type": "p" | "h" | "li"; "text": string; }>; "attachmentIds": Array<string>; "internalNote"?: string; "action": "draft" | "publish" | "schedule"; "scheduledAt"?: string; };
+  "AnnouncementWorkspaceAction": { "source": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; }; "reason"?: string; };
+  "AnnouncementWorkspaceWithdraw": { "source": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; }; "reason": string; };
+  "AnnouncementWorkspaceReceipt": { "id": string; "rootId": string; "status": "draft" | "scheduled" | "published" | "withdrawn" | "discarded"; "source": ({ "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": (string) | null; }) | null; };
+  "AnnouncementWorkspaceItemResponse": { "data": ApiSchemas["AnnouncementWorkspaceItem"]; "requestId": string; };
+  "AnnouncementComposeWorkspaceResponse": { "data": ApiSchemas["AnnouncementComposeWorkspace"]; "requestId": string; };
+  "AnnouncementAudienceEstimateResponse": { "data": ApiSchemas["AnnouncementAudienceEstimate"]; "requestId": string; };
+  "AnnouncementWorkspaceReceiptResponse": { "data": ApiSchemas["AnnouncementWorkspaceReceipt"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4077,6 +4092,96 @@ export const apiOperations = {
     "response": "ClassAttendanceReceipt",
     "list": false,
     "permission": "attendance.publish",
+    "readOnly": false
+  },
+  "getAnnouncementDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/announcement-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "AnnouncementDirectory",
+    "list": false,
+    "permission": "announcement.read",
+    "readOnly": true
+  },
+  "getClassAnnouncementDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/announcement-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "AnnouncementDirectory",
+    "list": false,
+    "permission": "announcement.read",
+    "readOnly": true
+  },
+  "getAnnouncementWorkspaceDetail": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/announcement-workspace/{announcementId}",
+    "auth": "staff",
+    "request": null,
+    "response": "AnnouncementWorkspaceItem",
+    "list": false,
+    "permission": "announcement.read",
+    "readOnly": true
+  },
+  "getAnnouncementComposeWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/announcement-compose",
+    "auth": "staff",
+    "request": null,
+    "response": "AnnouncementComposeWorkspace",
+    "list": false,
+    "permission": "announcement.manage",
+    "readOnly": true
+  },
+  "estimateAnnouncementAudience": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcement-estimate",
+    "auth": "staff",
+    "request": "AnnouncementAudienceInput",
+    "response": "AnnouncementAudienceEstimate",
+    "list": false,
+    "permission": "announcement.manage",
+    "readOnly": true
+  },
+  "saveAnnouncementWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcement-save",
+    "auth": "staff",
+    "request": "AnnouncementWorkspaceSave",
+    "response": "AnnouncementWorkspaceReceipt",
+    "list": false,
+    "permission": "announcement.manage",
+    "readOnly": false
+  },
+  "publishAnnouncementWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcement-publish",
+    "auth": "staff",
+    "request": "AnnouncementWorkspaceAction",
+    "response": "AnnouncementWorkspaceReceipt",
+    "list": false,
+    "permission": "announcement.publish",
+    "readOnly": false
+  },
+  "withdrawAnnouncementWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcement-withdraw",
+    "auth": "staff",
+    "request": "AnnouncementWorkspaceWithdraw",
+    "response": "AnnouncementWorkspaceReceipt",
+    "list": false,
+    "permission": "announcement.publish",
+    "readOnly": false
+  },
+  "discardAnnouncementWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/announcement-discard",
+    "auth": "staff",
+    "request": "AnnouncementWorkspaceAction",
+    "response": "AnnouncementWorkspaceReceipt",
+    "list": false,
+    "permission": "announcement.manage",
     "readOnly": false
   }
 } as const;

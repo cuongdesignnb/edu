@@ -1,0 +1,88 @@
+✔ native attendance commands require displayed null or existing source versions and exclude private or subject rights overrides (8.014ms)
+✔ staff preview context has a minimal context schema and independent school authority (6.089ms)
+✔ class workspace header has exact year routing and explicitly permits absent independent period metadata (11.8153ms)
+✔ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (14.5698ms)
+✔ native organization seating save requires the displayed revision and rejects actor or scope authority in its body (3.0992ms)
+✔ one-pupil class attendance accepts valid empty public notes and excludes private source fields (4.4446ms)
+✔ class roster purposes retain exact year scope and transfer requests accept only an optional displayed enrollment version (1.661ms)
+✔ native duty commands retain exact displayed source and publication versions without actor authority or silent group expansion (4.9844ms)
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.7804ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (5.2062ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (5.5695ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (8.2645ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (3.7462ms)
+✔ login rejects spoofed role, school and unknown fields (1.0088ms)
+✔ private user DTO rejects secrets and unknown properties (2.7688ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.1718ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (15.618ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (5.4047ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (14.9048ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (1.8906ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (8.5799ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.6568ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (12.4172ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (13.0498ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (7.8396ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (21.3065ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (26.5238ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (17.0316ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (3.3806ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (0.3524ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (6.0386ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (2.5095ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (6.0574ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (5.8151ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (4.9031ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (19.02ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (6.0086ms)
+✔ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (17.9411ms)
+✔ native announcement semantic blocks round trip Vietnamese plaintext and line breaks without HTML execution (7.9481ms)
+✔ native legacy HTML projection sanitizes executable tags and preserves real headings and list text only (1.5939ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.706ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.3232ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (17.715ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.6636ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.6725ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.7723ms)
+✔ grant action and class scope stay together (0.8277ms)
+✔ subject grants never authorize management without explicit subject policy (0.1351ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1366ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1326ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.1618ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (3.8351ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.4148ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (3.8333ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (1.5539ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (85.7505ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 55
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 512.0217
+
+✖ failing tests:
+
+test at tests\contract\schemas.test.mjs:52:1
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.7804ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  367 !== 358
+  
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:53:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 367,
+    expected: 358,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+EXIT_CODE=1

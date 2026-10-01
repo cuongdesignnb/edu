@@ -1,0 +1,47 @@
+
+Running 4 tests using 1 worker
+
+(node:29528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\announcement-contract.spec.ts:21:5 › class list and detail use exact source and publication POST while history retains real identifiers (1.5s)
+  ok 2 tests\native-ui-contract\announcement-contract.spec.ts:22:5 › read-only class announcement access hides edit publish compose private history and estimate on mobile (726ms)
+  x  3 tests\native-ui-contract\announcement-contract.spec.ts:23:5 › composer retains plaintext and displayed year/class versions through conflict without a blind retry (45.2s)
+(node:24404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 tests\native-ui-contract\announcement-contract.spec.ts:24:5 › class list outage shows retry and hides compose instead of returning an empty announcement list (890ms)
+
+
+  1) tests\native-ui-contract\announcement-contract.spec.ts:23:5 › composer retains plaintext and displayed year/class versions through conflict without a blind retry 
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.fill: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByRole('textbox', { name: 'Tiêu đề', exact: true })
+
+
+      21 | test('class list and detail use exact source and publication POST while history retains real identifiers',async({page})=>{const s=state();await routes(page,s);await page.goto(base+'/announcements');await expect(page.getByText('Thông báo theo nguồn API',{exact:true})).toBeVisible();await page.goto(base+'/announcements/'+id(4));await expect(page.getByText('Nội dung tiếng Việt từ API')).toBeVisible();await page.getByRole('button',{name:'Công bố ngay',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Công bố',exact:true}).click();await expect(page.getByRole('button',{name:'Thu hồi',exact:true})).toBeVisible();expect(s.requests.filter(r=>r.path===root+'/announcement-publish')).toEqual([{path:root+'/announcement-publish',method:'POST',body:{source:{...source(s),version:1,publicationId:null}}}]);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+      22 | test('read-only class announcement access hides edit publish compose private history and estimate on mobile',async({page})=>{const s=state();s.mode='read';await page.setViewportSize({width:390,height:844});await routes(page,s);await page.goto(base+'/announcements');await expect(page.getByText('Thông báo theo nguồn API',{exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Soạn thông báo',exact:true})).toHaveCount(0);await page.goto(base+'/announcements/'+id(4));await expect(page.getByText('Nội dung tiếng Việt từ API')).toBeVisible();await expect(page.getByRole('button',{name:'Công bố ngay',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Lịch sử',exact:true})).toHaveCount(0);await expect(page.getByText('Không có quyền xem ước tính người nhận')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+    > 23 | test('composer retains plaintext and displayed year/class versions through conflict without a blind retry',async({page})=>{const s=state();s.mode='conflict';await routes(page,s);await page.goto(base+'/announcements/new');await page.getByRole('textbox',{name:'Tiêu đề',exact:true}).fill('Thông báo giữ nguồn trước lỗi');await page.getByRole('textbox',{name:'Tóm tắt ngắn',exact:true}).fill('Tóm tắt đủ thông tin giữ nguyên');await page.getByRole('textbox',{name:'Đoạn văn 1',exact:true}).fill('Nội dung <script> là văn bản');await page.getByRole('button',{name:'Lưu nháp',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();const calls=s.requests.filter(r=>r.path===root+'/announcement-save');expect(calls).toHaveLength(1);expect(calls[0].body).toMatchObject({source:null,yearId,classId,expectedYearVersion:1,expectedClassVersion:3,body:[{type:'p',text:'Nội dung <script> là văn bản'}]});expect(s.saved).toBe(false);expect(s.unexpected).toEqual([]);});
+         |                                                                                                                                                                                                                                                                                          ^
+      24 | test('class list outage shows retry and hides compose instead of returning an empty announcement list',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(base+'/announcements');await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByRole('link',{name:'Soạn thông báo',exact:true})).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('Thông báo theo nguồn API',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});
+      25 |
+        at D:\Edu\tests\native-ui-contract\announcement-contract.spec.ts:23:282
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-announcements-browser-artifacts-final\announcement-contract-comp-2a1d7-flict-without-a-blind-retry\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-announcements-browser-artifacts-final\announcement-contract-comp-2a1d7-flict-without-a-blind-retry\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-announcements-browser-artifacts-final\announcement-contract-comp-2a1d7-flict-without-a-blind-retry\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-announcements-browser-artifacts-final\announcement-contract-comp-2a1d7-flict-without-a-blind-retry\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\announcement-contract.spec.ts:23:5 › composer retains plaintext and displayed year/class versions through conflict without a blind retry 
+  3 passed (50.6s)

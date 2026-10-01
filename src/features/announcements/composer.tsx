@@ -6,13 +6,17 @@ import {
 } from "lucide-react";
 import type { Announcement, AnnouncementScope } from "@/lib/model/types";
 import { announcementsRepo, type RepoError } from "@/lib/repositories";
+import { RepoError as NativeRepoError } from '@/lib/repositories/errors';
+import { announcementEstimateLine } from '@/lib/repositories/connected/announcements';
+import { announcementClock, announcementScheduledAt } from '@/lib/repositories/connected/announcement-clock';
+import { readStaffContext } from '@/lib/api/session';
 import { schoolOpsRepo } from "@/lib/repositories";
-import { useCommand, useRepo } from "@/lib/query/hooks";
-import { addDays, demoNowISO, demoToday, localDateTime } from "@/lib/calendar";
-import { fmtDateTime, fmtNumber } from "@/lib/formatters";
+import { useCommand, useRepo, useCtx } from "@/lib/query/hooks";
+import { addDays } from "@/lib/calendar";
+import { fmtDateTime } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
-import { Badge, DemoTag } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox, DateField, ErrorSummary, Field, RadioGroup, SelectField, TextArea, TextField } from "@/components/ui/form";
 import { ConfirmDialog, Modal } from "@/components/ui/dialog";
 import { ConflictDialog, useLeaveGuard, useUnsavedChanges } from "@/components/ui/guards";
@@ -75,13 +79,13 @@ export function RichTextEditor({ value, onChange, error, readOnly }: { value: Bo
 }
 
 /* ------------------------------ C022 AudienceSelector ------------------------------ */
-type ComposeOptions = Awaited<ReturnType<typeof announcementsRepo.composeOptions>>;
+type ComposeOptions = Pick<Awaited<ReturnType<typeof announcementsRepo.composeOptions>>, 'grades'|'classes'|'students'> & {yearId?:string;canSelectStudents?:boolean;files:{id:string;name:string;share:string}[]};
 
 export function AudienceSelector({ schoolId, origin, classId, options, scope, onScope, error }: {
   schoolId: string; origin: "school" | "class"; classId?: string; options: ComposeOptions; scope: AnnouncementScope; onScope: (s: AnnouncementScope) => void; error?: string;
 }) {
   const [pickClass, setPickClass] = useState<string>(scope.type === "student" ? scope.classIds?.[0] ?? "" : "");
-  const studentsQ = useRepo(["ann-class-students", schoolId, pickClass], (c) => schoolOpsRepo.announcementClassStudents(c, schoolId, pickClass), { enabled: origin === "school" && scope.type === "student" && !!pickClass });
+  const studentsQ = useRepo(["ann-class-students", schoolId, options.yearId, pickClass], (c) => schoolOpsRepo.announcementClassStudents(c, schoolId, pickClass, options.yearId!), { enabled: origin === "school" && scope.type === "student" && !!pickClass && !!options.yearId && options.canSelectStudents === true });
   const students = origin === "class" ? options.students : studentsQ.data ?? [];
   const selected = new Set(scope.studentIds ?? []);
   const toggleStudent = (id: string) => {
@@ -109,7 +113,7 @@ export function AudienceSelector({ schoolId, origin, classId, options, scope, on
   };
   return (
     <div className="space-y-3" data-field="scope">
-      <RadioGroup label="Phạm vi người nhận" value={scope.type} onChange={setType} options={typeOptions} direction={origin === "class" ? "col" : "row"} />
+      <RadioGroup label="Phạm vi người nhận" value={scope.type} onChange={setType} options={typeOptions.filter(o=>o.value!=="student" || options.canSelectStudents!==false)} direction={origin === "class" ? "col" : "row"} />
       {scope.type === "grade" && (
         <fieldset className="field"><legend className="label mb-1.5">Chọn khối</legend>
           <div className="flex flex-wrap gap-2">{options.grades.map((g) => <button key={g.id} type="button" className={clsx("chip", scope.gradeIds?.includes(g.id) && "chip-active")} aria-pressed={!!scope.gradeIds?.includes(g.id)} onClick={() => toggleIn("gradeIds", g.id)}>{g.name}</button>)}</div>
@@ -126,7 +130,7 @@ export function AudienceSelector({ schoolId, origin, classId, options, scope, on
             <SelectField label="Lớp của học sinh" value={pickClass} placeholder="Chọn lớp" options={options.classes.map((c) => ({ value: c.id, label: c.name }))}
               onChange={(e) => { setPickClass(e.target.value); onScope({ type: "student", studentIds: [], classIds: e.target.value ? [e.target.value] : [] }); }} />
           )}
-          {origin === "school" && pickClass && studentsQ.isLoading ? <Skeleton className="h-28" /> : (origin === "class" || pickClass) && (
+          {origin === "school" && studentsQ.error ? <Callout tone="danger" title="Không tải được học sinh">{studentsQ.error.message}<Button size="sm" onClick={() => studentsQ.refetch()}>Thử lại</Button></Callout> : origin === "school" && pickClass && studentsQ.isLoading ? <Skeleton className="h-28" /> : (origin === "class" || pickClass) && (
             <fieldset className="field">
               <legend className="label mb-1.5">Học sinh nhận ({selected.size} đã chọn)</legend>
               <div className="grid max-h-56 grid-cols-1 gap-1 overflow-y-auto rounded-xl border border-line p-2 sm:grid-cols-2">
@@ -162,20 +166,22 @@ export function ParentPreview({ title, summary, body, audience, files, isPublic 
 
 /* ------------------------------ C071 / O29 composer ------------------------------ */
 function initialScope(origin: "school" | "class", classId?: string, a?: AnnouncementDetail): AnnouncementScope {
-  if (a) return a.scope;
+  if (a) { if(a.scope.type === "mixed") throw new NativeRepoError("FORBIDDEN", "Thông báo có nhiều loại đối tượng chỉ được xem tại đây."); return a.scope; }
   return origin === "class" ? { type: "class", classIds: [classId!] } : { type: "school" };
 }
 
-export function AnnouncementComposer({ schoolId, origin, classId, announcement, onDone, onCancel }: { schoolId: string; origin: "school" | "class"; classId?: string; announcement?: AnnouncementDetail; onDone: (id: string) => void; /** optional: renders "Hủy" (asks before discarding unsaved changes) */ onCancel?: () => void }) {
+export function AnnouncementComposer({ schoolId, yearId, origin, classId, announcement, onDone, onCancel }: { schoolId: string; yearId?:string; origin: "school" | "class"; classId?: string; announcement?: AnnouncementDetail; onDone: (id: string) => void; /** optional: renders "Hủy" (asks before discarding unsaved changes) */ onCancel?: () => void }) {
   const leaveGuard = useLeaveGuard();
   const a = announcement;
-  const optionsQ = useRepo(["ann-compose", schoolId, classId ?? ""], (c) => announcementsRepo.composeOptions(c, schoolId, origin === "class" ? classId : undefined));
+  const ctx=useCtx(schoolId);
+  const timezone=readStaffContext()?.memberships.find(m=>m.schoolId===schoolId)?.timezone;
+  const optionsQ = useRepo(["ann-compose", schoolId, yearId ?? a?.yearId, classId ?? ""], (c) => announcementsRepo.composeOptions(c, schoolId, origin === "class" ? classId : undefined, yearId ?? a?.yearId));
   const init = useMemo(() => ({
     title: a?.title ?? "", summary: a?.summary ?? "", body: a?.body?.length ? a.body : [{ type: "p", text: "" }] as BodyBlock[],
     audience: (a?.audience ?? (origin === "class" ? "families" : "all")) as Announcement["audience"], scope: initialScope(origin, classId, a), isPublic: a?.isPublic ?? false,
     attachmentIds: a?.attachmentIds ?? [], internalNote: a?.internalNote ?? "",
-    date: a?.scheduledAt?.slice(0, 10) ?? addDays(demoToday(), 1), time: a?.scheduledAt?.slice(11, 16) ?? "07:00",
-  }), [a, origin, classId]);
+    date: a?.scheduledAt && timezone ? announcementClock(timezone,a.scheduledAt).date : addDays(ctx.today, 1), time: a?.scheduledAt && timezone ? announcementClock(timezone,a.scheduledAt).time : "07:00",
+  }), [a, origin, classId, timezone, ctx.today]);
   const [f, setF] = useState(init);
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -185,16 +191,18 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
   const dirty = !saved && JSON.stringify(f) !== JSON.stringify(init);
 
   const effectivePublic = origin === "school" && f.isPublic && f.scope.type === "school" && f.audience !== "staff";
-  const estimateQ = useRepo(["ann-estimate", schoolId, f.scope, f.audience], (c) => announcementsRepo.estimate(c, schoolId, f.scope, f.audience));
-  const scheduledAt = localDateTime(f.date, f.time || "07:00");
+  const scopeReady = f.scope.type === "school" || (f.scope.type === "grade" ? f.scope.gradeIds : f.scope.type === "class" ? f.scope.classIds : f.scope.studentIds)?.length;
+  const estimateQ = useRepo(["ann-estimate", schoolId, optionsQ.data?.yearId, classId, f.scope, f.audience, effectivePublic], (c) => announcementsRepo.estimate(c, schoolId, f.scope, f.audience, {yearId:optionsQ.data!.yearId,classId:origin === "class" ? classId : undefined,isPublic:effectivePublic}), {enabled:!!optionsQ.data && !!scopeReady});
+  let scheduledAt="";
+  try { if(timezone) scheduledAt=announcementScheduledAt(timezone,f.date,f.time || "07:00"); } catch { /* Validation is presented on submit; preserve the entered wall clock. */ }
   const isPublished = a?.status === "published";
 
-  const cmd = useCommand((ctx, action: Action) => announcementsRepo.save(ctx, schoolId, {
-    id: a?.id, origin, originClassId: origin === "class" ? classId : undefined, title: f.title, summary: f.summary, body: f.body.filter((b) => b.text.trim()),
-    audience: origin === "class" ? "families" : f.audience, scope: f.scope, isPublic: effectivePublic, attachmentIds: f.attachmentIds.filter((id) => (optionsQ.data?.files ?? []).some((x) => x.id === id && (x.share !== "student_parent" || f.scope.type === "student"))), internalNote: f.internalNote.trim() || undefined,
-    action, scheduledAt: action === "schedule" ? scheduledAt : undefined, version: a?.version,
-  }), {
-    success: (r) => r.status === "published" ? (isPublished ? "Đã cập nhật thông báo đã công bố" : "Đã công bố thông báo") : r.status === "scheduled" ? "Đã đặt lịch công bố (mô phỏng)" : "Đã lưu bản nháp",
+  const cmd = useCommand((ctx, action: Action) => { if(!optionsQ.data || optionsQ.data.readOnly || !scopeReady || action !== "draft" && (!optionsQ.data.canPublish || !estimateQ.data || estimateQ.error)) throw new NativeRepoError("VALIDATION", "Tải đầy đủ nguồn biểu mẫu và người nhận trước khi lưu."); return announcementsRepo.save(ctx, schoolId, {
+    source:a?.source ?? null,yearId:optionsQ.data.yearId,yearVersion:optionsQ.data.yearVersion,classVersion:optionsQ.data.classVersion, origin, originClassId: origin === "class" ? classId : undefined, title: f.title, summary: f.summary, body: f.body.filter((b) => b.text.trim()),
+    audience: origin === "class" ? "families" : f.audience, scope: f.scope, isPublic: effectivePublic, attachmentIds: f.attachmentIds, internalNote: f.internalNote.trim() || undefined,
+    action, scheduledAt: action === "schedule" ? scheduledAt : undefined,
+  }); }, {
+    success: (r) => r.status === "published" ? (isPublished ? "Đã cập nhật thông báo đã công bố" : "Đã công bố thông báo") : r.status === "scheduled" ? "Đã đặt lịch công bố" : "Đã lưu bản nháp",
     onError: (e: RepoError) => { if (e.code === "VALIDATION") setErrors(e.fieldErrors ?? { form: e.message }); },
   });
 
@@ -211,7 +219,8 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
     if (f.title.trim().length < 5) e.title = "Tiêu đề tối thiểu 5 ký tự";
     if (f.summary.trim().length < 10) e.summary = "Tóm tắt tối thiểu 10 ký tự";
     if (!f.body.some((b) => b.text.trim())) e.body = "Nhập nội dung";
-    if (action === "schedule" && scheduledAt <= demoNowISO()) e.scheduledAt = "Chọn thời điểm công bố sau hiện tại (theo đồng hồ demo)";
+    if (action === "schedule" && (!scheduledAt || Date.parse(scheduledAt) <= Date.parse(ctx.now))) e.scheduledAt = "Chọn thời điểm công bố sau hiện tại";
+    if(!scopeReady) e.scope="Chọn người nhận thông báo";
     setErrors(e);
     return !Object.keys(e).length;
   };
@@ -223,7 +232,7 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
   const files = opts.files.filter((x) => f.attachmentIds.includes(x.id));
   const est = estimateQ.data;
   const scopeText = f.scope.type === "school" ? "Toàn trường" : f.scope.type === "grade" ? `Khối: ${opts.grades.filter((g) => f.scope.gradeIds?.includes(g.id)).map((g) => g.name).join(", ") || "chưa chọn"}` : f.scope.type === "class" ? `Lớp: ${opts.classes.filter((c) => f.scope.classIds?.includes(c.id)).map((c) => c.name).join(", ") || "chưa chọn"}` : `${f.scope.studentIds?.length ?? 0} học sinh cụ thể`;
-  const estimateLine = est ? `${fmtNumber(est.students)} gia đình học sinh · ${fmtNumber(est.activeLinks)} link tra cứu đang hiệu lực${est.staff ? ` · ${fmtNumber(est.staff)} nhân sự` : ""}` : "Đang ước tính…";
+  const estimateLine = estimateQ.error ? "Không tải được ước tính người nhận" : !scopeReady ? "Chọn người nhận để xem ước tính" : est ? announcementEstimateLine(est,f.audience) : "Đang ước tính…";
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -248,7 +257,7 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
             <AudienceSelector schoolId={schoolId} origin={origin} classId={classId} options={opts} scope={f.scope} onScope={(s) => up("scope", s)} error={errors.scope} />
             <div className="flex items-start gap-3 rounded-xl bg-primary-light px-4 py-3 text-[13.5px] text-[#0b4c99]" aria-live="polite">
               <Users className="mt-0.5 size-4 flex-none" aria-hidden />
-              <div><p className="font-semibold">Ước tính người nhận: {estimateLine}</p><p className="text-[12.5px]">Tính từ dữ liệu demo tại thời điểm soạn. Không gửi email/Zalo thật — phụ huynh đọc trong trang tra cứu.</p></div>
+              <div><p className="font-semibold">Ước tính người nhận: {estimateLine}</p>{estimateQ.error && <Button size="sm" onClick={() => estimateQ.refetch()}>Thử lại</Button>}<p className="text-[12.5px]">Tính từ học sinh đang học và link hiện có. Không gửi email/Zalo thật — phụ huynh đọc trong trang tra cứu.</p></div>
             </div>
             {origin === "school" && (
               <div data-field="isPublic">
@@ -267,7 +276,7 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
               <legend className="label mb-1.5">Tệp đã chia sẻ được đính kèm</legend>
               {opts.files.length ? (
                 <div className="grid gap-1 sm:grid-cols-2">
-                  {opts.files.map((x) => <Checkbox key={x.id} label={x.name} description={x.share === "class_parents" ? "Chia sẻ phụ huynh cả lớp" : "Chia sẻ riêng phụ huynh một học sinh"} checked={f.attachmentIds.includes(x.id)} className="rounded-lg px-2 py-1.5 hover:bg-[#f7fbff]"
+                  {opts.files.map((x) => <Checkbox key={x.id} label={x.name} description={x.share === "class_parent" ? "Chia sẻ phụ huynh cả lớp" : "Chia sẻ riêng phụ huynh một học sinh"} checked={f.attachmentIds.includes(x.id)} className="rounded-lg px-2 py-1.5 hover:bg-[#f7fbff]"
                     onChange={(v) => up("attachmentIds", v ? [...f.attachmentIds, x.id] : f.attachmentIds.filter((id) => id !== x.id))} />)}
                 </div>
               ) : <p className="text-sm text-muted">Chưa có tệp được chia sẻ. Tệp nội bộ và minh chứng học sinh không thể đính kèm.</p>}
@@ -281,19 +290,19 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
           <div className="space-y-4 px-5 pb-5">
             {!isPublished && (
               <div className="grid gap-3 sm:grid-cols-[1fr_160px]" data-field="scheduledAt">
-                <DateField label="Ngày đặt lịch" value={f.date} min={demoToday()} onChange={(v) => up("date", v ?? demoToday())} error={errors.scheduledAt} />
+                <DateField label="Ngày đặt lịch" value={f.date} min={ctx.today} onChange={(v) => up("date", v ?? ctx.today)} error={errors.scheduledAt} />
                 <Field label="Giờ" htmlFor="ann-time"><input id="ann-time" type="time" className="input" value={f.time} onChange={(e) => up("time", e.target.value)} /></Field>
               </div>
             )}
-            {isPublished && <Callout tone="info" icon={<Info />}>Thông báo đang ở trạng thái đã công bố. Lưu thay đổi sẽ cập nhật nội dung phụ huynh đọc ở lần mở tiếp theo và được ghi vào lịch sử.</Callout>}
+            {isPublished && <Callout tone="info" icon={<Info />}>Thông báo đang ở trạng thái đã công bố. Lưu thay đổi tạo bản nháp mới; phụ huynh tiếp tục đọc bản đã công bố cho đến khi bản sửa được công bố.</Callout>}
             <div className="flex flex-wrap items-center gap-2">
               <Button variant="ghost" icon={<Eye className="size-4" />} onClick={() => setPreview(true)}>Xem trước như phụ huynh</Button>
               {onCancel && <Button variant="ghost" disabled={cmd.pending} onClick={() => leaveGuard(onCancel)}>Hủy</Button>}
               <div className="ml-auto flex flex-wrap gap-2">
                 {isPublished ? <Button variant="primary" icon={<Save className="size-4" />} loading={cmd.pending} onClick={() => start("draft")}>Lưu thay đổi</Button> : <>
                   <Button icon={<Save className="size-4" />} loading={cmd.pending && !confirm} onClick={() => start("draft")}>Lưu nháp</Button>
-                  <Button icon={<CalendarClock className="size-4" />} disabled={cmd.pending} onClick={() => start("schedule")}>Đặt lịch <DemoTag /></Button>
-                  <Button variant="primary" icon={<Send className="size-4" />} disabled={cmd.pending} onClick={() => start("publish")}>Công bố ngay</Button>
+                  <Button icon={<CalendarClock className="size-4" />} disabled={cmd.pending || !opts.canPublish || !est || !!estimateQ.error || opts.readOnly} onClick={() => start("schedule")}>Đặt lịch</Button>
+                  <Button variant="primary" icon={<Send className="size-4" />} disabled={cmd.pending || !opts.canPublish || !est || !!estimateQ.error || opts.readOnly} onClick={() => start("publish")}>Công bố ngay</Button>
                 </>}
               </div>
             </div>
@@ -319,13 +328,13 @@ export function AnnouncementComposer({ schoolId, origin, classId, announcement, 
         <ParentPreview title={f.title} summary={f.summary} body={f.body} audience={origin === "class" ? "families" : f.audience} files={files} isPublic={effectivePublic} />
       </Modal>
       <ConfirmDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)} busy={cmd.pending}
-        title={confirm === "schedule" ? "Đặt lịch công bố (mô phỏng)" : confirm === "draft" ? "Cập nhật thông báo đã công bố" : "Công bố thông báo"}
+        title={confirm === "schedule" ? "Đặt lịch công bố" : confirm === "draft" ? "Cập nhật thông báo đã công bố" : "Công bố thông báo"}
         object={f.title || "Thông báo chưa đặt tiêu đề"} confirmLabel={confirm === "schedule" ? "Đặt lịch" : confirm === "draft" ? "Lưu thay đổi" : "Công bố"}
         onConfirm={async () => { if (confirm) await submit(confirm); }}
         consequence={<div className="space-y-1.5">
           <p><b>Phạm vi:</b> {scopeText} · <b>Đối tượng:</b> {ANNOUNCEMENT_AUDIENCE[origin === "class" ? "families" : f.audience]}</p>
           <p><b>Ước tính:</b> {estimateLine}</p>
-          {confirm === "schedule" ? <p>Thông báo chuyển sang “Đã đặt lịch” cho {fmtDateTime(scheduledAt)}. Lịch hẹn chỉ là mô phỏng theo đồng hồ demo — không có máy chủ gửi tự động.</p>
+          {confirm === "schedule" ? <p>Thông báo chuyển sang “Đã đặt lịch” cho {fmtDateTime(scheduledAt)}. Máy chủ sẽ kiểm tra lại quyền và người nhận khi đến lịch công bố.</p>
             : <p>Người nhận thấy thông báo ở lần mở trang tra cứu kế tiếp. Không gửi email/Zalo thật. Nếu cần gỡ, có thể thu hồi — nhưng không thu hồi được nội dung đã được đọc hoặc chụp màn hình.</p>}
         </div>} />
       <ConflictDialog error={cmd.error} onClose={cmd.reset} onReload={() => { cmd.reset(); window.location.reload(); }} mine={<p className="text-sm">{f.title}</p>} />

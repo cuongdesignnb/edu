@@ -1,0 +1,43 @@
+ Container edumanage_backend_test-runner-run-e85011fb9bc9 Creating 
+ Container edumanage_backend_test-runner-run-e85011fb9bc9 Created 
+TAP version 13
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+ok 1 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 1181.075014
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+ok 2 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 414.988947
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+ok 3 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 473.73607
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+ok 4 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 546.793233
+  type: 'test'
+  ...
+# Subtest: B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot
+ok 5 - B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot
+  ---
+  duration_ms: 1714.724897
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5125.422302
+EXIT_CODE=0

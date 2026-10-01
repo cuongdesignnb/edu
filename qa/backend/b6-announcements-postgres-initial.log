@@ -1,0 +1,77 @@
+ Container edumanage_backend_test-runner-run-3024254017f7 Creating 
+ Container edumanage_backend_test-runner-run-3024254017f7 Created 
+✖ B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source (940.539604ms)
+✖ B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification (361.237971ms)
+✖ B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights (397.139218ms)
+✔ B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads (2844.61287ms)
+✔ B5 public school announcements sanitize content and keep draft/private replacements out of the public projection (4204.510057ms)
+✔ B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss (1692.681298ms)
+✔ B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn (1959.418149ms)
+✔ B5 withdrawn announcements redact retained staff notifications instead of exposing a stale published target (57806.519041ms)
+✔ B5 teacher schedule is own dated teaching and announcement feed reads only current publications across draft edits (3736.805663ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 6
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74833.816661
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1264:1
+✖ B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source (940.539604ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:announcement_source_changed","title":"ANNOUNCEMENT_SOURCE_CHANGED","status":409,"code":"ANNOUNCEMENT_SOURCE_CHANGED","requestId":"022fdd89-a021-402f-b843-c8a604dd12e4"}
+  
+  409 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1268:117)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1272:1
+✖ B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification (361.237971ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1274:576)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1277:1
+✖ B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights (397.139218ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  404 !== 403
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1279:338)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 403,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

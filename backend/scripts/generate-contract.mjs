@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
 import SwaggerParser from '@apidevtools/swagger-parser';
+import {extendAnnouncementContract} from './announcement-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -725,7 +726,8 @@ for(const [id,suffix,response,screen,parameters] of [['getClassAttendanceSlots',
 spec.paths[attPath+'/students/{studentId}/history'].get['x-frontend-screen-ids']=['CL04','CL05'];operations.find(o=>o.id==='getClassAttendanceHistory').frontend_ids=['CL04','CL05'];
 extendOperation('createDuty','saveClassAttendanceSheet',attPath+'/save','attendance.record','ClassAttendanceReceipt',false,['CL04'],dutyPaths,'ClassAttendanceSave');
 extendOperation('createDuty','publishClassAttendanceSheet',attPath+'/publish','attendance.publish','ClassAttendanceReceipt',false,['CL04'],dutyPaths,'ClassAttendancePublish');
-for(const [path,items] of Object.entries(spec.paths))for(const operation of Object.values(items))if(operation?.operationId?.includes('ClassAttendance'))operation.description='Exact class/year/date attendance sources with independent lesson rights, displayed versions, atomic editing and immutable publication replacements; staff public notes only.';
+for(const items of Object.values(spec.paths))for(const operation of Object.values(items))if(operation?.operationId?.includes('ClassAttendance'))operation.description='Exact class/year/date attendance sources with independent lesson rights, displayed versions, atomic editing and immutable publication replacements; staff public notes only.';
+extendAnnouncementContract(spec,extendOperation,{object,uuid,label,count,timestamp,studentDate,operations});
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

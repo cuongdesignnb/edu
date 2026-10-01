@@ -1,0 +1,2 @@
+{"prefix":"b6-announcements","kind":"BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E","startedAt":"2026-10-01T21:19:50.121Z","host":"127.0.0.1","port":18763,"selectedFiles":["tests/native-ui-contract/announcement-contract.spec.ts"],"portFreeBefore":true,"ownedNextPid":48864,"playwrightExitCode":1,"ownedNextTerminationRequested":true,"ownedNextClosed":true,"ownedNextExit":{"code":null,"signal":"SIGTERM"},"portFreeAfter":true,"finishedAt":"2026-10-01T21:20:41.800Z","exitCode":1}
+EXIT_CODE=1

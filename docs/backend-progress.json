@@ -4244,6 +4244,128 @@
       "evidence": [
         "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getAnnouncementDirectory",
+      "screenIds": [
+        "SC33"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "getClassAnnouncementDirectory",
+      "screenIds": [
+        "CL21"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "getAnnouncementWorkspaceDetail",
+      "screenIds": [
+        "SC35",
+        "CL23"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "getAnnouncementComposeWorkspace",
+      "screenIds": [
+        "SC34",
+        "CL22"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "estimateAnnouncementAudience",
+      "screenIds": [
+        "SC34",
+        "CL22"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "saveAnnouncementWorkspace",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35",
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "publishAnnouncementWorkspace",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35",
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "withdrawAnnouncementWorkspace",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35",
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
+    },
+    {
+      "operationId": "discardAnnouncementWorkspace",
+      "screenIds": [
+        "SC33",
+        "SC34",
+        "SC35",
+        "CL21",
+        "CL22",
+        "CL23"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
+      ]
     }
   ],
   "screens": [
@@ -5140,11 +5262,18 @@
         "updateSchoolAnnouncement",
         "publishSchoolAnnouncement",
         "scheduleSchoolAnnouncement",
-        "withdrawSchoolAnnouncement"
+        "withdrawSchoolAnnouncement",
+        "getAnnouncementDirectory",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5157,11 +5286,19 @@
         "updateSchoolAnnouncement",
         "publishSchoolAnnouncement",
         "scheduleSchoolAnnouncement",
-        "withdrawSchoolAnnouncement"
+        "withdrawSchoolAnnouncement",
+        "getAnnouncementComposeWorkspace",
+        "estimateAnnouncementAudience",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5174,11 +5311,18 @@
         "updateSchoolAnnouncement",
         "publishSchoolAnnouncement",
         "scheduleSchoolAnnouncement",
-        "withdrawSchoolAnnouncement"
+        "withdrawSchoolAnnouncement",
+        "getAnnouncementWorkspaceDetail",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5690,11 +5834,18 @@
         "updateClassAnnouncement",
         "publishClassAnnouncement",
         "scheduleClassAnnouncement",
-        "withdrawClassAnnouncement"
+        "withdrawClassAnnouncement",
+        "getClassAnnouncementDirectory",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5707,11 +5858,19 @@
         "updateClassAnnouncement",
         "publishClassAnnouncement",
         "scheduleClassAnnouncement",
-        "withdrawClassAnnouncement"
+        "withdrawClassAnnouncement",
+        "getAnnouncementComposeWorkspace",
+        "estimateAnnouncementAudience",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5724,11 +5883,18 @@
         "updateClassAnnouncement",
         "publishClassAnnouncement",
         "scheduleClassAnnouncement",
-        "withdrawClassAnnouncement"
+        "withdrawClassAnnouncement",
+        "getAnnouncementWorkspaceDetail",
+        "saveAnnouncementWorkspace",
+        "publishAnnouncementWorkspace",
+        "withdrawAnnouncementWorkspace",
+        "discardAnnouncementWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native announcement API source; PostgreSQL purposes 5/5 and intercepted browser 4/4. Whole PostgreSQL browser E2E NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {

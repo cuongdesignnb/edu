@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 152,
-  "activatedCandidateCount": 152,
-  "activatedLegacyMethodCount": 135,
+  "candidateCount": 162,
+  "activatedCandidateCount": 162,
+  "activatedLegacyMethodCount": 144,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -254,7 +254,17 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "schoolList",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -268,7 +278,17 @@
         "opts: { status?: string } = {}"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "classList",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -281,7 +301,17 @@
         "id: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "detail",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -294,7 +324,17 @@
         "classId?: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "composeOptions",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -308,7 +348,17 @@
         "audience: Announcement[\"audience\"]"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "estimate",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -321,7 +371,17 @@
         "input: ComposeInput"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "save",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -335,7 +395,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "withdraw",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -348,7 +418,17 @@
         "id: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "announcementsRepo",
+        "method": "deleteDraft",
+        "file": "src/lib/repositories/connected/announcements.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "announcementsRepo",
@@ -2464,7 +2544,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "schoolOpsRepo",
+        "method": "announcementClassStudents",
+        "file": "src/lib/repositories/connected/school-ops.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "schoolOpsRepo",
@@ -4419,6 +4509,16 @@
     }
   ],
   "extensions": [
+    {
+      "repository": "announcementsRepo",
+      "method": "publish",
+      "file": "src/lib/repositories/connected/announcements.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
     {
       "repository": "classroomRepo",
       "method": "requestTransfer",

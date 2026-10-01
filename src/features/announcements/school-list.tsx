@@ -23,7 +23,7 @@ export function SchoolAnnouncementList({ schoolId }: { schoolId: string }) {
   const q = useRepo(["school-announcements", schoolId, list.query], (c) => announcementsRepo.schoolList(c, schoolId, list.query));
   const router = useRouter();
   const [del, setDel] = useState<Row | null>(null);
-  const remove = useCommand((ctx, id: string) => announcementsRepo.deleteDraft(ctx, schoolId, id), { success: "Đã xóa bản nháp", onSuccess: () => setDel(null) });
+  const remove = useCommand((ctx, row: Row) => announcementsRepo.deleteDraft(ctx, schoolId, row.source), { success: "Đã xóa bản nháp", onSuccess: () => setDel(null) });
   const status = (list.query.filters?.status ?? "") as StatusTab;
   const base = `/school/${schoolId}/announcements`;
   const counts = q.data?.counts;
@@ -41,16 +41,16 @@ export function SchoolAnnouncementList({ schoolId }: { schoolId: string }) {
       </div>
     ) },
     { key: "scope", header: "Phạm vi · đối tượng", hideBelow: "md", cell: (r) => <div className="min-w-[150px] text-[13px]"><p className="text-ink">{r.scopeLabel}</p><p className="text-muted">{r.audienceLabel}</p></div> },
-    { key: "est", header: "Ước tính nhận", align: "right", hideBelow: "lg", cell: (r) => <span className="text-[13px] tabular-nums">{r.audience === "staff" ? `${fmtNumber(r.estimate.staff)} nhân sự` : `${fmtNumber(r.estimate.students)} gia đình`}</span> },
+    { key: "est", header: "Ước tính nhận", align: "right", hideBelow: "lg", cell: (r) => <span className="text-[13px] tabular-nums">{r.estimate === null ? "—" : r.audience === "staff" ? `${fmtNumber(r.estimate.staff)} nhân sự` : `${fmtNumber(r.estimate.students)} gia đình`}</span> },
     { key: "status", header: "Trạng thái", cell: (r) => <StatusBadge status={r.status} map={PUBLICATION_STATUS} /> },
     { key: "time", header: "Thời điểm", hideBelow: "sm", cell: (r) => <span className="whitespace-nowrap text-[13px] text-body">{r.status === "published" ? `Công bố ${fmtDateTime(r.publishedAt)}` : r.status === "scheduled" ? `Hẹn ${fmtDateTime(r.scheduledAt)}` : r.status === "withdrawn" ? `Thu hồi ${fmtDateTime(r.withdrawnAt)}` : `Sửa ${fmtDateTime(r.updatedAt)}`}</span> },
     { key: "act", header: <span className="sr-only">Thao tác</span>, align: "center", cell: (r) => {
-      const editable = r.origin === "school" && canCompose && (r.status === "draft" || r.status === "scheduled");
+      const editable = r.origin === "school" && r.canEdit && (r.status === "draft" || r.status === "scheduled");
       return (
         <ActionMenu label={`Thao tác với ${r.title}`} items={[
           { label: "Xem chi tiết", icon: <Eye />, href: `${base}/${r.id}` },
           ...(editable ? [{ label: "Sửa", icon: <PenLine />, href: `${base}/${r.id}/edit` }] : []),
-          ...(r.origin === "school" && canCompose && r.status === "draft" ? [{ label: "Xóa bản nháp", icon: <Trash2 />, danger: true, separatorBefore: true, onSelect: () => setDel(r) }] : []),
+          ...(r.origin === "school" && r.canDelete && r.status === "draft" ? [{ label: "Xóa bản nháp", icon: <Trash2 />, danger: true, separatorBefore: true, onSelect: () => setDel(r) }] : []),
         ]} />
       );
     } },
@@ -60,7 +60,7 @@ export function SchoolAnnouncementList({ schoolId }: { schoolId: string }) {
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatTile label="Bản nháp" value={counts ? fmtNumber(counts.draft) : "—"} icon={<FileEdit className="size-5" />} tone="neutral" />
-        <StatTile label="Đã đặt lịch (mô phỏng)" value={counts ? fmtNumber(counts.scheduled) : "—"} icon={<CalendarClock className="size-5" />} tone="blue" />
+        <StatTile label="Đã đặt lịch" value={counts ? fmtNumber(counts.scheduled) : "—"} icon={<CalendarClock className="size-5" />} tone="blue" />
         <StatTile label="Đã công bố" value={counts ? fmtNumber(counts.published) : "—"} icon={<CheckCircle2 className="size-5" />} tone="green" />
         <StatTile label="Đã thu hồi" value={counts ? fmtNumber(counts.withdrawn) : "—"} icon={<Ban className="size-5" />} tone="pink" />
       </div>
@@ -93,7 +93,7 @@ export function SchoolAnnouncementList({ schoolId }: { schoolId: string }) {
       </section>
       <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Xóa bản nháp thông báo" object={del?.title} variant="danger" confirmLabel="Xóa bản nháp" busy={remove.pending}
         consequence="Bản nháp chưa từng công bố sẽ bị xóa khỏi danh sách. Thao tác được ghi vào nhật ký nhà trường. Thông báo đã công bố không xóa được — hãy thu hồi."
-        onConfirm={async () => { if (del) await remove.run(del.id); }} />
+        onConfirm={async () => { if (del) await remove.run(del); }} />
     </div>
   );
 }
