@@ -9,6 +9,8 @@ import {http} from '../../api/client';
 import {nativeClassHeader} from './classroom-header';
 import {nativeClassOverview} from './classroom-overview';
 import {readGroupWorkspace,readSeatingWorkspace,moveClassGroup,changeClassPosition,saveClassSeating} from './classroom-organization';
+import {readDutyWorkspace,saveDutyTask,removeDutyTask} from './classroom-duties';
+import {mondayOf} from '../../calendar';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -43,6 +45,10 @@ async function cards(schoolId:string,includeEnded=false){
   return rows.map(row=>nativeTeacherClass(row,schoolId)).sort((a,b)=>Number(b.live)-Number(a.live)||Number(b.duties.some(d=>d.live&&d.kind==='homeroom'))-Number(a.duties.some(d=>d.live&&d.kind==='homeroom'))||a.name.localeCompare(b.name,'vi')||a.id.localeCompare(b.id));
 }
 export const connectedClassroomRepo=withStaffAccess({
+  async duties(_ctx:Ctx,schoolId:string,yearId:string,classId:string,weekStart?:string){return readDutyWorkspace(schoolId,yearId,classId,weekStart);},
+  async dutyChoices(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate:string){return readDutyWorkspace(schoolId,yearId,classId,mondayOf(onDate),onDate);},
+  async saveDuty(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof saveDutyTask>[2]){return saveDutyTask(schoolId,classId,input);},
+  async deleteDuty(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof removeDutyTask>[2]){return removeDutyTask(schoolId,classId,input);},
   async groups(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readGroupWorkspace(schoolId,yearId,classId);},
   async seating(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readSeatingWorkspace(schoolId,yearId,classId);},
   async setGroup(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof moveClassGroup>[2]){return moveClassGroup(schoolId,classId,input);},

@@ -4111,6 +4111,39 @@
       "evidence": [
         "qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getClassDutyWorkspace",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "saveClassDutyTask",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "removeClassDutyTask",
+      "screenIds": [
+        "CL16"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5459,11 +5492,16 @@
         "listDuties",
         "createDuty",
         "updateDuty",
-        "publishDuty"
+        "publishDuty",
+        "getClassDutyWorkspace",
+        "saveClassDutyTask",
+        "removeClassDutyTask"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native dated duty board and selected-member draft/publication/edit/move/delete; displayed source versions/publication pointer and uncertain retry keys preserved. Own minimal actual published parent preview. Two desktop/mobile screenshots inspected; Edge5/5 intercepted contracts. Whole-screen PostgreSQL browser E2E remains pending."
+      ],
       "apiStatus": "TESTED"
     },
     {

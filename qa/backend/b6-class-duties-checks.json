@@ -1,0 +1,147 @@
+{
+  "checkpoint": "B6 CL16 duty board; full goal remains active",
+  "baseline": "68c64f687064689b2cfa3fae1b7448e70ed67e0b",
+  "recordedAt": "2026-10-01T15:33:01.915716+00:00",
+  "contract": {
+    "operations": 349,
+    "schemas": 476,
+    "semanticDiff": {
+      "baseline": "68c64f687064689b2cfa3fae1b7448e70ed67e0b",
+      "existingOperationsUnchanged": 346,
+      "existingSchemasUnchanged": 467,
+      "changedSchemas": [
+        "GroupDutyAssignment"
+      ],
+      "change": "Optional enrollmentIds selects an exact dated group subset; omitted targets retain canonical all-member behavior.",
+      "permissionsUnchanged": true,
+      "rolesUnchanged": true,
+      "addedOperations": [
+        "getClassDutyWorkspace",
+        "removeClassDutyTask",
+        "saveClassDutyTask"
+      ],
+      "addedSchemas": [
+        "ClassDutyTask",
+        "ClassDutyTaskReceipt",
+        "ClassDutyTaskReceiptResponse",
+        "ClassDutyTaskRemove",
+        "ClassDutyTaskSave",
+        "ClassDutyTaskSource",
+        "ClassDutyWorkspace",
+        "ClassDutyWorkspaceResponse"
+      ]
+    }
+  },
+  "migrations": {
+    "total": 47,
+    "current": "047-duty-selected-targets.sql",
+    "replay": "PASS_NO_PENDING",
+    "log": "b6-class-duties-migration-replay.log"
+  },
+  "postgres": {
+    "status": "PASS_SELECTED_ONLY",
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 8516.359959,
+    "log": "b6-class-duties-postgres-accepted.log",
+    "runnerImage": "sha256:2039258b2d10fde8015e44a52a538dbe79b62bcfb8e570f5d63043d4f1795c8a",
+    "fullCurrentRegression": "NOT_RERUN"
+  },
+  "backendUnitContracts": {
+    "passed": 51,
+    "durationMs": 607.229852,
+    "log": "b6-class-duties-backend-unit-contract-accepted.log"
+  },
+  "frontendUnit": {
+    "passed": 388,
+    "files": 46,
+    "durationSeconds": 10.19,
+    "apiTests": 347,
+    "historicalSyntheticTests": 41,
+    "log": "b6-class-duties-frontend-unit.log"
+  },
+  "frontendBuild": {
+    "exitCode": 0,
+    "lastBackendOnlyCorrectionSdkUnchanged": {
+      "before": "47360AFD83E8FEDBAE82FFEA8B23B4E720AD1ACDAB634AAE654EA1371E9FC521",
+      "after": "47360AFD83E8FEDBAE82FFEA8B23B4E720AD1ACDAB634AAE654EA1371E9FC521",
+      "unchanged": true
+    },
+    "log": "b6-class-duties-frontend-build.log"
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "passed": 5,
+    "stats": {
+      "startTime": "2026-10-01T15:30:40.279Z",
+      "duration": 25442.052,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "run": {
+      "prefix": "b6-class-duties",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T15:30:39.252Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "selectedFiles": [
+        "tests/native-ui-contract/class-duties-contract.spec.ts"
+      ],
+      "portFreeBefore": true,
+      "ownedNextPid": 3556,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T15:31:05.757Z",
+      "exitCode": 0
+    },
+    "screenshotsInspected": [
+      "b6-class-duties-desktop.png",
+      "b6-class-duties-mobile.png"
+    ],
+    "postgresE2E": "NOT_RUN"
+  },
+  "facade": {
+    "activatedCandidates": 142,
+    "activatedLegacyMethods": 126,
+    "totalLegacyMethods": 231,
+    "pendingLegacyMethods": 105
+  },
+  "operationStatuses": {
+    "IMPLEMENTED": 12,
+    "TESTED": 337
+  },
+  "coreSourceStatuses": {
+    "IMPLEMENTED": 66,
+    "NOT_STARTED": 49,
+    "STATIC_UNVERIFIED": 3
+  },
+  "coreTotal": 118,
+  "listenerAfter": {
+    "checkedAt": "2026-10-01T15:31:50.7213755+00:00",
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "releaseUrl": "http://127.0.0.1:18763",
+  "releaseServing": false,
+  "goalStatus": "ACTIVE",
+  "remaining": [
+    "105 legacy facade methods",
+    "49 core screens NOT_STARTED and 3 STATIC_UNVERIFIED; no whole-screen PostgreSQL E2E accepted",
+    "12 implemented operations lack accepted checks",
+    "full current PostgreSQL regression and browser E2E",
+    "root deploy/scripts release merge and Docker local release",
+    "restart persistence, physical backup/restore, failure drills, release workload performance",
+    "production deployment is not authorized"
+  ]
+}

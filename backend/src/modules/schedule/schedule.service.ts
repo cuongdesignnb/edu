@@ -7,11 +7,13 @@ import { Problem,validation,notFound } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
 import { timetableResource,dutyResource,lessonResource,lessonReadResource,timetableDto,dutyDto,range,validateEntries,occurrences,conflicts,type Entry,type DutyInput,type GroupDutyInput } from './schedule-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
+import {classDutyWorkspace} from './class-duty-workspace';
+import {classDutyCommand} from './class-duty-commands';
 
 @Injectable()
 export class ScheduleService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listSchoolLessons','listMySchedule','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['listSchoolLessons','listMySchedule','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),getClassDutyWorkspace:c=>classDutyWorkspace(this.db,this.policy,c),saveClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c),removeClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c,true)};}
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,allowed=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,allowSubject:c.operation.permission==='schedule.read',date:c.body.startsOn as string|undefined});
     const cls=await getResource(tx,resource('class'),schoolId,classId,c.operation.method!=='GET'),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
@@ -43,7 +45,7 @@ export class ScheduleService {
           (c.body.entries as Entry[]|undefined)??((await timetableDto(tx,existing!)).entries as Entry[]);
         const groups=isDuty?(c.body.groupAssignments as GroupDutyInput[]|undefined)??(existing?(await dutyDto(tx,existing)).groupAssignments as GroupDutyInput[]:[]):[];
         if(isDuty)await this.validateDuties(tx,c,data as DutyInput[],starts,ends);else await validateEntries(tx,ctx.schoolId,data as Entry[]);
-        for(const g of groups){if(g.dutyDate<starts||g.dutyDate>=ends||!g.task.trim())validation('groupAssignments','Ngày/nhiệm vụ ngoài lịch');const group=await one(tx,'SELECT id FROM app.class_groups WHERE school_id=$1 AND class_id=$2 AND id=$3',[ctx.schoolId,ctx.classId,g.groupId]);if(!group)validation('groupAssignments.groupId','Tổ không thuộc lớp');}
+        for(const g of groups){if(g.dutyDate<starts||g.dutyDate>=ends||!g.task.trim())validation('groupAssignments','Ngày/nhiệm vụ ngoài lịch');const group=await one(tx,'SELECT id FROM app.class_groups WHERE school_id=$1 AND class_id=$2 AND id=$3',[ctx.schoolId,ctx.classId,g.groupId]);if(!group)validation('groupAssignments.groupId','Tổ không thuộc lớp');if(g.enrollmentIds){const eligible=(await tx.query('SELECT gm.enrollment_id FROM app.group_memberships gm JOIN app.enrollments e ON e.school_id=gm.school_id AND e.id=gm.enrollment_id WHERE gm.school_id=$1 AND gm.class_id=$2 AND gm.group_id=$3 AND gm.cancelled_at IS NULL AND gm.starts_on<=$4 AND gm.ends_on>$4 AND e.status<>\'CANCELLED\' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4) AND gm.enrollment_id=ANY($5::uuid[])',[ctx.schoolId,ctx.classId,g.groupId,g.dutyDate,g.enrollmentIds])).rows;if(eligible.length!==g.enrollmentIds.length)validation('groupAssignments.enrollmentIds','Có học sinh không thuộc tổ trong ngày trực');}}
         let row:Row;
         if(create){
           if(isDuty)row=(await one<Row>(tx,'INSERT INTO app.duty_schedules(school_id,class_id,year_id,starts_on,ends_on,created_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',[ctx.schoolId,ctx.classId,ctx.year.id,starts,ends,c.principal!.userId]))!;
@@ -57,7 +59,7 @@ export class ScheduleService {
         if(isDuty)for(const a of data as DutyInput[])await tx.query('INSERT INTO app.duty_assignments(school_id,class_id,schedule_id,enrollment_id,duty_date,task,status) VALUES($1,$2,$3,$4,$5,$6,$7)',[ctx.schoolId,ctx.classId,row.id,a.enrollmentId,a.dutyDate,a.task,a.status??'ASSIGNED']);
         else for(const e of data as Entry[])await tx.query(`INSERT INTO app.timetable_entries(school_id,class_id,timetable_id,weekday,period_number,subject_id,member_id,room_id,starts_at_local,ends_at_local)
           VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,[ctx.schoolId,ctx.classId,row.id,e.weekday,e.periodNumber,e.subjectId,e.memberId,e.roomId??null,e.startsAtLocal,e.endsAtLocal]);
-        for(const g of groups)await tx.query('INSERT INTO app.duty_group_plans(school_id,class_id,schedule_id,group_id,duty_date,task,status) VALUES($1,$2,$3,$4,$5,$6,$7)',[ctx.schoolId,ctx.classId,row.id,g.groupId,g.dutyDate,g.task,g.status??'ASSIGNED']);
+        for(const g of groups)await tx.query('INSERT INTO app.duty_group_plans(school_id,class_id,schedule_id,group_id,duty_date,task,status,enrollment_targets) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[ctx.schoolId,ctx.classId,row.id,g.groupId,g.dutyDate,g.task,g.status??'ASSIGNED',g.enrollmentIds??null]);
         row=await this.row(tx,r,c,String(row.id));await audit(tx,c,isDuty?'duty':'timetable',String(row.id));return {data:isDuty?await dutyDto(tx,row):await timetableDto(tx,row),status:create?201:200};
       }
       const row=await this.row(tx,r,c,(c.params.timetableId??c.params.dutyId)!,true);
@@ -111,7 +113,9 @@ export class ScheduleService {
     for(const group of groups){
       const members=(await tx.query<{enrollment_id:string}>(`SELECT g.enrollment_id FROM app.group_memberships g JOIN app.enrollments e ON e.school_id=g.school_id AND e.id=g.enrollment_id
         WHERE g.school_id=$1 AND g.group_id=$2 AND g.class_id=$3 AND g.cancelled_at IS NULL AND g.starts_on<=$4 AND g.ends_on>$4
-        AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4) ORDER BY g.enrollment_id`,[row.school_id,group.group_id,row.class_id,group.duty_date])).rows;
+        AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4)
+        AND ($5::uuid[] IS NULL OR g.enrollment_id=ANY($5::uuid[])) ORDER BY g.enrollment_id`,[row.school_id,group.group_id,row.class_id,group.duty_date,group.enrollment_targets??null])).rows;
+      if(group.enrollment_targets&&members.length!==(group.enrollment_targets as string[]).length)validation('groupAssignments.enrollmentIds','Thành viên đã chọn không còn thuộc tổ trong ngày trực');
       if(!members.length&&group.status!=='CANCELLED')validation('groupAssignments','Tổ không có học sinh trong ngày trực nhật');
       for(const member of members){
         if(++total>5000)throw new Problem(422,'DUTY_ASSIGNMENT_LIMIT');

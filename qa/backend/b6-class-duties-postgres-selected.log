@@ -1,0 +1,17 @@
+ Container edumanage_backend_test-runner-run-7dc491184e26 Creating 
+ Container edumanage_backend_test-runner-run-7dc491184e26 Created 
+✔ B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal (1871.75387ms)
+✔ B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope (576.857663ms)
+✔ B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets (356.000551ms)
+✔ B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history (584.053362ms)
+✔ B5 group duties expand the effective group at publication and retain the individual targets after later moves (809.485359ms)
+✔ B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal (1157.779252ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6293.543299
+EXIT_CODE=0

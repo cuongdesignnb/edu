@@ -25,8 +25,15 @@ test('native organization seating save requires the displayed revision and rejec
  const op=operations.find(o=>o.id==='saveClassSeatingRevision');assert.equal(op.permission,'seating.manage');assert.equal(op.request,'ClassSeatingRevisionSave');assert.equal(op.method,'POST');
 });
 
+test('native duty commands retain exact displayed source and publication versions without actor authority or silent group expansion',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',body={source:null,date:'2026-10-02',task:'Nhiệm vụ trực nhật',studentIds:[id],groupId:id,publish:true,expectedPublicationId:null};validateSchema('ClassDutyTaskSave',body);
+ for(const bad of [{...body,studentIds:[id,id]},{...body,actorId:id},{...body,publish:'true'},{...body,expectedPublicationId:undefined},{...body,source:{scheduleId:id}}])assert.throws(()=>validateSchema('ClassDutyTaskSave',bad));
+ validateSchema('GroupDutyAssignment',{groupId:id,dutyDate:body.date,task:body.task,enrollmentIds:[id]});assert.throws(()=>validateSchema('GroupDutyAssignment',{groupId:id,dutyDate:body.date,task:body.task,enrollmentIds:[]}));
+ assert.equal(operations.find(o=>o.id==='saveClassDutyTask').permission,'duty.manage');assert.equal(operations.find(o=>o.id==='getClassDutyWorkspace').permission,'duty.read');
+});
+
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,346);assert.equal(new Set(operations.map(op=>op.id )).size,346);
+  assert.equal(operations.length,349);assert.equal(new Set(operations.map(op=>op.id )).size,349);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

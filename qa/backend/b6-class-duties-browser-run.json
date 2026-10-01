@@ -1,0 +1,22 @@
+{
+  "prefix": "b6-class-duties",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T15:30:39.252Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/class-duties-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 3556,
+  "playwrightExitCode": 0,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T15:31:05.757Z",
+  "exitCode": 0
+}

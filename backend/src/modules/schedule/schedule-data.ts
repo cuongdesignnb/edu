@@ -11,7 +11,7 @@ export const lessonReadResource:Resource={...lessonResource,table:`(SELECT l.*,c
  JOIN app.memberships m ON m.school_id=l.school_id AND m.id=l.member_id LEFT JOIN app.rooms r ON r.school_id=l.school_id AND r.id=l.room_id)`,fields:{...lessonResource.fields,yearId:'year_id',className:'class_name',subjectName:'subject_name',teacherName:'teacher_name',roomName:'room_name'},filters:{...lessonResource.filters,yearId:'year_id'}};
 export interface Entry {id?:string|null;weekday:number;periodNumber:number;subjectId:string|null;memberId:string|null;roomId?:string|null;startsAtLocal:string;endsAtLocal:string}
 export interface DutyInput {id?:string;enrollmentId:string;dutyDate:string;task:string;status?:string}
-export interface GroupDutyInput {id?:string;groupId:string;dutyDate:string;task:string;status?:string}
+export interface GroupDutyInput {id?:string;groupId:string;dutyDate:string;task:string;status?:string;enrollmentIds?:string[]}
 export interface Occurrence extends Row {class_id:string;subject_id:string;member_id:string;room_id:string|null;starts_at:Date;ends_at:Date;day:string;entry_id:string;period_number:number}
 export type Conflict={kind:'CLASS'|'TEACHER'|'ROOM'|'ASSIGNMENT'|'HOLIDAY';startsAt:string;endsAt:string;message:string};
 
@@ -25,8 +25,8 @@ export async function timetableDto(tx:Transaction,row:Row){
 }
 export async function dutyDto(tx:Transaction,row:Row){
   const assignments=(await tx.query<Row>('SELECT id,enrollment_id,duty_date,task,status FROM app.duty_assignments WHERE school_id=$1 AND schedule_id=$2 ORDER BY duty_date,enrollment_id,id',[row.school_id,row.id])).rows;
-  const groups=(await tx.query<Row>('SELECT id,group_id,duty_date,task,status FROM app.duty_group_plans WHERE school_id=$1 AND schedule_id=$2 ORDER BY duty_date,group_id,id',[row.school_id,row.id])).rows;
-  return {...dto(dutyResource,row),assignments:assignments.map(a=>({id:a.id,enrollmentId:a.enrollment_id,dutyDate:a.duty_date,task:a.task,status:a.status})),groupAssignments:groups.map(g=>({id:g.id,groupId:g.group_id,dutyDate:g.duty_date,task:g.task,status:g.status}))};
+  const groups=(await tx.query<Row>('SELECT id,group_id,duty_date,task,status,enrollment_targets FROM app.duty_group_plans WHERE school_id=$1 AND schedule_id=$2 ORDER BY duty_date,group_id,id',[row.school_id,row.id])).rows;
+  return {...dto(dutyResource,row),assignments:assignments.map(a=>({id:a.id,enrollmentId:a.enrollment_id,dutyDate:a.duty_date,task:a.task,status:a.status})),groupAssignments:groups.map(g=>({id:g.id,groupId:g.group_id,dutyDate:g.duty_date,task:g.task,status:g.status,...(g.enrollment_targets?{enrollmentIds:g.enrollment_targets}:{})}))};
 }
 export async function validateEntries(tx:Transaction,schoolId:string,entries:Entry[]){
   const periods=new Set<string>();

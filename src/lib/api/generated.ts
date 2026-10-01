@@ -302,7 +302,7 @@ export interface ApiSchemas {
   "PublicSchoolResponse": { "data": ApiSchemas["PublicSchool"]; "requestId": string; };
   "ParentLessonBatch": { "items": Array<ApiSchemas["ParentLesson"]>; };
   "ParentDutyBatch": { "items": Array<ApiSchemas["ParentDuty"]>; };
-  "GroupDutyAssignment": { "id"?: string; "groupId": string; "dutyDate": string; "task": string; "status"?: "ASSIGNED" | "DONE" | "CANCELLED"; };
+  "GroupDutyAssignment": { "id"?: string; "groupId": string; "dutyDate": string; "task": string; "status"?: "ASSIGNED" | "DONE" | "CANCELLED"; "enrollmentIds"?: Array<string>; };
   "SupportAccessRevoke": { "expectedVersion": number; "reason": string; "decision"?: "REVOKE" | "REJECT"; };
   "RolloverPreviewStudent": { "id": string; "studentCode": string; "fullName": string; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; };
   "RolloverPreviewSourceClass": { "id": string; "name": string; "gradeLevel": (number) | null; "students": Array<ApiSchemas["RolloverPreviewStudent"]>; };
@@ -468,6 +468,14 @@ export interface ApiSchemas {
   "ClassGroupWorkspaceResponse": { "data": ApiSchemas["ClassGroupWorkspace"]; "requestId": string; };
   "ClassSeatingWorkspaceResponse": { "data": ApiSchemas["ClassSeatingWorkspace"]; "requestId": string; };
   "ClassSeatingRevisionSave": { "effectiveOn": string; "seats": Array<ApiSchemas["Seat"]>; "expectedRevision": number; "note"?: string; };
+  "ClassDutyTaskSource": { "scheduleId": string; "expectedVersion": number; "expectedDataVersion": number; "date": string; "task": string; "assignmentIds": Array<string>; "groupPlanId": (string) | null; };
+  "ClassDutyTask": { "id": string; "scheduleId": string; "version": number; "dataVersion": number; "date": string; "task": string; "assignmentIds": Array<string>; "groupPlanId": (string) | null; "groupId": (string) | null; "groupName": (string) | null; "studentIds": Array<string>; "studentNames": Array<string>; "unavailableTargets": number; "status": "DRAFT" | "PUBLISHED" | "WITHDRAWN"; "canEdit": boolean; };
+  "ClassDutyWorkspace": { "schoolId": string; "yearId": string; "classId": string; "today": string; "monday": string; "referenceDate": string; "startsOn": string; "endsOn": string; "readOnly": boolean; "canEdit": boolean; "canPublish": boolean; "canPreview": boolean; "previewStudents": Array<{ "id": string; "fullName": string; }>; "publicationId": (string) | null; "tasks": Array<ApiSchemas["ClassDutyTask"]>; "students": Array<{ "id": string; "enrollmentId": string; "fullName": string; }>; "groups": Array<{ "id": string; "name": string; "studentIds": Array<string>; }>; "preview": (Array<{ "studentId": string; "date": string; "task": string; "status": "ASSIGNED" | "DONE" | "CANCELLED"; "publishedAt": string; }>) | null; };
+  "ClassDutyWorkspaceResponse": { "data": ApiSchemas["ClassDutyWorkspace"]; "requestId": string; };
+  "ClassDutyTaskSave": { "source": ({ "scheduleId": string; "expectedVersion": number; "expectedDataVersion": number; "date": string; "task": string; "assignmentIds": Array<string>; "groupPlanId": (string) | null; }) | null; "date": string; "task": string; "studentIds": Array<string>; "groupId": (string) | null; "publish": boolean; "expectedPublicationId": (string) | null; };
+  "ClassDutyTaskRemove": { "source": { "scheduleId": string; "expectedVersion": number; "expectedDataVersion": number; "date": string; "task": string; "assignmentIds": Array<string>; "groupPlanId": (string) | null; }; "expectedPublicationId": (string) | null; };
+  "ClassDutyTaskReceipt": { "sourceId": (string) | null; "status": "DRAFT" | "PUBLISHED" | "REMOVED"; };
+  "ClassDutyTaskReceiptResponse": { "data": ApiSchemas["ClassDutyTaskReceipt"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3929,6 +3937,36 @@ export const apiOperations = {
     "response": "SeatingPlan",
     "list": false,
     "permission": "seating.manage",
+    "readOnly": false
+  },
+  "getClassDutyWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassDutyWorkspace",
+    "list": false,
+    "permission": "duty.read",
+    "readOnly": true
+  },
+  "saveClassDutyTask": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-tasks",
+    "auth": "staff",
+    "request": "ClassDutyTaskSave",
+    "response": "ClassDutyTaskReceipt",
+    "list": false,
+    "permission": "duty.manage",
+    "readOnly": false
+  },
+  "removeClassDutyTask": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-tasks/remove",
+    "auth": "staff",
+    "request": "ClassDutyTaskRemove",
+    "response": "ClassDutyTaskReceipt",
+    "list": false,
+    "permission": "duty.manage",
     "readOnly": false
   }
 } as const;

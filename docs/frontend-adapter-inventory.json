@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 138,
-  "activatedCandidateCount": 138,
-  "activatedLegacyMethodCount": 123,
+  "candidateCount": 142,
+  "activatedCandidateCount": 142,
+  "activatedLegacyMethodCount": 126,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -751,7 +751,17 @@
         "weekStart?: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "classroomRepo",
+        "method": "duties",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "classroomRepo",
@@ -765,7 +775,17 @@
         "input: { id?: ID; date: string; task: string; groupId?: ID; studentIds: ID[]; publish: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "classroomRepo",
+        "method": "saveDuty",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "classroomRepo",
@@ -779,7 +799,17 @@
         "dutyId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "classroomRepo",
+        "method": "deleteDuty",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "classroomRepo",
@@ -4299,6 +4329,16 @@
     }
   ],
   "extensions": [
+    {
+      "repository": "classroomRepo",
+      "method": "dutyChoices",
+      "file": "src/lib/repositories/connected/classroom.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
     {
       "repository": "classroomRepo",
       "method": "createGroup",

@@ -1,0 +1,26 @@
+{
+  "baseline": "68c64f687064689b2cfa3fae1b7448e70ed67e0b",
+  "existingOperationsUnchanged": 346,
+  "existingSchemasUnchanged": 467,
+  "changedSchemas": [
+    "GroupDutyAssignment"
+  ],
+  "change": "Optional enrollmentIds selects an exact dated group subset; omitted targets retain canonical all-member behavior.",
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassDutyWorkspace",
+    "removeClassDutyTask",
+    "saveClassDutyTask"
+  ],
+  "addedSchemas": [
+    "ClassDutyTask",
+    "ClassDutyTaskReceipt",
+    "ClassDutyTaskReceiptResponse",
+    "ClassDutyTaskRemove",
+    "ClassDutyTaskSave",
+    "ClassDutyTaskSource",
+    "ClassDutyWorkspace",
+    "ClassDutyWorkspaceResponse"
+  ]
+}

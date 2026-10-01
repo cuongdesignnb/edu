@@ -11852,6 +11852,16 @@
             "DONE",
             "CANCELLED"
           ]
+        },
+        "enrollmentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
         }
       },
       "required": [
@@ -20994,6 +21004,577 @@
         "effectiveOn",
         "seats",
         "expectedRevision"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTaskSource": {
+      "type": "object",
+      "properties": {
+        "scheduleId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expectedVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expectedDataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "assignmentIds": {
+          "type": "array",
+          "maxItems": 5000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "groupPlanId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        }
+      },
+      "required": [
+        "scheduleId",
+        "expectedVersion",
+        "expectedDataVersion",
+        "date",
+        "task",
+        "assignmentIds",
+        "groupPlanId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTask": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "scheduleId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "assignmentIds": {
+          "type": "array",
+          "maxItems": 5000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "groupPlanId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "groupName": {
+          "type": "string",
+          "nullable": true
+        },
+        "studentIds": {
+          "type": "array",
+          "maxItems": 5000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "studentNames": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableTargets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PUBLISHED",
+            "WITHDRAWN"
+          ]
+        },
+        "canEdit": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "scheduleId",
+        "version",
+        "dataVersion",
+        "date",
+        "task",
+        "assignmentIds",
+        "groupPlanId",
+        "groupId",
+        "groupName",
+        "studentIds",
+        "studentNames",
+        "unavailableTargets",
+        "status",
+        "canEdit"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyWorkspace": {
+      "type": "object",
+      "properties": {
+        "schoolId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "monday": {
+          "type": "string",
+          "format": "date"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "canEdit": {
+          "type": "boolean"
+        },
+        "canPublish": {
+          "type": "boolean"
+        },
+        "canPreview": {
+          "type": "boolean"
+        },
+        "previewStudents": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "fullName": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "fullName"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "publicationId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "tasks": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/ClassDutyTask"
+          }
+        },
+        "students": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "fullName": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "enrollmentId",
+              "fullName"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "studentIds": {
+                "type": "array",
+                "maxItems": 5000,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "studentIds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "preview": {
+          "type": "array",
+          "maxItems": 5000,
+          "nullable": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "studentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "task": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ASSIGNED",
+                  "DONE",
+                  "CANCELLED"
+                ]
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "studentId",
+              "date",
+              "task",
+              "status",
+              "publishedAt"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schoolId",
+        "yearId",
+        "classId",
+        "today",
+        "monday",
+        "referenceDate",
+        "startsOn",
+        "endsOn",
+        "readOnly",
+        "canEdit",
+        "canPublish",
+        "canPreview",
+        "previewStudents",
+        "publicationId",
+        "tasks",
+        "students",
+        "groups",
+        "preview"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyWorkspaceResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ClassDutyWorkspace"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTaskSave": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "object",
+          "properties": {
+            "scheduleId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expectedDataVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "assignmentIds": {
+              "type": "array",
+              "maxItems": 5000,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "groupPlanId": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          "required": [
+            "scheduleId",
+            "expectedVersion",
+            "expectedDataVersion",
+            "date",
+            "task",
+            "assignmentIds",
+            "groupPlanId"
+          ],
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 4000
+        },
+        "studentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "publish": {
+          "type": "boolean"
+        },
+        "expectedPublicationId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        }
+      },
+      "required": [
+        "source",
+        "date",
+        "task",
+        "studentIds",
+        "groupId",
+        "publish",
+        "expectedPublicationId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTaskRemove": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "object",
+          "properties": {
+            "scheduleId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expectedVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expectedDataVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "assignmentIds": {
+              "type": "array",
+              "maxItems": 5000,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "groupPlanId": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            }
+          },
+          "required": [
+            "scheduleId",
+            "expectedVersion",
+            "expectedDataVersion",
+            "date",
+            "task",
+            "assignmentIds",
+            "groupPlanId"
+          ],
+          "additionalProperties": false
+        },
+        "expectedPublicationId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        }
+      },
+      "required": [
+        "source",
+        "expectedPublicationId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTaskReceipt": {
+      "type": "object",
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PUBLISHED",
+            "REMOVED"
+          ]
+        }
+      },
+      "required": [
+        "sourceId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "ClassDutyTaskReceiptResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ClassDutyTaskReceipt"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
       ],
       "additionalProperties": false
     }
@@ -77126,6 +77707,492 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SeatingPlanResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getClassDutyWorkspace",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-workspace",
+      "title": "getClassDutyWorkspace",
+      "tag": "Classroom",
+      "permission": "duty.read",
+      "scope": "school",
+      "request": null,
+      "response": "ClassDutyWorkspace",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL16"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "weekStart",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassDutyWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "saveClassDutyTask",
+      "method": "POST",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-tasks",
+      "title": "saveClassDutyTask",
+      "tag": "Schedule",
+      "permission": "duty.manage",
+      "scope": "school",
+      "request": "ClassDutyTaskSave",
+      "response": "ClassDutyTaskReceipt",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL16"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClassDutyTaskSave"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassDutyTaskReceiptResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "removeClassDutyTask",
+      "method": "POST",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/duty-tasks/remove",
+      "title": "removeClassDutyTask",
+      "tag": "Schedule",
+      "permission": "duty.manage",
+      "scope": "school",
+      "request": "ClassDutyTaskRemove",
+      "response": "ClassDutyTaskReceipt",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL16"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClassDutyTaskRemove"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassDutyTaskReceiptResponse"
               }
             }
           }

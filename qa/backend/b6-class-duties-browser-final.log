@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:3436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\class-duties-contract.spec.ts:34:5 › class duties preserve selected group members displayed sources draft publication move and removal with own parent preview (11.9s)
+  ok 2 tests\native-ui-contract\class-duties-contract.spec.ts:40:5 › class duties keep management publication and parent preview controls separate and hide draft sources from a read-only actor (889ms)
+  ok 3 tests\native-ui-contract\class-duties-contract.spec.ts:43:5 › class duties retain unsaved fields on publication conflict and retry an uncertain command with one intent key (10.1s)
+  ok 4 tests\native-ui-contract\class-duties-contract.spec.ts:46:5 › class duty outages malformed receipts and denied scope cannot become an empty board with pupil actions (901ms)
+  ok 5 tests\native-ui-contract\class-duties-contract.spec.ts:49:5 › class duties remain readable on a390px viewport with a minimal own published preview and safe duty navigation (507ms)
+
+  5 passed (25.4s)
