@@ -6,6 +6,7 @@ import {dateDays,inclusiveDate} from '../../api/dates';
 import {apiPage,apiList} from '../../api/lists';
 import {displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {RepoError} from '../errors';
+import {guardianDirectoryRow,guardianProfile} from './guardian-mapping';
 
 export interface StudentCreateInput {
   code?:string;fullName:string;dob:string;gender:Gender;classId:ID;startDate:string;
@@ -50,6 +51,26 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
 }
 
 export const connectedStudentsRepo=withStaffAccess({
+  async setVerification(_ctx:Ctx,schoolId:ID,relationshipId:ID,status:'verified'|'revoked',note:string,source:{version:number;canReceiveInfo?:boolean}){
+    if(!['verified','revoked'].includes(status))throw new RepoError('VALIDATION','Trạng thái xác minh không hợp lệ.');
+    if(note.trim().length<3)throw new RepoError('VALIDATION','Ghi căn cứ xác minh hoặc lý do thu hồi ít nhất 3 ký tự.',{fieldErrors:{note:'Nhập căn cứ hoặc lý do ít nhất 3 ký tự.'}});
+    const expectedVersion=displayedVersion(source.version);
+    if(status==='verified'&&typeof source.canReceiveInfo!=='boolean')throw new RepoError('VALIDATION','Chọn rõ quyền nhận thông tin trước khi xác minh.',{fieldErrors:{canReceiveInfo:'Chọn có hoặc không cho nhận thông tin.'}});
+    const params={schoolId,relationshipId},data=await formResult(status==='verified'
+      ?http('verifyRelationship',{params,body:{expectedVersion,canReceiveInfo:source.canReceiveInfo!,verificationNote:note.trim()}})
+      :http('revokeRelationship',{params,body:{expectedVersion,reason:note.trim()}}),{verificationNote:'note',reason:'note'});
+    const row=data.data;
+    if(row.id!==relationshipId||row.status!==(status==='verified'?'VERIFIED':'REVOKED')||row.canReceiveInfo!==(status==='verified'?source.canReceiveInfo:false)||displayedVersion(row.version)<=expectedVersion)throw new RepoError('NETWORK','Chưa xác minh được kết quả cập nhật quan hệ. Hãy tải lại hồ sơ.');
+    return {...row,id:requiredId(row.id),schoolId,studentId:requiredId(row.studentId),guardianId:requiredId(row.guardianId),relation:row.relationshipLabel,verification:status,nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+  },
+  async guardians(_ctx:Ctx,schoolId:ID,q:ListQuery){
+    const verification=q.filters?.verification,states:Record<string,string>={verified:'VERIFIED',unverified:'UNVERIFIED',revoked:'REVOKED'};
+    if(verification&&!states[verification]||q.sort&&!['name','fullName'].includes(q.sort))throw new RepoError('VALIDATION','Bộ lọc giám hộ không hợp lệ.');
+    return apiPage('listGuardianDirectory',{params:{schoolId},query:{q:q.q,verification:verification?states[verification]:undefined,sort:'fullName',dir:q.dir??'asc'}},q,row=>guardianDirectoryRow(row,schoolId));
+  },
+  async guardian(_ctx:Ctx,schoolId:ID,guardianId:ID){const value=(await http('getGuardianDetails',{params:{schoolId,guardianId}})).data;
+    if(value.guardian.id!==guardianId)throw new RepoError('READ_ERROR','Máy chủ trả sai hồ sơ giám hộ.');return guardianProfile(value,schoolId);
+  },
   async list(_ctx:Ctx,schoolId:ID,q:ListQuery){
     const summary=(await http('getStudentDirectorySummary',{params:{schoolId},query:{yearId:q.filters?.yearId}})).data;
     const statuses:Record<string,string>={studying:'ACTIVE',left:'LEFT',graduated:'GRADUATED',archived:'ARCHIVED'},status=q.filters?.status,guardian=q.filters?.guardian;

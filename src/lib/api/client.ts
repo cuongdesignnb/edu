@@ -58,6 +58,7 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
   if(p.code==='INVALID_CREDENTIALS')code='VALIDATION';
   const messages:Partial<Record<RepoErrorCode,string>>={NO_SESSION:'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',REVOKED:'Link tra cứu không còn hiệu lực hoặc đã bị thu hồi.',NETWORK:'Không nhận được xác nhận lưu từ máy chủ. Nội dung của bạn vẫn còn; hãy thử lại.',READ_ERROR:'Không tải được dữ liệu từ máy chủ. Vui lòng thử lại.'};
   const problemMessages:Record<string,string>={
+    SHARED_GUARDIAN_SCOPE:'Liên hệ này dùng chung cho nhiều học sinh. Cần người có quyền quản lý tất cả các lớp liên quan sửa liên hệ.',
     LAST_ADMIN_REQUIRED:'Trường cần còn ít nhất một quản trị đang có hiệu lực. Hãy phân công quản trị khác trước.',
     OWN_ROLES_EDIT_FORBIDDEN:'Không thể tự thay đổi vai trò của chính mình.',OWN_ROLE_EDIT_FORBIDDEN:'Không thể sửa mẫu quyền mà bạn đang giữ.',
     SELF_SUSPENSION_FORBIDDEN:'Không thể tự khóa hoặc kết thúc thành viên của chính mình.',

@@ -1145,7 +1145,8 @@ guardian filters require independent guardian.read before SQL counts/selection.
 Directory family counters require SCHOOL guardian.read; link counts independently
 require SCHOOL parent_access.manage or parent_access.issue. Denied counts are null,
 with explicit capability flags, rather than zero. Verified counts require an
-active guardian and a live VERIFIED/can-receive-info relationship. Active-link
+active guardian and a live VERIFIED relationship. Permission to receive information
+is a separate state and does not undo verification. Active-link
 counts use actual expiry/revocation and relationship eligibility. Summary year and
 class labels are minimal picker metadata for this purpose, not year/class mutation
 or pupil/family rights. Choices have explicit bounds and fail on overflow.
@@ -1196,3 +1197,68 @@ integration, zero skipped; 25/25 backend contract/unit; 136/136 frontend API uni
 18 files; backend/frontend TypeScript and scoped lint exit0. Runtime: 294 operations,
 380 schemas, 90 unactivated candidates. Failed attempts and outstanding browser,
 frontend activation and B7 acceptance are retained in the implementation report.
+
+## ADR-052 — Scoped guardian directories and shared contact acknowledgements
+
+School guardian.read authorizes the SQL guardian directory and summary, including
+minimal related student references without granting student profiles. Current class
+and year come only from an enrollment in effect on the school's current date;
+ended enrollments remain null. Search, verification/status filters, counts and
+Vietnamese keyset ordering are evaluated in PostgreSQL. Class guardian.read may
+read the contact and only relationships whose student is currently enrolled in its
+authorized classes; the school directory/summary are denied. It must not discover
+siblings by names, identifiers, totals, search, links or audit events.
+
+Details retain real contact, relationship, student and enrollment versions,
+verification notes and revocation reasons. Link metadata requires independent
+parent_access.manage/issue authority; it never returns a reusable token/hash/link.
+School audit.read separately permits the newest 100 scoped audit metadata events
+with has-more, excluding snapshots, IP and request identifiers. Unknown and denied
+values remain null. Relationship and link limits fail explicitly at 1000; they do
+not claim complete truncated history. Verification and receiving permission are
+distinct: disabling canReceiveInfo does not make a VERIFIED relationship unverified.
+
+An existing contact edit affects every linked student, so guardian.manage for one
+class is insufficient when another linked student has no current enrollment in a
+managed class. School authority or coverage of every affected class is required.
+Existing updateGuardian acknowledgements also require current guardian.read before
+idempotency replay because they contain contact fields not submitted by the caller.
+Partial updateStudent acknowledgements redact unsubmitted dateOfBirth/preferredName
+after Commands.execute, including older stored receipts. Explicit submitted values
+remain acknowledged. Revoked access cannot become a private read through a retry.
+
+The three added read operations and strict projections preserve the earlier API
+contract. Candidate guardian list/detail/summary adapters keep real versions and
+denied null panels, reject mismatched student/relationship/link ownership and
+propagate API failures. They remain unactivated with the rest of B6; save and verify
+form wiring, root provider/facade, browser acceptance and B7 are pending. The
+candidate verification command requires the displayed relationship version and
+explicit canReceiveInfo choice, retains the same key after a lost acknowledgement,
+checks its actual result and maps note/reason errors to the existing form field.
+No replacement source version is fetched to silently overwrite concurrent edits.
+
+## ADR-053 — Local JIT control for the bounded school overview query
+
+The retained PostgreSQL integration database exposed a real statement_timeout
+failure in the existing school-class overview projection. Its plan estimated
+6,719,481.58 cost units and enabled 665 JIT functions to return at most six class
+rows. An isolated diagnostic reproduced SQLSTATE 57014 at 5001.23 ms; separate
+JIT-off executions of the original query completed at about 849–855 ms. These
+are diagnostic samples against retained synthetic history, not release p95/load
+measurements or evidence that the B7 performance gate has been met.
+
+schoolClassOverview disables JIT only locally around its existing stats and
+bounded preview SQL, then restores the prior setting on success. SQL failures
+propagate to Database.transaction and rollback restores the transaction-local
+setting. It preserves the query, ordering, result limits, tenant RLS, current
+permissions and the runtime five-second timeout. It does not alter global role,
+server, parent or worker settings. The dedicated PostgreSQL test checks identical
+results with caller JIT on/off, successful restoration and rollback after invalid
+SQL, plus the unchanged timeout. Actual diagnostic logs and full-suite outcomes
+are recorded separately; further release optimization remains a B7 obligation.
+
+Actual ADR-052/053 evidence: 145/145 full PostgreSQL, 36 verified migrations,
+26/26 backend contract/unit, 146/146 frontend API unit; TypeScript/scoped lint
+exit0. Selected overview and fixture workflows each ran 2/2 separately. Runtime
+297 operations / 390 schemas, 94 unactivated candidates. The implementation
+report retains failed attempts, image provenance and all outstanding B6/B7 gates.

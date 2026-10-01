@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-8effcd91ae5d Creating
+ Container edumanage_backend_test-runner-run-8effcd91ae5d Created
+{"kind":"school-class-preview-plan","jit":"on","cost":6719481.58,"rows":6,"jitPlan":{"Functions":665,"Options":{"Inlining":true,"Optimization":true,"Expressions":true,"Deforming":true}}}
+{"kind":"school-class-preview-execution","jit":"on","ms":4576.230474,"rowCount":6}
+{"kind":"school-overview-diagnostic","jit":"on","ms":6206.49172,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","cost":6719481.58,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","ms":849.255494,"rowCount":6}
+{"kind":"school-overview-diagnostic","jit":"off","ms":1832.3944300000012,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","cost":6719481.58,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","ms":855.4395289999993,"rowCount":6}
+{"kind":"school-overview-diagnostic","jit":"off","ms":1844.835004999999,"result":"completed"}

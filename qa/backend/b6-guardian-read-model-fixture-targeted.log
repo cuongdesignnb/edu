@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-2dedc68fdc03 Creating
+ Container edumanage_backend_test-runner-run-2dedc68fdc03 Created
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (611.442682ms)
+✔ B5 support tickets persist both sides, preserve queue states and exact timestamp pagination, and deny other schools (387.957004ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1820.440984

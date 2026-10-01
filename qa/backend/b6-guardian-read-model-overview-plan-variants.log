@@ -1,0 +1,17 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-fdd635b74663 Creating
+ Container edumanage_backend_test-runner-run-fdd635b74663 Created
+{"kind":"school-class-preview-plan","jit":"on","materialized":false,"cost":6719481.58,"rows":6,"jitPlan":{"Functions":665,"Options":{"Inlining":true,"Optimization":true,"Expressions":true,"Deforming":true}}}
+{"kind":"school-class-preview-execution","jit":"on","materialized":false,"ms":5001.234347,"errorCode":"57014"}
+{"kind":"school-overview-diagnostic","jit":"on","materialized":false,"ms":6696.863785,"errorCode":"57014"}
+{"kind":"school-class-preview-plan","jit":"on","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":{"Functions":567,"Options":{"Inlining":true,"Optimization":true,"Expressions":true,"Deforming":true}}}
+{"kind":"school-class-preview-execution","jit":"on","materialized":true,"ms":4379.909588999999,"rowCount":6,"rowHash":"1943900cde6a7be54ef51c0eaefe9ad81a2f4c2606a2df9a647753dff7063b5d"}
+{"kind":"school-overview-diagnostic","jit":"on","materialized":true,"ms":5824.678191,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","materialized":true,"ms":1399.082491000001,"rowCount":6,"rowHash":"1943900cde6a7be54ef51c0eaefe9ad81a2f4c2606a2df9a647753dff7063b5d"}
+{"kind":"school-overview-diagnostic","jit":"off","materialized":true,"ms":2461.5038210000002,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","materialized":true,"ms":1417.325707,"rowCount":6,"rowHash":"1943900cde6a7be54ef51c0eaefe9ad81a2f4c2606a2df9a647753dff7063b5d"}
+{"kind":"school-overview-diagnostic","jit":"off","materialized":true,"ms":2401.711411,"result":"completed"}

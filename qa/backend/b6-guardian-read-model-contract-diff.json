@@ -1,0 +1,24 @@
+{
+  "comparedCommit": "fd890d525b2d10542b7e01d23217b30914b61ca9",
+  "oldOperations": 294,
+  "newOperations": 297,
+  "changedOperations": [],
+  "changedSchemas": [],
+  "addedOperations": [
+    "listGuardianDirectory",
+    "getGuardianDirectorySummary",
+    "getGuardianDetails"
+  ],
+  "addedSchemas": [
+    "GuardianDirectoryStudent",
+    "GuardianDirectoryRow",
+    "GuardianDirectoryRowPage",
+    "GuardianDirectorySummary",
+    "GuardianDirectorySummaryResponse",
+    "GuardianProfileStudent",
+    "GuardianProfileRelationship",
+    "GuardianHistoryEvent",
+    "GuardianDetails",
+    "GuardianDetailsResponse"
+  ]
+}

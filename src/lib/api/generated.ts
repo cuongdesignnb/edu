@@ -380,6 +380,16 @@ export interface ApiSchemas {
   "StudentAccessEvent": { "id": string; "accessLinkId": string; "eventKind": string; "occurredAt": string; "deviceSummary": (string) | null; "section": (string) | null; "guardianName": string; "relationshipLabel": string; };
   "StudentDetails": { "student": ApiSchemas["StudentProfileCore"]; "level": "FULL" | "SUBJECT_MINIMAL"; "today": string; "year": (ApiSchemas["StudentYear"] | (null) | null); "referenceDate": (string) | null; "selectedEnrollment": (ApiSchemas["StudentSelectedEnrollment"] | (null) | null); "history": Array<ApiSchemas["StudentHistory"]>; "group": (ApiSchemas["StudentGroup"] | (null) | null); "positions": (Array<ApiSchemas["StudentPosition"]>) | null; "relationships": (Array<ApiSchemas["StudentRelationship"]>) | null; "links": (Array<ApiSchemas["StudentAccessLink"]>) | null; "accessLog": (Array<ApiSchemas["StudentAccessEvent"]>) | null; "accessLogHasMore": (boolean) | null; "internalNote": (string) | null; "perms": { "edit": boolean; "transfer": boolean; "seeGuardians": boolean; "editGuardians": boolean; "verifyGuardians": boolean; "manageLinks": boolean; "issueLinks": boolean; "revokeLinks": boolean; "seeInternalNote": boolean; "seeBirthDate": boolean; }; };
   "StudentDetailsResponse": { "data": ApiSchemas["StudentDetails"]; "requestId": string; };
+  "GuardianDirectoryStudent": { "id": string; "version": number; "name": string; "code": string; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "relationshipId": string; "relationshipVersion": number; "relation": string; "verification": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "canReceiveInfo": boolean; "isPrimaryContact": boolean; "classId": (string) | null; "className": (string) | null; "yearId": (string) | null; };
+  "GuardianDirectoryRow": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "fullName": string; "phone": (string) | null; "email": (string) | null; "status": "ACTIVE" | "ARCHIVED"; "verified": number; "unverified": number; "revoked": number; "activeLinks": (number) | null; "relationshipCount": number; "students": Array<ApiSchemas["GuardianDirectoryStudent"]>; };
+  "GuardianDirectoryRowPage": { "data": Array<ApiSchemas["GuardianDirectoryRow"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "GuardianDirectorySummary": { "guardians": number; "verified": number; "unverified": number; "revoked": number; "activeLinks": (number) | null; "canSeeLinks": boolean; "canManage": boolean; "canVerify": boolean; };
+  "GuardianDirectorySummaryResponse": { "data": ApiSchemas["GuardianDirectorySummary"]; "requestId": string; };
+  "GuardianProfileStudent": { "id": string; "version": number; "name": string; "code": string; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "classId": (string) | null; "className": (string) | null; "yearId": (string) | null; "enrollmentId": (string) | null; "enrollmentVersion": (number) | null; };
+  "GuardianProfileRelationship": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "guardianId": (string) | null; "relationshipLabel": string; "isPrimary": boolean; "canReceiveInfo": boolean; "status": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "verifiedAt": (string) | null; "revokedAt": (string) | null; "verifiedByName": (string) | null; "verificationNote": (string) | null; "revokedReason": (string) | null; "student": ApiSchemas["GuardianProfileStudent"]; "canEdit": boolean; "canVerify": boolean; "canIssue": boolean; "canRevokeLinks": boolean; "canSeeLinks": boolean; "links": (Array<ApiSchemas["StudentAccessLink"]>) | null; };
+  "GuardianHistoryEvent": { "id": string; "actorId": (string) | null; "actorName": (string) | null; "action": string; "targetType": string; "targetId": string; "at": string; "reason": (string) | null; };
+  "GuardianDetails": { "guardian": ApiSchemas["Guardian"]; "today": string; "canEditContact": boolean; "canViewHistory": boolean; "historyHasMore": (boolean) | null; "relationships": Array<ApiSchemas["GuardianProfileRelationship"]>; "history": (Array<ApiSchemas["GuardianHistoryEvent"]>) | null; };
+  "GuardianDetailsResponse": { "data": ApiSchemas["GuardianDetails"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3321,6 +3331,36 @@ export const apiOperations = {
     "response": "StudentDetails",
     "list": false,
     "permission": "student.read",
+    "readOnly": true
+  },
+  "listGuardianDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/guardian-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "GuardianDirectoryRow",
+    "list": true,
+    "permission": "guardian.read",
+    "readOnly": true
+  },
+  "getGuardianDirectorySummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/guardian-directory-summary",
+    "auth": "staff",
+    "request": null,
+    "response": "GuardianDirectorySummary",
+    "list": false,
+    "permission": "guardian.read",
+    "readOnly": true
+  },
+  "getGuardianDetails": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/guardians/{guardianId}/details",
+    "auth": "staff",
+    "request": null,
+    "response": "GuardianDetails",
+    "list": false,
+    "permission": "guardian.read",
     "readOnly": true
   }
 } as const;

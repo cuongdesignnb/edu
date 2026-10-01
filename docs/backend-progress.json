@@ -1326,9 +1326,10 @@
         "SC22"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
       ]
     },
     {
@@ -1337,9 +1338,10 @@
         "SC22"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
       ]
     },
     {
@@ -1385,9 +1387,10 @@
         "SC22"
       ],
       "milestone": null,
-      "status": "IMPLEMENTED",
+      "status": "TESTED",
       "evidence": [
-        "backend/src/modules; B2 TypeScript build"
+        "backend/src/modules; B2 TypeScript build",
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
       ]
     },
     {
@@ -3493,6 +3496,39 @@
       "evidence": [
         "qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN."
       ]
+    },
+    {
+      "operationId": "listGuardianDirectory",
+      "screenIds": [
+        "SC21"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
+      ]
+    },
+    {
+      "operationId": "getGuardianDirectorySummary",
+      "screenIds": [
+        "SC21"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
+      ]
+    },
+    {
+      "operationId": "getGuardianDetails",
+      "screenIds": [
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
+      ]
     }
   ],
   "screens": [
@@ -4083,7 +4119,9 @@
       "scope": "core",
       "operationIds": [
         "listGuardians",
-        "createGuardian"
+        "createGuardian",
+        "listGuardianDirectory",
+        "getGuardianDirectorySummary"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4099,7 +4137,8 @@
         "listRelationships",
         "createRelationship",
         "verifyRelationship",
-        "revokeRelationship"
+        "revokeRelationship",
+        "getGuardianDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

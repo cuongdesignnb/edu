@@ -30953,6 +30953,308 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/guardian-directory:
+    get:
+      operationId: listGuardianDirectory
+      tags:
+        - Students
+      summary: listGuardianDirectory
+      description: Current authorized family contacts and pupil references, with
+        independent link/audit panels; no parent accounts, unscoped siblings or
+        reusable link secrets.
+      x-permission: guardian.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC21
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: verification
+          in: query
+          schema:
+            type: string
+            enum:
+              - UNVERIFIED
+              - VERIFIED
+              - REVOKED
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - ARCHIVED
+        - name: q
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum:
+              - fullName
+        - name: dir
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 4000
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuardianDirectoryRowPage"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/guardian-directory-summary:
+    get:
+      operationId: getGuardianDirectorySummary
+      tags:
+        - Students
+      summary: getGuardianDirectorySummary
+      description: Current authorized family contacts and pupil references, with
+        independent link/audit panels; no parent accounts, unscoped siblings or
+        reusable link secrets.
+      x-permission: guardian.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC21
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuardianDirectorySummaryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/guardians/{guardianId}/details:
+    get:
+      operationId: getGuardianDetails
+      tags:
+        - Students
+      summary: getGuardianDetails
+      description: Current authorized family contacts and pupil references, with
+        independent link/audit panels; no parent accounts, unscoped siblings or
+        reusable link secrets.
+      x-permission: guardian.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC22
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: guardianId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuardianDetailsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -42622,6 +42924,434 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/StudentDetails"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    GuardianDirectoryStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        code:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LEFT
+            - GRADUATED
+            - ARCHIVED
+        relationshipId:
+          type: string
+          format: uuid
+        relationshipVersion:
+          type: integer
+          minimum: 1
+        relation:
+          type: string
+        verification:
+          type: string
+          enum:
+            - UNVERIFIED
+            - VERIFIED
+            - REVOKED
+        canReceiveInfo:
+          type: boolean
+        isPrimaryContact:
+          type: boolean
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        className:
+          type: string
+          nullable: true
+        yearId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - id
+        - version
+        - name
+        - code
+        - status
+        - relationshipId
+        - relationshipVersion
+        - relation
+        - verification
+        - canReceiveInfo
+        - isPrimaryContact
+        - classId
+        - className
+        - yearId
+      additionalProperties: false
+    GuardianDirectoryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        email:
+          type: string
+          format: email
+          nullable: true
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - ARCHIVED
+        verified:
+          type: integer
+          minimum: 0
+        unverified:
+          type: integer
+          minimum: 0
+        revoked:
+          type: integer
+          minimum: 0
+        activeLinks:
+          type: integer
+          minimum: 0
+          nullable: true
+        relationshipCount:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        students:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/GuardianDirectoryStudent"
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - fullName
+        - phone
+        - email
+        - status
+        - verified
+        - unverified
+        - revoked
+        - activeLinks
+        - relationshipCount
+        - students
+      additionalProperties: false
+    GuardianDirectoryRowPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GuardianDirectoryRow"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
+        - requestId
+      additionalProperties: false
+    GuardianDirectorySummary:
+      type: object
+      properties:
+        guardians:
+          type: integer
+          minimum: 0
+        verified:
+          type: integer
+          minimum: 0
+        unverified:
+          type: integer
+          minimum: 0
+        revoked:
+          type: integer
+          minimum: 0
+        activeLinks:
+          type: integer
+          minimum: 0
+          nullable: true
+        canSeeLinks:
+          type: boolean
+        canManage:
+          type: boolean
+        canVerify:
+          type: boolean
+      required:
+        - guardians
+        - verified
+        - unverified
+        - revoked
+        - activeLinks
+        - canSeeLinks
+        - canManage
+        - canVerify
+      additionalProperties: false
+    GuardianDirectorySummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/GuardianDirectorySummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    GuardianProfileStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        code:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LEFT
+            - GRADUATED
+            - ARCHIVED
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        className:
+          type: string
+          nullable: true
+        yearId:
+          type: string
+          format: uuid
+          nullable: true
+        enrollmentId:
+          type: string
+          format: uuid
+          nullable: true
+        enrollmentVersion:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+        - id
+        - version
+        - name
+        - code
+        - status
+        - classId
+        - className
+        - yearId
+        - enrollmentId
+        - enrollmentVersion
+      additionalProperties: false
+    GuardianProfileRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        studentId:
+          type: string
+          format: uuid
+          nullable: true
+        guardianId:
+          type: string
+          format: uuid
+          nullable: true
+        relationshipLabel:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isPrimary:
+          type: boolean
+        canReceiveInfo:
+          type: boolean
+        status:
+          type: string
+          enum:
+            - UNVERIFIED
+            - VERIFIED
+            - REVOKED
+        verifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        revokedAt:
+          type: string
+          format: date-time
+          nullable: true
+        verifiedByName:
+          type: string
+          nullable: true
+        verificationNote:
+          type: string
+          nullable: true
+        revokedReason:
+          type: string
+          nullable: true
+        student:
+          $ref: "#/components/schemas/GuardianProfileStudent"
+        canEdit:
+          type: boolean
+        canVerify:
+          type: boolean
+        canIssue:
+          type: boolean
+        canRevokeLinks:
+          type: boolean
+        canSeeLinks:
+          type: boolean
+        links:
+          type: array
+          maxItems: 1000
+          nullable: true
+          items:
+            $ref: "#/components/schemas/StudentAccessLink"
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - studentId
+        - guardianId
+        - relationshipLabel
+        - isPrimary
+        - canReceiveInfo
+        - status
+        - verifiedAt
+        - revokedAt
+        - verifiedByName
+        - verificationNote
+        - revokedReason
+        - student
+        - canEdit
+        - canVerify
+        - canIssue
+        - canRevokeLinks
+        - canSeeLinks
+        - links
+      additionalProperties: false
+    GuardianHistoryEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+          nullable: true
+        actorName:
+          type: string
+          nullable: true
+        action:
+          type: string
+        targetType:
+          type: string
+        targetId:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          nullable: true
+      required:
+        - id
+        - actorId
+        - actorName
+        - action
+        - targetType
+        - targetId
+        - at
+        - reason
+      additionalProperties: false
+    GuardianDetails:
+      type: object
+      properties:
+        guardian:
+          $ref: "#/components/schemas/Guardian"
+        today:
+          type: string
+          format: date
+        canEditContact:
+          type: boolean
+        canViewHistory:
+          type: boolean
+        historyHasMore:
+          type: boolean
+          nullable: true
+        relationships:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/GuardianProfileRelationship"
+        history:
+          type: array
+          maxItems: 100
+          nullable: true
+          items:
+            $ref: "#/components/schemas/GuardianHistoryEvent"
+      required:
+        - guardian
+        - today
+        - canEditContact
+        - canViewHistory
+        - historyHasMore
+        - relationships
+        - history
+      additionalProperties: false
+    GuardianDetailsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/GuardianDetails"
         requestId:
           type: string
       required:

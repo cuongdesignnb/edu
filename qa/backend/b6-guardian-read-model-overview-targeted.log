@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-4527c373499b Creating
+ Container edumanage_backend_test-runner-run-4527c373499b Created
+✔ B6 school overview keeps current scoped totals, actual setup and publication metadata without lending school-wide reads (3220.684108ms)
+✔ B6 bounded school class overview preserves query results, local JIT preference and the five-second runtime timeout (325.047719ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4336.476511

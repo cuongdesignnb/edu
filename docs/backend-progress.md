@@ -109,12 +109,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | rejectTransfer | SC20 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | listGuardians | SC21 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | createGuardian | SC21, SC18 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| getGuardian | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
-| updateGuardian | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| getGuardian | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
+| updateGuardian | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
 | listRelationships | SC18, SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
 | createRelationship | SC18, SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
 | verifyRelationship | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b2-integration.log; 21/21 real PostgreSQL checks |
-| revokeRelationship | SC22 | IMPLEMENTED | backend/src/modules; B2 TypeScript build |
+| revokeRelationship | SC22 | TESTED | backend/src/modules; B2 TypeScript build; qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
 | listParentAccess | SC23 | TESTED | qa/backend/parent-integration.log |
 | issueParentAccess | SC18, SC23 | TESTED | qa/backend/parent-integration.log |
 | getParentAccess | SC24 | TESTED | qa/backend/parent-integration.log |
@@ -298,6 +298,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listStudentDirectoryIds | SC16 | TESTED | qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN. |
 | getStudentDirectorySummary | SC16 | TESTED | qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN. |
 | getStudentDetails | SC18, SC19, CL02, CL03 | TESTED | qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN. |
+| listGuardianDirectory | SC21 | TESTED | qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
+| getGuardianDirectorySummary | SC21 | TESTED | qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
+| getGuardianDetails | SC22 | TESTED | qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
 
 | screenId | Scope | API status | UI status | Static mapping |
 |---|---|---|---|---|

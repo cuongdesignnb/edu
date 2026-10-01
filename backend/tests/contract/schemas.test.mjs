@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,294);assert.equal(new Set(operations.map(op=>op.id)).size,294);
+  assert.equal(operations.length,297);assert.equal(new Set(operations.map(op=>op.id)).size,297);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -103,4 +103,15 @@ test('student read models distinguish denied and unknown values and exclude reus
   const link={id,version:1,createdAt:time,updatedAt:time,studentId:id,yearId:id,relationshipId:id,allowedSections:['overview'],allowDownload:false,expiresAt:time,revokedAt:null,revokeReason:null,issuedBy:id,issuedByName:null,guardianName:'Tên giả',relationshipLabel:'Mẹ',yearName:'Năm giả',status:'ACTIVE',opens:0,lastOpenedAt:null};validateSchema('StudentAccessLink',link,true);
   for(const key of ['token','tokenHash','link'])assert.throws(()=>validateSchema('StudentAccessLink',{...link,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
   for(const op of ['listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'])assert.equal(operations.find(o=>o.id===op).permission,'student.read');
+});
+
+test('guardian projections exclude student private profiles and audit snapshots and require explicit denied panels',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',time=new Date().toISOString(),guardian={id,version:1,createdAt:time,updatedAt:time,fullName:'Liên hệ giả',phone:null,email:null,status:'ACTIVE'};
+  validateSchema('GuardianDetails',{guardian,today:'2026-10-01',canEditContact:false,canViewHistory:false,historyHasMore:null,relationships:[],history:null},true);
+  validateSchema('GuardianDirectorySummary',{guardians:0,verified:0,unverified:0,revoked:0,activeLinks:null,canSeeLinks:false,canManage:false,canVerify:false},true);
+  const student={id,version:1,name:'Học sinh giả',code:'CODE',status:'LEFT',classId:null,className:null,yearId:null,enrollmentId:null,enrollmentVersion:null};validateSchema('GuardianProfileStudent',student,true);
+  for(const key of ['dateOfBirth','internalNote','guardianPhone'])assert.throws(()=>validateSchema('GuardianProfileStudent',{...student,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  const event={id,actorId:null,actorName:null,action:'verifyRelationship',targetType:'relationship',targetId:id,at:time,reason:null};validateSchema('GuardianHistoryEvent',event,true);
+  for(const key of ['before','after','redactedAfter','requestId','ipDailyHash'])assert.throws(()=>validateSchema('GuardianHistoryEvent',{...event,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  for(const op of ['listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'])assert.equal(operations.find(o=>o.id===op).permission,'guardian.read');
 });

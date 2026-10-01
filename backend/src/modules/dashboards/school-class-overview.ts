@@ -7,6 +7,18 @@ import type {ViewContext} from './dashboards.service';
 interface Stats {total:number;active:number;draft:number;live:number;noHomeroom:number;noStudents:number;noTimetable:number}
 /** Full-scope SQL totals; only six class DTOs leave PostgreSQL for the overview table. */
 export async function schoolClassOverview(tx:Transaction,ctx:ViewContext){
+  // Retained synthetic tenant history makes the planner estimate this bounded
+  // metadata projection at millions of cost units and compile hundreds of LLVM
+  // functions. Actual scoped execution is cheaper without that compilation.
+  // Keep the setting local and restore it after success; any SQL failure bubbles
+  // to Database.transaction, whose rollback restores the original setting too.
+  const previous=(await one<{jit:string}>(tx,'SHOW jit'))!.jit;
+  if(previous!=='off')await tx.query("SELECT set_config('jit','off',true)");
+  const result=await schoolClassOverviewSql(tx,ctx);
+  if(previous!=='off')await tx.query("SELECT set_config('jit',$1,true)",[previous]);
+  return result;
+}
+async function schoolClassOverviewSql(tx:Transaction,ctx:ViewContext){
   const projection=organizationRead('class',ctx.schoolId,ctx.grants,ctx.today,true),parameters=[ctx.schoolId,...projection.bindings,ctx.year?.id??null];
   const data=`SELECT t.* FROM ${projection.resource.table} t WHERE t.school_id=$1 AND t.year_id=$4`;
   const stats=(await one<Stats>(tx,`WITH data AS (${data}) SELECT count(*)::int AS total,

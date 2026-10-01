@@ -1,0 +1,21 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-f872cbcde289 Creating
+ Container edumanage_backend_test-runner-run-f872cbcde289 Created
+{"kind":"school-class-preview-plan","jit":"on","effectiveJit":"off","materialized":false,"cost":6719481.58,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"on","materialized":false,"ms":852.4992850000001,"rowCount":6,"rowHash":"e0b3bd1e4f26f097829a9889da4633569da08b436fe13aa02477eeb34afe3a8f"}
+{"kind":"jit-restoration","jit":"on","after":"on"}
+{"kind":"school-overview-diagnostic","jit":"on","materialized":false,"ms":1952.072838,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"on","effectiveJit":"off","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"on","materialized":true,"ms":1470.308912,"rowCount":6,"rowHash":"8cd811fb6285551154715f0bde725c398ee8a9be3f4044a456a60fbd26d685f1"}
+{"kind":"jit-restoration","jit":"on","after":"on"}
+{"kind":"school-overview-diagnostic","jit":"on","materialized":true,"ms":2476.2713939999994,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","effectiveJit":"off","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","materialized":true,"ms":1383.4472070000002,"rowCount":6,"rowHash":"8cd811fb6285551154715f0bde725c398ee8a9be3f4044a456a60fbd26d685f1"}
+{"kind":"jit-restoration","jit":"off","after":"off"}
+{"kind":"school-overview-diagnostic","jit":"off","materialized":true,"ms":2370.7211690000004,"result":"completed"}
+{"kind":"school-class-preview-plan","jit":"off","effectiveJit":"off","materialized":true,"cost":6839479.9,"rows":6,"jitPlan":null}
+{"kind":"school-class-preview-execution","jit":"off","materialized":true,"ms":1361.9507089999997,"rowCount":6,"rowHash":"8cd811fb6285551154715f0bde725c398ee8a9be3f4044a456a60fbd26d685f1"}
+{"kind":"jit-restoration","jit":"off","after":"off"}
+{"kind":"school-overview-diagnostic","jit":"off","materialized":true,"ms":2354.540635999999,"result":"completed"}

@@ -8,6 +8,9 @@ import { placeEnrollment } from './enrollment';
 import {studentForm,nextStudentCode} from './student-form';
 import {studentDirectory,studentDirectorySummary} from './student-directory';
 import {studentDetails} from './student-details';
+import {canEditGuardianContact} from './guardian-policy';
+import {guardianDirectory,guardianDirectorySummary} from './guardian-directory';
+import {guardianDetails} from './guardian-details';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 @Injectable()
@@ -17,7 +20,8 @@ export class StudentsService {
     const handlers:Record<string,Handler>={};
     for(const id of ['listStudents','getStudent','getClassStudent','listClassStudents','createStudent','updateStudent',
       'listStudentEnrollments','createEnrollment','listGuardians','createGuardian','getGuardian','updateGuardian',
-      'listRelationships','createRelationship','verifyRelationship','revokeRelationship','listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'])handlers[id]=c=>this.handle(c);
+      'listRelationships','createRelationship','verifyRelationship','revokeRelationship','listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails',
+      'listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'])handlers[id]=c=>this.handle(c);
     return handlers;
   }
   private async studentScope(tx:Transaction,c:RequestContext,studentId:string,action:string){
@@ -47,6 +51,12 @@ export class StudentsService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,operation=c.operation.id,studentId=c.params.studentId??String(c.body.studentId??'');
+    if(['listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'].includes(operation))return this.db.transaction(async tx=>{
+      const access=await this.permissions.collection(tx,c.principal!,'guardian.read',schoolId);
+      if(operation==='getGuardianDetails')return {data:await guardianDetails(tx,c,access)};
+      if(operation==='getGuardianDirectorySummary')return {data:await guardianDirectorySummary(tx,c,access)};
+      return guardianDirectory(tx,c,access);
+    },{schoolId});
     if(['listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'].includes(operation))return this.db.transaction(async tx=>{
       const access=await this.permissions.collection(tx,c.principal!,'student.read',schoolId,operation==='getStudentDetails');
       if(operation==='getStudentDetails')return {data:await studentDetails(tx,c,access)};
@@ -72,7 +82,16 @@ export class StudentsService {
         return access;
       }
       if(['listGuardians','listRelationships'].includes(operation))return this.permissions.collection(tx,c.principal!,c.operation.permission,schoolId);
-      if(['getGuardian','updateGuardian'].includes(operation))return this.guardianScope(tx,c,c.params.guardianId!);
+      if(['getGuardian','updateGuardian'].includes(operation)){
+        const access=await this.guardianScope(tx,c,c.params.guardianId!);
+        if(operation==='updateGuardian'){
+          if(!await canEditGuardianContact(tx,schoolId,c.params.guardianId!,access.grants,access.today))throw new Problem(403,'SHARED_GUARDIAN_SCOPE');
+          // Existing contact acknowledgements include fields absent from a patch.
+          // Write authority alone cannot become a private contact read endpoint.
+          await this.guardianScope(tx,{...c,operation:{...c.operation,permission:'guardian.read'}},c.params.guardianId!);
+        }
+        return access;
+      }
       if(['verifyRelationship','revokeRelationship'].includes(operation)){
         const rel=await getResource(tx,resource('relationship'),schoolId,c.params.relationshipId!);
         return this.studentScope(tx,c,String(rel.student_id),c.operation.permission);
@@ -179,7 +198,15 @@ export class StudentsService {
     if(!write)return this.db.transaction(work,{schoolId});
     // Commands reserves idempotency before any mutation. work rechecks current
     // target scope within the same transaction as references and locks.
-    return this.commands.execute(c,authorize,work);
+    const result=await this.commands.execute(c,authorize,work);
+    if(operation==='updateStudent'&&result.data&&typeof result.data==='object'&&!Array.isArray(result.data)){
+      // Redact cached acknowledgements too: a partial edit must not read private
+      // fields the caller did not submit, even after its former read grant ends.
+      const data={...result.data};
+      for(const field of ['dateOfBirth','preferredName'])if(!Object.hasOwn(c.body,field))delete (data as Record<string,unknown>)[field];
+      return {...result,data};
+    }
+    return result;
   }
   private async guardianScope(tx:Transaction,c:RequestContext,guardianId:string){
     const schoolId=c.params.schoolId!;

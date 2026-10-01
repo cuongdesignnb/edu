@@ -24,7 +24,7 @@ const directory:Resource={table:`(WITH rows AS (
    AND gr.status<>'REVOKED' AND gr.revoked_at IS NULL AND g.status='ACTIVE') END AS guardian_count,
  CASE WHEN $4::boolean THEN (SELECT count(*)::int FROM app.guardian_relationships gr JOIN app.guardians g
    ON g.school_id=gr.school_id AND g.id=gr.guardian_id WHERE gr.school_id=s.school_id AND gr.student_id=s.id
-   AND gr.status='VERIFIED' AND gr.can_receive_info AND gr.revoked_at IS NULL AND g.status='ACTIVE') END AS verified_guardians,
+   AND gr.status='VERIFIED' AND gr.revoked_at IS NULL AND g.status='ACTIVE') END AS verified_guardians,
  CASE WHEN $5::boolean THEN (SELECT count(*)::int FROM app.parent_access_links l JOIN app.guardian_relationships gr
    ON gr.school_id=l.school_id AND gr.id=l.relationship_id WHERE l.school_id=s.school_id AND l.student_id=s.id AND l.year_id=$2::uuid
    AND l.revoked_at IS NULL AND l.expires_at>now() AND gr.status='VERIFIED' AND gr.can_receive_info AND gr.revoked_at IS NULL) END AS active_links,
