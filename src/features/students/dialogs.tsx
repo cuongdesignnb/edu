@@ -13,7 +13,9 @@ import { Callout } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/badge";
 import { Checkbox, DateField, ErrorSummary, RadioGroup, SelectField, TextArea, TextField } from "@/components/ui/form";
 import { Combobox } from "@/components/ui/combobox";
-import { Skeleton, ErrorState } from "@/components/ui/states";
+import { Skeleton, ErrorState, QueryState } from "@/components/ui/states";
+import { SchoolSourceState } from "@/features/school-org/common";
+import { ConflictDialog } from "@/components/ui/guards";
 import { ALL_MODULES, MODULE_HINT, QrImage, LinkBox, QrPrintCard, RELATIONS, accessUrl, fieldErrorsOf, usePrintQr } from "./shared";
 
 /** First close attempt with unsaved input shows a warning; the second closes (O32 inside dialogs). */
@@ -27,53 +29,63 @@ function useDirtyClose(dirty: boolean, open: boolean) {
 }
 
 /* ------------------------------ O09 — add / edit guardian ------------------------------ */
-export interface GuardianEditTarget { guardianId: string; relationshipId: string; fullName: string; relation: GuardianRelationship["relation"]; phoneMasked: string; email?: string; isPrimaryContact: boolean }
+export interface GuardianEditTarget { guardianId: string; relationshipId: string; fullName?: string; relation?: string; phoneMasked?: string | null; email?: string | null; isPrimaryContact?: boolean }
+type GuardianSource = Awaited<ReturnType<typeof studentsExtraRepo.guardianForm>>;
+type GuardianProps = {open:boolean;onOpenChange:(o:boolean)=>void;schoolId:string;studentId:string;studentName:string;existing?:GuardianEditTarget|null};
 
-export function GuardianDialog({ open, onOpenChange, schoolId, studentId, studentName, existing }: { open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; studentId: string; studentName: string; existing?: GuardianEditTarget | null }) {
-  const init = useMemo(() => ({ fullName: existing?.fullName ?? "", relation: existing?.relation ?? "Mẹ", phone: existing?.phoneMasked ?? "", email: existing?.email ?? "", isPrimaryContact: existing?.isPrimaryContact ?? false }), [existing]);
-  const [f, setF] = useState(init);
-  useEffect(() => { if (open) setF(init); }, [open, init]);
-  const dirty = JSON.stringify(f) !== JSON.stringify(init);
-  const { beforeClose, banner } = useDirtyClose(dirty, open);
-  const cmd = useCommand((ctx, input: Parameters<typeof studentsRepo.saveGuardian>[2]) => studentsRepo.saveGuardian(ctx, schoolId, input), { success: existing ? "Đã cập nhật người giám hộ" : "Đã thêm người giám hộ (chưa xác minh)", onSuccess: () => onOpenChange(false) });
-  const fe = fieldErrorsOf(cmd.error);
-  const submit = () => cmd.run({ studentId, guardianId: existing?.guardianId, relationshipId: existing?.relationshipId, fullName: f.fullName, relation: f.relation as GuardianRelationship["relation"], phone: f.phone, email: f.email.trim() || undefined, isPrimaryContact: f.isPrimaryContact });
-  return (
-    <Modal open={open} onOpenChange={(o) => { if (!o) cmd.reset(); onOpenChange(o); }} busy={cmd.pending} beforeClose={beforeClose}
-      title={existing ? "Sửa người giám hộ" : "Thêm người giám hộ"} description={`Học sinh: ${studentName}`}
-      footer={<><Button variant="ghost" onClick={() => { cmd.reset(); onOpenChange(false); }} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} onClick={submit}>Lưu</Button></>}>
-      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-        {banner}
-        <ErrorSummary errors={fe} labels={{ fullName: "Họ tên", phone: "Số điện thoại", email: "Email" }} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div data-field="fullName" className="sm:col-span-2"><TextField label="Họ và tên người giám hộ" required value={f.fullName} onChange={(e) => setF({ ...f, fullName: e.target.value })} error={fe.fullName} autoComplete="off" /></div>
-          <SelectField label="Quan hệ với học sinh" required value={f.relation} onChange={(e) => setF({ ...f, relation: e.target.value as GuardianRelationship["relation"] })} options={RELATIONS.map((r) => ({ value: r, label: r }))} />
-          <div data-field="phone"><TextField label="Số điện thoại liên hệ" required inputMode="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} error={fe.phone} helper={existing ? "Đang hiển thị dạng đã che. Nhập số mới nếu cần thay đổi." : "Chỉ nhân sự có quyền thấy; hiển thị dạng đã che."} /></div>
-          <div data-field="email" className="sm:col-span-2"><TextField label="Email (không bắt buộc)" type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} error={fe.email} /></div>
-        </div>
-        <Checkbox label="Liên hệ ưu tiên" description="Người được nhà trường liên hệ trước. Không liên quan đến quyền xem thông tin." checked={f.isPrimaryContact} onChange={(v) => setF({ ...f, isPrimaryContact: v })} />
-        <Callout tone="info" icon={<Info />}>Lưu thông tin liên hệ <b>không</b> có nghĩa là đã xác minh. Nhà trường không tự xác minh theo số điện thoại và không gộp người giám hộ theo số điện thoại. Xác minh là bước riêng, có ghi căn cứ.</Callout>
-      </form>
-    </Modal>
-  );
+export function GuardianDialog(props:GuardianProps) {
+  const {schoolId,studentId,existing,open}=props;
+  const q=useRepo(["guardian-form",schoolId,studentId,existing?.relationshipId],c=>studentsExtraRepo.guardianForm(c,schoolId,studentId,existing?.relationshipId),{enabled:open});
+  if(!q.data || q.error && q.error.code!=="READ_ERROR")return <Modal open={open} onOpenChange={props.onOpenChange} title={existing?"Sửa người giám hộ":"Thêm người giám hộ"}><QueryState query={q} skeleton="form">{()=>null}</QueryState></Modal>;
+  return <SchoolSourceState query={q}>{source=><GuardianBody key={`${studentId}:${existing?.relationshipId??'new'}`} {...props} current={source} reload={async()=>(await q.refetch()).data}/>}</SchoolSourceState>;
+}
+
+function GuardianBody({open,onOpenChange,schoolId,studentId,studentName,existing,current,reload}:GuardianProps&{current:GuardianSource;reload:()=>Promise<GuardianSource|undefined>}) {
+  const [source,setSource]=useState(current);
+  const snapshot=(view:GuardianSource)=>({fullName:view.target?.guardian.fullName??"",relation:view.target?.relationship.relationshipLabel??"Mẹ",phone:view.target?.guardian.phoneMasked??"",email:view.target?.guardian.email??"",isPrimaryContact:view.target?.relationship.isPrimary??false});
+  const [init,setInit]=useState(()=>snapshot(source));
+  const [f,setF]=useState(init);
+  const dirty=JSON.stringify(f)!==JSON.stringify(init);
+  const {beforeClose,banner}=useDirtyClose(dirty,open);
+  const cmd=useCommand((ctx,input:Parameters<typeof studentsRepo.saveGuardian>[2])=>studentsRepo.saveGuardian(ctx,schoolId,input),{success:existing?"Đã cập nhật người giám hộ":"Đã thêm người giám hộ (chưa xác minh)",onSuccess:()=>onOpenChange(false)});
+  const fe=fieldErrorsOf(cmd.error);
+  const submit=()=>cmd.run({studentId,guardianId:source.target?.guardian.id,relationshipId:source.target?.relationship.id,...f,email:f.email.trim()||null,source});
+  const contactLocked=!!current.target&&!current.target.canEditContact;
+  return <Modal open={open} onOpenChange={onOpenChange} busy={cmd.pending} beforeClose={beforeClose} title={existing?"Sửa người giám hộ":"Thêm người giám hộ"} description={`Học sinh: ${studentName}`}
+    footer={<><Button variant="ghost" onClick={()=>{if(beforeClose())onOpenChange(false);}} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} onClick={submit}>Lưu</Button></>}>
+    <form className="space-y-4" onSubmit={e=>{e.preventDefault();submit();}}>
+      {banner}
+      <p className="text-[12.5px] text-muted">Hồ sơ học sinh v{source.student.version}{source.target?` · giám hộ v${source.target.guardian.version} · quan hệ v${source.target.relationship.version}`:""}</p>
+      {contactLocked&&<Callout tone="neutral">Liên hệ dùng chung: bạn được sửa quan hệ với học sinh này. Thông tin liên hệ cần người có quyền quản lý tất cả lớp liên quan sửa.</Callout>}
+      <ErrorSummary errors={fe} labels={{fullName:"Họ tên",phone:"Số điện thoại",email:"Email",relation:"Quan hệ"}}/>
+      {cmd.error&&!['VALIDATION','CONFLICT'].includes(cmd.error.code)&&<ErrorState error={cmd.error} compact/>}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div data-field="fullName" className="sm:col-span-2"><TextField label="Họ và tên người giám hộ" required value={f.fullName} disabled={contactLocked} onChange={e=>setF({...f,fullName:e.target.value})} error={fe.fullName} autoComplete="off"/></div>
+        <SelectField label="Quan hệ với học sinh" required value={f.relation} onChange={e=>setF({...f,relation:e.target.value})} options={[...RELATIONS,...(!RELATIONS.includes(f.relation as GuardianRelationship['relation'])?[f.relation]:[])].map(r=>({value:r,label:r}))}/>
+        <div data-field="phone"><TextField label="Số điện thoại liên hệ" required inputMode="tel" disabled={contactLocked} value={f.phone} onChange={e=>setF({...f,phone:e.target.value})} error={fe.phone} helper={source.target?"Giữ nguyên số đã che để không đổi liên hệ. Nhập số đầy đủ nếu cần đổi.":"Hiển thị dạng đã che cho nhân sự."}/></div>
+        <div data-field="email" className="sm:col-span-2"><TextField label="Email (không bắt buộc)" type="email" disabled={contactLocked} value={f.email} onChange={e=>setF({...f,email:e.target.value})} error={fe.email}/></div>
+      </div>
+      <Checkbox label="Liên hệ ưu tiên" description="Người được nhà trường liên hệ trước. Không liên quan đến quyền xem thông tin." checked={f.isPrimaryContact} onChange={v=>setF({...f,isPrimaryContact:v})}/>
+      <Callout tone="info" icon={<Info/>}>Lưu liên hệ không tự xác minh quan hệ hoặc cấp quyền nhận thông tin. Nhà trường xác minh riêng, có ghi căn cứ.</Callout>
+    </form>
+    <ConflictDialog error={cmd.error} onClose={()=>cmd.reset()} onReload={async()=>{const view=await reload();if(view){const next=snapshot(view);setSource(view);setInit(next);setF(next);cmd.reset();}}} mine={<p>{f.fullName} · {f.relation}</p>}/>
+  </Modal>;
 }
 
 /* ------------------------------ O10 — verify / revoke relationship ------------------------------ */
-export function VerifyDialog({ target, onClose, schoolId }: { target: { relationshipId: string; to: "verified" | "revoked"; guardianName: string; relation: string; studentName: string; activeLinks: number } | null; onClose: () => void; schoolId: string }) {
-  const cmd = useCommand((ctx, id: string, st: "verified" | "revoked", note: string) => studentsRepo.setVerification(ctx, schoolId, id, st, note), { success: (r) => r.verification === "verified" ? "Đã xác minh quan hệ giám hộ" : "Đã thu hồi quan hệ giám hộ", onSuccess: onClose });
-  const fe = fieldErrorsOf(cmd.error);
-  const verify = target?.to === "verified";
-  return (
-    <ConfirmDialog open={!!target} onOpenChange={(o) => { if (!o) { cmd.reset(); onClose(); } }} busy={cmd.pending}
-      title={verify ? "Xác minh quan hệ giám hộ" : "Thu hồi quan hệ giám hộ"}
-      object={target ? `${target.guardianName} — ${target.relation} của ${target.studentName}` : undefined}
-      consequence={verify
-        ? "Sau khi xác minh, nhà trường có thể cấp link tra cứu riêng cho người này. Xác minh chỉ áp dụng cho quan hệ với học sinh này, không tạo tài khoản."
-        : <>Quan hệ chuyển sang “Đã thu hồi”. {target?.activeLinks ? <b>{target.activeLinks} link đang hoạt động của người này sẽ bị thu hồi ngay.</b> : "Người này hiện không có link đang hoạt động."} Link của người giám hộ khác không thay đổi. Lịch sử được giữ.</>}
-      confirmLabel={verify ? "Xác minh" : "Thu hồi quan hệ"} variant={verify ? "primary" : "danger"} reasonRequired
-      reasonLabel={verify ? "Căn cứ xác minh (ví dụ: đối chiếu hồ sơ nhập học, gặp trực tiếp)" : "Lý do thu hồi"} error={fe.note}
-      onConfirm={(reason) => target ? cmd.run(target.relationshipId, target.to, reason) : undefined} />
-  );
+export function VerifyDialog({target,onClose,schoolId}:{target:{relationshipId:string;version:number;to:"verified"|"revoked";guardianName:string;relation:string;studentName:string;activeLinks:number|null}|null;onClose:()=>void;schoolId:string}) {
+  const [receive,setReceive]=useState<"yes"|"no"|"">("");
+  const [missing,setMissing]=useState(false);
+  useEffect(()=>{setReceive("");setMissing(false);},[target?.relationshipId,target?.version,target?.to]);
+  const cmd=useCommand((ctx,id:string,version:number,st:"verified"|"revoked",note:string,canReceiveInfo?:boolean)=>studentsRepo.setVerification(ctx,schoolId,id,st,note,{version,canReceiveInfo}),{success:r=>r.verification==="verified"?"Đã xác minh quan hệ giám hộ":"Đã thu hồi quan hệ giám hộ",onSuccess:onClose});
+  const verify=target?.to==="verified";
+  return <ConfirmDialog open={!!target} onOpenChange={o=>{if(!o){cmd.reset();onClose();}}} busy={cmd.pending} title={verify?"Xác minh quan hệ giám hộ":"Thu hồi quan hệ giám hộ"} object={target?`${target.guardianName} — ${target.relation} của ${target.studentName} · v${target.version}`:undefined}
+    consequence={verify?"Xác minh chỉ áp dụng cho học sinh này. Chọn riêng việc được nhận thông tin; không tạo tài khoản.":<>Quan hệ chuyển sang “Đã thu hồi”. {target?.activeLinks===null?"Các link còn hiệu lực của quan hệ này sẽ bị thu hồi ngay.":target?.activeLinks?`${target.activeLinks} link đang hoạt động sẽ bị thu hồi ngay.`:"Quan hệ này hiện không có link đang hoạt động."} Lịch sử được giữ.</>}
+    confirmLabel={verify?"Xác minh":"Thu hồi quan hệ"} variant={verify?"primary":"danger"} reasonRequired reasonLabel={verify?"Căn cứ xác minh (ví dụ: đối chiếu hồ sơ nhập học, gặp trực tiếp)":"Lý do thu hồi"} error={fieldErrorsOf(cmd.error).note}
+    onConfirm={reason=>{if(!target)return;if(verify&&!receive){setMissing(true);return;}return cmd.run(target.relationshipId,target.version,target.to,reason,verify?receive==='yes':undefined);}}>
+    {verify&&<RadioGroup label="Quyền nhận thông tin đã công bố" value={receive} onChange={v=>{setReceive(v);setMissing(false);}} options={[{value:'yes',label:'Được nhận thông tin'},{value:'no',label:'Chưa được nhận thông tin'}]} error={missing?'Chọn quyền nhận thông tin trước khi xác minh.':undefined}/>}
+    {cmd.error&&cmd.error.code!=='VALIDATION'&&<ErrorState error={cmd.error} compact/>}
+  </ConfirmDialog>;
 }
 
 /* ------------------------------ O11 — transfer / leave ------------------------------ */

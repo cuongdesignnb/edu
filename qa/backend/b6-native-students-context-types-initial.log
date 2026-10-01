@@ -1,0 +1,11 @@
+src/components/layout/shells.tsx(109,9): error TS2322: Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; } | { ...; }; ... 8 more ...; retryContext: () => void; } | null' is not assignable to type 'SchoolCtx | null'.
+  Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; } | { ...; }; ... 8 more ...; retryContext: () => void; }' is not assignable to type 'SchoolCtx'.
+    Types of property 'currentYearId' are incompatible.
+      Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+src/features/school-org/classes.tsx(38,24): error TS18047: 'years' is possibly 'null'.
+src/features/school-org/classes.tsx(51,48): error TS18047: 'years' is possibly 'null'.
+src/features/school-org/classes.tsx(83,163): error TS18047: 'years' is possibly 'null'.
+src/features/school-org/year-detail.tsx(53,37): error TS2322: Type 'AcademicYear[] | null' is not assignable to type '{ id: string; label: string; status: string; }[]'.
+  Type 'null' is not assignable to type '{ id: string; label: string; status: string; }[]'.
+src/lib/repositories/connected/school.ts(36,84): error TS2551: Property 'schoolCode' does not exist on type '{ schoolId: string | null; schoolName: string; schoolSlug: string; schoolShortName: string; schoolStatus: "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; department: string; timezone: string; ... 6 more ...; grants: { ...; }[]; }'. Did you mean 'schoolId'?

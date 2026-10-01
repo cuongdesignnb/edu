@@ -6,7 +6,7 @@ import {dateDays,inclusiveDate} from '../../api/dates';
 import {apiPage,apiList} from '../../api/lists';
 import {displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {RepoError} from '../errors';
-import {guardianDirectoryRow,guardianProfile,guardianContact} from './guardian-mapping';
+import {guardianDirectoryRow,guardianProfile,guardianContact,guardianLink} from './guardian-mapping';
 import {guardianSaveBody,type GuardianSaveInput} from './guardian-form';
 
 export interface StudentCreateInput {
@@ -38,15 +38,16 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
   const family=requiredValue(view.relationships,'relationships'),links=requiredValue(view.links,'links'),logs=requiredValue(view.accessLog,'accessLog'),positions=requiredValue(view.positions,'positions');
   if(perms.seeGuardians&&family===null||perms.manageLinks&&(links===null||logs===null)||view.level==='FULL'&&positions===null)throw new RepoError('READ_ERROR','Máy chủ chưa trả đủ phần hồ sơ được phép xem.');
   if(!perms.seeGuardians&&family!==null||!perms.manageLinks&&(links!==null||logs!==null)||!perms.seeInternalNote&&(view.internalNote!==null||Object.hasOwn(view.student,'internalNote')))throw new RepoError('READ_ERROR','Phản hồi hồ sơ vượt quyền đang được xác nhận.');
+  const history=requiredValue(view.history,'history');
+  if(selected&&selected.studentId!==student.id||history.some(row=>row.studentId!==student.id)||family?.some(row=>row.studentId!==student.id||row.guardianId!==row.guardian.id)||links?.some(row=>row.studentId!==student.id)||logs?.some(row=>!links?.some(link=>link.id===row.accessLinkId)))throw new RepoError('READ_ERROR','Các phần hồ sơ không khớp học sinh hoặc link đã chọn.');
   const classView=selected?{id:requiredId(selected.classId),name:selected.className,yearId:requiredId(selected.yearId),yearLabel:selected.yearName,homeroom:selected.homeroomName,referenceDate:view.referenceDate,enrollmentId:requiredId(selected.id),enrollmentVersion:displayedVersion(selected.version)}:null;
   return {student:{...student,...(perms.seeInternalNote?{internalNote:requiredValue(view.internalNote,'internalNote')}:{})},level:view.level==='FULL'?'full' as const:'subject-minimal' as const,
     today:requiredValue(view.today,'today'),year:requiredValue(view.year,'year'),referenceDate:requiredValue(view.referenceDate,'referenceDate'),currentClass:selected?.inEffect?classView:null,lastClass:selected&&!selected.inEffect?classView:null,
     selectedEnrollment:selected,group:requiredValue(view.group,'group')?.name??null,positions:positions===null?null:positions.map(p=>p.name),nativePositions:positions,
-    history:requiredValue(view.history,'history').map(e=>({...e,schoolId,studentId:requiredId(e.studentId),classId:requiredId(e.classId),yearId:requiredId(e.yearId),startDate:e.startsOn,endDate:e.endsOn===null?null:inclusiveDate(e.endsOn),status:e.status.toLowerCase(),className:e.className,yearLabel:e.yearName,homeroom:e.homeroomName})),
-    relationships:family===null?null:family.map(r=>({...r,schoolId,studentId:requiredId(r.studentId),guardianId:requiredId(r.guardianId),relation:r.relationshipLabel,isPrimaryContact:r.isPrimary,verification:r.status.toLowerCase(),
-      guardian:{...r.guardian,schoolId,phoneMasked:r.guardian.phone===null?null:requiredValue(r.guardian.phone,'guardian.phone').replace(/(\d{4})\d+(\d{3})$/,'$1 *** $2')}})),
-    links:links===null?null:links.map(l=>({...l,schoolId,studentId:requiredId(l.studentId),yearId:requiredId(l.yearId),relationshipId:requiredId(l.relationshipId),modules:requiredValue(l.allowedSections,'allowedSections').filter(s=>s!=='overview'),
-      issuedAt:l.createdAt,relation:l.relationshipLabel,yearLabel:l.yearName,status:l.status.toLowerCase(),nativeStatus:l.status})),
+    history:history.map(e=>({...e,schoolId,studentId:requiredId(e.studentId),classId:requiredId(e.classId),yearId:requiredId(e.yearId),startDate:e.startsOn,endDate:e.endsOn===null?null:inclusiveDate(e.endsOn),status:e.status.toLowerCase(),viewStatus:e.status==='CANCELLED'?'cancelled' as const:e.status==='ENDED'||e.endsOn!==null&&e.referenceDate>=e.endsOn?'ended' as const:e.startsOn>e.referenceDate?'planned' as const:'in-effect' as const,className:e.className,yearLabel:e.yearName,homeroom:e.homeroomName})),
+    relationships:family===null?null:family.map(r=>({...r,id:requiredId(r.id),version:displayedVersion(r.version),schoolId,studentId:requiredId(r.studentId),guardianId:requiredId(r.guardianId),relation:r.relationshipLabel,isPrimaryContact:r.isPrimary,verification:r.status.toLowerCase(),
+      guardian:guardianContact(r.guardian,schoolId)})),
+    links:links===null?null:links.map(l=>guardianLink(l,schoolId)),
     accessLog:logs===null?null:logs.map(l=>({...l,schoolId,accessId:requiredId(l.accessLinkId),at:l.occurredAt,event:l.eventKind,device:l.deviceSummary,module:l.section,label:`Link cấp cho ${l.relationshipLabel.toLowerCase()} (${l.guardianName})`})),
     accessLogHasMore:requiredValue(view.accessLogHasMore,'accessLogHasMore'),perms};
 }

@@ -1,0 +1,162 @@
+{
+  "phase": "B6 native student and guardian activation; partial goal checkpoint",
+  "previousCommit": "ba7411aa4579518ec7fdb733ea718ec5a08ff09c",
+  "frontendAllUnits": {
+    "passed": 244,
+    "failed": 0,
+    "files": 27,
+    "durationSeconds": 10.36,
+    "apiCases": 203,
+    "historicalSyntheticRegressions": 41,
+    "log": "b6-native-students-all-unit-reviewed.log"
+  },
+  "earlyTargeted": {
+    "passed": 64,
+    "failed": 0,
+    "files": 4,
+    "log": "b6-native-students-api-targeted-final.log",
+    "scope": "before two additional temporal-history and malformed-link cases; both later passed in full244"
+  },
+  "typescript": {
+    "exitCode": 0,
+    "log": "b6-native-students-types-reviewed.log"
+  },
+  "productionBuild": {
+    "exitCode": 0,
+    "log": "b6-native-students-build-reviewed.log"
+  },
+  "changedSourceLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "b6-native-students-changed-lint-reviewed.log"
+  },
+  "rootLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 2,
+    "log": "b6-native-students-all-lint-updated.log",
+    "scope": "two pre-existing global-error/reports warnings; later changed files have zero warnings"
+  },
+  "browserFinal": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "stats": {
+      "startTime": "2026-10-01T05:01:29.178Z",
+      "duration": 38358.726,
+      "expected": 33,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "run": {
+      "prefix": "b6-native-students",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T05:01:27.964Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 30852,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T05:02:07.569Z",
+      "exitCode": 0
+    }
+  },
+  "earlierBrowserRuns": {
+    "initial": {
+      "startTime": "2026-10-01T04:49:19.491Z",
+      "duration": 58673.359000000004,
+      "expected": 29,
+      "skipped": 0,
+      "unexpected": 3,
+      "flaky": 0
+    },
+    "second": {
+      "startTime": "2026-10-01T04:51:01.589Z",
+      "duration": 36020.308000000005,
+      "expected": 31,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "third": {
+      "startTime": "2026-10-01T04:54:03.944Z",
+      "duration": 35407.11,
+      "expected": 32,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "fourth": {
+      "startTime": "2026-10-01T04:56:32.198Z",
+      "duration": 49422.831999999995,
+      "expected": 32,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "fifth": {
+      "startTime": "2026-10-01T04:58:18.994Z",
+      "duration": 36814.655,
+      "expected": 33,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "portBefore": {
+    "listeners": [],
+    "checkedAt": "2026-10-01T11:48:38.0578042+07:00",
+    "listenerCount": 0,
+    "port": 18763
+  },
+  "portAfter": {
+    "port": 18763,
+    "listeners": [],
+    "listenerCount": 0,
+    "checkedAt": "2026-10-01T12:03:08.6433156+07:00"
+  },
+  "inventory": {
+    "nativeCandidates": 101,
+    "activatedNativeCandidates": 101,
+    "activatedLegacyMethods": 92,
+    "legacyMethods": 231,
+    "unmatchedLegacyMethods": 139,
+    "implementedCoreScreens": 44,
+    "notStartedCoreScreens": 71,
+    "staticUnverifiedCoreScreens": 3,
+    "testedCoreScreens": 0,
+    "totalCoreScreens": 118
+  },
+  "backendUnchangedThisPhase": {
+    "postgresqlFull": 156,
+    "postgresqlSkipped": 0,
+    "migrations": 36,
+    "unitContract": 29,
+    "fullSuiteLog": "b6-student-picker-integration-full.log",
+    "scope": "latest actual API-preparation evidence; not rerun for this frontend-only phase"
+  },
+  "runtimeContract": {
+    "operations": 302,
+    "schemas": 405,
+    "testedOperations": 290,
+    "implementedOperations": 12
+  },
+  "pending": [
+    "transfer/import/export and parent-access staff commands",
+    "remaining domain facades and 139 legacy methods",
+    "native parent browser projection/viewId/CSRF flows",
+    "12 operation acceptance paths",
+    "real PostgreSQL browser E2E and all core UI acceptance",
+    "final root deploy/scripts merge and Docker 18763 serving",
+    "restart persistence, physical backup restore and release load benchmark",
+    "production target unspecified; no production deployment"
+  ],
+  "goalStatus": "ACTIVE"
+}

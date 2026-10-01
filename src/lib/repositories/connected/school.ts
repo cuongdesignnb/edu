@@ -29,9 +29,13 @@ function confirmed(row:{id?:string|null;version?:number;status?:string}|null|und
 
 export const connectedSchoolRepo=withStaffAccess({
   async context(_ctx:Ctx,schoolId:ID){
-    const [profile,rows,context]=await Promise.all([http('getSchoolProfile',{params:{schoolId}}),apiList('listYears',{params:{schoolId},query:{sort:'startsOn',dir:'desc'}},100),refreshStaffContext()]);
-    const member=context.memberships.find(m=>m.schoolId===schoolId);if(!member||member.status!=='ACTIVE')throw new RepoError('REVOKED');
-    return {school:school(profile.data),years:rows.map(row=>year(row,schoolId)),currentYearId:rows.find(row=>row.status==='ACTIVE')?.id??undefined,roleNames:[...new Set(member.grants.filter(g=>g.scopeType==='SCHOOL').map(g=>g.roleLabel))],membershipId:requiredId(member.memberId)};
+    const context=await refreshStaffContext(),member=context.memberships.find(m=>m.schoolId===schoolId);
+    if(!member||member.status!=='ACTIVE')throw new RepoError('REVOKED');
+    const canReadProfile=hasSchoolApiAction(context,schoolId,'school.read'),canReadYears=hasSchoolApiAction(context,schoolId,'year.read');
+    const [profile,rows]=await Promise.all([canReadProfile?http('getSchoolProfile',{params:{schoolId}}):null,canReadYears?apiList('listYears',{params:{schoolId},query:{sort:'startsOn',dir:'desc'}},100):null]);
+    const basic={id:requiredId(member.schoolId),name:member.schoolName,code:null,slug:member.schoolSlug,shortName:member.schoolShortName,status:member.schoolStatus.toLowerCase() as School['status'],level:null,province:null,address:null,publicEmail:null,publicPhone:null,website:null,accentColor:null,motto:null,publicIntro:null,version:null,createdAt:null,activatedAt:null,statusReason:null,onboarding:null};
+    return {school:profile?school(profile.data):basic,years:rows===null?null:rows.map(row=>year(row,schoolId)),yearMetadataAvailable:canReadYears,currentYearId:rows?.find(row=>row.status==='ACTIVE')?.id??undefined,
+      roleNames:[...new Set(member.grants.filter(g=>g.scopeType==='SCHOOL').map(g=>g.roleLabel))],membershipId:requiredId(member.memberId)};
   },
   async profile(_ctx:Ctx,schoolId:ID){const [value,context]=await Promise.all([http('getSchoolProfile',{params:{schoolId}}),refreshStaffContext()]);return {school:school(value.data),canEdit:uiActions(context,{schoolId}).has('school.profile.edit')};},
   async saveProfile(_ctx:Ctx,schoolId:ID,patch:Pick<School,'shortName'|'motto'|'publicIntro'|'publicPhone'|'publicEmail'|'address'|'website'|'accentColor'>&{version:number}){

@@ -15,7 +15,7 @@ import { SchoolStatusDialog } from "@/features/platform/school-status-dialog";
 import { ClassDrawer } from "@/features/school-org/class-drawer";
 import { InviteModal } from "@/features/school-org/invite-modal";
 import { AssignDrawer } from "@/features/school-org/assign-drawer";
-import { GuardianDialog, VerifyDialog, TransferDialog, IssueAccessDialog, RevokeAccessDialog } from "@/features/students/dialogs";
+import { GuardianDialog, TransferDialog, IssueAccessDialog, RevokeAccessDialog } from "@/features/students/dialogs";
 import { QrImage, LinkBox, accessUrl } from "@/features/students/shared";
 import { FileViewerDialog } from "@/features/activities/evidence-dialogs";
 import { ExportFormatDialog, exportReportFile, type ExportFormat } from "@/features/reports/viewer";
@@ -65,7 +65,7 @@ function O10({ open, close }: { open: boolean; close: () => void }) {
   const rel = g.data?.relationships[0];
   if (!rel) return <Modal open onOpenChange={close} title="Đang tải quan hệ giám hộ…">{g.error ? <p className="text-sm text-danger-text">{g.error.message}</p> : <Loading />}</Modal>;
   const to = rel.verification === "verified" ? "revoked" : "verified";
-  return <VerifyDialog schoolId={A} onClose={close} target={{ relationshipId: rel.id, to, guardianName: g.data!.guardian.fullName, relation: rel.relation, studentName: rel.student.name, activeLinks: rel.links.filter((l) => l.status === "active").length }} />;
+  return <Modal open onOpenChange={close} title={to === "verified" ? "Xác minh quan hệ giám hộ" : "Thu hồi quan hệ giám hộ"}><p className="text-sm text-muted">Bản xem trước chưa có phiên bản quan hệ từ API. Thực hiện xác minh tại hồ sơ học sinh hoặc giám hộ đang kết nối.</p></Modal>;
 }
 
 function StudentDialogs({ which, open, close }: { which: "O09" | "O11"; open: boolean; close: () => void }) {

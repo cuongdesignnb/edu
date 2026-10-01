@@ -35,7 +35,7 @@ export function ClassesScreen() {
   const setStatus = useCommand((c, row: ClassRow, status: ClassRow["status"], reason?: string) => schoolRepo.setClassStatus(c, school.id, row.id, status, row.version, reason), {
     success: (r) => r.status === "active" ? `Đã kích hoạt lớp ${r.name}` : r.status === "archived" ? `Đã lưu trữ lớp ${r.name}` : `Đã chuyển lớp ${r.name} về nháp`,
   });
-  const selectedYear = years.find((y) => y.id === list.query.filters?.yearId);
+  const selectedYear = years?.find((y) => y.id === list.query.filters?.yearId);
   const writable = can("class.manage") && selectedYear?.status !== "archived";
 
   // ?new=1 (from SC01 quick action) opens the create drawer once.
@@ -48,7 +48,7 @@ export function ClassesScreen() {
   }, [sp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const menu = (r: ClassRow): MenuItem[] => {
-    const rowWritable = can("class.manage") && years.find((y) => y.id === r.yearId)?.status !== "archived";
+    const rowWritable = can("class.manage") && years?.find((y) => y.id === r.yearId)?.status !== "archived";
     return [
       { label: "Mở không gian lớp", icon: <Eye />, href: `/classroom/${school.id}/${r.yearId}/${r.id}` },
       ...(rowWritable && r.status !== "archived" ? [{ label: "Sửa thông tin lớp", icon: <Pencil />, onSelect: () => setTarget({ mode: "edit", row: r }) }] : []),
@@ -80,7 +80,7 @@ export function ClassesScreen() {
       <Card>
         <CardHeader title="Lớp học" icon={<Layers className="size-6 text-primary" />} subtitle={q.data ? `${q.data.total} lớp theo bộ lọc` : undefined} />
         <FilterBar q={list.query.q ?? ""} onQ={list.setQ} placeholder="Tìm theo tên lớp, GVCN…" onReset={() => { list.reset(); list.setFilter("yearId", yearId); }} active={list.active && (!!list.query.q || Object.entries(list.query.filters ?? {}).some(([k, v]) => k !== "yearId" && v) || list.query.filters?.yearId !== yearId)}>
-          <InlineSelect label="Năm học" allLabel="Tất cả năm học" value={list.query.filters?.yearId ?? ""} onChange={(v) => list.setFilter("yearId", v)} options={years.map((y) => ({ value: y.id, label: `${y.label}${y.status === "archived" ? " (lưu trữ)" : y.status === "draft" ? " (nháp)" : ""}` }))} />
+          <InlineSelect label="Năm học" allLabel="Tất cả năm học" value={list.query.filters?.yearId ?? ""} onChange={(v) => list.setFilter("yearId", v)} disabled={years===null} options={(years ?? []).map((y) => ({ value: y.id, label: `${y.label}${y.status === "archived" ? " (lưu trữ)" : y.status === "draft" ? " (nháp)" : ""}` }))} />
           <InlineSelect label="Khối" disabled={!opts.data} allLabel="Tất cả khối" value={list.query.filters?.gradeId ?? ""} onChange={(v) => list.setFilter("gradeId", v)} options={(opts.data?.grades ?? []).map((g) => ({ value: g.id, label: g.name }))} />
           <InlineSelect label="Giáo viên chủ nhiệm" disabled={!opts.data?.teachers} allLabel="Tất cả GVCN" value={list.query.filters?.homeroom ?? ""} onChange={(v) => list.setFilter("homeroom", v)} options={[{ value: "none", label: "Chưa có GVCN" }, ...(opts.data?.teachers ?? []).map((t) => ({ value: t.userId, label: t.name }))]} />
           <InlineSelect label="Trạng thái" allLabel="Tất cả trạng thái" value={list.query.filters?.status ?? ""} onChange={(v) => list.setFilter("status", v)} options={Object.entries(classStatus).map(([value, s]) => ({ value, label: s.label }))} />

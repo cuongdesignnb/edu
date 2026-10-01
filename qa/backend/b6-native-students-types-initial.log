@@ -1,0 +1,87 @@
+src/features/class-org/student-profile.tsx(30,29): error TS18047: 'p.links' is possibly 'null'.
+src/features/class-org/student-profile.tsx(40,55): error TS2339: Property 'avatarTone' does not exist on type '{ internalNote?: string | null | undefined; initialRelationship?: { id: string | null; version: number; createdAt: string; updatedAt: string; studentId: string | null; guardianId: string | null; ... 4 more ...; verifiedAt?: string | ... 1 more ... | undefined; } | undefined; ... 13 more ...; createdAt: string; }'.
+src/features/class-org/student-profile.tsx(47,26): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(47,92): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/class-org/student-profile.tsx(56,57): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(56,78): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(56,101): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/class-org/student-profile.tsx(101,74): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/class-org/student-profile.tsx(101,93): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/class-org/student-profile.tsx(113,22): error TS18047: 'p.relationships' is possibly 'null'.
+src/features/class-org/student-profile.tsx(115,26): error TS18047: 'p.relationships' is possibly 'null'.
+src/features/class-org/student-profile.tsx(119,62): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<VerificationStatus, StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<VerificationStatus, StatusLabel>'.
+src/features/class-org/student-profile.tsx(119,146): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<VerificationStatus, StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<VerificationStatus, StatusLabel>'.
+src/features/class-org/student-profile.tsx(131,22): error TS18047: 'p.links' is possibly 'null'.
+src/features/class-org/student-profile.tsx(133,26): error TS18047: 'p.links' is possibly 'null'.
+src/features/students/dialogs.tsx(40,32): error TS2345: Argument of type '{ studentId: string; guardianId: string | undefined; relationshipId: string | undefined; fullName: string; relation: GuardianRelationship["relation"]; phone: string; email: string | undefined; isPrimaryContact: boolean; }' is not assignable to parameter of type 'GuardianSaveInput'.
+  Property 'source' is missing in type '{ studentId: string; guardianId: string | undefined; relationshipId: string | undefined; fullName: string; relation: GuardianRelationship["relation"]; phone: string; email: string | undefined; isPrimaryContact: boolean; }' but required in type 'GuardianSaveInput'.
+src/features/students/dialogs.tsx(63,102): error TS2554: Expected 6 arguments, but got 5.
+src/features/students/guardians.tsx(36,102): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(104,54): error TS2322: Type '{ id: string; at: string; title: string; detail: any; actor: string | null; tone: "blue" | "green" | "red"; }[]' is not assignable to type 'TimelineItem[]'.
+  Type '{ id: string; at: string; title: string; detail: any; actor: string | null; tone: "blue" | "green" | "red"; }' is not assignable to type 'TimelineItem'.
+    Types of property 'actor' are incompatible.
+      Type 'string | null' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(104,61): error TS18047: 'd.history' is possibly 'null'.
+src/features/students/guardians.tsx(104,173): error TS2339: Property 'entityLabel' does not exist on type '{ id: string; schoolId: string; actorName: string | null; actorId: string | null; entityType: string; entityId: string; action: string; targetType: string; targetId: string; at: string; reason: string | null; }'.
+src/features/students/guardians.tsx(125,89): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(126,24): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(128,28): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(140,285): error TS2322: Type 'string' is not assignable to type '"Mẹ" | "Bố" | "Ông" | "Bà" | "Người giám hộ khác"'.
+src/features/students/guardians.tsx(140,307): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/guardians.tsx(140,344): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(142,313): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/student-form.tsx(139,43): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-form.tsx(139,55): error TS2322: Type '"Nam" | "Nữ" | null' is not assignable to type 'Gender'.
+  Type 'null' is not assignable to type 'Gender'.
+src/features/students/student-profile.tsx(58,22): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(59,21): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(59,100): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(59,144): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(60,36): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(61,16): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(62,62): error TS2339: Property 'token' does not exist on type '{ schoolId: string; studentId: string; yearId: string; relationshipId: string; modules: ("teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents")[]; ... 20 more ...; lastOpenedAt: string | null; }'.
+src/features/students/student-profile.tsx(64,38): error TS2537: Type '{ schoolId: string; studentId: string; yearId: string; relationshipId: string; modules: ("teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents")[]; ... 20 more ...; lastOpenedAt: string | null; }[] | null' has no matching index signature for type 'number'.
+src/features/students/student-profile.tsx(65,45): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(65,79): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(79,43): error TS2339: Property 'avatarTone' does not exist on type '{ internalNote?: string | null | undefined; initialRelationship?: { id: string | null; version: number; createdAt: string; updatedAt: string; studentId: string | null; guardianId: string | null; ... 4 more ...; verifiedAt?: string | ... 1 more ... | undefined; } | undefined; ... 13 more ...; createdAt: string; }'.
+src/features/students/student-profile.tsx(110,43): error TS18047: 'd.positions' is possibly 'null'.
+src/features/students/student-profile.tsx(110,64): error TS18047: 'd.positions' is possibly 'null'.
+src/features/students/student-profile.tsx(110,87): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/students/student-profile.tsx(124,24): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(125,24): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(135,185): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(135,238): error TS2322: Type 'string' is not assignable to type '"Mẹ" | "Bố" | "Ông" | "Bà" | "Người giám hộ khác"'.
+src/features/students/student-profile.tsx(135,260): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(135,297): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-profile.tsx(136,175): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(137,186): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(138,281): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-profile.tsx(167,141): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/students/student-profile.tsx(167,211): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/students/student-profile.tsx(180,226): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(185,18): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(187,22): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(187,89): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<"revoked" | "active" | "expired", StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<"revoked" | "active" | "expired", StatusLabel>'.
+src/features/students/student-profile.tsx(247,14): error TS18047: 'd.accessLog' is possibly 'null'.
+src/features/students/student-profile.tsx(251,27): error TS18047: 'd.accessLog' is possibly 'null'.
+src/features/students/student-profile.tsx(252,122): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<"revoked" | "issued" | "opened" | "viewed" | "blocked" | "reissued", string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<"revoked" | "issued" | "opened" | "viewed" | "blocked" | "reissued", string>'.
+src/features/students/student-profile.tsx(252,164): error TS2345: Argument of type 'string | null' is not assignable to parameter of type '"overview" | ParentModule | undefined'.
+  Type 'null' is not assignable to type '"overview" | ParentModule | undefined'.

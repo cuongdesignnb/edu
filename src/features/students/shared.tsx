@@ -148,3 +148,10 @@ export function QrPrintCard({ url, studentName, className, relation, schoolName,
 export function fieldErrorsOf(e: RepoError | null | undefined): Record<string, string> {
   return e?.code === "VALIDATION" ? e.fieldErrors ?? {} : {};
 }
+
+export const ENROLLMENT_STATUS = {
+  "in-effect": {label:"Theo học tại mốc",tone:"success" as const},
+  planned: {label:"Chưa bắt đầu",tone:"info" as const},
+  ended: {label:"Đã kết thúc",tone:"neutral" as const},
+  cancelled: {label:"Đã hủy",tone:"danger" as const},
+};

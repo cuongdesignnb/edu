@@ -5,29 +5,31 @@ import { UserRound, ShieldCheck, Link2, History, CalendarCheck, Lock, ArrowLeftR
 import { sessionRepo, studentsRepo } from "@/lib/repositories";
 import { teacherExtraRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
-import { attendanceStatus, fmtDate, fmtDateTime, positionLabel, studentStatus, verificationStatus } from "@/lib/formatters";
+import { attendanceStatus, fmtDate, fmtDateTime, studentStatus, verificationStatus } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
-import { Badge, PUBLICATION_STATUS } from "@/components/ui/badge";
+import { Badge, PUBLICATION_STATUS, StatusBadge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { QueryState, Skeleton } from "@/components/ui/states";
+import { Skeleton } from "@/components/ui/states";
+import { SchoolSourceState } from "@/features/school-org/common";
+import { ENROLLMENT_STATUS } from "@/features/students/shared";
 import { TransferDialog } from "./dialogs";
 
 /** CL03 — the shared student profile, projected for the actor's class scope (subject teachers get a minimal view). */
 export function ClassStudentProfile({ studentId }: { studentId: string }) {
   const { schoolId, yearId, classId, base, can, readOnly } = useClassroom();
-  const q = useRepo(["student-profile", schoolId, studentId, classId], (ctx) => studentsRepo.profile(ctx, schoolId, studentId, classId));
+  const q = useRepo(["student-profile", schoolId, studentId, classId, yearId], (ctx) => studentsRepo.profile(ctx, schoolId, studentId, classId, yearId));
   const att = useRepo(["student-attendance", classId, studentId], (ctx) => teacherExtraRepo.studentAttendance(ctx, schoolId, yearId, classId, studentId), { retry: false });
   const school = useRepo(["school-actions", schoolId], (ctx) => sessionRepo.schoolActions(ctx, schoolId));
   const [transfer, setTransfer] = useState(false);
   return (
-    <QueryState query={q} skeleton="detail">
+    <SchoolSourceState query={q}>
       {(p) => {
         const s = p.student;
         const minimal = p.level === "subject-minimal";
         const inThisClass = p.currentClass?.id === classId;
-        const activeLinks = p.links.filter((l) => l.status === "active");
+        const activeLinks = p.links?.filter((l) => l.status === "active");
         return (
           <div className="page">
             <ClassHeader title="Hồ sơ học sinh" subtitle={`${s.fullName} · ${s.code} · Lớp ${p.currentClass?.name ?? "—"}`} crumbs={[{ label: "Học sinh", href: `${base}/students` }, { label: s.fullName }]}
@@ -37,23 +39,23 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
               <div className="min-w-0 space-y-5">
                 <Card>
                   <div className="flex flex-wrap items-center gap-4 p-5">
-                    <Avatar name={s.fullName} tone={s.avatarTone} size={72} square />
+                    <Avatar name={s.fullName} tone="blue" size={72} square />
                     <div className="min-w-0 flex-1">
                       <h2 className="text-[22px] font-extrabold text-ink">{s.fullName}</h2>
-                      <p className="text-[13.5px] text-muted">Mã {s.code} · {s.gender}{!minimal && s.dob ? ` · Sinh ngày ${fmtDate(s.dob)}` : ""}</p>
+                      <p className="text-[13.5px] text-muted">Mã {s.code} · {s.gender ?? "Không hiển thị giới tính"}{!minimal && s.dob ? ` · Sinh ngày ${fmtDate(s.dob)}` : ""}</p>
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
                         <Badge tone={studentStatus[s.status as keyof typeof studentStatus]?.tone ?? "neutral"}>{studentStatus[s.status as keyof typeof studentStatus]?.label ?? s.status}</Badge>
                         {p.group && <Badge tone="info" dot={false}>{p.group}</Badge>}
-                        {p.positions.map((x) => <Badge key={x} tone="warning" dot={false}>{positionLabel[x]}</Badge>)}
+                        {p.positions?.map((x) => <Badge key={x} tone="warning" dot={false}>{x}</Badge>)}
                       </div>
                     </div>
                     {school.data?.includes("student.view.all") && <Link href={`/school/${schoolId}/students/${studentId}`} className="card-link">Hồ sơ đầy đủ ở nhà trường <ExternalLink className="size-3.5" aria-hidden /></Link>}
                   </div>
                   <dl className="border-t border-line px-5 py-3">
-                    <InfoRow label="Lớp hiện tại">{p.currentClass ? `${p.currentClass.name} · Năm học ${p.currentClass.yearLabel}` : "Không có lớp đang học"}</InfoRow>
+                    <InfoRow label={`Lớp tại mốc ${fmtDate(p.referenceDate)}`}>{p.currentClass ? `${p.currentClass.name} · Năm học ${p.currentClass.yearLabel}` : "Không có lớp đang học"}</InfoRow>
                     <InfoRow label="Giáo viên chủ nhiệm">{p.currentClass?.homeroom || "—"}</InfoRow>
                     {!minimal && <InfoRow label="Tổ">{p.group ?? "Chưa phân tổ"}</InfoRow>}
-                    <InfoRow label="Chức vụ trong lớp">{p.positions.length ? p.positions.map((x) => positionLabel[x]).join(", ") : "—"}</InfoRow>
+                    <InfoRow label="Chức vụ trong lớp">{p.positions === null ? "Không hiển thị theo quyền" : p.positions.length ? p.positions.join(", ") : "—"}</InfoRow>
                   </dl>
                   {!minimal && p.perms.seeInternalNote && "internalNote" in s && s.internalNote && (
                     <div className="mx-5 mb-5 flex gap-2 rounded-xl bg-warning-bg px-3.5 py-2.5 text-[13.5px] text-warning-text"><StickyNote className="mt-0.5 size-4 flex-none" aria-hidden /><span><b>Ghi chú nội bộ (không chia sẻ phụ huynh):</b> {s.internalNote}</span></div>
@@ -92,13 +94,13 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
                 </Card>
 
                 <Card>
-                  <CardHeader title="Lịch sử lớp học" icon={<History className="size-5 text-primary" />} subtitle={minimal ? "Chỉ lớp hiện tại trong phạm vi của bạn" : "Mọi lần chuyển lớp / ngừng học được giữ nguyên"} />
+                  <CardHeader title="Lịch sử lớp học" icon={<History className="size-5 text-primary" />} subtitle="Các lần theo học thuộc phạm vi được phép xem" />
                   <ul className="space-y-2 px-5 pb-5">
                     {p.history.map((h) => (
                       <li key={h.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-line px-3.5 py-2.5 text-[13.5px]">
                         <b className="text-ink">Lớp {h.className}</b><span className="text-muted">· {h.yearLabel}</span>
                         <span className="text-body">từ {fmtDate(h.startDate)}{h.endDate ? ` đến ${fmtDate(h.endDate)}` : ""}</span>
-                        {h.endDate ? <Badge tone="neutral">Đã kết thúc{h.endReason ? `: ${h.endReason}` : ""}</Badge> : <Badge tone="success">Đang học</Badge>}
+                        <StatusBadge status={h.viewStatus} map={ENROLLMENT_STATUS}/>
                         {h.homeroom && <span className="ml-auto text-[12px] text-muted">GVCN: {h.homeroom}</span>}
                       </li>
                     ))}
@@ -110,13 +112,13 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
                 {p.perms.seeGuardians ? (
                   <Card>
                     <CardHeader title="Người giám hộ" icon={<UserRound className="size-5 text-primary" />} />
-                    {p.relationships.length === 0 ? <p className="px-5 pb-5 text-sm text-warning-text">Chưa có người giám hộ.</p> : (
+                    {p.relationships?.length === 0 ? <p className="px-5 pb-5 text-sm text-warning-text">Chưa có người giám hộ.</p> : (
                       <ul className="space-y-2.5 px-5 pb-5">
-                        {p.relationships.map((r) => (
+                        {p.relationships?.map((r) => (
                           <li key={r.id} className="rounded-xl border border-line p-3 text-[13.5px]">
                             <p className="flex flex-wrap items-center gap-2"><b className="text-ink">{r.guardian.fullName}</b><span className="text-muted">({r.relation})</span>{r.isPrimaryContact && <Badge tone="info" dot={false}>Liên hệ chính</Badge>}</p>
                             <p className="text-muted">Điện thoại: {r.guardian.phoneMasked}</p>
-                            <p className="mt-1"><Badge tone={verificationStatus[r.verification].tone} icon={<ShieldCheck className="size-3" />}>{verificationStatus[r.verification].label}</Badge></p>
+                            <p className="mt-1"><StatusBadge status={r.verification} map={verificationStatus} /></p>
                           </li>
                         ))}
                       </ul>
@@ -127,10 +129,10 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
                 )}
                 {p.perms.manageLinks && (
                   <Card>
-                    <CardHeader title="Link tra cứu phụ huynh" icon={<Link2 className="size-5 text-primary" />} subtitle={`${activeLinks.length} link đang hiệu lực · ${activeLinks.filter((l) => l.opens > 0).length} link đã được mở`} />
-                    {p.links.length === 0 ? <p className="px-5 pb-5 text-sm text-muted">Chưa cấp link tra cứu.</p> : (
+                    <CardHeader title="Link tra cứu phụ huynh" icon={<Link2 className="size-5 text-primary" />} subtitle={`${activeLinks?.length} link đang hiệu lực · ${activeLinks?.filter((l) => l.opens > 0).length} link đã được mở`} />
+                    {p.links?.length === 0 ? <p className="px-5 pb-5 text-sm text-muted">Chưa cấp link tra cứu.</p> : (
                       <ul className="space-y-2 px-5 pb-4">
-                        {p.links.map((l) => (
+                        {p.links?.map((l) => (
                           <li key={l.id} className="rounded-xl border border-line p-3 text-[13px]">
                             <p className="flex flex-wrap items-center gap-2"><b className="text-ink">Link cấp cho {l.relation.toLowerCase()}</b><span className="text-muted">({l.guardianName})</span></p>
                             <p className="mt-1 flex flex-wrap gap-1.5"><Badge tone={PUBLICATION_STATUS[l.status]?.tone ?? "neutral"}>{PUBLICATION_STATUS[l.status]?.label ?? l.status}</Badge>{l.status === "active" && <Badge tone={l.opens ? "success" : "neutral"}>{l.opens ? "Link đã được mở" : "Đã cấp link, chưa mở"}</Badge>}</p>
@@ -150,6 +152,6 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
           </div>
         );
       }}
-    </QueryState>
+    </SchoolSourceState>
   );
 }

@@ -3,7 +3,7 @@ import path from 'node:path';
 import ts from 'typescript';
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import {apiRepository} from '@/lib/repositories/connected/facade';
-import {platformExtraRepo,studentsRepo} from '@/lib/repositories';
+import {platformExtraRepo,studentsExtraRepo} from '@/lib/repositories';
 import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
 
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
@@ -11,7 +11,7 @@ describe('connected root boundary',()=>{
   it('delegates activated methods to the API and rejects a missing integration instead of reading a demo database',async()=>{
     authenticationChanged();setStaffCsrf('unit-csrf');const fetcher=vi.fn().mockResolvedValue(new Response(JSON.stringify({data:{codeTaken:false,slugTaken:true},requestId:'native-root'})));vi.stubGlobal('fetch',fetcher);
     expect(await platformExtraRepo.checkSchoolIdentity({} as never,'NATIVE','native-school')).toEqual({codeTaken:false,slugTaken:true});expect(fetcher.mock.calls[0][0]).toBe('/api/v1/platform/school-identity?code=NATIVE&slug=native-school');
-    await expect(studentsRepo.list({} as never,'school-id',{})).rejects.toMatchObject({code:'READ_ERROR'});expect(fetcher).toHaveBeenCalledTimes(1);
+    await expect(studentsExtraRepo.exportStudents({} as never,'school-id',[])).rejects.toMatchObject({code:'READ_ERROR'});expect(fetcher).toHaveBeenCalledTimes(1);
   });
   it('does not expose a thenable or pretend an unavailable mutation was acknowledged',async()=>{
     const repository=apiRepository<{save:()=>Promise<{ok:boolean}>},{read:()=>Promise<number>}>({read:async()=>7});

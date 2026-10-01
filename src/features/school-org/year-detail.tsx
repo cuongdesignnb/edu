@@ -178,7 +178,7 @@ function Fact({ icon, label, value, wide }: { icon: React.ReactNode; label: stri
   );
 }
 
-function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Detail; years: { id: string; label: string; status: string }[]; canAdd: boolean; onAdd: (gradeId?: string) => void; onEdit: (r: ClassRow) => void; onAssign: (classId: string) => void }) {
+function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Detail; years: { id: string; label: string; status: string }[] | null; canAdd: boolean; onAdd: (gradeId?: string) => void; onEdit: (r: ClassRow) => void; onAssign: (classId: string) => void }) {
   const { school, can } = useSchool();
   const router = useRouter();
   const [grade, setGrade] = useState("");
@@ -200,7 +200,7 @@ function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Deta
     <Card className="min-w-0">
       <CardHeader title="Danh sách lớp học theo khối" icon={<GraduationCap className="size-6 text-primary" />} action={canAdd ? <Button variant="primary" icon={<Plus className="size-4" />} onClick={() => onAdd(grade || undefined)}>Thêm lớp</Button> : undefined} />
       <div className="flex flex-wrap gap-2 px-4 pb-3">
-        <InlineSelect label="Năm học" className="!w-auto min-w-[170px] flex-[1_1_170px]" value={d.year.id} onChange={(v) => router.push(`/school/${school.id}/academic-years/${v}`)} options={years.map((y) => ({ value: y.id, label: `Năm học ${y.label}` }))} />
+        {years !== null && <InlineSelect label="Năm học" className="!w-auto min-w-[170px] flex-[1_1_170px]" value={d.year.id} onChange={(v) => router.push(`/school/${school.id}/academic-years/${v}`)} options={years.map((y) => ({ value: y.id, label: `Năm học ${y.label}` }))} />}
         <InlineSelect label="Khối" className="!w-auto min-w-[140px] flex-[1_1_140px]" allLabel="Tất cả khối" value={grade} onChange={setGrade} options={(d.classesByGrade ?? []).map((g) => ({ value: g.grade.id, label: g.grade.name }))} />
         <div className="input-icon min-w-[200px] flex-[2_1_220px]"><Search className="size-4" aria-hidden /><input className="input" type="search" placeholder="Tìm kiếm lớp học, giáo viên…" aria-label="Tìm kiếm lớp học, giáo viên" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       </div>

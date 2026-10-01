@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-students-adapter.test.ts (17 tests) 44ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (21 tests) 53ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 1970ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  1962ms
+
+ Test Files  3 passed (3)
+      Tests  41 passed (41)
+   Start at  11:42:19
+   Duration  2.96s (transform 454ms, setup 161ms, collect 1.17s, tests 2.07s, environment 1ms, prepare 348ms)

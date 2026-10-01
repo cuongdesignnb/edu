@@ -345,13 +345,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC13 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
 | SC14 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
 | SC15 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
-| SC16 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC17 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC18 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC19 | core | TESTED | NOT_STARTED |  |  |
+| SC16 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
+| SC17 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
+| SC18 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
+| SC19 | core | TESTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
 | SC20 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC21 | core | TESTED | NOT_STARTED |  |  |
-| SC22 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC21 | core | TESTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
+| SC22 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
 | SC23 | core | TESTED | NOT_STARTED |  |  |
 | SC24 | core | TESTED | NOT_STARTED |  |  |
 | SC25 | core | TESTED | NOT_STARTED |  |  |
@@ -381,7 +381,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | TE06 | core | TESTED | NOT_STARTED |  |  |
 | CL01 | core | TESTED | NOT_STARTED |  |  |
 | CL02 | core | TESTED | NOT_STARTED |  |  |
-| CL03 | core | TESTED | NOT_STARTED |  |  |
+| CL03 | core | TESTED | NOT_STARTED |  | Native student DTO, explicit class/year, denied family/position projections and temporal enrollment history prepared; classroom facade is still unactivated, so this screen remains NOT_STARTED. |
 | CL04 | core | TESTED | NOT_STARTED |  |  |
 | CL05 | core | TESTED | NOT_STARTED |  |  |
 | CL06 | core | TESTED | NOT_STARTED |  |  |

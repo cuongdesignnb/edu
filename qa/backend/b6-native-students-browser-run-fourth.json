@@ -1,0 +1,19 @@
+{
+  "prefix": "b6-native-students",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T04:56:31.089Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "portFreeBefore": true,
+  "ownedNextPid": 35196,
+  "playwrightExitCode": 1,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T04:57:21.660Z",
+  "exitCode": 1
+}

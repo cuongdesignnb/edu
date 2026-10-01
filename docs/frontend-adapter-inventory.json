@@ -3,8 +3,8 @@
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
   "candidateCount": 101,
-  "activatedCandidateCount": 90,
-  "activatedLegacyMethodCount": 83,
+  "activatedCandidateCount": 101,
+  "activatedLegacyMethodCount": 92,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3428,13 +3428,13 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsExtraRepo",
         "method": "guardianSummary",
         "file": "src/lib/repositories/connected/students-extra.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3451,13 +3451,13 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "list",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3475,13 +3475,13 @@
         "classId?: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "profile",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3498,13 +3498,13 @@
         "input: { code?: string; fullName: string; dob: string; gender: Gender; classId: ID; startDate: string; guardian?: { fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string } }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "create",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3522,13 +3522,13 @@
         "patch: { fullName: string; dob: string; gender: Gender; internalNote?: string; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "update",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3586,13 +3586,13 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "guardians",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3609,13 +3609,13 @@
         "guardianId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "guardian",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3632,13 +3632,13 @@
         "input: { studentId: ID; guardianId?: ID; relationshipId?: ID; fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string; email?: string; isPrimaryContact: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "saveGuardian",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3657,13 +3657,13 @@
         "note: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "studentsRepo",
         "method": "setVerification",
         "file": "src/lib/repositories/connected/students.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -4064,7 +4064,7 @@
       "method": "createOptions",
       "file": "src/lib/repositories/connected/students-extra.ts",
       "status": "IMPLEMENTED",
-      "activated": false,
+      "activated": true,
       "evidence": [
         "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]
@@ -4074,7 +4074,7 @@
       "method": "guardianForm",
       "file": "src/lib/repositories/connected/students-extra.ts",
       "status": "IMPLEMENTED",
-      "activated": false,
+      "activated": true,
       "evidence": [
         "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]

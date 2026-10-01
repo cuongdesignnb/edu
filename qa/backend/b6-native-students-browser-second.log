@@ -1,0 +1,82 @@
+
+Running 32 tests using 1 worker
+
+(node:44904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\auth-contract.spec.ts:35:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › ignores a persisted demo persona and requires actual API authentication (616ms)
+  ok  2 tests\native-ui-contract\auth-contract.spec.ts:42:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement (691ms)
+  ok  3 tests\native-ui-contract\auth-contract.spec.ts:59:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › accepts a new invitation only after a matching ACK and preserves the result after cache invalidation (850ms)
+  ok  4 tests\native-ui-contract\auth-contract.spec.ts:81:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › requires the invited existing identity and does not offer a password replacement (454ms)
+  ok  5 tests\native-ui-contract\auth-contract.spec.ts:87:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a reset draft after an invalid ACK and shows completion after authentication changes (656ms)
+  ok  6 tests\native-ui-contract\auth-contract.spec.ts:97:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly (840ms)
+  ok  7 tests\native-ui-contract\auth-contract.spec.ts:112:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › allows an actual nullable own work phone and saves only after the server profile acknowledgement (552ms)
+  ok  8 tests\native-ui-contract\school-contract.spec.ts:22:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps school edits on a transient read failure and removes the private form on forbidden reads (686ms)
+  ok  9 tests\native-ui-contract\school-contract.spec.ts:35:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › accepts nullable public contacts and clears dirty state only after a matching profile ACK (604ms)
+  ok 10 tests\native-ui-contract\school-contract.spec.ts:46:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › opens a school without years and keeps year creation reachable (720ms)
+  ok 11 tests\native-ui-contract\school-contract.spec.ts:59:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps a reviewed school profile through background refresh and reloads explicitly after conflict (763ms)
+  ok 12 tests\native-ui-contract\school-contract.spec.ts:76:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › creates a class with class authority alone, retains a wrong ACK and retries one atomic command (9.9s)
+  ok 13 tests\native-ui-contract\school-contract.spec.ts:102:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › shows the year calendar with year authority alone and labels denied class data (581ms)
+  ok 14 tests\native-ui-contract\staff-contract.spec.ts:26:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › renders denied assignment and history panels without inventing empty data or reading invitations (595ms)
+  ok 15 tests\native-ui-contract\staff-contract.spec.ts:37:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › keeps mixed action scopes and source version through refresh, retains read failures and reloads a role explicitly after conflict (1.0s)
+  ok 16 tests\native-ui-contract\staff-contract.spec.ts:54:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › creates an invitation through purpose-bound choices with zero roles and truthful queued delivery (761ms)
+  ok 17 tests\native-ui-contract\staff-contract.spec.ts:66:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › replaces school roles with the reviewed member version and actual delegation deadline without reading a role catalog (802ms)
+  ok 18 tests\native-ui-contract\staff-contract.spec.ts:79:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › saves the reviewed assignment dates and versions, retains a wrong ACK and manually retries the same key (913ms)
+  ok 19 tests\native-ui-contract\staff-contract.spec.ts:94:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › recovers a handover after a lost create ACK and reload, then reviews changed sources without creating a second receipt (1.4s)
+  ok 20 tests\native-ui-contract\students-contract.spec.ts:36:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › uses directory year and class choices, preserves denied counters and sends server filters (699ms)
+  ok 21 tests\native-ui-contract\students-contract.spec.ts:47:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › opens a class-write creation form without school, year or roster readers and creates atomically (822ms)
+  ok 22 tests\native-ui-contract\students-contract.spec.ts:59:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › renders the minimal subject projection without family, notes, positions or stored link credentials (610ms)
+  ok 23 tests\native-ui-contract\students-contract.spec.ts:68:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › renders existing link metadata without recovering a secret or borrowing issuance authority (683ms)
+  ok 24 tests\native-ui-contract\students-contract.spec.ts:77:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › retains the student draft and displayed version through background read failure and a wrong mutation ACK (907ms)
+  ok 25 tests\native-ui-contract\students-contract.spec.ts:89:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › uses the atomic guardian source, keeps masked contact unchanged and freezes all reviewed versions (799ms)
+  ok 26 tests\native-ui-contract\students-contract.spec.ts:101:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › requires an explicit receiving choice for verification and sends the clicked relationship version (765ms)
+  x  27 tests\native-ui-contract\students-contract.spec.ts:112:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › removes an open guardian draft when purpose authority is revoked (844ms)
+(node:33424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 28 tests\native-ui-contract\support-contract.spec.ts:26:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses server ticket totals, message counts and filters without borrowing consent authority (928ms)
+  ok 29 tests\native-ui-contract\support-contract.spec.ts:37:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › keeps a ticket draft through read failure and mismatched create ACK, then manually retries the same intent (866ms)
+  ok 30 tests\native-ui-contract\support-contract.spec.ts:51:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses the reviewed support version through refresh and retains a required decline reason on conflict (775ms)
+  ok 31 tests\native-ui-contract\support-contract.spec.ts:64:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › retains an unconfirmed school message and sends the same key on manual retry (670ms)
+  ok 32 tests\native-ui-contract\support-contract.spec.ts:76:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses audit SQL filters and removes a private detail drawer when read authority is denied (720ms)
+
+
+  1) tests\native-ui-contract\students-contract.spec.ts:112:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › removes an open guardian draft when purpose authority is revoked
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)
+    Expected: visible
+    Error: strict mode violation: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) resolved to 2 elements:
+        1) <p class="text-base font-semibold text-ink">Bạn không có quyền xem mục này</p> aka getByText('Bạn không có quyền xem mục này')
+        2) <div class="mt-1 max-w-md text-sm text-muted">Bạn không có quyền thực hiện thao tác này trong p…</div> aka getByText('Bạn không có quyền thực hiện')
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) with timeout 10000ms
+      - waiting for getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)
+
+
+      117 |       return deny(r);
+      118 |     });
+    > 119 |     await page.goto(`${web}/guardians/${guardianId}`);await page.getByRole('button',{name:'Sửa liên hệ',exact:true}).click();await page.getByLabel(/^Họ và tên người giám hộ/).fill('Nội dung riêng');const prior=reads;denied=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect.poll(()=>reads).toBeGreaterThan(prior);await expect(page.getByLabel(/^Họ và tên người giám hộ/)).toHaveCount(0);await expect(page.locator('input[value="Nội dung riêng"]')).toHaveCount(0);await expect(page.getByRole('dialog',{name:'Sửa người giám hộ',exact:true}).getByText(/không có quyền/)).toBeVisible();
+          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+      120 |   });
+      121 | });
+      122 |
+        at D:\Edu\tests\native-ui-contract\students-contract.spec.ts:119:600
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-native-students-browser-artifacts-final\students-contract-Native-s-876d1-urpose-authority-is-revoked\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-native-students-browser-artifacts-final\students-contract-Native-s-876d1-urpose-authority-is-revoked\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-native-students-browser-artifacts-final\students-contract-Native-s-876d1-urpose-authority-is-revoked\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-native-students-browser-artifacts-final\students-contract-Native-s-876d1-urpose-authority-is-revoked\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\students-contract.spec.ts:112:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › removes an open guardian draft when purpose authority is revoked
+  31 passed (36.0s)

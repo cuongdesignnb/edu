@@ -1,0 +1,1292 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-native-students-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-native-students-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth-contract.spec.ts",
+      "file": "auth-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native browser contract with intercepted API responses — PostgreSQL E2E remains separate",
+          "file": "auth-contract.spec.ts",
+          "line": 34,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ignores a persisted demo persona and requires actual API authentication",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 616,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:02.065Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-c644a348057d54a485d7",
+              "file": "auth-contract.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "keeps a failed login form and retries the same intent before navigating on acknowledgement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 691,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:03.088Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-77e0d6b94cf486f1645f",
+              "file": "auth-contract.spec.ts",
+              "line": 42,
+              "column": 7
+            },
+            {
+              "title": "accepts a new invitation only after a matching ACK and preserves the result after cache invalidation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 850,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:03.787Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-f082bc19b47b5c6151c3",
+              "file": "auth-contract.spec.ts",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "requires the invited existing identity and does not offer a password replacement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 454,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:04.644Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-8e06fabfa74c8e5e0102",
+              "file": "auth-contract.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "keeps a reset draft after an invalid ACK and shows completion after authentication changes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 656,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:05.109Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-32636aa696191dff6a12",
+              "file": "auth-contract.spec.ts",
+              "line": 87,
+              "column": 7
+            },
+            {
+              "title": "retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 840,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:05.775Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-5e4d2742732036105b7d",
+              "file": "auth-contract.spec.ts",
+              "line": 97,
+              "column": 7
+            },
+            {
+              "title": "allows an actual nullable own work phone and saves only after the server profile acknowledgement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 552,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:06.625Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-403e563a20e39573b781",
+              "file": "auth-contract.spec.ts",
+              "line": 112,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "school-contract.spec.ts",
+      "file": "school-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native school browser contract — intercepted API, separate from PostgreSQL E2E",
+          "file": "school-contract.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "keeps school edits on a transient read failure and removes the private form on forbidden reads",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 686,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:07.195Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-5c3d5c57a2bf81ce69f2",
+              "file": "school-contract.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "accepts nullable public contacts and clears dirty state only after a matching profile ACK",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 604,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:07.890Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-55ebe53a85ff82ba2c56",
+              "file": "school-contract.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "opens a school without years and keeps year creation reachable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 720,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:08.502Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-84055ea3f83734dbd86f",
+              "file": "school-contract.spec.ts",
+              "line": 46,
+              "column": 7
+            },
+            {
+              "title": "keeps a reviewed school profile through background refresh and reloads explicitly after conflict",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 763,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:09.230Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-ea58a4ed08f7894a19c5",
+              "file": "school-contract.spec.ts",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "creates a class with class authority alone, retains a wrong ACK and retries one atomic command",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9918,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:10.002Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-4f7c7d9046239b1f4953",
+              "file": "school-contract.spec.ts",
+              "line": 76,
+              "column": 7
+            },
+            {
+              "title": "shows the year calendar with year authority alone and labels denied class data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 581,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:19.928Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ff3b673ed9e5134385d7-503a50a43d6da5231173",
+              "file": "school-contract.spec.ts",
+              "line": 102,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "staff-contract.spec.ts",
+      "file": "staff-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native staff browser contracts — intercepted API, separate from PostgreSQL E2E",
+          "file": "staff-contract.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "renders denied assignment and history panels without inventing empty data or reading invitations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 595,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:20.532Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-d32ef4455cb2bf7eb742",
+              "file": "staff-contract.spec.ts",
+              "line": 26,
+              "column": 7
+            },
+            {
+              "title": "keeps mixed action scopes and source version through refresh, retains read failures and reloads a role explicitly after conflict",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1034,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:21.137Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-869116c99e71166df6f6",
+              "file": "staff-contract.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "creates an invitation through purpose-bound choices with zero roles and truthful queued delivery",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 761,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:22.181Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-7893a05163fb55e13b16",
+              "file": "staff-contract.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "replaces school roles with the reviewed member version and actual delegation deadline without reading a role catalog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 802,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:22.958Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-e716659ef0a9d0026890",
+              "file": "staff-contract.spec.ts",
+              "line": 66,
+              "column": 7
+            },
+            {
+              "title": "saves the reviewed assignment dates and versions, retains a wrong ACK and manually retries the same key",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 913,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:23.768Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-fc24c8844741d39e1cb0",
+              "file": "staff-contract.spec.ts",
+              "line": 79,
+              "column": 7
+            },
+            {
+              "title": "recovers a handover after a lost create ACK and reload, then reviews changed sources without creating a second receipt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1380,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:24.691Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b72e4a0fd7fa62a9d69-46bd0660e0cd354a30a7",
+              "file": "staff-contract.spec.ts",
+              "line": 94,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "students-contract.spec.ts",
+      "file": "students-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E",
+          "file": "students-contract.spec.ts",
+          "line": 35,
+          "column": 6,
+          "specs": [
+            {
+              "title": "uses directory year and class choices, preserves denied counters and sends server filters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 699,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:26.096Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-4962007445ed03e01ce2",
+              "file": "students-contract.spec.ts",
+              "line": 36,
+              "column": 7
+            },
+            {
+              "title": "opens a class-write creation form without school, year or roster readers and creates atomically",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 822,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:26.803Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-5a69f2cad74c05fc252d",
+              "file": "students-contract.spec.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "renders the minimal subject projection without family, notes, positions or stored link credentials",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 610,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:27.635Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-1d7d283107ac4189a8b1",
+              "file": "students-contract.spec.ts",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "renders existing link metadata without recovering a secret or borrowing issuance authority",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 683,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:28.252Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-6d468280835c417889bb",
+              "file": "students-contract.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "retains the student draft and displayed version through background read failure and a wrong mutation ACK",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 907,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:28.943Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-335f680396b15dbd93d0",
+              "file": "students-contract.spec.ts",
+              "line": 77,
+              "column": 7
+            },
+            {
+              "title": "uses the atomic guardian source, keeps masked contact unchanged and freezes all reviewed versions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 799,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:29.859Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-ea55bc201231cee9b45a",
+              "file": "students-contract.spec.ts",
+              "line": 89,
+              "column": 7
+            },
+            {
+              "title": "requires an explicit receiving choice for verification and sends the clicked relationship version",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 765,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:30.667Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-43527f7824e145a07aa5",
+              "file": "students-contract.spec.ts",
+              "line": 101,
+              "column": 7
+            },
+            {
+              "title": "removes an open guardian draft when purpose authority is revoked",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 844,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\nExpected: visible\nError: strict mode violation: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) resolved to 2 elements:\n    1) <p class=\"text-base font-semibold text-ink\">Bạn không có quyền xem mục này</p> aka getByText('Bạn không có quyền xem mục này')\n    2) <div class=\"mt-1 max-w-md text-sm text-muted\">Bạn không có quyền thực hiện thao tác này trong p…</div> aka getByText('Bạn không có quyền thực hiện')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\nExpected: visible\nError: strict mode violation: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) resolved to 2 elements:\n    1) <p class=\"text-base font-semibold text-ink\">Bạn không có quyền xem mục này</p> aka getByText('Bạn không có quyền xem mục này')\n    2) <div class=\"mt-1 max-w-md text-sm text-muted\">Bạn không có quyền thực hiện thao tác này trong p…</div> aka getByText('Bạn không có quyền thực hiện')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\u001b[22m\n\n    at D:\\Edu\\tests\\native-ui-contract\\students-contract.spec.ts:119:600",
+                        "location": {
+                          "file": "D:\\Edu\\tests\\native-ui-contract\\students-contract.spec.ts",
+                          "column": 600,
+                          "line": 119
+                        },
+                        "snippet": "  117 |       return deny(r);\n  118 |     });\n> 119 |     await page.goto(`${web}/guardians/${guardianId}`);await page.getByRole('button',{name:'Sửa liên hệ',exact:true}).click();await page.getByLabel(/^Họ và tên người giám hộ/).fill('Nội dung riêng');const prior=reads;denied=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect.poll(()=>reads).toBeGreaterThan(prior);await expect(page.getByLabel(/^Họ và tên người giám hộ/)).toHaveCount(0);await expect(page.locator('input[value=\"Nội dung riêng\"]')).toHaveCount(0);await expect(page.getByRole('dialog',{name:'Sửa người giám hộ',exact:true}).getByText(/không có quyền/)).toBeVisible();\n      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^\n  120 |   });\n  121 | });\n  122 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\Edu\\tests\\native-ui-contract\\students-contract.spec.ts",
+                            "column": 600,
+                            "line": 119
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\nExpected: visible\nError: strict mode violation: getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) resolved to 2 elements:\n    1) <p class=\"text-base font-semibold text-ink\">Bạn không có quyền xem mục này</p> aka getByText('Bạn không có quyền xem mục này')\n    2) <div class=\"mt-1 max-w-md text-sm text-muted\">Bạn không có quyền thực hiện thao tác này trong p…</div> aka getByText('Bạn không có quyền thực hiện')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('dialog', { name: 'Sửa người giám hộ', exact: true }).getByText(/không có quyền/)\u001b[22m\n\n\n  117 |       return deny(r);\n  118 |     });\n> 119 |     await page.goto(`${web}/guardians/${guardianId}`);await page.getByRole('button',{name:'Sửa liên hệ',exact:true}).click();await page.getByLabel(/^Họ và tên người giám hộ/).fill('Nội dung riêng');const prior=reads;denied=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect.poll(()=>reads).toBeGreaterThan(prior);await expect(page.getByLabel(/^Họ và tên người giám hộ/)).toHaveCount(0);await expect(page.locator('input[value=\"Nội dung riêng\"]')).toHaveCount(0);await expect(page.getByRole('dialog',{name:'Sửa người giám hộ',exact:true}).getByText(/không có quyền/)).toBeVisible();\n      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^\n  120 |   });\n  121 | });\n  122 |\n    at D:\\Edu\\tests\\native-ui-contract\\students-contract.spec.ts:119:600"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:31.440Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-students-browser-artifacts-final\\students-contract-Native-s-876d1-urpose-authority-is-revoked\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-students-browser-artifacts-final\\students-contract-Native-s-876d1-urpose-authority-is-revoked\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-students-browser-artifacts-final\\students-contract-Native-s-876d1-urpose-authority-is-revoked\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\students-contract.spec.ts",
+                        "column": 600,
+                        "line": 119
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4ed4c34e09d1346d692a-321540ac84c4003f514e",
+              "file": "students-contract.spec.ts",
+              "line": 112,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "support-contract.spec.ts",
+      "file": "support-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native school support browser contracts — intercepted API, separate from PostgreSQL E2E",
+          "file": "support-contract.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "uses server ticket totals, message counts and filters without borrowing consent authority",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:33.011Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "30a0b73788af9e9fddea-084e09d356428b639c56",
+              "file": "support-contract.spec.ts",
+              "line": 26,
+              "column": 7
+            },
+            {
+              "title": "keeps a ticket draft through read failure and mismatched create ACK, then manually retries the same intent",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 866,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:34.312Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "30a0b73788af9e9fddea-bb40bd2364e229773aeb",
+              "file": "support-contract.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "uses the reviewed support version through refresh and retains a required decline reason on conflict",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 775,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:35.185Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "30a0b73788af9e9fddea-5e685d56c82af72d96fc",
+              "file": "support-contract.spec.ts",
+              "line": 51,
+              "column": 7
+            },
+            {
+              "title": "retains an unconfirmed school message and sends the same key on manual retry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 670,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:35.970Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "30a0b73788af9e9fddea-80e87f95de0fd4af2e9a",
+              "file": "support-contract.spec.ts",
+              "line": 64,
+              "column": 7
+            },
+            {
+              "title": "uses audit SQL filters and removes a private detail drawer when read authority is denied",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 720,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T04:51:36.649Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "30a0b73788af9e9fddea-3745d66f6941e72189b8",
+              "file": "support-contract.spec.ts",
+              "line": 76,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-01T04:51:01.589Z",
+    "duration": 36020.308000000005,
+    "expected": 31,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

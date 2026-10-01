@@ -5,6 +5,8 @@ import {connectedPlatformRepo} from './connected/platform';
 import {connectedSchoolRepo} from './connected/school';
 import {connectedStaffRepo} from './connected/staff';
 import {connectedSupportRepo} from './connected/support';
+import {connectedStudentsRepo} from './connected/students';
+import {connectedStudentsExtraRepo} from './connected/students-extra';
 
 import {connectedPlatformExtraRepo} from './connected/platform';
 import {connectedAuthRepo} from './connected/auth';
@@ -13,11 +15,11 @@ export const sessionRepo=apiRepository<typeof import('./session').sessionRepo,ty
 export const platformRepo=apiRepository<typeof import('./platform').platformRepo,typeof connectedPlatformRepo>(connectedPlatformRepo);
 export const schoolRepo=apiRepository<typeof import('./school').schoolRepo,typeof connectedSchoolRepo>(connectedSchoolRepo);
 export const staffRepo=apiRepository<typeof import('./staff').staffRepo,typeof connectedStaffRepo>(connectedStaffRepo);
-export const studentsRepo=apiRepository<typeof import('./students').studentsRepo,object>({});
+export const studentsRepo=apiRepository<typeof import('./students').studentsRepo,typeof connectedStudentsRepo>(connectedStudentsRepo);
 export const supportRepo=apiRepository<typeof import('./support').supportRepo,typeof connectedSupportRepo>(connectedSupportRepo);
 export const platformExtraRepo=apiRepository<typeof import('./platform-extra').platformExtraRepo,typeof connectedPlatformExtraRepo>(connectedPlatformExtraRepo);
 export const authDemoRepo=apiRepository<typeof import('./platform-extra').authDemoRepo,typeof connectedAuthRepo>(connectedAuthRepo);
-export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,object>({});
+export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,typeof connectedStudentsExtraRepo>(connectedStudentsExtraRepo);
 export const classroomRepo=apiRepository<typeof import('./classroom').classroomRepo,object>({});
 export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,object>({});
 export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,object>({});

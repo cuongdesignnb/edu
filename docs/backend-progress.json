@@ -4183,8 +4183,11 @@
         "getStudentDirectorySummary"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4196,8 +4199,11 @@
         "getStudentCreateOptions"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4213,8 +4219,11 @@
         "getStudentDetails"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4226,8 +4235,11 @@
         "getStudentDetails"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4257,8 +4269,11 @@
         "getGuardianDirectorySummary"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4276,8 +4291,11 @@
         "saveStudentGuardian"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4674,7 +4692,9 @@
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
-      "evidence": [],
+      "evidence": [
+        "Native student DTO, explicit class/year, denied family/position projections and temporal enrollment history prepared; classroom facade is still unactivated, so this screen remains NOT_STARTED."
+      ],
       "apiStatus": "TESTED"
     },
     {

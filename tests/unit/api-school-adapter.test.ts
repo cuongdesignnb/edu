@@ -2,6 +2,7 @@ import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 import {connectedSchoolRepo} from '@/lib/repositories/connected/school';
 import type {Ctx} from '@/lib/repositories/core';
 import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
+import {refreshStaffContext} from '@/lib/api/session';
 import {inclusiveDate,exclusiveDate} from '@/lib/api/dates';
 import {uiActions,hasSchoolApiAction} from '@/lib/api/permissions';
 
@@ -14,6 +15,12 @@ beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(uiAc
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 
 describe('school API adapter candidates',()=>{
+  it('uses membership context for purpose-write pages without borrowing school or year readers',async()=>{
+    vi.mocked(refreshStaffContext).mockResolvedValueOnce({memberships:[{schoolId,memberId:itemId,status:'ACTIVE',schoolName:'Trường theo lớp',schoolSlug:'scoped',schoolShortName:'Lớp',schoolStatus:'ACTIVE',grants:[]}]} as never);
+    const fetcher=vi.fn();vi.stubGlobal('fetch',fetcher);const value=await connectedSchoolRepo.context(ctx,schoolId);
+    expect(value).toMatchObject({school:{id:schoolId,name:'Trường theo lớp',slug:'scoped',code:null,version:null,accentColor:null},years:null,yearMetadataAvailable:false,membershipId:itemId});expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it('reads the actual grade catalog with read authority without calling a management picker',async()=>{
     vi.mocked(uiActions).mockReturnValue(new Set(['class.view']));vi.mocked(hasSchoolApiAction).mockReturnValue(true);
     const grade={id:schoolId,version:1,code:'10',name:'Khối 10',gradeLevel:10,status:'ACTIVE',inUse:false};
