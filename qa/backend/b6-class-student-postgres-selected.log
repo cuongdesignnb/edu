@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-runner-run-822b8bf3c7cb Creating 
+ Container edumanage_backend_test-runner-run-822b8bf3c7cb Created 
+✔ B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes (1380.340059ms)
+✔ B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority (800.085664ms)
+✔ B6 native student projections separate school roster authority from family, note and link authority in the same session (454.593594ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3478.162603
+EXIT_CODE=0

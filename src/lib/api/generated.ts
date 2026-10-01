@@ -481,6 +481,8 @@ export interface ApiSchemas {
   "ClassRosterWorkspaceResponse": { "data": ApiSchemas["ClassRosterWorkspace"]; "requestId": string; };
   "ClassTransferOptions": { "schoolId": string; "yearId": string; "classId": string; "today": string; "referenceDate": string; "startsOn": string; "endsOn": string; "students": Array<{ "id": string; "fullName": string; "studentCode": string; "enrollmentId": string; "enrollmentVersion": number; "startsOn": string; "endsOn": (string) | null; }>; "targets": Array<{ "id": string; "name": string; "size": number; "capacity": (number) | null; }>; };
   "ClassTransferOptionsResponse": { "data": ApiSchemas["ClassTransferOptions"]; "requestId": string; };
+  "ClassStudentAttendance": { "schoolId": string; "yearId": string; "classId": string; "studentId": string; "today": string; "referenceDate": string; "className": string; "sessions": number; "published": number; "tally": { "PRESENT": number; "LATE": number; "EXCUSED": number; "UNEXCUSED": number; "UNMARKED": number; }; "notable": Array<{ "date": string; "status": "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "note": (string) | null; "published": boolean; }>; };
+  "ClassStudentAttendanceResponse": { "data": ApiSchemas["ClassStudentAttendance"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3992,6 +3994,16 @@ export const apiOperations = {
     "response": "ClassTransferOptions",
     "list": false,
     "permission": "student.transfer.request",
+    "readOnly": true
+  },
+  "getClassStudentAttendance": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/students/{studentId}/attendance",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassStudentAttendance",
+    "list": false,
+    "permission": "attendance.read",
     "readOnly": true
   }
 } as const;

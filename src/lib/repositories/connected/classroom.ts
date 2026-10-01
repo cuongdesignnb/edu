@@ -12,6 +12,7 @@ import {readGroupWorkspace,readSeatingWorkspace,moveClassGroup,changeClassPositi
 import {readDutyWorkspace,saveDutyTask,removeDutyTask} from './classroom-duties';
 import {mondayOf} from '../../calendar';
 import {readClassRoster,readTransferOptions,requestClassTransfer} from './classroom-roster';
+import {readClassStudentAttendance} from './class-student-attendance';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -64,6 +65,7 @@ export const connectedClassroomRepo=withStaffAccess({
   async teacherClasses(_ctx:Ctx,schoolId:string,includeEnded=false){return cards(schoolId,includeEnded);},
 });
 export const connectedTeacherExtraRepo=withStaffAccess({
+  async studentAttendance(_ctx:Ctx,schoolId:string,yearId:string,classId:string,studentId:string){return readClassStudentAttendance(schoolId,yearId,classId,studentId);},
   async transferTargets(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate?:string){return readTransferOptions(schoolId,yearId,classId,onDate);},
   async myClassActions(_ctx:Ctx,schoolId:string):Promise<Record<string,string[]>>{return Object.fromEntries((await cards(schoolId)).map(c=>[c.id,c.actions]));},
 });

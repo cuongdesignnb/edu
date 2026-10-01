@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:14848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\class-student-contract.spec.ts:21:5 › class student profile shows actual own attendance current scoped family history and independent transfer authority (902ms)
+  ok 2 tests\native-ui-contract\class-student-contract.spec.ts:22:5 › subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile (510ms)
+  ok 3 tests\native-ui-contract\class-student-contract.spec.ts:23:5 › class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts (861ms)
+  ok 4 tests\native-ui-contract\class-student-contract.spec.ts:24:5 › a failed or foreign year profile cannot display pupil family or launch the subordinate attendance purpose (521ms)
+
+  4 passed (3.8s)

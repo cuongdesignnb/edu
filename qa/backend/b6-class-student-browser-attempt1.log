@@ -1,0 +1,95 @@
+
+Running 4 tests using 1 worker
+
+(node:17916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 tests\native-ui-contract\class-student-contract.spec.ts:21:5 › class student profile shows actual own attendance current scoped family history and independent transfer authority (10.6s)
+(node:53828) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 tests\native-ui-contract\class-student-contract.spec.ts:22:5 › subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile (684ms)
+  x  3 tests\native-ui-contract\class-student-contract.spec.ts:23:5 › class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts (10.4s)
+(node:52516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 tests\native-ui-contract\class-student-contract.spec.ts:24:5 › a failed or foreign year profile cannot display pupil family or launch the subordinate attendance purpose (550ms)
+
+
+  1) tests\native-ui-contract\class-student-contract.spec.ts:21:5 › class student profile shows actual own attendance current scoped family history and independent transfer authority 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms
+      - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })
+
+
+      18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});
+      19 |  });}
+    > 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}
+         |                                                                                                                                                                                       ^
+      21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});
+      22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+      23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});
+        at open (D:\Edu\tests\native-ui-contract\class-student-contract.spec.ts:20:183)
+        at D:\Edu\tests\native-ui-contract\class-student-contract.spec.ts:21:155
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-e5897-ependent-transfer-authority\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-e5897-ependent-transfer-authority\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-e5897-ependent-transfer-authority\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-e5897-ependent-transfer-authority\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests\native-ui-contract\class-student-contract.spec.ts:23:5 › class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms
+      - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })
+
+
+      18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});
+      19 |  });}
+    > 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}
+         |                                                                                                                                                                                       ^
+      21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});
+      22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+      23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});
+        at open (D:\Edu\tests\native-ui-contract\class-student-contract.spec.ts:20:183)
+        at D:\Edu\tests\native-ui-contract\class-student-contract.spec.ts:23:171
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-6c121-ummary-receipts-hide-counts\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-6c121-ummary-receipts-hide-counts\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-6c121-ummary-receipts-hide-counts\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-class-student-browser-artifacts-final\class-student-contract-cla-6c121-ummary-receipts-hide-counts\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests\native-ui-contract\class-student-contract.spec.ts:21:5 › class student profile shows actual own attendance current scoped family history and independent transfer authority 
+    tests\native-ui-contract\class-student-contract.spec.ts:23:5 › class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts 
+  2 passed (25.1s)

@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 145,
-  "activatedCandidateCount": 145,
-  "activatedLegacyMethodCount": 128,
+  "candidateCount": 146,
+  "activatedCandidateCount": 146,
+  "activatedLegacyMethodCount": 129,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -4267,7 +4267,17 @@
         "studentId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "teacherExtraRepo",
+        "method": "studentAttendance",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "teacherExtraRepo",

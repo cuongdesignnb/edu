@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-class-student-attendance.test.ts (4 tests) 11ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  03:19:45
+   Duration  478ms (transform 148ms, setup 33ms, collect 177ms, tests 11ms, environment 0ms, prepare 90ms)
+
+EXIT_CODE=0

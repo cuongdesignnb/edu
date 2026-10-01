@@ -11,7 +11,7 @@ import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
 import { Badge, PUBLICATION_STATUS, StatusBadge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/states";
+import { ErrorState, Skeleton } from "@/components/ui/states";
 import { SchoolSourceState } from "@/features/school-org/common";
 import { ENROLLMENT_STATUS } from "@/features/students/shared";
 import { TransferDialog } from "./dialogs";
@@ -20,7 +20,7 @@ import { TransferDialog } from "./dialogs";
 export function ClassStudentProfile({ studentId }: { studentId: string }) {
   const { schoolId, yearId, classId, base, can, readOnly } = useClassroom();
   const q = useRepo(["student-profile", schoolId, studentId, classId, yearId], (ctx) => studentsRepo.profile(ctx, schoolId, studentId, classId, yearId));
-  const att = useRepo(["student-attendance", classId, studentId], (ctx) => teacherExtraRepo.studentAttendance(ctx, schoolId, yearId, classId, studentId), { retry: false });
+  const att = useRepo(["student-attendance", schoolId, yearId, classId, studentId], (ctx) => teacherExtraRepo.studentAttendance(ctx, schoolId, yearId, classId, studentId), { retry: false,enabled:!!q.data&&!q.isError });
   const school = useRepo(["school-actions", schoolId], (ctx) => sessionRepo.schoolActions(ctx, schoolId));
   const [transfer, setTransfer] = useState(false);
   return (
@@ -33,7 +33,7 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
         return (
           <div className="page">
             <ClassHeader title="Hồ sơ học sinh" subtitle={`${s.fullName} · ${s.code} · Lớp ${p.currentClass?.name ?? "—"}`} crumbs={[{ label: "Học sinh", href: `${base}/students` }, { label: s.fullName }]}
-              actions={!readOnly && inThisClass && can("groups.manage") && p.perms.transfer ? <Button size="sm" icon={<ArrowLeftRight className="size-4" />} onClick={() => setTransfer(true)}>Đề nghị chuyển lớp</Button> : undefined} />
+              actions={!readOnly && inThisClass && p.referenceDate===p.today && p.perms.transfer ? <Button size="sm" icon={<ArrowLeftRight className="size-4" />} onClick={() => setTransfer(true)}>Đề nghị chuyển lớp</Button> : undefined} />
             {minimal && <Callout tone="neutral" icon={<Lock />} title="Hồ sơ rút gọn theo phạm vi giáo viên bộ môn">Không hiển thị người giám hộ, link tra cứu, ngày sinh và ghi chú nội bộ. Dùng chung một hồ sơ nhưng chỉ trả về trường thông tin bạn được phép xem.</Callout>}
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
               <div className="min-w-0 space-y-5">
@@ -65,7 +65,7 @@ export function ClassStudentProfile({ studentId }: { studentId: string }) {
                 <Card>
                   <CardHeader title="Chuyên cần trong lớp" icon={<CalendarCheck className="size-5 text-primary" />} subtitle="Theo các buổi sáng đã lưu" action={can("attendance.record") || can("report.class") ? <Link href={`${base}/attendance/weekly`} className="card-link">Xem theo tuần</Link> : undefined} />
                   <div className="px-5 pb-5">
-                    {att.isLoading ? <Skeleton className="h-24" /> : att.error ? <p className="text-sm text-muted">Bạn không có quyền xem tổng hợp chuyên cần của học sinh này.</p> : att.data && (
+                    {att.isLoading ? <Skeleton className="h-24" /> : att.error ? <ErrorState compact error={att.error} onRetry={()=>void att.refetch()} /> : att.data && (
                       <>
                         <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
                           {(["present", "late", "excused", "unexcused", "unmarked"] as const).map((k) => (

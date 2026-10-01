@@ -36415,6 +36415,107 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/students/{studentId}/attendance:
+    get:
+      operationId: getClassStudentAttendance
+      tags:
+        - Classroom
+      summary: getClassStudentAttendance
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: attendance.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL03
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassStudentAttendanceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -52882,6 +52983,112 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ClassTransferOptions"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassStudentAttendance:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        referenceDate:
+          type: string
+          format: date
+        className:
+          type: string
+        sessions:
+          type: integer
+          minimum: 0
+        published:
+          type: integer
+          minimum: 0
+        tally:
+          type: object
+          properties:
+            PRESENT:
+              type: integer
+              minimum: 0
+            LATE:
+              type: integer
+              minimum: 0
+            EXCUSED:
+              type: integer
+              minimum: 0
+            UNEXCUSED:
+              type: integer
+              minimum: 0
+            UNMARKED:
+              type: integer
+              minimum: 0
+          required:
+            - PRESENT
+            - LATE
+            - EXCUSED
+            - UNEXCUSED
+            - UNMARKED
+          additionalProperties: false
+        notable:
+          type: array
+          maxItems: 8
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              status:
+                type: string
+                enum:
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+              note:
+                type: string
+                maxLength: 4000
+                nullable: true
+              published:
+                type: boolean
+            required:
+              - date
+              - status
+              - note
+              - published
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - studentId
+        - today
+        - referenceDate
+        - className
+        - sessions
+        - published
+        - tally
+        - notable
+      additionalProperties: false
+    ClassStudentAttendanceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassStudentAttendance"
         requestId:
           type: string
       required:

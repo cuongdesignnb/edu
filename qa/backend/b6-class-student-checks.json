@@ -1,0 +1,116 @@
+{
+  "checkpoint": "B6 CL03 student profile and scoped attendance; goal active",
+  "baseline": "0be2c72dadaa7f8275ecad8530952ba54021cd8a",
+  "recordedAt": "2026-10-01T20:30:12.323706+00:00",
+  "contract": {
+    "baseline": "0be2c72dadaa7f8275ecad8530952ba54021cd8a",
+    "existingOperationsUnchanged": 351,
+    "existingSchemasUnchanged": 481,
+    "permissionsUnchanged": true,
+    "rolesUnchanged": true,
+    "addedOperations": [
+      "getClassStudentAttendance"
+    ],
+    "addedSchemas": [
+      "ClassStudentAttendance",
+      "ClassStudentAttendanceResponse"
+    ]
+  },
+  "postgres-selected.log": {
+    "passed": 3,
+    "durationMs": 3478.162603
+  },
+  "backend-unit-contract.log": {
+    "passed": 53,
+    "durationMs": 550.553036
+  },
+  "frontendUnit": {
+    "passed": 398,
+    "files": 48,
+    "durationSeconds": 9.56,
+    "apiTests": 357,
+    "historicalSyntheticTests": 41
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "stats": {
+      "startTime": "2026-10-01T20:26:29.422Z",
+      "duration": 3780.576,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "run": {
+      "prefix": "b6-class-student",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T20:26:28.429Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "selectedFiles": [
+        "tests/native-ui-contract/class-student-contract.spec.ts"
+      ],
+      "portFreeBefore": true,
+      "ownedNextPid": 35736,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T20:26:33.231Z",
+      "exitCode": 0
+    },
+    "screenshotsInspected": [
+      "b6-class-student-desktop.png",
+      "b6-class-student-mobile.png"
+    ],
+    "postgresE2E": "NOT_RUN"
+  },
+  "operationStatuses": {
+    "IMPLEMENTED": 12,
+    "TESTED": 340
+  },
+  "coreSourceStatuses": {
+    "IMPLEMENTED": 68,
+    "NOT_STARTED": 47,
+    "STATIC_UNVERIFIED": 3
+  },
+  "coreTotal": 118,
+  "facade": {
+    "activatedCandidates": 146,
+    "activatedLegacyMethods": 129,
+    "totalLegacyMethods": 231,
+    "pendingLegacyMethods": 102
+  },
+  "migrations": {
+    "total": 47,
+    "newMigration": false,
+    "currentReplay": "NOT_RERUN"
+  },
+  "runnerImage": "sha256:93d9ac47de083671e46ffa1f382c876f8e55c16a05bdc8b91e6c5310bc425680",
+  "fullCurrentPostgresRegression": "NOT_RERUN",
+  "preservedFailures": [
+    "image-build.log and image-build-current.log: TS2532 strict tally index errors, repaired without weakening types",
+    "browser-results-attempt1.json: 2/4; invalid role header fixture had null links despite parent_access.manage; fixture corrected, application guard unchanged"
+  ],
+  "listenerAfter": {
+    "checkedAt": "2026-10-01T20:26:57.0103527+00:00",
+    "listeners": [],
+    "listenerCount": 0
+  },
+  "releaseUrl": "http://127.0.0.1:18763",
+  "releaseServing": false,
+  "goalStatus": "ACTIVE",
+  "remaining": [
+    "102 legacy facade methods",
+    "47 core NOT_STARTED; 3 STATIC_UNVERIFIED; no whole-screen PostgreSQL browser acceptance",
+    "12 IMPLEMENTED operations without accepted checks",
+    "full current PostgreSQL regression and PostgreSQL browser E2E",
+    "root deploy/scripts merge and Docker local release",
+    "restart persistence, physical backup/restore, failure drills and release workload performance",
+    "production not authorized"
+  ]
+}

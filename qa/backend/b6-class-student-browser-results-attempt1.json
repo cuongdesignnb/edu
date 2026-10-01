@@ -1,0 +1,304 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts",
+      "tests/native-ui-contract/class-student-contract.spec.ts"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-class-student-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-class-student-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "class-student-contract.spec.ts",
+      "file": "class-student-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "class student profile shows actual own attendance current scoped family history and independent transfer authority",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10633,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n\n    at open (D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:20:183)\n    at D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:21:155",
+                    "location": {
+                      "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                      "column": 183,
+                      "line": 20
+                    },
+                    "snippet": "  18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});\n  19 |  });}\n> 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}\n     |                                                                                                                                                                                       ^\n  21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});\n  22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                        "column": 183,
+                        "line": 20
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n\n\n  18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});\n  19 |  });}\n> 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}\n     |                                                                                                                                                                                       ^\n  21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});\n  22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});\n    at open (D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:20:183)\n    at D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:21:155"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T20:25:05.046Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-e5897-ependent-transfer-authority\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-e5897-ependent-transfer-authority\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-e5897-ependent-transfer-authority\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                    "column": 183,
+                    "line": 20
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ea607151402056e95b39-ca044b32056bc1855ee8",
+          "file": "class-student-contract.spec.ts",
+          "line": 21,
+          "column": 5
+        },
+        {
+          "title": "subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 684,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T20:25:16.915Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ea607151402056e95b39-bab809cfa8ce28be9335",
+          "file": "class-student-contract.spec.ts",
+          "line": 22,
+          "column": 5
+        },
+        {
+          "title": "class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10375,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n\n    at open (D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:20:183)\n    at D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:23:171",
+                    "location": {
+                      "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                      "column": 183,
+                      "line": 20
+                    },
+                    "snippet": "  18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});\n  19 |  });}\n> 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}\n     |                                                                                                                                                                                       ^\n  21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});\n  22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                        "column": 183,
+                        "line": 20
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('heading', { name: 'Hồ sơ học sinh', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Hồ sơ học sinh', exact: true })\u001b[22m\n\n\n  18 |  s.unexpected.push(path);return route.fulfill({status:503,json:{code:'UNEXPECTED_BROWSER_CONTRACT_REQUEST',requestId:'class-student-unexpected'}});\n  19 |  });}\n> 20 | async function open(page:Page,s:State){await routes(page,s);await page.goto(base+`/students/${studentId}`);await expect(page.getByRole('heading',{name:'Hồ sơ học sinh',exact:true})).toBeVisible();}\n     |                                                                                                                                                                                       ^\n  21 | test('class student profile shows actual own attendance current scoped family history and independent transfer authority',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();await expect(page.getByText('Ghi chú công khai riêng API',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toBeVisible();await expect(page.getByText('Đổi tổ / chức vụ ở trang Tổ & chức vụ',{exact:true})).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);const details=s.requests.find(r=>r.path.endsWith('/details'))!;expect(new URLSearchParams(details.query).get('classId')).toBe(classId);expect(new URLSearchParams(details.query).get('yearId')).toBe(yearId);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);});\n  22 | test('subject class profile keeps the native minimal pupil and denies daily summary without exposing family birth date links or zero counts on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Hồ sơ rút gọn theo phạm vi giáo viên bộ môn',{exact:true})).toBeVisible();await expect(page.getByText('Giám hộ hồ sơ riêng API',{exact:true})).toHaveCount(0);await expect(page.getByText('Ghi chú chỉ dành cho nhân sự API',{exact:false})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Link tra cứu phụ huynh'})).toHaveCount(0);await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);await expect(page.getByRole('button',{name:'Đề nghị chuyển lớp',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  23 | test('class profile attendance outages retry without zero fallback and foreign or malformed summary receipts hide counts',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('3 buổi đã lưu · 1 buổi đã công bố cho phụ huynh.')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText(/buổi đã lưu/)).toHaveCount(0);expect(s.unexpected).toEqual([]);});\n    at open (D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:20:183)\n    at D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts:23:171"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T20:25:17.830Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-6c121-ummary-receipts-hide-counts\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-6c121-ummary-receipts-hide-counts\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-student-browser-artifacts-final\\class-student-contract-cla-6c121-ummary-receipts-hide-counts\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\Edu\\tests\\native-ui-contract\\class-student-contract.spec.ts",
+                    "column": 183,
+                    "line": 20
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ea607151402056e95b39-3e972766df9776b3629f",
+          "file": "class-student-contract.spec.ts",
+          "line": 23,
+          "column": 5
+        },
+        {
+          "title": "a failed or foreign year profile cannot display pupil family or launch the subordinate attendance purpose",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 550,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T20:25:28.755Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ea607151402056e95b39-0bd4a35070753b342e7e",
+          "file": "class-student-contract.spec.ts",
+          "line": 24,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-01T20:25:04.599Z",
+    "duration": 25125.045000000002,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

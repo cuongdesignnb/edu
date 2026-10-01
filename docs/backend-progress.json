@@ -4167,6 +4167,17 @@
       "evidence": [
         "qa/backend/b6-class-roster-postgres-accepted.log: 3/3 actual PostgreSQL class roster/transfer checks; exact dates/scope, separate subject/family/link rights, SQL literal search, historical masking, archive/revoke, displayed enrollment-version and idempotent submitted request. Existing transfer regressions2/2; backend52/52; frontend394/394; Edge4/4 intercepted API contracts. Full current PostgreSQL/browser PostgreSQL E2E and B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getClassStudentAttendance",
+      "screenIds": [
+        "CL03"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-student-postgres-selected.log: actual PostgreSQL3/3; saved morning sources, enrollment/date bounds, immutable publication withdrawal, fresh subject/class/homeroom revocation and no internal notes. Backend53/53; frontend398/398; Edge4/4 intercepted contracts. Full current PostgreSQL/browser PostgreSQL E2E and B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5325,12 +5336,14 @@
         "createTransfer",
         "getClassStudent",
         "getStudentDetails",
-        "getClassTransferOptions"
+        "getClassTransferOptions",
+        "getClassStudentAttendance"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "evidence": [
-        "Native student DTO, explicit class/year, denied family/position projections and temporal enrollment history prepared; classroom facade is still unactivated, so this screen remains NOT_STARTED."
+        "Native student DTO, explicit class/year, denied family/position projections and temporal enrollment history prepared; classroom facade is still unactivated, so this screen remains NOT_STARTED.",
+        "Native shared exact enrollment profile plus independent actual morning attendance summary, strict source validation, permission masking and fail-closed retry. Independent transfer right; no subordinate attendance query after profile failure. PostgreSQL3/3; Edge4/4 intercepted contracts; desktop/mobile screenshots inspected. Whole-screen PostgreSQL browser E2E pending."
       ],
       "apiStatus": "TESTED"
     },

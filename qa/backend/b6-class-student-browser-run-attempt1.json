@@ -1,0 +1,22 @@
+{
+  "prefix": "b6-class-student",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T20:25:03.555Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/class-student-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 18672,
+  "playwrightExitCode": 1,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T20:25:29.749Z",
+  "exitCode": 1
+}

@@ -1,0 +1,14 @@
+{
+  "baseline": "0be2c72dadaa7f8275ecad8530952ba54021cd8a",
+  "existingOperationsUnchanged": 351,
+  "existingSchemasUnchanged": 481,
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassStudentAttendance"
+  ],
+  "addedSchemas": [
+    "ClassStudentAttendance",
+    "ClassStudentAttendanceResponse"
+  ]
+}

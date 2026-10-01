@@ -120,7 +120,8 @@ export const connectedStudentsRepo=withStaffAccess({
   },
   async profile(_ctx:Ctx,schoolId:ID,studentId:ID,classId?:ID,yearId?:ID){
     const view=(await http('getStudentDetails',{params:{schoolId,studentId},query:{classId,yearId}})).data;
-    if(view.student.id!==studentId)throw new RepoError('READ_ERROR','Máy chủ trả sai hồ sơ học sinh.');return profileView(view,schoolId);
+    if(view.student.id!==studentId||classId&&(!view.selectedEnrollment||view.selectedEnrollment.classId!==classId||yearId&&view.selectedEnrollment.yearId!==yearId||view.selectedEnrollment.referenceDate!==view.referenceDate||!view.history.some(e=>e.id===view.selectedEnrollment!.id)))throw new RepoError('READ_ERROR','Máy chủ trả sai học sinh, lớp hoặc năm học đang mở.');
+    if(view.level==='SUBJECT_MINIMAL'&&(view.student.dateOfBirth!==null||view.student.preferredName!==null||view.positions!==null||view.group!==null||view.internalNote!==null||view.relationships!==null||view.links!==null))throw new RepoError('READ_ERROR','Hồ sơ rút gọn chứa thông tin ngoài phạm vi giáo viên bộ môn.');return profileView(view,schoolId);
   },
   async create(_ctx:Ctx,schoolId:ID,input:StudentCreateInput){
     const confirm=(data:ApiSchemas['Student'])=>{

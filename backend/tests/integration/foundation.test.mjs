@@ -103,7 +103,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,351);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,352);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -1216,6 +1216,31 @@ test('B5 timetable rejects teacher/room collisions and revoked assignments, skip
   const holiday=await other.post('calendar-events',{yearId:seedId('year:A'),classId:other.classId,title:'Ngày nghỉ lịch kiểm thử',kind:'HOLIDAY',startsOn:f.day,endsOn:nextDate(f.day,1)});assert.equal(holiday.statusCode,201);
   assert.equal((await other.post(`calendar-events/${holiday.json().data.id}/publish`,{expectedVersion:holiday.json().data.version})).statusCode,200);
   const latest=(await request('GET',`/api/v1/schools/${schoolA}/${other.base}/timetables/${refresh.id}`)).json().data,skipped=await other.post(`${other.base}/timetables/${latest.id}/validate`,{expectedVersion:latest.version});assert.equal(skipped.statusCode,200);assert.equal(skipped.json().data.valid,true,skipped.body);
+});
+
+test('B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes',async()=>{
+ const f=await classRosterFixture(),p=await nativePupil(f,{fullName:'Học sinh chuyên cần riêng',startsOn:nextDate(f.today,-4)}),other=await nativePupil(f,{fullName:'Bạn khác chuyên cần',startsOn:nextDate(f.today,-4)}),att=`classes/${f.classId}/attendance`,url=f.base+`/students/${p.id}/attendance`;
+ const create=async(date,slot='MORNING')=>{const r=await f.post(att,{date,granularity:'DAILY',slot});assert.equal(r.statusCode,201,r.body);return r.json().data;};
+ let session=await create(nextDate(f.today,-2));const body={expectedVersion:session.version,records:session.records.map(r=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:r.enrollmentId===p.initialEnrollment.id?'LATE':'PRESENT',...(r.enrollmentId===p.initialEnrollment.id?{lateMinutes:5}:{}),publicNote:r.enrollmentId===p.initialEnrollment.id?'Ghi chú công khai riêng':'PRIVATE-OTHER-PUPIL-NOTE',internalNote:'PRIVATE-STAFF-NOTE'}))};
+ const saved=await f.patch(`${att}/${session.id}/records`,body);assert.equal(saved.statusCode,200,saved.body);session=saved.json().data;
+ const publication=await f.post(`${att}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion,expectedPublicationId:null});assert.equal(publication.statusCode,200,publication.body);
+ const second=await create(nextDate(f.today,-1)),present=await f.patch(`${att}/${second.id}/records`,{expectedVersion:second.version,records:second.records.map(r=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'PRESENT',publicNote:''}))});assert.equal(present.statusCode,200,present.body);
+ await create(f.today);await create(f.today,'AFTERNOON');await create(nextDate(f.today,-5));
+ const empty=await create(nextDate(f.today,-3)),emptyNote=await f.patch(`${att}/${empty.id}/records`,{expectedVersion:empty.version,records:empty.records.map(r=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'EXCUSED',publicNote:''}))});assert.equal(emptyNote.statusCode,200,emptyNote.body);
+ const read=async()=>{const r=await request('GET',url);assert.equal(r.statusCode,200,r.body);validateSchema('ClassStudentAttendance',r.json().data,true);for(const secret of ['PRIVATE-OTHER-PUPIL-NOTE','PRIVATE-STAFF-NOTE',other.id,'dateOfBirth','guardian'])assert.equal(r.body.includes(secret),false);return r.json().data;};
+ let w=await read();assert.equal(w.sessions,4);assert.equal(w.published,1);assert.deepEqual(w.tally,{PRESENT:1,LATE:1,EXCUSED:1,UNEXCUSED:0,UNMARKED:1});assert.equal(w.notable[0].status,'UNMARKED');assert.equal(w.notable[1].note,'Ghi chú công khai riêng');assert.equal(w.notable[1].published,true);assert.equal(w.notable[2].note,'');
+ const withdrawn=await f.post(`publications/${publication.json().data.id}/withdraw`,{expectedVersion:publication.json().data.version,reason:'Thu hồi chuyên cần riêng'});assert.equal(withdrawn.statusCode,200,withdrawn.body);w=await read();assert.equal(w.sessions,4);assert.equal(w.published,0);assert.equal(w.notable[1].published,false);
+ assert.equal((await request('GET',url.replace(f.yearId,seedId('year:A')))).statusCode,404);assert.equal((await request('GET',url.replace(p.id,seedId('student:A:1')))).statusCode,404);assert.equal((await request('GET',url+'?actorId='+p.id)).statusCode,422);
+});
+test('B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority',async()=>{
+ const f=await classRosterFixture(),p=await nativePupil(f,{startsOn:nextDate(f.today,-4),dateOfBirth:'2011-09-30',gender:'Nữ',initialGuardian:{fullName:'PRIVATE-STUDENT-FAMILY',relationshipLabel:'Mẹ',phone:'0912345678'}}),url=f.base+`/students/${p.id}/attendance`;
+ for(const date of [nextDate(f.today,-2),nextDate(f.today,-1),f.today])assert.equal((await f.post(`classes/${f.classId}/attendance`,{date,granularity:'DAILY',slot:'MORNING'})).statusCode,201);
+ const role=await f.role([{action:'class.read',scopes:['SUBJECT']},{action:'student.read',scopes:['SUBJECT']},{action:'attendance.read',scopes:['SUBJECT']}]),subject=(await db.transaction(tx=>tx.query("INSERT INTO app.subjects(school_id,code,name) VALUES($1,'PROFILE','Môn hồ sơ') RETURNING id",[f.schoolId]),{schoolId:f.schoolId})).rows[0].id;
+ await f.grant(f.target,role.id,{scopeType:'SUBJECT',classId:f.classId,subjectId:subject});const admin=jar.get('edu_staff');jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',url)).statusCode,404);
+ const profile=`/api/v1/schools/${f.schoolId}/students/${p.id}/details?classId=${f.classId}&yearId=${f.yearId}`;let r=await request('GET',profile);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.level,'SUBJECT_MINIMAL');assert.equal(r.json().data.student.dateOfBirth,null);assert.equal(r.json().data.relationships,null);assert.equal(r.json().data.links,null);assert.equal(r.json().data.positions,null);assert.equal(r.body.includes('PRIVATE-STUDENT-FAMILY'),false);jar.set('edu_staff',admin);
+ const broad=await f.role([{action:'class.read',scopes:['CLASS']},{action:'student.read',scopes:['CLASS']},{action:'attendance.read',scopes:['CLASS']}]),grant=await f.grant(f.target,broad.id,{scopeType:'CLASS',classId:f.classId});jar.delete('edu_staff');await login('teacher-a@example.invalid');r=await request('GET',url);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.sessions,3);
+ await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,404);jar.set('edu_staff',admin);
+ const home=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'HOMEROOM',startsOn:nextDate(f.today,-1),endsOn:f.endsOn,reason:'Giao chủ nhiệm từ ngày mới'});assert.equal(home.statusCode,201,home.body);jar.delete('edu_staff');await login('teacher-a@example.invalid');r=await request('GET',url);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.sessions,2);assert.equal(r.json().data.tally.UNMARKED,2);jar.set('edu_staff',admin);
 });
 
 async function classRosterFixture(){
@@ -2421,7 +2446,8 @@ async function staffUiFixture(timezone='Asia/Ho_Chi_Minh'){
   const member=async id=>{const response=await request('GET',`/api/v1/schools/${schoolId}/members/${id}`);assert.equal(response.statusCode,200,response.body);return response.json().data;};
   const role=async permissions=>{const response=await post('roles',{code:`staff-${crypto.randomUUID()}`,label:'Vai trò kiểm thử giả',permissions});assert.equal(response.statusCode,201,response.body);return response.json().data;};
   const grant=async(memberId,roleId,options={})=>{const response=await post('grants',{memberId,roleId,scopeType:'SCHOOL',validFrom:new Date(Date.now()-1000).toISOString(),...options});assert.equal(response.statusCode,201,response.body);return response.json().data;};
-  return {schoolId,...values,post,member,role,grant,setCsrf:value=>{csrf=value;}};
+  const patch=(path,body,key=crypto.randomUUID())=>request('PATCH',`/api/v1/schools/${schoolId}/${path}`,body,csrf,{'idempotency-key':key});
+  return {schoolId,...values,post,patch,member,role,grant,setCsrf:value=>{csrf=value;}};
 }
 
 test('B6 atomic school-role replacement retains expiry/class scopes, detects independent grants and rolls back all failures',async()=>{
