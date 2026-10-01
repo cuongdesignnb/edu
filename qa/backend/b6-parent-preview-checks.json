@@ -1,0 +1,254 @@
+{
+  "phase": "B6 SC25 native independent staff parent preview; partial goal checkpoint",
+  "previousCommit": "3d84bd1df4ec8075759221861c46e8b184680342",
+  "backend": {
+    "contractOperations": 340,
+    "schemas": 457,
+    "operationStatus": {
+      "TESTED": 328,
+      "IMPLEMENTED": 12
+    },
+    "migrations": 45,
+    "runnerImage": "sha256:2ef90f00dbae3f973f65f8251fedbc6fecb255e2eacfbc318840b8d7173e7db7",
+    "postgresFull": {
+      "tests": 182,
+      "pass": 182,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 643576.833866,
+      "log": "b6-parent-preview-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 2474.889192,
+      "log": "b6-parent-preview-integration-selected.log"
+    },
+    "unitContract": {
+      "tests": 47,
+      "pass": 47,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 556.143193,
+      "log": "b6-parent-preview-backend-unit-contract.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-preview-backend-types.log"
+    },
+    "lint": {
+      "kind": "HOST_REAL_SRC_TESTS_SCRIPTS_CONFIG",
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-preview-backend-lint.log"
+    },
+    "contractSemanticDiff": {
+      "changedExistingOperations": [],
+      "changedExistingSchemas": [],
+      "newOperations": [
+        "getParentAccessPreviewContext"
+      ],
+      "newSchemas": [],
+      "log": "b6-parent-preview-contract-diff.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 355,
+      "fail": 0,
+      "skipped": 0,
+      "files": 41,
+      "durationSeconds": 9.84,
+      "apiCases": 314,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-preview-frontend-full.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-preview-frontend-types.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-preview-frontend-lint.log"
+    },
+    "build": {
+      "exitCode": 0,
+      "log": "b6-parent-preview-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 84,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 88498.59800000001,
+    "newCases": 4,
+    "run": {
+      "prefix": "b6-parent-preview",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T11:49:48.247Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 55152,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T11:51:17.826Z",
+      "exitCode": 0
+    },
+    "results": "b6-parent-preview-browser-results-final.json",
+    "inspectedScreenshots": [
+      "b6-parent-preview-staff-preview-desktop.png",
+      "b6-parent-preview-staff-preview-mobile.png",
+      "b6-parent-preview-staff-preview-file.png"
+    ]
+  },
+  "priorFailures": [
+    {
+      "kind": "selected PostgreSQL fixture",
+      "result": {
+        "tests": 2,
+        "pass": 1,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 2581.061627,
+        "log": "b6-parent-preview-integration-selected-initial.log"
+      },
+      "reason": "Missing validateSchema import in the new test; imported the existing validator without changing application guards."
+    },
+    {
+      "kind": "lint command",
+      "exitCode": 2,
+      "logs": [
+        "b6-parent-preview-backend-lint-initial.log",
+        "b6-parent-preview-backend-lint-no-image-config.log"
+      ],
+      "reason": "Test image omits scripts and host ESLint config. Actual host src/tests/scripts lint then passed with zero warnings."
+    },
+    {
+      "kind": "controlled browser",
+      "result": {
+        "startTime": "2026-10-01T11:38:36.872Z",
+        "duration": 121873.737,
+        "expected": 81,
+        "skipped": 0,
+        "unexpected": 3,
+        "flaky": 0
+      },
+      "log": "b6-parent-preview-initial-browser-final.log",
+      "results": "b6-parent-preview-initial-browser-results-final.json",
+      "run": {
+        "prefix": "b6-parent-preview",
+        "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+        "startedAt": "2026-10-01T11:38:35.787Z",
+        "host": "127.0.0.1",
+        "port": 18763,
+        "portFreeBefore": true,
+        "ownedNextPid": 47948,
+        "playwrightExitCode": 1,
+        "ownedNextTerminationRequested": true,
+        "ownedNextClosed": true,
+        "ownedNextExit": {
+          "code": null,
+          "signal": "SIGTERM"
+        },
+        "portFreeAfter": true,
+        "finishedAt": "2026-10-01T11:40:38.788Z",
+        "exitCode": 1
+      },
+      "reason": "Combined timetable teacher text needed a region-content assertion; an unshared direct route needed a fresh-context module guard; generic gate error/retry assertions exposed parent-link invalidity presented as staff-session expiry and an API outage presented as permission denial. Module reads now stop before content requests, invalid links use the existing link state, outages permit retry, and tests assert the actual permission state."
+    }
+  ],
+  "sourceInventory": {
+    "nativeCandidates": 127,
+    "activatedCandidates": 127,
+    "matchedLegacyMethods": 114,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 117,
+    "log": "b6-parent-preview-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 61,
+    "NOT_STARTED": 54,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "SC25"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T18:49:44.5168164+07:00",
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T18:51:52.0776524+07:00",
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "implementedBehavior": [
+    "Minimal context-only staff purpose reuses ParentContext and independent school/class/year/time preview scope; old canonical preview remains unchanged.",
+    "Temporary parent preview sessions expire within one minute and are revoked in finally; STAFF_PREVIEW differs from public opens and cookies/pointers are not adopted.",
+    "Fresh context gates every section before native content or private bytes are requested, for both public parents and staff previews. Current staff owner spans context and content.",
+    "Existing staff shell and all parent specialist routes share the same serializers and design. Invalid link, actual staff denial and API failure remain distinct; an outage can retry."
+  ],
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "transportFailure": {
+    "result": {
+      "startTime": "2026-10-01T11:44:09.465Z",
+      "duration": 99486.4,
+      "expected": 83,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "log": "b6-parent-preview-before-transport-browser-final.log",
+    "results": "b6-parent-preview-before-transport-browser-results-final.json",
+    "run": {
+      "prefix": "b6-parent-preview",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T11:44:08.420Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 56476,
+      "playwrightExitCode": 1,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T11:45:48.997Z",
+      "exitCode": 1
+    },
+    "reason": "A preview domain PARENT_ACCESS_INVALID401 reset staff authentication. The exception is restricted to staff parent_access.preview operations and that exact code; real UNAUTHENTICATED and every other staff operation still revoke authentication. Four regressions check context, binary denial, actual staff expiry and unrelated staff operations."
+  }
+}

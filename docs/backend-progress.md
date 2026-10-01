@@ -343,6 +343,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentPublishedConduct | SC25, PA04, PA05 | TESTED | qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence. |
 | getParentPublishedOverview | PA02 | TESTED | qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview |
 | previewParentPublishedOverview | SC25, PA02 | TESTED | qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview |
+| getParentAccessPreviewContext | SC25 | TESTED | qa/backend/b6-parent-preview-integration-selected.log |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -391,7 +392,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC22 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run.; qa/backend/b6-parent-issue-checks.json |
 | SC23 | core | TESTED | IMPLEMENTED |  | Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E; qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E |
 | SC24 | core | TESTED | IMPLEMENTED |  | Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E; qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E |
-| SC25 | core | TESTED | NOT_STARTED |  |  |
+| SC25 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-preview-checks.json |
 | SC26 | core | TESTED | NOT_STARTED |  |  |
 | SC27 | core | TESTED | NOT_STARTED |  |  |
 | SC28 | core | TESTED | NOT_STARTED |  |  |

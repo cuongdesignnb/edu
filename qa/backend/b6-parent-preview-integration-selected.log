@@ -1,0 +1,13 @@
+ Container edumanage_backend_test-runner-run-5fbefa167624 Creating
+ Container edumanage_backend_test-runner-run-5fbefa167624 Created
+✔ B6 staff preview context returns only current own safe metadata without overview panels or cookie adoption and expires every temporary session (1166.43711ms)
+✔ B6 staff preview context keeps current class year school and grant-time scope independent from issuance and public parent sessions (425.478849ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2474.889192
+exitCode=0

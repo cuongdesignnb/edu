@@ -4034,6 +4034,17 @@
       "evidence": [
         "qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview"
       ]
+    },
+    {
+      "operationId": "getParentAccessPreviewContext",
+      "screenIds": [
+        "SC25"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-preview-integration-selected.log"
+      ]
     }
   ],
   "screens": [
@@ -4817,11 +4828,14 @@
         "previewParentPublishedAnnouncement",
         "previewParentPublishedConductDirectory",
         "previewParentPublishedConduct",
-        "previewParentPublishedOverview"
+        "previewParentPublishedOverview",
+        "getParentAccessPreviewContext"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-preview-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -7,6 +7,18 @@ beforeEach(()=>{authenticationChanged();setStaffCsrf('memory-only-csrf');});
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 
 describe('connected HTTP transport',()=>{
+  it('invalid parent preview context keeps the independent staff session and original link problem',async()=>{
+    const owner=captureStaffAccess(),revision=staffAccessRevision();vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({code:'PARENT_ACCESS_INVALID'}),{status:401})));await expect(http('getParentAccessPreviewContext',{params:{schoolId,accessId:schoolId}})).rejects.toMatchObject({code:'NO_SESSION',details:{problemCode:'PARENT_ACCESS_INVALID'}});expect(staffAccessRevision()).toBe(revision);expect(()=>owner.assertCurrent()).not.toThrow();
+  });
+  it('invalid parent preview private bytes keep staff authority and never produce a file',async()=>{
+    const owner=captureStaffAccess(),revision=staffAccessRevision();vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({code:'PARENT_ACCESS_INVALID'}),{status:401})));await expect(download('previewParentDocumentView',{params:{schoolId,accessId:schoolId,documentId:schoolId}})).rejects.toMatchObject({details:{problemCode:'PARENT_ACCESS_INVALID'}});expect(staffAccessRevision()).toBe(revision);expect(()=>owner.assertCurrent()).not.toThrow();
+  });
+  it('actual staff authentication expiry still revokes the current preview owner',async()=>{
+    const owner=captureStaffAccess(),revision=staffAccessRevision();vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({code:'UNAUTHENTICATED'}),{status:401})));await expect(http('getParentAccessPreviewContext',{params:{schoolId,accessId:schoolId}})).rejects.toMatchObject({code:'NO_SESSION'});expect(staffAccessRevision()).toBeGreaterThan(revision);expect(()=>owner.assertCurrent()).toThrow();
+  });
+  it('the preview-link exception cannot suppress authentication revocation on other staff operations',async()=>{
+    const owner=captureStaffAccess(),revision=staffAccessRevision();vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({code:'PARENT_ACCESS_INVALID'}),{status:401})));await expect(http('getMyProfile')).rejects.toMatchObject({code:'NO_SESSION'});expect(staffAccessRevision()).toBeGreaterThan(revision);expect(()=>owner.assertCurrent()).toThrow();
+  });
   it('does not reuse or install an old bootstrap CSRF after identity change',async()=>{
     const gate=Promise.withResolvers<Response>(),begun=Promise.withResolvers<void>();let bootstrapCalls=0;
     const fetcher=vi.fn().mockImplementation((url:string)=>{if(url==='/api/v1/auth/csrf'){bootstrapCalls++;if(bootstrapCalls===1){begun.resolve();return gate.promise;}return Promise.resolve(envelope({csrfToken:'new-bootstrap'}));}return Promise.resolve(envelope({accepted:true}));});vi.stubGlobal('fetch',fetcher);

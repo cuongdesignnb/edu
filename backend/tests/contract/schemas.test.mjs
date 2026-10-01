@@ -1,8 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('staff preview context has a minimal context schema and independent school authority',()=>{
+ const op=operations.find(operation=>operation.id==='getParentAccessPreviewContext');assert.equal(op.response,'ParentContext');assert.equal(op.permission,'parent_access.preview');assert.equal(op.auth,'staff');assert.equal(op.scope,'school');assert.equal(op.method,'GET');assert.equal(op.path,'/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/context');assert.equal(op.readOnly,true);
+ const value={viewId:'da72b470-4b45-4f5f-b89d-179c0cdf454a',school:{name:'Trường kiểm thử',slug:'preview-test',publicContactPhone:null,shortName:null,motto:null,publicContactEmail:null,publicAddress:null},student:{displayName:'Con riêng',classLabel:'6A',schoolYearLabel:'2026–2027'},allowedSections:['teachers'],allowDownload:false,csrfToken:'synthetic-preview-csrf',expiresAt:'2026-10-01T01:01:00Z',today:'2026-10-01',year:{label:'2026–2027',startsOn:'2026-09-01',endsOn:'2027-06-01'},relationshipLabel:'Mẹ',linkExpiresAt:'2026-11-01T00:00:00Z',lastPublishedAt:null};validateSchema('ParentContext',value,true);
+ for(const bad of [{context:value},{...value,attendance:[]},{...value,token:'secret'},{...value,student:{...value.student,id:value.viewId}}])assert.throws(()=>validateSchema('ParentContext',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+});
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,339);assert.equal(new Set(operations.map(op=>op.id )).size,339);
+  assert.equal(operations.length,340);assert.equal(new Set(operations.map(op=>op.id )).size,340);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

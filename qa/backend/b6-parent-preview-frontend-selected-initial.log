@@ -1,0 +1,19 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-teachers-adapter.test.ts (6 tests) 23ms
+ ✓ tests/unit/api-parent-documents-adapter.test.ts (8 tests) 30ms
+ ✓ tests/unit/api-parent-duties-adapter.test.ts (6 tests) 41ms
+ ✓ tests/unit/api-parent-timetable-adapter.test.ts (6 tests) 55ms
+ ✓ tests/unit/api-parent-overview-adapter.test.ts (10 tests) 62ms
+ ✓ tests/unit/api-parent-shared-adapter.test.ts (9 tests) 75ms
+ ✓ tests/unit/api-parent-attendance-adapter.test.ts (6 tests) 91ms
+ ✓ tests/unit/api-parent-conduct-adapter.test.ts (9 tests) 95ms
+ ✓ tests/unit/api-parent-intake-adapter.test.ts (14 tests) 121ms
+
+ Test Files  9 passed (9)
+      Tests  74 passed (74)
+   Start at  18:30:55
+   Duration  1.08s (transform 785ms, setup 1.35s, collect 2.70s, tests 593ms, environment 3ms, prepare 1.89s)
+
+exitCode=0

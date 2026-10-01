@@ -1,0 +1,19 @@
+warning: in the working copy of '.gitignore', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/scripts/generate-contract.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/access.service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/parent.service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/contract/schemas.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/integration/foundation.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/backend-adrs.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/features/parent/views/preview.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/lib/repositories/connected/parent.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-attendance-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-conduct-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-documents-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-duties-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-intake-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-overview-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-shared-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-teachers-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/unit/api-parent-timetable-adapter.test.ts', CRLF will be replaced by LF the next time Git touches it
+exitCode=0

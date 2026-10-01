@@ -50,12 +50,21 @@ describe('Native parent exchange/context ownership; remaining content facade met
     adopt();const pending=deferred<Response>();vi.stubGlobal('fetch',vi.fn(async()=>pending.promise));const read=repo.context({viewId:first},slug);adopt(second);pending.resolve(error(401,'PARENT_ACCESS_INVALID'));await expect(read).rejects.toMatchObject({code:'CONFLICT'});expect(readParentView(slug)).toBe(second);expect(readParentFault(slug)).toBeNull();
   });
   it('previews through independent current staff ownership, without replacing a public parent view',async()=>{
-    adopt();const ctx={staffOwner:captureStaffAccess()} as Ctx,fetcher=vi.fn(async(_input:string)=>response({context:wire(second)}));vi.stubGlobal('fetch',fetcher);expect(await repo.context({preview:{ctx,schoolId,accessId}},slug)).toMatchObject({isPreview:true});expect(readParentView(slug)).toBe(first);expect(fetcher.mock.calls[0][0]).toBe(`/api/v1/schools/${schoolId}/parent-access/${accessId}/preview`);
+    adopt();const ctx={staffOwner:captureStaffAccess()} as Ctx,fetcher=vi.fn(async(_input:string)=>response(wire(second)));vi.stubGlobal('fetch',fetcher);expect(await repo.context({preview:{ctx,schoolId,accessId}},slug)).toMatchObject({isPreview:true});expect(readParentView(slug)).toBe(first);expect(fetcher.mock.calls[0][0]).toBe(`/api/v1/schools/${schoolId}/parent-access/${accessId}/preview/context`);
     authorizationChanged();await expect(repo.context({preview:{ctx,schoolId,accessId}},slug)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(1);
   });
   it('derives only the actual inclusive year navigation bound and actual nullable public school contact',async()=>{
     adopt();vi.stubGlobal('fetch',vi.fn(async(input:string)=>input.includes('/public/')?response({name:'Trường công khai',slug,announcements:[]}):response(wire())));expect(await extra.grantedYear({viewId:first},slug)).toEqual({label:'2026–2027',startDate:'2026-09-01',endDate:'2027-05-31'});expect(await repo.publicSchool(slug)).toEqual({school:{name:'Trường công khai',slug,address:null,publicPhone:null,publicEmail:null}});
     vi.stubGlobal('fetch',vi.fn(async()=>response({name:'Wrong school',slug:'foreign',announcements:[]})));await expect(repo.publicSchool(slug)).rejects.toMatchObject({code:'READ_ERROR'});
+  });
+  it('rejects the old overview envelope on the context-only preview purpose',async()=>{
+    adopt();const ctx={staffOwner:captureStaffAccess()} as Ctx;vi.stubGlobal('fetch',vi.fn(async()=>response({context:wire(second),attendance:[]})));await expect(repo.context({preview:{ctx,schoolId,accessId}},slug)).rejects.toMatchObject({code:'READ_ERROR'});expect(readParentView(slug)).toBe(first);expect(readParentFault(slug)).toBeNull();
+  });
+  it('rejects a slow preview context after its independent staff authority changes',async()=>{
+    adopt();const pending=deferred<Response>(),ctx={staffOwner:captureStaffAccess()} as Ctx;vi.stubGlobal('fetch',vi.fn(async()=>pending.promise));const read=repo.context({preview:{ctx,schoolId,accessId}},slug);authorizationChanged();pending.resolve(response(wire(second)));await expect(read).rejects.toMatchObject({code:'FORBIDDEN'});expect(readParentView(slug)).toBe(first);expect(readParentFault(slug)).toBeNull();
+  });
+  it('a denied preview context does not terminate or replace the public child session',async()=>{
+    adopt();const ctx={staffOwner:captureStaffAccess()} as Ctx;vi.stubGlobal('fetch',vi.fn(async()=>error(401,'PARENT_ACCESS_INVALID')));await expect(repo.context({preview:{ctx,schoolId,accessId}},slug)).rejects.toMatchObject({code:'NO_SESSION'});expect(readParentView(slug)).toBe(first);expect(readParentFault(slug)).toBeNull();
   });
 });
 describe('Private parent query cache ownership',()=>{

@@ -22,6 +22,10 @@ type ReplaceFirst<T>=T extends (...args:infer A)=>infer R?A extends [unknown,...
 /** Unconnected methods retain their display contracts, and still fail through the facade. */
 export type ParentRepositoryInterface={[K in keyof Historical]:ReplaceFirst<Historical[K]>};
 export type ParentOpenKey={token:string}|Extract<ParentKey,{preview:unknown}>;
+type ParentDisplay=ReturnType<typeof nativeParentContext>['display'];
+function requireSection(context:ParentDisplay,section:'overview'|ParentDisplay['modules'][number]){
+  if(!(section==='overview'?context.overviewAllowed:context.modules.includes(section)))throw new RepoError('FORBIDDEN','module',{details:{problemCode:'PARENT_SECTION_DENIED'}});
+}
 function terminal(error:unknown){
   if(!isRepoError(error))return null;
   if(error.details?.problemCode==='PARENT_CONTEXT_CHANGED')return 'changed' as const;
@@ -33,8 +37,8 @@ function terminal(error:unknown){
 async function previewContext(key:Extract<ParentKey,{preview:unknown}>,slug:string){
   const {ctx,schoolId,accessId}=key.preview,owner=captureStaffAccess();
   ctx.staffOwner?.assertCurrent();owner.assertCurrent();
-  try{const result=await http('previewParent',{params:{schoolId,accessId}});
-    ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentContext(result.data.context,slug,true).display;
+  try{const result=await http('getParentAccessPreviewContext',{params:{schoolId,accessId}});
+    ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentContext(result.data,slug,true).display;
   }catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
 }
 async function documentFile(key:ParentKey,slug:string,id:string,forDownload:boolean){
@@ -42,7 +46,7 @@ async function documentFile(key:ParentKey,slug:string,id:string,forDownload:bool
  const assertCurrent=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};
  assertCurrent();
  try{
-   const context=await connectedParentRepo.context(key,slug);assertCurrent();
+   const context=await connectedParentRepo.context(key,slug);assertCurrent();requireSection(context,'documents');
    const metadata='preview' in key?await http('previewParentDocument',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,documentId:id}}):await http('getParentDocument',{params:{schoolSlug:slug,documentId:id},parentViewId:parent!.viewId,signal:parent!.signal});
    assertCurrent();const file=nativeParentDocument(metadata.data,context,id);
    if(!(forDownload?file.downloadAllowed:file.viewAllowed))throw new RepoError('FORBIDDEN',forDownload?'Nhà trường chưa cho phép tải tệp này.':'Định dạng tệp này không được xem trước.',{details:{problemCode:forDownload?'DOWNLOAD_DENIED':'FILE_PREVIEW_DENIED'}});
@@ -55,7 +59,7 @@ async function sharedContent(key:ParentKey,slug:string,section:'activities'|'ann
  const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
  const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
  try{
-   const context=await connectedParentRepo.context(key,slug);current();
+   const context=await connectedParentRepo.context(key,slug);current();requireSection(context,section);
    if(section==='activities'){
      const result='preview' in key?id?await http('previewParentPublishedActivity',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,activityId:id}}):await http('previewParentPublishedActivityDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):id?await http('getParentPublishedActivity',{params:{schoolSlug:slug,activityId:id},parentViewId:parent!.viewId,signal:parent!.signal}):await http('getParentPublishedActivityDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
      current();return id?nativeParentActivity(result.data as ApiSchemas['ParentSharedActivity'],context,id):nativeParentActivities(result.data as ApiSchemas['ParentSharedActivityDirectory'],context);
@@ -68,7 +72,7 @@ async function publishedConduct(key:ParentKey,slug:string,id?:string){
  const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
  const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
  try{
-   const context=await connectedParentRepo.context(key,slug);current();
+   const context=await connectedParentRepo.context(key,slug);current();requireSection(context,'conduct');
    const result='preview' in key?id?await http('previewParentPublishedConduct',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,periodId:id}}):await http('previewParentPublishedConductDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):id?await http('getParentPublishedConduct',{params:{schoolSlug:slug,periodId:id},parentViewId:parent!.viewId,signal:parent!.signal}):await http('getParentPublishedConductDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
    current();return id?nativeParentConduct(result.data as ApiSchemas['ParentSharedConduct'],context,id):nativeParentConductDirectory(result.data as ApiSchemas['ParentSharedConductDirectory'],context);
  }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
@@ -77,7 +81,7 @@ export const connectedParentRepo={
   async overview(key:ParentKey,slug:string){
     const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
     const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
-    try{const context=await connectedParentRepo.context(key,slug);current();
+    try{const context=await connectedParentRepo.context(key,slug);current();requireSection(context,'overview');
       const result='preview' in key?await http('previewParentPublishedOverview',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):await http('getParentPublishedOverview',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
       current();return nativeParentOverview(result.data,context);
     }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
@@ -91,7 +95,7 @@ export const connectedParentRepo={
   async documents(key:ParentKey,slug:string){
     const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
     const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
-    try{const context=await connectedParentRepo.context(key,slug);current();
+    try{const context=await connectedParentRepo.context(key,slug);current();requireSection(context,'documents');
       const result='preview' in key?await http('previewParentDocumentDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):await http('getParentDocumentDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
       current();return nativeParentDocuments(result.data,context);
     }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
@@ -119,7 +123,7 @@ export const connectedParentRepo={
   },
   async attendance(key:ParentKey,slug:string,month:string){
     const composite='preview' in key?captureStaffAccess():null;
-    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();
+    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();requireSection(context,'attendance');
     if('preview' in key){const {ctx,schoolId,accessId}=key.preview,owner=composite!;ctx.staffOwner?.assertCurrent();owner.assertCurrent();
       try{const {data}=await http('previewParentAttendanceMonth',{params:{schoolId,accessId},query:{month}});ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentAttendance(data,context,month);}
       catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
@@ -130,7 +134,7 @@ export const connectedParentRepo={
   },
   async teachers(key:ParentKey,slug:string){
     const composite='preview' in key?captureStaffAccess():null;
-    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();
+    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();requireSection(context,'teachers');
     if('preview' in key){const {ctx,schoolId,accessId}=key.preview,owner=composite!;ctx.staffOwner?.assertCurrent();owner.assertCurrent();
       try{const {data}=await http('previewParentTeacherDirectory',{params:{schoolId,accessId}});ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentTeachers(data,context);}
       catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
@@ -141,7 +145,7 @@ export const connectedParentRepo={
   },
   async timetable(key:ParentKey,slug:string,week:string){
     const composite='preview' in key?captureStaffAccess():null;
-    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();
+    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();requireSection(context,'timetable');
     if('preview' in key){const {ctx,schoolId,accessId}=key.preview,owner=composite!;ctx.staffOwner?.assertCurrent();owner.assertCurrent();
       try{const {data}=await http('previewParentTimetableWeek',{params:{schoolId,accessId},query:{week}});ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentTimetable(data,context,week);}
       catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
@@ -152,7 +156,7 @@ export const connectedParentRepo={
   },
   async duties(key:ParentKey,slug:string){
     const composite='preview' in key?captureStaffAccess():null;
-    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();
+    const context=await connectedParentRepo.context(key,slug);composite?.assertCurrent();requireSection(context,'duties');
     if('preview' in key){const {ctx,schoolId,accessId}=key.preview,owner=composite!;ctx.staffOwner?.assertCurrent();owner.assertCurrent();
       try{const {data}=await http('previewParentDutySchedule',{params:{schoolId,accessId}});ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentDuties(data,context);}
       catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}

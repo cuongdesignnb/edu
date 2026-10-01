@@ -7,7 +7,7 @@ import { useSchool } from "@/components/layout/shells";
 import { ParentShell, unavailableReason } from "@/features/parent/shell";
 import { PageHeader } from "@/components/layout/page";
 import { Callout, Card } from "@/components/ui/card";
-import { DeniedState, EmptyState, PageSkeleton, ErrorState } from "@/components/ui/states";
+import { EmptyState, PageSkeleton, ErrorState } from "@/components/ui/states";
 import { ParentOverviewView } from "./overview";
 import { ParentAttendanceView } from "./attendance";
 import { ParentConductListView, ParentConductDetailView } from "./conduct";
@@ -59,9 +59,9 @@ export function ParentPreviewView({ schoolId, accessId, view }: { schoolId: stri
         breadcrumbs={[{ label: school.shortName, href: `/school/${schoolId}` }, { label: "Link phụ huynh", href: `/school/${schoolId}/parent-access` }, { label: "Chi tiết link", href: `/school/${schoolId}/parent-access/${accessId}` }, { label: "Xem trước nội bộ" }]} />
       <Callout tone="neutral" icon={<Eye />} title="Xem trước nội bộ">Chế độ này không ghi lượt mở link, không cấp thêm quyền nào cho phụ huynh và không cho phép chỉnh sửa. Đường dẫn/mã link không hiển thị ở đây.</Callout>
       {gate.isLoading ? <PageSkeleton variant="parent" />
-        : gate.error?.code === "FORBIDDEN" || gate.error?.code === "NO_SESSION" ? <Card><ErrorState error={gate.error} /></Card>
+        : gate.error?.code === "FORBIDDEN" ? <Card><ErrorState error={gate.error} /></Card>
           : reason ? <Card><EmptyState icon={<Info className="size-6" />} title="Link hiện không sử dụng được" description={REASON_TEXT[reason] ?? REASON_TEXT.invalid} /></Card>
-            : gate.error ? (gate.error.code === "NOT_FOUND" ? <Card><EmptyState title="Không tìm thấy link" description="Link không tồn tại hoặc không thuộc trường này." /></Card> : <Card><DeniedState message={gate.error.message} /></Card>)
+            : gate.error ? (gate.error.code === "NOT_FOUND" ? <Card><EmptyState title="Không tìm thấy link" description="Link không tồn tại hoặc không thuộc trường này." /></Card> : <Card><ErrorState error={gate.error} onRetry={() => gate.refetch()} /></Card>)
               : (
                 <div className="overflow-hidden rounded-2xl border-2 border-dashed border-[#c9b8ff]">
                   <ParentShell slug={school.slug} preview={{ key, base }}>

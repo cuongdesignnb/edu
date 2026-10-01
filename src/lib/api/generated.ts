@@ -3650,6 +3650,16 @@ export const apiOperations = {
     "permission": "parent_access.preview",
     "readOnly": true
   },
+  "getParentAccessPreviewContext": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/context",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentContext",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
   "getParentPublishedOverview": {
     "method": "GET",
     "path": "/api/v1/parent/{schoolSlug}/overview/published",

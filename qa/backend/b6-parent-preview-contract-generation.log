@@ -1,0 +1,3 @@
+Validated 340 operations, 457 schemas, 128 screen mappings.
+ADR-001: normalized 3 empty required arrays; source handoff preserved.
+exitCode=0

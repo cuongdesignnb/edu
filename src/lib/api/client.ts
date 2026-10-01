@@ -116,7 +116,8 @@ async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{
     if(op.auth==='staff')assertStaffAccess(epoch,identity);
     if(response.status<500&&response.status!==429&&hash)retries.delete(hash);
     if(problem.code==='CSRF_INVALID'){bootstrapCsrf=null;staffCsrf=null;}
-    if(response.status===401&&op.auth==='staff'&&problem.code!=='INVALID_CREDENTIALS')authenticationChanged();
+    // A preview link can expire independently of the authenticated staff session.
+    if(response.status===401&&op.auth==='staff'&&problem.code!=='INVALID_CREDENTIALS'&&!(op.permission==='parent_access.preview'&&problem.code==='PARENT_ACCESS_INVALID'))authenticationChanged();
     throw error(response.status,problem,op.auth,read,response.headers.get('retry-after'),id);
   }
   if(op.auth==='staff')assertStaffAccess(epoch,identity);

@@ -1,0 +1,7 @@
+ Container edumanage_backend_test-runner-run-1d45db6b2bd1 Creating
+ Container edumanage_backend_test-runner-run-1d45db6b2bd1 Created
+
+> edumanage-backend@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+exitCode=0

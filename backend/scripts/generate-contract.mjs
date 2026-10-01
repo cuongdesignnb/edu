@@ -452,6 +452,11 @@ spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule']
 
 
 
+// SC25 context-only preview avoids fetching unused legacy overview panels.
+extendOperation('previewParent','getParentAccessPreviewContext','/schools/{schoolId}/parent-access/{accessId}/preview/context','parent_access.preview','ParentContext',false,['SC25'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid}]);
+spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/context'].get.description='Independent current staff preview authority; only the own child/year safe context and current link capabilities, no overview panels, bearer token or parent cookie adoption.';
+operations.find(operation=>operation.id==='getParentAccessPreviewContext').description=spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/context'].get.description;
+
 // PA02 reads a bounded, independently section-gated published composite snapshot.
 const overviewWeekTotals=object(Object.fromEntries(['present','late','excused','unexcused','unmarked','published','marked'].map(key=>[key,{type:'integer',minimum:0,maximum:1000}])));
 spec.components.schemas.ParentOverviewAttendanceWeek=object({granularity:{type:'string',enum:['DAILY']},weekStart:studentDate,startsOn:studentDate,endsOn:studentDate,totals:overviewWeekTotals,records:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentAttendance'}}});

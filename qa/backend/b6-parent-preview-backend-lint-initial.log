@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-93f7cfedf96a Creating
+ Container edumanage_backend_test-runner-run-93f7cfedf96a Created
+
+> edumanage-backend@0.1.0 lint
+> eslint src tests scripts
+
+
+Oops! Something went wrong! :(
+
+ESLint: 10.11.0
+
+No files matching the pattern "scripts" were found.
+Please check for typing mistakes in the pattern.
+
+
+exitCode=2
