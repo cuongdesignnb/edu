@@ -1,0 +1,6 @@
+src/modules/classroom/class-workspace-overview.ts(51,74): error TS2353: Object literal may only specify known properties, and 'isolation' does not exist in type '{ schoolId?: string | undefined; userId?: string | undefined; parentSessionId?: string | undefined; parent?: boolean | undefined; readOnly?: boolean | undefined; }'.
+src/modules/classroom/classroom.service.ts(24,402): error TS2322: Type '(c: RequestContext) => Promise<unknown>' is not assignable to type 'Handler'.
+  Type 'Promise<unknown>' is not assignable to type 'Promise<Result>'.
+    Type 'unknown' is not assignable to type 'Result'.
+
+EXIT_CODE=2

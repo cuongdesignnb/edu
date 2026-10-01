@@ -1,0 +1,37 @@
+ Container edumanage_backend_test-runner-run-b6e22b6dbb7f Creating 
+ Container edumanage_backend_test-runner-run-b6e22b6dbb7f Created 
+✔ B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers (1083.976392ms)
+✔ B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators (930.302028ms)
+✖ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2103.244984ms)
+✔ B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks (295.657403ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5281.06114
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1641:1
+✖ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2103.244984ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 2
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1654:564)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+
+EXIT_CODE=1

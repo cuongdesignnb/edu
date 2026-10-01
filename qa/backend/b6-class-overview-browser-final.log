@@ -1,0 +1,18 @@
+
+Running 11 tests using 1 worker
+
+(node:55220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\class-header-contract.spec.ts:20:5 › class header keeps exact delegated CLASS without teacher self and nullable independent panels (923ms)
+  ok  2 tests\native-ui-contract\class-header-contract.spec.ts:25:5 › class header fits mobile while denying absent roster denominator and invented period state (470ms)
+  ok  3 tests\native-ui-contract\class-header-contract.spec.ts:28:5 › class header uses actual school authority without fetching a denied teacher directory (581ms)
+  ok  4 tests\native-ui-contract\class-header-contract.spec.ts:31:5 › class header preserves teacher full cards and actual current contact counters and published status (651ms)
+  ok  5 tests\native-ui-contract\class-header-contract.spec.ts:34:5 › class header errors remove private panels and outage retry confirms a fresh exact receipt (786ms)
+  ok  6 tests\native-ui-contract\class-overview-contract.spec.ts:18:5 › class overview renders native morning source tasks cancelled nullable lessons groups and bounded activity progress on desktop (679ms)
+  ok  7 tests\native-ui-contract\class-overview-contract.spec.ts:21:5 › class overview keeps the existing cards readable at390px and scrolls its actual schedule inside the table (550ms)
+  ok  8 tests\native-ui-contract\class-overview-contract.spec.ts:24:5 › class overview distinguishes denied panels from zero sources and does not borrow student or teacher directories (663ms)
+  ok  9 tests\native-ui-contract\class-overview-contract.spec.ts:27:5 › class overview represents actual holiday absence without fabricated attendance denominator or create action (568ms)
+  ok 10 tests\native-ui-contract\class-overview-contract.spec.ts:30:5 › class overview suppresses current sources for archived scope and independently gates historical links (602ms)
+  ok 11 tests\native-ui-contract\class-overview-contract.spec.ts:33:5 › class overview retries outages and removes every private content panel on malformed or denied purpose receipts (1.0s)
+
+  11 passed (8.6s)

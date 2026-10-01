@@ -1,0 +1,48 @@
+ Container edumanage_backend_test-runner-run-4018cfb1c9f7 Creating 
+ Container edumanage_backend_test-runner-run-4018cfb1c9f7 Created 
+✔ B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers (1168.236361ms)
+✔ B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators (1193.346953ms)
+✖ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2183.830954ms)
+✔ B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks (284.102087ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5714.575547
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1641:1
+✖ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2183.830954ms)
+  error: Participant review attribution required
+      at /srv/api/node_modules/pg/lib/client.js:694:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async db.transaction.schoolId (file:///srv/api/tests/integration/foundation.test.mjs:1652:34)
+      at async Database.transaction (/srv/api/dist/database/database.js:47:27)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1652:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    length: 170,
+    severity: 'ERROR',
+    code: '23514',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: 'PL/pgSQL function app.guard_activity_participant() line 22 at RAISE',
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'pl_exec.c',
+    line: '3897',
+    routine: 'exec_stmt_raise'
+  }
+
+
+EXIT_CODE=1

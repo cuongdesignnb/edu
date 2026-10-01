@@ -1,0 +1,14 @@
+{
+  "baseline": "674c0c304a97a3144c7bdedc6a125c0f14e8a85c",
+  "existingOperationsUnchanged": 342,
+  "existingSchemasUnchanged": 461,
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassWorkspaceOverview"
+  ],
+  "addedSchemas": [
+    "ClassWorkspaceOverview",
+    "ClassWorkspaceOverviewResponse"
+  ]
+}

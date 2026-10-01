@@ -1,0 +1,105 @@
+{
+  "checkpoint": "B6 native class overview; full goal remains active",
+  "baseline": "674c0c304a97a3144c7bdedc6a125c0f14e8a85c",
+  "recordedAt": "2026-10-01T14:00:29.036966+00:00",
+  "contract": {
+    "operations": 343,
+    "schemas": 463,
+    "semanticDiff": {
+      "baseline": "674c0c304a97a3144c7bdedc6a125c0f14e8a85c",
+      "existingOperationsUnchanged": 342,
+      "existingSchemasUnchanged": 461,
+      "permissionsUnchanged": true,
+      "rolesUnchanged": true,
+      "addedOperations": [
+        "getClassWorkspaceOverview"
+      ],
+      "addedSchemas": [
+        "ClassWorkspaceOverview",
+        "ClassWorkspaceOverviewResponse"
+      ]
+    }
+  },
+  "migrations": {
+    "count": 46,
+    "newMigration": false,
+    "currentFullReplay": "NOT_RERUN"
+  },
+  "postgres": {
+    "status": "PASS_SELECTED_ONLY",
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 17465.523694,
+    "log": "b6-class-overview-postgres-final.log",
+    "runnerImage": "sha256:04658a5d9e50388d46449946ca7d79908194dac25b6523401d379f70c1c42b6c",
+    "fullCurrentRegression": "NOT_RERUN",
+    "evidenceQueuePositiveLifecycle": "NOT_RUN_IN_THIS_CHECKPOINT"
+  },
+  "backendUnitContracts": {
+    "passed": 49,
+    "durationMs": 566.602822
+  },
+  "frontendUnit": {
+    "passed": 373,
+    "files": 44,
+    "durationSeconds": 10.3,
+    "apiTests": 332,
+    "historicalSyntheticTests": 41
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "selectedFiles": [
+      "tests/native-ui-contract/class-header-contract.spec.ts",
+      "tests/native-ui-contract/class-overview-contract.spec.ts"
+    ],
+    "startTime": "2026-10-01T13:56:21.755Z",
+    "duration": 8590.307999999999,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "ownedNextPid": 55456,
+    "ownedNextClosed": true,
+    "screenshotsInspected": [
+      "desktop",
+      "mobile",
+      "denied",
+      "archived"
+    ]
+  },
+  "build": "PASS",
+  "backendTypes": "PASS",
+  "backendLint": "PASS",
+  "frontendTypes": "PASS",
+  "changedFrontendLint": "PASS",
+  "fullRootLint": "NOT_RERUN",
+  "facade": {
+    "nativeCandidates": 131,
+    "activatedNativeCandidates": 131,
+    "matchedLegacyMethods": 118,
+    "legacyMethods": 231,
+    "remainingLegacyMethods": 113
+  },
+  "coreScreens": {
+    "IMPLEMENTED": 63,
+    "TESTED": 0,
+    "NOT_STARTED": 52,
+    "STATIC_UNVERIFIED": 3
+  },
+  "latestOsPortCheck": {
+    "listeners": 0,
+    "port": 18763,
+    "checkedAt": "2026-10-01T20:58:05.2201344+07:00"
+  },
+  "dockerReleaseUrl": "NOT_SERVING",
+  "postgresBrowserE2E": "NOT_RUN",
+  "releaseRestartPersistence": "NOT_RUN",
+  "physicalBackupRestore": "NOT_RUN",
+  "releaseWorkloadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "userZipTouched": false,
+  "retainedVolumesDeleted": false
+}

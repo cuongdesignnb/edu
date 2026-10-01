@@ -1,0 +1,60 @@
+ Container edumanage_backend_test-runner-run-5c419cec7c23 Creating 
+ Container edumanage_backend_test-runner-run-5c419cec7c23 Created 
+✔ staff preview context has a minimal context schema and independent school authority (12.217568ms)
+✔ class workspace header has exact year routing and explicitly permits absent independent period metadata (26.874122ms)
+✔ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (21.816461ms)
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (0.514129ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (8.383407ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (9.075171ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (7.494091ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (3.348086ms)
+✔ login rejects spoofed role, school and unknown fields (1.003099ms)
+✔ private user DTO rejects secrets and unknown properties (2.073355ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.594052ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (21.124441ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (5.849902ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (16.764573ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (3.529267ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (11.11276ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (1.695273ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (14.829469ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (10.916296ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (8.04849ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (22.29353ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (35.237329ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (29.356153ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (5.304128ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (0.45103ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (5.392658ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (4.28534ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (11.335059ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (4.973145ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (4.692808ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (28.914898ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (11.675285ms)
+✔ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (21.807444ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.51168ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.557874ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (12.143466ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.558081ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.503799ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.766834ms)
+✔ grant action and class scope stay together (0.911146ms)
+✔ subject grants never authorize management without explicit subject policy (0.175951ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.158529ms)
+✔ a custom class grant authorizes only its delegated action and class (0.133081ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.206128ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (4.260194ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.439418ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (3.377641ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (2.930169ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (104.027563ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 49
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 566.602822
+EXIT_CODE=0

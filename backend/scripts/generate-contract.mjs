@@ -643,6 +643,20 @@ spec.components.schemas.ClassWorkspaceHeader=object({
 });
 spec.components.schemas.ClassWorkspaceHeaderResponse=object({data:{$ref:'#/components/schemas/ClassWorkspaceHeader'},requestId:label});
 extendOperation('getClassOverview','getClassWorkspaceHeader','/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-header','class.read','ClassWorkspaceHeader',false,['CL01'],['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})));
+// Bounded exact class content uses native source states and separate panel rights.
+const classTaskKind={type:'string',enum:['attendance','attendance-finish','attendance-publish','lesson-attendance','conduct-review','conduct-lock','evidence','adjustment','adjustment-publish','groups']};
+const overviewCounts=object({total:count,present:count,late:count,excused:count,unexcused:count,unmarked:count});
+spec.components.schemas.ClassWorkspaceOverview=object({schoolId:uuid,yearId:uuid,classId:uuid,today:studentDate,referenceDate:studentDate,asOf:{type:'string',format:'date-time'},isCurrent:{type:'boolean'},readOnly:{type:'boolean'},
+ permissions:object({attendance:{type:'boolean'},schedule:{type:'boolean'},groups:{type:'boolean'},activities:{type:'boolean'}}),canRecordMorning:{type:'boolean'},
+ allowedTaskKinds:{type:'array',maxItems:10,uniqueItems:true,items:classTaskKind},tasks:{type:'array',maxItems:10,nullable:true,items:object({kind:classTaskKind,count:{type:'integer',minimum:1}})},
+ attendance:{...object({calendarState:{type:'string',enum:['HOLIDAY','WITHIN_YEAR']},session:{...object({id:uuid,version:{type:'integer',minimum:1},sourceVersion:{type:'integer',minimum:1},status:{type:'string',enum:['OPEN','LOCKED','PUBLISHED']}}),nullable:true},counts:{...overviewCounts,nullable:true}}),nullable:true},
+ lessons:{type:'array',maxItems:100,nullable:true,items:object({id:uuid,version:{type:'integer',minimum:1},periodNumber:{type:'integer',minimum:1,nullable:true},startsAtLocal:{type:'string',pattern:'^([01][0-9]|2[0-3]):[0-5][0-9]$'},endsAtLocal:{type:'string',pattern:'^([01][0-9]|2[0-3]):[0-5][0-9]$'},subjectName:label,teacherName:nullableLabel,roomName:nullableLabel,status:{type:'string',enum:['SCHEDULED','CANCELLED']},changeReason:nullableLabel})},
+ groups:{...object({items:{type:'array',maxItems:100,items:object({id:uuid,name:label,size:count})},totalStudents:count,noGroup:count}),nullable:true},
+ activities:{...object({items:{type:'array',maxItems:6,items:object({id:uuid,version:{type:'integer',minimum:1},title:label,dueAt:{type:'string',format:'date-time'},dueDate:studentDate,total:count,done:count})},total:count,hasMore:{type:'boolean'}}),nullable:true},
+ navigation:{type:'array',uniqueItems:true,maxItems:6,items:{type:'string',enum:['reports','attendance/weekly','conduct','timetable','groups','activities']}},
+});
+spec.components.schemas.ClassWorkspaceOverviewResponse=object({data:{$ref:'#/components/schemas/ClassWorkspaceOverview'},requestId:label});
+extendOperation('getClassOverview','getClassWorkspaceOverview','/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-overview','class.read','ClassWorkspaceOverview',false,['CL01'],['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})));
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

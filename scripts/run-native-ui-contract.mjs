@@ -7,7 +7,10 @@ import net from 'node:net';
 const root=path.resolve(import.meta.dirname,'..'),qa=path.join(root,'qa/backend'),port=18763;
 const prefix=process.argv[2]??'b6-native-activation';
 if(!/^b6-[a-z-]+$/.test(prefix))throw new Error('Invalid QA evidence prefix');
+const selectedFiles=process.argv.slice(3);
+if(selectedFiles.some(file=>!/^tests\/native-ui-contract\/[a-z-]+\.spec\.ts$/.test(file)))throw new Error('Invalid native browser test path');
 const evidence={prefix,kind:'BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E',startedAt:new Date().toISOString(),host:'127.0.0.1',port};
+if(selectedFiles.length)evidence.selectedFiles=selectedFiles;
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function portFree(){
   return new Promise(resolve=>{
@@ -35,7 +38,7 @@ try{
     await delay(200);
   }
   if(!ready)throw new Error('The owned QA server did not become ready.');
-  const runner=launch(['node_modules/@playwright/test/cli.js','test','--config','playwright.native.config.ts'],path.join(qa,`${prefix}-browser-final.log`));
+  const runner=launch(['node_modules/@playwright/test/cli.js','test','--config','playwright.native.config.ts',...selectedFiles],path.join(qa,`${prefix}-browser-final.log`));
   const result=await runner.finished;evidence.playwrightExitCode=result.code;code=result.code??1;
 }catch(error){evidence.error=error.message;code=1;}
 finally{

@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-bf18dcb7cd15 Creating 
+ Container edumanage_backend_test-runner-run-bf18dcb7cd15 Created 
+✔ B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers (1041.802939ms)
+✔ B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators (1125.157596ms)
+✔ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2446.660883ms)
+✔ B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks (266.384732ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5741.849241
+
+EXIT_CODE=0

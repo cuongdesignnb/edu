@@ -35492,6 +35492,101 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-overview:
+    get:
+      operationId: getClassWorkspaceOverview
+      tags:
+        - Classroom
+      summary: getClassWorkspaceOverview
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: class.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL01
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassWorkspaceOverviewResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -50440,6 +50535,340 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ClassWorkspaceHeader"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassWorkspaceOverview:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        referenceDate:
+          type: string
+          format: date
+        asOf:
+          type: string
+          format: date-time
+        isCurrent:
+          type: boolean
+        readOnly:
+          type: boolean
+        permissions:
+          type: object
+          properties:
+            attendance:
+              type: boolean
+            schedule:
+              type: boolean
+            groups:
+              type: boolean
+            activities:
+              type: boolean
+          required:
+            - attendance
+            - schedule
+            - groups
+            - activities
+          additionalProperties: false
+        canRecordMorning:
+          type: boolean
+        allowedTaskKinds:
+          type: array
+          maxItems: 10
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - attendance
+              - attendance-finish
+              - attendance-publish
+              - lesson-attendance
+              - conduct-review
+              - conduct-lock
+              - evidence
+              - adjustment
+              - adjustment-publish
+              - groups
+        tasks:
+          type: array
+          maxItems: 10
+          nullable: true
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+                enum:
+                  - attendance
+                  - attendance-finish
+                  - attendance-publish
+                  - lesson-attendance
+                  - conduct-review
+                  - conduct-lock
+                  - evidence
+                  - adjustment
+                  - adjustment-publish
+                  - groups
+              count:
+                type: integer
+                minimum: 1
+            required:
+              - kind
+              - count
+            additionalProperties: false
+        attendance:
+          type: object
+          properties:
+            calendarState:
+              type: string
+              enum:
+                - HOLIDAY
+                - WITHIN_YEAR
+            session:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                version:
+                  type: integer
+                  minimum: 1
+                sourceVersion:
+                  type: integer
+                  minimum: 1
+                status:
+                  type: string
+                  enum:
+                    - OPEN
+                    - LOCKED
+                    - PUBLISHED
+              required:
+                - id
+                - version
+                - sourceVersion
+                - status
+              additionalProperties: false
+              nullable: true
+            counts:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  minimum: 0
+                present:
+                  type: integer
+                  minimum: 0
+                late:
+                  type: integer
+                  minimum: 0
+                excused:
+                  type: integer
+                  minimum: 0
+                unexcused:
+                  type: integer
+                  minimum: 0
+                unmarked:
+                  type: integer
+                  minimum: 0
+              required:
+                - total
+                - present
+                - late
+                - excused
+                - unexcused
+                - unmarked
+              additionalProperties: false
+              nullable: true
+          required:
+            - calendarState
+            - session
+            - counts
+          additionalProperties: false
+          nullable: true
+        lessons:
+          type: array
+          maxItems: 100
+          nullable: true
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              version:
+                type: integer
+                minimum: 1
+              periodNumber:
+                type: integer
+                minimum: 1
+                nullable: true
+              startsAtLocal:
+                type: string
+                pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+              endsAtLocal:
+                type: string
+                pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+              subjectName:
+                type: string
+              teacherName:
+                type: string
+                nullable: true
+              roomName:
+                type: string
+                nullable: true
+              status:
+                type: string
+                enum:
+                  - SCHEDULED
+                  - CANCELLED
+              changeReason:
+                type: string
+                nullable: true
+            required:
+              - id
+              - version
+              - periodNumber
+              - startsAtLocal
+              - endsAtLocal
+              - subjectName
+              - teacherName
+              - roomName
+              - status
+              - changeReason
+            additionalProperties: false
+        groups:
+          type: object
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  size:
+                    type: integer
+                    minimum: 0
+                required:
+                  - id
+                  - name
+                  - size
+                additionalProperties: false
+            totalStudents:
+              type: integer
+              minimum: 0
+            noGroup:
+              type: integer
+              minimum: 0
+          required:
+            - items
+            - totalStudents
+            - noGroup
+          additionalProperties: false
+          nullable: true
+        activities:
+          type: object
+          properties:
+            items:
+              type: array
+              maxItems: 6
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  version:
+                    type: integer
+                    minimum: 1
+                  title:
+                    type: string
+                  dueAt:
+                    type: string
+                    format: date-time
+                  dueDate:
+                    type: string
+                    format: date
+                  total:
+                    type: integer
+                    minimum: 0
+                  done:
+                    type: integer
+                    minimum: 0
+                required:
+                  - id
+                  - version
+                  - title
+                  - dueAt
+                  - dueDate
+                  - total
+                  - done
+                additionalProperties: false
+            total:
+              type: integer
+              minimum: 0
+            hasMore:
+              type: boolean
+          required:
+            - items
+            - total
+            - hasMore
+          additionalProperties: false
+          nullable: true
+        navigation:
+          type: array
+          uniqueItems: true
+          maxItems: 6
+          items:
+            type: string
+            enum:
+              - reports
+              - attendance/weekly
+              - conduct
+              - timetable
+              - groups
+              - activities
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - referenceDate
+        - asOf
+        - isCurrent
+        - readOnly
+        - permissions
+        - canRecordMorning
+        - allowedTaskKinds
+        - tasks
+        - attendance
+        - lessons
+        - groups
+        - activities
+        - navigation
+      additionalProperties: false
+    ClassWorkspaceOverviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassWorkspaceOverview"
         requestId:
           type: string
       required:

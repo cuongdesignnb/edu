@@ -7,6 +7,7 @@ import {RepoError} from '../errors';
 import {withStaffAccess} from './common';
 import {http} from '../../api/client';
 import {nativeClassHeader} from './classroom-header';
+import {nativeClassOverview} from './classroom-overview';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -42,6 +43,7 @@ async function cards(schoolId:string,includeEnded=false){
 }
 export const connectedClassroomRepo=withStaffAccess({
   async header(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return nativeClassHeader((await http('getClassWorkspaceHeader',{params:{schoolId,yearId,classId}})).data,schoolId,yearId,classId);},
+  async overview(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return nativeClassOverview((await http('getClassWorkspaceOverview',{params:{schoolId,yearId,classId}})).data,schoolId,yearId,classId);},
   async teacherClasses(_ctx:Ctx,schoolId:string,includeEnded=false){return cards(schoolId,includeEnded);},
 });
 export const connectedTeacherExtraRepo=withStaffAccess({

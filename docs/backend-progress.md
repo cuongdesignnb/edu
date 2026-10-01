@@ -346,6 +346,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getParentAccessPreviewContext | SC25 | TESTED | qa/backend/b6-parent-preview-integration-selected.log |
 | listTeacherClassDirectory | TE02 | TESTED | qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate. |
 | getClassWorkspaceHeader | CL01 | TESTED | qa/backend/b6-class-header-postgres-selected-visual-corrected.log: real PostgreSQL 3/3 on current image; exact school/year/class/current assignment/grant rights, independent minimal fields, real publish/withdraw and parent-link counters, foreign/future/expired/revoked/ended denial. Header only; CL01 overview and full current-tree regression remain separate. |
+| getClassWorkspaceOverview | CL01 | TESTED | qa/backend/b6-class-overview-postgres-final.log: 10/10 selected PostgreSQL checks, zero failed/skipped/cancelled; exact DAILY source, publish/withdraw, own SUBJECT lessons, current revoke, holiday/archive/future scope, actual conduct/adjustment transitions and complete100/101 panel bounds. Backend49/49, frontend373/373, selected Edge11/11 intercepted contracts; current full PostgreSQL/E2E/B7 NOT_RUN. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -419,7 +420,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | TE04 | core | TESTED | NOT_STARTED |  |  |
 | TE05 | core | TESTED | NOT_STARTED |  |  |
 | TE06 | core | TESTED | NOT_STARTED |  |  |
-| CL01 | core | TESTED | NOT_STARTED |  |  |
+| CL01 | core | TESTED | IMPLEMENTED |  | Native selected class overview, independent current readers and actual task/attendance/schedule/groups/activity sources; desktop/mobile/denied/archive screenshots inspected; Edge11/11 intercepted browser contracts. PostgreSQL browser E2E not run; screen acceptance remains pending. |
 | CL02 | core | TESTED | NOT_STARTED |  |  |
 | CL03 | core | TESTED | NOT_STARTED |  | Native student DTO, explicit class/year, denied family/position projections and temporal enrollment history prepared; classroom facade is still unactivated, so this screen remains NOT_STARTED. |
 | CL04 | core | TESTED | NOT_STARTED |  |  |

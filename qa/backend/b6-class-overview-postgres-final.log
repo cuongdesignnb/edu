@@ -1,0 +1,21 @@
+ Container edumanage_backend_test-runner-run-30bd7ac4495b Creating 
+ Container edumanage_backend_test-runner-run-30bd7ac4495b Created 
+✔ B6 class workspace header isolates school year class subject fields and actual publication link counters (2635.093393ms)
+✔ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (884.042073ms)
+✔ B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments (732.474954ms)
+✔ B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers (1180.830813ms)
+✔ B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators (2308.043533ms)
+✔ B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke (2483.186917ms)
+✔ B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks (265.372985ms)
+✔ B6 class workspace overview follows actual conduct review lock and adjustment transitions without exposing their private sources (976.44996ms)
+✔ B6 class workspace overview accepts complete100-row panels and rejects larger sources before returning a partial success (389.199396ms)
+✔ B5 dashboards count real scoped rows, keep homeroom and subject tasks separate and immediately recheck revocation (4560.763027ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17465.523694
+EXIT_CODE=0

@@ -461,6 +461,8 @@ export interface ApiSchemas {
   "TeacherClassCardPage": { "data": Array<ApiSchemas["TeacherClassCard"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "ClassWorkspaceHeader": { "school": { "id": string; "name": string; "shortName": string; "slug": string; }; "class": { "id": string; "version": number; "yearId": string; "gradeLevelId": string; "name": string; "capacity": number; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "roomId": (string) | null; "motto": (string) | null; "createdAt": string; }; "year": { "id": string; "version": number; "code": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; }; "grade": string; "today": string; "referenceDate": string; "homeroom": ({ "name": string; "contactVisible": boolean; "workEmail": (string) | null; "workPhone": (string) | null; }) | null; "studentCount": (number) | null; "maleCount": (number) | null; "femaleCount": (number) | null; "myDuties": Array<string>; "viaSchoolRole": boolean; "workspaceKind": "TEACHER" | "SCHOOL" | "CLASS"; "actions": Array<string>; "tabs": Array<{ "key": "overview" | "students" | "attendance" | "conduct" | "timetable" | "groups" | "activities" | "announcements" | "files" | "reports"; "label": string; "path": "" | "/students" | "/attendance" | "/conduct" | "/timetable" | "/groups" | "/activities" | "/announcements" | "/files" | "/reports"; }>; "summary": { "weekIndex": (number) | null; "weekStatus": ("OPEN" | "IN_REVIEW" | "LOCKED" | "PUBLISHED" | null) | null; "pending": (number) | null; "links": ({ "studentsWithLink": number; "opened": number; }) | null; "lastPublishedAt": (string) | null; }; "readOnly": boolean; };
   "ClassWorkspaceHeaderResponse": { "data": ApiSchemas["ClassWorkspaceHeader"]; "requestId": string; };
+  "ClassWorkspaceOverview": { "schoolId": string; "yearId": string; "classId": string; "today": string; "referenceDate": string; "asOf": string; "isCurrent": boolean; "readOnly": boolean; "permissions": { "attendance": boolean; "schedule": boolean; "groups": boolean; "activities": boolean; }; "canRecordMorning": boolean; "allowedTaskKinds": Array<"attendance" | "attendance-finish" | "attendance-publish" | "lesson-attendance" | "conduct-review" | "conduct-lock" | "evidence" | "adjustment" | "adjustment-publish" | "groups">; "tasks": (Array<{ "kind": "attendance" | "attendance-finish" | "attendance-publish" | "lesson-attendance" | "conduct-review" | "conduct-lock" | "evidence" | "adjustment" | "adjustment-publish" | "groups"; "count": number; }>) | null; "attendance": ({ "calendarState": "HOLIDAY" | "WITHIN_YEAR"; "session": ({ "id": string; "version": number; "sourceVersion": number; "status": "OPEN" | "LOCKED" | "PUBLISHED"; }) | null; "counts": ({ "total": number; "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; }) | null; }) | null; "lessons": (Array<{ "id": string; "version": number; "periodNumber": (number) | null; "startsAtLocal": string; "endsAtLocal": string; "subjectName": string; "teacherName": (string) | null; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeReason": (string) | null; }>) | null; "groups": ({ "items": Array<{ "id": string; "name": string; "size": number; }>; "totalStudents": number; "noGroup": number; }) | null; "activities": ({ "items": Array<{ "id": string; "version": number; "title": string; "dueAt": string; "dueDate": string; "total": number; "done": number; }>; "total": number; "hasMore": boolean; }) | null; "navigation": Array<"reports" | "attendance/weekly" | "conduct" | "timetable" | "groups" | "activities">; };
+  "ClassWorkspaceOverviewResponse": { "data": ApiSchemas["ClassWorkspaceOverview"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3880,6 +3882,16 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ClassWorkspaceHeader",
+    "list": false,
+    "permission": "class.read",
+    "readOnly": true
+  },
+  "getClassWorkspaceOverview": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-overview",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassWorkspaceOverview",
     "list": false,
     "permission": "class.read",
     "readOnly": true

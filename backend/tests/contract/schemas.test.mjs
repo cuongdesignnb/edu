@@ -12,8 +12,15 @@ test('class workspace header has exact year routing and explicitly permits absen
  for(const bad of [{...value,studentId:id},{...value,tokenHash:'secret'},{...value,summary:{...value.summary,periodId:id}},{...value,homeroom:{name:'Tên công tác',contactVisible:true,workEmail:null,workPhone:null,userId:id}}])assert.throws(()=>validateSchema('ClassWorkspaceHeader',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
 });
 
+test('class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects',()=>{
+ const op=operations.find(o=>o.id==='getClassWorkspaceOverview');assert.equal(op.auth,'staff');assert.equal(op.permission,'class.read');assert.equal(op.readOnly,true);assert.equal(op.method,'GET');assert.deepEqual(op.parameters.filter(p=>p.in==='path').map(p=>p.name),['schoolId','yearId','classId']);
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',v={schoolId:id,yearId:id,classId:id,today:'2026-10-01',referenceDate:'2026-10-01',asOf:'2026-10-01T01:00:00Z',isCurrent:true,readOnly:false,permissions:{attendance:false,schedule:false,groups:false,activities:false},canRecordMorning:false,allowedTaskKinds:[],tasks:null,attendance:null,lessons:null,groups:null,activities:null,navigation:[]};validateSchema('ClassWorkspaceOverview',v,true);
+ const lesson={id,version:1,periodNumber:null,startsAtLocal:'08:00',endsAtLocal:'08:30',subjectName:'Môn thật',teacherName:null,roomName:null,status:'CANCELLED',changeReason:null};validateSchema('ClassWorkspaceOverview',{...v,lessons:[lesson]},true);
+ for(const bad of [{...v,studentId:id},{...v,internalNote:'secret'},{...v,tasks:[{kind:'role-spoof',count:1}]},{...v,lessons:[{...lesson,memberId:id}]},{...v,lessons:Array.from({length:101},()=>lesson)},{...v,groups:{items:[],noGroup:0,totalStudents:0,students:[]}}])assert.throws(()=>validateSchema('ClassWorkspaceOverview',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+});
+
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,342);assert.equal(new Set(operations.map(op=>op.id )).size,342);
+  assert.equal(operations.length,343);assert.equal(new Set(operations.map(op=>op.id )).size,343);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

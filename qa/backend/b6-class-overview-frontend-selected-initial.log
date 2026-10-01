@@ -1,0 +1,41 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ❯ tests/unit/api-class-overview-adapter.test.ts (6 tests | 1 failed) 33ms
+   ✓ Native bounded class overview and independently authorized nullable sources > retains denied null panels and accepts truthful source versions nullable schedule metadata and actual local due date 6ms
+   ✓ Native bounded class overview and independently authorized nullable sources > requests only the exact school year class purpose with a current staff receipt 9ms
+   ✓ Native bounded class overview and independently authorized nullable sources > rejects foreign private and inconsistent permission counts source tasks and navigation rather than filtering or defaulting 3ms
+   ✓ Native bounded class overview and independently authorized nullable sources > rejects missing-session fabricated presence duplicate or oversized sources and incomplete activity previews 1ms
+   ✓ Native bounded class overview and independently authorized nullable sources > accepts actual holiday absence and archived sources while rejecting current tasks in an archived year 1ms
+   × Native bounded class overview and independently authorized nullable sources > rejects delayed receipts after authority changes and propagates outages without borrowing cached mock facts 12ms
+     → expected RepoError: Phạm vi quyền đã thay đổi. Vui… { …(3) } to match object { code: 'SESSION_EXPIRED' }
+(4 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-class-overview-adapter.test.ts > Native bounded class overview and independently authorized nullable sources > rejects delayed receipts after authority changes and propagates outages without borrowing cached mock facts
+AssertionError: expected RepoError: Phạm vi quyền đã thay đổi. Vui… { …(3) } to match object { code: 'SESSION_EXPIRED' }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "SESSION_EXPIRED",
++ RepoError {
++   "code": "FORBIDDEN",
+  }
+
+ ❯ tests/unit/api-class-overview-adapter.test.ts:26:311
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  20:41:13
+   Duration  542ms (transform 139ms, setup 37ms, collect 159ms, tests 33ms, environment 0ms, prepare 103ms)
+
+
+EXIT_CODE=1

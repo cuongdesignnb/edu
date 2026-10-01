@@ -4067,6 +4067,17 @@
       "evidence": [
         "qa/backend/b6-class-header-postgres-selected-visual-corrected.log: real PostgreSQL 3/3 on current image; exact school/year/class/current assignment/grant rights, independent minimal fields, real publish/withdraw and parent-link counters, foreign/future/expired/revoked/ended denial. Header only; CL01 overview and full current-tree regression remain separate."
       ]
+    },
+    {
+      "operationId": "getClassWorkspaceOverview",
+      "screenIds": [
+        "CL01"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-overview-postgres-final.log: 10/10 selected PostgreSQL checks, zero failed/skipped/cancelled; exact DAILY source, publish/withdraw, own SUBJECT lessons, current revoke, holiday/archive/future scope, actual conduct/adjustment transitions and complete100/101 panel bounds. Backend49/49, frontend373/373, selected Edge11/11 intercepted contracts; current full PostgreSQL/E2E/B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5192,11 +5203,14 @@
       "scope": "core",
       "operationIds": [
         "getClassOverview",
-        "getClassWorkspaceHeader"
+        "getClassWorkspaceHeader",
+        "getClassWorkspaceOverview"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native selected class overview, independent current readers and actual task/attendance/schedule/groups/activity sources; desktop/mobile/denied/archive screenshots inspected; Edge11/11 intercepted browser contracts. PostgreSQL browser E2E not run; screen acceptance remains pending."
+      ],
       "apiStatus": "TESTED"
     },
     {

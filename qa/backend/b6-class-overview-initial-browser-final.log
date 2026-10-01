@@ -1,0 +1,61 @@
+
+Running 11 tests using 1 worker
+
+(node:32964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\class-header-contract.spec.ts:20:5 › class header keeps exact delegated CLASS without teacher self and nullable independent panels (938ms)
+  ok  2 tests\native-ui-contract\class-header-contract.spec.ts:25:5 › class header fits mobile while denying absent roster denominator and invented period state (488ms)
+  ok  3 tests\native-ui-contract\class-header-contract.spec.ts:28:5 › class header uses actual school authority without fetching a denied teacher directory (573ms)
+  ok  4 tests\native-ui-contract\class-header-contract.spec.ts:31:5 › class header preserves teacher full cards and actual current contact counters and published status (591ms)
+  ok  5 tests\native-ui-contract\class-header-contract.spec.ts:34:5 › class header errors remove private panels and outage retry confirms a fresh exact receipt (785ms)
+  ok  6 tests\native-ui-contract\class-overview-contract.spec.ts:18:5 › class overview renders native morning source tasks cancelled nullable lessons groups and bounded activity progress on desktop (693ms)
+  ok  7 tests\native-ui-contract\class-overview-contract.spec.ts:21:5 › class overview keeps the existing cards readable at390px and scrolls its actual schedule inside the table (519ms)
+  ok  8 tests\native-ui-contract\class-overview-contract.spec.ts:24:5 › class overview distinguishes denied panels from zero sources and does not borrow student or teacher directories (667ms)
+  ok  9 tests\native-ui-contract\class-overview-contract.spec.ts:27:5 › class overview represents actual holiday absence without fabricated attendance denominator or create action (553ms)
+  x  10 tests\native-ui-contract\class-overview-contract.spec.ts:30:5 › class overview suppresses current sources for archived scope and independently gates historical links (660ms)
+(node:4092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 tests\native-ui-contract\class-overview-contract.spec.ts:33:5 › class overview retries outages and removes every private content panel on malformed or denied purpose receipts (1.3s)
+
+
+  1) tests\native-ui-contract\class-overview-contract.spec.ts:30:5 › class overview suppresses current sources for archived scope and independently gates historical links 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('link', { name: 'Báo cáo lớp', exact: true })
+    Expected: visible
+    Error: strict mode violation: getByRole('link', { name: 'Báo cáo lớp', exact: true }) resolved to 2 elements:
+        1) <a class="btn btn-secondary btn-sm" href="/classroom/74000000-0000-4000-8000-000000000001/74000000-0000-4000-8000-000000000002/74000000-0000-4000-8000-000000000003/reports">Báo cáo lớp</a> aka locator('a').filter({ hasText: /^Báo cáo lớp$/ })
+        2) <a class="card-link" href="/classroom/74000000-0000-4000-8000-000000000001/74000000-0000-4000-8000-000000000002/74000000-0000-4000-8000-000000000003/reports">…</a> aka getByTestId('class-overview-activities').getByRole('link', { name: 'Báo cáo lớp' })
+
+    Call log:
+      - Expect "toBeVisible" getByRole('link', { name: 'Báo cáo lớp', exact: true }) with timeout 10000ms
+      - waiting for getByRole('link', { name: 'Báo cáo lớp', exact: true })
+
+
+      29 | });
+      30 | test('class overview suppresses current sources for archived scope and independently gates historical links',async({page})=>{
+    > 31 |  const s=state('archived');await routes(page,s);await page.goto(base);await expect(page.getByRole('heading',{name:'Năm học hoặc lớp đã lưu trữ',exact:true})).toBeVisible();for(const suffix of ['tasks','attendance','lessons'])await expect(page.getByTestId('class-overview-'+suffix)).toHaveCount(0);await expect(page.getByRole('link',{name:'Báo cáo lớp',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Điểm danh theo tuần',exact:true})).toHaveCount(0);expect(s.unexpected).toEqual([]);await page.screenshot({path:`qa/backend/${prefix}-class-overview-archived.png`,fullPage:true});
+         |                                                                                                                                                                                                                                                                                                                                                                               ^
+      32 | });
+      33 | test('class overview retries outages and removes every private content panel on malformed or denied purpose receipts',async({page})=>{
+      34 |  const s=state('outage');await routes(page,s);await page.goto(base);await expect(page.getByText('Không tải được dữ liệu',{exact:true})).toBeVisible();s.mode='full';await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByTestId('class-overview-groups')).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByText('Không tải được dữ liệu',{exact:true})).toBeVisible();await expect(page.getByTestId('class-overview-groups')).toHaveCount(0);s.mode='denied';await page.reload();await expect(page.getByTestId('class-overview-activities')).toHaveCount(0);await expect(page.getByText('Hoạt động nguồn API 1',{exact:true})).toHaveCount(0);expect(s.unexpected).toEqual([]);
+        at D:\Edu\tests\native-ui-contract\class-overview-contract.spec.ts:31:367
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-class-overview-browser-artifacts-final\class-overview-contract-cl-cb10e-ntly-gates-historical-links\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-class-overview-browser-artifacts-final\class-overview-contract-cl-cb10e-ntly-gates-historical-links\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-class-overview-browser-artifacts-final\class-overview-contract-cl-cb10e-ntly-gates-historical-links\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-class-overview-browser-artifacts-final\class-overview-contract-cl-cb10e-ntly-gates-historical-links\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\class-overview-contract.spec.ts:30:5 › class overview suppresses current sources for archived scope and independently gates historical links 
+  10 passed (9.7s)
