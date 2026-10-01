@@ -91,7 +91,7 @@ test.describe('Native browser contract with intercepted API responses — Postgr
     await page.goto('/reset-password#token=synthetic-reset-fragment');await page.getByLabel(/^Mật khẩu mới/).fill(password);await page.getByLabel(/^Nhập lại mật khẩu mới/).fill(password);await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();
     await expect(page.getByRole('button',{name:/Chưa xác minh được kết quả từ máy chủ/})).toBeVisible();await expect(page.getByLabel(/^Mật khẩu mới/)).toHaveValue(password);
     await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();await expect(page.getByText('Đã đặt lại mật khẩu',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);expect(new URL(page.url()).hash).toBe('');await noPersistence(page);
-    await page.setViewportSize({width:390,height:844});await page.screenshot({path:'qa/backend/b6-native-activation-reset-mobile.png',fullPage:true});
+    await page.setViewportSize({width:390,height:844});await page.screenshot({path:`qa/backend/${evidencePrefix}-reset-mobile.png`,fullPage:true});
   });
 
   test('retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly',async({page})=>{

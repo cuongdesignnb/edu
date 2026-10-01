@@ -368,10 +368,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC37 | core | TESTED | NOT_STARTED |  |  |
 | SC38 | core | TESTED | NOT_STARTED |  |  |
 | SC39 | core | TESTED | NOT_STARTED |  |  |
-| SC40 | core | TESTED | NOT_STARTED |  |  |
+| SC40 | core | TESTED | IMPLEMENTED |  | Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun. |
 | SC41 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
-| SC42 | core | TESTED | NOT_STARTED |  |  |
-| SC43 | core | TESTED | NOT_STARTED |  |  |
+| SC42 | core | TESTED | IMPLEMENTED |  | Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun. |
+| SC43 | core | TESTED | IMPLEMENTED |  | Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun. |
 | TE01 | core | TESTED | NOT_STARTED |  |  |
 | TE02 | core | TESTED | NOT_STARTED |  |  |
 | TE03 | core | TESTED | NOT_STARTED |  |  |

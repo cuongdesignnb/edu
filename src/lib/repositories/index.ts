@@ -4,6 +4,7 @@ import {connectedSessionRepo} from './connected/session';
 import {connectedPlatformRepo} from './connected/platform';
 import {connectedSchoolRepo} from './connected/school';
 import {connectedStaffRepo} from './connected/staff';
+import {connectedSupportRepo} from './connected/support';
 
 import {connectedPlatformExtraRepo} from './connected/platform';
 import {connectedAuthRepo} from './connected/auth';
@@ -13,7 +14,7 @@ export const platformRepo=apiRepository<typeof import('./platform').platformRepo
 export const schoolRepo=apiRepository<typeof import('./school').schoolRepo,typeof connectedSchoolRepo>(connectedSchoolRepo);
 export const staffRepo=apiRepository<typeof import('./staff').staffRepo,typeof connectedStaffRepo>(connectedStaffRepo);
 export const studentsRepo=apiRepository<typeof import('./students').studentsRepo,object>({});
-export const supportRepo=apiRepository<typeof import('./support').supportRepo,object>({});
+export const supportRepo=apiRepository<typeof import('./support').supportRepo,typeof connectedSupportRepo>(connectedSupportRepo);
 export const platformExtraRepo=apiRepository<typeof import('./platform-extra').platformExtraRepo,typeof connectedPlatformExtraRepo>(connectedPlatformExtraRepo);
 export const authDemoRepo=apiRepository<typeof import('./platform-extra').authDemoRepo,typeof connectedAuthRepo>(connectedAuthRepo);
 export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,object>({});

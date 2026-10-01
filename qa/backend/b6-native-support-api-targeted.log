@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-support-adapter.test.ts (13 tests) 29ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  11:04:43
+   Duration  589ms (transform 199ms, setup 35ms, collect 248ms, tests 29ms, environment 0ms, prepare 101ms)

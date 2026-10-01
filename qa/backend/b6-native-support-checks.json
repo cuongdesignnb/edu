@@ -1,0 +1,141 @@
+{
+  "phase": "B6_NATIVE_SCHOOL_SUPPORT_PARTIAL",
+  "baseCommit": "cc5d974548fd3c1598ed0f2a22a06e581a7ed71d",
+  "backendSourceChanged": false,
+  "frontendTypecheckExitCode": 0,
+  "frontendBuildExitCode": 0,
+  "frontendScopedLintExitCode": 0,
+  "frontendExistingLintWarnings": 2,
+  "frontendAllUnit": {
+    "passed": 231,
+    "total": 231,
+    "files": 27,
+    "exitCode": 0,
+    "durationSeconds": 9.76,
+    "apiCasesWithinThisRun": 190,
+    "apiFilesWithinThisRun": 24,
+    "historicalSyntheticTests": 41,
+    "log": "b6-native-support-all-unit-final.log"
+  },
+  "frontendTargetedSupportUnit": {
+    "passed": 13,
+    "total": 13,
+    "files": 1,
+    "exitCode": 0,
+    "durationSeconds": 0.589,
+    "log": "b6-native-support-api-targeted.log"
+  },
+  "browserContract": {
+    "passed": 24,
+    "total": 24,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 28184.871000000003,
+    "exitCode": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "run": {
+      "prefix": "b6-native-support",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T04:09:12.443Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 36772,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T04:09:41.627Z",
+      "exitCode": 0
+    },
+    "log": "b6-native-support-browser-final.log"
+  },
+  "backendEvidenceCarriedForward": {
+    "executedInThisPhase": false,
+    "source": "b6-native-staff-checks.json",
+    "postgresIntegration": {
+      "passed": 155,
+      "total": 155,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationMs": 349878.402378,
+      "migrationCount": 36,
+      "image": "sha256:819c9c991a29073656d9e765f08d8cc58a5e844d2e93439f70c79822731f64cf",
+      "log": "b6-native-staff-integration-full.log",
+      "isolatedComposeProject": "edumanage_backend_test",
+      "postgresHostPortPublished": false
+    },
+    "backendUnitContract": {
+      "passed": 28,
+      "total": 28,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationMs": 598.4858,
+      "log": "b6-native-staff-backend-unit-contract.log"
+    }
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T11:07:37.7170514+07:00",
+    "listeners": [],
+    "port": 18763,
+    "listenerCount": 0
+  },
+  "portAfter": {
+    "port": 18763,
+    "checkedAt": "2026-10-01T11:10:18.9982295+07:00",
+    "listeners": [],
+    "listenerCount": 0
+  },
+  "apiOperationStatuses": {
+    "TESTED": 289,
+    "IMPLEMENTED": 12
+  },
+  "uiSourceStatuses": {
+    "IMPLEMENTED": 38,
+    "STATIC_UNVERIFIED": 3,
+    "NOT_STARTED": 77
+  },
+  "otherScreenStatuses": {
+    "STATIC_UNVERIFIED": 10
+  },
+  "coreScreenCount": 118,
+  "screenRegistryCount": 128,
+  "candidateCount": 100,
+  "activatedCandidates": 90,
+  "activatedLegacyMethods": 83,
+  "legacyMethods": 231,
+  "failedAttempts": {
+    "typecheck": {
+      "exitCode": 2,
+      "log": "b6-native-support-types-third.log",
+      "reason": "radio priority literals widened after pending options mapping"
+    },
+    "browserContract": {
+      "passed": 23,
+      "failed": 1,
+      "total": 24,
+      "log": "b6-native-support-browser-initial.log",
+      "reason": "incorrect expected conflict message"
+    },
+    "historicalScreenshotPath": "Initial reset screenshot was stored under this phase; historical image restored and test now uses phase prefix."
+  },
+  "auditExports": "NOT_IMPLEMENTED",
+  "postgresBrowserE2E": "NOT_RUN",
+  "parentNativeViewIdCsrfProjection": "NOT_IMPLEMENTED",
+  "allCoreNativeUiAcceptance": "NOT_RUN",
+  "finalDockerApplication": "NOT_RUN",
+  "rootDeployScriptsMerge": "PENDING_COMPLETE_IMPLEMENTATION",
+  "apiWebRestartPersistence": "NOT_RUN",
+  "physicalBackupRestore": "NOT_RUN",
+  "smtpProcessDiskDrills": "NOT_RUN",
+  "releaseLoadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "volumesDeleted": false,
+  "unrelatedProjectsChanged": false,
+  "intendedLocalUrl": "http://127.0.0.1:18763",
+  "completedDockerAppServing": false
+}

@@ -4506,8 +4506,10 @@
         "listSchoolAudit"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4534,8 +4536,10 @@
         "createSupportAccess"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4551,8 +4555,10 @@
         "revokeSupportAccess"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun."
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -1,0 +1,1 @@
+src/features/school-ops/support.tsx(99,106): error TS2322: Type 'string' is not assignable to type '"low" | "normal" | "high"'.
