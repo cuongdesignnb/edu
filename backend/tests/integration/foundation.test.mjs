@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,301);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,302);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2753,4 +2753,29 @@ test('B6 native staff activity is SQL-bounded to staff targets, rechecks audit a
   const response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,1);assert.deepEqual(response.json().data.map(r=>r.id),[ids[0]]);assert.equal(response.body.includes('must-not-expose'),false);assert.equal(response.json().page.hasMore,false);
   assert.equal((await request('GET',`${base}/members/${f.other}/details`)).statusCode,403);assert.equal((await request('GET',`${url}&targetType=student`)).statusCode,422);assert.equal((await request('GET',`${url}&actorId=${seedId('user:admin-a')}`)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/staff-activity`)).statusCode,404);
   await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);
+});
+
+test('B6 student-create choices use current class write authority without borrowing roster, year or class readers',async()=>{
+  const f=await staffUiFixture(),write=await f.role([{action:'student.manage',scopes:['CLASS']}]),family=await f.role([{action:'guardian.manage',scopes:['CLASS']}]);
+  const studentGrant=await f.grant(f.target,write.id,{scopeType:'CLASS',classId:f.classId}),guardianGrant=await f.grant(f.target,family.id,{scopeType:'CLASS',classId:f.classId,validFrom:new Date(Date.now()+60000).toISOString()});
+  const schoolWrite=await f.role([{action:'student.manage',scopes:['SCHOOL']}]),schoolGrant=await f.grant(f.target,schoolWrite.id,{validFrom:new Date(Date.now()+60000).toISOString()});
+  const extra=await db.transaction(async tx=>{
+    const row=(await tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'OTHER','Lớp ngoài phạm vi giả',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId])).rows[0];
+    return row.id;
+  },{schoolId:f.schoolId});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const base=`/api/v1/schools/${f.schoolId}`,url=`${base}/student-create-options`;
+  let response=await request('GET',url);assert.equal(response.statusCode,200,response.body);let view=response.json().data;
+  assert.equal(view.today,f.today);assert.deepEqual(view.classes.map(c=>c.id),[f.classId]);assert.equal(view.classes[0].canAddGuardian,false);assert.ok(!view.classes.some(c=>c.id===extra));
+  assert.deepEqual(Object.keys(view.classes[0]).sort(),['id','version','name','status','yearId','yearName','yearStartsOn','yearEndsOn','canAddGuardian'].sort());
+  assert.equal((await request('GET',`${base}/classes`)).statusCode,403);assert.equal((await request('GET',`${base}/student-directory-summary`)).statusCode,403);assert.equal((await request('GET',`${base}/academic-years`)).statusCode,403);
+  assert.equal((await request('GET',`${url}?classId=${extra}`)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/student-create-options`)).statusCode,404);
+  response=await request('GET',`${url}?yearId=${view.classes[0].yearId}`);assert.equal(response.statusCode,200,response.body);assert.deepEqual(response.json().data.classes.map(c=>c.id),[f.classId]);
+  await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_from=now()-interval '1 minute' WHERE school_id=$1 AND id=$2",[f.schoolId,guardianGrant.id]),{schoolId:f.schoolId});
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);view=response.json().data;assert.equal(view.classes[0].canAddGuardian,true);
+  await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_from=now()-interval '1 minute' WHERE school_id=$1 AND id=$2",[f.schoolId,schoolGrant.id]),{schoolId:f.schoolId});
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);view=response.json().data;assert.deepEqual(new Set(view.classes.map(c=>c.id)),new Set([f.classId,extra]));assert.equal(view.classes.find(c=>c.id===f.classId).canAddGuardian,true);assert.equal(view.classes.find(c=>c.id===extra).canAddGuardian,false);
+  assert.equal((await request('GET',`${base}/classes`)).statusCode,403);assert.equal((await request('GET',`${base}/student-directory-summary`)).statusCode,403);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,schoolGrant.id]),{schoolId:f.schoolId});
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,guardianGrant.id]),{schoolId:f.schoolId});response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data.classes[0].canAddGuardian,false);
+  for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,studentGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);}
 });

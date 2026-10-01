@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-students-adapter.test.ts (17 tests) 33ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (21 tests) 35ms
+
+ Test Files  2 passed (2)
+      Tests  38 passed (38)
+   Start at  11:22:47
+   Duration  507ms (transform 160ms, setup 77ms, collect 293ms, tests 69ms, environment 0ms, prepare 200ms)

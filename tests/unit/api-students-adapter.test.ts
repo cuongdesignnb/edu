@@ -1,5 +1,6 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {connectedStudentsRepo,nativeStudent} from '@/lib/repositories/connected/students';
+import {connectedStudentsExtraRepo} from '@/lib/repositories/connected/students-extra';
 import {authenticationChanged,authorizationChanged,captureStaffAccess,onStaffMutationAcknowledged,setStaffCsrf} from '@/lib/api/client';
 import type {ApiSchemas} from '@/lib/api/generated';
 import type {Ctx} from '@/lib/repositories/core';
@@ -85,4 +86,14 @@ it.each([{...row(),dateOfBirth:'2010-01-01'},{...row(),initialEnrollment:{...row
 it('does not consume a student edit whose submitted private note is not acknowledged',async()=>{
   const patch={fullName:input.fullName,dob:input.dob,gender:input.gender,version:4,internalNote:null},fetcher=vi.fn().mockResolvedValueOnce(envelope({...row(),version:5,internalNote:'Nội dung sai'})).mockResolvedValueOnce(envelope({...row(),version:5,internalNote:null})),ack=vi.fn(),off=onStaffMutationAcknowledged(ack);vi.stubGlobal('fetch',fetcher);
   try{await expect(connectedStudentsRepo.update(ctx,schoolId,id,patch)).rejects.toMatchObject({code:'NETWORK'});expect(ack).not.toHaveBeenCalled();await connectedStudentsRepo.update(ctx,schoolId,id,patch);expect(ack).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);}finally{off();}
+});
+
+
+it('gets minimal student-create choices through write authority without reading a class or year catalog',async()=>{
+  const value={today:'2026-10-01',classes:[{id:classId,version:7,name:'Lớp nguồn',status:'DRAFT',yearId:id,yearName:'Năm nguồn',yearStartsOn:'2026-01-01',yearEndsOn:'2027-01-01',canAddGuardian:false}]},fetcher=vi.fn().mockResolvedValue(envelope(value));vi.stubGlobal('fetch',fetcher);
+  expect(await connectedStudentsExtraRepo.createOptions(ctx,schoolId,id)).toEqual(value);expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toContain(`/student-create-options?yearId=${id}`);
+});
+it('keeps unavailable guardian capability explicit and refuses stale ownership before sending creation-choice reads',async()=>{
+  const value={today:'2026-10-01',classes:[{id:classId,version:7,name:'Lớp nguồn',status:'DRAFT',yearId:id,yearName:'Năm nguồn',yearStartsOn:'2026-01-01',yearEndsOn:'2027-01-01'}]},fetcher=vi.fn().mockResolvedValue(envelope(value));vi.stubGlobal('fetch',fetcher);
+  await expect(connectedStudentsExtraRepo.createOptions(ctx,schoolId)).rejects.toMatchObject({code:'READ_ERROR'});const stale={staffOwner:captureStaffAccess()} as Ctx;authorizationChanged();await expect(connectedStudentsExtraRepo.createOptions(stale,schoolId)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(1);
 });

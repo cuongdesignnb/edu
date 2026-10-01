@@ -31029,6 +31029,94 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/student-create-options:
+    get:
+      operationId: getStudentCreateOptions
+      tags:
+        - Students
+      summary: getStudentCreateOptions
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: student.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC17
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentCreateOptionsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/students/{studentId}/details:
     get:
       operationId: getStudentDetails
@@ -42730,6 +42818,72 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/StudentDirectorySummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    StudentCreateClassChoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+        yearId:
+          type: string
+          format: uuid
+        yearName:
+          type: string
+        yearStartsOn:
+          type: string
+          format: date
+        yearEndsOn:
+          type: string
+          format: date
+        canAddGuardian:
+          type: boolean
+      required:
+        - id
+        - version
+        - name
+        - status
+        - yearId
+        - yearName
+        - yearStartsOn
+        - yearEndsOn
+        - canAddGuardian
+      additionalProperties: false
+    StudentCreateOptions:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        classes:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/StudentCreateClassChoice"
+      required:
+        - today
+        - classes
+      additionalProperties: false
+    StudentCreateOptionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/StudentCreateOptions"
         requestId:
           type: string
       required:

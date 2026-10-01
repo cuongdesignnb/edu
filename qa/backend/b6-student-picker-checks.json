@@ -1,0 +1,77 @@
+{
+  "phase": "B6 student create choices API preparation",
+  "implementation": "getStudentCreateOptions; student extra SDK remains unactivated",
+  "postgresql": {
+    "full": {
+      "passed": 156,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 340661.425607,
+      "migrations": 36,
+      "runnerImage": "sha256:362c36b1e46ace6a262ef467632f80a0d3d32f0534ceba14b6895841a8917530",
+      "log": "b6-student-picker-integration-full.log"
+    },
+    "selectedEnhanced": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1732.19668,
+      "runnerImage": "sha256:4a632b4ac78c24c4054ef2027a91b42e7119c3fed2e0b3851a15b1ffbed35856",
+      "log": "b6-student-picker-integration-targeted-enhanced.log",
+      "scope": "same picker test enhanced after full run with school write grant and per-class guardian capability; runtime unchanged"
+    }
+  },
+  "backendUnitContract": {
+    "passed": 29,
+    "failed": 0,
+    "skipped": 0,
+    "log": "b6-student-picker-backend-unit-contract.log"
+  },
+  "frontendTargeted": {
+    "passed": 38,
+    "failed": 0,
+    "log": "b6-student-picker-api-targeted.log"
+  },
+  "frontendAllUnits": {
+    "passed": 241,
+    "failed": 0,
+    "files": 27,
+    "nativeApiTests": 200,
+    "historicalSyntheticTests": 41,
+    "log": "b6-student-picker-all-unit-final.log"
+  },
+  "backendTypecheckExitCode": 0,
+  "backendLintExitCode": 0,
+  "frontendTypecheckExitCode": 0,
+  "frontendChangedFilesLintExitCode": 0,
+  "contract": {
+    "operations": 302,
+    "schemas": 405,
+    "testedOperations": 290,
+    "implementedOperations": 12
+  },
+  "frontendInventory": {
+    "candidateAdapters": 101,
+    "activatedAdapters": 90,
+    "activatedLegacyMethods": 83,
+    "totalLegacyMethods": 231,
+    "implementedCoreScreens": 38,
+    "testedCoreScreens": 0,
+    "totalCoreScreens": 118
+  },
+  "portCheck": {
+    "checkedAt": "2026-10-01T11:32:38.2383160+07:00",
+    "listenerCount": 0,
+    "port": 18763,
+    "listeners": []
+  },
+  "notRunThisPhase": [
+    "production frontend build",
+    "browser suite",
+    "native student or guardian UI acceptance",
+    "final Docker deployment",
+    "physical backup restore",
+    "release load benchmark"
+  ],
+  "remaining": "native frontend domains, 12 API acceptance paths, real PostgreSQL browser E2E, B7 Docker/restart/backup/restore/performance; goal active"
+}

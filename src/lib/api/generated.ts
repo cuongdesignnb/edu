@@ -372,6 +372,9 @@ export interface ApiSchemas {
   "StudentDirectoryIdPage": { "data": Array<ApiSchemas["StudentDirectoryId"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "StudentDirectorySummary": { "year": (ApiSchemas["StudentYear"] | (null) | null); "referenceDate": (string) | null; "today": string; "years": Array<ApiSchemas["StudentYear"]>; "classes": Array<ApiSchemas["StudentDirectoryClass"]>; "kpi": { "students": number; "studying": number; "unverified": (number) | null; "activeLinks": (number) | null; }; "canSeeGuardians": boolean; "canSeeLinks": boolean; "canCreate": boolean; "canTransfer": boolean; "canExport": boolean; };
   "StudentDirectorySummaryResponse": { "data": ApiSchemas["StudentDirectorySummary"]; "requestId": string; };
+  "StudentCreateClassChoice": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE"; "yearId": string; "yearName": string; "yearStartsOn": string; "yearEndsOn": string; "canAddGuardian": boolean; };
+  "StudentCreateOptions": { "today": string; "classes": Array<ApiSchemas["StudentCreateClassChoice"]>; };
+  "StudentCreateOptionsResponse": { "data": ApiSchemas["StudentCreateOptions"]; "requestId": string; };
   "StudentHistory": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; };
   "StudentSelectedEnrollment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; "inEffect": boolean; };
   "StudentProfileCore": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName": (string) | null; "dateOfBirth": (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "gender": ("Nam" | "Nữ" | null) | null; };
@@ -3353,6 +3356,16 @@ export const apiOperations = {
     "response": "StudentDirectorySummary",
     "list": false,
     "permission": "student.read",
+    "readOnly": true
+  },
+  "getStudentCreateOptions": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/student-create-options",
+    "auth": "staff",
+    "request": null,
+    "response": "StudentCreateOptions",
+    "list": false,
+    "permission": "student.manage",
     "readOnly": true
   },
   "getStudentDetails": {

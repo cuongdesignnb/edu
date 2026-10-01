@@ -367,6 +367,10 @@ const studentListParams=[{name:'schoolId',in:'path',required:true,schema:uuid},.
 extendOperation('listStudents','listStudentDirectory','/schools/{schoolId}/student-directory','student.read','StudentDirectoryRow',true,['SC16'],studentListParams);
 extendOperation('listStudents','listStudentDirectoryIds','/schools/{schoolId}/student-directory/ids','student.read','StudentDirectoryId',true,['SC16'],structuredClone(studentListParams));
 extendOperation('getStudent','getStudentDirectorySummary','/schools/{schoolId}/student-directory-summary','student.read','StudentDirectorySummary',false,['SC16'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
+spec.components.schemas.StudentCreateClassChoice=object({id:uuid,version:{type:'integer',minimum:1},name:label,status:{type:'string',enum:['DRAFT','ACTIVE']},yearId:uuid,yearName:label,yearStartsOn:studentDate,yearEndsOn:studentDate,canAddGuardian:{type:'boolean'}});
+spec.components.schemas.StudentCreateOptions=object({today:studentDate,classes:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/StudentCreateClassChoice'}}});
+spec.components.schemas.StudentCreateOptionsResponse=object({data:{$ref:'#/components/schemas/StudentCreateOptions'},requestId:label});
+extendOperation('getStudent','getStudentCreateOptions','/schools/{schoolId}/student-create-options','student.manage','StudentCreateOptions',false,['SC17'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
 const studentHistoryProps={...structuredClone(spec.components.schemas.Enrollment.properties),className:label,yearName:label,yearStatus:structuredClone(spec.components.schemas.Year.properties.status),referenceDate:studentDate,homeroomName:nullableLabel};
 spec.components.schemas.StudentHistory=object(studentHistoryProps);
 spec.components.schemas.StudentSelectedEnrollment=object({...studentHistoryProps,inEffect:{type:'boolean'}});

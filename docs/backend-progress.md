@@ -305,6 +305,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | saveStudentGuardian | SC20, SC22 | TESTED | ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN. |
 | getStaffInvitationOptions | SC10 | TESTED | qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim. |
 | listStaffActivity | SC10, SC15 | TESTED | qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim. |
+| getStudentCreateOptions | SC17 | TESTED | qa/backend/b6-student-picker-integration-full.log:156/156 PostgreSQL, exit0, zero skipped,36 migrations/checksum replay; enhanced selected1/1 covers current School/Class student.manage with independent per-class guardian flags, no catalog/roster lending and future/expired/revoked denial. Backend29/29 contract, frontend38 targeted/241 all-unit/type/lint exit0. SDK/UI remains unactivated; no new browser/build/B7 PASS. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|

@@ -3577,6 +3577,17 @@
       "evidence": [
         "qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim."
       ]
+    },
+    {
+      "operationId": "getStudentCreateOptions",
+      "screenIds": [
+        "SC17"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-student-picker-integration-full.log:156/156 PostgreSQL, exit0, zero skipped,36 migrations/checksum replay; enhanced selected1/1 covers current School/Class student.manage with independent per-class guardian flags, no catalog/roster lending and future/expired/revoked denial. Backend29/29 contract, frontend38 targeted/241 all-unit/type/lint exit0. SDK/UI remains unactivated; no new browser/build/B7 PASS."
+      ]
     }
   ],
   "screens": [
@@ -4181,7 +4192,8 @@
       "scope": "core",
       "operationIds": [
         "createStudent",
-        "createEnrollment"
+        "createEnrollment",
+        "getStudentCreateOptions"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

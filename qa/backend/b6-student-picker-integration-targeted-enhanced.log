@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-397d27781bb2 Creating
+ Container edumanage_backend_test-runner-run-397d27781bb2 Created
+✔ B6 student-create choices use current class write authority without borrowing roster, year or class readers (941.156732ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1732.19668

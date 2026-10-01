@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 100,
+  "candidateCount": 101,
   "activatedCandidateCount": 90,
   "activatedLegacyMethodCount": 83,
   "methods": [
@@ -4055,6 +4055,16 @@
       "file": "src/lib/repositories/connected/staff.ts",
       "status": "IMPLEMENTED",
       "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "createOptions",
+      "file": "src/lib/repositories/connected/students-extra.ts",
+      "status": "IMPLEMENTED",
+      "activated": false,
       "evidence": [
         "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]

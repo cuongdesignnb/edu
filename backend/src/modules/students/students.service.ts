@@ -6,6 +6,7 @@ import { Commands,audit } from '../../common/commands';
 import { Problem,validation,notFound } from '../../common/problem';
 import { placeEnrollment } from './enrollment';
 import {studentForm,nextStudentCode} from './student-form';
+import {studentCreateOptions} from './student-create-options';
 import {studentDirectory,studentDirectorySummary} from './student-directory';
 import {studentDetails} from './student-details';
 import {canEditGuardianContact} from './guardian-policy';
@@ -19,7 +20,7 @@ export class StudentsService {
   constructor(private readonly db:Database,private readonly permissions:Permissions,private readonly commands:Commands){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['listStudents','getStudent','getClassStudent','listClassStudents','createStudent','updateStudent',
+    for(const id of ['getStudentCreateOptions','listStudents','getStudent','getClassStudent','listClassStudents','createStudent','updateStudent',
       'listStudentEnrollments','createEnrollment','listGuardians','createGuardian','getGuardian','updateGuardian',
       'listRelationships','createRelationship','verifyRelationship','revokeRelationship','listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails',
       'listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails','getStudentGuardianForm','saveStudentGuardian'])handlers[id]=c=>this.handle(c);
@@ -52,6 +53,10 @@ export class StudentsService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,operation=c.operation.id,studentId=c.params.studentId??String(c.body.studentId??'');
+    if(operation==='getStudentCreateOptions')return this.db.transaction(async tx=>{
+      const access=await this.permissions.collection(tx,c.principal!,'student.manage',schoolId);
+      return {data:await studentCreateOptions(tx,c,access)};
+    },{schoolId,userId:c.principal!.userId,readOnly:true});
     if(operation==='getStudentGuardianForm')return this.db.transaction(async tx=>{
       const access=await this.studentScope(tx,c,studentId,'guardian.manage');await this.studentScope(tx,c,studentId,'guardian.read');
       return {data:await guardianForm(tx,c,access)};

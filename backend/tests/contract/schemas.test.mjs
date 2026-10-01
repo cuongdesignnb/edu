@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,301);assert.equal(new Set(operations.map(op=>op.id)).size,301);
+  assert.equal(operations.length,302);assert.equal(new Set(operations.map(op=>op.id)).size,302);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -129,4 +129,11 @@ test('guardian projections exclude student private profiles and audit snapshots 
   const event={id,actorId:null,actorName:null,action:'verifyRelationship',targetType:'relationship',targetId:id,at:time,reason:null};validateSchema('GuardianHistoryEvent',event,true);
   for(const key of ['before','after','redactedAfter','requestId','ipDailyHash'])assert.throws(()=>validateSchema('GuardianHistoryEvent',{...event,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
   for(const op of ['listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'])assert.equal(operations.find(o=>o.id===op).permission,'guardian.read');
+});
+
+test('student-create options are a minimal write-purpose class projection without roster or borrowed catalogs',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',choice={id,version:1,name:'Lớp',status:'DRAFT',yearId:id,yearName:'Năm',yearStartsOn:'2026-01-01',yearEndsOn:'2027-01-01',canAddGuardian:false};
+  validateSchema('StudentCreateOptions',{today:'2026-10-01',classes:[choice]},true);
+  for(const field of ['students','capacity','homeroomMemberId','gradeId','contacts'])assert.throws(()=>validateSchema('StudentCreateClassChoice',{...choice,[field]:[]},true));
+  assert.equal(operations.find(op=>op.id==='getStudentCreateOptions').permission,'student.manage');
 });
