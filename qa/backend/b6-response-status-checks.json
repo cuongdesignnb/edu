@@ -1,0 +1,39 @@
+{
+  "baselineCommit": "7150a5b41a4abe5728a374b4e799b38adcf0d27e",
+  "contract": {
+    "operations": 369,
+    "schemas": 518,
+    "changedOperations": [
+      "issueParentAccess",
+      "saveClassDutyTask",
+      "removeClassDutyTask",
+      "saveClassAttendanceSheet",
+      "publishClassAttendanceSheet"
+    ],
+    "changes": "Four native acknowledgement HTTP201 schemas corrected to actual HTTP200; existing issueParentAccess HTTP201 uses the same declared HTTP200 envelope. No arbitrary success status accepted.",
+    "schemaRolePermissionSemanticsUnchanged": true
+  },
+  "actualTests": {
+    "postgres": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 16762.124295,
+      "log": "b6-response-status-postgres-final.log"
+    },
+    "backendUnitContract": {
+      "passed": 60,
+      "failed": 0,
+      "durationMs": 520.7754
+    },
+    "buildLint": "EXIT0",
+    "initialPostgres": "18/20 FAIL preserved; strict validator found undeclared existing parent-link HTTP201; schema declared and real final20/20 succeeded."
+  },
+  "fullCurrentIntegration": "NOT_RUN at this checkpoint; next action is the complete suite",
+  "frontendBehaviorChanged": false,
+  "newMigrations": 0,
+  "databaseMigrations": 48,
+  "dockerReleaseServing": false,
+  "productionDeployed": false,
+  "fullGoalComplete": false
+}

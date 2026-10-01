@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('native duty and attendance acknowledgements declare their actual HTTP200 without changing explicit HTTP201 creation',()=>{
+ for(const id of ['saveClassDutyTask','removeClassDutyTask','saveClassAttendanceSheet','publishClassAttendanceSheet']){const op=operations.find(o=>o.id===id);assert.equal(op.method,'POST');assert.equal(op.responses['201'],undefined);assert.equal(op.responses['200'].content['application/json'].schema.$ref,`#/components/schemas/${op.response}Response`);}
+ for(const id of ['requestPlatformSupportAccess','saveClassSeatingRevision']){const op=operations.find(o=>o.id===id);assert.ok(op.responses['201'].content['application/json'].schema.$ref);assert.equal(op.responses['200'],undefined);}
+ const issued=operations.find(o=>o.id==='issueParentAccess');assert.deepEqual(issued.responses['201'].content['application/json'].schema,issued.responses['200'].content['application/json'].schema);
+});
 test('teacher announcement reads require a displayed published source and actual HTTP200 receipts',()=>{
  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={id,rootId:id,yearId:id,classId:null,version:2,dataVersion:1,publicationId:id};validateSchema('TeacherAnnouncementReadInput',{sources:[source]});
  for(const bad of [{sources:[]},{sources:[{...source,publicationId:null}]},{sources:[source,source]},{sources:[source],actorId:id},{sources:[{...source,version:0}]}])assert.throws(()=>validateSchema('TeacherAnnouncementReadInput',bad));

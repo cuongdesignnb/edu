@@ -1,5 +1,12 @@
 # Backend implementation evidence
 
+## Mandatory successful JSON response validation — current partial checkpoint
+
+- API router now requires a schema for every successful JSON status. An undeclared status fails with RESPONSE_STATUS_CONTRACT_ERROR; malformed/private JSON fails its actual schema. Binary routes keep their separate streaming contract.
+- Metadata inspection found four native duty/attendance acknowledgements inheriting HTTP201 while handlers actually return HTTP200. Their HTTP200 schemas now run. Existing seating and platform support creation correctly use HTTP201. The first strict PostgreSQL run18/20 exposed the canonical parent-link issuance service returning HTTP201 with only HTTP200 declared; its actual creation response now validates through the same existing envelope. No link or permission behavior changed. All five operation response-metadata diffs are recorded in ADR-089.
+- Actual affected PostgreSQL **20/20**, **16762.124295 ms**, covers migration replay, registered handlers, teacher/school/class announcements, attendance, duties and seating. Backend unit/contracts **60/60**, **520.7754 ms**; build/lint/current runner build exit0. The18/20 failed run remains preserved. Frontend runtime source was unchanged; client regeneration succeeded. No new migration beyond the48 already applied.
+- Contract remains369 operations/518 schemas,357 historical TESTED/12 IMPLEMENTED; frontend146/231 legacy methods with85 pending. The whole current integration suite is the next action; this checkpoint does not claim all API workflows are verified under the strict validator. Public UI, full PostgreSQL browser E2E, root deploy/scripts, Docker release at18763, restart, physical restore and release load remain pending. Production not deployed; no volume, other project or user ZIP changed. Full goal remains active. Evidence: `qa/backend/b6-response-status-checks.json`.
+
 ## B6 teacher announcement feed and persisted read receipts — current partial checkpoint
 
 - TE05 now reads only current immutable publications through teacher.self and announcement.read. School/class/subject rights and dated enrollment stay on the server. Draft edits keep the earlier publication readable; a newly published revision is unread. The minimal teacher projection contains no internal notes, history, estimates or raw recipient IDs. Guardian access remains link-only.

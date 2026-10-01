@@ -1,0 +1,168 @@
+ Container edumanage_backend_test-runner-run-fb27f66341a2 Creating 
+ Container edumanage_backend_test-runner-run-fb27f66341a2 Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 434.834149
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 77.627839
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 989.942943
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 544.194982
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+ok 5 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 535.284264
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+ok 6 - B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+  ---
+  duration_ms: 455.236405
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+ok 7 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 626.985061
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+ok 8 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 391.136564
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+ok 9 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 453.151393
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+not ok 10 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 277.332835
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1322:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"793dbf47-899c-498d-af73-776d69d70713"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1324:270)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+ok 11 - B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+  ---
+  duration_ms: 528.149197
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+ok 12 - B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+  ---
+  duration_ms: 704.271697
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+ok 13 - B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+  ---
+  duration_ms: 577.507217
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+ok 14 - B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+  ---
+  duration_ms: 473.166164
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+ok 15 - B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+  ---
+  duration_ms: 459.22401
+  type: 'test'
+  ...
+# Subtest: B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+not ok 16 - B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+  ---
+  duration_ms: 400.978301
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1399:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"1a82d0e6-739b-4ec5-9b5a-f242434a4331"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1408:290)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+ok 17 - B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+  ---
+  duration_ms: 489.615645
+  type: 'test'
+  ...
+# Subtest: B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+ok 18 - B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+  ---
+  duration_ms: 322.187487
+  type: 'test'
+  ...
+# Subtest: B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+ok 19 - B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+  ---
+  duration_ms: 475.058042
+  type: 'test'
+  ...
+# Subtest: B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+ok 20 - B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+  ---
+  duration_ms: 349.004342
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 18
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10356.6407
+
+EXIT_CODE=1

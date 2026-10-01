@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { Readable } from 'node:stream';
 import type { FastifyInstance,FastifyRequest,FastifyReply,HTTPMethods } from 'fastify';
-import { operations,validateSchema,responseSchema,type Operation } from './common/contract';
+import { operations,validateSchema,validateJsonResponse,type Operation } from './common/contract';
 import { Database } from './database/database';
 import { IdentityService,userDto,type Principal } from './modules/identity/identity.service';
 import { Permissions } from './common/permissions';
@@ -90,8 +90,7 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
             return reply.code(status).send(file.stream);
           }
           const response={data:result.data,...(result.page?{page:result.page}:{}),requestId};
-          const schema=responseSchema(operation,status);
-          if(schema) validateSchema(schema,response,true);
+          validateJsonResponse(operation,status,response);
           await auditSupport(status);
           return reply.code(status).send(response);
         }catch(error){

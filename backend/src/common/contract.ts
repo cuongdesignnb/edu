@@ -29,3 +29,9 @@ export function responseSchema(operation: Operation, status: number): string | u
   const ref = responses[String(status)]?.content?.['application/json']?.schema?.$ref;
   return ref?.split('/').at(-1);
 }
+/** A JSON success may never bypass validation through an undeclared status. */
+export function validateJsonResponse(operation:Operation,status:number,response:unknown):void {
+  const schema=responseSchema(operation,status);
+  if(!schema)throw new Problem(500,'RESPONSE_STATUS_CONTRACT_ERROR');
+  validateSchema(schema,response,true);
+}

@@ -728,6 +728,14 @@ extendOperation('createDuty','saveClassAttendanceSheet',attPath+'/save','attenda
 extendOperation('createDuty','publishClassAttendanceSheet',attPath+'/publish','attendance.publish','ClassAttendanceReceipt',false,['CL04'],dutyPaths,'ClassAttendancePublish');
 for(const items of Object.values(spec.paths))for(const operation of Object.values(items))if(operation?.operationId?.includes('ClassAttendance'))operation.description='Exact class/year/date attendance sources with independent lesson rights, displayed versions, atomic editing and immutable publication replacements; staff public notes only.';
 extendAnnouncementContract(spec,extendOperation,{object,uuid,label,count,timestamp,studentDate,operations});
+// These native acknowledgements return HTTP200. Their create-duty template had
+// inherited HTTP201, leaving the actual response outside the validator contract.
+for(const paths of Object.values(spec.paths))for(const op of Object.values(paths))if(['saveClassDutyTask','removeClassDutyTask','saveClassAttendanceSheet','publishClassAttendanceSheet'].includes(op?.operationId)){
+ op.responses['200']=op.responses['201'];delete op.responses['201'];
+}
+// The existing link-issuance service creates its one-time link with HTTP201.
+// Keep its HTTP200 envelope and validate the actual creation response as well.
+for(const paths of Object.values(spec.paths))for(const op of Object.values(paths))if(op?.operationId==='issueParentAccess')op.responses['201']=structuredClone(op.responses['200']);
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

@@ -11675,6 +11675,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ParentAccessIssuedResponse"
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentAccessIssuedResponse"
         "400":
           description: Sai cú pháp hoặc Content-Type.
           content:
@@ -36034,7 +36040,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ClassDutyTaskSave"
       responses:
-        "201":
+        "200":
           description: Thành công
           content:
             application/json:
@@ -36135,7 +36141,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ClassDutyTaskRemove"
       responses:
-        "201":
+        "200":
           description: Thành công
           content:
             application/json:
@@ -36984,7 +36990,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ClassAttendanceSave"
       responses:
-        "201":
+        "200":
           description: Thành công
           content:
             application/json:
@@ -37086,7 +37092,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ClassAttendancePublish"
       responses:
-        "201":
+        "200":
           description: Thành công
           content:
             application/json:

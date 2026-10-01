@@ -1,0 +1,133 @@
+ Container edumanage_backend_test-runner-run-8da7d3a0bf58 Creating 
+ Container edumanage_backend_test-runner-run-8da7d3a0bf58 Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 507.234221
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 81.002968
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 1916.513208
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 1207.280721
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+ok 5 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 1013.181779
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+ok 6 - B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+  ---
+  duration_ms: 1096.735924
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+ok 7 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 1265.064909
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+ok 8 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 731.744814
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+ok 9 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 1055.192141
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+ok 10 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 1159.708108
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+ok 11 - B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+  ---
+  duration_ms: 968.965655
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+ok 12 - B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+  ---
+  duration_ms: 697.689235
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+ok 13 - B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+  ---
+  duration_ms: 553.170799
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+ok 14 - B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+  ---
+  duration_ms: 453.873277
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+ok 15 - B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+  ---
+  duration_ms: 444.197831
+  type: 'test'
+  ...
+# Subtest: B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+ok 16 - B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+  ---
+  duration_ms: 1237.19213
+  type: 'test'
+  ...
+# Subtest: B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+ok 17 - B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+  ---
+  duration_ms: 454.579847
+  type: 'test'
+  ...
+# Subtest: B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+ok 18 - B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+  ---
+  duration_ms: 311.511811
+  type: 'test'
+  ...
+# Subtest: B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+ok 19 - B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+  ---
+  duration_ms: 500.385963
+  type: 'test'
+  ...
+# Subtest: B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+ok 20 - B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+  ---
+  duration_ms: 339.235726
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16762.124295
+EXIT_CODE=0

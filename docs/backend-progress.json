@@ -1414,7 +1414,8 @@
       "milestone": null,
       "status": "TESTED",
       "evidence": [
-        "qa/backend/parent-integration.log"
+        "qa/backend/parent-integration.log",
+        "qa/backend/b6-response-status-postgres-final.log:20/20 actual PostgreSQL; mandatory JSON success validation, exact duty/attendance HTTP200 and parent issuance HTTP201 envelope. Full current suite remains pending."
       ]
     },
     {
@@ -4131,7 +4132,8 @@
       "milestone": "B6",
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN."
+        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN.",
+        "qa/backend/b6-response-status-postgres-final.log:20/20 actual PostgreSQL; mandatory JSON success validation, exact duty/attendance HTTP200 and parent issuance HTTP201 envelope. Full current suite remains pending."
       ]
     },
     {
@@ -4142,7 +4144,8 @@
       "milestone": "B6",
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN."
+        "qa/backend/b6-class-duties-postgres-accepted.log: 7/7 selected real PostgreSQL checks; exact dated scope and selected group members, immutable publication/replacement/move/delete/draft/withdrawal, fresh revoke, races/replay, own parent projections and canonical short-task compatibility. Backend51/51; frontend388/388; Edge5/5 intercepted API contracts, not PostgreSQL browser E2E. Migration047 applied/replayed; full current PostgreSQL/B7 NOT_RUN.",
+        "qa/backend/b6-response-status-postgres-final.log:20/20 actual PostgreSQL; mandatory JSON success validation, exact duty/attendance HTTP200 and parent issuance HTTP201 envelope. Full current suite remains pending."
       ]
     },
     {
@@ -4231,7 +4234,8 @@
       "milestone": "B6",
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN.",
+        "qa/backend/b6-response-status-postgres-final.log:20/20 actual PostgreSQL; mandatory JSON success validation, exact duty/attendance HTTP200 and parent issuance HTTP201 envelope. Full current suite remains pending."
       ]
     },
     {
@@ -4242,7 +4246,8 @@
       "milestone": "B6",
       "status": "TESTED",
       "evidence": [
-        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN.",
+        "qa/backend/b6-response-status-postgres-final.log:20/20 actual PostgreSQL; mandatory JSON success validation, exact duty/attendance HTTP200 and parent issuance HTTP201 envelope. Full current suite remains pending."
       ]
     },
     {
