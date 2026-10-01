@@ -10,6 +10,7 @@ import { hashToken,randomToken,csrfFor,setCookie } from '../../common/security';
 import { Problem,validation } from '../../common/problem';
 import { validateSchema } from '../../common/contract';
 import { IdentityService } from '../identity/identity.service';
+import {attendanceMonthBounds,parentAttendanceMonth} from './attendance-month';
 import { objectPath } from '../files/storage';
 import type { RequestContext,Handler,Result } from '../../api.router';
 
@@ -24,7 +25,7 @@ const documentResource:Resource={table:`(SELECT d.*,meta.info->>'contentType' AS
 @Injectable()
 export class ParentService {
   constructor(private readonly db:Database,private readonly identity:IdentityService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','listParentConduct','getParentConduct','getParentTimetable','getParentDuties','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','listParentDocuments','downloadParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','getParentAttendanceMonth','listParentConduct','getParentConduct','getParentTimetable','getParentDuties','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','listParentDocuments','downloadParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   async school(slug:string){const school=(await this.db.app.query<Row>('SELECT id,name,slug,status,timezone,public_contact_phone FROM platform.schools WHERE slug=$1',[slug])).rows[0];if(!school||school.status!=='ACTIVE')throw new Problem(401,'PARENT_ACCESS_INVALID');return school;}
   async link(tx:Transaction,schoolId:string,id:string){
     const link=await one<Row>(tx,`SELECT l.*,s.full_name,y.name AS year_label,y.status AS year_status,sc.name AS school_name,sc.slug,sc.public_contact_phone,sc.public_contact_email,sc.public_address,sc.short_name AS school_short_name,sc.motto,sc.timezone,g.relationship_label,y.starts_on AS year_starts_on,y.ends_on AS year_ends_on,to_char((now() AT TIME ZONE sc.timezone)::date,'YYYY-MM-DD') AS today,
@@ -92,6 +93,17 @@ export class ParentService {
     for(const row of result.data){if(!row.publishedAt)continue;const item=row.payload as Record<string,unknown>,value={...item,...(Object.hasOwn(item,'publishedAt')?{publishedAt:row.publishedAt}:{})};validateSchema(schemas[section]!,value,true);data.push(value);}
     if(detail){if(!data.length)throw new Problem(404,'RESOURCE_NOT_FOUND');return {data:data[0]};}return {data,page:result.page};
   }
+  private async attendanceMonth(p:ParentPrincipal,month:unknown){
+    this.allow(p,'attendance');const bounds=attendanceMonthBounds(p.link,month),records:Parameters<typeof parentAttendanceMonth>[3]=[];let cursor:string|undefined;const visited=new Set<string>();
+    do{const result=await this.published(p,'attendance',{from:bounds.from,to:bounds.to,limit:'100',...(cursor?{cursor}:{})});
+      if(!Array.isArray(result.data))throw new Problem(500,'PARENT_ATTENDANCE_SOURCE_INVALID');
+      for(const value of result.data){validateSchema('ParentAttendance',value,true);records.push(value as unknown as Parameters<typeof parentAttendanceMonth>[3][number]);}
+      if(records.length>1000)throw new Problem(422,'PARENT_MONTH_TOO_LARGE');
+      if(!result.page?.hasMore)break;cursor=result.page.nextCursor??undefined;if(!cursor||visited.has(cursor))throw new Problem(500,'PARENT_CURSOR_INVALID');visited.add(cursor);
+    }while(cursor);
+    const calendar=await this.db.transaction(tx=>one<{calendar:Parameters<typeof parentAttendanceMonth>[2]|null}>(tx,'SELECT app.parent_attendance_calendar($1,$2,$3,$4,$5) AS calendar',[p.schoolId,p.studentId,p.yearId,bounds.from,bounds.to]),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
+    if(!calendar?.calendar)throw new Problem(401,'PARENT_ACCESS_INVALID');return {data:parentAttendanceMonth(p.link,bounds.month,calendar.calendar,records)};
+  }
   private async teachers(p:ParentPrincipal){
     this.allow(p,'teachers');return this.db.transaction(async tx=>{
       const rows=(await tx.query<Row>(`SELECT DISTINCT m.work_display_name,m.share_work_contact,
@@ -126,8 +138,8 @@ export class ParentService {
     return {context:await this.context(p),attendance,...(conduct.length?{latestConduct:conduct[0]}:{}),teachers,todayLessons:lessons.filter(item=>item.date===today),announcements,asOf:new Date().toISOString()};
   }
   async preview(c:RequestContext,schoolId:string,accessId:string){
-    const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW');return principal;},{schoolId});
-    try{return {data:await this.overview(p)};}finally{await this.db.app.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1',[p.sessionId]);}
+    const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW',c.operation.id==='previewParentAttendanceMonth'?'attendance':undefined);return principal;},{schoolId});
+    try{return c.operation.id==='previewParentAttendanceMonth'?await this.attendanceMonth(p,c.query.month):{data:await this.overview(p)};}finally{await this.db.app.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1',[p.sessionId]);}
   }
   private async handle(c:RequestContext):Promise<Result>{
     c.reply.header('X-Robots-Tag','noindex, nofollow');if(c.operation.id==='exchangeParentLink')return this.exchange(c);
@@ -135,7 +147,8 @@ export class ParentService {
     if(c.operation.id==='endParentSession'){await this.db.transaction(async tx=>{await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1 AND school_id=$2',[p.sessionId,p.schoolId]);await this.event(tx,c,p,'ENDED');},{schoolId:p.schoolId});setCookie(c.reply,runtimeConfig().parentCookie,'',0);return {data:{id:p.sessionId,status:'ENDED'}};}
     if(c.operation.id==='getParentContext')return {data:await this.context(p)};
     const section=c.operation.permission.replace('parent.','');this.allow(p,section);let result:Result;
-    if(section==='overview')result={data:await this.overview(p)};
+    if(c.operation.id==='getParentAttendanceMonth')result=await this.attendanceMonth(p,c.query.month);
+    else if(section==='overview')result={data:await this.overview(p)};
     else if(section==='teachers')result=await this.teachers(p);
     else if(section==='documents')result=await this.documents(p,c.query,c.params.documentId,c.operation.id==='downloadParentDocument');
     else result=await this.published(p,section,c.query,c.params.periodId?{key:'periodId',id:c.params.periodId}:c.params.activityId?{key:'id',id:c.params.activityId}:c.params.announcementId?{key:'id',id:c.params.announcementId}:undefined);

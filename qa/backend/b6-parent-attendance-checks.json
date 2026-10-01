@@ -1,0 +1,189 @@
+{
+  "phase": "B6 native parent monthly attendance and independent staff preview; partial goal checkpoint",
+  "previousCommit": "35e0ad425c1b972844e0c5a546f2285b435f1a98",
+  "backend": {
+    "contractOperations": 312,
+    "schemas": 425,
+    "operationStatus": {
+      "TESTED": 300,
+      "IMPLEMENTED": 12
+    },
+    "migrations": 37,
+    "runnerImage": "sha256:96f8f3b7091290ddc33a4147483f94a639c47d7aad176a7ebbbb39631ed62703",
+    "postgresFull": {
+      "pass": 162,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 462105.938715,
+      "log": "b6-parent-attendance-integration-full.log"
+    },
+    "postgresSelectedReviewed": {
+      "pass": 3,
+      "fail": 0,
+      "durationMs": 3857.140912,
+      "log": "b6-parent-attendance-integration-targeted-reviewed.log",
+      "cases": "BE01 and the two new parent attendance cases; verifyInstallation was not selected by its name"
+    },
+    "postgresSelectedInitial": {
+      "pass": 2,
+      "fail": 0,
+      "durationMs": 3392.276313,
+      "log": "b6-parent-attendance-integration-targeted-initial.log"
+    },
+    "unitContract": {
+      "pass": 37,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 437.2903,
+      "log": "b6-parent-attendance-backend-unit-contract-reviewed.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-attendance-backend-types-final.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-attendance-backend-lint-final.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 290,
+      "fail": 0,
+      "files": 33,
+      "durationSeconds": 11.78,
+      "apiCases": 249,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-attendance-frontend-unit-full.log"
+    },
+    "selectedInitial": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 0.544,
+      "log": "b6-parent-attendance-frontend-unit-targeted-initial.log",
+      "limitation": "Precedes final context ownership and terminal-fault changes; later full run includes those changes"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-attendance-frontend-types-final.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-attendance-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-attendance-frontend-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 57,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 66647.781,
+    "newCases": 4,
+    "log": "b6-parent-attendance-browser-final.log",
+    "results": "b6-parent-attendance-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-attendance",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T07:31:50.580Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 44908,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T07:32:58.495Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-attendance-parent-attendance-desktop.png",
+      "b6-parent-attendance-parent-attendance-mobile.png"
+    ]
+  },
+  "initialFailures": [
+    {
+      "log": "b6-parent-attendance-backend-types-initial.log",
+      "reason": "Record<string,unknown> cast did not prove ParentAttendance; corrected with array and schema validation before typed conversion"
+    },
+    {
+      "log": "b6-parent-attendance-backend-unit-contract.log",
+      "pass": 35,
+      "fail": 1,
+      "durationMs": 520.1259,
+      "reason": "Old route count expected 310; actual initial addition was 311; final contract has 312 with independent preview endpoint"
+    },
+    {
+      "log": "b6-parent-attendance-integration-full-initial.log",
+      "pass": 160,
+      "fail": 2,
+      "skipped": 0,
+      "durationMs": 448002.031151,
+      "reason": "verifyInstallation expected 36 instead of 37 source migrations; calendar test expected exactly two school-wide labels despite retained legitimate published fixtures. Expectations now verify actual source migration count and required permitted labels/private exclusions; no applied SQL or volume was changed for this correction"
+    }
+  ],
+  "sourceInventory": {
+    "nativeCandidates": 114,
+    "activatedCandidates": 114,
+    "matchedLegacyMethods": 102,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 129,
+    "log": "b6-parent-attendance-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 49,
+    "NOT_STARTED": 66,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updated": [
+      "PA03"
+    ],
+    "limitation": "Source implementation and controlled browser evidence do not certify complete PostgreSQL UI acceptance"
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T14:31:45.9983171+07:00",
+    "port": 18763,
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T14:38:24.4696179+07:00",
+    "listeners": []
+  },
+  "scope": [
+    "Only currently allowed own-child/year published attendance records and school/class-effective published holiday names; raw calendar tables remain denied to parent role",
+    "All real daily sessions retained; UNMARKED is neither present nor absent and excluded from marked denominator; Sunday alone is not a holiday",
+    "Complete strict month bounds and payload metadata; no forged totals, hidden fields, private calendar events or other child/class rows accepted",
+    "Current opaque view ownership governs all composite reads; staff preview uses current separate staff identity and purpose authority without replacing public view",
+    "Calendar/cards retain established design; navigation ends at actual school-local current month within academic year"
+  ],
+  "notRunOrIncomplete": [
+    "Real PostgreSQL browser E2E",
+    "Other parent content screens and full staff preview",
+    "Remaining frontend domain facades",
+    "Final deploy/scripts root merge and release Docker URL",
+    "Restart-data acceptance",
+    "Physical backup/restore acceptance",
+    "Release workload/CPU/RSS/pool performance acceptance",
+    "Production deployment"
+  ],
+  "safety": {
+    "removedVolumes": false,
+    "otherProjectProcessesTouched": false,
+    "productionDeployed": false,
+    "goalComplete": false,
+    "currentLocalUrlServing": false
+  }
+}

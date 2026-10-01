@@ -1,0 +1,12 @@
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (12.0159ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.4468ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.4226ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.4585ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.2112

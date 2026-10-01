@@ -1408,3 +1408,11 @@ Evidence: qa/backend/b6-parent-session-checks.json records actual full PostgreSQ
 - PA01/PA14 are source implementations only. Parent/preview content remains unavailable; context-only screenshots and intercepted responses do not establish complete native parent acceptance or PostgreSQL browser E2E. Unconnected methods still fail through the facade with no runtime legacy/mock fallback.
 
 Actual frontend284 and controlled Edge53 are recorded in qa/backend/b6-parent-intake-checks.json,including the initial49/53 responsive-selector failure and corrected full rerun. Backend runtime was unchanged and not retested in this checkpoint. B6/B7 release gates remain pending.
+
+## ADR-066 — parent monthly attendance retains every published slot and scoped actual holidays
+
+- Monthly attendance is a purpose endpoint independent of overview sharing. Date bounds are strict and clipped to the actual academic year. Published projections retain all sessions; unmarked is a real status excluded from the marked denominator. No missing or Sunday date is fabricated as present, absent or a holiday. Daily mixed status and totals derive from actual session facts.
+- A SECURITY DEFINER calendar function returns only chronological dates and published holiday names under exact current school/student/year/attendance session checks, with class enrollment effective on each day. It reveals no raw event IDs, private events or another class's labels; raw table privileges remain denied. Staff preview checks separate current preview scope and uses a revoked-after-read temporary session with the same serializer.
+- The native adapter validates every day/session/total before exposing data, keeps view and staff ownership over composite reads, and rejects stale identity results without clearing a newer view. Preview never adopts a parent session. Existing cards/calendar and navigation through the actual current month are preserved.
+
+Actual PostgreSQL162, backend unit/contracts37, frontend290 and intercepted Edge57 are recorded in qa/backend/b6-parent-attendance-checks.json, including initial failed checks and corrected reruns. Only PA03 is source IMPLEMENTED; real PostgreSQL UI E2E and B7 release gates remain pending. No retained volume was removed.

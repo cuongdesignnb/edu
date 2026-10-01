@@ -28,7 +28,7 @@ export function useHref() {
 }
 
 export function isModuleError(e: RepoError | null | undefined) {
-  return !!e && e.code === "FORBIDDEN" && e.message === "module";
+  return !!e && e.code === "FORBIDDEN" && (e.message === "module" || e.details?.problemCode === "PARENT_SECTION_DENIED");
 }
 
 /** Friendly state when the school has not shared this module through the link. */

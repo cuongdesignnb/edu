@@ -355,6 +355,18 @@ const studentDate={type:'string',format:'date'},studentNullableDate={...studentD
 // Native parent shell metadata: no child date of birth, personal contacts or bearer material.
 Object.assign(spec.components.schemas.ParentContext.properties,{today:studentDate,year:object({label,startsOn:studentDate,endsOn:studentDate}),relationshipLabel:label,linkExpiresAt:timestamp,lastPublishedAt:{...timestamp,nullable:true}});
 Object.assign(spec.components.schemas.ParentContext.properties.school.properties,{shortName:nullableLabel,motto:nullableLabel,publicContactEmail:nullableLabel,publicAddress:nullableLabel});
+// Native PA03 uses actual published sessions and a scope-limited academic calendar.
+spec.components.schemas.ParentAttendanceMonth=object({month:{type:'string',pattern:'^\\d{4}-(0[1-9]|1[0-2])$'},yearStart:{type:'string'},yearEnd:{type:'string'},today:studentDate,
+ days:{type:'array',maxItems:31,items:object({date:studentDate,weekday:{type:'integer',minimum:1,maximum:7},holidayNames:{type:'array',items:label},sessions:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentAttendance'}},status:{type:'string',enum:['unmarked','present','late','excused','unexcused','mixed','future','holiday','not_published']}})},
+ totals:object(Object.fromEntries(['present','late','excused','unexcused','unmarked','published','marked'].map(name=>[name,{type:'integer',minimum:0}])))});
+spec.components.schemas.ParentAttendanceMonthResponse=object({data:{$ref:'#/components/schemas/ParentAttendanceMonth'},requestId:label});
+extendOperation('getParentContext','getParentAttendanceMonth','/parent/{schoolSlug}/attendance-month','parent.attendance','ParentAttendanceMonth',false,['PA03'],[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}},{name:'month',in:'query',required:true,schema:{type:'string',pattern:'^\\d{4}-(0[1-9]|1[0-2])$'}}]);
+const parentMonthOperation=operations.find(value=>value.id==='getParentAttendanceMonth');parentMonthOperation.scope='parent';parentMonthOperation.description='Actual published attendance sessions and holiday labels for only the current parent child/year/module; missing days never infer attendance.';
+spec.paths['/parent/{schoolSlug}/attendance-month'].get.description=parentMonthOperation.description;
+extendOperation('previewParent','previewParentAttendanceMonth','/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month','parent_access.preview','ParentAttendanceMonth',false,['SC25','PA03'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid},{name:'month',in:'query',required:true,schema:{type:'string',pattern:'^\\d{4}-(0[1-9]|1[0-2])$'}}]);
+spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month'].get.description='Internal staff preview of the same published child/year attendance month; requires independent current preview authority and never changes parent cookies.';
+
+
 
 spec.components.schemas.StudentYear=object({id:uuid,version:versionPositive,name:label,status:structuredClone(spec.components.schemas.Year.properties.status),startsOn:studentDate,endsOn:studentDate});
 spec.components.schemas.StudentDirectoryClass=object({id:uuid,version:versionPositive,yearId:uuid,name:label,status:structuredClone(spec.components.schemas.Class.properties.status)});

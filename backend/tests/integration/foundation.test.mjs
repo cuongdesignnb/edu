@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,310);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,312);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2234,7 +2234,7 @@ test('B6 Vietnamese composite keysets preserve given/full-name order, case/diacr
     do{const response=await request('GET',`/api/v1/schools/${f.schoolId}/staff-directory?limit=2&sort=department&dir=${dir}`+(cursor?'&cursor='+encodeURIComponent(cursor):''));assert.equal(response.statusCode,200,response.body);departmentRows.push(...response.json().data);cursor=response.json().page.nextCursor;}while(cursor);
     assert.equal(new Set(departmentRows.map(r=>r.id)).size,all.length);const firstNull=departmentRows.findIndex(r=>r.department===null);assert.ok(firstNull>=0);assert.ok(departmentRows.slice(firstNull).every(r=>r.department===null));
   }
-  assert.equal((await verifyInstallation(pool)).migrations,36);
+  assert.equal((await verifyInstallation(pool)).migrations,(await fs.readdir('migrations')).filter(name=>name.endsWith('.sql')).length);
 });
 
 test('B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access',async()=>{
@@ -2909,4 +2909,32 @@ test('B6 parent metadata masks independently authorized contact, paginates anony
   await db.transaction(tx=>tx.query("UPDATE app.enrollments SET starts_on=$3::date-1,ends_on=$3::date,status='ENDED' WHERE school_id=$1 AND id=$2",[f.schoolId,f.enrollmentId,f.today]),{schoolId:f.schoolId});assert.equal((await request('GET',detailUrl)).statusCode,404);assert.equal((await request('GET',history)).statusCode,404);
   jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const schoolRead=await f.role([{action:'parent_access.manage',scopes:['SCHOOL']}]);await f.grant(f.target,schoolRead.id);jar.delete('edu_staff');await login('teacher-a@example.invalid');
   detail=await request('GET',detailUrl);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.access.enrollmentInEffect,false);assert.equal(detail.json().data.access.canIssue,false);assert.equal(detail.json().data.canViewContact,false);assert.equal(detail.json().data.phoneMasked,null);
+});
+
+
+test('B6 parent attendance month exposes only real child sessions and published scoped holiday labels without borrowing overview',async()=>{
+ const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),studentId=f.enrollments[0].studentId,yearId=seedId('year:A'),relation=await parentRelationship(csrf,f.post,studentId);
+ const issued=await f.post('parent-access',{studentId,yearId,relationshipId:relation.id,allowedSections:['attendance'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(issued.statusCode,201,issued.body);const context=await parentExchange(issued.json().data.link);
+ await db.transaction(async tx=>{
+  for(const [classId,title,status,date] of [[null,'Ngày nghỉ trường công bố','PUBLISHED','2026-09-30'],[f.classId,'Ngày nghỉ đúng lớp','PUBLISHED','2026-09-30'],[seedId('class:A:10A2'),'NGÀY NGHỈ LỚP KHÁC','PUBLISHED','2026-09-30'],[null,'NGÀY NGHỈ NHÁP','DRAFT','2026-09-30'],[null,'NGÀY NGHỈ ĐÃ THU HỒI','WITHDRAWN','2026-09-30']])await tx.query("INSERT INTO app.calendar_events(school_id,year_id,class_id,title,kind,starts_on,ends_on,status) VALUES($1,$2,$3,$4,'HOLIDAY',$5,$5::date+1,$6)",[schoolA,yearId,classId,title,date,status]);
+ },{schoolId:schoolA});
+ const root=`classes/${f.classId}/attendance`,created=await f.post(root,{date:'2026-09-29',granularity:'DAILY'});assert.equal(created.statusCode,201,created.body);let session=created.json().data;
+ const saved=await request('PATCH',`/api/v1/schools/${schoolA}/${root}/${session.id}/records`,{expectedVersion:session.version,records:session.records.map(r=>({enrollmentId:r.enrollmentId,expectedVersion:r.version,status:'PRESENT',publicNote:r.enrollmentId===f.enrollments[0].id?'Ghi chú tháng của chính con':'GHI CHÚ CON KHÁC',internalNote:'GHI CHÚ NỘI BỘ THÁNG'}))},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(saved.statusCode,200,saved.body);session=saved.json().data;
+ const before=await parentGet('attendance-month',context,'?month=2026-09');assert.equal(before.statusCode,200,before.body);assert.equal(before.json().data.totals.published,0);assert.equal(before.json().data.days.find(d=>d.date==='2026-09-29').status,'not_published');
+ const published=await f.post(`${root}/${session.id}/publish`,{expectedSourceVersion:session.dataVersion});assert.equal(published.statusCode,200,published.body);
+ const month=await parentGet('attendance-month',context,'?month=2026-09');assert.equal(month.statusCode,200,month.body);const data=month.json().data;assert.equal(data.totals.present,1);assert.equal(data.totals.marked,1);assert.equal(data.totals.published,1);assert.equal(data.days.length,30);assert.equal(data.days.find(d=>d.date==='2026-09-29').sessions[0].publicNote,'Ghi chú tháng của chính con');assert.ok(data.days.find(d=>d.date==='2026-09-30').holidayNames.includes('Ngày nghỉ đúng lớp'));assert.ok(data.days.find(d=>d.date==='2026-09-30').holidayNames.includes('Ngày nghỉ trường công bố')); // Other real school-wide holidays can remain in the retained test volume.
+ for(const secret of ['GHI CHÚ CON KHÁC','GHI CHÚ NỘI BỘ THÁNG','NGÀY NGHỈ LỚP KHÁC','NGÀY NGHỈ NHÁP','NGÀY NGHỈ ĐÃ THU HỒI',studentId,f.enrollments[1].studentId,f.classId])assert.equal(month.body.includes(secret),false,secret);
+ const preview=await request('GET',`/api/v1/schools/${schoolA}/parent-access/${issued.json().data.access.id}/preview/attendance-month?month=2026-09`);assert.equal(preview.statusCode,200,preview.body);assert.deepEqual(preview.json().data,data);assert.equal(preview.headers['set-cookie'],undefined);assert.equal((await parentGet('context',context)).json().data.viewId,context.viewId);
+ assert.equal((await parentGet('overview',context)).statusCode,403);for(const query of ['','?month=2026-13','?month=2026-08','?month=2027-06'])assert.equal((await parentGet('attendance-month',context,query)).statusCode,422);
+ const withdrawal=await f.post(`publications/${published.json().data.id}/withdraw`,{expectedVersion:published.json().data.version,reason:'Thu hồi buổi điểm danh tháng kiểm thử'});assert.equal(withdrawal.statusCode,200,withdrawal.body);assert.equal((await parentGet('attendance-month',context,'?month=2026-09')).json().data.totals.published,0);
+});
+
+test('B6 parent attendance calendar SQL function checks exact child/year/school/current session and cannot expose raw calendar tables',async()=>{
+ const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),studentId=f.enrollments[0].studentId,yearId=seedId('year:A'),relation=await parentRelationship(csrf,f.post,studentId),issued=await f.post('parent-access',{studentId,yearId,relationshipId:relation.id,allowedSections:['attendance'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(issued.statusCode,201,issued.body);const context=await parentExchange(issued.json().data.link),scope={schoolId:schoolA,parentSessionId:context.viewId,parent:true};
+ const sql='SELECT app.parent_attendance_calendar($1,$2,$3,$4,$5) AS calendar',read=async(args,options=scope)=>(await db.transaction(tx=>tx.query(sql,args),options)).rows[0].calendar;
+ const args=[schoolA,studentId,yearId,'2026-09-01','2026-10-01'];assert.equal((await read(args)).length,30);
+ assert.equal(await read([schoolA,f.enrollments[1].studentId,yearId,...args.slice(3)]),null);assert.equal(await read([schoolB,studentId,seedId('year:B'),...args.slice(3)]),null);assert.equal(await read([schoolA,studentId,seedId('year:B'),...args.slice(3)]),null);assert.equal(await read(args,{schoolId:schoolA,parent:true}),null);assert.equal(await read([schoolA,studentId,yearId,'2026-08-31','2026-09-01']),null);assert.equal(await read([schoolA,studentId,yearId,'2026-09-01','2026-11-01']),null);
+ await assert.rejects(db.transaction(tx=>tx.query('SELECT * FROM app.calendar_events'),scope),e=>e.code==='42501');
+ const denied=await f.post('parent-access',{studentId,yearId,relationshipId:relation.id,allowedSections:['overview'],allowDownload:false,expiresAt:'2027-05-31T00:00:00Z'});assert.equal(denied.statusCode,201,denied.body);const deniedContext=await parentExchange(denied.json().data.link);assert.equal((await parentGet('attendance-month',deniedContext,'?month=2026-09')).statusCode,403);
+ const revoke=await f.post(`parent-access/${denied.json().data.access.id}/revoke`,{expectedVersion:denied.json().data.access.version,reason:'Thu hồi link kiểm tra lịch theo quyền'});assert.equal(revoke.statusCode,200,revoke.body);assert.equal((await parentGet('attendance-month',deniedContext,'?month=2026-09')).statusCode,401);
 });

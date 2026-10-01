@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, Info, CalendarCheck } from "lucide-react";
+import { useParent } from "@/features/parent/shell";
 import { parentRepo } from "@/lib/repositories";
-import { demoToday } from "@/lib/calendar";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/button";
 import { fmtDateLong } from "@/lib/formatters";
@@ -14,6 +14,8 @@ const DAY_STATUS: Record<string, { label: string; short: string; cls: string; do
   late: { label: "Đi muộn", short: "Muộn", cls: "bg-warning-bg text-warning-text border-[#f5d9a6]", dot: "bg-warning" },
   excused: { label: "Nghỉ có phép", short: "Có phép", cls: "bg-primary-light text-primary-strong border-[#cfe3fb]", dot: "bg-primary" },
   unexcused: { label: "Nghỉ không phép", short: "K.phép", cls: "bg-danger-bg text-danger-text border-[#f6c9cb]", dot: "bg-danger" },
+  unmarked: { label: "Chưa đánh dấu", short: "Chưa ĐD", cls: "bg-white text-muted border-dashed border-line-strong", dot: "bg-faint" },
+  mixed: { label: "Khác nhau theo buổi", short: "Theo buổi", cls: "bg-primary-light text-primary-strong border-[#cfe3fb]", dot: "bg-primary" },
   not_published: { label: "Chưa công bố", short: "Chưa CB", cls: "bg-white text-muted border-dashed border-line-strong", dot: "bg-faint" },
   holiday: { label: "Ngày nghỉ", short: "Nghỉ lễ", cls: "bg-purple-bg text-purple-text border-[#ddd2ff]", dot: "bg-purple" },
   weekend: { label: "Chủ nhật", short: "CN", cls: "bg-neutral-bg text-neutral-text border-line", dot: "bg-neutral-text" },
@@ -30,7 +32,8 @@ function shiftMonth(m: string, n: number) {
 
 /** PA03 — Chuyên cần của con: only published sessions; missing data is never shown as present. */
 export function ParentAttendanceView() {
-  const [month, setMonth] = useState(() => demoToday().slice(0, 7));
+  const {context}=useParent();
+  const [month, setMonth] = useState(() => context.today.slice(0,7)<context.year.startsOn.slice(0,7)?context.year.startsOn.slice(0,7):context.today.slice(0,7));
   const q = usePRead(["attendance", month], (k, s) => parentRepo.attendance(k, s, month));
   const [y, m] = month.split("-").map(Number);
 
@@ -56,12 +59,13 @@ export function ParentAttendanceView() {
                     {d.days.map((day) => {
                       const st = DAY_STATUS[day.status] ?? DAY_STATUS.not_published;
                       return (
-                        <div key={day.date} title={`${fmtDateLong(day.date)}: ${st.label}${day.note ? ` — ${day.note}` : ""}`}
+                        <div key={day.date} title={`${fmtDateLong(day.date)}: ${st.label}${day.holidayNames.length?` · ${day.holidayNames.join(", ")}`:""}`}
                           className={clsx("flex min-h-[54px] flex-col rounded-lg border p-1 sm:min-h-[76px] sm:rounded-xl sm:p-2", st.cls)}>
-                          <span className="sr-only">{fmtDateLong(day.date)}: {st.label}{day.note ? ` — ${day.note}` : ""}</span>
+                          <span className="sr-only">{fmtDateLong(day.date)}: {st.label}{day.holidayNames.length?` · ${day.holidayNames.join(", ")}`:""}</span>
                           <span className="text-[12px] font-bold sm:text-[14px]" aria-hidden>{Number(day.date.slice(8))}</span>
                           <span className="mt-auto text-[10px] font-semibold leading-tight sm:hidden" aria-hidden>{st.short}</span>
                           <span className="mt-auto hidden text-[12px] font-semibold leading-tight sm:block" aria-hidden>{day.status === "future" ? "" : st.label}</span>
+                          {day.sessions.map((session,index)=><span key={`${session.slotLabel}:${index}`} className="mt-1 block text-[10px] leading-snug sm:text-[11px]">{session.slotLabel}: {DAY_STATUS[session.status.toLowerCase()]?.label}{session.publicNote?` · ${session.publicNote}`:''}</span>)}
                         </div>
                       );
                     })}
@@ -81,11 +85,12 @@ export function ParentAttendanceView() {
                       ))}
                     </dl>
                   ) : <p className="mt-3 text-sm text-muted">Tháng này chưa có buổi điểm danh nào được công bố.</p>}
-                  <p className="mt-3 text-[13px] text-muted">{d.totals.published ? `Con có mặt ${attended}/${d.totals.published} buổi đã công bố (tính cả đi muộn).` : "Không tính tỷ lệ khi chưa có dữ liệu công bố."}</p>
+                  {d.totals.unmarked>0&&<p className="mt-3 text-[13px] text-muted">{d.totals.unmarked} buổi đã công bố nhưng chưa đánh dấu; không tính là có mặt, vắng hay đưa vào tỷ lệ.</p>}
+                  <p className="mt-3 text-[13px] text-muted">{d.totals.published ? d.totals.marked?`Con có mặt ${attended}/${d.totals.marked} buổi đã được đánh dấu và công bố (tính cả đi muộn).`:"Chưa có buổi được đánh dấu để tính tỷ lệ." : "Không tính tỷ lệ khi chưa có dữ liệu công bố."}</p>
                 </Card>
                 <Callout tone="info" icon={<Info />} title="Cách đọc lịch chuyên cần">
                   <ul className="list-disc space-y-1 pl-4">
-                    <li>Mỗi ngày học có buổi sáng/chiều; ô ngày hiển thị trạng thái đã công bố của ngày đó, tổng hợp đếm theo buổi.</li>
+                    <li>Mỗi ô giữ các buổi và ghi chú đã công bố của ngày đó; tổng hợp đếm theo buổi.</li>
                     <li>“Chưa công bố” nghĩa là giáo viên chưa công bố điểm danh — không có nghĩa là con có mặt hay vắng.</li>
                     <li>Chỉ xem được các tháng trong năm học được cấp qua link.</li>
                   </ul>

@@ -3676,6 +3676,29 @@
       "evidence": [
         "qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31"
       ]
+    },
+    {
+      "operationId": "getParentAttendanceMonth",
+      "screenIds": [
+        "PA03"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-attendance-integration-full.log"
+      ]
+    },
+    {
+      "operationId": "previewParentAttendanceMonth",
+      "screenIds": [
+        "SC25",
+        "PA03"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-attendance-integration-full.log"
+      ]
     }
   ],
   "screens": [
@@ -4444,7 +4467,8 @@
       "screenId": "SC25",
       "scope": "core",
       "operationIds": [
-        "previewParent"
+        "previewParent",
+        "previewParentAttendanceMonth"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5177,11 +5201,15 @@
       "screenId": "PA03",
       "scope": "core",
       "operationIds": [
-        "getParentAttendance"
+        "getParentAttendance",
+        "getParentAttendanceMonth",
+        "previewParentAttendanceMonth"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-attendance-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -364,6 +364,8 @@ export interface ApiSchemas {
   "HandoverApprove": { "expectedVersion": number; "previewHash"?: string; };
   "HandoverReview": { "expectedVersion": number; "previewHash": string; "expectedFromAssignmentVersion": number; "expectedClassVersion": number; "expectedToMemberVersion": number; };
   "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
+  "ParentAttendanceMonth": { "month": string; "yearStart": string; "yearEnd": string; "today": string; "days": Array<{ "date": string; "weekday": number; "holidayNames": Array<string>; "sessions": Array<ApiSchemas["ParentAttendance"]>; "status": "unmarked" | "present" | "late" | "excused" | "unexcused" | "mixed" | "future" | "holiday" | "not_published"; }>; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; };
+  "ParentAttendanceMonthResponse": { "data": ApiSchemas["ParentAttendanceMonth"]; "requestId": string; };
   "StudentYear": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "startsOn": string; "endsOn": string; };
   "StudentDirectoryClass": { "id": string; "version": number; "yearId": string; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; };
   "StudentDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "dateOfBirth": (string) | null; "gender": ("Nam" | "Nữ" | null) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "enrollmentId": string; "enrollmentVersion": number; "classId": string; "className": string; "yearId": string; "yearName": string; "enrollmentInEffect": boolean; "guardianCount": (number) | null; "verifiedGuardians": (number) | null; "activeLinks": (number) | null; };
@@ -3345,6 +3347,26 @@ export const apiOperations = {
     "list": false,
     "permission": "assignment.manage",
     "readOnly": false
+  },
+  "getParentAttendanceMonth": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/attendance-month",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentAttendanceMonth",
+    "list": false,
+    "permission": "parent.attendance",
+    "readOnly": true
+  },
+  "previewParentAttendanceMonth": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentAttendanceMonth",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
   },
   "listStudentDirectory": {
     "method": "GET",

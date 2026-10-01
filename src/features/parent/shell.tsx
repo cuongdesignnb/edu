@@ -46,7 +46,7 @@ export function useParentRead<T>(key: readonly unknown[], fn: (k: ParentKey, slu
   const router = useRouter();
   const previewId='preview' in p.key?p.key.preview.accessId:null;
   const q = useQuery<T, RepoError>({ queryKey: ["parent", parentSessionRevision(), previewId, p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
-  const reason = unavailableReason(q.error);
+  const reason = !p.preview?readParentFault(p.slug)??unavailableReason(q.error):unavailableReason(q.error);
   useEffect(() => { if (reason && !p.preview) router.replace(`/p/${p.slug}/access-unavailable?reason=${reason}`); }, [reason, p.preview, p.slug, router]);
   return q;
 }

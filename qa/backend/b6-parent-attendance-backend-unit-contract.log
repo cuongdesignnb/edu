@@ -1,0 +1,65 @@
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (1.5137ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (8.8143ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (7.9247ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (9.9416ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (3.7753ms)
+✔ login rejects spoofed role, school and unknown fields (0.8856ms)
+✔ private user DTO rejects secrets and unknown properties (3.0919ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.2263ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (20.608ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (4.9045ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (18.1727ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (2.3362ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (10.3985ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (2.6099ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (17.4735ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (14.7966ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (9.6371ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (43.6006ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (51.5223ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (18.558ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (7.1111ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (4.0626ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (4.8342ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (2.6887ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (13.18ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.3684ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.3986ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.4251ms)
+✔ grant action and class scope stay together (1.313ms)
+✔ subject grants never authorize management without explicit subject policy (0.2351ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1993ms)
+✔ a custom class grant authorizes only its delegated action and class (0.2125ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.2767ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.9433ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.299ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (102.5233ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 35
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 520.1259
+
+✖ failing tests:
+
+test at tests\contract\schemas.test.mjs:4:1
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (1.5137ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  311 !== 310
+
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:5:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 311,
+    expected: 310,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

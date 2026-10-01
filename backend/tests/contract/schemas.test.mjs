@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,310);assert.equal(new Set(operations.map(op=>op.id)).size,310);
+  assert.equal(operations.length,312);assert.equal(new Set(operations.map(op=>op.id)).size,312);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -162,4 +162,11 @@ test('parent context metadata distinguishes year, link and session bounds withou
   validateSchema('ParentContext',context,true);
   for(const field of ['dateOfBirth','internalNote','guardianPhone','studentId','token','tokenHash'])assert.throws(()=>validateSchema('ParentContext',{...context,student:{...context.student,[field]:'private'}},true));
   assert.throws(()=>validateSchema('ParentContext',{...context,year:{...context.year,endsOn:time}},true));
+});
+
+
+test('parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states',()=>{
+ const row={month:'2026-10',yearStart:'2026-09',yearEnd:'2027-05',today:'2026-10-01',days:[{date:'2026-10-01',weekday:4,holidayNames:[],sessions:[],status:'not_published'}],totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0}};
+ assert.doesNotThrow(()=>validateSchema('ParentAttendanceMonth',row,true));
+ for(const value of [{...row,studentId:'63000000-0000-4000-8000-000000000001'},{...row,days:[{...row.days[0],status:'invented-present'}]},{...row,totals:{...row.totals,marked:-1}}])assert.throws(()=>validateSchema('ParentAttendanceMonth',value,true));
 });
