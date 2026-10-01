@@ -1,0 +1,35 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-be5f6f688fe4 Creating
+ Container edumanage_backend_test-runner-run-be5f6f688fe4 Created
+✔ B6 parent-issue purpose readers paginate over 1000 pupils, keep current class/time authority and expose no contact or token (1252.505967ms)
+✖ B6 reviewed parent issuance rejects stale sources, rotates atomically, converts local dates and never replays secrets (541.033145ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2550.669686
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:2829:1
+✖ B6 reviewed parent issuance rejects stale sources, rotates atomically, converts local dates and never replays secrets (541.033145ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:csrf_invalid","title":"CSRF_INVALID","status":403,"code":"CSRF_INVALID","requestId":"93358485-247b-473f-b4c5-bd02210c1665"}
+
+  403 !== 200
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2841:166)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 403,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

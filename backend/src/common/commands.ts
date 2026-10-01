@@ -46,15 +46,17 @@ export class Commands {
            WHERE school_id=$1 AND actor_user_id=$2 AND operation_id=$3 AND key_hash=$4 FOR UPDATE`,
         [schoolId,c.principal!.userId,c.operation.id,hashToken(key)]);
         if(!existing||existing.request_hash!==requestHash)throw new Problem(409,'IDEMPOTENCY_CONFLICT');
-        if(secretResult)throw new Problem(409,'LINK_ALREADY_ISSUED');
+        if(secretResult)throw new Problem(409,'LINK_ALREADY_ISSUED',undefined,undefined,(existing.response_metadata as Result&{resultId?:string}).resultId);
         if(existing.status!=='COMPLETED')throw new Problem(409,'IN_PROGRESS');
         return {...existing.response_metadata,status:existing.response_status};
       }
       const result=await work(tx);
+      const secretData=result.data as {access?:{id?:unknown}}|undefined;
+      const issuedId=secretResult&&typeof secretData?.access?.id==='string'?secretData.access.id:undefined;
       await tx.query(`UPDATE app.idempotency_keys SET status='COMPLETED',response_status=$5,response_metadata=$6
         WHERE school_id=$1 AND actor_user_id=$2 AND operation_id=$3 AND key_hash=$4`,
       [schoolId,c.principal!.userId,c.operation.id,hashToken(key),result.status??200,
-        secretResult?{issued:true}:result]);
+        secretResult?{issued:true,...(issuedId?{resultId:issuedId}:{})}:result]);
       return result;
     },{schoolId,userId:c.principal!.userId});
   }

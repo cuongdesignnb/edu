@@ -1,12 +1,13 @@
 export class Problem extends Error {
   constructor(public readonly status: number, public readonly code: string,
     public readonly fieldErrors?: { path: string; code: string; message: string }[],
-    public readonly currentVersion?: number) { super(code); }
+    public readonly currentVersion?: number,public readonly resultId?:string) { super(code); }
   response(requestId: string) {
     return { type: `urn:edumanage:problem:${this.code.toLowerCase()}`, title: this.code,
       status: this.status, code: this.code, requestId,
       ...(this.fieldErrors ? { fieldErrors: this.fieldErrors } : {}),
-      ...(this.currentVersion ? { currentVersion: this.currentVersion } : {}) };
+      ...(this.currentVersion ? { currentVersion: this.currentVersion } : {}),
+      ...(this.resultId ? { resultId:this.resultId } : {}) };
   }
 }
 export function notFound(): never { throw new Problem(404, 'RESOURCE_NOT_FOUND'); }

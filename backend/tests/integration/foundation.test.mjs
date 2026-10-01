@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,302);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,306);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2778,4 +2778,78 @@ test('B6 student-create choices use current class write authority without borrow
   await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,schoolGrant.id]),{schoolId:f.schoolId});
   await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,guardianGrant.id]),{schoolId:f.schoolId});response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data.classes[0].canAddGuardian,false);
   for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,studentGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);}
+});
+
+async function parentIssueUiFixture(timezone='America/Los_Angeles'){
+  const f=await staffUiFixture(timezone);
+  const rows=await db.transaction(async tx=>{
+    const yearId=(await tx.query('SELECT year_id FROM app.classes WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId])).rows[0].year_id;
+    const student=(await tx.query("INSERT INTO app.students(school_id,student_code,full_name,internal_note) VALUES($1,'ISSUE-ONE','Học sinh cấp link giả','private-student-note') RETURNING id",[f.schoolId])).rows[0];
+    const enrollment=(await tx.query('INSERT INTO app.enrollments(school_id,student_id,class_id,year_id,starts_on) VALUES($1,$2,$3,$4,$5) RETURNING id',[f.schoolId,student.id,f.classId,yearId,f.today])).rows[0];
+    return {yearId,studentId:student.id,enrollmentId:enrollment.id};
+  },{schoolId:f.schoolId});
+  const relation=await parentRelationship(null,f.post,rows.studentId);
+  const issueRole=await f.role([{action:'parent_access.issue',scopes:['CLASS']}]);
+  const issueGrant=await f.grant(f.target,issueRole.id,{scopeType:'CLASS',classId:f.classId});
+  const base=`/api/v1/schools/${f.schoolId}`;
+  const source=async()=>{const response=await request('GET',`${base}/students/${rows.studentId}/parent-access-issue-source?yearId=${rows.yearId}`);assert.equal(response.statusCode,200,response.body);return response.json().data;};
+  return {...f,...rows,relation,issueGrant,base,source};
+}
+function reviewedParentBody(source,relationshipId){
+  const relationship=source.relationships.find(r=>r.id===relationshipId);
+  return {studentId:source.student.id,yearId:source.context.year.id,relationshipId,allowedSections:['overview','documents'],allowDownload:false,expiresOn:source.context.today,
+    reviewedSource:{schoolVersion:source.context.schoolVersion,yearVersion:source.context.year.version,studentVersion:source.student.version,enrollmentId:source.enrollment.id,enrollmentVersion:source.enrollment.version,classVersion:source.class.version,relationshipVersion:relationship.version,guardianVersion:relationship.guardianVersion}};
+}
+
+test('B6 parent-issue purpose readers paginate over 1000 pupils, keep current class/time authority and expose no contact or token',async()=>{
+  const f=await parentIssueUiFixture();
+  const outside=await db.transaction(async tx=>{
+    await tx.query('UPDATE app.classes SET capacity=2000 WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId]);
+    await tx.query("WITH s AS(INSERT INTO app.students(school_id,student_code,full_name) SELECT $1,'ISSUE-'||lpad(n::text,4,'0'),'Học sinh số '||n FROM generate_series(1,1001)n RETURNING id) INSERT INTO app.enrollments(school_id,student_id,class_id,year_id,starts_on) SELECT $1,id,$2,$3,$4 FROM s",[f.schoolId,f.classId,f.yearId,f.today]);
+    const cl=(await tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'ISSUE-OUT','Lớp ngoài cấp link giả',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId])).rows[0];
+    const s=(await tx.query("INSERT INTO app.students(school_id,student_code,full_name) VALUES($1,'ISSUE-OUT','Học sinh ngoài lớp giả') RETURNING id",[f.schoolId])).rows[0];
+    await tx.query('INSERT INTO app.enrollments(school_id,student_id,class_id,year_id,starts_on) VALUES($1,$2,$3,$4,$5)',[f.schoolId,s.id,cl.id,f.yearId,f.today]);return s.id;
+  },{schoolId:f.schoolId});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');
+  const context=await request('GET',`${f.base}/parent-access/issue-context`);assert.equal(context.statusCode,200,context.body);assert.equal(context.json().data.year.id,f.yearId);assert.equal(context.json().data.timezone,'America/Los_Angeles');
+  let page=await request('GET',`${f.base}/parent-access/issue-students?limit=100`);assert.equal(page.statusCode,200,page.body);assert.equal(page.json().page.total,1002);assert.equal(page.json().data.length,100);assert.equal(page.json().page.hasMore,true);
+  const next=await request('GET',`${f.base}/parent-access/issue-students?limit=100&cursor=${encodeURIComponent(page.json().page.nextCursor)}`);assert.equal(next.statusCode,200,next.body);assert.equal(new Set([...page.json().data,...next.json().data].map(r=>r.id)).size,200);
+  assert.equal((await request('GET',`${f.base}/parent-access/issue-students?limit=100&q=changed&cursor=${encodeURIComponent(page.json().page.nextCursor)}`)).statusCode,422);
+  const filtered=await request('GET',`${f.base}/parent-access/issue-students?q=ISSUE-ONE`);assert.equal(filtered.statusCode,200,filtered.body);assert.deepEqual(filtered.json().data.map(r=>r.id),[f.studentId]);
+  for(const row of page.json().data)assert.deepEqual(Object.keys(row).sort(),['id','version','fullName','studentCode','classId','className'].sort());
+  const source=await f.source();assert.equal(source.context.today,f.today);assert.equal(source.enrollment.inEffect,true);assert.equal(source.relationships[0].canIssue,true);assert.equal(source.relationships[0].guardianName.startsWith('Giám hộ giả'),true);
+  for(const secret of ['0901234567','private-student-note','token_hash','tokenHash','email','dateOfBirth'])assert.equal(JSON.stringify(source).includes(secret),false,secret);
+  for(const path of ['classes','academic-years','student-directory-summary','guardian-directory-summary','settings','parent-access'])assert.equal((await request('GET',`${f.base}/${path}`)).statusCode,403,path);
+  assert.equal((await request('GET',`${f.base}/students/${outside}/parent-access-issue-source`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/parent-access/issue-context`)).statusCode,404);
+  await db.transaction(tx=>tx.query("UPDATE app.enrollments SET ends_on=$3::date,status='ENDED',starts_on=$3::date-1 WHERE school_id=$1 AND id=$2",[f.schoolId,f.enrollmentId,f.today]),{schoolId:f.schoolId});
+  assert.equal((await request('GET',`${f.base}/students/${f.studentId}/parent-access-issue-source`)).statusCode,404);page=await request('GET',`${f.base}/parent-access/issue-students?limit=100`);assert.equal(page.json().page.total,1001);
+  for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,f.issueGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',`${f.base}/parent-access/issue-context`)).statusCode,403);}
+});
+
+test('B6 reviewed parent issuance rejects stale sources, rotates atomically, converts local dates and never replays secrets',async()=>{
+  const f=await parentIssueUiFixture();jar.delete('edu_staff');const csrf=await login('teacher-a@example.invalid');f.setCsrf(csrf);
+  let source=await f.source(),body=reviewedParentBody(source,f.relation.id);
+  const post=(data,key=crypto.randomUUID())=>f.post('parent-access/reviewed-issue',data,key);
+  for(const key of ['schoolVersion','yearVersion','studentVersion','enrollmentVersion','classVersion','relationshipVersion','guardianVersion']){const stale=structuredClone(body);stale.reviewedSource[key]++;const response=await post(stale);assert.equal(response.statusCode,409,response.body);assert.equal(response.json().code,'PARENT_ISSUE_SOURCE_CHANGED');}
+  assert.equal((await post({...body,reviewedSource:{...body.reviewedSource,enrollmentId:crypto.randomUUID()}})).statusCode,409);
+  assert.equal((await post({...body,allowedSections:['overview'],allowDownload:true})).statusCode,422);
+  const expected=(await db.transaction(tx=>tx.query('SELECT ($1::date+1)::timestamp AT TIME ZONE $2 AS at',[f.today,source.context.timezone]),{schoolId:f.schoolId})).rows[0].at.toISOString();
+  const key=crypto.randomUUID(),issued=await post(body,key);assert.equal(issued.statusCode,201,issued.body);let receipt=issued.json().data;
+  assert.equal(receipt.access.expiresAt,expected);assert.equal(receipt.displayOnce,true);assert.match(receipt.link,/#token=[A-Za-z0-9_-]{43}$/);assert.equal(new URL(receipt.link).search,'');
+  const replay=await post(body,key);assert.equal(replay.statusCode,409,replay.body);assert.equal(replay.json().code,'LINK_ALREADY_ISSUED');assert.equal(replay.json().resultId,receipt.access.id);assert.equal(replay.body.includes('#token='),false);
+  const metadata=(await db.transaction(tx=>tx.query("SELECT response_metadata FROM app.idempotency_keys WHERE school_id=$1 AND operation_id='issueReviewedParentAccess'",[f.schoolId]),{schoolId:f.schoolId})).rows.map(r=>r.response_metadata);assert.deepEqual(metadata,[{issued:true,resultId:receipt.access.id}]);
+  const token=new URL(receipt.link).hash.slice(7),parentCsrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
+  const parent=await request('POST',`/api/v1/parent/${source.context.schoolSlug}/access/exchange`,{token},parentCsrf);assert.equal(parent.statusCode,200,parent.body);const parentView=parent.json().data;
+  const original=receipt.access,replace={accessId:original.id,expectedVersion:original.version};
+  const wrong=await post({...body,replace:{...replace,expectedVersion:replace.expectedVersion+1},reason:'Cấp lại có kiểm tra giả'});assert.equal(wrong.statusCode,409);assert.equal(wrong.json().code,'VERSION_CONFLICT');
+  const rollback=await post({...body,replace,reason:'Cấp lại nhưng tải không hợp lệ',allowedSections:['overview'],allowDownload:true});assert.equal(rollback.statusCode,422);
+  let old=(await db.transaction(tx=>tx.query('SELECT revoked_at FROM app.parent_access_links WHERE school_id=$1 AND id=$2',[f.schoolId,original.id]),{schoolId:f.schoolId})).rows[0];assert.equal(old.revoked_at,null);
+  source=await f.source();body=reviewedParentBody(source,f.relation.id);
+  const rotated=await post({...body,replace,reason:'Cấp lại sau khi xác nhận nguồn',allowedSections:['overview','attendance'],allowDownload:false});assert.equal(rotated.statusCode,200,rotated.body);receipt=rotated.json().data;assert.notEqual(receipt.access.id,original.id);assert.deepEqual(receipt.access.allowedSections,['overview','attendance']);
+  old=(await db.transaction(tx=>tx.query('SELECT revoked_at FROM app.parent_access_links WHERE school_id=$1 AND id=$2',[f.schoolId,original.id]),{schoolId:f.schoolId})).rows[0];assert.ok(old.revoked_at);
+  assert.equal((await request('GET',`/api/v1/parent/${source.context.schoolSlug}/context`,undefined,undefined,{'x-parent-view':parentView.viewId})).statusCode,401);
+  assert.equal((await request('POST',`/api/v1/parent/${source.context.schoolSlug}/access/exchange`,{token},parentCsrf)).statusCode,401);
+  await db.transaction(tx=>tx.query('UPDATE app.guardian_relationships SET can_receive_info=false WHERE school_id=$1 AND id=$2',[f.schoolId,f.relation.id]),{schoolId:f.schoolId});
+  const stale=await post(body);assert.equal(stale.statusCode,409);source=await f.source();assert.equal(source.relationships[0].canIssue,false);assert.deepEqual(source.relationships[0].activeLinkIds,[]);assert.equal((await post(reviewedParentBody(source,f.relation.id))).statusCode,422);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,f.issueGrant.id]),{schoolId:f.schoolId});assert.equal((await post(body,key)).statusCode,403);
 });

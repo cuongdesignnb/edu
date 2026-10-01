@@ -1,6 +1,6 @@
 // Generated from the validated backend contract. Do not hand-edit.
 export interface ApiSchemas {
-  "Error": { "type": string; "title": string; "status": number; "code": string; "detail"?: string; "requestId": string; "fieldErrors"?: Array<{ "path": string; "code": string; "message": string; }>; "currentVersion"?: number; };
+  "Error": { "type": string; "title": string; "status": number; "code": string; "detail"?: string; "requestId": string; "fieldErrors"?: Array<{ "path": string; "code": string; "message": string; }>; "currentVersion"?: number; "resultId"?: string; };
   "Ack": { "id": (string) | null; "status": string; "version"?: number; };
   "Health": { "status": "ok" | "degraded"; "buildSha"?: string; };
   "ReasonCommand": { "expectedVersion": number; "reason": string; };
@@ -375,6 +375,16 @@ export interface ApiSchemas {
   "StudentCreateClassChoice": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE"; "yearId": string; "yearName": string; "yearStartsOn": string; "yearEndsOn": string; "canAddGuardian": boolean; };
   "StudentCreateOptions": { "today": string; "classes": Array<ApiSchemas["StudentCreateClassChoice"]>; };
   "StudentCreateOptionsResponse": { "data": ApiSchemas["StudentCreateOptions"]; "requestId": string; };
+  "ParentIssueYear": { "id": string; "version": number; "name": string; "startsOn": string; "endsOn": string; "lastDay": string; "suggestedExpiryOn": string; };
+  "ParentIssueContext": { "schoolId": string; "schoolVersion": number; "schoolName": string; "schoolSlug": string; "timezone": string; "today": string; "ttlDays": number; "defaultSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "year": (ApiSchemas["ParentIssueYear"] | (null) | null); };
+  "ParentIssueStudentChoice": { "id": string; "version": number; "fullName": string; "studentCode": string; "classId": string; "className": string; };
+  "ParentIssueRelationship": { "id": string; "version": number; "guardianId": string; "guardianVersion": number; "guardianName": string; "relationshipLabel": string; "status": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "isPrimary": boolean; "canReceiveInfo": boolean; "canIssue": boolean; "activeLinkIds": Array<string>; };
+  "ParentIssueSource": { "context": ApiSchemas["ParentIssueContext"]; "student": { "id": string; "version": number; "fullName": string; "studentCode": string; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; }; "enrollment": { "id": string; "version": number; "inEffect": boolean; }; "class": { "id": string; "version": number; "name": string; }; "relationships": Array<ApiSchemas["ParentIssueRelationship"]>; };
+  "ParentIssueReview": { "schoolVersion": number; "yearVersion": number; "studentVersion": number; "enrollmentId": string; "enrollmentVersion": number; "classVersion": number; "relationshipVersion": number; "guardianVersion": number; };
+  "ParentAccessReviewedCreate": { "studentId": string; "yearId": string; "relationshipId": string; "reviewedSource": ApiSchemas["ParentIssueReview"]; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresOn": string; "replace"?: { "accessId": string; "expectedVersion": number; }; "reason"?: string; };
+  "ParentIssueContextResponse": { "data": ApiSchemas["ParentIssueContext"]; "requestId": string; };
+  "ParentIssueSourceResponse": { "data": ApiSchemas["ParentIssueSource"]; "requestId": string; };
+  "ParentIssueStudentChoicePage": { "data": Array<ApiSchemas["ParentIssueStudentChoice"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "StudentHistory": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; };
   "StudentSelectedEnrollment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; "inEffect": boolean; };
   "StudentProfileCore": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName": (string) | null; "dateOfBirth": (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "gender": ("Nam" | "Nữ" | null) | null; };
@@ -3367,6 +3377,46 @@ export const apiOperations = {
     "list": false,
     "permission": "student.manage",
     "readOnly": true
+  },
+  "getParentAccessIssueContext": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/issue-context",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentIssueContext",
+    "list": false,
+    "permission": "parent_access.issue",
+    "readOnly": true
+  },
+  "listParentAccessIssueStudents": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/issue-students",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentIssueStudentChoice",
+    "list": true,
+    "permission": "parent_access.issue",
+    "readOnly": true
+  },
+  "getStudentParentAccessIssueSource": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}/parent-access-issue-source",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentIssueSource",
+    "list": false,
+    "permission": "parent_access.issue",
+    "readOnly": true
+  },
+  "issueReviewedParentAccess": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/parent-access/reviewed-issue",
+    "auth": "staff",
+    "request": "ParentAccessReviewedCreate",
+    "response": "ParentAccessIssued",
+    "list": false,
+    "permission": "parent_access.issue",
+    "readOnly": false
   },
   "getStudentDetails": {
     "method": "GET",

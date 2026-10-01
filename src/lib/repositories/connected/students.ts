@@ -8,6 +8,7 @@ import {displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} fr
 import {RepoError} from '../errors';
 import {guardianDirectoryRow,guardianProfile,guardianContact,guardianLink} from './guardian-mapping';
 import {guardianSaveBody,type GuardianSaveInput} from './guardian-form';
+import {parentIssueBody,parentIssueReceipt,type ParentIssueInput} from './parent-access-issue';
 
 export interface StudentCreateInput {
   code?:string;fullName:string;dob:string;gender:Gender;classId:ID;startDate:string;
@@ -53,6 +54,9 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
 }
 
 export const connectedStudentsRepo=withStaffAccess({
+  async issueAccess(_ctx:Ctx,schoolId:ID,input:ParentIssueInput){const body=parentIssueBody(schoolId,input),acknowledge=(value:ApiSchemas['ParentAccessIssued'])=>parentIssueReceipt(value,body,input.source);
+    const result=await formResult(http('issueReviewedParentAccess',{params:{schoolId},body,validateData:value=>{acknowledge(value);return true;}}),{allowedSections:'modules',expiresOn:'expiresOn'});return acknowledge(result.data);
+  },
   async saveGuardian(_ctx:Ctx,schoolId:ID,input:GuardianSaveInput){
     const body=guardianSaveBody(schoolId,input);
     const acknowledge=(view:ApiSchemas['GuardianSaveResult'])=>{

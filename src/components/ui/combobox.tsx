@@ -11,9 +11,9 @@ export interface ComboOption { value: string; label: string; hint?: string; disa
  * C015 — searchable select (single or multi) with keyboard support.
  * Options must already be restricted to the actor's school/class scope by the caller.
  */
-export function Combobox({ label, options, value, onChange, multiple, placeholder = "Chọn…", error, required, helper, emptyText = "Không có lựa chọn phù hợp", id, disabled }: {
+export function Combobox({ label, options, value, onChange, multiple, placeholder = "Chọn…", error, required, helper, emptyText = "Không có lựa chọn phù hợp", id, disabled, onSearchChange, selectedLabel }: {
   label: ReactNode; options: ComboOption[]; value: string | string[]; onChange: (v: string | string[]) => void; multiple?: boolean; placeholder?: string;
-  error?: string; required?: boolean; helper?: ReactNode; emptyText?: string; id?: string; disabled?: boolean;
+  error?: string; required?: boolean; helper?: ReactNode; emptyText?: string; id?: string; disabled?: boolean;onSearchChange?:(query:string)=>void;selectedLabel?:string;
 }) {
   const auto = useId();
   const fid = id ?? auto;
@@ -22,10 +22,10 @@ export function Combobox({ label, options, value, onChange, multiple, placeholde
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
   const selected = useMemo(() => new Set(Array.isArray(value) ? value : value ? [value] : []), [value]);
-  const filtered = useMemo(() => options.filter((o) => !q || fold(`${o.label} ${o.hint ?? ""}`).includes(fold(q))), [options, q]);
+  const filtered = useMemo(() => onSearchChange?options:options.filter((o) => !q || fold(`${o.label} ${o.hint ?? ""}`).includes(fold(q))), [options, q,onSearchChange]);
   const summary = multiple
     ? selected.size ? `${selected.size} đã chọn` : placeholder
-    : options.find((o) => o.value === value)?.label ?? placeholder;
+    : options.find((o) => o.value === value)?.label ?? selectedLabel ?? placeholder;
 
   const choose = (o: ComboOption) => {
     if (o.disabled) return;
@@ -42,7 +42,7 @@ export function Combobox({ label, options, value, onChange, multiple, placeholde
   return (
     <div className="field">
       <label className="label" htmlFor={fid}>{label}{required && <span className="req" aria-hidden>*</span>}</label>
-      <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQ(""); }}>
+      <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) {setQ("");onSearchChange?.("");} }}>
         <Popover.Trigger asChild disabled={disabled}>
           <button id={fid} type="button" role="combobox" aria-expanded={open} aria-invalid={!!error || undefined} aria-controls={`${fid}-list`}
             className={clsx("select flex items-center text-left", !selected.size && "text-faint")}>
@@ -55,7 +55,7 @@ export function Combobox({ label, options, value, onChange, multiple, placeholde
             <div className="input-icon mb-2">
               <Search className="size-4" aria-hidden />
               <input className="input" placeholder="Tìm…" value={q} aria-label="Tìm trong danh sách" aria-controls={`${fid}-list`}
-                onChange={(e) => { setQ(e.target.value); setActive(0); }}
+                onChange={(e) => { setQ(e.target.value); setActive(0);onSearchChange?.(e.target.value); }}
                 onKeyDown={(e) => {
                   if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
                   if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }

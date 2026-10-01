@@ -9,7 +9,7 @@ export interface ApiOptions<K extends OperationId> {
   parentViewId?:string;parentCsrf?:string;supportAccessId?:string;
   validateData?:(data:ApiData<K>)=>boolean;
 }
-interface HttpProblem {code?:string;status?:number;currentVersion?:number;requestId?:string;fieldErrors?:{path:string;message:string}[]}
+interface HttpProblem {code?:string;status?:number;currentVersion?:number;resultId?:string;requestId?:string;fieldErrors?:{path:string;message:string}[]}
 let staffCsrf:string|null=null,bootstrapCsrf:string|null=null,bootstrapPending:Promise<string>|null=null;
 let authEpoch=0,accessEpoch=0;
 let staffRequests=new AbortController();
@@ -59,6 +59,8 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
   if(p.code==='INVALID_CREDENTIALS')code='VALIDATION';
   const messages:Partial<Record<RepoErrorCode,string>>={NO_SESSION:'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',REVOKED:'Link tra cứu không còn hiệu lực hoặc đã bị thu hồi.',NETWORK:'Không nhận được xác nhận lưu từ máy chủ. Nội dung của bạn vẫn còn; hãy thử lại.',READ_ERROR:'Không tải được dữ liệu từ máy chủ. Vui lòng thử lại.'};
   const problemMessages:Record<string,string>={
+    PARENT_ISSUE_SOURCE_CHANGED:'Nguồn cấp link đã thay đổi. Hãy tải lại và xác nhận học sinh, người nhận cùng thời hạn.',
+    LINK_ALREADY_ISSUED:'Lệnh này đã cấp link, nhưng mã truy cập chỉ được trả một lần. Xem quyền đã cấp và chủ động cấp lại nếu chưa giữ được link.',
     SHARED_GUARDIAN_SCOPE:'Liên hệ này dùng chung cho nhiều học sinh. Cần người có quyền quản lý tất cả các lớp liên quan sửa liên hệ.',
     GUARDIAN_PRIMARY_CHANGED:'Liên hệ ưu tiên đã thay đổi. Hãy tải lại và kiểm tra trước khi lưu.',GUARDIAN_ARCHIVED:'Liên hệ giám hộ đã được lưu trữ. Hãy tải lại hồ sơ.',
     LAST_ADMIN_REQUIRED:'Trường cần còn ít nhất một quản trị đang có hiệu lực. Hãy phân công quản trị khác trước.',
@@ -69,7 +71,7 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
     MEMBERSHIP_REACTIVATION_REQUIRED:'Thành viên đã bị khóa hoặc kết thúc. Quản trị trường cần mở lại trước khi nhận lời mời.',
   };
   const fieldErrors=p.fieldErrors?Object.fromEntries(p.fieldErrors.map(e=>[e.path.replace(/^\//,'').replace(/\//g,'.')||'form',e.message])):undefined;
-  return new RepoError(code,p.code==='INVALID_CREDENTIALS'?(id==='changePassword'?'Mật khẩu hiện tại không đúng.':'Email hoặc mật khẩu không đúng.'):status===429?'Bạn đang thao tác quá nhanh. Hãy đợi rồi thử lại.':status===503?'Máy chủ chưa sẵn sàng. Nội dung chưa lưu vẫn được giữ để thử lại.':problemMessages[p.code??'']??messages[code],{fieldErrors,details:{httpStatus:status,problemCode:p.code,requestId:p.requestId,currentVersion:p.currentVersion,...(retryAfter?{retryAfter}: {})}});
+  return new RepoError(code,p.code==='INVALID_CREDENTIALS'?(id==='changePassword'?'Mật khẩu hiện tại không đúng.':'Email hoặc mật khẩu không đúng.'):status===429?'Bạn đang thao tác quá nhanh. Hãy đợi rồi thử lại.':status===503?'Máy chủ chưa sẵn sàng. Nội dung chưa lưu vẫn được giữ để thử lại.':problemMessages[p.code??'']??messages[code],{fieldErrors,details:{httpStatus:status,problemCode:p.code,requestId:p.requestId,currentVersion:p.currentVersion,...(typeof p.resultId==='string'?{resultId:p.resultId}:{}),...(retryAfter?{retryAfter}: {})}});
 }
 async function csrfBootstrap(){
   if(bootstrapCsrf)return bootstrapCsrf;

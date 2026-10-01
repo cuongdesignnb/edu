@@ -1,0 +1,38 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (1.8962ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (13.9245ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (9.4585ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (5.4919ms)
+✔ login rejects spoofed role, school and unknown fields (1.1663ms)
+✔ private user DTO rejects secrets and unknown properties (5.0987ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.3319ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (33.1064ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (9.2169ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (22.1199ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (2.6447ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (12.209ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (2.7212ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (18.1599ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (13.3739ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (11.1037ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (34.4083ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (35.7486ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (20.0852ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (4.091ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (3.6808ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.4422ms)
+✔ grant action and class scope stay together (1.1067ms)
+✔ subject grants never authorize management without explicit subject policy (0.1411ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1235ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1347ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.1783ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.9427ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.4603ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (87.9526ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1132.5215

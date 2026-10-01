@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Printer, ShieldCheck, ShieldOff, Info, ExternalLink } from "lucide-react";
-import type { GuardianRelationship, ParentModule } from "@/lib/model/types";
+import { AlertTriangle, ShieldCheck, ShieldOff, Info } from "lucide-react";
+import type { GuardianRelationship } from "@/lib/model/types";
 import { schoolRepo, studentsRepo } from "@/lib/repositories";
 import { studentsExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
-import { fmtDate, parentModuleLabel, verificationStatus } from "@/lib/formatters";
+import { fmtDate, verificationStatus } from "@/lib/formatters";
 import { Modal, ConfirmDialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Callout } from "@/components/ui/card";
@@ -16,7 +15,7 @@ import { Combobox } from "@/components/ui/combobox";
 import { Skeleton, ErrorState, QueryState } from "@/components/ui/states";
 import { SchoolSourceState } from "@/features/school-org/common";
 import { ConflictDialog } from "@/components/ui/guards";
-import { ALL_MODULES, MODULE_HINT, QrImage, LinkBox, QrPrintCard, RELATIONS, accessUrl, fieldErrorsOf, usePrintQr } from "./shared";
+import { RELATIONS, fieldErrorsOf } from "./shared";
 
 /** First close attempt with unsaved input shows a warning; the second closes (O32 inside dialogs). */
 function useDirtyClose(dirty: boolean, open: boolean) {
@@ -90,12 +89,11 @@ export function VerifyDialog({target,onClose,schoolId}:{target:{relationshipId:s
 
 /* ------------------------------ O11 — transfer / leave ------------------------------ */
 export function TransferDialog({ open, onOpenChange, schoolId, student, canDecide }: { open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; student?: { id: string; fullName: string; className: string; classId?: string } | null; canDecide: boolean }) {
-  const ctxQ = useRepo(["students-issue-ctx", schoolId], (ctx) => studentsExtraRepo.issueContext(ctx, schoolId), { enabled: open });
   const classesQ = useRepo(["class-options", schoolId], (ctx) => schoolRepo.classOptions(ctx, schoolId), { enabled: open });
   const studentsQ = useRepo(["students-options", schoolId], (ctx) => studentsExtraRepo.studentOptions(ctx, schoolId), { enabled: open && !student });
   const blank = { studentId: student?.id ?? "", kind: "transfer" as "transfer" | "leave", toClassId: "", effectiveDate: undefined as string | undefined, reason: "", applyNow: false };
   const [f, setF] = useState(blank);
-  useEffect(() => { if (open) setF({ ...blank, effectiveDate: ctxQ.data?.today }); }, [open, student?.id, ctxQ.data?.today]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (open) setF({ ...blank }); }, [open, student?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const dirty = !!(f.reason || f.toClassId || (!student && f.studentId));
   const { beforeClose, banner } = useDirtyClose(dirty, open);
   const cmd = useCommand((ctx, input: Parameters<typeof studentsRepo.requestTransfer>[2]) => studentsRepo.requestTransfer(ctx, schoolId, input),
@@ -139,7 +137,7 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
               options={(classesQ.data ?? []).filter((c) => c.id !== currentClassId && c.status !== "archived").map((c) => ({ value: c.id, label: `${c.name}${c.status === "draft" ? " (nháp)" : ""}` }))} />
           </div>
         )}
-        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={f.effectiveDate} onChange={(v) => setF({ ...f, effectiveDate: v })} error={errs.effectiveDate} max={ctxQ.data?.yearEnd} helper="dd/MM/yyyy — không áp dụng lùi quá 7 ngày" /></div>
+        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={f.effectiveDate} onChange={(v) => setF({ ...f, effectiveDate: v })} error={errs.effectiveDate} helper="dd/MM/yyyy — không áp dụng lùi quá 7 ngày" /></div>
         <div data-field="reason"><TextArea label="Lý do" required rows={3} value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} error={errs.reason} maxChars={300} /></div>
         {canDecide && <Checkbox label="Áp dụng ngay (bạn có quyền duyệt)" description="Nếu không chọn, yêu cầu sẽ ở trạng thái Chờ duyệt." checked={f.applyNow} onChange={(v) => setF({ ...f, applyNow: v })} />}
         <Callout tone="neutral" icon={<Info />} title="Điều gì thay đổi">
@@ -153,136 +151,7 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
   );
 }
 
-/* ------------------------------ O12 / O13 — issue (or reissue) a private link ------------------------------ */
-export function IssueAccessDialog({ open, onOpenChange, schoolId, studentId: fixedStudent, relationshipId: preRel, replace }: {
-  open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; studentId?: string; relationshipId?: string; replace?: { accessId: string; relationshipId: string; modules: ParentModule[]; label: string } | null;
-}) {
-  const ctxQ = useRepo(["students-issue-ctx", schoolId], (ctx) => studentsExtraRepo.issueContext(ctx, schoolId), { enabled: open });
-  const studentsQ = useRepo(["students-options", schoolId], (ctx) => studentsExtraRepo.studentOptions(ctx, schoolId), { enabled: open && !fixedStudent });
-  const [studentId, setStudentId] = useState(fixedStudent ?? "");
-  const candQ = useRepo(["issue-candidates", schoolId, studentId], (ctx) => studentsExtraRepo.issueCandidates(ctx, schoolId, studentId), { enabled: open && !!studentId });
-  const [relId, setRelId] = useState("");
-  const [modules, setModules] = useState<ParentModule[]>([]);
-  const [expires, setExpires] = useState<string | undefined>();
-  const [reason, setReason] = useState("");
-  const [local, setLocal] = useState<Record<string, string>>({});
-  const [issued, setIssued] = useState<{ token: string; expiresAt: string; modules: ParentModule[]; id: string; relation: string } | null>(null);
-  const { print, node } = usePrintQr();
-
-  useEffect(() => {
-    if (!open) return;
-    setStudentId(fixedStudent ?? ""); setRelId(replace?.relationshipId ?? preRel ?? ""); setReason(""); setLocal({}); setIssued(null);
-  }, [open, fixedStudent, preRel, replace?.relationshipId]);
-  useEffect(() => {
-    if (open && ctxQ.data) { setModules(replace?.modules ?? ctxQ.data.defaultModules); setExpires(ctxQ.data.suggestedExpiry); }
-  }, [open, ctxQ.data, replace?.modules]);
-
-  const cmd = useCommand((ctx, input: Parameters<typeof studentsRepo.issueAccess>[2]) => studentsRepo.issueAccess(ctx, schoolId, input), { success: replace ? "Đã cấp lại link — link cũ đã bị thu hồi" : "Đã cấp link tra cứu riêng" });
-  const fe = fieldErrorsOf(cmd.error);
-  const rels = candQ.data?.relationships ?? [];
-  const rel = rels.find((r) => r.id === relId);
-  const dirty = !issued && (!!reason || (!replace && !preRel && !!relId));
-  const { beforeClose, banner } = useDirtyClose(dirty, open);
-
-  const submit = async () => {
-    const e: Record<string, string> = {};
-    if (!studentId) e.studentId = "Chọn học sinh";
-    if (!relId) e.relationshipId = "Chọn người giám hộ đã xác minh";
-    else if (rel && rel.verification !== "verified") e.relationshipId = "Cần xác minh trước khi cấp link";
-    if (!modules.length) e.modules = "Chọn ít nhất một mục được xem";
-    if (!expires) e.expiresOn = "Chọn hạn sử dụng";
-    if (replace && reason.trim().length < 3) e.reason = "Ghi lý do cấp lại";
-    setLocal(e);
-    if (Object.keys(e).length) return;
-    const pa = await cmd.run({ relationshipId: relId, modules, expiresOn: expires!, replaceAccessId: replace?.accessId, reason: replace ? reason : undefined });
-    if (pa) setIssued({ token: pa.token, expiresAt: pa.expiresAt, modules: pa.modules, id: pa.id, relation: rel?.relation ?? "" });
-  };
-  const errs: Record<string, string> = { ...local, ...fe, ...(cmd.error?.code === "UNVERIFIED" ? { relationshipId: "Cần xác minh trước khi cấp link" } : {}) };
-  const url = issued && ctxQ.data ? accessUrl(ctxQ.data.slug, issued.token) : "";
-  const student = candQ.data?.student;
-
-  return (
-    <Modal open={open} onOpenChange={(o) => { if (!o) cmd.reset(); onOpenChange(o); }} busy={cmd.pending} beforeClose={beforeClose} size="lg"
-      title={issued ? "Đã cấp link tra cứu" : replace ? "Cấp lại link tra cứu" : "Cấp đường dẫn riêng cho phụ huynh"}
-      description={issued ? "Link và mã QR chỉ hiển thị đầy đủ ở bước này. Hãy trao tận tay người được cấp." : "Một link cho một học sinh, một người giám hộ đã xác minh, trong năm học hiện tại."}
-      footer={issued ? <>
-        <Link href={`/school/${schoolId}/parent-access/${issued.id}`} className="btn btn-ghost">Xem chi tiết quyền</Link>
-        <Button icon={<Printer className="size-4" />} onClick={() => student && ctxQ.data && print(<QrPrintCard url={url} studentName={student.fullName} className={student.className} relation={issued.relation} schoolName={ctxQ.data.schoolName} expiresAt={issued.expiresAt} />)}>In QR</Button>
-        <Button variant="primary" onClick={() => onOpenChange(false)}>Xong</Button>
-      </> : <>
-        <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={cmd.pending}>Hủy</Button>
-        <Button variant="primary" loading={cmd.pending} onClick={submit} disabled={!!rel && rel.verification !== "verified"}>{replace ? "Thu hồi link cũ và cấp link mới" : "Cấp link"}</Button>
-      </>}>
-      {node}
-      {issued ? (
-        <div className="space-y-4">
-          <Callout tone="success" icon={<CheckCircle2 />} title={`Link cấp cho ${issued.relation.toLowerCase()} của ${student?.fullName ?? ""}`}>Hiệu lực đến {fmtDate(issued.expiresAt)} · {issued.modules.length} mục được xem.{replace ? " Link cũ đã bị chặn ngay." : ""}</Callout>
-          <div className="grid gap-4 sm:grid-cols-[176px_minmax(0,1fr)] sm:items-center">
-            <div className="mx-auto rounded-xl border border-line bg-white p-3"><QrImage url={url} size={148} /></div>
-            <div className="min-w-0 space-y-3">
-              <LinkBox url={url} />
-              <a href={url} target="_blank" rel="noreferrer" className="card-link">Mở thử link demo <ExternalLink className="size-3.5" aria-hidden /></a>
-              <p className="text-[13px] text-muted">Mục được xem: {issued.modules.map((m) => parentModuleLabel[m]).join(", ")}.</p>
-            </div>
-          </div>
-          <Callout tone="warning" icon={<AlertTriangle />} title="Không đăng vào nhóm chung">Ai có link đều mở được trang tra cứu trong thời hạn. Chỉ gửi riêng cho người được cấp. Nếu lộ link, thu hồi và cấp lại. Đây là link demo, không phải thiết kế bảo mật cho bản chính thức.</Callout>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {banner}
-          <ErrorSummary errors={errs} labels={{ studentId: "Học sinh", relationshipId: "Người giám hộ", modules: "Mục được xem", expiresOn: "Hạn sử dụng", reason: "Lý do" }} />
-          {replace && <Callout tone="info" icon={<Info />}>Cấp lại sẽ <b>thu hồi link cũ</b> ({replace.label}) và tạo link mới. Link của người giám hộ khác không thay đổi.</Callout>}
-          {!fixedStudent && (
-            <div data-field="studentId">
-              {studentsQ.isLoading ? <Skeleton className="h-11" /> : (
-                <Combobox label="Học sinh" required value={studentId} onChange={(v) => { setStudentId(String(v)); setRelId(""); }} error={errs.studentId} placeholder="Tìm theo tên hoặc mã…"
-                  options={(studentsQ.data ?? []).map((s) => ({ value: s.id, label: `${s.fullName} (${s.code})`, hint: `Lớp ${s.className} · sinh ${fmtDate(s.dob)}` }))} />
-              )}
-            </div>
-          )}
-          {studentId && (candQ.isLoading ? <Skeleton className="h-24" /> : candQ.error ? <ErrorState error={candQ.error} onRetry={() => candQ.refetch()} compact /> : (
-            <fieldset data-field="relationshipId" className="field">
-              <legend className="label mb-1.5">Người giám hộ được cấp<span className="req" aria-hidden>*</span></legend>
-              {rels.length === 0 ? <p className="text-sm text-muted">Học sinh chưa có người giám hộ. Thêm và xác minh người giám hộ trước.</p> : (
-                <div className="space-y-2" role="radiogroup">
-                  {rels.map((r) => {
-                    const ok = r.verification === "verified";
-                    const locked = !!replace && r.id !== replace.relationshipId;
-                    return (
-                      <label key={r.id} className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 text-sm ${relId === r.id ? "border-[#9cc7f5] bg-primary-light" : "border-line"} ${ok && !locked ? "cursor-pointer" : "cursor-not-allowed opacity-70"}`}>
-                        <input type="radio" name="issue-rel" className="mt-1 size-4 accent-[var(--color-primary)]" checked={relId === r.id} disabled={!ok || locked} onChange={() => setRelId(r.id)} />
-                        <span className="min-w-0 flex-1">
-                          <span className="flex flex-wrap items-center gap-2"><b className="text-ink">{r.guardianName}</b><span className="text-muted">{r.relation}</span><StatusBadge status={r.verification} map={verificationStatus} /></span>
-                          <span className="block text-[12.5px] text-muted">{r.phoneMasked}{r.activeAccessIds.length ? ` · đang có ${r.activeAccessIds.length} link hoạt động` : ""}</span>
-                          {!ok && <span className="mt-0.5 block text-[12.5px] font-semibold text-warning-text">Cần xác minh trước khi cấp link</span>}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-              {errs.relationshipId && <p className="error-text mt-1">{errs.relationshipId}</p>}
-            </fieldset>
-          ))}
-          {candQ.data && candQ.data.student.status !== "studying" && <Callout tone="warning" icon={<AlertTriangle />}>Học sinh không còn theo học — không cấp link mới.</Callout>}
-          <fieldset data-field="modules" className="field">
-            <legend className="label mb-1.5">Mục phụ huynh được xem<span className="req" aria-hidden>*</span></legend>
-            <p className="helper mb-2">Mặc định theo chính sách chia sẻ của trường. Chỉ dữ liệu đã công bố mới hiển thị.</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {ALL_MODULES.map((m) => <Checkbox key={m} label={parentModuleLabel[m]} description={MODULE_HINT[m]} checked={modules.includes(m)} onChange={(v) => setModules(v ? [...modules, m] : modules.filter((x) => x !== m))} className="rounded-lg border border-line px-3 py-2" />)}
-            </div>
-            {errs.modules && <p className="error-text mt-1">{errs.modules}</p>}
-          </fieldset>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div data-field="expiresOn"><DateField label="Hạn sử dụng" required value={expires} onChange={setExpires} min={ctxQ.data?.tomorrow} max={ctxQ.data?.yearEnd} error={errs.expiresOn} helper={ctxQ.data ? `Tối đa hết năm học ${ctxQ.data.yearLabel} (${fmtDate(ctxQ.data.yearEnd)})` : undefined} /></div>
-            <div className="field"><span className="label">Năm học</span><p className="input flex items-center bg-neutral-bg">{ctxQ.data?.yearLabel ?? "—"}</p></div>
-          </div>
-          {replace && <div data-field="reason"><TextArea label="Lý do cấp lại" required rows={2} value={reason} onChange={(e) => setReason(e.target.value)} error={errs.reason} /></div>}
-        </div>
-      )}
-    </Modal>
-  );
-}
+export {IssueAccessDialog} from "./issue-access-dialog";
 
 /* ------------------------------ O14 — revoke a link ------------------------------ */
 export function RevokeAccessDialog({ target, onClose, schoolId }: { target: { accessId: string; label: string } | null; onClose: () => void; schoolId: string }) {

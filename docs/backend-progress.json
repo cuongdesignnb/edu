@@ -3588,6 +3588,50 @@
       "evidence": [
         "qa/backend/b6-student-picker-integration-full.log:156/156 PostgreSQL, exit0, zero skipped,36 migrations/checksum replay; enhanced selected1/1 covers current School/Class student.manage with independent per-class guardian flags, no catalog/roster lending and future/expired/revoked denial. Backend29/29 contract, frontend38 targeted/241 all-unit/type/lint exit0. SDK/UI remains unactivated; no new browser/build/B7 PASS."
       ]
+    },
+    {
+      "operationId": "getParentAccessIssueContext",
+      "screenIds": [
+        "O14"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-issue-integration-full-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "listParentAccessIssueStudents",
+      "screenIds": [
+        "O14"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-issue-integration-full-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "getStudentParentAccessIssueSource",
+      "screenIds": [
+        "O14"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-issue-integration-full-reviewed.log"
+      ]
+    },
+    {
+      "operationId": "issueReviewedParentAccess",
+      "screenIds": [
+        "O14"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-issue-integration-full-reviewed.log"
+      ]
     }
   ],
   "screens": [
@@ -4216,13 +4260,18 @@
         "listRelationships",
         "createRelationship",
         "issueParentAccess",
-        "getStudentDetails"
+        "getStudentDetails",
+        "getParentAccessIssueContext",
+        "listParentAccessIssueStudents",
+        "getStudentParentAccessIssueSource",
+        "issueReviewedParentAccess"
       ],
       "staticReason": "",
       "status": "IMPLEMENTED",
       "evidence": [
         "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
-        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run.",
+        "qa/backend/b6-parent-issue-checks.json"
       ],
       "apiStatus": "IMPLEMENTED"
     },
@@ -4288,13 +4337,18 @@
         "revokeRelationship",
         "getGuardianDetails",
         "getStudentGuardianForm",
-        "saveStudentGuardian"
+        "saveStudentGuardian",
+        "getParentAccessIssueContext",
+        "listParentAccessIssueStudents",
+        "getStudentParentAccessIssueSource",
+        "issueReviewedParentAccess"
       ],
       "staticReason": "",
       "status": "IMPLEMENTED",
       "evidence": [
         "Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.",
-        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run."
+        "Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run.",
+        "qa/backend/b6-parent-issue-checks.json"
       ],
       "apiStatus": "IMPLEMENTED"
     },
@@ -4303,7 +4357,11 @@
       "scope": "core",
       "operationIds": [
         "listParentAccess",
-        "issueParentAccess"
+        "issueParentAccess",
+        "getParentAccessIssueContext",
+        "listParentAccessIssueStudents",
+        "getStudentParentAccessIssueSource",
+        "issueReviewedParentAccess"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4317,7 +4375,11 @@
         "getParentAccess",
         "revokeParentAccess",
         "reissueParentAccess",
-        "listParentAccessEvents"
+        "listParentAccessEvents",
+        "getParentAccessIssueContext",
+        "listParentAccessIssueStudents",
+        "getStudentParentAccessIssueSource",
+        "issueReviewedParentAccess"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-issue-adapter.test.ts (8 tests) 30ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  12:29:48
+   Duration  657ms (transform 128ms, setup 92ms, collect 150ms, tests 30ms, environment 0ms, prepare 178ms)

@@ -1,0 +1,161 @@
+{
+  "phase": "B6 reviewed parent-link staff issuance; partial goal checkpoint",
+  "previousCommit": "cf499dac0e4a896a481ef9232eaaf33fed8fa21e",
+  "contract": {
+    "operations": 306,
+    "schemas": 415,
+    "newOperations": [
+      "getParentAccessIssueContext",
+      "listParentAccessIssueStudents",
+      "getStudentParentAccessIssueSource",
+      "issueReviewedParentAccess"
+    ],
+    "operationStatus": {
+      "TESTED": 294,
+      "IMPLEMENTED": 12
+    }
+  },
+  "postgresFull": {
+    "tests": 158,
+    "pass": 158,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 431871.759072,
+    "log": "b6-parent-issue-integration-full-reviewed.log",
+    "runnerImage": "sha256:2d7bbca5abab717ee79e023c49faaf3f0a214a9da7c40964ae7ec730257c0fb9",
+    "migrations": 36
+  },
+  "postgresFullInitial": {
+    "tests": 158,
+    "pass": 157,
+    "fail": 1,
+    "skipped": 0,
+    "durationMs": 385459.78501,
+    "log": "b6-parent-issue-integration-full.log",
+    "runnerImage": "sha256:0d53df9a8bda683a89dea8844f009f54286d685521255a69ae26c4742a722bca",
+    "failure": "route inventory assertion still expected302 instead of306; all157 other tests passed; corrected before the later full158 run"
+  },
+  "postgresTargetedInitial": {
+    "tests": 2,
+    "pass": 1,
+    "fail": 1,
+    "skipped": 0,
+    "durationMs": 2550.669686,
+    "log": "b6-parent-issue-integration-targeted-initial.log",
+    "runnerImage": "sha256:7cc4a344a8de76e2c7424d29d6d08172921ad2daab8cd08fab3c2077cf754df4",
+    "failure": "parent exchange fixture used staff CSRF; corrected to current public CSRF"
+  },
+  "postgresTargetedFinal": {
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 2731.465662,
+    "log": "b6-parent-issue-integration-targeted-final.log",
+    "runnerImage": "sha256:0d53df9a8bda683a89dea8844f009f54286d685521255a69ae26c4742a722bca"
+  },
+  "backendUnitsContracts": {
+    "tests": 30,
+    "pass": 30,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 424.7501,
+    "log": "b6-parent-issue-backend-unit-contract-reviewed.log"
+  },
+  "backendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-issue-backend-types-reviewed.log"
+  },
+  "backendLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "b6-parent-issue-backend-lint-reviewed.log"
+  },
+  "frontendUnits": {
+    "passed": 252,
+    "failed": 0,
+    "files": 28,
+    "durationSeconds": 11.94,
+    "apiCases": 211,
+    "historicalSyntheticRegressions": 41,
+    "log": "b6-parent-issue-frontend-unit-all.log"
+  },
+  "frontendTargeted": {
+    "passed": 8,
+    "failed": 0,
+    "durationSeconds": 0.657,
+    "log": "b6-parent-issue-frontend-unit-targeted-initial.log"
+  },
+  "frontendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-issue-frontend-types-reviewed.log",
+    "initialFailureLog": "b6-parent-issue-frontend-types-initial.log",
+    "initialFailure": "legacy unactivated access DTO has no native version and transfer improperly borrowed issue-purpose year bounds; removed borrowing, retained undefined/unavailable version as a command rejection"
+  },
+  "frontendBuild": {
+    "exitCode": 0,
+    "log": "b6-parent-issue-frontend-build-reviewed.log"
+  },
+  "frontendChangedLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "b6-parent-issue-frontend-lint-reviewed.log"
+  },
+  "browser": {
+    "startTime": "2026-10-01T05:37:09.146Z",
+    "duration": 49444.01,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "results": "b6-parent-issue-browser-results-final.json",
+    "log": "b6-parent-issue-browser-final.log",
+    "run": "b6-parent-issue-browser-run.json",
+    "ownedNextPid": 36848,
+    "ownedNextClosed": true,
+    "portFreeBefore": true,
+    "portFreeAfter": true,
+    "screenshotsViewed": [
+      "parent-link-issued",
+      "parent-link-issued-mobile"
+    ]
+  },
+  "browserFirstRun": {
+    "startTime": "2026-10-01T05:34:42.906Z",
+    "duration": 51928.091,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "results": "b6-parent-issue-initial-browser-results-final.json",
+    "purposeOfSecondRun": "capture final desktop/mobile screenshots after the transient success toast closes; source behavior unchanged; first39 passed"
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T12:38:38.3255850+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "inventory": {
+    "methodCount": 231,
+    "candidateCount": 105,
+    "activatedCandidateCount": 105,
+    "activatedLegacyMethodCount": 95
+  },
+  "coreSourceStatus": {
+    "IMPLEMENTED": 44,
+    "STATIC_UNVERIFIED": 3,
+    "NOT_STARTED": 71
+  },
+  "remaining": [
+    "136 unmatched legacy methods; native staff link directory/details/revoke, transfers/import/export and other classroom/conduct/schedule/activity/notification/report/search/parent facades",
+    "PostgreSQL browser E2E and complete118 core-screen acceptance",
+    "Root deploy/scripts merge and final local Docker service at127.0.0.1:18763",
+    "Actual release restart/persistence and physical backup/restore drills",
+    "SMTP/process/disk failure drills and release workload/CPU/RSS/pool benchmark",
+    "Production deployment waits for a designated server/domain"
+  ]
+}

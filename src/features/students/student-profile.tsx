@@ -47,7 +47,7 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
   const [guardianDlg, setGuardianDlg] = useState<{ existing: GuardianEditTarget | null } | null>(null);
   const [verify, setVerify] = useState<Parameters<typeof VerifyDialog>[0]["target"]>(null);
   const [transfer, setTransfer] = useState(false);
-  const [issue, setIssue] = useState<{ relationshipId?: string; replace?: { accessId: string; relationshipId: string; modules: ParentModule[]; label: string } | null } | null>(null);
+  const [issue, setIssue] = useState<{ relationshipId?: string; replace?: { accessId: string; version: number; relationshipId: string; modules: ParentModule[]; allowDownload?: boolean; label: string } | null } | null>(null);
   const [revoke, setRevoke] = useState<{ accessId: string; label: string } | null>(null);
   const [selId, setSelId] = useState<string | undefined>();
 
@@ -173,7 +173,8 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
           <Card>
             <CardHeader className="!flex-nowrap !items-start" title="Quyền xem của phụ huynh" icon={<Lock className="size-5" />} action={link ? <StatusBadge status={link.status} map={ACCESS_STATUS} /> : undefined}
               subtitle="Phụ huynh xem thông tin đã công bố qua đường link riêng, không cần đăng ký hay đăng nhập." />
-            {links === null ? <EmptyState compact icon={<Lock className="size-6" />} title="Không quản lý link tra cứu" description="Vai trò của bạn không bao gồm quyền cấp hoặc xem link tra cứu của học sinh này." /> : links.length === 0 ? (
+            {links === null ? <EmptyState compact icon={<Lock className="size-6" />} title="Không quản lý link tra cứu" description={d.perms.issueLinks?"Vai trò của bạn không được xem danh sách link đã cấp.":"Vai trò của bạn không bao gồm quyền cấp hoặc xem link tra cứu của học sinh này."}
+              action={d.perms.issueLinks&&studying?<Button variant="primary" size="sm" icon={<Link2 className="size-4"/>} onClick={()=>setIssue({})}>Cấp link mới</Button>:undefined}/> : links.length === 0 ? (
               <EmptyState compact icon={<Link2 className="size-6" />} title="Chưa cấp link tra cứu" description="Cấp link riêng cho từng người giám hộ đã xác minh."
                 action={d.perms.issueLinks && studying ? <Button variant="primary" size="sm" icon={<Link2 className="size-4" />} onClick={() => setIssue({})}>Cấp link mới</Button> : undefined} />
             ) : link && (
@@ -211,7 +212,7 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
           {d.perms.manageLinks && link && (
             <Card>
               <CardHeader title="Nội dung phụ huynh được xem" icon={<Eye className="size-5" />} subtitle={`Theo ${linkLabel(link).charAt(0).toLowerCase() + linkLabel(link).slice(1)}. Chỉ đọc — muốn đổi thì cấp lại link.`}
-                action={d.perms.issueLinks && link.status === "active" && studying ? <Button size="sm" variant="ghost" onClick={() => setIssue({ relationshipId: link.relationshipId, replace: { accessId: link.id, relationshipId: link.relationshipId, modules: link.modules, label: linkLabel(link) } })}>Cấp lại với mục khác</Button> : undefined} />
+                action={d.perms.issueLinks && link.status === "active" && studying ? <Button size="sm" variant="ghost" onClick={() => setIssue({ relationshipId: link.relationshipId, replace: { accessId: link.id, version: link.version, relationshipId: link.relationshipId, modules: link.modules, allowDownload: link.allowDownload, label: linkLabel(link) } })}>Cấp lại với mục khác</Button> : undefined} />
               <ul className="divide-y divide-line px-5 pb-3">
                 {ALL_MODULES.map((m) => {
                   const on = link.modules.includes(m);

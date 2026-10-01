@@ -371,6 +371,30 @@ spec.components.schemas.StudentCreateClassChoice=object({id:uuid,version:{type:'
 spec.components.schemas.StudentCreateOptions=object({today:studentDate,classes:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/StudentCreateClassChoice'}}});
 spec.components.schemas.StudentCreateOptionsResponse=object({data:{$ref:'#/components/schemas/StudentCreateOptions'},requestId:label});
 extendOperation('getStudent','getStudentCreateOptions','/schools/{schoolId}/student-create-options','student.manage','StudentCreateOptions',false,['SC17'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
+// Native parent-link issuance: purpose readers and frozen, version-reviewed commands.
+spec.components.schemas.Error.properties.resultId=uuid;
+spec.components.schemas.ParentIssueYear=object({id:uuid,version:versionPositive,name:label,startsOn:studentDate,endsOn:studentDate,lastDay:studentDate,suggestedExpiryOn:studentDate});
+spec.components.schemas.ParentIssueContext=object({schoolId:uuid,schoolVersion:versionPositive,schoolName:label,schoolSlug:label,timezone:label,today:studentDate,ttlDays:{type:'integer',minimum:1,maximum:90},
+ defaultSections:structuredClone(spec.components.schemas.ParentAccess.properties.allowedSections),year:nullableMatrixRef('ParentIssueYear')});
+spec.components.schemas.ParentIssueStudentChoice=object({id:uuid,version:versionPositive,fullName:label,studentCode:label,classId:uuid,className:label});
+spec.components.schemas.ParentIssueRelationship=object({id:uuid,version:versionPositive,guardianId:uuid,guardianVersion:versionPositive,guardianName:label,relationshipLabel:label,status:{type:'string',enum:['UNVERIFIED','VERIFIED','REVOKED']},isPrimary:{type:'boolean'},canReceiveInfo:{type:'boolean'},canIssue:{type:'boolean'},activeLinkIds:{type:'array',items:uuid}});
+spec.components.schemas.ParentIssueSource=object({context:{$ref:'#/components/schemas/ParentIssueContext'},student:object({id:uuid,version:versionPositive,fullName:label,studentCode:label,status:structuredClone(spec.components.schemas.Student.properties.status)}),
+ enrollment:object({id:uuid,version:versionPositive,inEffect:{type:'boolean'}}),class:object({id:uuid,version:versionPositive,name:label}),relationships:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentIssueRelationship'}}});
+spec.components.schemas.ParentIssueReview=object({schoolVersion:versionPositive,yearVersion:versionPositive,studentVersion:versionPositive,enrollmentId:uuid,enrollmentVersion:versionPositive,classVersion:versionPositive,relationshipVersion:versionPositive,guardianVersion:versionPositive});
+spec.components.schemas.ParentAccessReviewedCreate=object({studentId:uuid,yearId:uuid,relationshipId:uuid,reviewedSource:{$ref:'#/components/schemas/ParentIssueReview'},allowedSections:structuredClone(spec.components.schemas.ParentAccessCreate.properties.allowedSections),allowDownload:{type:'boolean'},expiresOn:studentDate,
+ replace:object({accessId:uuid,expectedVersion:versionPositive}),reason:{type:'string',minLength:3,maxLength:2000}},['studentId','yearId','relationshipId','reviewedSource','allowedSections','allowDownload','expiresOn']);
+for(const name of ['ParentIssueContext','ParentIssueSource'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+spec.components.schemas.ParentIssueStudentChoicePage=object({data:{type:'array',items:{$ref:'#/components/schemas/ParentIssueStudentChoice'}},page:{$ref:'#/components/schemas/PageInfo'},requestId:label});
+const parentIssueParams=[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}];
+extendOperation('getParentAccess','getParentAccessIssueContext','/schools/{schoolId}/parent-access/issue-context','parent_access.issue','ParentIssueContext',false,['SC18','SC22','SC23','SC24'],structuredClone(parentIssueParams));
+extendOperation('listParentAccess','listParentAccessIssueStudents','/schools/{schoolId}/parent-access/issue-students','parent_access.issue','ParentIssueStudentChoice',true,['SC18','SC22','SC23','SC24'],[...structuredClone(parentIssueParams),
+ {name:'q',in:'query',schema:{type:'string',maxLength:200}},{name:'sort',in:'query',schema:{type:'string',enum:['fullName','studentCode']}},{name:'dir',in:'query',schema:{type:'string',enum:['asc','desc']}},{name:'limit',in:'query',schema:{type:'integer',minimum:1,maximum:100}},{name:'cursor',in:'query',schema:{type:'string',maxLength:4000}}]);
+extendOperation('getParentAccess','getStudentParentAccessIssueSource','/schools/{schoolId}/students/{studentId}/parent-access-issue-source','parent_access.issue','ParentIssueSource',false,['SC18','SC22','SC23','SC24'],[...structuredClone(parentIssueParams),{name:'studentId',in:'path',required:true,schema:uuid}]);
+extendOperation('issueParentAccess','issueReviewedParentAccess','/schools/{schoolId}/parent-access/reviewed-issue','parent_access.issue','ParentAccessIssued',false,['SC18','SC22','SC23','SC24'],undefined,'ParentAccessReviewedCreate');
+for(const id of ['getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess']){
+ const generated=operations.find(op=>op.id===id),operation=spec.paths[generated.path.replace(/^\/api\/v1/,'')][generated.method.toLowerCase()];
+ operation.description=generated.description='Parent-link issuance under current school/class/time authority. Readers contain minimal pupil and recipient metadata, no contact details or bearer token; commands verify the reviewed source and rotate atomically.';
+}
 const studentHistoryProps={...structuredClone(spec.components.schemas.Enrollment.properties),className:label,yearName:label,yearStatus:structuredClone(spec.components.schemas.Year.properties.status),referenceDate:studentDate,homeroomName:nullableLabel};
 spec.components.schemas.StudentHistory=object(studentHistoryProps);
 spec.components.schemas.StudentSelectedEnrollment=object({...studentHistoryProps,inEffect:{type:'boolean'}});
