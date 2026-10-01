@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:43608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\class-roster-contract.spec.ts:26:5 › class roster preserves server filters stable ordinals historical rows and one displayed versioned transfer request (1.1s)
+  ok 2 tests\native-ui-contract\class-roster-contract.spec.ts:33:5 › subject roster hides family link transfer and unauthorized organization sources on a390px viewport (570ms)
+  ok 3 tests\native-ui-contract\class-roster-contract.spec.ts:36:5 › filtered roster outages and malformed private receipts remove pupil actions rather than showing the cached unfiltered list (955ms)
+  ok 4 tests\native-ui-contract\class-roster-contract.spec.ts:39:5 › transfer choice outages block submission and version conflicts retain the unsaved request fields (809ms)
+
+  4 passed (4.4s)

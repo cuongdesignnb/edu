@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-runner-run-4d825dc33a4d Creating 
+ Container edumanage_backend_test-runner-run-4d825dc33a4d Created 
+✔ B6 class roster returns exact dated pupils organization and SQL search without contacts and masks historical family facts (1053.957876ms)
+✔ B6 class roster separates subject pupil reads family link and organization authority and rechecks current revocation (405.563144ms)
+✔ B6 class roster transfer choices preserve dated displayed enrollment versions and submit one idempotent request without moving pupils (416.846756ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2677.873144
+EXIT_CODE=0

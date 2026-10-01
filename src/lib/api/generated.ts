@@ -75,7 +75,7 @@ export interface ApiSchemas {
   "VerifyRelationship": { "expectedVersion": number; "canReceiveInfo": boolean; "verificationNote": string; };
   "StudentDetail": { "student": ApiSchemas["Student"]; "enrollments": Array<ApiSchemas["Enrollment"]>; "relationships"?: Array<ApiSchemas["Relationship"]>; "guardians"?: Array<ApiSchemas["Guardian"]>; "internalNote"?: (string) | null; };
   "Transfer": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "fromEnrollmentId": (string) | null; "toClassId"?: string; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; };
-  "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; };
+  "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; "expectedEnrollmentVersion"?: number; };
   "ParentAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "yearId": (string) | null; "relationshipId": (string) | null; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt"?: (string) | null; "issuedToGuardianName"?: string; "revokeReason"?: (string) | null; };
   "ParentAccessCreate": { "studentId": string; "yearId": string; "relationshipId": string; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; };
   "ParentAccessIssued": { "access": ApiSchemas["ParentAccess"]; "link": string; "displayOnce": boolean; };
@@ -476,6 +476,11 @@ export interface ApiSchemas {
   "ClassDutyTaskRemove": { "source": { "scheduleId": string; "expectedVersion": number; "expectedDataVersion": number; "date": string; "task": string; "assignmentIds": Array<string>; "groupPlanId": (string) | null; }; "expectedPublicationId": (string) | null; };
   "ClassDutyTaskReceipt": { "sourceId": (string) | null; "status": "DRAFT" | "PUBLISHED" | "REMOVED"; };
   "ClassDutyTaskReceiptResponse": { "data": ApiSchemas["ClassDutyTaskReceipt"]; "requestId": string; };
+  "ClassRosterRow": { "id": string; "studentCode": string; "fullName": string; "gender": ("Nam" | "Nữ" | null) | null; "enrollmentId": string; "enrollmentVersion": number; "startsOn": string; "ordinal": number; "groupId": (string) | null; "groupName": (string) | null; "positions": Array<string>; "transferredIn": boolean; "currentEnrollment": boolean; "guardian": ({ "name": string; "relation": string; "verification": "UNVERIFIED" | "VERIFIED"; }) | null; "linkStatus": ("none" | "issued" | "opened" | "revoked" | null) | null; };
+  "ClassRosterWorkspace": { "schoolId": string; "yearId": string; "classId": string; "today": string; "referenceDate": string; "classVersion": number; "readOnly": boolean; "seeGuardians": boolean; "seeLinks": boolean; "canAdd": boolean; "canTransfer": boolean; "canGroups": boolean; "canSeating": boolean; "groups": Array<{ "id": string; "name": string; }>; "total": number; "rows": Array<ApiSchemas["ClassRosterRow"]>; "leftRecently": Array<{ "id": string; "enrollmentId": string; "fullName": string; "studentCode": string; "endsOn": string; "reason": (string) | null; }>; "linkSummary": ({ "total": number; "withLink": number; "opened": number; }) | null; "canReadGroups": boolean; };
+  "ClassRosterWorkspaceResponse": { "data": ApiSchemas["ClassRosterWorkspace"]; "requestId": string; };
+  "ClassTransferOptions": { "schoolId": string; "yearId": string; "classId": string; "today": string; "referenceDate": string; "startsOn": string; "endsOn": string; "students": Array<{ "id": string; "fullName": string; "studentCode": string; "enrollmentId": string; "enrollmentVersion": number; "startsOn": string; "endsOn": (string) | null; }>; "targets": Array<{ "id": string; "name": string; "size": number; "capacity": (number) | null; }>; };
+  "ClassTransferOptionsResponse": { "data": ApiSchemas["ClassTransferOptions"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3968,6 +3973,26 @@ export const apiOperations = {
     "list": false,
     "permission": "duty.manage",
     "readOnly": false
+  },
+  "getClassRosterWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/roster-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassRosterWorkspace",
+    "list": false,
+    "permission": "student.read",
+    "readOnly": true
+  },
+  "getClassTransferOptions": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/transfer-options",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassTransferOptions",
+    "list": false,
+    "permission": "student.transfer.request",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

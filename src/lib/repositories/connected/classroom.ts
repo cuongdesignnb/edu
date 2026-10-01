@@ -11,6 +11,7 @@ import {nativeClassOverview} from './classroom-overview';
 import {readGroupWorkspace,readSeatingWorkspace,moveClassGroup,changeClassPosition,saveClassSeating} from './classroom-organization';
 import {readDutyWorkspace,saveDutyTask,removeDutyTask} from './classroom-duties';
 import {mondayOf} from '../../calendar';
+import {readClassRoster,readTransferOptions,requestClassTransfer} from './classroom-roster';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -45,6 +46,8 @@ async function cards(schoolId:string,includeEnded=false){
   return rows.map(row=>nativeTeacherClass(row,schoolId)).sort((a,b)=>Number(b.live)-Number(a.live)||Number(b.duties.some(d=>d.live&&d.kind==='homeroom'))-Number(a.duties.some(d=>d.live&&d.kind==='homeroom'))||a.name.localeCompare(b.name,'vi')||a.id.localeCompare(b.id));
 }
 export const connectedClassroomRepo=withStaffAccess({
+  async roster(_ctx:Ctx,schoolId:string,yearId:string,classId:string,opts:Parameters<typeof readClassRoster>[3]={}){return readClassRoster(schoolId,yearId,classId,opts);},
+  async requestTransfer(_ctx:Ctx,schoolId:string,input:Parameters<typeof requestClassTransfer>[1]){return requestClassTransfer(schoolId,input);},
   async duties(_ctx:Ctx,schoolId:string,yearId:string,classId:string,weekStart?:string){return readDutyWorkspace(schoolId,yearId,classId,weekStart);},
   async dutyChoices(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate:string){return readDutyWorkspace(schoolId,yearId,classId,mondayOf(onDate),onDate);},
   async saveDuty(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof saveDutyTask>[2]){return saveDutyTask(schoolId,classId,input);},
@@ -61,5 +64,6 @@ export const connectedClassroomRepo=withStaffAccess({
   async teacherClasses(_ctx:Ctx,schoolId:string,includeEnded=false){return cards(schoolId,includeEnded);},
 });
 export const connectedTeacherExtraRepo=withStaffAccess({
+  async transferTargets(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate?:string){return readTransferOptions(schoolId,yearId,classId,onDate);},
   async myClassActions(_ctx:Ctx,schoolId:string):Promise<Record<string,string[]>>{return Object.fromEntries((await cards(schoolId)).map(c=>[c.id,c.actions]));},
 });

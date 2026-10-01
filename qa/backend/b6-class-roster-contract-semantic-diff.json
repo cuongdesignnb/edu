@@ -1,0 +1,22 @@
+{
+  "baseline": "851b90b27959225fdc3805a4d7e093a6d562bae9",
+  "existingOperationsUnchanged": 349,
+  "existingSchemasUnchanged": 475,
+  "changedSchemas": [
+    "TransferCreate"
+  ],
+  "change": "TransferCreate gains optional expectedEnrollmentVersion; canonical commands reject stale displayed source versions before a new request is inserted.",
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassRosterWorkspace",
+    "getClassTransferOptions"
+  ],
+  "addedSchemas": [
+    "ClassRosterRow",
+    "ClassRosterWorkspace",
+    "ClassRosterWorkspaceResponse",
+    "ClassTransferOptions",
+    "ClassTransferOptionsResponse"
+  ]
+}

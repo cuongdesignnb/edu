@@ -1,0 +1,63 @@
+ Container edumanage_backend_test-runner-run-b3bfc3c55734 Creating 
+ Container edumanage_backend_test-runner-run-b3bfc3c55734 Created 
+✔ staff preview context has a minimal context schema and independent school authority (10.293066ms)
+✔ class workspace header has exact year routing and explicitly permits absent independent period metadata (19.144543ms)
+✔ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (26.879481ms)
+✔ native organization seating save requires the displayed revision and rejects actor or scope authority in its body (4.806312ms)
+✔ class roster purposes retain exact year scope and transfer requests accept only an optional displayed enrollment version (2.885675ms)
+✔ native duty commands retain exact displayed source and publication versions without actor authority or silent group expansion (14.300804ms)
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (0.488091ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (10.613079ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (14.150922ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (14.371889ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (4.323631ms)
+✔ login rejects spoofed role, school and unknown fields (0.994717ms)
+✔ private user DTO rejects secrets and unknown properties (2.256742ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.179112ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (17.300837ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (5.380366ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (27.099056ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (3.39937ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (15.197509ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (3.745689ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (21.347343ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (13.993033ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (12.968395ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (24.792832ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (36.791321ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (14.003522ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (5.764617ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (1.175922ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (9.181913ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (2.625866ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (5.905516ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (4.406159ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (4.554241ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (17.560973ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (6.528244ms)
+✔ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (23.475588ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.809433ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.473814ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (22.612023ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.41983ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.400062ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.794384ms)
+✔ grant action and class scope stay together (0.942096ms)
+✔ subject grants never authorize management without explicit subject policy (0.160446ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.148383ms)
+✔ a custom class grant authorizes only its delegated action and class (0.139336ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.167399ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.619824ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.302356ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (1.798389ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (2.053153ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (131.510921ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 621.751661
+EXIT_CODE=0

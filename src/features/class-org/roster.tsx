@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ClipboardList, Plus, ArrowLeftRight, Eye, Users2, History, LayoutGrid, Pencil, Crown, UserRound } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
@@ -32,29 +32,27 @@ const PAGE = 10;
 
 /** CL02 — class roster (R06) with groups / positions and a seating preview. */
 export function ClassRoster() {
-  const { schoolId, yearId, classId, base, can, readOnly, header } = useClassroom();
+  const { schoolId, yearId, classId, base, readOnly, header } = useClassroom();
   const [q, setQ] = useState("");
   const [groupId, setGroupId] = useState("");
   const [link, setLink] = useState("");
   const [page, setPage] = useState(1);
-  const [groupFor, setGroupFor] = useState<Row | null>(null);
+  const [groupFor, setGroupFor] = useState<(Row & {classVersion:number}) | null>(null);
   const [transfer, setTransfer] = useState<{ open: boolean; preset: string | null }>({ open: false, preset: null });
-  const all = useRepo(["class-roster", classId], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId));
-  const list = useRepo(["class-roster", classId, q, groupId, link], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId, { q, groupId: groupId || undefined, linkStatus: link || undefined }));
-  const side = can("groups.manage") || can("seating.manage") || can("student.profile.view");
-  const indexOf = useMemo(() => new Map((all.data?.rows ?? []).map((r, i) => [r.id, i + 1])), [all.data]);
+  const list = useRepo(["class-roster", schoolId, yearId, classId, q, groupId, link], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId, { q, groupId: groupId || undefined, linkStatus: link || undefined }));
   const reset = () => { setQ(""); setGroupId(""); setLink(""); setPage(1); };
   const active = !!q || !!groupId || !!link;
 
   return (
-    <QueryState query={all} skeleton="none">
+    <QueryState query={list} skeleton="none">
       {(d) => {
-        const rows = list.data?.rows ?? d.rows;
+        const rows = d.rows;
+        const side=d.canReadGroups||d.canSeating;
         const pageCount = Math.max(1, Math.ceil(rows.length / PAGE));
         const cur = Math.min(page, pageCount);
         const pageRows = rows.slice((cur - 1) * PAGE, cur * PAGE);
         const columns: Column<Row>[] = [
-          { key: "no", header: "#", cell: (r) => <span className="tabular-nums text-muted">{indexOf.get(r.id)}</span>, className: "w-10" },
+          { key: "no", header: "#", cell: (r) => <span className="tabular-nums text-muted">{r.ordinal}</span>, className: "w-10" },
           { key: "name", header: "Học sinh", cell: (r) => (
             <Link href={`${base}/students/${r.id}`} className="flex min-w-0 items-center gap-2.5 hover:underline">
               <Avatar name={r.fullName} tone={r.avatarTone} size={34} />
@@ -64,11 +62,11 @@ export function ClassRoster() {
           { key: "group", header: "Tổ", cell: (r) => r.groupName ?? <span className="whitespace-nowrap text-warning-text">Chưa phân tổ</span>, className: "whitespace-nowrap" },
           { key: "pos", header: "Chức vụ", hideBelow: "sm", cell: (r) => r.positions.length ? <span className="flex flex-wrap gap-1">{r.positions.map((p) => <Badge key={p} tone={POS_TONE[p] ?? "info"} dot={false}>{p}</Badge>)}</span> : <span className="text-faint">—</span> },
           ...(d.seeGuardians ? [{ key: "guardian", header: "Người giám hộ", hideBelow: "md" as const, cell: (r: Row) => r.guardian ? <span className="block min-w-0"><span className="block truncate text-ink">{r.guardian.name}</span><span className="block text-[12px] text-muted">({r.guardian.relation}){r.guardian.verification !== "verified" ? " · chưa xác minh" : ""}</span></span> : <span className="text-warning-text">Chưa có</span> }] : []),
-          ...(d.seeLinks ? [{ key: "link", header: "Link tra cứu", cell: (r: Row) => { const s = LINK_STATUS[r.link ?? "none"]; return <Badge tone={s.tone} className="whitespace-nowrap">{s.label}</Badge>; } }] : []),
+          ...(d.seeLinks ? [{ key: "link", header: "Link tra cứu", cell: (r: Row) => { const s = r.link===undefined?undefined:LINK_STATUS[r.link]; return s?<Badge tone={s.tone} className="whitespace-nowrap">{s.label}</Badge>:<span className="text-muted">Không hiển thị</span>; } }] : []),
           { key: "act", header: <span className="sr-only">Thao tác</span>, className: "w-12", cell: (r) => (
             <ActionMenu label={`Thao tác cho ${r.fullName}`} items={[
               { label: "Xem hồ sơ", icon: <Eye />, href: `${base}/students/${r.id}` },
-              ...(d.canGroups && !readOnly ? [{ label: "Đổi tổ", icon: <Users2 />, onSelect: () => setGroupFor(r) }] : []),
+              ...(d.canGroups && !readOnly ? [{ label: "Đổi tổ", icon: <Users2 />, onSelect: () => setGroupFor({...r,classVersion:d.classVersion}) }] : []),
               ...(d.canTransfer && !readOnly ? [{ label: "Đề nghị chuyển lớp", icon: <ArrowLeftRight />, onSelect: () => setTransfer({ open: true, preset: r.id }), hint: "Nhà trường duyệt, lịch sử được giữ" }] : []),
             ]} />
           ) },
@@ -77,7 +75,7 @@ export function ClassRoster() {
           <div className={side ? "grid gap-5 xl:grid-cols-[minmax(0,1fr)_336px]" : ""}>
             <div className="min-w-0 space-y-5">
               <Card>
-                <CardHeader title={`Danh sách học sinh (${d.rows.length})`} icon={<ClipboardList className="size-5 text-primary" />}
+                <CardHeader title={`Danh sách học sinh (${d.total})`} icon={<ClipboardList className="size-5 text-primary" />}
                   action={!readOnly && <>
                     {d.canAdd && <ButtonLink href={`/school/${schoolId}/students/new?classId=${classId}`} size="sm" variant="primary" icon={<Plus className="size-4" />}>Thêm học sinh</ButtonLink>}
                     {d.canTransfer && <Button size="sm" icon={<ArrowLeftRight className="size-4" />} onClick={() => setTransfer({ open: true, preset: null })}>Chuyển lớp</Button>}
@@ -87,17 +85,17 @@ export function ClassRoster() {
                   {d.seeLinks && <InlineSelect label="Trạng thái link" value={link} onChange={(v) => { setLink(v); setPage(1); }} allLabel="Tất cả trạng thái link" options={Object.entries(LINK_STATUS).map(([value, s]) => ({ value, label: s.label }))} />}
                 </FilterBar>
                 {!d.seeGuardians && <p className="mx-4 mb-3 rounded-lg bg-neutral-bg px-3 py-2 text-[12.5px] text-neutral-text">Bạn xem danh sách theo phạm vi giáo viên bộ môn: không hiển thị người giám hộ và link tra cứu.</p>}
-                {d.rows.length === 0 ? <EmptyState title="Lớp chưa có học sinh" description={d.canAdd ? "Thêm học sinh hoặc nhập danh sách từ tệp ở phần Học sinh của nhà trường." : "Nhà trường chưa xếp học sinh vào lớp này."} />
+                {d.total === 0 ? <EmptyState title="Lớp chưa có học sinh" description={d.canAdd ? "Thêm học sinh hoặc nhập danh sách từ tệp ở phần Học sinh của nhà trường." : "Nhà trường chưa xếp học sinh vào lớp này."} />
                   : <>
                     <div className="hidden sm:block [&_td]:!px-2.5 [&_th]:!px-2.5 [&_td]:text-[13.5px]"><DataTable rows={pageRows} columns={columns} rowKey={(r) => r.id} caption={`Học sinh lớp ${header.class.name}`} minWidth={d.seeGuardians ? 680 : 520} dense empty={<EmptyFiltered onReset={reset} what="học sinh" />} /></div>
                     {/* Phones: one card per student instead of a horizontally scrolling table. */}
                     {pageRows.length === 0 ? <div className="sm:hidden"><EmptyFiltered onReset={reset} what="học sinh" /></div> : (
                       <ul className="divide-y divide-line border-t border-line sm:hidden" aria-label={`Học sinh lớp ${header.class.name}`}>
                         {pageRows.map((r) => {
-                          const ls = LINK_STATUS[r.link ?? "none"];
+                          const ls = r.link===undefined?undefined:LINK_STATUS[r.link];
                           return (
                             <li key={r.id} className="flex items-start gap-3 px-4 py-3">
-                              <span className="w-6 pt-2 text-right text-[12px] tabular-nums text-muted">{indexOf.get(r.id)}</span>
+                              <span className="w-6 pt-2 text-right text-[12px] tabular-nums text-muted">{r.ordinal}</span>
                               <Link href={`${base}/students/${r.id}`} className="flex-none"><Avatar name={r.fullName} tone={r.avatarTone} size={36} /></Link>
                               <div className="min-w-0 flex-1">
                                 <Link href={`${base}/students/${r.id}`} className="block truncate font-semibold text-ink hover:underline">{r.fullName}</Link>
@@ -105,7 +103,7 @@ export function ClassRoster() {
                                 {(r.positions.length > 0 || d.seeLinks) && (
                                   <p className="mt-1.5 flex flex-wrap gap-1">
                                     {r.positions.map((p) => <Badge key={p} tone={POS_TONE[p] ?? "info"} dot={false}>{p}</Badge>)}
-                                    {d.seeLinks && <Badge tone={ls.tone}>{ls.label}</Badge>}
+                                    {d.seeLinks && (ls?<Badge tone={ls.tone}>{ls.label}</Badge>:<span className="text-muted">Link: không hiển thị</span>)}
                                   </p>
                                 )}
                                 {d.seeGuardians && <p className="mt-1 truncate text-[12px] text-muted">{r.guardian ? `${r.guardian.name} (${r.guardian.relation})${r.guardian.verification !== "verified" ? " · chưa xác minh" : ""}` : <span className="text-warning-text">Chưa có người giám hộ</span>}</p>}
@@ -124,7 +122,7 @@ export function ClassRoster() {
                 {d.leftRecently.length === 0 ? <p className="px-5 pb-5 text-sm text-muted">Chưa có học sinh rời lớp trong năm học này.</p> : (
                   <ul className="divide-y divide-line px-5 pb-3">
                     {d.leftRecently.map((s) => (
-                      <li key={s.id} className="flex flex-wrap items-center gap-3 py-2.5 text-sm">
+                      <li key={s.enrollmentId} className="flex flex-wrap items-center gap-3 py-2.5 text-sm">
                         <span className="min-w-[200px] flex-1"><span className="block font-semibold text-ink">{s.fullName} <span className="font-normal text-muted">· {s.code}</span></span><span className="block text-muted">Rời lớp {fmtDate(s.endDate)}{s.reason ? ` — ${s.reason}` : ""}</span></span>
                         <Link href={`${base}/students/${s.id}`} className="font-semibold text-primary-strong hover:underline">Xem lịch sử</Link>
                       </li>
@@ -135,11 +133,11 @@ export function ClassRoster() {
             </div>
             {side && (
               <div className="min-w-0 space-y-5">
-                <SeatingPreview />
-                <GroupsSummary />
+                {d.canSeating&&<SeatingPreview />}
+                {d.canReadGroups&&<GroupsSummary />}
               </div>
             )}
-            <ChangeGroupDialog open={!!groupFor} onOpenChange={(o) => { if (!o) setGroupFor(null); }} schoolId={schoolId} yearId={yearId} classId={classId} expectedClassVersion={header.class.version} student={groupFor} groups={d.groups} />
+            <ChangeGroupDialog open={!!groupFor} onOpenChange={(o) => { if (!o) setGroupFor(null); }} schoolId={schoolId} yearId={yearId} classId={classId} expectedClassVersion={groupFor?.classVersion??d.classVersion} student={groupFor} groups={d.groups} />
             <TransferDialog open={transfer.open} onOpenChange={(o) => setTransfer((t) => ({ ...t, open: o }))} schoolId={schoolId} yearId={yearId} classId={classId} preset={transfer.preset} students={d.rows} />
           </div>
         );
@@ -171,7 +169,7 @@ function SeatingPreview() {
 
 function GroupsSummary() {
   const { schoolId, yearId, classId, base, can, readOnly } = useClassroom();
-  const q = useRepo(["class-groups", classId], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId));
+  const q = useRepo(["class-groups", schoolId, yearId, classId], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId));
   const TONES = ["bg-[#fff4e0] text-[#9a5700]", "bg-[#f1ecff] text-[#5b3cc4]", "bg-[#e6f7f0] text-[#05744f]", "bg-[#e8f3ff] text-[#0659c2]"];
   return (
     <Card>

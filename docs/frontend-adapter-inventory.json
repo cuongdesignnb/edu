@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 142,
-  "activatedCandidateCount": 142,
-  "activatedLegacyMethodCount": 126,
+  "candidateCount": 145,
+  "activatedCandidateCount": 145,
+  "activatedLegacyMethodCount": 128,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -536,7 +536,17 @@
         "opts: { q?: string; groupId?: string; linkStatus?: string } = {}"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "classroomRepo",
+        "method": "roster",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "classroomRepo",
@@ -4288,7 +4298,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "teacherExtraRepo",
+        "method": "transferTargets",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "teacherExtraRepo",
@@ -4329,6 +4349,16 @@
     }
   ],
   "extensions": [
+    {
+      "repository": "classroomRepo",
+      "method": "requestTransfer",
+      "file": "src/lib/repositories/connected/classroom.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
     {
       "repository": "classroomRepo",
       "method": "dutyChoices",

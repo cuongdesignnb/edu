@@ -1,0 +1,256 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts",
+      "tests/native-ui-contract/class-roster-contract.spec.ts"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-class-roster-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-class-roster-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "class-roster-contract.spec.ts",
+      "file": "class-roster-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "class roster preserves server filters stable ordinals historical rows and one displayed versioned transfer request",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 45252,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 45000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\class-roster-contract.spec.ts",
+                        "column": 215,
+                        "line": 29
+                      },
+                      "message": "Error: locator.click: Test timeout of 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Xóa bộ lọc' })\u001b[22m\n\n\n  27 |  const s=state();await open(page,s);await expect(page.getByText('Giám hộ roster riêng API',{exact:true}).first()).toBeVisible();await expect(page.getByText('Học sinh đã rời roster API',{exact:false})).toBeVisible();\n  28 |  await page.getByLabel('Lọc theo tổ').selectOption('none');await expect(page.getByText('Bạn thứ hai roster API',{exact:true}).first()).toBeVisible();await expect(page.getByText('Học sinh roster API',{exact:true})).toHaveCount(0);await page.getByLabel('Lọc theo tổ').selectOption('');\n> 29 |  await page.getByPlaceholder('Tìm học sinh theo họ tên, mã…').fill('ROSTER001');await expect(page.getByText('Bạn thứ hai roster API',{exact:true})).toHaveCount(0);await page.getByRole('button',{name:'Xóa bộ lọc'}).click();\n     |                                                                                                                                                                                                                       ^\n  30 |  await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});await page.getByRole('button',{name:'Chuyển lớp',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('Học sinh',{exact:false}).selectOption(studentId);await dialog.getByLabel('Lớp đích (cùng năm học)').selectOption(targetId);await dialog.getByLabel('Lý do').fill('Đề nghị roster giữ lịch sử');await expect(dialog.getByRole('button',{name:'Gửi đề nghị'})).toBeEnabled();await dialog.getByRole('button',{name:'Gửi đề nghị'}).click();await expect(dialog).toHaveCount(0);\n  31 |  const posts=s.requests.filter(r=>r.method==='POST');expect(posts).toHaveLength(1);expect(posts[0].body).toEqual({studentId,fromEnrollmentId:enrollmentId,expectedEnrollmentVersion:5,toClassId:targetId,effectiveOn:'2026-10-01',reason:'Đề nghị roster giữ lịch sử'});expect(posts[0].key).toBeTruthy();await expect(page.getByRole('heading',{name:'Danh sách học sinh (2)'})).toBeVisible();expect(s.unexpected).toEqual([]);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);\n  32 | });\n    at D:\\Edu\\tests\\native-ui-contract\\class-roster-contract.spec.ts:29:215"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T15:50:05.900Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-roster-browser-artifacts-final\\class-roster-contract-clas-a631f--versioned-transfer-request\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-roster-browser-artifacts-final\\class-roster-contract-clas-a631f--versioned-transfer-request\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-roster-browser-artifacts-final\\class-roster-contract-clas-a631f--versioned-transfer-request\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8955eed2d3c3ab23c6d4-86a44e1c43271a73929d",
+          "file": "class-roster-contract.spec.ts",
+          "line": 26,
+          "column": 5
+        },
+        {
+          "title": "subject roster hides family link transfer and unauthorized organization sources on a390px viewport",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 634,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T15:50:52.009Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8955eed2d3c3ab23c6d4-9ddc3e91aa120e684adf",
+          "file": "class-roster-contract.spec.ts",
+          "line": 33,
+          "column": 5
+        },
+        {
+          "title": "filtered roster outages and malformed private receipts remove pupil actions rather than showing the cached unfiltered list",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 912,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T15:50:52.863Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8955eed2d3c3ab23c6d4-d7d611c0a61a00d176bd",
+          "file": "class-roster-contract.spec.ts",
+          "line": 36,
+          "column": 5
+        },
+        {
+          "title": "transfer choice outages block submission and version conflicts retain the unsaved request fields",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 781,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T15:50:53.784Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8955eed2d3c3ab23c6d4-2c34f700e307987afc4d",
+          "file": "class-roster-contract.spec.ts",
+          "line": 39,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-01T15:50:05.460Z",
+    "duration": 49341.983,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,35 @@
+ Container edumanage_backend_test-runner-run-5586d3041942 Creating 
+ Container edumanage_backend_test-runner-run-5586d3041942 Created 
+✔ B6 class roster returns exact dated pupils organization and SQL search without contacts and masks historical family facts (1195.128379ms)
+✖ B6 class roster separates subject pupil reads family link and organization authority and rechecks current revocation (371.026913ms)
+✔ B6 class roster transfer choices preserve dated displayed enrollment versions and submit one idempotent request without moving pupils (424.38478ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2832.949132
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1238:1
+✖ B6 class roster separates subject pupil reads family link and organization authority and rechecks current revocation (371.026913ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  404 !== 403
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1242:104)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 403,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

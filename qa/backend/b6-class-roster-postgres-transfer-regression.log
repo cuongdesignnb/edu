@@ -1,0 +1,14 @@
+time="2026-10-01T22:49:41+07:00" level=warning msg="Found orphan containers ([edumanage_backend_test-runner-run-23b9723aa262]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container edumanage_backend_test-runner-run-f64b5d00980f Creating 
+ Container edumanage_backend_test-runner-run-f64b5d00980f Created 
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (2382.644386ms)
+✔ B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically (491.517547ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3674.950034
+EXIT_CODE=0

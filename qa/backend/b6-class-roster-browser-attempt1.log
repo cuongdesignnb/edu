@@ -1,0 +1,48 @@
+
+Running 4 tests using 1 worker
+
+(node:20568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 tests\native-ui-contract\class-roster-contract.spec.ts:26:5 › class roster preserves server filters stable ordinals historical rows and one displayed versioned transfer request (45.3s)
+(node:47944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 tests\native-ui-contract\class-roster-contract.spec.ts:33:5 › subject roster hides family link transfer and unauthorized organization sources on a390px viewport (634ms)
+  ok 3 tests\native-ui-contract\class-roster-contract.spec.ts:36:5 › filtered roster outages and malformed private receipts remove pupil actions rather than showing the cached unfiltered list (912ms)
+  ok 4 tests\native-ui-contract\class-roster-contract.spec.ts:39:5 › transfer choice outages block submission and version conflicts retain the unsaved request fields (781ms)
+
+
+  1) tests\native-ui-contract\class-roster-contract.spec.ts:26:5 › class roster preserves server filters stable ordinals historical rows and one displayed versioned transfer request 
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.click: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Xóa bộ lọc' })
+
+
+      27 |  const s=state();await open(page,s);await expect(page.getByText('Giám hộ roster riêng API',{exact:true}).first()).toBeVisible();await expect(page.getByText('Học sinh đã rời roster API',{exact:false})).toBeVisible();
+      28 |  await page.getByLabel('Lọc theo tổ').selectOption('none');await expect(page.getByText('Bạn thứ hai roster API',{exact:true}).first()).toBeVisible();await expect(page.getByText('Học sinh roster API',{exact:true})).toHaveCount(0);await page.getByLabel('Lọc theo tổ').selectOption('');
+    > 29 |  await page.getByPlaceholder('Tìm học sinh theo họ tên, mã…').fill('ROSTER001');await expect(page.getByText('Bạn thứ hai roster API',{exact:true})).toHaveCount(0);await page.getByRole('button',{name:'Xóa bộ lọc'}).click();
+         |                                                                                                                                                                                                                       ^
+      30 |  await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});await page.getByRole('button',{name:'Chuyển lớp',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('Học sinh',{exact:false}).selectOption(studentId);await dialog.getByLabel('Lớp đích (cùng năm học)').selectOption(targetId);await dialog.getByLabel('Lý do').fill('Đề nghị roster giữ lịch sử');await expect(dialog.getByRole('button',{name:'Gửi đề nghị'})).toBeEnabled();await dialog.getByRole('button',{name:'Gửi đề nghị'}).click();await expect(dialog).toHaveCount(0);
+      31 |  const posts=s.requests.filter(r=>r.method==='POST');expect(posts).toHaveLength(1);expect(posts[0].body).toEqual({studentId,fromEnrollmentId:enrollmentId,expectedEnrollmentVersion:5,toClassId:targetId,effectiveOn:'2026-10-01',reason:'Đề nghị roster giữ lịch sử'});expect(posts[0].key).toBeTruthy();await expect(page.getByRole('heading',{name:'Danh sách học sinh (2)'})).toBeVisible();expect(s.unexpected).toEqual([]);expect(s.requests.some(r=>r.path===root+'/students')).toBe(false);
+      32 | });
+        at D:\Edu\tests\native-ui-contract\class-roster-contract.spec.ts:29:215
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-class-roster-browser-artifacts-final\class-roster-contract-clas-a631f--versioned-transfer-request\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-class-roster-browser-artifacts-final\class-roster-contract-clas-a631f--versioned-transfer-request\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-class-roster-browser-artifacts-final\class-roster-contract-clas-a631f--versioned-transfer-request\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-class-roster-browser-artifacts-final\class-roster-contract-clas-a631f--versioned-transfer-request\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\class-roster-contract.spec.ts:26:5 › class roster preserves server filters stable ordinals historical rows and one displayed versioned transfer request 
+  3 passed (49.3s)

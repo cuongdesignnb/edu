@@ -1,0 +1,142 @@
+{
+  "checkpoint": "B6 CL02 class roster and transfer requests; goal remains active",
+  "baseline": "851b90b27959225fdc3805a4d7e093a6d562bae9",
+  "recordedAt": "2026-10-01T15:53:40.400499+00:00",
+  "contract": {
+    "operations": 351,
+    "schemas": 481,
+    "semanticDiff": {
+      "baseline": "851b90b27959225fdc3805a4d7e093a6d562bae9",
+      "existingOperationsUnchanged": 349,
+      "existingSchemasUnchanged": 475,
+      "changedSchemas": [
+        "TransferCreate"
+      ],
+      "change": "TransferCreate gains optional expectedEnrollmentVersion; canonical commands reject stale displayed source versions before a new request is inserted.",
+      "permissionsUnchanged": true,
+      "rolesUnchanged": true,
+      "addedOperations": [
+        "getClassRosterWorkspace",
+        "getClassTransferOptions"
+      ],
+      "addedSchemas": [
+        "ClassRosterRow",
+        "ClassRosterWorkspace",
+        "ClassRosterWorkspaceResponse",
+        "ClassTransferOptions",
+        "ClassTransferOptionsResponse"
+      ]
+    }
+  },
+  "migrations": {
+    "total": 47,
+    "newMigration": false,
+    "currentReplay": "NOT_RERUN",
+    "previousReplay": "b6-class-duties-migration-replay.log"
+  },
+  "postgres": {
+    "passed": 3,
+    "durationMs": 2677.873144,
+    "log": "b6-class-roster-postgres-accepted.log",
+    "transferRegressions": {
+      "passed": 2,
+      "durationMs": 3674.950034,
+      "log": "b6-class-roster-postgres-transfer-regression.log"
+    },
+    "runnerImage": "sha256:31751616d22fb91c0a48357f1a96419587846e9d538deac004d64015f9270336",
+    "fullCurrentRegression": "NOT_RERUN"
+  },
+  "backendUnitContracts": {
+    "passed": 52,
+    "durationMs": 580.968118,
+    "log": "b6-class-roster-backend-unit-contract-accepted.log"
+  },
+  "frontendUnit": {
+    "passed": 394,
+    "files": 47,
+    "durationSeconds": 10.05,
+    "apiTests": 353,
+    "historicalSyntheticTests": 41,
+    "log": "b6-class-roster-frontend-unit-final.log"
+  },
+  "frontendBuild": {
+    "exitCode": 0,
+    "log": "b6-class-roster-frontend-build-final.log"
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "stats": {
+      "startTime": "2026-10-01T15:51:44.932Z",
+      "duration": 4431.412,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "run": {
+      "prefix": "b6-class-roster",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T15:51:43.959Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "selectedFiles": [
+        "tests/native-ui-contract/class-roster-contract.spec.ts"
+      ],
+      "portFreeBefore": true,
+      "ownedNextPid": 47476,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T15:51:49.401Z",
+      "exitCode": 0
+    },
+    "screenshotsInspected": [
+      "b6-class-roster-desktop.png",
+      "b6-class-roster-mobile.png"
+    ],
+    "postgresE2E": "NOT_RUN"
+  },
+  "preservedFailures": [
+    "b6-class-roster-postgres-selected.log: 0/3, nullable enum response errors and incorrect capacity expectation",
+    "b6-class-roster-postgres-current.log: 2/3, expected403 versus actual native concealment404",
+    "b6-class-roster-browser-results-attempt1.json: 3/4, selector used Xóa bộ lọc while the actual toolbar button says Xóa lọc"
+  ],
+  "facade": {
+    "activatedCandidates": 145,
+    "activatedLegacyMethods": 128,
+    "totalLegacyMethods": 231,
+    "pendingLegacyMethods": 103
+  },
+  "operationStatuses": {
+    "IMPLEMENTED": 12,
+    "TESTED": 339
+  },
+  "coreSourceStatuses": {
+    "IMPLEMENTED": 67,
+    "NOT_STARTED": 48,
+    "STATIC_UNVERIFIED": 3
+  },
+  "coreTotal": 118,
+  "listenerAfter": {
+    "listeners": [],
+    "listenerCount": 0,
+    "checkedAt": "2026-10-01T15:52:13.2177893+00:00"
+  },
+  "releaseUrl": "http://127.0.0.1:18763",
+  "releaseServing": false,
+  "goalStatus": "ACTIVE",
+  "remaining": [
+    "103 legacy facade methods",
+    "48 core NOT_STARTED; 3 STATIC_UNVERIFIED; no whole-screen PostgreSQL E2E accepted",
+    "12 implemented operations lack accepted checks",
+    "full current PostgreSQL regression and PostgreSQL browser E2E",
+    "root deploy/scripts merge and Docker local release",
+    "restart persistence, physical backup/restore, failure drills and release workload performance",
+    "production deployment not authorized"
+  ]
+}

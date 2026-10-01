@@ -36195,6 +36195,226 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/roster-workspace:
+    get:
+      operationId: getClassRosterWorkspace
+      tags:
+        - Classroom
+      summary: getClassRosterWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: student.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL02
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: q
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: groupId
+          in: query
+          schema:
+            type: string
+            pattern: ^(none|[0-9a-fA-F-]{36})$
+        - name: linkStatus
+          in: query
+          schema:
+            type: string
+            enum:
+              - none
+              - issued
+              - opened
+              - revoked
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassRosterWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/transfer-options:
+    get:
+      operationId: getClassTransferOptions
+      tags:
+        - Classroom
+      summary: getClassTransferOptions
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: student.transfer.request
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL02
+        - CL03
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassTransferOptionsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -39159,6 +39379,9 @@ components:
         reason:
           type: string
           maxLength: 4000
+        expectedEnrollmentVersion:
+          type: integer
+          minimum: 1
       required:
         - studentId
         - fromEnrollmentId
@@ -52325,6 +52548,340 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ClassDutyTaskReceipt"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassRosterRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        studentCode:
+          type: string
+        fullName:
+          type: string
+        gender:
+          type: string
+          enum:
+            - Nam
+            - Nữ
+            - null
+          nullable: true
+        enrollmentId:
+          type: string
+          format: uuid
+        enrollmentVersion:
+          type: integer
+          minimum: 1
+        startsOn:
+          type: string
+          format: date
+        ordinal:
+          type: integer
+          minimum: 1
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+        groupName:
+          type: string
+          nullable: true
+        positions:
+          type: array
+          maxItems: 500
+          items:
+            type: string
+        transferredIn:
+          type: boolean
+        currentEnrollment:
+          type: boolean
+        guardian:
+          type: object
+          properties:
+            name:
+              type: string
+            relation:
+              type: string
+            verification:
+              type: string
+              enum:
+                - UNVERIFIED
+                - VERIFIED
+          required:
+            - name
+            - relation
+            - verification
+          additionalProperties: false
+          nullable: true
+        linkStatus:
+          type: string
+          enum:
+            - none
+            - issued
+            - opened
+            - revoked
+            - null
+          nullable: true
+      required:
+        - id
+        - studentCode
+        - fullName
+        - gender
+        - enrollmentId
+        - enrollmentVersion
+        - startsOn
+        - ordinal
+        - groupId
+        - groupName
+        - positions
+        - transferredIn
+        - currentEnrollment
+        - guardian
+        - linkStatus
+      additionalProperties: false
+    ClassRosterWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        referenceDate:
+          type: string
+          format: date
+        classVersion:
+          type: integer
+          minimum: 1
+        readOnly:
+          type: boolean
+        seeGuardians:
+          type: boolean
+        seeLinks:
+          type: boolean
+        canAdd:
+          type: boolean
+        canTransfer:
+          type: boolean
+        canGroups:
+          type: boolean
+        canSeating:
+          type: boolean
+        groups:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+        total:
+          type: integer
+          minimum: 0
+        rows:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/ClassRosterRow"
+        leftRecently:
+          type: array
+          maxItems: 2000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              enrollmentId:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+              studentCode:
+                type: string
+              endsOn:
+                type: string
+                format: date
+              reason:
+                type: string
+                nullable: true
+            required:
+              - id
+              - enrollmentId
+              - fullName
+              - studentCode
+              - endsOn
+              - reason
+            additionalProperties: false
+        linkSummary:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            withLink:
+              type: integer
+              minimum: 0
+            opened:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - withLink
+            - opened
+          additionalProperties: false
+          nullable: true
+        canReadGroups:
+          type: boolean
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - referenceDate
+        - classVersion
+        - readOnly
+        - seeGuardians
+        - seeLinks
+        - canAdd
+        - canTransfer
+        - canGroups
+        - canSeating
+        - groups
+        - total
+        - rows
+        - leftRecently
+        - linkSummary
+        - canReadGroups
+      additionalProperties: false
+    ClassRosterWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassRosterWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassTransferOptions:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        referenceDate:
+          type: string
+          format: date
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+        students:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+              studentCode:
+                type: string
+              enrollmentId:
+                type: string
+                format: uuid
+              enrollmentVersion:
+                type: integer
+                minimum: 1
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+                nullable: true
+            required:
+              - id
+              - fullName
+              - studentCode
+              - enrollmentId
+              - enrollmentVersion
+              - startsOn
+              - endsOn
+            additionalProperties: false
+        targets:
+          type: array
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              size:
+                type: integer
+                minimum: 0
+              capacity:
+                type: integer
+                minimum: 1
+                nullable: true
+            required:
+              - id
+              - name
+              - size
+              - capacity
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - referenceDate
+        - startsOn
+        - endsOn
+        - students
+        - targets
+      additionalProperties: false
+    ClassTransferOptionsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassTransferOptions"
         requestId:
           type: string
       required:

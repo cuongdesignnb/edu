@@ -1,0 +1,22 @@
+{
+  "prefix": "b6-class-roster",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T15:50:04.484Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/class-roster-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 8780,
+  "playwrightExitCode": 1,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T15:50:54.835Z",
+  "exitCode": 1
+}

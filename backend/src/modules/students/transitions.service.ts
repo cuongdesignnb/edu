@@ -67,6 +67,7 @@ export class TransitionsService {
       if(op==='createTransfer'){
         if(String(c.body.reason).trim().length<3)validation('reason','Cần lý do chuyển lớp');
         const from=await getResource(tx,resource('enrollment'),schoolId,String(c.body.fromEnrollmentId),true);
+        if(c.body.expectedEnrollmentVersion!==undefined)this.version(from,c.body.expectedEnrollmentVersion);
         await this.validateTransfer(tx,schoolId,from,c.body.studentId,c.body.toClassId,String(c.body.effectiveOn));
         const row=await one<Row>(tx,`INSERT INTO app.transfer_requests(school_id,student_id,from_enrollment_id,to_class_id,effective_on,reason,status,requested_by)
           VALUES($1,$2,$3,$4,$5,$6,'SUBMITTED',$7) RETURNING *`,[schoolId,c.body.studentId,from.id,c.body.toClassId??null,c.body.effectiveOn,c.body.reason,c.principal!.userId]);
