@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { FileText, Award, Download, ChevronRight, Info } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ import { useFileViewer, useSafeDownload } from "./file-viewer";
 
 /** PA13 — files shared with this student/class + published reports (links to PA05). */
 export function ParentDocumentsView() {
-  useParentView("documents");
   const href = useHref();
   const viewer = useFileViewer();
   const download = useSafeDownload();

@@ -1,0 +1,230 @@
+﻿
+Running 53 tests using 1 worker
+
+(node:4636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\auth-contract.spec.ts:35:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › ignores a persisted demo persona and requires actual API authentication (706ms)
+  ok  2 tests\native-ui-contract\auth-contract.spec.ts:42:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement (696ms)
+  ok  3 tests\native-ui-contract\auth-contract.spec.ts:59:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › accepts a new invitation only after a matching ACK and preserves the result after cache invalidation (925ms)
+  ok  4 tests\native-ui-contract\auth-contract.spec.ts:81:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › requires the invited existing identity and does not offer a password replacement (502ms)
+  ok  5 tests\native-ui-contract\auth-contract.spec.ts:87:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a reset draft after an invalid ACK and shows completion after authentication changes (711ms)
+  ok  6 tests\native-ui-contract\auth-contract.spec.ts:97:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly (896ms)
+  ok  7 tests\native-ui-contract\auth-contract.spec.ts:112:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › allows an actual nullable own work phone and saves only after the server profile acknowledgement (619ms)
+  x   8 tests\native-ui-contract\parent-intake-contract.spec.ts:25:5 › Parent native intake consumes fragment, persists only view ID and reloads the owned context (10.6s)
+(node:12248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   9 tests\native-ui-contract\parent-intake-contract.spec.ts:29:5 › Parent opening a second link shows only that child and replaces the tab pointer (10.7s)
+(node:5872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 tests\native-ui-contract\parent-intake-contract.spec.ts:32:5 › Parent query-string credentials cannot exchange and the unavailable page uses actual public contact (638ms)
+  x  11 tests\native-ui-contract\parent-intake-contract.spec.ts:35:5 › Parent invalid current session clears child content and only its own storage key (10.7s)
+(node:41584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  12 tests\native-ui-contract\parent-intake-contract.spec.ts:38:5 › Parent other-tab cookie/view change fails closed without replacing the other tab child (10.6s)
+(node:42468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 tests\native-ui-contract\parent-intake-contract.spec.ts:41:5 › Parent landing and navigation respect a link whose overview is not shared on mobile (760ms)
+  ok 14 tests\native-ui-contract\school-contract.spec.ts:22:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps school edits on a transient read failure and removes the private form on forbidden reads (744ms)
+  ok 15 tests\native-ui-contract\school-contract.spec.ts:35:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › accepts nullable public contacts and clears dirty state only after a matching profile ACK (582ms)
+  ok 16 tests\native-ui-contract\school-contract.spec.ts:46:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › opens a school without years and keeps year creation reachable (720ms)
+  ok 17 tests\native-ui-contract\school-contract.spec.ts:59:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps a reviewed school profile through background refresh and reloads explicitly after conflict (855ms)
+  ok 18 tests\native-ui-contract\school-contract.spec.ts:76:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › creates a class with class authority alone, retains a wrong ACK and retries one atomic command (10.0s)
+  ok 19 tests\native-ui-contract\school-contract.spec.ts:102:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › shows the year calendar with year authority alone and labels denied class data (694ms)
+  ok 20 tests\native-ui-contract\staff-contract.spec.ts:26:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › renders denied assignment and history panels without inventing empty data or reading invitations (668ms)
+  ok 21 tests\native-ui-contract\staff-contract.spec.ts:37:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › keeps mixed action scopes and source version through refresh, retains read failures and reloads a role explicitly after conflict (1.2s)
+  ok 22 tests\native-ui-contract\staff-contract.spec.ts:54:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › creates an invitation through purpose-bound choices with zero roles and truthful queued delivery (801ms)
+  ok 23 tests\native-ui-contract\staff-contract.spec.ts:66:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › replaces school roles with the reviewed member version and actual delegation deadline without reading a role catalog (911ms)
+  ok 24 tests\native-ui-contract\staff-contract.spec.ts:79:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › saves the reviewed assignment dates and versions, retains a wrong ACK and manually retries the same key (955ms)
+  ok 25 tests\native-ui-contract\staff-contract.spec.ts:94:7 › Native staff browser contracts — intercepted API, separate from PostgreSQL E2E › recovers a handover after a lost create ACK and reload, then reviews changed sources without creating a second receipt (1.4s)
+  ok 26 tests\native-ui-contract\students-contract.spec.ts:44:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › class manage alone reads its directory choices, sends filters and exposes the explicit student/year URL restriction (850ms)
+  ok 27 tests\native-ui-contract\students-contract.spec.ts:54:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › directory issuance searches one bounded page across 1600 candidates without reading a full roster (1.1s)
+  ok 28 tests\native-ui-contract\students-contract.spec.ts:62:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › details preserve denied contact, real total opens, explicit null history fields and bounded sibling metadata (832ms)
+  ok 29 tests\native-ui-contract\students-contract.spec.ts:69:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › revocation keeps the clicked version through a metadata refresh and retains the same key after an unconfirmed reason (866ms)
+  ok 30 tests\native-ui-contract\students-contract.spec.ts:76:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › a conflict keeps the revocation reason and directs an explicit reload without adopting a new version (671ms)
+  ok 31 tests\native-ui-contract\students-contract.spec.ts:81:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › loss of manage authority unmounts detail metadata and the open private revocation draft (774ms)
+  ok 32 tests\native-ui-contract\students-contract.spec.ts:86:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › denied revoke authority removes the draft and exact recipient from the command error dialog (728ms)
+  ok 33 tests\native-ui-contract\students-contract.spec.ts:91:7 › Native staff parent-link metadata browser contracts — intercepted API, separate from PostgreSQL E2E › directory rotation freezes the selected old link while background directory/source readers refresh (901ms)
+  ok 34 tests\native-ui-contract\students-contract.spec.ts:101:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › uses directory year and class choices, preserves denied counters and sends server filters (818ms)
+  ok 35 tests\native-ui-contract\students-contract.spec.ts:112:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › opens a class-write creation form without school, year or roster readers and creates atomically (872ms)
+  ok 36 tests\native-ui-contract\students-contract.spec.ts:124:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › renders the minimal subject projection without family, notes, positions or stored link credentials (741ms)
+  ok 37 tests\native-ui-contract\students-contract.spec.ts:133:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › renders existing link metadata without recovering a secret or borrowing issuance authority (852ms)
+  ok 38 tests\native-ui-contract\students-contract.spec.ts:142:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › retains the student draft and displayed version through background read failure and a wrong mutation ACK (1.0s)
+  ok 39 tests\native-ui-contract\students-contract.spec.ts:154:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › uses the atomic guardian source, keeps masked contact unchanged and freezes all reviewed versions (931ms)
+  ok 40 tests\native-ui-contract\students-contract.spec.ts:166:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › retains a guardian draft on 409 and adopts changed contact, relationship and primary versions only after explicit reload (957ms)
+  ok 41 tests\native-ui-contract\students-contract.spec.ts:178:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › requires an explicit receiving choice for verification and sends the clicked relationship version (895ms)
+  ok 42 tests\native-ui-contract\students-contract.spec.ts:189:7 › Native student and guardian browser contracts — intercepted API, separate from PostgreSQL E2E › removes an open guardian draft when purpose authority is revoked (751ms)
+  ok 43 tests\native-ui-contract\students-contract.spec.ts:201:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › issue-only class authority prepares the recipient without borrowed readers and displays a fragment link once (6.0s)
+  ok 44 tests\native-ui-contract\students-contract.spec.ts:217:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › a verified relationship without receiving authority remains disabled (652ms)
+  ok 45 tests\native-ui-contract\students-contract.spec.ts:224:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › source conflicts keep the reviewed draft and only an explicit reload adopts the new versions/defaults (1.0s)
+  ok 46 tests\native-ui-contract\students-contract.spec.ts:232:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › lost acknowledgement retries the same command and disables resubmission after the one-time receipt is unavailable (989ms)
+  ok 47 tests\native-ui-contract\students-contract.spec.ts:238:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › rotation sends the displayed old link version and preserves explicit document download permission (818ms)
+  ok 48 tests\native-ui-contract\students-contract.spec.ts:245:7 › Native parent-link issuance browser contracts — intercepted API, separate from PostgreSQL E2E › a source authorization failure on refresh removes the private issuance form (759ms)
+  ok 49 tests\native-ui-contract\support-contract.spec.ts:26:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses server ticket totals, message counts and filters without borrowing consent authority (771ms)
+  ok 50 tests\native-ui-contract\support-contract.spec.ts:37:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › keeps a ticket draft through read failure and mismatched create ACK, then manually retries the same intent (974ms)
+  ok 51 tests\native-ui-contract\support-contract.spec.ts:51:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses the reviewed support version through refresh and retains a required decline reason on conflict (858ms)
+  ok 52 tests\native-ui-contract\support-contract.spec.ts:64:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › retains an unconfirmed school message and sends the same key on manual retry (694ms)
+  ok 53 tests\native-ui-contract\support-contract.spec.ts:76:7 › Native school support browser contracts — intercepted API, separate from PostgreSQL E2E › uses audit SQL filters and removes a private detail drawer when read authority is denied (829ms)
+
+
+  1) tests\native-ui-contract\parent-intake-contract.spec.ts:25:5 › Parent native intake consumes fragment, persists only view ID and reloads the owned context
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Con API thứ nhất', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Con API thứ nhất', { exact: true }).first() with timeout 10000ms
+      - waiting for getByText('Con API thứ nhất', { exact: true }).first()
+        23 × locator resolved to <p class="text-[19px] font-bold text-ink">Con API thứ nhất</p>
+           - unexpected value "hidden"
+
+
+      24 | async function pointer(page:Page){return page.evaluate(()=>({local:Object.keys(localStorage),session:{...sessionStorage}}));}
+      25 | test('Parent native intake consumes fragment, persists only view ID and reloads the owned context',async({page})=>{
+    > 26 |   const state=initial();await routes(page,state);await open(page,tokenA);await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();expect(await pointer(page)).toEqual({local:[],session:{'edu-parent-view':JSON.stringify({slug,viewId:first})}});expect(page.url()).not.toContain(tokenA);await page.reload();await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();expect(state.exchanges).toBe(1);
+         |                                                                                                                                                ^
+      27 |   await page.screenshot({path:`qa/backend/${prefix}-parent-context-desktop.png`,fullPage:true});
+      28 | });
+      29 | test('Parent opening a second link shows only that child and replaces the tab pointer',async({page})=>{
+        at D:\Edu\tests\native-ui-contract\parent-intake-contract.spec.ts:26:144
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-005df-d-reloads-the-owned-context\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-005df-d-reloads-the-owned-context\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-005df-d-reloads-the-owned-context\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-005df-d-reloads-the-owned-context\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests\native-ui-contract\parent-intake-contract.spec.ts:29:5 › Parent opening a second link shows only that child and replaces the tab pointer
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Con API thứ nhất', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Con API thứ nhất', { exact: true }).first() with timeout 10000ms
+      - waiting for getByText('Con API thứ nhất', { exact: true }).first()
+        23 × locator resolved to <p class="text-[19px] font-bold text-ink">Con API thứ nhất</p>
+           - unexpected value "hidden"
+
+
+      28 | });
+      29 | test('Parent opening a second link shows only that child and replaces the tab pointer',async({page})=>{
+    > 30 |   const state=initial();await routes(page,state);await open(page,tokenA);await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();await open(page,tokenB);await expect(page.getByText('Con API thứ hai',{exact:true}).first()).toBeVisible();await expect(page.getByText('Con API thứ nhất',{exact:true})).toHaveCount(0);expect((await pointer(page)).session).toEqual({'edu-parent-view':JSON.stringify({slug,viewId:second})});
+         |                                                                                                                                                ^
+      31 | });
+      32 | test('Parent query-string credentials cannot exchange and the unavailable page uses actual public contact',async({page})=>{
+      33 |   const state=initial();await routes(page,state);await page.goto(`/p/${slug}/access?t=${tokenA}`);await expect(page).toHaveURL(/\/access-unavailable\?reason=invalid$/);await expect(page.getByRole('heading',{name:'Đường dẫn không sử dụng được'})).toBeVisible();await expect(page.getByText('public@example.invalid',{exact:true})).toBeVisible();expect(state.exchanges).toBe(0);expect(await pointer(page)).toEqual({local:[],session:{}});
+        at D:\Edu\tests\native-ui-contract\parent-intake-contract.spec.ts:30:144
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-6acac-nd-replaces-the-tab-pointer\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-6acac-nd-replaces-the-tab-pointer\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-6acac-nd-replaces-the-tab-pointer\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-6acac-nd-replaces-the-tab-pointer\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests\native-ui-contract\parent-intake-contract.spec.ts:35:5 › Parent invalid current session clears child content and only its own storage key
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Con API thứ nhất', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Con API thứ nhất', { exact: true }).first() with timeout 10000ms
+      - waiting for getByText('Con API thứ nhất', { exact: true }).first()
+        23 × locator resolved to <p class="text-[19px] font-bold text-ink">Con API thứ nhất</p>
+           - unexpected value "hidden"
+
+
+      34 | });
+      35 | test('Parent invalid current session clears child content and only its own storage key',async({page})=>{
+    > 36 |   const state=initial();await routes(page,state);await open(page,tokenA);await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();await page.evaluate(()=>sessionStorage.setItem('unrelated-preference','keep'));state.revoked=true;await page.reload();await expect(page).toHaveURL(/\/access-unavailable\?reason=invalid$/);await expect(page.getByText('Con API thứ nhất',{exact:true})).toHaveCount(0);expect((await pointer(page)).session).toEqual({'unrelated-preference':'keep'});
+         |                                                                                                                                                ^
+      37 | });
+      38 | test('Parent other-tab cookie/view change fails closed without replacing the other tab child',async({page,context})=>{
+      39 |   const state=initial();await routes(page,state);await open(page,tokenA);await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();const other=await context.newPage();await routes(other,state);await open(other,tokenB);await expect(other.getByText('Con API thứ hai',{exact:true}).first()).toBeVisible();await page.reload();await expect(page).toHaveURL(/\/access-unavailable\?reason=changed$/);await expect(page.getByRole('heading',{name:'Phiên tra cứu đã thay đổi'})).toBeVisible();await expect(page.getByText('Con API thứ nhất',{exact:true})).toHaveCount(0);expect((await pointer(other)).session).toEqual({'edu-parent-view':JSON.stringify({slug,viewId:second})});await other.close();
+        at D:\Edu\tests\native-ui-contract\parent-intake-contract.spec.ts:36:144
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-5cd8e-nd-only-its-own-storage-key\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-5cd8e-nd-only-its-own-storage-key\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-5cd8e-nd-only-its-own-storage-key\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-5cd8e-nd-only-its-own-storage-key\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) tests\native-ui-contract\parent-intake-contract.spec.ts:38:5 › Parent other-tab cookie/view change fails closed without replacing the other tab child
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Con API thứ nhất', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Con API thứ nhất', { exact: true }).first() with timeout 10000ms
+      - waiting for getByText('Con API thứ nhất', { exact: true }).first()
+        23 × locator resolved to <p class="text-[19px] font-bold text-ink">Con API thứ nhất</p>
+           - unexpected value "hidden"
+
+
+      37 | });
+      38 | test('Parent other-tab cookie/view change fails closed without replacing the other tab child',async({page,context})=>{
+    > 39 |   const state=initial();await routes(page,state);await open(page,tokenA);await expect(page.getByText('Con API thứ nhất',{exact:true}).first()).toBeVisible();const other=await context.newPage();await routes(other,state);await open(other,tokenB);await expect(other.getByText('Con API thứ hai',{exact:true}).first()).toBeVisible();await page.reload();await expect(page).toHaveURL(/\/access-unavailable\?reason=changed$/);await expect(page.getByRole('heading',{name:'Phiên tra cứu đã thay đổi'})).toBeVisible();await expect(page.getByText('Con API thứ nhất',{exact:true})).toHaveCount(0);expect((await pointer(other)).session).toEqual({'edu-parent-view':JSON.stringify({slug,viewId:second})});await other.close();
+         |                                                                                                                                                ^
+      40 | });
+      41 | test('Parent landing and navigation respect a link whose overview is not shared on mobile',async({page})=>{
+      42 |   const state=initial();state.sections=['attendance'];await routes(page,state);await page.setViewportSize({width:390,height:844});await page.goto(`/p/${slug}/access#token=${tokenA}`);await expect(page).toHaveURL(new RegExp(`/p/${slug}/attendance$`));await expect(page.getByRole('heading',{name:'Chuyên cần của con'})).toBeVisible();await expect(page.getByRole('link',{name:'Tổng quan',exact:true})).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:`qa/backend/${prefix}-parent-context-mobile.png`,fullPage:true});
+        at D:\Edu\tests\native-ui-contract\parent-intake-contract.spec.ts:39:144
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-325be-placing-the-other-tab-child\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-325be-placing-the-other-tab-child\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-325be-placing-the-other-tab-child\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-parent-intake-browser-artifacts-final\parent-intake-contract-Par-325be-placing-the-other-tab-child\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    tests\native-ui-contract\parent-intake-contract.spec.ts:25:5 › Parent native intake consumes fragment, persists only view ID and reloads the owned context
+    tests\native-ui-contract\parent-intake-contract.spec.ts:29:5 › Parent opening a second link shows only that child and replaces the tab pointer
+    tests\native-ui-contract\parent-intake-contract.spec.ts:35:5 › Parent invalid current session clears child content and only its own storage key
+    tests\native-ui-contract\parent-intake-contract.spec.ts:38:5 › Parent other-tab cookie/view change fails closed without replacing the other tab child
+  49 passed (1.7m)

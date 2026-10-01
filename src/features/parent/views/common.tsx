@@ -12,7 +12,7 @@ import type { Tone } from "@/lib/formatters";
 
 /** Stable identity of the current link/preview so cached reads never mix two links or two previews. */
 export function keyId(k: ParentKey) {
-  return "preview" in k ? `preview:${k.preview.accessId}:${k.preview.ctx.actor.kind === "anonymous" ? "anon" : k.preview.ctx.actor.userId}` : `link:${k.token}`;
+  return "preview" in k ? `preview:${k.preview.accessId}:${k.preview.ctx.actor.kind === "anonymous" ? "anon" : k.preview.ctx.actor.userId}` : `view:${k.viewId}`;
 }
 
 /** useParentRead + an identity segment in the cache key. */

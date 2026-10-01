@@ -1399,3 +1399,12 @@ This source checkpoint keeps SC23/SC24 IMPLEMENTED; native parent/preview adapte
 - This foundation is deliberately unmounted in the current facade. Its thirteen new helper tests and backend context checks establish protocol behavior, not native parent screen or browser acceptance. Remaining adapters must bind all composites, cache ownership and file blobs before activation.
 
 Evidence: qa/backend/b6-parent-session-checks.json records actual full PostgreSQL160, backend32 and frontend273; current frontend build/browser were not run. B6/B7 release gates remain pending.
+
+## ADR-065 — activated parent intake/context keeps view, query and staff preview owners separate
+
+- The public read key is now a non-bearer viewId. Raw token input is limited to open; it is not a ParentKey and cannot enter query identity or persistent session ownership. A validated receipt alone adopts the view. URL fragment removal, retry ownership and a one-flight effect prevent stale callbacks or duplicate mount handlers from adopting/navigating another child.
+- Root query ownership purges public parent/file results on view changes and staff preview results on actual staff authority changes. Every context request carries X-Parent-View and asserts its captured owner before accepting display or handling failure. Current terminal errors clear that owner and retain a nonsecret redirect reason; old failures cannot clear the new view. Session reload stores no private context/CSRF and obtains fresh metadata through the same view header.
+- Preview context is scoped by current staff identity, school and access ID without replacing any public view. Public unavailable contact uses its separate public endpoint and cannot retrieve pupil or guardian data. Optional contacts remain absent; link/session expiry and inclusive/exclusive year bounds are distinct actual facts. Server retrieval events replace obsolete browser telemetry; no fabricated log ACK is added.
+- PA01/PA14 are source implementations only. Parent/preview content remains unavailable; context-only screenshots and intercepted responses do not establish complete native parent acceptance or PostgreSQL browser E2E. Unconnected methods still fail through the facade with no runtime legacy/mock fallback.
+
+Actual frontend284 and controlled Edge53 are recorded in qa/backend/b6-parent-intake-checks.json,including the initial49/53 responsive-selector failure and corrected full rerun. Backend runtime was unchanged and not retested in this checkpoint. B6/B7 release gates remain pending.

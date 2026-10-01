@@ -3,7 +3,7 @@ import Link from "next/link";
 import { clsx } from "clsx";
 import { Award, ChevronRight, Printer, History, Info, CheckCircle2, MinusCircle } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParent, useParentView } from "@/features/parent/shell";
+import { useParent } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { PState, usePRead, useHref, ParentHeader, ParentPage, GRADE_TONE } from 
 
 /** PA04 — published weeks only; never a class ranking, never unpublished results. */
 export function ParentConductListView() {
-  useParentView("conduct");
   const q = usePRead(["conduct"], (k, s) => parentRepo.conductList(k, s));
   const href = useHref();
   return (
@@ -57,7 +56,6 @@ const PRINT_CSS = `@media print { header, aside, nav, footer, [role="status"], .
 
 /** PA05 — one published week: base + items = total, rule version, version history, print view. */
 export function ParentConductDetailView({ periodId }: { periodId: string }) {
-  useParentView("conduct");
   const p = useParent();
   const href = useHref();
   const q = usePRead(["conduct", periodId], (k, s) => parentRepo.conductDetail(k, s, periodId));

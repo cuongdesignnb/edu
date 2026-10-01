@@ -413,7 +413,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL24 | core | TESTED | NOT_STARTED |  |  |
 | CL25 | core | TESTED | NOT_STARTED |  |  |
 | CL26 | core | TESTED | NOT_STARTED |  |  |
-| PA01 | core | TESTED | NOT_STARTED |  |  |
+| PA01 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | PA02 | core | TESTED | NOT_STARTED |  |  |
 | PA03 | core | TESTED | NOT_STARTED |  |  |
 | PA04 | core | TESTED | NOT_STARTED |  |  |
@@ -426,7 +426,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA11 | core | TESTED | NOT_STARTED |  |  |
 | PA12 | core | TESTED | NOT_STARTED |  |  |
 | PA13 | core | TESTED | NOT_STARTED |  |  |
-| PA14 | core | TESTED | NOT_STARTED |  |  |
+| PA14 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | SY01 | core | TESTED | NOT_STARTED |  |  |
 | SY02 | core | TESTED | NOT_STARTED |  |  |
 | SY03 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Trang chính sách cần chủ dự án duyệt, nội dung tĩnh. |  |

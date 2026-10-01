@@ -1,0 +1,12 @@
+﻿
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-credential.test.ts (3 tests) 5ms
+ ✓ tests/unit/api-parent-context.test.ts (5 tests) 7ms
+ ✓ tests/unit/api-parent-session.test.ts (8 tests) 10ms
+ ✓ tests/unit/api-parent-intake-adapter.test.ts (11 tests) 91ms
+
+ Test Files  4 passed (4)
+      Tests  27 passed (27)
+   Start at  13:55:14
+   Duration  603ms (transform 211ms, setup 141ms, collect 331ms, tests 112ms, environment 1ms, prepare 416ms)

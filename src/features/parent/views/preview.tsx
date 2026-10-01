@@ -47,10 +47,10 @@ const REASON_TEXT: Record<string, string> = {
 export function ParentPreviewView({ schoolId, accessId, view }: { schoolId: string; accessId: string; view: string[] }) {
   const ctx = useCtx();
   const { school } = useSchool();
-  const key = useMemo<ParentKey>(() => ({ preview: { ctx, accessId } }), [ctx, accessId]);
+  const key = useMemo<ParentKey>(() => ({ preview: { ctx, schoolId, accessId } }), [ctx, schoolId, accessId]);
   const base = `/school/${schoolId}/parent-access/${accessId}/preview`;
   // Gate first: the repository enforces parentAccess permission for the preview.
-  const gate = useRepo(["parent-preview-gate", schoolId, accessId, school.slug], (c) => parentRepo.open({ preview: { ctx: c, accessId } }, school.slug), { staleTime: 0 });
+  const gate = useRepo(["parent-preview-gate", schoolId, accessId, school.slug], (c) => parentRepo.open({ preview: { ctx: c, schoolId, accessId } }, school.slug), { staleTime: 0 });
   const reason = unavailableReason(gate.error);
 
   return (

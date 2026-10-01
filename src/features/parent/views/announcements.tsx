@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search, Megaphone, Paperclip, Download, ChevronRight } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ const SCOPE: Record<string, string> = { school: "Toàn trường", grade: "Khố
 
 /** PA10 — announcements whose audience includes this student; local search only. */
 export function ParentAnnouncementsView() {
-  useParentView("announcements");
   const href = useHref();
   const [text, setText] = useState("");
   const qs = text.trim();
@@ -59,7 +57,6 @@ export function ParentAnnouncementsView() {
 
 /** PA11 — detail with allowed attachments (preview / download). */
 export function ParentAnnouncementDetailView({ announcementId }: { announcementId: string }) {
-  useParentView("announcements");
   const href = useHref();
   const viewer = useFileViewer();
   const download = useSafeDownload();

@@ -2,7 +2,6 @@
 import { clsx } from "clsx";
 import { Info } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/states";
@@ -29,7 +28,6 @@ function DutyList({ items, past }: { items: Duty[]; past?: boolean }) {
 
 /** PA07 — only the child's own duties (no other students' names). */
 export function ParentDutiesView() {
-  useParentView("duties");
   const q = usePRead(["duties"], (k, s) => parentRepo.duties(k, s));
   return (
     <ParentPage>

@@ -1,7 +1,6 @@
 "use client";
 import { Users, Phone, Mail, Clock3, MapPin, School, BookOpen, Info } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, CardLink, Callout } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/states";
@@ -20,7 +19,6 @@ function Contact({ phone, email }: { phone?: string; email?: string }) {
 
 /** PA12 — homeroom + subject teachers of the class; contact only as the school allows; no chat. */
 export function ParentTeachersView() {
-  useParentView("teachers");
   const href = useHref();
   const p = useParent();
   const q = usePRead(["teachers"], (k, s) => parentRepo.teachers(k, s));

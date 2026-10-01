@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock, ShieldCheck } from "lucide-react";
 import { parentRepo, type RepoError } from "@/lib/repositories";
-import { writeParentToken,parentCredential,consumeParentCredential } from "@/lib/api/parent-credential";
+import { parentCredential,consumeParentCredential } from "@/lib/api/parent-credential";
+import { clearParentSession } from '@/lib/api/parent-session';
 import { unavailableReason } from "@/features/parent/shell";
 import { Brand } from "@/components/layout/brand";
 import {ErrorState} from "@/components/ui/states";
@@ -13,36 +14,27 @@ import {ErrorState} from "@/components/ui/states";
  */
 export function ParentAccessView({ slug }: { slug: string }) {
   const router = useRouter();
-  const started = useRef(false);
+  const flight=useRef<{slug:string;attempt:number;promise:ReturnType<typeof parentRepo.open>}|null>(null);
   const [state, setState] = useState<"opening" | "done">("opening");
   const [error,setError]=useState<RepoError|null>(null),[attempt,setAttempt]=useState(0);
 
+  useEffect(()=>{const changed=()=>{if(window.location.hash)setAttempt(n=>n+1);};window.addEventListener('hashchange',changed);return()=>window.removeEventListener('hashchange',changed);},[]);
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    const token=parentCredential(slug);
-    if (!token) {
-      writeParentToken(slug, null);
-      setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=invalid`), 0);
-      return;
+    let alive=true;
+    if(!flight.current||flight.current.slug!==slug||flight.current.attempt!==attempt){
+      const token=parentCredential(slug);
+      if(!token){clearParentSession();router.replace(`/p/${slug}/access-unavailable?reason=invalid`);return;}
+      flight.current={slug,attempt,promise:parentRepo.open({token},slug)};
     }
-    parentRepo.open({ token }, slug).then(
-      () => {
-        writeParentToken(slug, token);
-        consumeParentCredential(slug);
-        setState("done");
-        setTimeout(() => router.replace(`/p/${slug}/overview`), 0);
-      },
-      (e: RepoError) => {
-        writeParentToken(slug, null);
-        const reason=unavailableReason(e);
-        if(reason)setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=${reason}`), 0);
-        else setError(e);
-      },
-    );
+    flight.current.promise.then(receipt=>{
+      if(!alive)return;consumeParentCredential(slug);setState('done');router.replace(`/p/${slug}/${receipt.homeModule}`);
+    },(e:RepoError)=>{
+      if(!alive)return;const reason=unavailableReason(e);if(reason)router.replace(`/p/${slug}/access-unavailable?reason=${reason}`);else setError(e);
+    });
+    return()=>{alive=false;};
   }, [slug, router,attempt]);
 
-  if(error)return <div className="flex min-h-dvh items-center justify-center bg-app p-4"><div className="card w-full max-w-lg p-6"><ErrorState error={error} onRetry={()=>{started.current=false;setError(null);setAttempt(n=>n+1);}} /></div></div>;
+  if(error)return <div className="flex min-h-dvh items-center justify-center bg-app p-4"><div className="card w-full max-w-lg p-6"><ErrorState error={error} onRetry={()=>{setError(null);setAttempt(n=>n+1);}} /></div></div>;
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-app p-4">

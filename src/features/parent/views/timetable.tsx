@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, CalendarDays, Info } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
 import { parentExtraRepo } from "@/lib/repositories";
 import { addDays, demoToday, mondayOf } from "@/lib/calendar";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, IconButton } from "@/components/ui/button";
@@ -14,7 +13,6 @@ import { PState, usePRead, ParentHeader, ParentPage } from "./common";
 
 /** PA06 — week timetable within the granted year; changed / cancelled lessons with reason. */
 export function ParentTimetableView() {
-  useParentView("timetable");
   const today = demoToday();
   const [week, setWeek] = useState(() => mondayOf(today));
   const yq = usePRead(["granted-year"], (k, s) => parentExtraRepo.grantedYear(k, s));

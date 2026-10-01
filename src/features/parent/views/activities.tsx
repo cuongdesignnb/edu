@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { CalendarClock, Info, FileText, Image as ImageIcon, Download } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,6 @@ const sub = (s: string) => submissionStatus[s as keyof typeof submissionStatus] 
 
 /** PA08 — activities of the child (status of the child only; no submit/upload). */
 export function ParentActivitiesView() {
-  useParentView("activities");
   const href = useHref();
   const q = usePRead(["activities"], (k, s) => parentRepo.activities(k, s));
   return (
@@ -51,7 +49,6 @@ export function ParentActivitiesView() {
 
 /** PA09 — activity detail with shared evidence of this child only. */
 export function ParentActivityDetailView({ activityId }: { activityId: string }) {
-  useParentView("activities");
   const href = useHref();
   const viewer = useFileViewer();
   const download = useSafeDownload();

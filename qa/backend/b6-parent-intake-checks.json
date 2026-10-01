@@ -1,0 +1,157 @@
+{
+  "phase": "B6 native parent fragment exchange/context/year/public unavailable contact; partial goal checkpoint",
+  "previousCommit": "4a81029835356b6124f87c60c7201549aa198db9",
+  "backendRuntime": {
+    "changed": false,
+    "postgresFullThisCheckpoint": "NOT_RERUN",
+    "lastActualEvidence": "b6-parent-session-checks.json",
+    "lastActualTests": 160,
+    "lastActualDurationMs": 430144.354134,
+    "migrations": 36,
+    "runnerImage": "sha256:e677e280b6be8b0254ba5461e81a3b05d95777a9132cf43f90d572a155a9fe75",
+    "contractOperations": 310,
+    "schemas": 423,
+    "operationStatus": {
+      "TESTED": 298,
+      "IMPLEMENTED": 12
+    }
+  },
+  "frontendUnits": {
+    "pass": 284,
+    "fail": 0,
+    "files": 32,
+    "durationSeconds": 10.26,
+    "apiCases": 243,
+    "historicalSyntheticRegressions": 41,
+    "log": "b6-parent-intake-frontend-unit-full.log"
+  },
+  "selectedOwnershipTests": {
+    "pass": 27,
+    "fail": 0,
+    "durationSeconds": 0.603,
+    "files": 4,
+    "newIntakeCases": 11,
+    "log": "b6-parent-intake-unit-targeted-initial.log"
+  },
+  "frontendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-intake-frontend-types-browser-reviewed.log",
+    "initialFailureLog": "b6-parent-intake-frontend-types-initial.log",
+    "initialFailure": "Duplicate useParent import and public-contact adapter shape did not match its actual consumer; fixed before build/browser",
+    "testTypeFailureLog": "b6-parent-intake-frontend-types-with-tests.log",
+    "testTypeFailure": "An untyped zero-argument fetch mock was indexed; corrected its input signature"
+  },
+  "frontendChangedLint": {
+    "exitCode": 0,
+    "warnings": 0,
+    "log": "b6-parent-intake-frontend-lint-reviewed.log",
+    "browserTestLintLog": "b6-parent-intake-browser-lint-reviewed.log"
+  },
+  "inventoryScriptLint": {
+    "exitCode": 0,
+    "warnings": 0,
+    "log": "b6-parent-intake-inventory-lint.log"
+  },
+  "productionFrontendBuild": {
+    "exitCode": 0,
+    "log": "b6-parent-intake-frontend-build.log"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 53,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 58307.288,
+    "newCases": 6,
+    "log": "b6-parent-intake-browser-final.log",
+    "results": "b6-parent-intake-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-intake",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T07:01:12.464Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 48580,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T07:02:11.981Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-intake-parent-context-desktop.png",
+      "b6-parent-intake-parent-context-mobile.png"
+    ],
+    "contentSections": "Still unavailable; screenshots and cases accept only intake/context/ownership/navigation/public contact"
+  },
+  "browserInitial": {
+    "pass": 49,
+    "fail": 4,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 102581.994,
+    "log": "b6-parent-intake-initial-browser-final.log",
+    "results": "b6-parent-intake-initial-browser-results-final.json",
+    "retainedTraceDirectory": "b6-parent-intake-browser-artifacts-initial",
+    "failure": "Four selectors chose the hidden mobile copy of the child name at desktop width. Traces confirmed the actual desktop name was present. Selectors now choose visible paragraphs; the full53 rerun passed."
+  },
+  "activation": {
+    "nativeCandidates": 113,
+    "activatedCandidates": 113,
+    "matchedLegacy": 101,
+    "legacyMethods": 231,
+    "pendingLegacy": 130,
+    "parentMethods": [
+      "open",
+      "context"
+    ],
+    "parentExtraMethods": [
+      "grantedYear"
+    ],
+    "parentExtension": [
+      "publicSchool"
+    ],
+    "coreSource": {
+      "IMPLEMENTED": 48,
+      "NOT_STARTED": 67,
+      "STATIC_UNVERIFIED": 3,
+      "TESTED": 0
+    },
+    "newSourceScreens": [
+      "PA01",
+      "PA14"
+    ],
+    "parentContent": "UNACTIVATED",
+    "previewContext": "ACTIVATED_WITH_CURRENT_STAFF_OWNER",
+    "previewContent": "UNACTIVATED"
+  },
+  "ownership": "Public ParentKey uses viewId, never a token. Only open accepts a fragment. Cookie remains HttpOnly; CSRF stays memory; sessionStorage is allowlisted slug/viewId. New exchanges clear/cancel/purge public ownership; current invalid or changed views redirect with no prior child. Old in-flight work cannot clear a newer child. Staff previews have separate current authority and do not replace a public session. Backend retrieval records actual events; removed obsolete browser telemetry calls without introducing fake acknowledgements.",
+  "portBefore": {
+    "checkedAt": "2026-10-01T13:58:06.4371779+07:00",
+    "port": 18763,
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T14:02:44.8254356+07:00",
+    "port": 18763,
+    "listeners": []
+  },
+  "remaining": [
+    "130 legacy methods unavailable",
+    "Parent overview/attendance/conduct/timetable/duties/activities/announcements/teachers/documents/files and preview content incomplete",
+    "No core screen marked TESTED",
+    "Real PostgreSQL browser E2E pending",
+    "Final root deploy/scripts merge and local Docker serving pending",
+    "Restart retention, physical backup/restore, failure drills and required workload benchmark pending",
+    "No production deployment"
+  ],
+  "fullRootLint": "NOT_RERUN; no claim that historical global-error/reports warnings are resolved",
+  "goal": "ACTIVE; no volume deleted, other project process stopped or production deployed; unrelated handoff ZIP untouched"
+}

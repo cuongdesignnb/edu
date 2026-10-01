@@ -4,7 +4,6 @@ import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, Info, CalendarCheck } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
 import { demoToday } from "@/lib/calendar";
-import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/button";
 import { fmtDateLong } from "@/lib/formatters";
@@ -31,7 +30,6 @@ function shiftMonth(m: string, n: number) {
 
 /** PA03 — Chuyên cần của con: only published sessions; missing data is never shown as present. */
 export function ParentAttendanceView() {
-  useParentView("attendance");
   const [month, setMonth] = useState(() => demoToday().slice(0, 7));
   const q = usePRead(["attendance", month], (k, s) => parentRepo.attendance(k, s, month));
   const [y, m] = month.split("-").map(Number);

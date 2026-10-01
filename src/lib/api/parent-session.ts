@@ -3,6 +3,8 @@ import {RepoError} from '../repositories/errors';
 const storageKey='edu-parent-view';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 interface ParentView {slug:string;viewId:string;csrfToken:string|null}
+type ParentFaultReason='invalid'|'changed'|'expired'|'suspended';
+let fault:{slug:string;reason:ParentFaultReason}|null=null;
 let view:ParentView|null=null,restored=false,revision=0,requests=new AbortController();
 const listeners=new Set<()=>void>();
 const changed=()=>new RepoError('CONFLICT','Phiên tra cứu đã đổi. Mở lại link riêng để xem đúng thông tin.',{details:{problemCode:'PARENT_CONTEXT_CHANGED'}});
@@ -18,7 +20,9 @@ export function parentSessionRevision(){restore();return revision;}
 export function onParentSessionChanged(listener:()=>void){listeners.add(listener);return()=>{listeners.delete(listener);};}
 /** Only a non-bearer view ID survives reload. Cookie authentication remains server-owned. */
 export function readParentView(slug:string){restore();return view?.slug===slug?view.viewId:null;}
-export function clearParentSession(){restored=true;invalidate();view=null;persist();notify();}
+export function readParentFault(slug:string){return fault?.slug===slug?fault.reason:null;}
+export function clearParentSession(){restored=true;invalidate();view=null;fault=null;persist();notify();}
+export function clearParentSessionFor(slug:string){restore();if(view?.slug===slug||fault?.slug===slug)clearParentSession();}
 /** Starting another link removes previous private ownership before exchange can complete. */
 export function beginParentExchange(){
   clearParentSession();const owner=revision,signal=requests.signal;
@@ -33,5 +37,7 @@ export function captureParentSession(slug:string,expectedViewId:string){
   const owner=revision,value=view;
   return {viewId:value.viewId,csrfToken:value.csrfToken,signal:requests.signal,assertCurrent(){if(owner!==revision||view!==value)throw changed();},confirmCsrf(viewId:string,csrfToken:string){
     if(owner!==revision||view!==value||viewId!==value.viewId)throw changed();if(!csrfToken)throw new RepoError('READ_ERROR','API chưa xác nhận phiên tra cứu.');value.csrfToken=csrfToken;
+  },fail(reason:ParentFaultReason){
+    if(owner!==revision||view!==value)throw changed();invalidate();view=null;fault={slug,reason};persist();notify();
   }};
 }

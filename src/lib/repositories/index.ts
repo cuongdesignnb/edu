@@ -7,6 +7,7 @@ import {connectedStaffRepo} from './connected/staff';
 import {connectedSupportRepo} from './connected/support';
 import {connectedStudentsRepo} from './connected/students';
 import {connectedStudentsExtraRepo} from './connected/students-extra';
+import {connectedParentRepo,connectedParentExtraRepo,type ParentRepositoryInterface} from './connected/parent';
 
 import {connectedPlatformExtraRepo} from './connected/platform';
 import {connectedAuthRepo} from './connected/auth';
@@ -26,16 +27,16 @@ export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,ob
 export const activitiesRepo=apiRepository<typeof import('./activities').activitiesRepo,object>({});
 export const announcementsRepo=apiRepository<typeof import('./announcements').announcementsRepo,object>({});
 export const reportsRepo=apiRepository<typeof import('./reports').reportsRepo,object>({});
-export const parentRepo=apiRepository<typeof import('./parent').parentRepo,object>({});
+export const parentRepo=apiRepository<ParentRepositoryInterface,typeof connectedParentRepo>(connectedParentRepo);
 export const searchRepo=apiRepository<typeof import('./search').searchRepo,object>({});
 export const teacherExtraRepo=apiRepository<typeof import('./teacher-extra').teacherExtraRepo,object>({});
 export const schoolOpsRepo=apiRepository<typeof import('./school-ops-extra').schoolOpsRepo,object>({});
 export const schoolOrgRepo=apiRepository<typeof import('./school-org-extra').schoolOrgRepo,object>({});
-export const parentExtraRepo=apiRepository<typeof import('./parent-extra').parentExtraRepo,object>({});
+export const parentExtraRepo=apiRepository<{grantedYear:typeof connectedParentExtraRepo.grantedYear},typeof connectedParentExtraRepo>(connectedParentExtraRepo);
 export const activitiesExtraRepo=apiRepository<typeof import('./activities-extra').activitiesExtraRepo,object>({});
 export {accessStatus,UPLOAD_LIMITS,SCHOOL_REPORTS,CLASS_REPORTS,SUPPORT_SCOPE_LABEL,PASSWORD_RULES,passwordErrors} from './connected/statics';
 export type {ReportData} from './reports';
-export type {ParentKey} from './parent';
+export type {ParentKey} from './connected/parent';
 export type {SearchHit} from './search';
 export {RepoError,isRepoError,errorMessage,type RepoErrorCode} from './errors';
 export type {Ctx,ListQuery,Page} from './core';

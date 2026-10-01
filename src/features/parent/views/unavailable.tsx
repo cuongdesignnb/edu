@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, Link2Off, Ban, School, Lock, Phone, Mail, MapPin, Info } from "lucide-react";
-import { announcementsRepo } from "@/lib/repositories";
-import { writeParentToken } from "@/lib/api/parent-credential";
+import { parentRepo } from "@/lib/repositories";
+import { clearParentSessionFor } from "@/lib/api/parent-session";
 import { Brand } from "@/components/layout/brand";
 import { ButtonLink } from "@/components/ui/button";
 import { Skeleton,ErrorState } from "@/components/ui/states";
@@ -13,7 +13,8 @@ import type {RepoError} from "@/lib/repositories";
 const REASONS: Record<string, { title: string; text: string; icon: React.ReactNode }> = {
   expired: { title: "Đường dẫn đã hết hạn", text: "Link riêng này đã quá thời hạn sử dụng nhà trường đặt khi cấp. Thông tin của học sinh không còn hiển thị qua link này.", icon: <Clock3 className="size-7" /> },
   revoked: { title: "Đường dẫn đã bị thu hồi", text: "Nhà trường đã thu hồi link này (ví dụ khi cấp link mới hoặc khi link bị chuyển tiếp nhầm). Link cũ không còn mở được thông tin.", icon: <Ban className="size-7" /> },
-  invalid: { title: "Đường dẫn không hợp lệ", text: "Không nhận ra đường dẫn này. Có thể link bị gõ sai, bị cắt mất một phần, hoặc không thuộc trường này.", icon: <Link2Off className="size-7" /> },
+  changed: { title: "Phiên tra cứu đã thay đổi", text: "Một link khác đã được mở trên trình duyệt này. Vui lòng mở lại link riêng do nhà trường cấp để xem đúng thông tin của con.", icon: <Link2Off className="size-7" /> },
+  invalid: { title: "Đường dẫn không sử dụng được", text: "Link không còn hiệu lực hoặc không được nhận diện. Vui lòng liên hệ nhà trường để kiểm tra và cấp lại link riêng.", icon: <Link2Off className="size-7" /> },
   suspended: { title: "Nhà trường đang tạm dừng sử dụng hệ thống", text: "Trường hiện tạm dừng trên EduManage nên trang thông tin cho gia đình tạm thời không mở được. Dữ liệu không bị xóa.", icon: <School className="size-7" /> },
   module: { title: "Mục này chưa được chia sẻ qua link của bạn", text: "Link riêng chỉ mở những mục nhà trường cho phép. Mục bạn vừa mở không nằm trong phạm vi được cấp.", icon: <Lock className="size-7" /> },
 };
@@ -24,8 +25,8 @@ export function ParentUnavailableView({ slug }: { slug: string }) {
   const reason = REASONS[sp.get("reason") ?? ""] ? (sp.get("reason") as string) : "invalid";
   const r = REASONS[reason];
   // The tab no longer holds a usable link (except "module", where the link itself is still valid).
-  useEffect(() => { if (reason !== "module") writeParentToken(slug, null); }, [reason, slug]);
-  const pub = useQuery({ queryKey: ["public-school-contact", slug], queryFn: () => announcementsRepo.publicSchool(slug), retry: false });
+  useEffect(() => { if (reason !== "module") clearParentSessionFor(slug); }, [reason, slug]);
+  const pub = useQuery({ queryKey: ["public-school-contact", slug], queryFn: () => parentRepo.publicSchool(slug), retry: false });
   const s = pub.data?.school;
 
   return (

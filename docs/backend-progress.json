@@ -5156,8 +5156,10 @@
         "getParentContext"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5301,8 +5303,10 @@
         "endParentSession"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "clsx";
@@ -8,12 +8,12 @@ import { Lock, ShieldCheck, Heart, Leaf, MoreHorizontal, X, Eye } from "lucide-r
 import type { ParentModule } from "@/lib/model/types";
 import { parentRepo, isRepoError, type ParentKey, type RepoError } from "@/lib/repositories";
 import { useQuery } from "@tanstack/react-query";
-import { readParentToken,parentLinkRevision } from "@/lib/api/parent-credential";
+import { readParentView,readParentFault,parentSessionRevision,onParentSessionChanged } from "@/lib/api/parent-session";
 import { PARENT_NAV } from "@/components/layout/nav";
 import { NavIcon } from "@/components/layout/icons";
 import { Brand } from "@/components/layout/brand";
 import { DemoScenarioBanner } from "@/components/ui/guards";
-import { DeniedState, EmptyState, PageSkeleton } from "@/components/ui/states";
+import { DeniedState, EmptyState, ErrorState, PageSkeleton } from "@/components/ui/states";
 import { ButtonLink } from "@/components/ui/button";
 
 interface ParentCtx { key: ParentKey; slug: string; base: string; modules: ParentModule[]; preview: boolean; context: Awaited<ReturnType<typeof parentRepo.context>> }
@@ -28,6 +28,8 @@ export function useParent() {
 /** Map a repository error to the unavailable-page reason (never exposes data). */
 export function unavailableReason(e: RepoError | null | undefined): string | null {
   if (!e || !isRepoError(e)) return null;
+  if (e.details?.problemCode === "PARENT_CONTEXT_CHANGED") return "changed";
+  if (e.details?.problemCode === "PARENT_ACCESS_INVALID") return "invalid";
   if (e.code === "REVOKED") return "revoked";
   if (e.code === "EXPIRED") return "expired";
   if (e.code === "SUSPENDED") return "suspended";
@@ -43,20 +45,10 @@ export function useParentRead<T>(key: readonly unknown[], fn: (k: ParentKey, slu
   const p = useParent();
   const router = useRouter();
   const previewId='preview' in p.key?p.key.preview.accessId:null;
-  const q = useQuery<T, RepoError>({ queryKey: ["parent", parentLinkRevision(), previewId, p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
+  const q = useQuery<T, RepoError>({ queryKey: ["parent", parentSessionRevision(), previewId, p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
   const reason = unavailableReason(q.error);
   useEffect(() => { if (reason && !p.preview) router.replace(`/p/${p.slug}/access-unavailable?reason=${reason}`); }, [reason, p.preview, p.slug, router]);
   return q;
-}
-
-/** View telemetry is separate from retrieving private content. */
-export function useParentView(module: ParentModule | "overview") {
-  const p = useParent();
-  useEffect(() => {
-    if (p.preview) return;
-    const dev = /Android/i.test(navigator.userAgent) ? "Điện thoại Android / Trình duyệt" : /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone / Safari" : "Máy tính / Trình duyệt";
-    void parentRepo.logView(p.key, p.slug, module, dev).catch(()=>undefined);
-  }, [module, p.key, p.slug, p.preview]);
 }
 
 const MOBILE_PRIMARY = ["overview", "timetable", "attendance"];
@@ -64,23 +56,26 @@ const MOBILE_PRIMARY = ["overview", "timetable", "attendance"];
 export function ParentShell({ slug, children, preview }: { slug: string; children: ReactNode; preview?: { key: ParentKey; base: string } }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [token, setToken] = useState<string | null | undefined>(undefined);
-  useEffect(() => { setToken(preview ? null : readParentToken(slug)); }, [slug, preview, pathname]);
-  const key = useMemo<ParentKey | null>(() => (preview ? preview.key : token ? { token } : null), [preview, token]);
+  const revision=useSyncExternalStore(onParentSessionChanged,parentSessionRevision,()=>-1);
+  const viewId=revision===-1?null:readParentView(slug);
+  const key = useMemo<ParentKey | null>(() => preview?preview.key:viewId?{viewId}:null, [preview, viewId]);
   const previewId=key&&'preview' in key?key.preview.accessId:null;
-  const ctxQ = useQuery({ queryKey: ["parent", parentLinkRevision(), previewId, slug, "context"], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
-  const reason = unavailableReason(ctxQ.error as RepoError | null);
+  const ctxQ = useQuery({ queryKey: ["parent", revision, previewId, slug, "context",viewId], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false,staleTime:0,refetchOnWindowFocus:true,refetchInterval:30_000 });
+  const reason = !preview?readParentFault(slug)??unavailableReason(ctxQ.error as RepoError | null):unavailableReason(ctxQ.error as RepoError | null);
   useEffect(() => { if (reason && !preview) router.replace(`/p/${slug}/access-unavailable?reason=${reason}`); }, [reason, preview, slug, router]);
   const base = preview?.base ?? `/p/${slug}`;
   const value = useMemo<ParentCtx | null>(() => (key && ctxQ.data ? { key, slug, base, modules: ctxQ.data.modules, preview: !!preview, context: ctxQ.data } : null), [key, ctxQ.data, slug, base, preview]);
 
-  if (token === undefined && !preview) return <PageSkeleton variant="parent" />;
+  if (revision === -1 && !preview) return <PageSkeleton variant="parent" />;
+  if(reason&&!preview)return <PageSkeleton variant="parent" />;
   if (!key) return <NoLink slug={slug} />;
   if (ctxQ.isLoading || (reason && !preview)) return <PageSkeleton variant="parent" />;
   if ((ctxQ.error as RepoError | null)?.code === "FORBIDDEN") return <div className="p-6"><DeniedState message="Bạn không có quyền xem trước link tra cứu này." /></div>;
+  if(ctxQ.error)return <div className="p-6"><ErrorState error={ctxQ.error as RepoError} onRetry={()=>ctxQ.refetch()} /></div>;
   if (!value) return <div className="p-6"><EmptyState title="Không mở được thông tin" description="Đường dẫn không còn hiệu lực hoặc không đúng trường." /></div>;
 
-  const nav = PARENT_NAV.filter((n) => !n.module || value.modules.includes(n.module));
+  const nav = PARENT_NAV.filter((n) => n.href==='overview'?value.context.overviewAllowed:!n.module || value.modules.includes(n.module));
+  const home=nav[0]?.href??'overview';
   const active = (href: string) => (href === "overview" ? pathname === `${base}/overview` || pathname === base : pathname.startsWith(`${base}/${href}`));
   return (
     <Ctx.Provider value={value}>
@@ -88,7 +83,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
         {!preview && <DemoScenarioBanner compact />}
         <header className="no-print relative overflow-hidden border-b border-line bg-gradient-to-r from-white via-[#f5f9ff] to-[#eaf3ff]">
           <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-4 lg:h-[88px]">
-            <Brand href={`${base}/overview`} />
+            <Brand href={`${base}/${home}`} />
             <div className="ml-4 hidden items-center gap-3 md:flex">
               <span className="icon-tile icon-tile-sm tone-blue !rounded-full"><Lock className="size-5" /></span>
               <div><p className="text-[16px] font-bold text-ink">Cổng thông tin dành cho phụ huynh</p><p className="text-[12.5px] text-muted">Thông tin đã được nhà trường công bố, chỉ xem</p></div>
@@ -120,7 +115,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
         </div>
         <footer className="no-print hidden border-t border-line bg-white/70 lg:block">
           <div className="mx-auto grid max-w-[1400px] grid-cols-3 gap-6 px-6 py-5 text-[13px]">
-            {[[<ShieldCheck key="a" className="size-6" />, "An toàn · Chỉ xem", "Không tài khoản, không đăng nhập. Link riêng do nhà trường cấp."], [<Heart key="b" className="size-6" />, "Kết nối yêu thương", "Xem tình hình học tập, rèn luyện đã được công bố của con."], [<Leaf key="c" className="size-6" />, "Đồng hành cùng con", `Liên hệ công việc: ${value.context.school.publicPhone} · ${value.context.school.publicEmail}`]].map(([ic, t, d]) => (
+            {[[<ShieldCheck key="a" className="size-6" />, "An toàn · Chỉ xem", "Không tài khoản, không đăng nhập. Link riêng do nhà trường cấp."], [<Heart key="b" className="size-6" />, "Kết nối yêu thương", "Xem tình hình học tập, rèn luyện đã được công bố của con."], [<Leaf key="c" className="size-6" />, "Đồng hành cùng con", [value.context.school.publicPhone,value.context.school.publicEmail].filter(Boolean).join(' · ')||'Vui lòng liên hệ trực tiếp giáo viên chủ nhiệm.']].map(([ic, t, d]) => (
               <div key={t as string} className="flex items-start gap-3"><span className="icon-tile icon-tile-sm tone-blue !rounded-full">{ic}</span><div><p className="font-bold text-ink">{t}</p><p className="text-muted">{d}</p></div></div>
             ))}
           </div>

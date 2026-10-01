@@ -1,8 +1,8 @@
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {parentCredential,consumeParentCredential,readParentToken,writeParentToken,parentLinkRevision} from '@/lib/api/parent-credential';
+import {parentCredential,consumeParentCredential} from '@/lib/api/parent-credential';
 
-afterEach(()=>{vi.unstubAllGlobals();for(const slug of ['credential-school-a','credential-school-b']){consumeParentCredential(slug);writeParentToken(slug,null);}});
-describe('transitional parent credential intake (portal adapter remains unavailable)',()=>{
+afterEach(()=>{vi.unstubAllGlobals();for(const slug of ['credential-school-a','credential-school-b']){consumeParentCredential(slug);}});
+describe('parent fragment intake independent of view ownership',()=>{
   it('consumes a fragment only on its own school access route, removes it from history and does not persist it',()=>{
     const slug='credential-school-a',location={pathname:`/p/${slug}/access`,hash:'#token=synthetic-parent-secret',search:''},replaceState=vi.fn().mockImplementation(()=>{location.hash='';}),setItem=vi.fn();
     vi.stubGlobal('window',{location,history:{state:null,replaceState},localStorage:{setItem},sessionStorage:{setItem}});
@@ -12,7 +12,11 @@ describe('transitional parent credential intake (portal adapter remains unavaila
   it('does not treat the old query token as a usable link',()=>{
     vi.stubGlobal('window',{location:{pathname:'/p/credential-school-a/access',hash:'',search:'?t=synthetic-query-secret'},history:{replaceState:vi.fn()}});expect(parentCredential('credential-school-a')).toBeNull();
   });
-  it('keeps independent memory ownership and nonsecret cache revisions when a link changes',()=>{
-    const before=parentLinkRevision();writeParentToken('credential-school-a','first-synthetic-secret');writeParentToken('credential-school-b','other-synthetic-secret');expect(parentLinkRevision()).toBe(before+2);expect(readParentToken('credential-school-a')).toBe('first-synthetic-secret');writeParentToken('credential-school-a','first-synthetic-secret');expect(parentLinkRevision()).toBe(before+2);writeParentToken('credential-school-a',null);expect(readParentToken('credential-school-a')).toBeNull();expect(readParentToken('credential-school-b')).toBe('other-synthetic-secret');
+  it('keeps pending fragments separate while a successful receipt consumes only its own fragment',()=>{
+    const location={pathname:'/p/credential-school-a/access',hash:'#token=first-synthetic-secret',search:''};
+    vi.stubGlobal('window',{location,history:{state:null,replaceState:vi.fn().mockImplementation(()=>{location.hash='';})}});
+    expect(parentCredential('credential-school-a')).toBe('first-synthetic-secret');
+    location.pathname='/p/credential-school-b/access';location.hash='#token=other-synthetic-secret';expect(parentCredential('credential-school-b')).toBe('other-synthetic-secret');
+    consumeParentCredential('credential-school-a');expect(parentCredential('credential-school-a')).toBeNull();expect(parentCredential('credential-school-b')).toBe('other-synthetic-secret');
   });
 });

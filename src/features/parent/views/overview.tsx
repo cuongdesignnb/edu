@@ -3,7 +3,7 @@ import Link from "next/link";
 import { clsx } from "clsx";
 import { Lock, Users, GraduationCap, School, Phone, Mail, Clock3, Award, CheckCircle2, MinusCircle, Megaphone, CalendarDays, AlertTriangle, ChevronRight, Quote } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { useParent, useParentView } from "@/features/parent/shell";
+import { useParent } from "@/features/parent/shell";
 import { Card, CardHeader, CardLink } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -29,7 +29,6 @@ function TintHeader({ tone, icon, title, href, linkLabel = "Xem chi tiết" }: {
 
 /** PA02 — Thông tin của con (R10). */
 export function ParentOverviewView() {
-  useParentView("overview");
   const p = useParent();
   const ctx = p.context;
   const q = usePRead(["overview"], (k, s) => parentRepo.overview(k, s));
@@ -65,7 +64,7 @@ export function ParentOverviewView() {
             <div className="min-w-0 flex-1 sm:hidden">
               <p className="text-[19px] font-bold text-ink">{ctx.student.fullName}</p>
               <p className="text-[13px] text-muted">Lớp {ctx.className}</p>
-              <PublishState at={ctx.lastPublishedAt} compact />
+              <PublishState at={ctx.lastPublishedAt??undefined} compact />
             </div>
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-4">
@@ -75,12 +74,12 @@ export function ParentOverviewView() {
                 <p className="mt-1 text-[15px] text-body">Lớp {ctx.className}<span className="mx-3 text-line-strong" aria-hidden>|</span>{ctx.school.name}</p>
                 {ctx.school.motto && <p className="quote mt-2 !text-[15px]"><Quote className="mr-1 inline size-4 -translate-y-0.5 rotate-180 opacity-50" aria-hidden />{ctx.school.motto}</p>}
               </div>
-              <PublishState at={ctx.lastPublishedAt} />
+              <PublishState at={ctx.lastPublishedAt??undefined} />
             </div>
             <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
               <Tile icon={<Users className="size-6" />} label="Học sinh" value={`Lớp ${ctx.className}`} className="hidden sm:flex" />
               <Tile icon={<GraduationCap className="size-6" />} label="Năm học" value={ctx.yearLabel} />
-              <Tile icon={<School className="size-6" />} label="Trường" value={ctx.school.shortName} />
+              <Tile icon={<School className="size-6" />} label="Trường" value={ctx.school.shortName??ctx.school.name} />
             </dl>
           </div>
         </div>
