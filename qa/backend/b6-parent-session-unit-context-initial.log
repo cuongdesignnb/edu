@@ -1,0 +1,10 @@
+﻿
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-context.test.ts (5 tests) 9ms
+ ✓ tests/unit/api-parent-session.test.ts (8 tests) 13ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  13:41:21
+   Duration  542ms (transform 93ms, setup 78ms, collect 102ms, tests 21ms, environment 0ms, prepare 360ms)

@@ -4165,6 +4165,22 @@
             "publicContactPhone": {
               "type": "string",
               "nullable": true
+            },
+            "shortName": {
+              "type": "string",
+              "nullable": true
+            },
+            "motto": {
+              "type": "string",
+              "nullable": true
+            },
+            "publicContactEmail": {
+              "type": "string",
+              "nullable": true
+            },
+            "publicAddress": {
+              "type": "string",
+              "nullable": true
             }
           },
           "required": [
@@ -4221,6 +4237,44 @@
         "expiresAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "year": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "startsOn": {
+              "type": "string",
+              "format": "date"
+            },
+            "endsOn": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "required": [
+            "label",
+            "startsOn",
+            "endsOn"
+          ],
+          "additionalProperties": false
+        },
+        "relationshipLabel": {
+          "type": "string"
+        },
+        "linkExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastPublishedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
         }
       },
       "required": [

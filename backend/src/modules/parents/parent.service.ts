@@ -27,7 +27,7 @@ export class ParentService {
   handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','listParentConduct','getParentConduct','getParentTimetable','getParentDuties','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','listParentDocuments','downloadParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   async school(slug:string){const school=(await this.db.app.query<Row>('SELECT id,name,slug,status,timezone,public_contact_phone FROM platform.schools WHERE slug=$1',[slug])).rows[0];if(!school||school.status!=='ACTIVE')throw new Problem(401,'PARENT_ACCESS_INVALID');return school;}
   async link(tx:Transaction,schoolId:string,id:string){
-    const link=await one<Row>(tx,`SELECT l.*,s.full_name,y.name AS year_label,y.status AS year_status,sc.name AS school_name,sc.slug,sc.public_contact_phone,sc.timezone,
+    const link=await one<Row>(tx,`SELECT l.*,s.full_name,y.name AS year_label,y.status AS year_status,sc.name AS school_name,sc.slug,sc.public_contact_phone,sc.public_contact_email,sc.public_address,sc.short_name AS school_short_name,sc.motto,sc.timezone,g.relationship_label,y.starts_on AS year_starts_on,y.ends_on AS year_ends_on,to_char((now() AT TIME ZONE sc.timezone)::date,'YYYY-MM-DD') AS today,
       coalesce((SELECT c.name FROM app.enrollments e JOIN app.classes c ON c.school_id=e.school_id AND c.id=e.class_id WHERE e.school_id=l.school_id AND e.student_id=l.student_id AND e.year_id=l.year_id AND e.status<>'CANCELLED' AND e.starts_on<=(now() AT TIME ZONE sc.timezone)::date ORDER BY e.starts_on DESC,e.id LIMIT 1),'Chưa xếp lớp') AS class_label
       FROM app.parent_access_links l JOIN app.guardian_relationships g ON g.school_id=l.school_id AND g.id=l.relationship_id AND g.student_id=l.student_id
       JOIN app.students s ON s.school_id=l.school_id AND s.id=l.student_id JOIN app.academic_years y ON y.school_id=l.school_id AND y.id=l.year_id JOIN platform.schools sc ON sc.id=l.school_id
@@ -47,7 +47,13 @@ export class ParentService {
       return this.principal(session,link);
     },{schoolId:String(school.id)});
   }
-  context(p:ParentPrincipal){const l=p.link;return {viewId:p.sessionId,school:{name:l.school_name,slug:l.slug,publicContactPhone:l.public_contact_phone},student:{displayName:l.full_name,classLabel:l.class_label,schoolYearLabel:l.year_label},allowedSections:l.allowed_sections,allowDownload:l.allow_download,csrfToken:csrfFor(p.sessionId,p.tokenHash),expiresAt:p.absoluteExpiresAt};}
+  async context(p:ParentPrincipal){
+    const l=p.link,last=await this.db.transaction(tx=>one<Row>(tx,`SELECT max(app.parent_publication_time(school_id,student_id,year_id,section,publication_id)) AS published_at
+      FROM app.parent_publication_items WHERE school_id=$1 AND student_id=$2 AND year_id=$3 AND section=ANY($4::text[])`,[p.schoolId,p.studentId,p.yearId,l.allowed_sections]),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
+    return {viewId:p.sessionId,school:{name:l.school_name,slug:l.slug,publicContactPhone:l.public_contact_phone,shortName:l.school_short_name||null,motto:l.motto||null,publicContactEmail:l.public_contact_email||null,publicAddress:l.public_address||null},
+      student:{displayName:l.full_name,classLabel:l.class_label,schoolYearLabel:l.year_label},allowedSections:l.allowed_sections,allowDownload:l.allow_download,csrfToken:csrfFor(p.sessionId,p.tokenHash),expiresAt:p.absoluteExpiresAt,
+      today:l.today,year:{label:l.year_label,startsOn:iso(l.year_starts_on as Date),endsOn:iso(l.year_ends_on as Date)},relationshipLabel:l.relationship_label,linkExpiresAt:iso(l.expires_at as Date),lastPublishedAt:last?.published_at?iso(last.published_at as Date):null};
+  }
   private allow(p:ParentPrincipal,section:string){if(!(p.link.allowed_sections as string[]).includes(section))throw new Problem(403,'PARENT_SECTION_DENIED');}
   private async event(tx:Transaction,c:RequestContext,p:ParentPrincipal,kind:string,section?:string){
     const daily=new Date().toISOString().slice(0,10),ipHash=crypto.createHmac('sha256',runtimeConfig().key).update(`parent-ip:${daily}:${c.request.ip}`).digest('hex');
@@ -65,7 +71,7 @@ export class ParentService {
       const session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(id,school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,$5,least($6,now()+interval '30 minutes'),least($6,now()+interval '8 hours')) RETURNING *`,[sessionId,school.id,link.id,tokenHash,hashToken(csrfToken),link.expires_at]);
       const principal=this.principal(session!,link);await this.event(tx,c,principal,'EXCHANGED');return principal;
     },{schoolId:String(school.id)});
-    setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(28800,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:this.context(p)};
+    setCookie(c.reply,runtimeConfig().parentCookie,token,Math.min(28800,Math.floor((new Date(p.link.expires_at as Date).getTime()-Date.now())/1000)));return {data:await this.context(p)};
   }
   private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string}){
     this.allow(p,section);if(query.sort&&!['id','createdAt','publishedAt'].includes(query.sort))validation('sort','Chỉ sắp xếp theo thời gian công bố');
@@ -117,7 +123,7 @@ export class ParentService {
     const sections=p.link.allowed_sections as string[],read=async(section:string)=>sections.includes(section)?(await this.published(p,section,{limit:'10'})).data as Record<string,unknown>[]:[];
     const attendance=await read('attendance'),conduct=await read('conduct'),announcements=await read('announcements'),lessons=await read('timetable'),teachers=sections.includes('teachers')?(await this.teachers(p)).data:[];
     const today=(await this.db.app.query<{today:string}>("SELECT (now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$1",[p.schoolId])).rows[0]!.today;
-    return {context:this.context(p),attendance,...(conduct.length?{latestConduct:conduct[0]}:{}),teachers,todayLessons:lessons.filter(item=>item.date===today),announcements,asOf:new Date().toISOString()};
+    return {context:await this.context(p),attendance,...(conduct.length?{latestConduct:conduct[0]}:{}),teachers,todayLessons:lessons.filter(item=>item.date===today),announcements,asOf:new Date().toISOString()};
   }
   async preview(c:RequestContext,schoolId:string,accessId:string){
     const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW');return principal;},{schoolId});
@@ -127,7 +133,7 @@ export class ParentService {
     c.reply.header('X-Robots-Tag','noindex, nofollow');if(c.operation.id==='exchangeParentLink')return this.exchange(c);
     const p=c.parent!;
     if(c.operation.id==='endParentSession'){await this.db.transaction(async tx=>{await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1 AND school_id=$2',[p.sessionId,p.schoolId]);await this.event(tx,c,p,'ENDED');},{schoolId:p.schoolId});setCookie(c.reply,runtimeConfig().parentCookie,'',0);return {data:{id:p.sessionId,status:'ENDED'}};}
-    if(c.operation.id==='getParentContext')return {data:this.context(p)};
+    if(c.operation.id==='getParentContext')return {data:await this.context(p)};
     const section=c.operation.permission.replace('parent.','');this.allow(p,section);let result:Result;
     if(section==='overview')result={data:await this.overview(p)};
     else if(section==='teachers')result=await this.teachers(p);

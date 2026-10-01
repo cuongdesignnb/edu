@@ -155,3 +155,11 @@ test('student-create options are a minimal write-purpose class projection withou
   for(const field of ['students','capacity','homeroomMemberId','gradeId','contacts'])assert.throws(()=>validateSchema('StudentCreateClassChoice',{...choice,[field]:[]},true));
   assert.equal(operations.find(op=>op.id==='getStudentCreateOptions').permission,'student.manage');
 });
+
+
+test('parent context metadata distinguishes year, link and session bounds without child private fields',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',time=new Date().toISOString(),context={viewId:id,school:{name:'Trường',slug:'truong',publicContactPhone:null,shortName:null,motto:null,publicContactEmail:null,publicAddress:null},student:{displayName:'Học sinh',classLabel:'Lớp',schoolYearLabel:'Năm'},allowedSections:['overview'],allowDownload:false,csrfToken:'synthetic-csrf',expiresAt:time,today:'2026-10-01',year:{label:'Năm',startsOn:'2026-09-01',endsOn:'2027-06-01'},relationshipLabel:'Mẹ',linkExpiresAt:time,lastPublishedAt:null};
+  validateSchema('ParentContext',context,true);
+  for(const field of ['dateOfBirth','internalNote','guardianPhone','studentId','token','tokenHash'])assert.throws(()=>validateSchema('ParentContext',{...context,student:{...context.student,[field]:'private'}},true));
+  assert.throws(()=>validateSchema('ParentContext',{...context,year:{...context.year,endsOn:time}},true));
+});

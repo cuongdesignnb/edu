@@ -1,0 +1,9 @@
+﻿
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-session.test.ts (8 tests) 11ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  13:36:33
+   Duration  478ms (transform 63ms, setup 49ms, collect 50ms, tests 11ms, environment 0ms, prepare 133ms)

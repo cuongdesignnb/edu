@@ -352,6 +352,10 @@ spec.components.schemas.StudentPatch.properties.internalNote={type:'string',maxL
 spec.components.schemas.StudentDetail.properties.internalNote.nullable=true;
 // ADR-051: SQL directory and explicit historical/current student projections.
 const studentDate={type:'string',format:'date'},studentNullableDate={...studentDate,nullable:true},nullableLabel={type:'string',nullable:true};
+// Native parent shell metadata: no child date of birth, personal contacts or bearer material.
+Object.assign(spec.components.schemas.ParentContext.properties,{today:studentDate,year:object({label,startsOn:studentDate,endsOn:studentDate}),relationshipLabel:label,linkExpiresAt:timestamp,lastPublishedAt:{...timestamp,nullable:true}});
+Object.assign(spec.components.schemas.ParentContext.properties.school.properties,{shortName:nullableLabel,motto:nullableLabel,publicContactEmail:nullableLabel,publicAddress:nullableLabel});
+
 spec.components.schemas.StudentYear=object({id:uuid,version:versionPositive,name:label,status:structuredClone(spec.components.schemas.Year.properties.status),startsOn:studentDate,endsOn:studentDate});
 spec.components.schemas.StudentDirectoryClass=object({id:uuid,version:versionPositive,yearId:uuid,name:label,status:structuredClone(spec.components.schemas.Class.properties.status)});
 spec.components.schemas.StudentDirectoryRow=object({id:uuid,version:versionPositive,createdAt:timestamp,updatedAt:timestamp,studentCode:label,fullName:label,dateOfBirth:studentNullableDate,gender:studentGender,status:structuredClone(spec.components.schemas.Student.properties.status),

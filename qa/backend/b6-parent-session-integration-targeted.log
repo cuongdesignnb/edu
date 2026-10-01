@@ -1,0 +1,16 @@
+﻿ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-4551739eebb0 Creating
+ Container edumanage_backend_test-runner-run-4551739eebb0 Created
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (1976.059578ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (629.795163ms)
+✔ B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity (552.217845ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4005.808557

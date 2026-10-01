@@ -1,0 +1,120 @@
+{
+  "phase": "B6 parent session ownership and safe context foundations; helpers unmounted, partial goal checkpoint",
+  "previousCommit": "5349c9db26c3e55ca9cf47ca2a0b64358d766daa",
+  "contract": {
+    "operations": 310,
+    "schemas": 423,
+    "operationStatus": {
+      "TESTED": 298,
+      "IMPLEMENTED": 12
+    },
+    "additions": "Optional safe ParentContext metadata; no new operations"
+  },
+  "postgresFull": {
+    "tests": 160,
+    "pass": 160,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 430144.354134,
+    "migrations": 36,
+    "runnerImage": "sha256:e677e280b6be8b0254ba5461e81a3b05d95777a9132cf43f90d572a155a9fe75",
+    "log": "b6-parent-session-integration-full.log"
+  },
+  "postgresSelected": {
+    "tests": 3,
+    "pass": 3,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 4005.808557,
+    "log": "b6-parent-session-integration-targeted.log"
+  },
+  "backendUnitContracts": {
+    "tests": 32,
+    "pass": 32,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 551.907,
+    "log": "b6-parent-session-backend-unit-contract.log"
+  },
+  "backendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-session-backend-types.log"
+  },
+  "backendLint": {
+    "exitCode": 0,
+    "warnings": 0,
+    "log": "b6-parent-session-backend-lint.log"
+  },
+  "frontendUnits": {
+    "tests": 273,
+    "pass": 273,
+    "fail": 0,
+    "files": 31,
+    "durationSeconds": 10.7,
+    "apiCases": 232,
+    "historicalSyntheticRegressions": 41,
+    "log": "b6-parent-session-frontend-unit-reviewed.log",
+    "newHelperCases": 13
+  },
+  "frontendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-session-frontend-types-reviewed.log"
+  },
+  "frontendChangedLint": {
+    "exitCode": 0,
+    "warnings": 0,
+    "files": 4,
+    "log": "b6-parent-session-frontend-lint-final.log"
+  },
+  "frontendProductionBuild": {
+    "status": "NOT_RUN_THIS_CHECKPOINT",
+    "reason": "Pure helpers are not mounted; root facade and parent UI remain unchanged"
+  },
+  "controlledBrowser": {
+    "status": "NOT_RUN_THIS_CHECKPOINT",
+    "previousCheckpoint": "b6-parent-access-checks.json",
+    "reason": "Prior47 intercepted cases are not claimed as this checkpoint evidence or PostgreSQL browser E2E"
+  },
+  "activation": {
+    "sessionRegistry": "UNMOUNTED",
+    "contextParser": "UNMOUNTED",
+    "parentFacade": "UNACTIVATED",
+    "previewFacade": "UNACTIVATED",
+    "nativeCandidates": 109,
+    "activatedCandidates": 109,
+    "matchedLegacy": 98,
+    "legacyMethods": 231,
+    "pendingLegacy": 133,
+    "coreSource": {
+      "IMPLEMENTED": 46,
+      "NOT_STARTED": 69,
+      "STATIC_UNVERIFIED": 3,
+      "TESTED": 0
+    }
+  },
+  "ownership": {
+    "storedFields": [
+      "slug",
+      "viewId"
+    ],
+    "storage": "sessionStorage, non-bearer pointer only",
+    "csrf": "memory only",
+    "cookie": "server-owned HttpOnly authentication",
+    "switch": "abort old requests and reject late ownership receipts"
+  },
+  "context": "Actual school timezone date/year bounds/relation/link expiry/session expiry/public contacts; last publication constrained to link student, year, current publications and allowed sections; display excludes view/CSRF/private identity metadata",
+  "limitations": [
+    "Parent session/query/screen adapters not mounted",
+    "No new screen acceptance",
+    "No current phase frontend build/browser run",
+    "No real PostgreSQL browser E2E",
+    "Root deploy/scripts merge and final loopback Docker stack not completed",
+    "Release restart, physical backup/restore, failure drills and specified workload benchmark pending",
+    "No production deployment"
+  ],
+  "failedPreparatoryCommands": [
+    "First edit used backend cwd and could not find root source; corrected from D:/Edu before metadata generation",
+    "An exact-text edit assertion failed before writing; corrected against actual integration source"
+  ],
+  "logPreservation": "All current logs retained, including initial runs; previous checkpoint logs unchanged; unrelated handoff ZIP untouched"
+}
