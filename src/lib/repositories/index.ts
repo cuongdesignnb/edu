@@ -2,13 +2,14 @@
 import {apiRepository} from './connected/facade';
 import {connectedSessionRepo} from './connected/session';
 import {connectedPlatformRepo} from './connected/platform';
+import {connectedSchoolRepo} from './connected/school';
 
 import {connectedPlatformExtraRepo} from './connected/platform';
 import {connectedAuthRepo} from './connected/auth';
 
 export const sessionRepo=apiRepository<typeof import('./session').sessionRepo,typeof connectedSessionRepo>(connectedSessionRepo);
 export const platformRepo=apiRepository<typeof import('./platform').platformRepo,typeof connectedPlatformRepo>(connectedPlatformRepo);
-export const schoolRepo=apiRepository<typeof import('./school').schoolRepo,object>({});
+export const schoolRepo=apiRepository<typeof import('./school').schoolRepo,typeof connectedSchoolRepo>(connectedSchoolRepo);
 export const staffRepo=apiRepository<typeof import('./staff').staffRepo,object>({});
 export const studentsRepo=apiRepository<typeof import('./students').studentsRepo,object>({});
 export const supportRepo=apiRepository<typeof import('./support').supportRepo,object>({});

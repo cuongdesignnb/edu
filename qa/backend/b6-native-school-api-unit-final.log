@@ -1,0 +1,32 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-client.test.ts (11 tests) 34ms
+ ✓ tests/unit/api-query-boundary.test.ts (5 tests) 36ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 39ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 62ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 76ms
+ ✓ tests/unit/api-auth-adapter.test.ts (7 tests) 45ms
+ ✓ tests/unit/api-platform-adapter.test.ts (13 tests) 56ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 71ms
+ ✓ tests/unit/api-students-adapter.test.ts (11 tests) 46ms
+ ✓ tests/unit/api-school-adapter.test.ts (22 tests) 82ms
+ ✓ tests/unit/api-assignment-adapter.test.ts (8 tests) 47ms
+ ✓ tests/unit/api-handover-adapter.test.ts (8 tests) 49ms
+ ✓ tests/unit/api-staff-adapter.test.ts (9 tests) 49ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (17 tests) 61ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 53ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 34ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 39ms
+ ✓ tests/unit/api-context.test.ts (1 test) 8ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 10ms
+ ✓ tests/unit/api-parent-credential.test.ts (3 tests) 8ms
+ ✓ tests/unit/api-member-details.test.ts (5 tests) 21ms
+ ✓ tests/unit/api-school-read-capability.test.ts (1 test) 4ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 3244ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  3225ms
+
+ Test Files  23 passed (23)
+      Tests  174 passed (174)
+   Start at  10:17:21
+   Duration  4.50s (transform 2.41s, setup 1.37s, collect 5.99s, tests 4.18s, environment 5ms, prepare 3.89s)

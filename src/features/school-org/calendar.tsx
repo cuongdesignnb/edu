@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 import { CalendarDays, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, CalendarClock, Umbrella, ListOrdered, ArrowLeft } from "lucide-react";
-import type { Term } from "@/lib/model/types";
+type Term = Awaited<ReturnType<typeof schoolRepo.yearDetail>>["terms"][number];
 import { schoolRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
@@ -170,8 +170,8 @@ function WeeksTable({ d, editable }: { d: Detail; editable: boolean }) {
                       <td className="whitespace-nowrap">{w.startDate.slice(8, 10)}/{w.startDate.slice(5, 7)} – {fmtDate(w.endDate)}</td>
                       <td className="whitespace-nowrap">{d.terms.find((t) => t.id === w.termId)?.name}</td>
                       <td className="whitespace-nowrap">{fmtDate(w.closeDeadline)}</td>
-                      <td>{w.isCurrent ? <Badge tone="success" className="whitespace-nowrap">Hiện tại</Badge> : w.locked ? <Badge tone="purple" className="whitespace-nowrap" title="Có lớp đã chốt thi đua tuần này">Đã chốt</Badge> : <Badge tone="neutral" className="whitespace-nowrap">Đang mở</Badge>}</td>
-                      {editable && <td className="center"><Button size="sm" variant="ghost" disabled={w.locked} title={w.locked ? "Tuần đã có lớp chốt — không đổi hạn áp ngược" : undefined} onClick={() => setEdit(w)}>Đổi hạn</Button></td>}
+                      <td>{w.isCurrent ? <Badge tone="success" className="whitespace-nowrap">Hiện tại</Badge> : w.locked === null ? <Badge tone="neutral">Không có quyền xem tình trạng chốt</Badge> : w.locked ? <Badge tone="purple" className="whitespace-nowrap" title="Có lớp đã chốt thi đua tuần này">Đã chốt</Badge> : <Badge tone="neutral" className="whitespace-nowrap">Đang mở</Badge>}</td>
+                      {editable && <td className="center"><Button size="sm" variant="ghost" disabled={w.locked !== false} title={w.locked ? "Tuần đã có lớp chốt — không đổi hạn áp ngược" : undefined} onClick={() => setEdit(w)}>Đổi hạn</Button></td>}
                     </tr>
                   ))}
                 </tbody>
@@ -189,12 +189,12 @@ function WeeksTable({ d, editable }: { d: Detail; editable: boolean }) {
 function DeadlineDialog({ week, schoolId, onClose }: { week: WeekRow | null; schoolId: string; onClose: () => void }) {
   const [value, setValue] = useState<string | undefined>();
   const { errors, setErrors, onError } = useFormErrors();
-  const cmd = useCommand((c, id: string, date: string) => schoolRepo.updateWeekDeadline(c, schoolId, id, date), { success: (w) => `Đã đổi hạn chốt tuần ${w.index}`, onError });
+  const cmd = useCommand((c, row: WeekRow, date: string) => schoolRepo.updateWeekDeadline(c, schoolId, row.id, date, row.version), { success: (w) => `Đã đổi hạn chốt tuần ${w.index}`, onError });
   const v = value ?? week?.closeDeadline;
   const close = () => { setValue(undefined); setErrors({}); onClose(); };
   return (
     <Modal open={!!week} onOpenChange={(o) => { if (!o) close(); }} busy={cmd.pending} size="sm" title={`Hạn chốt tuần ${week?.index ?? ""}`} description={week ? `${fmtDate(week.startDate)} – ${fmtDate(week.endDate)}` : undefined}
-      footer={<><Button variant="ghost" onClick={close} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} disabled={!v || v === week?.closeDeadline} onClick={async () => { if (!week || !v) return; const r = await cmd.run(week.id, v); if (r) close(); }}>Lưu hạn chốt</Button></>}>
+      footer={<><Button variant="ghost" onClick={close} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} disabled={!v || v === week?.closeDeadline} onClick={async () => { if (!week || !v) return; const r = await cmd.run(week, v); if (r) close(); }}>Lưu hạn chốt</Button></>}>
       <div className="space-y-3">
         <FormError message={errors._form} />
         <DateField label="Hạn chốt" required value={v} min={week?.endDate} onChange={setValue} error={errors.closeDeadline} helper="Không sớm hơn ngày cuối tuần. Chỉ áp dụng khi chưa có lớp chốt tuần này." />
@@ -206,10 +206,10 @@ function DeadlineDialog({ week, schoolId, onClose }: { week: WeekRow | null; sch
 function Holidays({ d, editable }: { d: Detail; editable: boolean }) {
   const { school } = useSchool();
   const [form, setForm] = useState<{ name: string; startDate?: string; endDate?: string }>({ name: "" });
-  const [remove, setRemove] = useState<{ id: string; name: string } | null>(null);
+  const [remove, setRemove] = useState<Detail["holidays"][number] | null>(null);
   const { errors, setErrors, onError, clear } = useFormErrors();
   const add = useCommand((c, h: { name: string; startDate: string; endDate: string }) => schoolRepo.addHoliday(c, school.id, d.year.id, h), { success: (h) => `Đã thêm ${h.name}`, onError });
-  const del = useCommand((c, id: string) => schoolRepo.removeHoliday(c, school.id, id), { success: "Đã xóa ngày nghỉ khỏi lịch" });
+  const del = useCommand((c, row: Detail["holidays"][number], reason: string) => schoolRepo.removeHoliday(c, school.id, row.id, row.version, reason), { success: "Đã xóa ngày nghỉ khỏi lịch" });
   const submit = async () => {
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Nhập tên ngày nghỉ";
@@ -228,7 +228,7 @@ function Holidays({ d, editable }: { d: Detail; editable: boolean }) {
             {d.holidays.map((h) => (
               <li key={h.id} className="flex items-center gap-3 px-4 py-2.5">
                 <div className="min-w-0 flex-1"><p className="font-medium text-ink">{h.name}</p><p className="text-[12.5px] text-muted">{fmtDate(h.startDate)}{h.endDate !== h.startDate ? ` – ${fmtDate(h.endDate)}` : ""}</p></div>
-                {editable && <IconButton label={`Xóa ${h.name}`} icon={<Trash2 className="size-4" />} size="sm" onClick={() => setRemove({ id: h.id, name: h.name })} />}
+                {editable && <IconButton label={`Xóa ${h.name}`} icon={<Trash2 className="size-4" />} size="sm" onClick={() => setRemove(h)} />}
               </li>
             ))}
           </ul>
@@ -251,7 +251,8 @@ function Holidays({ d, editable }: { d: Detail; editable: boolean }) {
       </div>
       <ConfirmDialog open={!!remove} onOpenChange={(o) => { if (!o) setRemove(null); }} busy={del.pending} title="Xóa ngày nghỉ khỏi lịch" object={remove?.name} variant="danger" confirmLabel="Xóa ngày nghỉ"
         consequence="Ngày này trở lại là ngày học bình thường trên lịch. Dữ liệu điểm danh, thi đua đã ghi không thay đổi."
-        onConfirm={async () => { if (!remove) return; const r = await del.run(remove.id); if (r) setRemove(null); }} />
+        reasonLabel="Lý do xóa khỏi lịch (ít nhất 3 ký tự)" reasonRequired error={del.error?.message}
+        onConfirm={async (reason) => { if (!remove) return; const r = await del.run(remove, reason); if (r) setRemove(null); }} />
     </Card>
   );
 }

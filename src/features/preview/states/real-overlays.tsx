@@ -147,7 +147,7 @@ function O04({ open, close }: { open: boolean; close: () => void }) {
   if (!open) return null;
   const term = q.data?.terms[0];
   if (!q.data || !term) return <Modal open onOpenChange={close} title="Đang tải năm học…">{q.error ? <p className="text-sm text-danger-text">{q.error.message}</p> : <Loading />}</Modal>;
-  return <TermDialog term={term} year={q.data.year} lockedWeeks={q.data.weeks.filter((w) => w.termId === term.id && w.locked).length} onClose={close} />;
+  return <TermDialog term={{...term, code: "PREVIEW-TERM", version: 1, openingDate: term.openingDate}} year={q.data.year} lockedWeeks={q.data.weeks.filter((w) => w.termId === term.id && w.locked).length} onClose={close} />;
 }
 
 /** O32 — the real unsaved-changes guard: type, then click any link. */

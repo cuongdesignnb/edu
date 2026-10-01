@@ -1325,3 +1325,14 @@ storage or raw-token query keys. This is transitional intake, not a native porta
 session or parent acceptance claim. Seven intercepted-response browser contract
 checks and API units are separate from the pending real PostgreSQL browser E2E,
 multi-tab, Docker restart, physical backup/restore and release-load gates.
+
+
+## ADR-056 — Native school source, permission-separated DTO panels and reviewed commands
+
+The root facade activates the existing school SDK. Actor/access revision still owns every read/command; school/year changes remount affected private forms and clear exact school cache keys. The selected year is validated against server-returned rows. Schools without an active year can select an actual draft/archived year, and schools without any year retain configuration and year creation. No empty selection is sent as a fabricated year ID. Date advice uses the server-adjusted clock and school timezone; persisted year choice grants no authority.
+
+Year/calendar reads are independent of class/dictionary management. Class panels are null without their current school capability; class readers group returned class projections without borrowing a dictionary management picker. Current School dictionary.read can supply the actual catalog. Grade/teacher list filters remain limited by their existing picker capabilities until a separate read-purpose integration is implemented. Null counters and completeness are unavailable, not zero or unfinished. Assignment metadata/inputs require assignment authority; class creation remains one atomic server command.
+
+Forms retain displayed versions and dirty values. A semantic write ACK must match the entity/version and commanded status before idempotency cleanup or success. An explicit conflict reload fetches the source; a transient read failure can retain the current owner's reviewed draft with an error, whereas forbidden reads remove the private form. These are actual cached server values, not fixture fallback. Settings/profile acknowledge the returned snapshot before clearing dirty state. Public contact nulls are allowed. Logo/file and linked staff actions remain pending.
+
+Full PostgreSQL153 and backend contract27 are API evidence. Frontend API174/all-unit215 and 13 intercepted-response Edge checks are separate evidence; the historical synthetic41 and controlled browser responses cannot certify PostgreSQL browser E2E. Screen status remains IMPLEMENTED until full native acceptance. B6/B7, physical restore/restart and release load remain incomplete; no final local Docker or production success is claimed.

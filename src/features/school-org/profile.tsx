@@ -24,10 +24,13 @@ const PRESETS = ["#0a72e6", "#087cfa", "#0e9f6e", "#7c5ce0", "#e5484d", "#f59e0b
 export function ProfileScreen() {
   const { school } = useSchool();
   const q = useRepo(["school-profile", school.id], (c) => schoolRepo.profile(c, school.id));
-  return <QueryState query={q} skeleton="form">{(d) => <ProfileForm key={d.school.version} s={d.school} canEdit={d.canEdit} onReload={() => q.refetch()} />}</QueryState>;
+  if (q.data && (!q.error || q.error.code === "READ_ERROR")) return <ProfileForm s={q.data.school} canEdit={q.data.canEdit} readError={q.error?.message} onReload={async () => { const r = await q.refetch(); return r.error ? undefined : r.data?.school; }} />;
+  return <QueryState query={q} skeleton="form">{() => null}</QueryState>;
 }
 
-function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; onReload: () => void }) {
+type NativeSchool = Awaited<ReturnType<typeof schoolRepo.profile>>["school"];
+function ProfileForm({ s: latest, canEdit, onReload, readError }: { readError?: string; s: NativeSchool; canEdit: boolean; onReload: () => Promise<NativeSchool | undefined> }) {
+  const [s, setReviewed] = useState(latest);
   const init = useMemo<Form>(() => ({ shortName: s.shortName, motto: s.motto, publicIntro: s.publicIntro, publicPhone: s.publicPhone, publicEmail: s.publicEmail, address: s.address, website: s.website ?? "", accentColor: s.accentColor }), [s]);
   const [v, setV] = useState<Form>(init);
   const [logo, setLogo] = useState<{ url: string; name: string } | null>(null);
@@ -38,13 +41,14 @@ function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; on
   const save = async () => {
     const e: Record<string, string> = {};
     if (v.shortName.trim().length < 2) e.shortName = "Nhập tên viết tắt";
-    if (!/^\S+@\S+\.\S+$/.test(v.publicEmail)) e.publicEmail = "Email liên hệ chưa hợp lệ";
+    if (v.publicEmail && !/^\S+@\S+\.\S+$/.test(v.publicEmail)) e.publicEmail = "Email liên hệ chưa hợp lệ";
     if (!/^#[0-9a-fA-F]{6}$/.test(v.accentColor)) e.accentColor = "Màu nhấn dạng #RRGGBB";
     if (/[<>]/.test(v.publicIntro + v.motto + v.shortName + v.address)) e.publicIntro = "Không chèn mã HTML/JS — chỉ nhập văn bản thường";
     if (v.publicIntro.length > 600) e.publicIntro = "Tối đa 600 ký tự";
     if (v.website && !/^https?:\/\/[^\s<>]+$/.test(v.website)) e.website = "Website bắt đầu bằng http:// hoặc https://";
     if (Object.keys(e).length) { setErrors(e); return false; }
     const r = await cmd.run({ ...v, website: v.website || undefined, version: s.version });
+    if (r) { setReviewed(r); setV({ shortName: r.shortName, motto: r.motto, publicIntro: r.publicIntro, publicPhone: r.publicPhone, publicEmail: r.publicEmail, address: r.address, website: r.website ?? "", accentColor: r.accentColor }); }
     return !!r;
   };
   useUnsavedChanges(dirty, save);
@@ -56,12 +60,13 @@ function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; on
       <PageHeader title="Thông tin và nhận diện trường" subtitle="Thông tin công khai hiển thị trên trang trường, cổng phụ huynh và bản in"
         breadcrumbs={[{ label: "Nhà trường", href: `/school/${s.id}` }, { label: "Thông tin trường" }]}
         actions={canEdit ? <><Button variant="ghost" disabled={!dirty || cmd.pending} onClick={() => { setV(init); setErrors({}); }}>Hủy thay đổi</Button><Button variant="primary" loading={cmd.pending} disabled={!dirty} onClick={save}>Lưu thông tin</Button></> : undefined} />
+      {readError && <FormError message={readError} />}
       {ro && <Callout tone="neutral" icon={<Lock />}>Bạn chỉ có quyền xem. Sửa thông tin trường cần quyền “Sửa thông tin và nhận diện trường”.</Callout>}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card>
             <CardHeader title="Thông tin định danh" icon={<Building2 className="size-5 text-primary" />} subtitle="Do nền tảng quản lý — liên hệ hỗ trợ nếu cần đổi" />
-            <dl className="px-5 pb-4"><InfoRow label="Tên trường">{s.name}</InfoRow><InfoRow label="Mã trường">{s.code}</InfoRow><InfoRow label="Đường dẫn trang trường">/schools/{s.slug}</InfoRow><InfoRow label="Cấp học · Tỉnh/thành">{s.level} · {s.province}</InfoRow></dl>
+            <dl className="px-5 pb-4"><InfoRow label="Tên trường">{s.name}</InfoRow><InfoRow label="Mã trường">{s.code}</InfoRow><InfoRow label="Đường dẫn trang trường">/schools/{s.slug}</InfoRow><InfoRow label="Cấp học · Tỉnh/thành">{s.level ?? "Chưa khai báo cấp học"} · {s.province}</InfoRow></dl>
           </Card>
           <Card>
             <CardHeader title="Thông tin công khai" icon={<Globe className="size-5 text-primary" />} />
@@ -75,7 +80,7 @@ function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; on
               <div data-field="publicIntro"><TextArea label="Giới thiệu ngắn" disabled={ro} rows={4} maxChars={600} value={v.publicIntro} onChange={(e) => set("publicIntro", e.target.value)} error={errors.publicIntro} helper="Văn bản thường, không nhận HTML hoặc mã script." /></div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div data-field="publicPhone"><TextField label="Điện thoại công khai" disabled={ro} icon={<Phone className="size-4" />} value={v.publicPhone} onChange={(e) => set("publicPhone", e.target.value)} /></div>
-                <div data-field="publicEmail"><TextField label="Email liên hệ" required disabled={ro} type="email" icon={<Mail className="size-4" />} value={v.publicEmail} onChange={(e) => set("publicEmail", e.target.value)} error={errors.publicEmail} /></div>
+                <div data-field="publicEmail"><TextField label="Email liên hệ" disabled={ro} type="email" icon={<Mail className="size-4" />} value={v.publicEmail} onChange={(e) => set("publicEmail", e.target.value)} error={errors.publicEmail} /></div>
                 <div data-field="address"><TextField label="Địa chỉ" disabled={ro} icon={<MapPin className="size-4" />} value={v.address} onChange={(e) => set("address", e.target.value)} /></div>
                 <div data-field="website"><TextField label="Website" disabled={ro} placeholder="https://" value={v.website ?? ""} onChange={(e) => set("website", e.target.value)} error={errors.website} /></div>
               </div>
@@ -100,7 +105,7 @@ function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; on
                 <p className="label mb-1.5 flex items-center gap-2">Logo <DemoTag>Xem trước cục bộ</DemoTag></p>
                 <FileDropzone accept={["image/png", "image/jpeg", "image/webp"]} maxBytes={1024 * 1024} disabled={ro} label="Chọn ảnh logo (PNG, JPG, WEBP)" hint="Tối đa 1 MB. Không nhận SVG (có thể chứa mã)."
                   onFiles={([f]) => { if (logo) URL.revokeObjectURL(logo.url); setLogo({ url: URL.createObjectURL(f), name: f.name }); }} />
-                <p className="mt-1.5 text-[12px] text-muted">{logo ? `Đang xem trước “${logo.name}”. ` : ""}Bản demo chưa lưu ảnh logo vào hồ sơ trường; nhận diện dùng ký hiệu chữ theo màu nhấn.</p>
+                <p className="mt-1.5 text-[12px] text-muted">{logo ? `Đang xem trước “${logo.name}”. ` : ""}Ảnh đang chọn chỉ dùng để xem trước. Hồ sơ hiện dùng ký hiệu chữ theo màu nhấn.</p>
               </div>
             </div>
           </Card>
@@ -132,7 +137,7 @@ function ProfileForm({ s, canEdit, onReload }: { s: School; canEdit: boolean; on
           </Card>
         </div>
       </div>
-      <ConflictDialog error={conflict} onClose={() => setConflict(null)} onReload={() => { setConflict(null); onReload(); }} mine={<span>{v.shortName} · {v.motto}</span>} />
+      <ConflictDialog error={conflict} onClose={() => setConflict(null)} onReload={async () => { const refreshed = await onReload(); if (refreshed) { setReviewed(refreshed); setV({ shortName: refreshed.shortName, motto: refreshed.motto, publicIntro: refreshed.publicIntro, publicPhone: refreshed.publicPhone, publicEmail: refreshed.publicEmail, address: refreshed.address, website: refreshed.website ?? "", accentColor: refreshed.accentColor }); setErrors({}); setConflict(null); } }} mine={<span>{v.shortName} · {v.motto}</span>} />
     </div>
   );
 }

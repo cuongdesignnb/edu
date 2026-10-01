@@ -24,7 +24,7 @@ export function YearsScreen() {
   const q = useRepo(["school-years", school.id], (c) => schoolRepo.years(c, school.id));
   const [confirm, setConfirm] = useState<{ year: AcademicYear; to: "active" | "archived" } | null>(null);
   const [err, setErr] = useState<string>();
-  const cmd = useCommand((c, id: string, to: AcademicYear["status"]) => schoolRepo.setYearStatus(c, school.id, id, to), {
+  const cmd = useCommand((c, row: AcademicYear, to: "active" | "archived", reason?: string) => schoolRepo.setYearStatus(c, school.id, row.id, to, row.version, reason), {
     success: (y) => y.status === "active" ? `Năm học ${y.label} đã hoạt động` : `Đã lưu trữ năm học ${y.label}`,
     onError: (e) => setErr(e.message), silentError: true,
   });
@@ -85,8 +85,8 @@ export function YearsScreen() {
         title={confirm?.to === "active" ? "Kích hoạt năm học" : "Lưu trữ năm học"} object={confirm ? `Năm học ${confirm.year.label}` : undefined}
         variant={confirm?.to === "archived" ? "danger" : "primary"} confirmLabel={confirm?.to === "active" ? "Kích hoạt" : "Lưu trữ năm học"}
         consequence={confirm?.to === "active" ? "Năm học trở thành năm hoạt động. Chỉ một năm hoạt động tại một thời điểm — nếu đang có năm hoạt động, hãy kết thúc năm đó trước." : "Tất cả lớp của năm này chuyển sang Lưu trữ (chỉ xem). Dữ liệu, học sinh và báo cáo được giữ nguyên. Nên dùng quy trình chuẩn bị năm mới trước khi lưu trữ."}
-        error={err}
-        onConfirm={async () => { if (!confirm) return; const r = await cmd.run(confirm.year.id, confirm.to); if (r) setConfirm(null); }} />
+        error={err} reasonLabel={confirm?.to === "archived" ? "Lý do lưu trữ (ít nhất 3 ký tự)" : undefined} reasonRequired={confirm?.to === "archived"}
+        onConfirm={async (reason) => { if (!confirm) return; const r = await cmd.run(confirm.year, confirm.to, reason); if (r) setConfirm(null); }} />
     </div>
   );
 }

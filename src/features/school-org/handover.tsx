@@ -54,7 +54,7 @@ export function HandoverWizard() {
 
   const cls = classes.data?.find((c) => c.id === classId);
   const cur = preview.data?.current;
-  const newT = opts.data?.teachers.find((t) => t.membershipId === to);
+  const newT = opts.data?.teachers?.find((t) => t.membershipId === to);
   const openTotal = preview.data ? Object.values(preview.data.openItems).reduce((a, n) => a + n, 0) : 0;
   const reset = () => { setDone(null); setStep(0); setClassId(""); setTo(""); setNote(""); setDate(addDays(ctx.today, 1)); setErrors({}); };
   const next = () => {

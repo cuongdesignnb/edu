@@ -22,6 +22,11 @@ export const UI_ACTIONS:Record<ActionKey,readonly string[]>={
   'announcement.class':['announcement.manage'],'files.manage':['file.manage'],'report.class':['report.read'],'report.export':['report.export'],
 };
 export interface UiScope {schoolId:string;classId?:string;subjectId?:string;date?:string}
+/** Advisory read capability for DTO panels without a legacy UI action key. */
+export function hasSchoolApiAction(context:ApiSchemas['Context'],schoolId:string,action:string):boolean{
+  const member=context.memberships.find(m=>m.schoolId===schoolId),now=Date.parse(context.serverNow);
+  return !!member&&member.status==='ACTIVE'&&member.schoolStatus==='ACTIVE'&&member.grants.some(grant=>grant.scopeType==='SCHOOL'&&!grant.revokedAt&&Date.parse(grant.validFrom)<=now&&(!grant.validUntil||now<Date.parse(grant.validUntil))&&grant.actions.includes(action));
+}
 export function uiActions(context:ApiSchemas['Context'],scope:UiScope):Set<ActionKey>{
   const member=context.memberships.find(m=>m.schoolId===scope.schoolId),result=new Set<ActionKey>();
   if(!member||member.status!=='ACTIVE'||member.schoolStatus!=='ACTIVE')return result;

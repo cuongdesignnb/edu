@@ -1,0 +1,20 @@
+
+Running 13 tests using 1 worker
+
+(node:43016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\auth-contract.spec.ts:34:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › ignores a persisted demo persona and requires actual API authentication (643ms)
+  ok  2 tests\native-ui-contract\auth-contract.spec.ts:41:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement (652ms)
+  ok  3 tests\native-ui-contract\auth-contract.spec.ts:58:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › accepts a new invitation only after a matching ACK and preserves the result after cache invalidation (872ms)
+  ok  4 tests\native-ui-contract\auth-contract.spec.ts:80:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › requires the invited existing identity and does not offer a password replacement (473ms)
+  ok  5 tests\native-ui-contract\auth-contract.spec.ts:86:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a reset draft after an invalid ACK and shows completion after authentication changes (648ms)
+  ok  6 tests\native-ui-contract\auth-contract.spec.ts:96:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly (875ms)
+  ok  7 tests\native-ui-contract\auth-contract.spec.ts:111:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › allows an actual nullable own work phone and saves only after the server profile acknowledgement (548ms)
+  ok  8 tests\native-ui-contract\school-contract.spec.ts:22:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps school edits on a transient read failure and removes the private form on forbidden reads (678ms)
+  ok  9 tests\native-ui-contract\school-contract.spec.ts:35:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › accepts nullable public contacts and clears dirty state only after a matching profile ACK (598ms)
+  ok 10 tests\native-ui-contract\school-contract.spec.ts:46:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › opens a school without years and keeps year creation reachable (737ms)
+  ok 11 tests\native-ui-contract\school-contract.spec.ts:59:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › keeps a reviewed school profile through background refresh and reloads explicitly after conflict (779ms)
+  ok 12 tests\native-ui-contract\school-contract.spec.ts:76:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › creates a class with class authority alone, retains a wrong ACK and retries one atomic command (10.0s)
+  ok 13 tests\native-ui-contract\school-contract.spec.ts:102:7 › Native school browser contract — intercepted API, separate from PostgreSQL E2E › shows the year calendar with year authority alone and labels denied class data (595ms)
+
+  13 passed (19.2s)

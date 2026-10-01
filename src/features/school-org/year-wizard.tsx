@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Plus, Trash2, Copy, CheckCircle2, Info } from "lucide-react";
 import { schoolRepo } from "@/lib/repositories";
-import { useCommand, useRepo } from "@/lib/query/hooks";
+import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
@@ -39,18 +39,19 @@ export function YearWizard() {
 }
 
 function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years>> }) {
-  const { school, setYearId } = useSchool();
+  const { school, setYearId, can } = useSchool();
+  const ctx = useCtx();
   const router = useRouter();
-  const latest = rows[0];
+  const [latest] = useState(rows[0]);
   const detail = useRepo(["school-year-detail", school.id, latest?.id], (c) => schoolRepo.yearDetail(c, school.id, latest!.id), { enabled: !!latest });
-  const initial = useMemo(() => {
-    const start = latest ? addDays(latest.endDate, 1) : "2027-08-01";
-    const label = latest ? latest.label.split("–").map((y) => String(Number(y) + 1)).join("–") : `${start.slice(0, 4)}–${Number(start.slice(0, 4)) + 1}`;
+  const [initial] = useState(() => {
+    const start = latest ? addDays(latest.endDate, 1) : `${ctx.today.slice(0, 4)}-08-01`;
+    const label = `${start.slice(0, 4)}–${Number(start.slice(0, 4)) + 1}`;
     const terms: TermDraft[] = latest?.terms.length
       ? [...latest.terms].sort((a, b) => a.startDate.localeCompare(b.startDate)).map((t) => ({ name: t.name, startDate: shiftYear(t.startDate), endDate: shiftYear(t.endDate), openingDate: t.openingDate ? shiftYear(t.openingDate) : undefined }))
       : [{ name: "Học kỳ 1" }, { name: "Học kỳ 2" }];
-    return { label, startDate: start as string | undefined, endDate: addDays(shiftYear(start), -1) as string | undefined, terms, holidays: [] as HolidayDraft[], copyRules: true };
-  }, [latest]);
+    return { label, startDate: start as string | undefined, endDate: addDays(shiftYear(start), -1) as string | undefined, terms, holidays: [] as HolidayDraft[], copyRules: can("rules.manage") && !!latest };
+  });
   const [v, setV] = useState(initial);
   const [step, setStep] = useState(0);
   const [done, setDone] = useState<{ id: string; label: string } | null>(null);
@@ -202,7 +203,7 @@ function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years
                 <InfoRow label="Trạng thái sau khi tạo">Nháp</InfoRow>
               </dl>
               <div className="space-y-3">
-                <Checkbox label="Sao chép nội quy thi đua đang áp dụng thành bản nháp cho năm mới" description="Bản sao ở trạng thái Nháp, cần ban hành lại. Nội quy năm hiện tại không đổi." checked={v.copyRules} onChange={(c) => setV((s) => ({ ...s, copyRules: c }))} />
+                <Checkbox label="Sao chép nội quy thi đua đang áp dụng thành bản nháp cho năm mới" description="Bản sao ở trạng thái Nháp, cần ban hành lại. Nội quy năm hiện tại không đổi." checked={v.copyRules} disabled={!can("rules.manage") || !latest} onChange={(c) => setV((s) => ({ ...s, copyRules: c }))} />
                 <Callout tone="warning" icon={<Info />} title="Không tự chuyển học sinh">Tạo năm học không di chuyển học sinh, lớp hay phân công. Xếp lớp năm mới làm ở “Kết thúc năm & chuẩn bị năm mới”, có xem trước từng nhóm.</Callout>
               </div>
             </div>

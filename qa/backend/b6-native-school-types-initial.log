@@ -1,0 +1,82 @@
+src/components/layout/shells.tsx(107,43): error TS2345: Argument of type '() => { school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to parameter of type '() => SchoolCtx | null'.
+  Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to type 'SchoolCtx | null'.
+    Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; }' is not assignable to type 'SchoolCtx'.
+      The types of 'school.level' are incompatible between these types.
+        Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+          Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/school-org/assign-drawer.tsx(57,19): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(59,19): error TS18048: 'opts.data.subjects' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(72,24): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(81,26): error TS18048: 'opts.data.subjects' is possibly 'undefined'.
+src/features/school-org/calendar.tsx(75,108): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'SetStateAction<Term | null>'.
+  Type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to type 'Term'.
+    Types of property 'weekCount' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/calendar.tsx(174,93): error TS2322: Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+  Type 'null' is not assignable to type 'boolean | undefined'.
+src/features/school-org/class-drawer.tsx(48,85): error TS2339: Property 'homeroomName' does not exist on type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassStatus; roomId: string | undefined; motto: string | undefined; version: number; }'.
+src/features/school-org/class-drawer.tsx(63,24): error TS2345: Argument of type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassRoom["status"]; roomId: string | undefined; motto: string | undefined; version: number; }' is not assignable to parameter of type 'ClassRow'.
+  Type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassStatus; roomId: string | undefined; motto: string | undefined; version: number; }' is missing the following properties from type 'ClassRow': yearLabel, gradeName, size, subjectTeacherCount, issues
+src/features/school-org/classes.tsx(93,52): error TS2322: Type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }[]' is not assignable to type 'ClassRow[]'.
+  Type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }' is not assignable to type 'ClassRow'.
+    Types of property 'size' are incompatible.
+      Type 'number | null' is not assignable to type 'number'.
+        Type 'null' is not assignable to type 'number'.
+src/features/school-org/dictionaries.tsx(42,63): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/dictionaries.tsx(43,67): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/dictionaries.tsx(44,61): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/handover.tsx(57,16): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/overview.tsx(25,49): error TS2537: Type '{ tasks: string[]; severity: "blocked" | "attention"; yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; ... 14 more ...; version: number; }[] | null' has no matching index signature for type 'number'.
+src/features/school-org/overview.tsx(47,39): error TS2322: Type '{ tasks: string[]; severity: "blocked" | "attention"; yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; ... 14 more ...; version: number; }[] | null' is not assignable to type 'any[]'.
+  Type 'null' is not assignable to type 'any[]'.
+src/features/school-org/overview.tsx(73,54): error TS18047: 'k.activeClasses' is possibly 'null'.
+src/features/school-org/overview.tsx(73,72): error TS18047: 'k.prevClasses' is possibly 'null'.
+src/features/school-org/overview.tsx(76,55): error TS18047: 'k.students' is possibly 'null'.
+src/features/school-org/overview.tsx(76,68): error TS18047: 'k.prevStudents' is possibly 'null'.
+src/features/school-org/overview.tsx(166,8): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(168,12): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(229,8): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(231,12): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/profile.tsx(27,92): error TS2322: Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+  Types of property 'level' are incompatible.
+    Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+      Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/school-org/rollover.tsx(46,32): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(48,55): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(49,60): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(65,50): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(172,107): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(176,166): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(179,85): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(187,149): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(198,93): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/year-detail.tsx(117,34): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'Term'.
+  Types of property 'weekCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/year-detail.tsx(130,139): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'Term'.
+  Types of property 'weekCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/year-detail.tsx(235,107): error TS2345: Argument of type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }' is not assignable to parameter of type 'ClassRow'.
+  Types of property 'size' are incompatible.
+    Type 'number | null' is not assignable to type 'number'.
+      Type 'null' is not assignable to type 'number'.
+src/features/school-org/years.tsx(27,116): error TS2345: Argument of type 'YearStatus' is not assignable to parameter of type '"active" | "archived"'.
+  Type '"draft"' is not assignable to type '"active" | "archived"'.

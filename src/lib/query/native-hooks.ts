@@ -1,5 +1,6 @@
 "use client";
-import {useCallback,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import {useCallback,useContext,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import {NativeSchoolScope} from './native-school-scope';
 import {useQuery,type UseQueryOptions} from '@tanstack/react-query';
 import {onStaffAccessChanged,staffAccessRevision} from '../api/client';
 import {makeStaffCtx} from '../api/context';
@@ -16,6 +17,7 @@ export function useNativeSession(){
 }
 /** The render owns this context; a delayed callback cannot adopt a newer identity. */
 export function useNativeCtx(schoolId?:string):Ctx{
+  const selectedSchool=useContext(NativeSchoolScope);schoolId??=selectedSchool;
   const {session}=useNativeSession(),revision=useSyncExternalStore(onStaffAccessChanged,staffAccessRevision,()=>0);
   return useMemo(()=>{const value=makeStaffCtx(schoolId);return {...value,actor:session?.actor??{kind:'anonymous'},staffOwner:{...value.staffOwner!,epoch:revision}};},[session,revision,schoolId]);
 }

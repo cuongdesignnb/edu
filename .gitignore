@@ -20,3 +20,5 @@ qa/backend/private/
 public/preview-references/evidence/
 ## Native browser diagnostics remain local; reviewed logs/results/screenshots are tracked.
 /qa/backend/b6-native-activation-browser-artifacts*/
+
+/qa/backend/b6-native-school-browser-artifacts*/

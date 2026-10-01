@@ -15,7 +15,7 @@ export default function Page({ params }: { params: Promise<{ schoolId: string }>
   return (
     <div className="page">
       <PageHeader title="Cài đặt hiển thị và chia sẻ" subtitle="Mặc định link tra cứu, thông tin giáo viên hiển thị cho phụ huynh và mẫu báo cáo" />
-      <QueryState query={q} skeleton="form">{(d) => <SettingsForm key={d.settings.version} schoolId={schoolId} data={d} schoolName={school.name} />}</QueryState>
+      <QueryState query={q} skeleton="form">{(d) => <SettingsForm schoolId={schoolId} data={d} schoolName={school.name} />}</QueryState>
     </div>
   );
 }

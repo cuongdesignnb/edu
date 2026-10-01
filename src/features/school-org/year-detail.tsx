@@ -7,8 +7,8 @@ import {
   CalendarDays, Plus, CalendarRange, Users, ChevronDown, ChevronRight, ArrowRight, Pencil, Eye, UserCog, Power, CalendarClock, Clock3, Flag,
   GraduationCap, RefreshCw, Search, Layers,
 } from "lucide-react";
-import type { Term } from "@/lib/model/types";
-import type { ClassRow } from "@/lib/repositories/school";
+type Term = Awaited<ReturnType<typeof schoolRepo.yearDetail>>["terms"][number];
+type ClassRow = Awaited<ReturnType<typeof schoolRepo.classes>>["items"][number];
 import { schoolRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
@@ -65,15 +65,15 @@ export function YearDetail({ yearId }: { yearId: string }) {
 }
 
 function steps(d: Detail, b: string) {
-  const activeGrades = d.grades.filter((g) => g.status === "active");
-  const gradesWithClasses = activeGrades.filter((g) => d.classesByGrade.some((x) => x.grade.id === g.id && x.classes.length));
-  const drafts = d.classesByGrade.flatMap((x) => x.classes).filter((c) => c.status === "draft").length;
+  const activeGrades = (d.grades ?? []).filter((g) => g.status === "active");
+  const gradesWithClasses = activeGrades.filter((g) => d.classesByGrade?.some((x) => x.grade.id === g.id && x.classes.length));
+  const drafts = d.classesByGrade?.flatMap((x) => x.classes).filter((c) => c.status === "draft").length;
   return [
     { label: "Năm học", done: d.year.status !== "draft", detail: yearStatus[d.year.status].label.replace(" — chỉ xem", ""), href: `${b}/academic-years` },
     { label: "Học kỳ", done: d.terms.length > 0 && d.weeks.length > 0, detail: `${d.terms.length} học kỳ · ${d.weeks.length} tuần`, href: `${b}/academic-years/${d.year.id}/calendar` },
-    { label: "Khối", done: activeGrades.length > 0 && gradesWithClasses.length === activeGrades.length, detail: `${gradesWithClasses.length}/${activeGrades.length} khối có lớp`, href: `${b}/dictionaries` },
-    { label: "Lớp học", done: d.totalClasses > 0 && drafts === 0, detail: `${d.totalClasses} lớp${drafts ? ` · ${drafts} nháp` : ""}`, href: `${b}/classes` },
-    { label: "Phân công GVCN", done: d.totalClasses > 0 && d.assignedHomeroom === d.totalClasses, detail: `${d.assignedHomeroom}/${d.totalClasses} lớp`, href: `${b}/assignments` },
+    { label: "Khối", done: d.grades === null || d.classesByGrade === null ? null : activeGrades.length > 0 && gradesWithClasses.length === activeGrades.length, detail: d.grades === null ? "Không có quyền xem danh mục khối" : d.classesByGrade === null ? "Không có quyền xem lớp theo khối" : `${gradesWithClasses.length}/${activeGrades.length} khối có lớp`, href: `${b}/dictionaries` },
+    { label: "Lớp học", done: d.totalClasses === null ? null : d.totalClasses > 0 && drafts === 0, detail: d.totalClasses === null ? "Không có quyền xem lớp" : `${d.totalClasses} lớp${drafts ? ` · ${drafts} nháp` : ""}`, href: `${b}/classes` },
+    { label: "Phân công GVCN", done: d.totalClasses === null ? null : d.totalClasses > 0 && d.assignedHomeroom === d.totalClasses, detail: d.totalClasses === null ? "Không có quyền xem phân công" : `${d.assignedHomeroom}/${d.totalClasses} lớp`, href: `${b}/assignments` },
   ];
 }
 
@@ -184,15 +184,16 @@ function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Deta
   const [grade, setGrade] = useState("");
   const [q, setQ] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const activate = useCommand((c, id: string) => schoolRepo.setClassStatus(c, school.id, id, "active"), { success: "Đã kích hoạt lớp" });
-  const groups = useMemo(() => d.classesByGrade.filter((g) => !grade || g.grade.id === grade).map((g) => ({ ...g, classes: g.classes.filter((c) => matches(q, c.name, c.homeroomName)) })), [d, grade, q]);
+  const activate = useCommand((c, row: ClassRow) => schoolRepo.setClassStatus(c, school.id, row.id, "active", row.version), { success: "Đã kích hoạt lớp" });
+  const groups = useMemo(() => (d.classesByGrade ?? []).filter((g) => !grade || g.grade.id === grade).map((g) => ({ ...g, classes: g.classes.filter((c) => matches(q, c.name, c.homeroomName)) })), [d, grade, q]);
   const total = groups.reduce((n, g) => n + g.classes.length, 0);
   const archived = d.year.status === "archived";
+  if (d.classesByGrade === null) return <Card><EmptyState compact title="Không có quyền xem lớp của năm học" /></Card>;
   const menu = (r: ClassRow): MenuItem[] => [
     { label: "Mở không gian lớp", icon: <Eye />, href: `/classroom/${school.id}/${d.year.id}/${r.id}` },
     ...(canAdd ? [{ label: "Sửa thông tin lớp", icon: <Pencil />, onSelect: () => onEdit(r) }] : []),
     ...(can("assignment.manage") && !r.homeroomName && !archived ? [{ label: "Phân công GVCN", icon: <UserCog />, onSelect: () => onAssign(r.id) }] : []),
-    ...(canAdd && r.status === "draft" ? [{ label: "Kích hoạt lớp", icon: <Power />, disabled: !r.homeroomName, hint: r.homeroomName ? undefined : "Cần phân công GVCN trước", onSelect: () => activate.run(r.id) }] : []),
+    ...(canAdd && r.status === "draft" ? [{ label: "Kích hoạt lớp", icon: <Power />, disabled: !r.homeroomName, hint: r.homeroomName ? undefined : "Cần phân công GVCN trước", onSelect: () => activate.run(r) }] : []),
     { label: "Xem trong danh sách lớp", icon: <GraduationCap />, href: `/school/${school.id}/classes?q=${encodeURIComponent(r.name)}&year=${d.year.id}`, separatorBefore: true },
   ];
   return (
@@ -200,7 +201,7 @@ function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Deta
       <CardHeader title="Danh sách lớp học theo khối" icon={<GraduationCap className="size-6 text-primary" />} action={canAdd ? <Button variant="primary" icon={<Plus className="size-4" />} onClick={() => onAdd(grade || undefined)}>Thêm lớp</Button> : undefined} />
       <div className="flex flex-wrap gap-2 px-4 pb-3">
         <InlineSelect label="Năm học" className="!w-auto min-w-[170px] flex-[1_1_170px]" value={d.year.id} onChange={(v) => router.push(`/school/${school.id}/academic-years/${v}`)} options={years.map((y) => ({ value: y.id, label: `Năm học ${y.label}` }))} />
-        <InlineSelect label="Khối" className="!w-auto min-w-[140px] flex-[1_1_140px]" allLabel="Tất cả khối" value={grade} onChange={setGrade} options={d.grades.map((g) => ({ value: g.id, label: g.name }))} />
+        <InlineSelect label="Khối" className="!w-auto min-w-[140px] flex-[1_1_140px]" allLabel="Tất cả khối" value={grade} onChange={setGrade} options={(d.classesByGrade ?? []).map((g) => ({ value: g.grade.id, label: g.grade.name }))} />
         <div className="input-icon min-w-[200px] flex-[2_1_220px]"><Search className="size-4" aria-hidden /><input className="input" type="search" placeholder="Tìm kiếm lớp học, giáo viên…" aria-label="Tìm kiếm lớp học, giáo viên" value={q} onChange={(e) => setQ(e.target.value)} /></div>
       </div>
       {d.totalClasses === 0 ? (
@@ -229,7 +230,7 @@ function ClassesByGrade({ d, years, canAdd, onAdd, onEdit, onAssign }: { d: Deta
                     <tr key={r.id}>
                       <td><Link href={`/classroom/${school.id}/${d.year.id}/${r.id}`} className="font-semibold text-ink hover:text-primary-strong hover:underline">{r.name}</Link></td>
                       <td>{r.homeroomName ?? <span className="font-medium text-danger-text">Chưa phân công</span>}</td>
-                      <td className="num">{r.size}<span className="text-muted">/{r.capacity}</span></td>
+                      <td className="num">{r.size ?? "—"}<span className="text-muted">/{r.capacity}</span></td>
                       <td>{r.subjectTeacherCount} giáo viên</td>
                       <td><StatusBadge status={r.status} map={classStatus} /></td>
                       <td className="center"><ActionMenu label={`Thao tác với lớp ${r.name}`} items={menu(r)} /></td>

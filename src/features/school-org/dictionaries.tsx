@@ -19,7 +19,7 @@ import { FormError, useDirtyClose, useFormErrors } from "./common";
 
 type Kind = "grade" | "subject" | "room";
 type Dict = Awaited<ReturnType<typeof schoolRepo.dictionaries>>;
-interface Item { id: string; name: string; status: "active" | "inactive"; inUse: boolean; level?: number; code?: string; color?: string; capacity?: number }
+type Item = Dict["grades"][number];
 const KIND_LABEL: Record<Kind, string> = { grade: "khối", subject: "môn học", room: "phòng học" };
 
 /** SC08 — dictionaries: grades / subjects / rooms. Add, edit, deactivate; items in use are never deleted. */
@@ -57,7 +57,7 @@ function DictTable({ kind, rows, canManage }: { kind: Kind; rows: Item[]; canMan
   const [page, setPage] = useState(1);
   const [edit, setEdit] = useState<Item | "new" | null>(null);
   const [toggle, setToggle] = useState<Item | null>(null);
-  const cmd = useCommand((c, id: string, st: "active" | "inactive") => schoolRepo.setDictionaryStatus(c, school.id, kind, id, st), { success: (x) => x.status === "inactive" ? `Đã ngừng dùng ${x.name}` : `Đã dùng lại ${x.name}` });
+  const cmd = useCommand((c, row: Item, st: "active" | "inactive") => schoolRepo.setDictionaryStatus(c, school.id, kind, row.id, st, row.version), { success: (x) => x.status === "inactive" ? `Đã ngừng dùng ${x.name}` : `Đã dùng lại ${x.name}` });
   const filtered = useMemo(() => rows.filter((r) => matches(q, r.name, r.code) && (!status || r.status === status)).sort((a, b) => kind === "grade" ? (a.level ?? 0) - (b.level ?? 0) : a.name.localeCompare(b.name, "vi")), [rows, q, status, kind]);
   const pageSize = 10;
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -85,10 +85,10 @@ function DictTable({ kind, rows, canManage }: { kind: Kind; rows: Item[]; canMan
       </div>
       <Pagination page={cur} pageCount={pageCount} total={filtered.length} pageSize={pageSize} onPage={setPage} what={KIND_LABEL[kind]} />
       <ItemDialog kind={kind} item={edit} onClose={() => setEdit(null)} />
-      <ConfirmDialog open={!!toggle} onOpenChange={(o) => { if (!o) setToggle(null); }} busy={cmd.pending} object={toggle?.name}
+      <ConfirmDialog open={!!toggle} onOpenChange={(o) => { if (!o) setToggle(null); }} busy={cmd.pending} error={cmd.error?.message} object={toggle?.name}
         title={toggle?.status === "active" ? `Ngừng dùng ${KIND_LABEL[kind]}` : `Dùng lại ${KIND_LABEL[kind]}`} variant={toggle?.status === "active" ? "danger" : "primary"} confirmLabel={toggle?.status === "active" ? "Ngừng dùng" : "Dùng lại"}
         consequence={toggle?.status === "active" ? `Không chọn được khi tạo lớp/phân công/lịch mới. ${toggle?.inUse ? "Dữ liệu cũ đang dùng mục này vẫn giữ nguyên." : ""}` : "Mục xuất hiện lại trong các lựa chọn."}
-        onConfirm={async () => { if (!toggle) return; const r = await cmd.run(toggle.id, toggle.status === "active" ? "inactive" : "active"); if (r) setToggle(null); }} />
+        onConfirm={async () => { if (!toggle) return; const r = await cmd.run(toggle, toggle.status === "active" ? "inactive" : "active"); if (r) setToggle(null); }} />
     </Card>
   );
 }
@@ -96,7 +96,7 @@ function DictTable({ kind, rows, canManage }: { kind: Kind; rows: Item[]; canMan
 function ItemDialog({ kind, item, onClose }: { kind: Kind; item: Item | "new" | null; onClose: () => void }) {
   const { school } = useSchool();
   const cur = item && item !== "new" ? item : null;
-  const init = { name: cur?.name ?? "", code: cur?.code ?? "", level: cur?.level as number | undefined, color: cur?.color ?? "#0a72e6", capacity: (cur?.capacity ?? 40) as number | undefined };
+  const init = { name: cur?.name ?? "", code: cur?.code ?? "", level: cur?.level ?? undefined, color: cur?.color ?? "#0a72e6", capacity: (cur?.capacity ?? 40) as number | undefined };
   const [v, setV] = useState(init);
   const [key, setKey] = useState<unknown>(null);
   if (key !== item) { setKey(item); setV(init); }
@@ -113,7 +113,7 @@ function ItemDialog({ kind, item, onClose }: { kind: Kind; item: Item | "new" | 
     if (kind !== "grade" && !v.code.trim()) e.code = "Nhập mã";
     if (kind === "room" && !v.capacity) e.capacity = "Nhập sức chứa";
     if (Object.keys(e).length) { setErrors(e); return; }
-    const payload = { id: cur?.id, name: v.name.trim(), ...(kind === "grade" ? { level: v.level } : { code: v.code.trim().toUpperCase() }), ...(kind === "subject" ? { color: v.color } : {}), ...(kind === "room" ? { capacity: v.capacity } : {}) };
+    const payload = { id: cur?.id, version: cur?.version, name: v.name.trim(), ...(kind === "grade" ? { level: v.level } : { code: v.code.trim().toUpperCase() }), ...(kind === "subject" ? { color: v.color } : {}), ...(kind === "room" ? { capacity: v.capacity } : {}) };
     const r = await cmd.run(payload);
     if (r) close();
   };

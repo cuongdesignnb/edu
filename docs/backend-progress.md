@@ -327,15 +327,15 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PL09 | core | TESTED | NOT_STARTED |  |  |
 | PL10 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
 | PL11 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
-| SC01 | core | TESTED | NOT_STARTED |  |  |
-| SC02 | core | TESTED | NOT_STARTED |  |  |
-| SC03 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC04 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC05 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC06 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC07 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC08 | core | TESTED | NOT_STARTED |  |  |
-| SC09 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC01 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC02 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC03 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC04 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC05 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC06 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC07 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC08 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
+| SC09 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
 | SC10 | core | IMPLEMENTED | NOT_STARTED |  |  |
 | SC11 | core | IMPLEMENTED | NOT_STARTED |  |  |
 | SC12 | core | TESTED | NOT_STARTED |  |  |
@@ -367,7 +367,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC38 | core | TESTED | NOT_STARTED |  |  |
 | SC39 | core | TESTED | NOT_STARTED |  |  |
 | SC40 | core | TESTED | NOT_STARTED |  |  |
-| SC41 | core | TESTED | NOT_STARTED |  |  |
+| SC41 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
 | SC42 | core | TESTED | NOT_STARTED |  |  |
 | SC43 | core | TESTED | NOT_STARTED |  |  |
 | TE01 | core | TESTED | NOT_STARTED |  |  |

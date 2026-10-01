@@ -54,9 +54,9 @@ export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | nu
     if (r) close();
   };
 
-  const teacher = opts.data?.teachers.find((t) => t.membershipId === v.membershipId);
+  const teacher = opts.data?.teachers?.find((t) => t.membershipId === v.membershipId);
   const cls = classes.data?.find((c) => c.id === v.classId);
-  const subject = opts.data?.subjects.find((s) => s.id === v.subjectId);
+  const subject = opts.data?.subjects?.find((s) => s.id === v.subjectId);
   return (
     <>
       <Drawer open={open} onOpenChange={(o) => { if (!o) close(); }} beforeClose={beforeClose} busy={cmd.pending} width={480}
@@ -64,7 +64,7 @@ export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | nu
         footer={step === "form"
           ? <><Button variant="ghost" onClick={() => { if (beforeClose()) close(); }}>Hủy</Button><Button variant="primary" icon={<ShieldCheck className="size-4" />} onClick={toPreview}>Xem trước quyền</Button></>
           : <><Button variant="ghost" icon={<ArrowLeft className="size-4" />} onClick={() => setStep("form")} disabled={cmd.pending}>Quay lại sửa</Button><Button variant="primary" loading={cmd.pending} disabled={!preview.data} onClick={save}>Xác nhận phân công</Button></>}>
-        {!opts.data || !classes.data ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : step === "form" ? (
+        {opts.error || classes.error ? <ErrorState error={opts.error ?? classes.error} onRetry={() => { opts.refetch(); classes.refetch(); }} compact /> : !opts.data || !classes.data ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : !opts.data.canAssign || !opts.data.teachers || !opts.data.subjects ? <Callout tone="neutral">Bạn không có quyền phân công giáo viên.</Callout> : step === "form" ? (
           <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); toPreview(); }}>
             <ErrorSummary errors={Object.fromEntries(Object.entries(errors).filter(([k]) => k !== "_form"))} labels={LABELS} />
             <FormError message={errors._form} />

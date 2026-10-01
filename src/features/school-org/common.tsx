@@ -76,8 +76,8 @@ export function SectionTitle({ children, className, action }: { children: ReactN
 }
 
 /** Numbered step bar reflecting REAL completeness (not wizard position). */
-export function CompletenessSteps({ steps }: { steps: { label: string; done: boolean; detail?: string; href?: string }[] }) {
-  const current = steps.findIndex((s) => !s.done);
+export function CompletenessSteps({ steps }: { steps: { label: string; done: boolean | null; detail?: string; href?: string }[] }) {
+  const current = steps.findIndex((s) => s.done === false);
   return (
     <ol className="relative flex w-full max-w-full items-stretch gap-2 overflow-x-auto pb-1" aria-label="Tiến độ thiết lập năm học">
       {steps.map((s, i) => {
@@ -97,7 +97,7 @@ export function CompletenessSteps({ steps }: { steps: { label: string; done: boo
           <li key={s.label} className="flex min-w-fit flex-1 items-center gap-3" aria-current={active ? "step" : undefined}>
             {s.href ? <Link href={s.href} className="rounded-lg px-1 py-1 hover:bg-primary-light">{inner}</Link> : <span className="px-1 py-1">{inner}</span>}
             {i < steps.length - 1 && <span className="hidden h-px min-w-6 flex-1 bg-line-strong md:block" aria-hidden />}
-            <span className="sr-only">{s.done ? "Đã hoàn thành" : "Chưa hoàn thành"}</span>
+            <span className="sr-only">{s.done === null ? "Không có quyền xem tình trạng" : s.done ? "Đã hoàn thành" : "Chưa hoàn thành"}</span>
           </li>
         );
       })}

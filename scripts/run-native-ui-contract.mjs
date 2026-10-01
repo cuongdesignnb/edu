@@ -5,7 +5,9 @@ import path from 'node:path';
 import net from 'node:net';
 
 const root=path.resolve(import.meta.dirname,'..'),qa=path.join(root,'qa/backend'),port=18763;
-const evidence={kind:'BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E',startedAt:new Date().toISOString(),host:'127.0.0.1',port};
+const prefix=process.argv[2]??'b6-native-activation';
+if(!/^b6-[a-z-]+$/.test(prefix))throw new Error('Invalid QA evidence prefix');
+const evidence={prefix,kind:'BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E',startedAt:new Date().toISOString(),host:'127.0.0.1',port};
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function portFree(){
   return new Promise(resolve=>{
@@ -14,7 +16,7 @@ async function portFree(){
   });
 }
 function launch(args,logPath){
-  const log=createWriteStream(logPath),child=spawn(process.execPath,args,{cwd:root,stdio:['ignore','pipe','pipe'],windowsHide:true});
+  const log=createWriteStream(logPath),child=spawn(process.execPath,args,{cwd:root,stdio:['ignore','pipe','pipe'],windowsHide:true,env:{...process.env,EDU_NATIVE_QA_PREFIX:prefix}});
   const tracked={child,closed:false,error:null};child.stdout.pipe(log,{end:false});child.stderr.pipe(log,{end:false});
   child.once('error',error=>{tracked.error=error;});
   tracked.finished=new Promise(resolve=>child.once('close',(code,signal)=>{tracked.closed=true;log.end();resolve({code,signal});}));
@@ -24,7 +26,7 @@ let server=null,code=1;
 try{
   await fs.mkdir(qa,{recursive:true});evidence.portFreeBefore=await portFree();
   if(!evidence.portFreeBefore)throw new Error('Port 18763 is occupied. No process has been stopped or replaced.');
-  server=launch(['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],path.join(qa,'b6-native-activation-browser-server-final.log'));
+  server=launch(['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port',String(port)],path.join(qa,`${prefix}-browser-server-final.log`));
   evidence.ownedNextPid=server.child.pid;
   let ready=false;
   for(let attempt=0;attempt<100;attempt++){
@@ -33,7 +35,7 @@ try{
     await delay(200);
   }
   if(!ready)throw new Error('The owned QA server did not become ready.');
-  const runner=launch(['node_modules/@playwright/test/cli.js','test','--config','playwright.native.config.ts'],path.join(qa,'b6-native-activation-browser-final.log'));
+  const runner=launch(['node_modules/@playwright/test/cli.js','test','--config','playwright.native.config.ts'],path.join(qa,`${prefix}-browser-final.log`));
   const result=await runner.finished;evidence.playwrightExitCode=result.code;code=result.code??1;
 }catch(error){evidence.error=error.message;code=1;}
 finally{
@@ -47,6 +49,6 @@ finally{
   }
   evidence.portFreeAfter=await portFree();if(server&&!evidence.portFreeAfter)code=1;
   evidence.finishedAt=new Date().toISOString();evidence.exitCode=code;
-  await fs.writeFile(path.join(qa,'b6-native-activation-browser-run.json'),JSON.stringify(evidence,null,2)+'\n');
+  await fs.writeFile(path.join(qa,`${prefix}-browser-run.json`),JSON.stringify(evidence,null,2)+'\n');
   console.log(JSON.stringify(evidence));process.exitCode=code;
 }

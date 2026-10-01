@@ -22,7 +22,7 @@ import { InviteModal } from "./invite-modal";
 import { AssignDrawer, type AssignPrefill } from "./assign-drawer";
 
 type Overview = Awaited<ReturnType<typeof schoolRepo.overview>>;
-type NeedRow = Overview["classesNeedingAction"][number];
+type NeedRow = NonNullable<Overview["classesNeedingAction"]>[number];
 
 /** SC01 — school overview (R02). Every number is derived from the repository for the selected year. */
 export function SchoolOverview() {
@@ -70,10 +70,10 @@ function Kpis({ d }: { d: Overview }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <KpiCard label="Lớp đang hoạt động" value={fmtNumber(k.activeClasses)} icon={<Presentation className="size-7" />} tone="blue"
-        delta={prev && k.prevClasses !== undefined ? k.activeClasses - k.prevClasses : null} deltaLabel={prev ? `${vsPrev}${k.draftClasses ? ` · ${k.draftClasses} lớp nháp` : ""}` : undefined} hint={k.draftClasses ? `${k.draftClasses} lớp đang nháp` : "Không có lớp nháp"} />
+        delta={prev && k.activeClasses !== null && k.prevClasses != null ? k.activeClasses - k.prevClasses : null} deltaLabel={prev ? `${vsPrev}${k.draftClasses ? ` · ${k.draftClasses} lớp nháp` : ""}` : undefined} hint={k.draftClasses === null ? "Không có quyền xem lớp nháp" : k.draftClasses ? `${k.draftClasses} lớp đang nháp` : "Không có lớp nháp"} />
       <KpiCard label="Giáo viên, nhân sự" value={fmtNumber(k.staffActive)} icon={<Users className="size-7" />} tone="green" hint="Thành viên đang hoạt động của trường" />
       <KpiCard label="Học sinh" value={fmtNumber(k.students)} icon={<GraduationCap className="size-7" />} tone="amber"
-        delta={prev && k.prevStudents !== undefined ? k.students - k.prevStudents : null} deltaLabel={vsPrev} hint="Đang theo học các lớp đã kích hoạt" />
+        delta={prev && k.students !== null && k.prevStudents != null ? k.students - k.prevStudents : null} deltaLabel={vsPrev} hint="Đang theo học các lớp đã kích hoạt" />
       <KpiCard label="Link tra cứu hiệu lực" value={fmtNumber(k.linksActive)} icon={<Link2 className="size-7" />} tone="pink" hint={`${fmtNumber(k.linksOpened)} link đã được mở · năm học này`} />
     </div>
   );
@@ -109,9 +109,10 @@ function QuickActions({ onCreateClass, onInvite, archived }: { onCreateClass: ()
   );
 }
 
-function ClassesNeedingAction({ rows, yearId, onEdit, onAssign, canEdit, canAssign }: { rows: NeedRow[]; yearId: string; onEdit: (r: NeedRow) => void; onAssign: (classId: string) => void; canEdit: boolean; canAssign: boolean }) {
+function ClassesNeedingAction({ rows, yearId, onEdit, onAssign, canEdit, canAssign }: { rows: Overview["classesNeedingAction"]; yearId: string; onEdit: (r: NeedRow) => void; onAssign: (classId: string) => void; canEdit: boolean; canAssign: boolean }) {
   const { school } = useSchool();
-  const activate = useCommand((c, id: string) => schoolRepo.setClassStatus(c, school.id, id, "active"), { success: "Đã kích hoạt lớp" });
+  const activate = useCommand((c, row: NeedRow) => schoolRepo.setClassStatus(c, school.id, row.id, "active", row.version), { success: "Đã kích hoạt lớp" });
+  if (rows === null) return <Card><EmptyState compact title="Không có quyền xem lớp cần xử lý" /></Card>;
   const top = rows.slice(0, 6);
   return (
     <Card>
@@ -127,7 +128,7 @@ function ClassesNeedingAction({ rows, yearId, onEdit, onAssign, canEdit, canAssi
                     { label: "Mở không gian lớp", icon: <Eye />, href: `/classroom/${school.id}/${yearId}/${r.id}` },
                     ...(canEdit ? [{ label: "Sửa thông tin lớp", icon: <Pencil />, onSelect: () => onEdit(r) }] : []),
                     ...(canAssign && !r.homeroomName ? [{ label: "Phân công GVCN", icon: <UserCog />, onSelect: () => onAssign(r.id) }] : []),
-                    ...(canEdit && r.status === "draft" ? [{ label: "Kích hoạt lớp", icon: <Power />, disabled: !r.homeroomName, hint: r.homeroomName ? undefined : "Cần phân công GVCN trước", onSelect: () => activate.run(r.id) }] : []),
+                    ...(canEdit && r.status === "draft" ? [{ label: "Kích hoạt lớp", icon: <Power />, disabled: !r.homeroomName, hint: r.homeroomName ? undefined : "Cần phân công GVCN trước", onSelect: () => activate.run(r) }] : []),
                     { label: "Xem trong danh sách lớp", icon: <List />, href: `/school/${school.id}/classes?q=${encodeURIComponent(r.name)}`, separatorBefore: true },
                   ];
                   return (
@@ -160,6 +161,7 @@ function RecentAnnouncements({ items }: { items: Overview["announcements"] }) {
   const ctx = useCtx();
   const icons = [<Bell key="b" className="size-4" />, <Users2 key="u" className="size-4" />, <FileText key="f" className="size-4" />];
   const tones = ["tone-blue", "tone-amber", "tone-blue"];
+  if (items === null) return <Card><EmptyState compact title="Không có quyền xem thông báo gần đây" /></Card>;
   return (
     <Card>
       <CardHeader title="Thông báo gần đây" icon={<Megaphone className="size-6 text-primary" />} action={<CardLink href={`/school/${school.id}/announcements`} />} />
@@ -186,20 +188,20 @@ function RecentAnnouncements({ items }: { items: Overview["announcements"] }) {
 
 function SetupProgress({ d }: { d: Overview }) {
   const done = d.setup.filter((s) => s.done).length;
-  const total = d.setup.length;
-  const pct = total ? Math.round((done / total) * 100) : 0;
-  const firstOpen = d.setup.findIndex((s) => !s.done);
+  const total = d.setup.filter(s => s.done !== null).length;
+  const pct = total ? Math.round((done / total) * 100) : null;
+  const firstOpen = d.setup.findIndex((s) => s.done === false);
   const { school } = useSchool();
   return (
     <Card>
       <CardHeader title="Tiến độ khởi tạo năm học" icon={<ClipboardList className="size-6 text-primary" />} action={<CardLink href={`/school/${school.id}/academic-years/${d.year.id}`}>Xem chi tiết</CardLink>} />
       <div className="px-5 pb-5">
         <div className="flex items-center gap-5">
-          <DonutProgress value={done} total={total} size={112} stroke={13} label={`Đã hoàn thành ${done}/${total} hạng mục, ${pct}%`}>
-            <span className="text-[26px] font-extrabold text-ink">{pct}%</span>
+          <DonutProgress value={done} total={total} size={112} stroke={13} label={pct === null ? "Không có quyền xem tiến độ" : `Đã hoàn thành ${done}/${total} hạng mục có quyền xem, ${pct}%`}>
+            <span className="text-[26px] font-extrabold text-ink">{pct === null ? "—" : `${pct}%`}</span>
           </DonutProgress>
           <div className="min-w-0">
-            <p className="text-[15px] font-semibold text-ink">Đã hoàn thành {done}/{total} <span className="font-medium text-primary-strong">hạng mục</span></p>
+            <p className="text-[15px] font-semibold text-ink">{total ? `Đã hoàn thành ${done}/${total}` : "Chưa có thông tin"} <span className="font-medium text-primary-strong">hạng mục có quyền xem</span></p>
             <p className="text-[13px] text-muted">Năm học {d.year.label}</p>
             {firstOpen >= 0 && <p className="mt-1 text-[12.5px] text-body">Tiếp theo: <Link href={d.setup[firstOpen].href} className="font-semibold text-primary-strong hover:underline">{d.setup[firstOpen].label}</Link></p>}
           </div>
@@ -209,7 +211,7 @@ function SetupProgress({ d }: { d: Overview }) {
             <li key={s.key}>
               <Link href={s.href} className="group flex items-start gap-2.5 rounded-md py-0.5 text-[13px]">
                 {s.done ? <CheckCircle2 className="mt-0.5 size-[18px] flex-none fill-success text-white" aria-hidden /> : i === firstOpen ? <span className="mt-0.5 flex size-[18px] flex-none items-center justify-center rounded-full border-2 border-primary" aria-hidden><span className="size-2 rounded-full bg-primary" /></span> : <Circle className="mt-0.5 size-[18px] flex-none text-line-strong" aria-hidden />}
-                <span className="min-w-0 flex-1 text-ink group-hover:text-primary-strong group-hover:underline">{s.label}<span className="sr-only"> — {s.done ? "đã hoàn thành" : "chưa hoàn thành"}</span></span>
+                <span className="min-w-0 flex-1 text-ink group-hover:text-primary-strong group-hover:underline">{s.label}<span className="sr-only"> — {s.done === null ? "không có quyền xem tình trạng" : s.done ? "đã hoàn thành" : "chưa hoàn thành"}</span></span>
                 <span className={clsx("max-w-[45%] flex-none truncate text-right text-[12px]", s.done ? "text-muted" : i === firstOpen ? "font-medium text-primary-strong" : "text-muted")} title={s.detail}>{s.detail}</span>
               </Link>
             </li>
@@ -223,6 +225,7 @@ function SetupProgress({ d }: { d: Overview }) {
 function TodayItems({ items }: { items: Overview["todayItems"] }) {
   const ctx = useCtx();
   const dot = { danger: "bg-danger", warning: "bg-warning", info: "bg-primary" } as const;
+  if (items === null) return <Card><EmptyState compact title="Không có quyền xem việc cần xử lý" /></Card>;
   return (
     <Card>
       <CardHeader title="Việc cần xử lý hôm nay" icon={<CalendarCheck className="size-6 text-primary" />} subtitle={fmtDateLong(ctx.today)} />

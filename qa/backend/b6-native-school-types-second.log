@@ -1,0 +1,5 @@
+src/features/school-org/assign-drawer.tsx(72,15): error TS2322: Type '{ value: string; label: string; hint: string; }[] | undefined' is not assignable to type 'ComboOption[]'.
+  Type 'undefined' is not assignable to type 'ComboOption[]'.
+src/features/school-org/assign-drawer.tsx(81,17): error TS2322: Type '{ value: string; label: string; }[] | undefined' is not assignable to type '{ value: string; label: string; disabled?: boolean | undefined; }[]'.
+  Type 'undefined' is not assignable to type '{ value: string; label: string; disabled?: boolean | undefined; }[]'.
+src/features/school-org/term-dialog.tsx(27,174): error TS2339: Property 'version' does not exist on type 'Term'.

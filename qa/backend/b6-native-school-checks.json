@@ -1,0 +1,95 @@
+{
+  "phase": "B6_NATIVE_SCHOOL_PARTIAL",
+  "frontendTypecheckExitCode": 0,
+  "frontendBuildExitCode": 0,
+  "frontendScopedLintExitCode": 0,
+  "frontendExistingLintWarnings": 3,
+  "qaRunnerLintExitCode": 0,
+  "frontendApiUnit": {
+    "passed": 174,
+    "total": 174,
+    "files": 23,
+    "exitCode": 0,
+    "log": "b6-native-school-api-unit-final.log"
+  },
+  "frontendAllUnit": {
+    "passed": 215,
+    "total": 215,
+    "files": 26,
+    "historicalSyntheticTests": 41,
+    "exitCode": 0,
+    "log": "b6-native-school-all-unit-final.log"
+  },
+  "backendUnitContract": {
+    "passed": 27,
+    "total": 27,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "postgresIntegration": {
+    "passed": 153,
+    "total": 153,
+    "skipped": 0,
+    "exitCode": 0,
+    "durationMs": 331681.444906,
+    "migrationCount": 36,
+    "image": "sha256:4e01cfed9bafd95b6adfb021bb327138888ba383829925cca2dfe1f97eef96d6",
+    "log": "b6-native-school-integration-full.log"
+  },
+  "browserContract": {
+    "passed": 13,
+    "total": 13,
+    "durationSeconds": 19.2,
+    "exitCode": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "run": {
+      "prefix": "b6-native-school",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T03:18:00.681Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 44888,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T03:18:20.866Z",
+      "exitCode": 0
+    }
+  },
+  "portAfter": {
+    "listenerCount": 0,
+    "checkedAt": "2026-10-01T10:18:29.9398919+07:00",
+    "port": 18763,
+    "listeners": []
+  },
+  "apiOperationStatuses": {
+    "TESTED": 287,
+    "IMPLEMENTED": 12
+  },
+  "uiSourceStatuses": {
+    "IMPLEMENTED": 29,
+    "STATIC_UNVERIFIED": 3,
+    "NOT_STARTED": 86
+  },
+  "activatedCandidates": 64,
+  "activatedLegacyMethods": 61,
+  "legacyMethods": 231,
+  "postgresBrowserE2E": "NOT_RUN",
+  "finalDockerApplication": "NOT_RUN",
+  "rootDeployScriptsMerge": "PENDING_COMPLETE_IMPLEMENTATION",
+  "physicalBackupRestore": "NOT_RUN",
+  "releaseLoadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "volumesDeleted": false,
+  "otherScreenStatuses": {
+    "STATIC_UNVERIFIED": 10
+  },
+  "coreScreenCount": 118,
+  "screenRegistryCount": 128
+}

@@ -14,7 +14,7 @@ type Form = Omit<SchoolSettings, "schoolId" | "language" | "timezone" | "linkDef
 
 /** SC41 — display & sharing settings with version-conflict handling. Values are suggestions, not legal conclusions. */
 export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string; data: Data; schoolName: string }) {
-  const s = data.settings;
+  const [s, setReviewed] = useState(data.settings);
   const init = useMemo<Form>(() => ({ linkDefaultDays: s.linkDefaultDays, reportHeader: s.reportHeader, shareTeacherPhone: s.shareTeacherPhone, shareTeacherEmail: s.shareTeacherEmail, contactHours: s.contactHours, version: s.version }), [s]);
   const [f, setF] = useState<Form>(init);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -31,11 +31,11 @@ export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string;
   const save = useCommand((ctx) => schoolRepo.saveSettings(ctx, schoolId, { ...f, linkDefaultDays: f.linkDefaultDays ?? 0, reportHeader: f.reportHeader.trim(), contactHours: f.contactHours.trim() }), {
     success: "Đã lưu cài đặt hiển thị và chia sẻ", onError: (e: RepoError) => { if (e.code === "VALIDATION") setErrors(e.fieldErrors ?? {}); },
   });
-  const run = useCallback(async () => (check() ? !!(await save.run()) : false), [save, f]); // eslint-disable-line react-hooks/exhaustive-deps
+  const run = useCallback(async () => { if (!check()) return false; const r = await save.run(); if (r) { setReviewed(r); setF({ linkDefaultDays: r.linkDefaultDays, reportHeader: r.reportHeader, shareTeacherPhone: r.shareTeacherPhone, shareTeacherEmail: r.shareTeacherEmail, contactHours: r.contactHours, version: r.version }); } return !!r; }, [save, f]); // eslint-disable-line react-hooks/exhaustive-deps
   useUnsavedChanges(dirty, run);
   return (
     <div className="space-y-5">
-      <Callout tone="warning" icon={<Scale />} title="Thông số là đề xuất, không kết luận tuân thủ pháp luật">Các mặc định dưới đây là gợi ý vận hành cho bản demo. Nhà trường tự đối chiếu quy định hiện hành về dữ liệu cá nhân trước khi dùng thật.</Callout>
+      <Callout tone="warning" icon={<Scale />} title="Thông số là đề xuất, không kết luận tuân thủ pháp luật">Nhà trường quản lý các thông số vận hành dưới đây. Nhà trường tự đối chiếu quy định hiện hành về dữ liệu cá nhân trước khi dùng thật.</Callout>
       {ro && <Callout tone="neutral" icon={<Lock />}>Bạn chỉ có quyền xem cài đặt này.</Callout>}
       <ErrorSummary errors={errors} labels={{ linkDefaultDays: "Hạn link mặc định", reportHeader: "Tiêu đề báo cáo", contactHours: "Giờ liên hệ" }} />
       <div className="grid gap-5 xl:grid-cols-2">
@@ -69,10 +69,10 @@ export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string;
           <CardHeader title="Ngôn ngữ và múi giờ" icon={<Globe className="size-5" />} />
           <dl className="px-5 pb-5">
             <InfoRow label="Ngôn ngữ">Tiếng Việt</InfoRow>
-            <InfoRow label="Múi giờ">Asia/Ho_Chi_Minh (UTC+7)</InfoRow>
+            <InfoRow label="Múi giờ">{s.timezone}</InfoRow>
             <InfoRow label="Định dạng ngày">dd/MM/yyyy</InfoRow>
           </dl>
-          <p className="-mt-4 px-5 pb-5 text-[12.5px] text-muted">Cố định trong bản demo.</p>
+          <p className="-mt-4 px-5 pb-5 text-[12.5px] text-muted">Múi giờ do cấu hình trường trên máy chủ quyết định.</p>
         </Card>
       </div>
       {!ro && (

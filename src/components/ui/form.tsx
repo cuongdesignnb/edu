@@ -1,5 +1,7 @@
 "use client";
-import { forwardRef, useEffect, useId, useMemo, useRef, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { forwardRef, useContext, useEffect, useId, useMemo, useRef, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import {serverToday} from "@/lib/api/session";
+import {NativeSchoolScope} from "@/lib/query/native-school-scope";
 import { clsx } from "clsx";
 import * as Switch from "@radix-ui/react-switch";
 import * as Popover from "@radix-ui/react-popover";
@@ -63,9 +65,9 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HT
 });
 
 /** Compact select without a visible label (used inside filter bars — has aria-label). */
-export function InlineSelect({ label, value, onChange, options, className, allLabel }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; className?: string; allLabel?: string }) {
+export function InlineSelect({ label, value, onChange, options, className, allLabel, disabled }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; className?: string; allLabel?: string; disabled?: boolean }) {
   return (
-    <select aria-label={label} className={clsx("select", className)} value={value} onChange={(e) => onChange(e.target.value)}>
+    <select disabled={disabled} aria-label={label} className={clsx("select", className)} value={value} onChange={(e) => onChange(e.target.value)}>
       {allLabel !== undefined && <option value="">{allLabel}</option>}
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -159,7 +161,8 @@ function viToIso(v: string): string | null {
 }
 
 export function MiniCalendar({ value, onSelect, min, max, marked }: { value?: string; onSelect: (iso: string) => void; min?: string; max?: string; marked?: Set<string> }) {
-  const init = value ?? min ?? "2026-10-05";
+  const schoolId=useContext(NativeSchoolScope);
+  const init = value ?? min ?? serverToday(schoolId);
   const [ym, setYm] = useState({ y: Number(init.slice(0, 4)), m: Number(init.slice(5, 7)) });
   const days = useMemo(() => {
     const first = `${ym.y}-${String(ym.m).padStart(2, "0")}-01`;

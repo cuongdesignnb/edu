@@ -1,14 +1,15 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Building2, CalendarRange, Lock, Clock3, FlaskConical, Presentation } from "lucide-react";
 import type { AcademicYear, ActionKey, School } from "@/lib/model/types";
 import { useRepo, useSession } from "@/lib/query/hooks";
-import { schoolRepo, sessionRepo, classroomRepo } from "@/lib/repositories";
+import { schoolRepo, sessionRepo, classroomRepo, type RepoError } from "@/lib/repositories";
 import { isExpired } from "@/lib/api/session";
 import { StaffPrivateScope } from "@/lib/query/native-provider";
+import { NativeSchoolScope } from "@/lib/query/native-school-scope";
 import { demoNowISO } from "@/lib/calendar";
 import { Sidebar } from "./sidebar";
 import { Topbar, GlobalSearch, NotificationBell, UserMenu } from "./topbar";
@@ -78,7 +79,7 @@ export function PlatformShell({ children }: { children: ReactNode }) {
 }
 
 /* ------------------------------ School ------------------------------ */
-interface SchoolCtx { school: School; years: AcademicYear[]; yearId: string; setYearId: (id: string) => void; actions: Set<ActionKey>; can: (a: ActionKey) => boolean; roleNames: string[]; currentYearId?: string }
+interface SchoolCtx { school: Awaited<ReturnType<typeof schoolRepo.context>>["school"]; years: AcademicYear[]; yearId: string; setYearId: (id: string) => void; actions: Set<ActionKey>; can: (a: ActionKey) => boolean; roleNames: string[]; currentYearId?: string; contextError?: RepoError; retryContext: () => void }
 const SchoolContext = createContext<SchoolCtx | null>(null);
 export function useSchool() {
   const v = useContext(SchoolContext);
@@ -100,19 +101,20 @@ function useYearState(schoolId: string, fallback?: string) {
 export function SchoolContextProvider({ schoolId, children, loading }: { schoolId: string; children: (ctx: SchoolCtx) => ReactNode; loading?: ReactNode }) {
   const ctxQ = useRepo(["school-context", schoolId], (c) => schoolRepo.context(c, schoolId));
   const actsQ = useRepo(["school-actions", schoolId], (c) => sessionRepo.schoolActions(c, schoolId));
-  const [yearId, setYearRaw] = useYearState(schoolId, ctxQ.data?.currentYearId);
+  const fallbackYear = ctxQ.data?.currentYearId ?? ctxQ.data?.years.find(y => y.status !== "archived")?.id ?? ctxQ.data?.years[0]?.id;
+  const [yearId, setYearRaw] = useYearState(schoolId, fallbackYear);
   const qc = useQueryClient();
   const guard = useLeaveGuard();
-  const setYearId = useCallback((id: string) => guard(() => { setYearRaw(id); qc.removeQueries({ predicate: (q) => JSON.stringify(q.queryKey).includes(schoolId) && !JSON.stringify(q.queryKey).includes("school-context") }); }), [guard, qc, schoolId, setYearRaw]);
-  const value = useMemo<SchoolCtx | null>(() => {
-    if (!ctxQ.data || !actsQ.data || !yearId) return null;
+  const setYearId = useCallback((id: string) => guard(() => { if (!id) return; setYearRaw(id); qc.removeQueries({ predicate: (q) => q.queryKey.includes(schoolId) && !q.queryKey.includes("school-context") }); }), [guard, qc, schoolId, setYearRaw]);
+  const value: SchoolCtx | null = (() => {
+    if (!ctxQ.data || !actsQ.data) return null;
     const set = new Set(actsQ.data as ActionKey[]);
-    const valid = ctxQ.data.years.some((y) => y.id === yearId) ? yearId : ctxQ.data.currentYearId!;
-    return { school: ctxQ.data.school, years: ctxQ.data.years, yearId: valid, setYearId, actions: set, can: (a) => set.has(a), roleNames: ctxQ.data.roleNames, currentYearId: ctxQ.data.currentYearId };
-  }, [ctxQ.data, actsQ.data, yearId, setYearId]);
-  if (ctxQ.error || actsQ.error) return <ErrorPage error={ctxQ.error ?? actsQ.error} retry={() => { ctxQ.refetch(); actsQ.refetch(); }} />;
+    const valid = ctxQ.data.years.some((y) => y.id === yearId) ? yearId! : fallbackYear ?? "";
+    return { school: ctxQ.data.school, years: ctxQ.data.years, yearId: valid, setYearId, actions: set, can: (a) => set.has(a), roleNames: ctxQ.data.roleNames, currentYearId: ctxQ.data.currentYearId, contextError: ctxQ.error ?? actsQ.error ?? undefined, retryContext: () => { void ctxQ.refetch(); void actsQ.refetch(); } };
+  })();
+  if ((ctxQ.error || actsQ.error) && (!value || (ctxQ.error ?? actsQ.error)?.code !== "READ_ERROR")) return <ErrorPage error={ctxQ.error ?? actsQ.error} retry={() => { ctxQ.refetch(); actsQ.refetch(); }} />;
   if (!value) return <>{loading ?? <PageSkeleton />}</>;
-  return <SchoolContext.Provider value={value}>{children(value)}</SchoolContext.Provider>;
+  return <NativeSchoolScope.Provider value={schoolId}><SchoolContext.Provider key={schoolId} value={value}>{children(value)}</SchoolContext.Provider></NativeSchoolScope.Provider>;
 }
 
 function ErrorPage({ error, retry }: { error: Parameters<typeof ErrorState>[0]["error"]; retry: () => void }) {
@@ -132,7 +134,11 @@ function WorkspaceSwitch({ schoolId, target }: { schoolId: string; target: "teac
   );
 }
 
+function PrivateYearScope({children}: {children: ReactNode}) { return children; }
+
 export function SchoolShell({ schoolId, children }: { schoolId: string; children: ReactNode }) {
+  const pathname = usePathname();
+  const independent = /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
   return (
     <RequireStaffSession>
       <SchoolContextProvider schoolId={schoolId} loading={<Frame nav={[]} homeHref={`/school/${schoolId}`} roleLabel="" search={null} schoolId={schoolId}><PageSkeleton /></Frame>}>
@@ -140,7 +146,8 @@ export function SchoolShell({ schoolId, children }: { schoolId: string; children
           <Frame nav={schoolNav(schoolId)} actions={ctx.actions} homeHref={`/school/${schoolId}`} schoolId={schoolId}
             roleLabel={ctx.roleNames.join(", ") || "Nhân sự nhà trường"} search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, giáo viên, lớp học…" />}
             sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="teacher" />}>
-            {children}
+            {ctx.contextError && <div className="px-6 pt-4"><ErrorState error={ctx.contextError} onRetry={ctx.retryContext} compact /></div>}
+            {ctx.yearId || independent ? <PrivateYearScope key={independent ? schoolId : `${schoolId}/${ctx.yearId}`}>{children}</PrivateYearScope> : <div className="page"><EmptyState title="Chưa có năm học" description="Nhà trường cần tạo năm học trước khi tổ chức lớp và nhập dữ liệu học sinh." action={ctx.can("year.manage") ? <ButtonLink href={`/school/${schoolId}/academic-years/new`} variant="primary">Tạo năm học</ButtonLink> : undefined} /></div>}
           </Frame>
         )}
       </SchoolContextProvider>
@@ -164,6 +171,7 @@ export function SchoolYearBar() {
         <span className="relative">
           <CalendarRange className="pointer-events-none absolute left-3 top-1/2 size-[18px] -translate-y-1/2 text-primary" aria-hidden />
           <select className="select !h-11 !w-auto min-w-[180px] pl-10 text-[15px] font-semibold" value={yearId} onChange={(e) => setYearId(e.target.value)} aria-label="Chọn năm học">
+            {!years.length && <option value="">Chưa có năm học</option>}
             {years.map((y) => <option key={y.id} value={y.id}>{y.label}{y.status === "archived" ? " (lưu trữ)" : y.status === "draft" ? " (nháp)" : ""}</option>)}
           </select>
         </span>

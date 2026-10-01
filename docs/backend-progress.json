@@ -3868,8 +3868,10 @@
         "getSchoolOverview"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3881,8 +3883,10 @@
         "uploadFile"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3895,8 +3899,10 @@
         "updateYear"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -3909,8 +3915,10 @@
         "updateYear"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -3932,8 +3940,10 @@
         "activateYear"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -3955,8 +3965,10 @@
         "publishCalendarEvent"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -3971,8 +3983,10 @@
         "getRolloverPreview"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -3984,8 +3998,10 @@
         "updateDictionary"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4000,8 +4016,10 @@
         "archiveClass"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4462,8 +4480,10 @@
         "updateSchoolSettings"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {

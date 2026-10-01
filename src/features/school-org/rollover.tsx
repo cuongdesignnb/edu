@@ -35,17 +35,17 @@ function RolloverBody({ d }: { d: Preview }) {
   const [step, setStep] = useState(0);
   const [targetId, setTargetId] = useState(d.targets[0]?.year.id ?? "");
   const target = d.targets.find((t) => t.year.id === targetId);
-  const gradeLevel = (gid: string) => d.grades.find((g) => g.id === gid)?.level ?? 0;
+  const gradeLevel = (gid: string) => d.grades.find((g) => g.id === gid)?.level ?? null;
   const targetClasses = target?.classes ?? [];
-  const suggest = (clsName: string, level: number, action: Action) => {
-    if (action === "leave") return "";
+  const suggest = (clsName: string, level: number | null, action: Action) => {
+    if (action === "leave" || level === null) return "";
     const want = action === "promote" ? level + 1 : level;
     const same = targetClasses.find((c) => gradeLevel(c.gradeId) === want && c.name.replace(/^\d+/, "") === clsName.replace(/^\d+/, ""));
     return same?.id ?? targetClasses.find((c) => gradeLevel(c.gradeId) === want)?.id ?? "";
   };
-  const maxLevel = Math.max(0, ...d.grades.map((g) => g.level));
+  const maxLevel = Math.max(0, ...d.grades.flatMap((g) => g.level === null ? [] : [g.level]));
   const initialDecisions = useMemo(() => Object.fromEntries(d.classes.flatMap((c) => c.students.map((s) => {
-    const action: Action = s.status !== "studying" || c.gradeLevel >= maxLevel ? "leave" : "promote";
+    const action: Action = s.status !== "studying" || c.gradeLevel !== null && c.gradeLevel >= maxLevel ? "leave" : c.gradeLevel === null ? "retain" : "promote";
     return [s.id, { action, targetClassId: suggest(c.name, c.gradeLevel, action) }];
   }))), [d, targetId]); // eslint-disable-line react-hooks/exhaustive-deps
   const [decisions, setDecisions] = useState<Record<string, { action: Action; targetClassId: string }>>(initialDecisions);
@@ -151,7 +151,7 @@ function RolloverBody({ d }: { d: Preview }) {
       )}
       <ConfirmDialog open={confirm} onOpenChange={setConfirm} busy={apply.pending} title="Xác nhận xếp lớp năm mới" object={`${fmtNumber(counts.promote + counts.retain)} học sinh → năm ${target?.year.label}`}
         confirmLabel="Xếp lớp" consequence={`${counts.promote} lên lớp, ${counts.retain} ở lại khối, ${counts.leave} không chuyển tiếp. Năm ${d.from.label} được giữ nguyên.`}
-        onConfirm={async () => { const r = await apply.run(all.map((x) => ({ studentId: x.id, action: x.action, targetClassId: x.action === "leave" ? undefined : x.targetClassId }))); if (r) { setConfirm(false); setResult(r); } }} />
+        onConfirm={async () => { const r = await apply.run(all.map((x) => ({ studentId: x.id, fromClassId: x.classId, action: x.action, targetClassId: x.action === "leave" ? undefined : x.targetClassId }))); if (r) { setConfirm(false); setResult(r); } }} />
     </div>
   );
 }
@@ -161,7 +161,7 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: stri
 }
 
 function ClassDecision({ c, eff, targetClasses, gradeLevel, maxLevel, onClass, onStudent }: {
-  c: Preview["classes"][number]; eff: Record<string, { action: Action; targetClassId: string }>; targetClasses: { id: string; name: string; gradeId: string }[]; gradeLevel: (g: string) => number; maxLevel: number;
+  c: Preview["classes"][number]; eff: Record<string, { action: Action; targetClassId: string }>; targetClasses: { id: string; name: string; gradeId: string }[]; gradeLevel: (g: string) => number | null; maxLevel: number;
   onClass: (classId: string, a: Action, target?: string) => void; onStudent: (sid: string, p: Partial<{ action: Action; targetClassId: string }>) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -169,14 +169,14 @@ function ClassDecision({ c, eff, targetClasses, gradeLevel, maxLevel, onClass, o
   const uniform = acts.every((a) => a === acts[0]) ? acts[0] : undefined;
   const tids = c.students.map((s) => eff[s.id]?.targetClassId);
   const uniformTarget = tids.every((t) => t === tids[0]) ? tids[0] : undefined;
-  const optsFor = (a: Action) => targetClasses.filter((t) => gradeLevel(t.gradeId) === (a === "promote" ? c.gradeLevel + 1 : c.gradeLevel));
+  const optsFor = (a: Action) => targetClasses.filter((t) => c.gradeLevel === null || gradeLevel(t.gradeId) === (a === "promote" ? c.gradeLevel + 1 : c.gradeLevel));
   return (
     <section className="rounded-xl border border-line">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-        <div className="min-w-[120px] flex-1"><p className="font-bold text-ink">Lớp {c.name}</p><p className="text-[12.5px] text-muted">{c.students.length} học sinh{c.gradeLevel >= maxLevel ? " · khối cuối cấp" : ""}</p></div>
+        <div className="min-w-[120px] flex-1"><p className="font-bold text-ink">Lớp {c.name}</p><p className="text-[12.5px] text-muted">{c.students.length} học sinh{c.gradeLevel !== null && c.gradeLevel >= maxLevel ? " · khối cuối cấp" : ""}</p></div>
         <select aria-label={`Quyết định cho lớp ${c.name}`} className="select !w-auto min-w-[170px]" value={uniform ?? ""} onChange={(e) => onClass(c.id, e.target.value as Action)}>
           {!uniform && <option value="">Nhiều lựa chọn</option>}
-          {(Object.keys(ACTION_LABEL) as Action[]).filter((a) => a !== "promote" || c.gradeLevel < maxLevel).map((a) => <option key={a} value={a}>{ACTION_LABEL[a]}</option>)}
+          {(Object.keys(ACTION_LABEL) as Action[]).filter((a) => a !== "promote" || c.gradeLevel === null || c.gradeLevel < maxLevel).map((a) => <option key={a} value={a}>{ACTION_LABEL[a]}</option>)}
         </select>
         {uniform && uniform !== "leave" && (
           <select aria-label={`Lớp đích cho lớp ${c.name}`} className="select !w-auto min-w-[150px]" value={uniformTarget ?? ""} onChange={(e) => onClass(c.id, uniform, e.target.value)}>
@@ -184,7 +184,7 @@ function ClassDecision({ c, eff, targetClasses, gradeLevel, maxLevel, onClass, o
             {optsFor(uniform).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
           </select>
         )}
-        {uniform && uniform !== "leave" && optsFor(uniform).length === 0 && <Badge tone="danger">Năm đích chưa có lớp khối {uniform === "promote" ? c.gradeLevel + 1 : c.gradeLevel}</Badge>}
+        {uniform && uniform !== "leave" && optsFor(uniform).length === 0 && <Badge tone="danger">Năm đích chưa có lớp khối {c.gradeLevel === null ? "chưa xác định" : uniform === "promote" ? c.gradeLevel + 1 : c.gradeLevel}</Badge>}
         <Button size="sm" variant="ghost" onClick={() => setOpen((o) => !o)} aria-expanded={open} iconRight={<ChevronDown className={clsx("size-4 transition-transform", open && "rotate-180")} />}>Từng học sinh</Button>
       </div>
       {open && (
@@ -195,7 +195,7 @@ function ClassDecision({ c, eff, targetClasses, gradeLevel, maxLevel, onClass, o
               <li key={s.id} className="flex flex-wrap items-center gap-2 px-4 py-2 text-sm">
                 <span className="min-w-[180px] flex-1"><span className="font-medium text-ink">{s.fullName}</span> <span className="text-[12px] text-muted">{s.code}</span>{s.status !== "studying" && <Badge tone="neutral" className="ml-2">Đã rời trường</Badge>}</span>
                 <select aria-label={`Quyết định cho ${s.fullName}`} className="select !min-h-9 !w-auto !py-0 text-[13px]" value={dcs?.action} onChange={(e) => { const a = e.target.value as Action; onStudent(s.id, { action: a, targetClassId: a === "leave" ? "" : optsFor(a)[0]?.id ?? "" }); }}>
-                  {(Object.keys(ACTION_LABEL) as Action[]).filter((a) => a !== "promote" || c.gradeLevel < maxLevel).map((a) => <option key={a} value={a}>{ACTION_LABEL[a]}</option>)}
+                  {(Object.keys(ACTION_LABEL) as Action[]).filter((a) => a !== "promote" || c.gradeLevel === null || c.gradeLevel < maxLevel).map((a) => <option key={a} value={a}>{ACTION_LABEL[a]}</option>)}
                 </select>
                 {dcs?.action !== "leave" && (
                   <select aria-label={`Lớp đích cho ${s.fullName}`} className="select !min-h-9 !w-auto !py-0 text-[13px]" value={dcs?.targetClassId ?? ""} onChange={(e) => onStudent(s.id, { targetClassId: e.target.value })}>

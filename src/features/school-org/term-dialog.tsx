@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import type { Term } from "@/lib/model/types";
+type Term = Awaited<ReturnType<typeof schoolRepo.yearDetail>>["terms"][number];
 import { schoolRepo } from "@/lib/repositories";
 import { useCommand } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
@@ -24,7 +24,7 @@ export function TermDialog({ term, year, lockedWeeks, onClose }: { term: Term | 
   const dirty = !!term && JSON.stringify(v) !== JSON.stringify(initial);
   const close = () => { setErrors({}); onClose(); };
   const { beforeClose, confirmNode } = useDirtyClose(dirty, close);
-  const cmd = useCommand((c, patch: Pick<Term, "name" | "startDate" | "endDate" | "openingDate">) => schoolRepo.updateTerm(c, school.id, term!.id, patch), { success: (t) => `Đã cập nhật mốc ${t.name}`, onError });
+  const cmd = useCommand((c, patch: Pick<Term, "name" | "startDate" | "endDate" | "openingDate">) => schoolRepo.updateTerm(c, school.id, term!.id, {...patch, version: term!.version}), { success: (t) => `Đã cập nhật mốc ${t.name}`, onError });
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k as string); clear("_form"); };
   const submit = async () => {
     const local: Record<string, string> = {};

@@ -1,0 +1,62 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-client.test.ts (11 tests) 40ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 34ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 33ms
+ ✓ tests/unit/api-query-boundary.test.ts (5 tests) 37ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 51ms
+ ✓ tests/unit/api-platform-adapter.test.ts (13 tests) 46ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 50ms
+ ✓ tests/unit/api-auth-adapter.test.ts (7 tests) 44ms
+ ❯ tests/unit/api-school-adapter.test.ts (16 tests | 1 failed) 62ms
+   ✓ school API adapter candidates > maps returned profile fields and the read version without inventing onboarding progress 9ms
+   ✓ school API adapter candidates > rejects a response missing required profile fields instead of substituting mock content 2ms
+   ✓ school API adapter candidates > requires the version displayed by the form before modifying a dictionary 1ms
+   ✓ school API adapter candidates > validates the grade and preserves the submitted version and real field errors 19ms
+   ✓ school API adapter candidates > does not replace a missing dictionary usage flag with false 2ms
+   × school API adapter candidates > submits the complete year wizard once with exclusive ends, including one-day holidays 10ms
+     → Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+   ✓ school API adapter candidates > adds a holiday as one acknowledged published command 2ms
+   ✓ school API adapter candidates > keeps nullable authorized counts instead of displaying fabricated zeroes 1ms
+   ✓ school API adapter candidates > sends a deadline day and the displayed version for server timezone conversion 2ms
+   ✓ school API adapter candidates > converts date-only leap-year and month boundaries independently of local timezone 1ms
+   ✓ school API adapter candidates > loads purpose-bound picker metadata without retaining staff contacts or grants 3ms
+   ✓ school API adapter candidates > does not fetch assignment metadata when the context only permits class management 3ms
+   ✓ school API adapter candidates > looks up one week through a server date filter and rejects an ignored filter 3ms
+   ✓ school API adapter candidates > preserves unavailable overview panels/counts and does not manufacture completion or query broad datasets 1ms
+   ✓ school API adapter candidates > rejects a missing overview projection and a substituted selected year 1ms
+   ✓ school API adapter candidates > keeps full SQL totals separate from the bounded six-row class preview 2ms
+ ✓ tests/unit/api-students-adapter.test.ts (11 tests) 44ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (17 tests) 53ms
+ ✓ tests/unit/api-staff-adapter.test.ts (9 tests) 48ms
+ ✓ tests/unit/api-assignment-adapter.test.ts (8 tests) 49ms
+ ✓ tests/unit/api-handover-adapter.test.ts (8 tests) 51ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 36ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 36ms
+ ✓ tests/unit/api-member-details.test.ts (5 tests) 22ms
+ ✓ tests/unit/api-parent-credential.test.ts (3 tests) 8ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 10ms
+ ✓ tests/unit/api-context.test.ts (1 test) 6ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 37ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 2410ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  2397ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-school-adapter.test.ts > school API adapter candidates > submits the complete year wizard once with exclusive ends, including one-day holidays
+RepoError: Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+ ❯ http src/lib/api/client.ts:128:69
+
+ ❯ formResult src/lib/repositories/connected/common.ts:19:14
+ ❯ Object.createYear src/lib/repositories/connected/school.ts:61:18
+ ❯ Object.createYear src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-school-adapter.test.ts:44:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 21 passed (22)
+      Tests  1 failed | 166 passed (167)
+   Start at  10:00:30
+   Duration  3.63s (transform 1.76s, setup 1.23s, collect 6.20s, tests 3.21s, environment 6ms, prepare 3.31s)

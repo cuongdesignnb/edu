@@ -3,6 +3,7 @@ declare global {interface Window {__eduNativeProbe:{writes:string[];opens:string
 
 const userId='00000000-0000-4000-8000-000000000001',inviteId='00000000-0000-4000-8000-000000000002';
 const password='SyntheticPassword123';
+const evidencePrefix=process.env.EDU_NATIVE_QA_PREFIX??'b6-native-activation';
 const user=(version=1)=>({id:userId,version,displayName:`Nhân sự API ${version}`,email:'synthetic@example.invalid',status:'ACTIVE',createdAt:'2026-09-01T00:00:00Z',updatedAt:'2026-09-01T00:00:00Z',workPhone:'0900000000',bio:''});
 const context=(version=1)=>({user:user(version),memberships:[],platformActions:[],csrfToken:'contract-staff-csrf',mode:'connected',serverNow:new Date().toISOString()});
 const invitation=(existing=false)=>({id:inviteId,version:1,email:'synthetic@example.invalid',workDisplayName:'Nhân sự được mời',schoolId:userId,schoolSlug:'synthetic-school',schoolName:'Trường từ API',schoolStatus:'ACTIVE',inviterName:'Quản trị từ API',roleCodes:['SCHOOL_ADMIN'],roleLabels:['Quản trị trường'],requiresLogin:existing,signedInAsInvited:false,status:'PENDING',createdAt:'2026-09-30T00:00:00Z',updatedAt:'2026-09-30T00:00:00Z',expiresAt:'2027-01-01T00:00:00Z'});
@@ -74,7 +75,7 @@ test.describe('Native browser contract with intercepted API responses — Postgr
     await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect(page.getByText('Bạn đã trở thành thành viên của trường',{exact:true})).toBeVisible();
     expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(commands[1].body).toEqual({token:'synthetic-invitation-fragment',schoolSlug:'synthetic-school',displayName:'Nhân sự được mời',newPassword:password});await noPersistence(page);
     await page.getByRole('alert').filter({hasText:'Chưa nhận được xác nhận lưu'}).getByRole('button',{name:'Đóng thông báo'}).click();
-    await page.screenshot({path:'qa/backend/b6-native-activation-invitation-desktop.png',fullPage:true});
+    await page.screenshot({path:`qa/backend/${evidencePrefix}-invitation-desktop.png`,fullPage:true});
   });
 
   test('requires the invited existing identity and does not offer a password replacement',async({page})=>{
@@ -103,7 +104,7 @@ test.describe('Native browser contract with intercepted API responses — Postgr
     version=2;const before=contextReads;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect.poll(()=>contextReads).toBeGreaterThan(before);
     await expect(page.getByLabel(/^Họ và tên/)).toHaveValue('Nội dung chưa lưu');await expect(page.getByText('Phiên bản hồ sơ: 1',{exact:true})).toBeVisible();
     await page.getByRole('button',{name:'Lưu hồ sơ',exact:true}).click();await expect(page.getByRole('dialog',{name:'Dữ liệu đã thay đổi'})).toBeVisible();expect(commands).toHaveLength(1);expect(commands[0].expectedVersion).toBe(1);
-    await page.screenshot({path:'qa/backend/b6-native-activation-profile-conflict.png',fullPage:true});
+    await page.screenshot({path:`qa/backend/${evidencePrefix}-profile-conflict.png`,fullPage:true});
     await page.getByRole('button',{name:'Ở lại xem nội dung của tôi'}).click();await expect(page.getByLabel(/^Họ và tên/)).toHaveValue('Nội dung chưa lưu');
     await page.getByRole('button',{name:'Lưu hồ sơ',exact:true}).click();await page.getByRole('button',{name:'Tải bản mới nhất'}).click();await expect(page.getByLabel(/^Họ và tên/)).toHaveValue('Nhân sự API 2');await expect(page.getByText('Phiên bản hồ sơ: 2',{exact:true})).toBeVisible();await noPersistence(page);
   });

@@ -3,17 +3,55 @@ import {connectedSchoolRepo} from '@/lib/repositories/connected/school';
 import type {Ctx} from '@/lib/repositories/core';
 import {authenticationChanged,setStaffCsrf} from '@/lib/api/client';
 import {inclusiveDate,exclusiveDate} from '@/lib/api/dates';
-import {uiActions} from '@/lib/api/permissions';
+import {uiActions,hasSchoolApiAction} from '@/lib/api/permissions';
 
 vi.mock('@/lib/api/session',()=>({refreshStaffContext:vi.fn().mockResolvedValue({}),serverToday:vi.fn(()=> '2026-09-30')}));
-vi.mock('@/lib/api/permissions',()=>({uiActions:vi.fn(()=>new Set(['school.profile.edit','school.settings.edit','dictionary.manage']))}));
+vi.mock('@/lib/api/permissions',()=>({uiActions:vi.fn(()=>new Set(['school.profile.edit','school.settings.edit','dictionary.manage'])),hasSchoolApiAction:vi.fn(()=>false)}));
 const schoolId='00000000-0000-4000-8000-000000000001',itemId='00000000-0000-4000-8000-000000000002';
 const ctx={} as Ctx;
 const envelope=(data:unknown)=>new Response(JSON.stringify({data,requestId:'adapter-test',...(Array.isArray(data)?{page:{limit:100,hasMore:false,nextCursor:null,total:data.length}}:{})}),{headers:{'content-type':'application/json'}});
-beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(uiActions).mockReturnValue(new Set(['school.profile.edit','school.settings.edit','dictionary.manage']));});
+beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(uiActions).mockReturnValue(new Set(['school.profile.edit','school.settings.edit','dictionary.manage']));vi.mocked(hasSchoolApiAction).mockReturnValue(false);});
 afterEach(()=>{vi.unstubAllGlobals();authenticationChanged();});
 
 describe('school API adapter candidates',()=>{
+  it('reads the actual grade catalog with read authority without calling a management picker',async()=>{
+    vi.mocked(uiActions).mockReturnValue(new Set(['class.view']));vi.mocked(hasSchoolApiAction).mockReturnValue(true);
+    const grade={id:schoolId,version:1,code:'10',name:'Khối 10',gradeLevel:10,status:'ACTIVE',inUse:false};
+    const fetcher=vi.fn().mockImplementation((url:string)=>Promise.resolve(envelope(url.endsWith(`/academic-years/${itemId}`)?{id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'ACTIVE',version:2,terms:[]}:url.includes('/dictionaries/')?[grade]:[])));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.yearDetail(ctx,schoolId,itemId);expect(result.grades?.[0]).toMatchObject({id:schoolId,status:'active',level:10});
+    expect(fetcher.mock.calls.find(([url])=>String(url).includes('/dictionaries/'))?.[0]).not.toContain('purpose=');expect(hasSchoolApiAction).toHaveBeenCalledWith({},schoolId,'dictionary.read');
+  });
+  it('rejects invalid source versions before issuing a status command',async()=>{
+    const fetcher=vi.fn();vi.stubGlobal('fetch',fetcher);
+    for(const value of [undefined,0,-1,1.5,NaN])await expect(connectedSchoolRepo.setYearStatus(ctx,schoolId,itemId,'active',value)).rejects.toMatchObject({code:'CONFLICT'});
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  it('retains the same status intent after a mismatched acknowledgement and retries only on request',async()=>{
+    const row={id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'ACTIVE',version:4};
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope({...row,id:schoolId})).mockResolvedValueOnce(envelope(row));vi.stubGlobal('fetch',fetcher);
+    await expect(connectedSchoolRepo.setYearStatus(ctx,schoolId,itemId,'active',3)).rejects.toMatchObject({code:'NETWORK'});expect(fetcher).toHaveBeenCalledTimes(1);
+    expect((await connectedSchoolRepo.setYearStatus(ctx,schoolId,itemId,'active',3)).status).toBe('active');
+    expect(new Headers(fetcher.mock.calls[1][1].headers).get('idempotency-key')).toBe(new Headers(fetcher.mock.calls[0][1].headers).get('idempotency-key'));
+    expect(JSON.parse(fetcher.mock.calls[1][1].body)).toEqual({expectedVersion:3});
+  });
+  it('requires a matching withdrawn calendar acknowledgement before reporting removal',async()=>{
+    const fetcher=vi.fn().mockResolvedValue(envelope({id:itemId,version:3,status:'PUBLISHED'}));vi.stubGlobal('fetch',fetcher);
+    await expect(connectedSchoolRepo.removeHoliday(ctx,schoolId,itemId,2,'Sai ngày')).rejects.toMatchObject({code:'NETWORK'});
+    expect(fetcher).toHaveBeenCalledTimes(1);expect(JSON.parse(fetcher.mock.calls[0][1].body)).toEqual({expectedVersion:2,status:'WITHDRAWN',reason:'Sai ngày'});
+  });
+  it('reads year and calendar without borrowing class or dictionary authority',async()=>{
+    vi.mocked(uiActions).mockReturnValue(new Set(['year.manage']));
+    const fetcher=vi.fn().mockImplementation((url:string)=>Promise.resolve(envelope(url.endsWith(`/academic-years/${itemId}`)?{id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'DRAFT',version:2,terms:[]}:[])));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.yearDetail(ctx,schoolId,itemId);
+    expect(result).toMatchObject({canManage:true,canManageClasses:false,classesByGrade:null,grades:null,totalClasses:null,assignedHomeroom:null,terms:[],weeks:[],holidays:[]});
+    expect(fetcher).toHaveBeenCalledTimes(3);expect(fetcher.mock.calls.some(([url])=>String(url).includes('/classes')||String(url).includes('/dictionaries'))).toBe(false);
+  });
+  it('groups authorized classes by returned grade labels without requesting a management picker',async()=>{
+    vi.mocked(uiActions).mockReturnValue(new Set(['class.view']));
+    const row={id:itemId,yearId:itemId,gradeLevelId:schoolId,name:'10A1',capacity:40,status:'ACTIVE',version:2,yearName:'2028–2029',gradeName:'Khối 10',studentCount:null,subjectTeacherCount:0,hasTimetable:true,inactiveAssignmentCount:0,referenceDate:'2028-09-01'};
+    const fetcher=vi.fn().mockImplementation((url:string)=>Promise.resolve(envelope(url.endsWith(`/academic-years/${itemId}`)?{id:itemId,name:'2028–2029',code:'2028-2029',startsOn:'2028-09-01',endsOn:'2029-06-01',status:'ACTIVE',version:2,terms:[]}:url.includes('/classes?')?[row]:[])));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedSchoolRepo.yearDetail(ctx,schoolId,itemId);expect(result.totalClasses).toBe(1);expect(result.grades).toBeNull();expect(result.classesByGrade?.[0].grade).toEqual({id:schoolId,name:'Khối 10'});expect(result.classesByGrade?.[0].classes[0].size).toBeNull();expect(fetcher.mock.calls.some(([url])=>String(url).includes('/dictionaries'))).toBe(false);
+  });
   it('maps returned profile fields and the read version without inventing onboarding progress',async()=>{
     const fetcher=vi.fn().mockResolvedValue(envelope({id:schoolId,code:'API',slug:'api-school',name:'Trường từ API',shortName:'API',province:'TP.HCM',level:null,accentColor:'#123456',motto:'Học tốt',publicIntro:'Giới thiệu',publicContactEmail:'office@example.invalid',publicContactPhone:null,publicAddress:'Địa chỉ',website:'https://example.invalid',status:'ACTIVE',version:12,createdAt:'2026-09-01T00:00:00Z',updatedAt:'2026-09-01T00:00:00Z',timezone:'Asia/Ho_Chi_Minh'}));
     vi.stubGlobal('fetch',fetcher);const result=await connectedSchoolRepo.profile(ctx,schoolId);
@@ -40,7 +78,7 @@ describe('school API adapter candidates',()=>{
     await expect(connectedSchoolRepo.dictionaries(ctx,schoolId)).rejects.toMatchObject({code:'READ_ERROR'});
   });
   it('submits the complete year wizard once with exclusive ends, including one-day holidays',async()=>{
-    const fetcher=vi.fn().mockResolvedValue(envelope({id:itemId,setup:{termCount:2,weekCount:40,holidayCount:1}}));vi.stubGlobal('fetch',fetcher);
+    const fetcher=vi.fn().mockResolvedValue(envelope({id:itemId,version:1,status:'DRAFT',setup:{termCount:2,weekCount:40,holidayCount:1}}));vi.stubGlobal('fetch',fetcher);
     const result=await connectedSchoolRepo.createYear(ctx,schoolId,{label:'2028–2029',startDate:'2028-09-01',endDate:'2029-05-31',terms:[{name:'Học kỳ I',startDate:'2028-09-01',endDate:'2029-01-19',openingDate:'2028-09-05'},{name:'Học kỳ II',startDate:'2029-01-20',endDate:'2029-05-31'}],holidays:[{name:'Nghỉ một ngày',startDate:'2028-09-02',endDate:'2028-09-02'}],copyRules:true});
     expect(result).toEqual({id:itemId,setup:{termCount:2,weekCount:40,holidayCount:1}});expect(fetcher).toHaveBeenCalledTimes(1);
     const body=JSON.parse(fetcher.mock.calls[0][1].body);expect(body.code).toBe('2028-2029');expect(body.endsOn).toBe('2029-06-01');expect(body.terms[0].endsOn).toBe('2029-01-20');expect(body.holidays[0]).toEqual({title:'Nghỉ một ngày',startsOn:'2028-09-02',endsOn:'2028-09-03'});expect(body.copyRules).toBe(true);
