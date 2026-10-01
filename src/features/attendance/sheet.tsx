@@ -20,7 +20,7 @@ import { Checkbox, DateField, InlineSelect } from "@/components/ui/form";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { ConflictDialog, useLeaveGuard, useUnsavedChanges } from "@/components/ui/guards";
 import { BulkSelectionBar, Pagination } from "@/components/data/table";
-import { EmptyFiltered, QueryState, Skeleton } from "@/components/ui/states";
+import { EmptyFiltered, EmptyState, ErrorState, QueryState, Skeleton } from "@/components/ui/states";
 import { StatusButtons, STATUS_ORDER, STATUS_STYLE } from "./status";
 import { RecordHistoryDrawer } from "./history-drawer";
 
@@ -41,9 +41,9 @@ export function AttendanceScreen() {
   const leave = useLeaveGuard();
   const dp = sp.get("date");
   const date = dp && ISO.test(dp) ? dp : ctx.today;
-  const slots = useRepo(["att-slots", classId, date], (c) => teacherExtraRepo.attendanceSlots(c, schoolId, yearId, classId, date));
+  const slots = useRepo(["att-slots", schoolId, yearId, classId, date], (c) => teacherExtraRepo.attendanceSlots(c, schoolId, yearId, classId, date));
   const slotParam = sp.get("slot");
-  const slot = slotParam ?? (slots.data ? (slots.data.find((s) => s.canRecord)?.slot ?? "morning") : null);
+  const slot = slots.error ? null : slotParam ?? (slots.data ? (slots.data.find((s) => s.canRecord)?.slot ?? slots.data[0]?.slot ?? null) : null);
   const go = useCallback((d: string, s?: string | null) => leave(() => router.replace(`${pathname}?date=${d}${s ? `&slot=${s}` : ""}`, { scroll: false })), [leave, router, pathname]);
 
   return (
@@ -70,14 +70,14 @@ export function AttendanceScreen() {
           <Link href={`${base}/conduct/weekly`} className="btn btn-secondary"><Trophy className="size-4" aria-hidden />Thi đua theo tuần</Link>
         </nav>
       </Card>
-      {slot ? <SheetLoader date={date} slot={slot} /> : <Skeleton className="h-96" />}
+      {slots.error ? <ErrorState error={slots.error} onRetry={() => void slots.refetch()} /> : slot ? <SheetLoader date={date} slot={slot} /> : slots.data ? <EmptyState title="Không có buổi hoặc tiết thuộc quyền xem trong ngày này" /> : <Skeleton className="h-96" />}
     </div>
   );
 }
 
 function SheetLoader({ date, slot }: { date: string; slot: string }) {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["att-sheet", classId, date, slot], (c) => attendanceRepo.sheet(c, schoolId, yearId, classId, date, slot as Sheet["slot"]));
+  const q = useRepo(["att-sheet", schoolId, yearId, classId, date, slot], (c) => attendanceRepo.sheet(c, schoolId, yearId, classId, date, slot));
   const [nonce, setNonce] = useState(0);
   return (
     <QueryState query={q} skeleton="table">
@@ -90,7 +90,7 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
   const { schoolId, yearId, classId, base, readOnly, header } = useClassroom();
   const initial = useMemo(() => new Map<string, Entry>(sheet.rows.map((r) => [r.studentId, { status: r.status, note: r.note }])), [sheet]);
   const [draft, setDraft] = useState(() => new Map(initial));
-  const [linkConduct, setLinkConduct] = useState(true);
+  const [linkConduct, setLinkConduct] = useState(sheet.canLink);
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -113,20 +113,20 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
   const setEntry = (id: string, patch: Partial<Entry>) => setDraft((m) => { const n = new Map(m); n.set(id, { ...n.get(id)!, ...patch }); return n; });
 
   const save = useCommand((c, reason?: string) => attendanceRepo.save(c, schoolId, yearId, classId, {
-    date: sheet.date, slot: sheet.slot, expectedVersion: sheet.session?.version, linkConduct, reason,
-    entries: sheet.rows.filter((r) => draft.get(r.studentId)!.status !== "unmarked" || r.status !== "unmarked" || draft.get(r.studentId)!.note.trim()).map((r) => ({ studentId: r.studentId, status: draft.get(r.studentId)!.status, note: draft.get(r.studentId)!.note })),
+    date: sheet.date, slot: sheet.slot, source: sheet.source, linkConduct, reason,
+    entries: changed.map((r) => ({ studentId: r.studentId, recordVersion:r.recordVersion, status: draft.get(r.studentId)!.status, note: draft.get(r.studentId)!.note })),
   }), {
     success: (r) => `Đã lưu điểm danh: ${r.changed} thay đổi${r.linkedCreated ? `, tạo ${r.linkedCreated} ghi nhận chờ rà soát` : ""}${r.linkedVoided ? `, loại ${r.linkedVoided} ghi nhận` : ""}${r.blockedLinks.length ? ` — ${r.blockedLinks.length} ghi nhận không đổi vì tuần đã chốt` : ""}`,
-    onSuccess: () => { setReasonOpen(false); setSaveError(undefined); },
+    onSuccess: () => { setReasonOpen(false); setSaveError(undefined); onReload(); },
     onError: (e) => { if (e.code === "CONFLICT") setConflict(e); else if (e.code === "VALIDATION") setSaveError(e.fieldErrors?.reason ?? e.fieldErrors?.date ?? e.message); },
   });
-  const publish = useCommand((c) => attendanceRepo.publish(c, schoolId, yearId, classId, sheet.date, sheet.slot), {
-    success: `Đã công bố chuyên cần ngày ${fmtDate(sheet.date)} cho phụ huynh`, onSuccess: () => setPublishOpen(false),
+  const publish = useCommand((c) => attendanceRepo.publish(c, schoolId, yearId, classId, sheet.date, sheet.slot, sheet.source), {
+    success: `Đã công bố chuyên cần ngày ${fmtDate(sheet.date)} cho phụ huynh`, onSuccess: () => {setPublishOpen(false);onReload();},
     onError: (e) => { if (e.code === "VALIDATION") setSaveError(e.message); if (e.code === "CONFLICT") setConflict(e); },
   });
   const published = sheet.sessionStatus === "published";
-  const runSave = async () => { if (published) { setReasonOpen(true); return false; } return !!(await save.run(undefined)); };
-  useUnsavedChanges(dirty, published ? undefined : async () => !!(await save.run(undefined)));
+  const runSave = async () => { if (sheet.session?.locked) { setReasonOpen(true); return false; } return !!(await save.run(undefined)); };
+  useUnsavedChanges(dirty, sheet.session?.locked ? undefined : async () => !!(await save.run(undefined)));
 
   const filtered = useMemo(() => sheet.rows.filter((r) => matches(q, r.fullName, r.code)), [sheet.rows, q]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE));
@@ -151,7 +151,7 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
     { key: "present", label: "Có mặt" }, { key: "late", label: "Đi muộn" }, { key: "excused", label: "Nghỉ có phép" }, { key: "unexcused", label: "Nghỉ không phép" }, { key: "unmarked", label: "Chưa điểm danh" },
   ];
   const status = PUBLICATION_STATUS[sheet.sessionStatus === "none" ? "none" : sheet.sessionStatus];
-  const slotLabel = sheet.slot === "morning" ? "buổi sáng" : sheet.slot === "afternoon" ? "buổi chiều" : sheet.lesson ? `tiết ${sheet.lesson.period} – ${sheet.lesson.subject}` : `tiết ${sheet.slot.slice(7)}`;
+  const slotLabel = sheet.slot === "morning" ? "buổi sáng" : sheet.slot === "afternoon" ? "buổi chiều" : sheet.lesson ? `${sheet.lesson.period ? `tiết ${sheet.lesson.period}` : 'tiết học'} – ${sheet.lesson.subject}` : "tiết học";
 
   return (
     <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -213,7 +213,7 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
                           <td><StatusButtons name={r.fullName} value={e.status} onChange={(s) => setEntry(r.studentId, { status: s })} disabled={!editable} /></td>
                           <td>
                             <input className="input !min-h-9 text-[13px]" aria-label={`Ghi chú cho ${r.fullName}`} placeholder="Nhập ghi chú…" value={e.note} maxLength={200} disabled={!editable} onChange={(ev) => setEntry(r.studentId, { note: ev.target.value })} />
-                            {r.history.length > 0 && <button type="button" className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-primary-strong hover:underline" onClick={() => setHist(r.studentId)}><History className="size-3.5" aria-hidden />Lịch sử ({r.history.length})</button>}
+                            {r.edited && <button type="button" className="mt-1 inline-flex items-center gap-1 text-[12px] font-semibold text-primary-strong hover:underline" onClick={() => setHist(r.studentId)}><History className="size-3.5" aria-hidden />Lịch sử</button>}
                           </td>
                         </tr>
                       );
@@ -238,7 +238,7 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
                     <StatusButtons large name={r.fullName} value={e.status} onChange={(s) => setEntry(r.studentId, { status: s })} disabled={!editable} />
                     <input className="input mt-2.5" aria-label={`Ghi chú cho ${r.fullName}`} placeholder="Ghi chú (tuỳ chọn)" value={e.note} maxLength={200} disabled={!editable} onChange={(ev) => setEntry(r.studentId, { note: ev.target.value })} />
                     {li && <p className={clsx("mt-1.5 text-[12px] font-medium", li.tone)}><Link2 className="mr-1 inline size-3" aria-hidden />{li.text}</p>}
-                    {r.history.length > 0 && <button type="button" className="mt-1 inline-flex min-h-9 items-center gap-1 text-[12.5px] font-semibold text-primary-strong" onClick={() => setHist(r.studentId)}><History className="size-3.5" aria-hidden />Lịch sử ({r.history.length})</button>}
+                    {r.edited && <button type="button" className="mt-1 inline-flex min-h-9 items-center gap-1 text-[12.5px] font-semibold text-primary-strong" onClick={() => setHist(r.studentId)}><History className="size-3.5" aria-hidden />Lịch sử</button>}
                   </li>
                 );
               })}
@@ -274,7 +274,7 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
         <Card>
           <CardHeader title="Liên kết thi đua" icon={<Trophy className="size-5 text-warning" />} action={<Link href={`${base}/conduct/weekly`} className="card-link">Thi đua theo tuần</Link>} />
           <div className="space-y-3 px-5 pb-5">
-            <Checkbox label="Tạo ghi nhận thi đua liên kết cho Đi muộn / Không phép (không trừ trùng)" checked={linkConduct} onChange={setLinkConduct} disabled={!editable}
+            <Checkbox label="Tạo ghi nhận thi đua liên kết cho Đi muộn / Không phép (không trừ trùng)" checked={linkConduct} onChange={setLinkConduct} disabled={!editable || !sheet.canLink}
               description="Mỗi lượt vi phạm chỉ tạo tối đa một ghi nhận, ở trạng thái chờ rà soát." />
             {sheet.linkRules.length === 0 ? <p className="text-[13px] text-muted">Bộ nội quy hiện hành chưa có quy định liên kết điểm danh.</p> : (
               <ul className="divide-y divide-line rounded-xl border border-line">

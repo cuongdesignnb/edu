@@ -4178,6 +4178,72 @@
       "evidence": [
         "qa/backend/b6-class-student-postgres-selected.log: actual PostgreSQL3/3; saved morning sources, enrollment/date bounds, immutable publication withdrawal, fresh subject/class/homeroom revocation and no internal notes. Backend53/53; frontend398/398; Edge4/4 intercepted contracts. Full current PostgreSQL/browser PostgreSQL E2E and B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getClassAttendanceSlots",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getClassAttendanceSheet",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getClassAttendanceWeek",
+      "screenIds": [
+        "CL05"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getClassAttendanceHistory",
+      "screenIds": [
+        "CL06"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "saveClassAttendanceSheet",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "publishClassAttendanceSheet",
+      "screenIds": [
+        "CL04"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-attendance-postgres-accepted.log: actual PostgreSQL7/7; independent own lesson/daily rights, fresh grant/assignment revocation, displayed roster/session/record/publication versions, idempotency, UNMARKED roster updates, atomic reopen/save/republish and rollback, immutable snapshots, dated morning-only week and genuine own history. Existing canonical regressions5/5; backend54/54; frontend404/404; controlled Edge5/5. Whole PostgreSQL browser E2E and B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5356,11 +5422,18 @@
         "getAttendanceSession",
         "saveAttendanceRecords",
         "publishAttendance",
-        "reopenAttendance"
+        "reopenAttendance",
+        "getClassAttendanceSlots",
+        "getClassAttendanceSheet",
+        "saveClassAttendanceSheet",
+        "publishClassAttendanceSheet",
+        "getClassAttendanceHistory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native day/lesson slots, exact roster sheet, one atomic versioned save/publish command, publication edits with reason, scoped own audit history and six-day morning matrix. No default sheet after slot failure, no mock roster on source errors, malformed sources fail closed, conflict retains draft. PostgreSQL7/7+canonical5/5; Edge5/5 intercepted contracts; desktop/mobile inspected. Whole-screen PostgreSQL browser E2E pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5368,11 +5441,15 @@
       "scope": "core",
       "operationIds": [
         "listAttendanceSessions",
-        "getAttendanceSummary"
+        "getAttendanceSummary",
+        "getClassAttendanceWeek",
+        "getClassAttendanceHistory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native day/lesson slots, exact roster sheet, one atomic versioned save/publish command, publication edits with reason, scoped own audit history and six-day morning matrix. No default sheet after slot failure, no mock roster on source errors, malformed sources fail closed, conflict retains draft. PostgreSQL7/7+canonical5/5; Edge5/5 intercepted contracts; desktop/mobile inspected. Whole-screen PostgreSQL browser E2E pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5382,7 +5459,8 @@
         "createConductPeriod",
         "listConductRecords",
         "createConductRecord",
-        "updateConductRecord"
+        "updateConductRecord",
+        "getClassAttendanceHistory"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

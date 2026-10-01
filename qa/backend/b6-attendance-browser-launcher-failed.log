@@ -1,0 +1,20 @@
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBUSY: resource busy or locked, open 'D:\Edu\qa\backend\b6-attendance-browser-final.log'
+Emitted 'error' event on WriteStream instance at:
+    at WriteStream.onerror (node:internal/streams/readable:1035:14)
+    at WriteStream.emit (node:events:521:24)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'D:\\Edu\\qa\\backend\\b6-attendance-browser-final.log'
+}
+
+Node.js v24.19.0
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 94
+EXIT_CODE=-1073740791

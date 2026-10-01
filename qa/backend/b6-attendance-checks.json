@@ -1,0 +1,142 @@
+{
+  "checkpoint": "B6 CL04/CL05 complete native attendance workflows; goal remains active",
+  "baseline": "950e61848b489cdefdc9d7601d9047bf80703e8d",
+  "recordedAt": "2026-10-01T20:52:02.498020+00:00",
+  "contract": {
+    "baseline": "950e61848b489cdefdc9d7601d9047bf80703e8d",
+    "existingOperationsUnchanged": 352,
+    "existingSchemasUnchanged": 483,
+    "permissionsUnchanged": true,
+    "rolesUnchanged": true,
+    "addedOperations": [
+      "getClassAttendanceHistory",
+      "getClassAttendanceSheet",
+      "getClassAttendanceSlots",
+      "getClassAttendanceWeek",
+      "publishClassAttendanceSheet",
+      "saveClassAttendanceSheet"
+    ],
+    "addedSchemas": [
+      "ClassAttendanceHistory",
+      "ClassAttendanceHistoryResponse",
+      "ClassAttendancePublish",
+      "ClassAttendanceReceipt",
+      "ClassAttendanceReceiptResponse",
+      "ClassAttendanceSave",
+      "ClassAttendanceSheet",
+      "ClassAttendanceSheetResponse",
+      "ClassAttendanceSlots",
+      "ClassAttendanceSlotsResponse",
+      "ClassAttendanceSource",
+      "ClassAttendanceWeek",
+      "ClassAttendanceWeekResponse"
+    ],
+    "historyMapping": "O15 drawer in CL04/CL05; CL06 conduct source remains incomplete"
+  },
+  "postgres-accepted.log": {
+    "passed": 7,
+    "durationMs": 5290.323495
+  },
+  "postgres-canonical-regression.log": {
+    "passed": 5,
+    "durationMs": 4662.902074
+  },
+  "backend-unit-contract-current.log": {
+    "passed": 54,
+    "durationMs": 540.500677
+  },
+  "frontendUnit": {
+    "passed": 404,
+    "files": 49,
+    "durationSeconds": 9.69,
+    "apiTests": 363,
+    "historicalSyntheticTests": 41
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "stats": {
+      "startTime": "2026-10-01T20:50:07.413Z",
+      "duration": 5261.0199999999995,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "run": {
+      "prefix": "b6-attendance",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T20:50:06.413Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "selectedFiles": [
+        "tests/native-ui-contract/attendance-contract.spec.ts"
+      ],
+      "portFreeBefore": true,
+      "ownedNextPid": 4700,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T20:50:12.721Z",
+      "exitCode": 0
+    },
+    "screenshotsInspected": [
+      "b6-attendance-desktop.png",
+      "b6-attendance-mobile.png"
+    ],
+    "postgresE2E": "NOT_RUN"
+  },
+  "operationStatuses": {
+    "IMPLEMENTED": 12,
+    "TESTED": 346
+  },
+  "coreSourceStatuses": {
+    "IMPLEMENTED": 70,
+    "NOT_STARTED": 45,
+    "STATIC_UNVERIFIED": 3
+  },
+  "coreTotal": 118,
+  "facade": {
+    "activatedCandidates": 152,
+    "activatedLegacyMethods": 135,
+    "totalLegacyMethods": 231,
+    "pendingLegacyMethods": 96
+  },
+  "migrations": {
+    "total": 47,
+    "newMigration": false,
+    "currentReplay": "NOT_RERUN"
+  },
+  "postgresRunnerImage": "sha256:277bfbb615b45a3838359a61b1db39a9b46957a90cdfbba58a8b91ef008dd9d9",
+  "finalRunnerImage": "sha256:825e75e28e39e2cf67b2e848d16b596af099dcabba6d00a3a562ed410f15f5ac",
+  "runnerDifference": "Final build changes attendance history screen mapping metadata only; application/query/schema semantics from accepted PostgreSQL run are unchanged. Final unit/contracts executed on the final image.",
+  "fullCurrentPostgresRegression": "NOT_RERUN",
+  "preservedFailures": [
+    "contract.log: new weekly schema syntax error before generation; repaired",
+    "postgres-selected.log and postgres-current.log: each6/7; invalid fixture subject/assignment routes, fixed to native assignment API and synthetic SQL subject",
+    "browser-launcher-failed.log: EBUSY when launcher redirected into the runner-owned log; corrected to separate launcher log; actual OS port checked empty",
+    "browser-results-attempt1.json and attempt2.json: each4/5; selector searched hidden desktop exact name while mobile text includes real ordinal prefix; fixture selector corrected, UI unchanged"
+  ],
+  "listenerAfter": {
+    "checkedAt": "2026-10-02T03:50:51.5106095+07:00",
+    "listenerCount": 0,
+    "listeners": [],
+    "port": 18763
+  },
+  "releaseUrl": "http://127.0.0.1:18763",
+  "releaseServing": false,
+  "goalStatus": "ACTIVE",
+  "remaining": [
+    "96 legacy facade methods",
+    "45 core NOT_STARTED; 3 STATIC_UNVERIFIED; zero whole-screen PostgreSQL browser TESTED",
+    "12 IMPLEMENTED operations without accepted checks",
+    "full current PostgreSQL regression and PostgreSQL browser E2E",
+    "root deploy/scripts merge and Docker local release",
+    "restart persistence, physical backup/restore, failure drills and release workload performance",
+    "production not authorized"
+  ]
+}

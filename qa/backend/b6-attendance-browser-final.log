@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:36988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\attendance-contract.spec.ts:22:5 › attendance saves only changed displayed pupils and source then publishes and opens real own history (1.4s)
+  ok 2 tests\native-ui-contract\attendance-contract.spec.ts:23:5 › attendance API failure retries and malformed foreign source hides roster and all save actions (864ms)
+  ok 3 tests\native-ui-contract\attendance-contract.spec.ts:24:5 › subject attendance chooses actual own lesson and hides class publication and conduct actions on mobile (557ms)
+  ok 4 tests\native-ui-contract\attendance-contract.spec.ts:25:5 › slot failure does not request a default morning sheet and weekly uses native exceptions and own cell history (730ms)
+  ok 5 tests\native-ui-contract\attendance-contract.spec.ts:26:5 › save conflict retains the entered draft and asks for reload without a second blind write (616ms)
+
+  5 passed (5.3s)

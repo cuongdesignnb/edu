@@ -1,0 +1,18 @@
+ Container edumanage_backend_test-runner-run-62cd5cfc6787 Creating 
+ Container edumanage_backend_test-runner-run-62cd5cfc6787 Created 
+✔ B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes (1074.932753ms)
+✔ B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority (752.089451ms)
+✔ B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts (442.645364ms)
+✔ B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation (714.10561ms)
+✔ B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows (581.856077ms)
+✔ B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities (468.531314ms)
+✔ B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent (468.195096ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5290.323495
+EXIT_CODE=0

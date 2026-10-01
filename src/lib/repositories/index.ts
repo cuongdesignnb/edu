@@ -7,6 +7,7 @@ import {connectedStaffRepo} from './connected/staff';
 import {connectedSupportRepo} from './connected/support';
 import {connectedStudentsRepo} from './connected/students';
 import {connectedStudentsExtraRepo} from './connected/students-extra';
+import {connectedAttendanceRepo} from './connected/attendance';
 import {connectedClassroomRepo,connectedTeacherExtraRepo} from './connected/classroom';
 import {connectedParentRepo,connectedParentExtraRepo,type ParentRepositoryInterface} from './connected/parent';
 
@@ -23,7 +24,7 @@ export const platformExtraRepo=apiRepository<typeof import('./platform-extra').p
 export const authDemoRepo=apiRepository<typeof import('./platform-extra').authDemoRepo,typeof connectedAuthRepo>(connectedAuthRepo);
 export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,typeof connectedStudentsExtraRepo>(connectedStudentsExtraRepo);
 export const classroomRepo=apiRepository<typeof import('./classroom').classroomRepo,typeof connectedClassroomRepo>(connectedClassroomRepo);
-export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,object>({});
+export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,typeof connectedAttendanceRepo>(connectedAttendanceRepo);
 export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,object>({});
 export const activitiesRepo=apiRepository<typeof import('./activities').activitiesRepo,object>({});
 export const announcementsRepo=apiRepository<typeof import('./announcements').announcementsRepo,object>({});

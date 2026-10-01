@@ -1,0 +1,31 @@
+{
+  "baseline": "950e61848b489cdefdc9d7601d9047bf80703e8d",
+  "existingOperationsUnchanged": 352,
+  "existingSchemasUnchanged": 483,
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassAttendanceHistory",
+    "getClassAttendanceSheet",
+    "getClassAttendanceSlots",
+    "getClassAttendanceWeek",
+    "publishClassAttendanceSheet",
+    "saveClassAttendanceSheet"
+  ],
+  "addedSchemas": [
+    "ClassAttendanceHistory",
+    "ClassAttendanceHistoryResponse",
+    "ClassAttendancePublish",
+    "ClassAttendanceReceipt",
+    "ClassAttendanceReceiptResponse",
+    "ClassAttendanceSave",
+    "ClassAttendanceSheet",
+    "ClassAttendanceSheetResponse",
+    "ClassAttendanceSlots",
+    "ClassAttendanceSlotsResponse",
+    "ClassAttendanceSource",
+    "ClassAttendanceWeek",
+    "ClassAttendanceWeekResponse"
+  ],
+  "historyMapping": "O15 drawer in CL04/CL05; CL06 conduct source remains incomplete"
+}

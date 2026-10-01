@@ -1,0 +1,18 @@
+file:///D:/Edu/backend/scripts/generate-contract.mjs:714
+spec.components.schemas.ClassAttendanceWeek=object({...attScope,monday:studentDate,today:studentDate,week:{...attWeek,nullable:true},days:{type:'array',minItems:6,maxItems:6,items:object({date:studentDate,sessionStatus:{type:'string',enum:[...attState.enum,'future','outside_year']},holiday:nullableLabel,periodSessions:count})},rows:{type:'array',maxItems:5000,items:object({studentId:uuid,code:label,fullName:label,cells:{type:'array',minItems:6,maxItems:6,items:object({status:{type:'string',enum:[...attStatus.enum,'not_enrolled','holiday','future']},note:attNote,edited:{type:'boolean'}})},tally:object(Object.fromEntries(attStatus.enum.map(k=>[k,count])))})});
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+
+SyntaxError: Unexpected token ')'
+    at compileSourceTextModule (node:internal/modules/esm/utils:318:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:89:18)
+    at #translate (node:internal/modules/esm/loader:434:20)
+    at afterLoad (node:internal/modules/esm/loader:502:29)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:507:12)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:560:36)
+    at afterResolve (node:internal/modules/esm/loader:607:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:613:12)
+    at node:internal/modules/esm/loader:632:32
+    at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+
+Node.js v24.19.0
+EXIT_CODE=1

@@ -483,6 +483,19 @@ export interface ApiSchemas {
   "ClassTransferOptionsResponse": { "data": ApiSchemas["ClassTransferOptions"]; "requestId": string; };
   "ClassStudentAttendance": { "schoolId": string; "yearId": string; "classId": string; "studentId": string; "today": string; "referenceDate": string; "className": string; "sessions": number; "published": number; "tally": { "PRESENT": number; "LATE": number; "EXCUSED": number; "UNEXCUSED": number; "UNMARKED": number; }; "notable": Array<{ "date": string; "status": "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "note": (string) | null; "published": boolean; }>; };
   "ClassStudentAttendanceResponse": { "data": ApiSchemas["ClassStudentAttendance"]; "requestId": string; };
+  "ClassAttendanceSource": { "classVersion": number; "rosterHash": string; "sessionId": (string) | null; "version": (number) | null; "dataVersion": (number) | null; "publicationId": (string) | null; };
+  "ClassAttendanceSlots": { "schoolId": string; "yearId": string; "classId": string; "date": string; "slots": Array<{ "slot": string; "label": string; "canRecord": boolean; }>; };
+  "ClassAttendanceSheet": { "schoolId": string; "yearId": string; "classId": string; "date": string; "slot": string; "today": string; "className": string; "source": { "classVersion": number; "rosterHash": string; "sessionId": (string) | null; "version": (number) | null; "dataVersion": (number) | null; "publicationId": (string) | null; }; "session": ({ "id": string; "version": number; "dataVersion": number; "updatedAt": string; "publishedAt": (string) | null; "locked": boolean; }) | null; "sessionStatus": "none" | "open" | "published" | "locked"; "rows": Array<{ "studentId": string; "enrollmentId": string; "recordVersion": (number) | null; "code": string; "fullName": string; "groupName": (string) | null; "status": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "note": string; "edited": boolean; "linkedConduct": ({ "id": string; "points": number; "status": "DRAFT" | "APPROVED" | "EXCLUDED"; }) | null; }>; "counts": { "PRESENT": number; "LATE": number; "EXCUSED": number; "UNEXCUSED": number; "UNMARKED": number; }; "lessons": Array<{ "id": string; "period": (number) | null; "subject": string; "start": string; "end": string; "status": "SCHEDULED" | "CANCELLED" | "REPLACED"; }>; "lesson": ({ "id": string; "period": (number) | null; "subject": string; "start": string; "end": string; "status": "SCHEDULED" | "CANCELLED" | "REPLACED"; }) | null; "canRecord": boolean; "canPublish": boolean; "canLink": boolean; "holiday": (string) | null; "isSunday": boolean; "updatedByName": (string) | null; "week": ({ "id": string; "index": number; }) | null; "periodLocked": boolean; "linkRules": Array<{ "link": "LATE" | "UNEXCUSED"; "label": string; "points": number; }>; };
+  "ClassAttendanceWeek": { "schoolId": string; "yearId": string; "classId": string; "monday": string; "today": string; "week": ({ "id": string; "index": number; }) | null; "days": Array<{ "date": string; "sessionStatus": "none" | "open" | "published" | "locked" | "future" | "outside_year"; "holiday": (string) | null; "periodSessions": number; }>; "rows": Array<{ "studentId": string; "code": string; "fullName": string; "cells": Array<{ "status": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED" | "not_enrolled" | "holiday" | "future"; "note": string; "edited": boolean; }>; "tally": { "PRESENT": number; "LATE": number; "EXCUSED": number; "UNEXCUSED": number; "UNMARKED": number; }; }>; };
+  "ClassAttendanceHistory": { "schoolId": string; "yearId": string; "classId": string; "studentId": string; "studentName": string; "code": string; "date": string; "slot": string; "status": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "note": string; "sessionStatus": "none" | "open" | "published" | "locked"; "publishedAt": (string) | null; "linkedConduct": Array<{ "id": string; "points": number; "status": "DRAFT" | "APPROVED" | "EXCLUDED"; "reason": (string) | null; }>; "history": Array<{ "id": string; "at": string; "byName": (string) | null; "from": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "to": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "reason": (string) | null; }>; };
+  "ClassAttendanceSave": { "date": string; "slot": string; "source": { "classVersion": number; "rosterHash": string; "sessionId": (string) | null; "version": (number) | null; "dataVersion": (number) | null; "publicationId": (string) | null; }; "entries": Array<{ "studentId": string; "recordVersion": (number) | null; "status": "PRESENT" | "LATE" | "EXCUSED" | "UNEXCUSED" | "UNMARKED"; "note": string; }>; "linkConduct": boolean; "reason"?: string; };
+  "ClassAttendancePublish": { "date": string; "slot": string; "source": { "classVersion": number; "rosterHash": string; "sessionId": (string) | null; "version": (number) | null; "dataVersion": (number) | null; "publicationId": (string) | null; }; };
+  "ClassAttendanceReceipt": { "sessionId": string; "changed": number; "linkedCreated": number; "linkedVoided": number; "blockedLinks": Array<{ "studentId": (string) | null; "code": string; }>; "source": { "classVersion": number; "rosterHash": string; "sessionId": (string) | null; "version": (number) | null; "dataVersion": (number) | null; "publicationId": (string) | null; }; };
+  "ClassAttendanceSlotsResponse": { "data": ApiSchemas["ClassAttendanceSlots"]; "requestId": string; };
+  "ClassAttendanceSheetResponse": { "data": ApiSchemas["ClassAttendanceSheet"]; "requestId": string; };
+  "ClassAttendanceWeekResponse": { "data": ApiSchemas["ClassAttendanceWeek"]; "requestId": string; };
+  "ClassAttendanceHistoryResponse": { "data": ApiSchemas["ClassAttendanceHistory"]; "requestId": string; };
+  "ClassAttendanceReceiptResponse": { "data": ApiSchemas["ClassAttendanceReceipt"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4005,6 +4018,66 @@ export const apiOperations = {
     "list": false,
     "permission": "attendance.read",
     "readOnly": true
+  },
+  "getClassAttendanceSlots": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/slots",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassAttendanceSlots",
+    "list": false,
+    "permission": "attendance.read",
+    "readOnly": true
+  },
+  "getClassAttendanceSheet": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/sheet",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassAttendanceSheet",
+    "list": false,
+    "permission": "attendance.read",
+    "readOnly": true
+  },
+  "getClassAttendanceWeek": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/week",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassAttendanceWeek",
+    "list": false,
+    "permission": "attendance.read",
+    "readOnly": true
+  },
+  "getClassAttendanceHistory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/students/{studentId}/history",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassAttendanceHistory",
+    "list": false,
+    "permission": "attendance.read",
+    "readOnly": true
+  },
+  "saveClassAttendanceSheet": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/save",
+    "auth": "staff",
+    "request": "ClassAttendanceSave",
+    "response": "ClassAttendanceReceipt",
+    "list": false,
+    "permission": "attendance.record",
+    "readOnly": false
+  },
+  "publishClassAttendanceSheet": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/publish",
+    "auth": "staff",
+    "request": "ClassAttendancePublish",
+    "response": "ClassAttendanceReceipt",
+    "list": false,
+    "permission": "attendance.publish",
+    "readOnly": false
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

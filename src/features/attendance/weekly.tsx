@@ -46,7 +46,7 @@ export function AttendanceWeekly() {
   const pathname = usePathname();
   const w = sp.get("week");
   const monday = w && /^\d{4}-\d{2}-\d{2}$/.test(w) ? mondayOf(w) : undefined;
-  const q = useRepo(["att-weekly", classId, monday ?? "cur"], (c) => attendanceRepo.weekly(c, schoolId, yearId, classId, monday));
+  const q = useRepo(["att-weekly", schoolId, yearId, classId, monday ?? "cur"], (c) => attendanceRepo.weekly(c, schoolId, yearId, classId, monday));
   const [text, setText] = useState("");
   const [only, setOnly] = useState("");
   const [cell, setCell] = useState<{ studentId: string; date: string } | null>(null);

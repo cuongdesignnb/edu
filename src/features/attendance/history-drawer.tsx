@@ -14,7 +14,7 @@ export function RecordHistoryDrawer({ open, onOpenChange, schoolId, yearId, clas
   open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; yearId: string; classId: string;
   target: { studentId: string; date: string; slot?: string } | null; dayHref?: string;
 }) {
-  const q = useRepo(["att-history", classId, target?.studentId, target?.date, target?.slot], (ctx) => teacherExtraRepo.recordHistory(ctx, schoolId, yearId, classId, target!.studentId, target!.date, target?.slot ?? "morning"), { enabled: open && !!target });
+  const q = useRepo(["att-history", schoolId, yearId, classId, target?.studentId, target?.date, target?.slot], (ctx) => teacherExtraRepo.recordHistory(ctx, schoolId, yearId, classId, target!.studentId, target!.date, target?.slot ?? "morning"), { enabled: open && !!target });
   return (
     <Drawer open={open} onOpenChange={onOpenChange} title={q.data ? `${q.data.studentName} · ${q.data.code}` : "Chi tiết điểm danh"} description={target ? fmtDateLong(target.date) : undefined} width={480}
       footer={<>{dayHref && <ButtonLink href={dayHref} variant="secondary">Mở bảng điểm danh ngày</ButtonLink>}<Button onClick={() => onOpenChange(false)}>Đóng</Button></>}>

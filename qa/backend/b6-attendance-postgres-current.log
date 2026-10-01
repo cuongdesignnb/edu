@@ -1,0 +1,39 @@
+ Container edumanage_backend_test-runner-run-96c9b1a80c74 Creating 
+ Container edumanage_backend_test-runner-run-96c9b1a80c74 Created 
+✔ B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes (1081.824759ms)
+✔ B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority (768.980128ms)
+✔ B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts (488.355242ms)
+✔ B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation (712.518026ms)
+✔ B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows (613.189706ms)
+✔ B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities (496.713984ms)
+✖ B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment end remain independent (188.387355ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5115.726421
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1287:1
+✖ B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment end remain independent (188.387355ms)
+  AssertionError [ERR_ASSERTION]: {"message":"Cannot POST /api/v1/schools/5af38eef-571c-4e0a-af44-982d8b9e0781/subjects","error":"Not Found","statusCode":404}
+  
+  404 !== 201
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1288:127)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

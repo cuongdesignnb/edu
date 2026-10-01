@@ -7,6 +7,7 @@ import { Problem,validation,mapError } from '../../common/problem';
 import { PublicationsService,type ParentItem } from '../publications/publications.service';
 import { ConductService } from '../conduct/conduct.service';
 import type { RequestContext,Result,Handler } from '../../api.router';
+import {attendanceWorkspace,attendanceWorkspaceCommand} from './attendance-workspace';
 const r:Resource={table:'app.attendance_sessions',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',classId:'class_id',yearId:'year_id',date:'session_date',granularity:'granularity',lessonId:'lesson_id',status:'status',dataVersion:'data_version',slot:'slot_key'},writeFields:[],search:[],filters:{status:'status',granularity:'granularity',classId:'class_id'}};
 const rr:Resource={table:'app.attendance_records',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',enrollmentId:'enrollment_id',status:'status',lateMinutes:'late_minutes',publicNote:'public_note',internalNote:'internal_note'},writeFields:[],search:[],filters:{}};
 function sessionDto(row:Row){const value=dto(r,row);if(value.granularity==='DAILY')value.slot=value.slot==='afternoon'?'AFTERNOON':'MORNING';else delete value.slot;return value;}
@@ -14,7 +15,7 @@ function recordDto(row:Row){return Object.fromEntries(Object.entries(dto(rr,row)
 @Injectable()
 export class AttendanceService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService,private readonly conduct:ConductService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listAttendanceSessions','createAttendanceSession','getAttendanceSession','saveAttendanceRecords','getAttendanceSummary','publishAttendance','reopenAttendance'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['listAttendanceSessions','createAttendanceSession','getAttendanceSession','saveAttendanceRecords','getAttendanceSummary','publishAttendance','reopenAttendance'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),...Object.fromEntries(['getClassAttendanceSlots','getClassAttendanceSheet','getClassAttendanceWeek','getClassAttendanceHistory'].map(id=>[id,(c:RequestContext)=>attendanceWorkspace(this.db,this.policy,c)])),...Object.fromEntries(['saveClassAttendanceSheet','publishClassAttendanceSheet'].map(id=>[id,(c:RequestContext)=>attendanceWorkspaceCommand(this.db,this.policy,this.commands,(tx,context)=>this.applyInTransaction(tx,context),c)]))};}
   private async session(tx:Transaction,schoolId:string,classId:string,id:string,lock=false){
     const row=await one<Row>(tx,`SELECT * FROM app.attendance_sessions WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[schoolId,classId,id]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;
   }
@@ -42,7 +43,13 @@ export class AttendanceService {
       if(op==='createAttendanceSession')return this.authorizeSession(tx,c,{session_date:c.body.date,granularity:c.body.granularity,lesson_id:c.body.lessonId},'attendance.record');
       return this.authorizeSession(tx,c,await this.session(tx,schoolId,classId,c.params.sessionId!),c.operation.permission);
     };
-    const work=async(tx:Transaction):Promise<Result>=>{
+    const work=(tx:Transaction)=>this.applyInTransaction(tx,c);
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});
+    return this.commands.execute(c,authorize,work);
+  }
+  /** Internal composition keeps native sheet create/reopen/save/publish in one authorized transaction. */
+  async applyInTransaction(tx:Transaction,c:RequestContext):Promise<Result>{
+      const schoolId=c.params.schoolId!,classId=c.params.classId!,op=c.operation.id;
       const cls=await getResource(tx,resource('class'),schoolId,classId),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
       if(op==='listAttendanceSessions'||op==='getAttendanceSummary'){
         const allowed=await this.policy.require(tx,c.principal!,'attendance.read',{schoolId,classId,allowSubject:true});
@@ -122,13 +129,11 @@ export class AttendanceService {
           internal_note=CASE WHEN $8::boolean THEN $9 ELSE internal_note END,recorded_by=$10 WHERE school_id=$1 AND session_id=$2 AND enrollment_id=$3`,
         [schoolId,session.id,entry.enrollmentId,entry.status,entry.status==='LATE'?entry.lateMinutes??0:null,Object.hasOwn(entry,'publicNote'),entry.publicNote??null,Object.hasOwn(entry,'internalNote'),entry.internalNote??null,c.principal!.userId]);
         const source=await one<Row>(tx,'SELECT * FROM app.attendance_records WHERE school_id=$1 AND id=$2',[schoolId,current.id]);
+        if(current.status!==entry.status||Object.hasOwn(entry,'publicNote')&&current.public_note!==(entry.publicNote??null))await audit(tx,c,'attendanceRecord',String(current.id),{from:current.status,to:entry.status,noteChanged:current.public_note!==source!.public_note});
         await tx.query('SAVEPOINT conduct_sync');
         try{const synced=await this.conduct.syncAttendance(tx,c,session,source!,c.body.linkConduct===true);conductSync.created+=synced.created;conductSync.excluded+=synced.excluded;await tx.query('RELEASE SAVEPOINT conduct_sync');}
         catch(error){await tx.query('ROLLBACK TO SAVEPOINT conduct_sync');await tx.query('RELEASE SAVEPOINT conduct_sync');const problem=mapError(error);if(![403,404,409,422].includes(problem.status))throw error;conductSync.blocked.push({enrollmentId:entry.enrollmentId,code:problem.code});}
       }
       await audit(tx,c,'attendance',String(session.id),{changed:entries.length,conductSync});return {data:{...await this.detail(tx,await this.session(tx,schoolId,classId,String(session.id))),conductSync}};
-    };
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});
-    return this.commands.execute(c,authorize,work);
   }
 }

@@ -1,0 +1,22 @@
+{
+  "prefix": "b6-attendance",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T20:49:01.374Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/attendance-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 36556,
+  "playwrightExitCode": 1,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T20:49:18.713Z",
+  "exitCode": 1
+}

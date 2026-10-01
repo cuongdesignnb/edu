@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 146,
-  "activatedCandidateCount": 146,
-  "activatedLegacyMethodCount": 129,
+  "candidateCount": 152,
+  "activatedCandidateCount": 152,
+  "activatedLegacyMethodCount": 135,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -412,7 +412,17 @@
         "slot: Slot"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "attendanceRepo",
+        "method": "sheet",
+        "file": "src/lib/repositories/connected/attendance.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "attendanceRepo",
@@ -427,7 +437,17 @@
         "input: { date: string; slot: Slot; entries: { studentId: ID; status: AttendanceStatus; note?: string }[]; expectedVersion?: number; linkConduct: boolean; reason?: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "attendanceRepo",
+        "method": "save",
+        "file": "src/lib/repositories/connected/attendance.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "attendanceRepo",
@@ -443,7 +463,17 @@
         "slot: Slot"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "attendanceRepo",
+        "method": "publish",
+        "file": "src/lib/repositories/connected/attendance.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "attendanceRepo",
@@ -458,7 +488,17 @@
         "weekStart?: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "attendanceRepo",
+        "method": "weekly",
+        "file": "src/lib/repositories/connected/attendance.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "attendanceRepo",
@@ -4294,7 +4334,17 @@
         "slot = \"morning\""
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "teacherExtraRepo",
+        "method": "recordHistory",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "teacherExtraRepo",
@@ -4355,7 +4405,17 @@
         "date: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "teacherExtraRepo",
+        "method": "attendanceSlots",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     }
   ],
   "extensions": [

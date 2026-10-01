@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-deb833c29a6b Creating 
+ Container edumanage_backend_test-runner-run-deb833c29a6b Created 
+✔ B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections (1192.091699ms)
+✔ B3 subject attendance requires its actual lesson and cannot borrow daily access from another class (696.711542ms)
+✔ B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version (218.943715ms)
+✔ B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts (1259.293394ms)
+✔ B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings (524.601365ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4662.902074
+EXIT_CODE=0

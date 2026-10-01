@@ -1,0 +1,29 @@
+ Container edumanage_backend_test-runner-run-6189935fb5ca Creating 
+ Container edumanage_backend_test-runner-run-6189935fb5ca Created 
+✔ B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes (1350.983306ms)
+✔ B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority (778.070943ms)
+✔ B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts (453.182656ms)
+✔ B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation (653.450684ms)
+✔ B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows (579.625416ms)
+✔ B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities (473.315096ms)
+✖ B6 attendance workspace subject reads and records only own live lesson while daily rights and archive revoke remain independent (191.712667ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5381.563956
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1287:1
+✖ B6 attendance workspace subject reads and records only own live lesson while daily rights and archive revoke remain independent (191.712667ms)
+  TypeError: Cannot read properties of undefined (reading 'id')
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1288:239)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+EXIT_CODE=1

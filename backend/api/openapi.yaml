@@ -36516,6 +36516,636 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/slots:
+    get:
+      operationId: getClassAttendanceSlots
+      tags:
+        - Classroom
+      summary: getClassAttendanceSlots
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL04
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceSlotsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/sheet:
+    get:
+      operationId: getClassAttendanceSheet
+      tags:
+        - Classroom
+      summary: getClassAttendanceSheet
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL04
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: slot
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceSheetResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/week:
+    get:
+      operationId: getClassAttendanceWeek
+      tags:
+        - Classroom
+      summary: getClassAttendanceWeek
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekStart
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceWeekResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/students/{studentId}/history:
+    get:
+      operationId: getClassAttendanceHistory
+      tags:
+        - Classroom
+      summary: getClassAttendanceHistory
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL04
+        - CL05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: slot
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceHistoryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/save:
+    post:
+      operationId: saveClassAttendanceSheet
+      tags:
+        - Schedule
+      summary: saveClassAttendanceSheet
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.record
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL04
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassAttendanceSave"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/attendance-workspace/publish:
+    post:
+      operationId: publishClassAttendanceSheet
+      tags:
+        - Schedule
+      summary: publishClassAttendanceSheet
+      description: Exact class/year/date attendance sources with independent lesson
+        rights, displayed versions, atomic editing and immutable publication
+        replacements; staff public notes only.
+      x-permission: attendance.publish
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL04
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassAttendancePublish"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassAttendanceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -53089,6 +53719,944 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ClassStudentAttendance"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassAttendanceSource:
+      type: object
+      properties:
+        classVersion:
+          type: integer
+          minimum: 1
+        rosterHash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        sessionId:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+          nullable: true
+        dataVersion:
+          type: integer
+          minimum: 1
+          nullable: true
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - classVersion
+        - rosterHash
+        - sessionId
+        - version
+        - dataVersion
+        - publicationId
+      additionalProperties: false
+    ClassAttendanceSlots:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        slots:
+          type: array
+          maxItems: 102
+          items:
+            type: object
+            properties:
+              slot:
+                type: string
+                pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+              label:
+                type: string
+              canRecord:
+                type: boolean
+            required:
+              - slot
+              - label
+              - canRecord
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - date
+        - slots
+      additionalProperties: false
+    ClassAttendanceSheet:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        slot:
+          type: string
+          pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+        today:
+          type: string
+          format: date
+        className:
+          type: string
+        source:
+          type: object
+          properties:
+            classVersion:
+              type: integer
+              minimum: 1
+            rosterHash:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            sessionId:
+              type: string
+              format: uuid
+              nullable: true
+            version:
+              type: integer
+              minimum: 1
+              nullable: true
+            dataVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+            publicationId:
+              type: string
+              format: uuid
+              nullable: true
+          required:
+            - classVersion
+            - rosterHash
+            - sessionId
+            - version
+            - dataVersion
+            - publicationId
+          additionalProperties: false
+        session:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            version:
+              type: integer
+              minimum: 1
+            dataVersion:
+              type: integer
+              minimum: 1
+            updatedAt:
+              type: string
+              format: date-time
+            publishedAt:
+              type: string
+              format: date-time
+              nullable: true
+            locked:
+              type: boolean
+          required:
+            - id
+            - version
+            - dataVersion
+            - updatedAt
+            - publishedAt
+            - locked
+          additionalProperties: false
+          nullable: true
+        sessionStatus:
+          type: string
+          enum:
+            - none
+            - open
+            - published
+            - locked
+        rows:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              enrollmentId:
+                type: string
+                format: uuid
+              recordVersion:
+                type: integer
+                minimum: 1
+                nullable: true
+              code:
+                type: string
+              fullName:
+                type: string
+              groupName:
+                type: string
+                nullable: true
+              status:
+                type: string
+                enum:
+                  - PRESENT
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+              note:
+                type: string
+                maxLength: 4000
+              edited:
+                type: boolean
+              linkedConduct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  points:
+                    type: number
+                  status:
+                    type: string
+                    enum:
+                      - DRAFT
+                      - APPROVED
+                      - EXCLUDED
+                required:
+                  - id
+                  - points
+                  - status
+                additionalProperties: false
+                nullable: true
+            required:
+              - studentId
+              - enrollmentId
+              - recordVersion
+              - code
+              - fullName
+              - groupName
+              - status
+              - note
+              - edited
+              - linkedConduct
+            additionalProperties: false
+        counts:
+          type: object
+          properties:
+            PRESENT:
+              type: integer
+              minimum: 0
+            LATE:
+              type: integer
+              minimum: 0
+            EXCUSED:
+              type: integer
+              minimum: 0
+            UNEXCUSED:
+              type: integer
+              minimum: 0
+            UNMARKED:
+              type: integer
+              minimum: 0
+          required:
+            - PRESENT
+            - LATE
+            - EXCUSED
+            - UNEXCUSED
+            - UNMARKED
+          additionalProperties: false
+        lessons:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              period:
+                type: integer
+                minimum: 1
+                nullable: true
+              subject:
+                type: string
+              start:
+                type: string
+                pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+              end:
+                type: string
+                pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+              status:
+                type: string
+                enum:
+                  - SCHEDULED
+                  - CANCELLED
+                  - REPLACED
+            required:
+              - id
+              - period
+              - subject
+              - start
+              - end
+              - status
+            additionalProperties: false
+        lesson:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            period:
+              type: integer
+              minimum: 1
+              nullable: true
+            subject:
+              type: string
+            start:
+              type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            end:
+              type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            status:
+              type: string
+              enum:
+                - SCHEDULED
+                - CANCELLED
+                - REPLACED
+          required:
+            - id
+            - period
+            - subject
+            - start
+            - end
+            - status
+          additionalProperties: false
+          nullable: true
+        canRecord:
+          type: boolean
+        canPublish:
+          type: boolean
+        canLink:
+          type: boolean
+        holiday:
+          type: string
+          nullable: true
+        isSunday:
+          type: boolean
+        updatedByName:
+          type: string
+          nullable: true
+        week:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            index:
+              type: integer
+              minimum: 1
+          required:
+            - id
+            - index
+          additionalProperties: false
+          nullable: true
+        periodLocked:
+          type: boolean
+        linkRules:
+          type: array
+          maxItems: 2
+          items:
+            type: object
+            properties:
+              link:
+                type: string
+                enum:
+                  - LATE
+                  - UNEXCUSED
+              label:
+                type: string
+              points:
+                type: number
+            required:
+              - link
+              - label
+              - points
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - date
+        - slot
+        - today
+        - className
+        - source
+        - session
+        - sessionStatus
+        - rows
+        - counts
+        - lessons
+        - lesson
+        - canRecord
+        - canPublish
+        - canLink
+        - holiday
+        - isSunday
+        - updatedByName
+        - week
+        - periodLocked
+        - linkRules
+      additionalProperties: false
+    ClassAttendanceWeek:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        monday:
+          type: string
+          format: date
+        today:
+          type: string
+          format: date
+        week:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            index:
+              type: integer
+              minimum: 1
+          required:
+            - id
+            - index
+          additionalProperties: false
+          nullable: true
+        days:
+          type: array
+          minItems: 6
+          maxItems: 6
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              sessionStatus:
+                type: string
+                enum:
+                  - none
+                  - open
+                  - published
+                  - locked
+                  - future
+                  - outside_year
+              holiday:
+                type: string
+                nullable: true
+              periodSessions:
+                type: integer
+                minimum: 0
+            required:
+              - date
+              - sessionStatus
+              - holiday
+              - periodSessions
+            additionalProperties: false
+        rows:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              code:
+                type: string
+              fullName:
+                type: string
+              cells:
+                type: array
+                minItems: 6
+                maxItems: 6
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum:
+                        - PRESENT
+                        - LATE
+                        - EXCUSED
+                        - UNEXCUSED
+                        - UNMARKED
+                        - not_enrolled
+                        - holiday
+                        - future
+                    note:
+                      type: string
+                      maxLength: 4000
+                    edited:
+                      type: boolean
+                  required:
+                    - status
+                    - note
+                    - edited
+                  additionalProperties: false
+              tally:
+                type: object
+                properties:
+                  PRESENT:
+                    type: integer
+                    minimum: 0
+                  LATE:
+                    type: integer
+                    minimum: 0
+                  EXCUSED:
+                    type: integer
+                    minimum: 0
+                  UNEXCUSED:
+                    type: integer
+                    minimum: 0
+                  UNMARKED:
+                    type: integer
+                    minimum: 0
+                required:
+                  - PRESENT
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+                additionalProperties: false
+            required:
+              - studentId
+              - code
+              - fullName
+              - cells
+              - tally
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - monday
+        - today
+        - week
+        - days
+        - rows
+      additionalProperties: false
+    ClassAttendanceHistory:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        studentName:
+          type: string
+        code:
+          type: string
+        date:
+          type: string
+          format: date
+        slot:
+          type: string
+          pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+        status:
+          type: string
+          enum:
+            - PRESENT
+            - LATE
+            - EXCUSED
+            - UNEXCUSED
+            - UNMARKED
+        note:
+          type: string
+          maxLength: 4000
+        sessionStatus:
+          type: string
+          enum:
+            - none
+            - open
+            - published
+            - locked
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        linkedConduct:
+          type: array
+          maxItems: 1
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              points:
+                type: number
+              status:
+                type: string
+                enum:
+                  - DRAFT
+                  - APPROVED
+                  - EXCLUDED
+              reason:
+                type: string
+                nullable: true
+            required:
+              - id
+              - points
+              - status
+              - reason
+            additionalProperties: false
+        history:
+          type: array
+          maxItems: 2000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              at:
+                type: string
+                format: date-time
+              byName:
+                type: string
+                nullable: true
+              from:
+                type: string
+                enum:
+                  - PRESENT
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+              to:
+                type: string
+                enum:
+                  - PRESENT
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+              reason:
+                type: string
+                nullable: true
+            required:
+              - id
+              - at
+              - byName
+              - from
+              - to
+              - reason
+            additionalProperties: false
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - studentId
+        - studentName
+        - code
+        - date
+        - slot
+        - status
+        - note
+        - sessionStatus
+        - publishedAt
+        - linkedConduct
+        - history
+      additionalProperties: false
+    ClassAttendanceSave:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slot:
+          type: string
+          pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+        source:
+          type: object
+          properties:
+            classVersion:
+              type: integer
+              minimum: 1
+            rosterHash:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            sessionId:
+              type: string
+              format: uuid
+              nullable: true
+            version:
+              type: integer
+              minimum: 1
+              nullable: true
+            dataVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+            publicationId:
+              type: string
+              format: uuid
+              nullable: true
+          required:
+            - classVersion
+            - rosterHash
+            - sessionId
+            - version
+            - dataVersion
+            - publicationId
+          additionalProperties: false
+        entries:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              recordVersion:
+                type: integer
+                minimum: 1
+                nullable: true
+              status:
+                type: string
+                enum:
+                  - PRESENT
+                  - LATE
+                  - EXCUSED
+                  - UNEXCUSED
+                  - UNMARKED
+              note:
+                type: string
+                maxLength: 4000
+            required:
+              - studentId
+              - recordVersion
+              - status
+              - note
+            additionalProperties: false
+        linkConduct:
+          type: boolean
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 2000
+      required:
+        - date
+        - slot
+        - source
+        - entries
+        - linkConduct
+      additionalProperties: false
+    ClassAttendancePublish:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slot:
+          type: string
+          pattern: ^(morning|afternoon|period-[1-9][0-9]*|lesson-[0-9a-fA-F-]{36})$
+        source:
+          type: object
+          properties:
+            classVersion:
+              type: integer
+              minimum: 1
+            rosterHash:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            sessionId:
+              type: string
+              format: uuid
+              nullable: true
+            version:
+              type: integer
+              minimum: 1
+              nullable: true
+            dataVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+            publicationId:
+              type: string
+              format: uuid
+              nullable: true
+          required:
+            - classVersion
+            - rosterHash
+            - sessionId
+            - version
+            - dataVersion
+            - publicationId
+          additionalProperties: false
+      required:
+        - date
+        - slot
+        - source
+      additionalProperties: false
+    ClassAttendanceReceipt:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        changed:
+          type: integer
+          minimum: 0
+        linkedCreated:
+          type: integer
+          minimum: 0
+        linkedVoided:
+          type: integer
+          minimum: 0
+        blockedLinks:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+                nullable: true
+              code:
+                type: string
+            required:
+              - studentId
+              - code
+            additionalProperties: false
+        source:
+          type: object
+          properties:
+            classVersion:
+              type: integer
+              minimum: 1
+            rosterHash:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            sessionId:
+              type: string
+              format: uuid
+              nullable: true
+            version:
+              type: integer
+              minimum: 1
+              nullable: true
+            dataVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+            publicationId:
+              type: string
+              format: uuid
+              nullable: true
+          required:
+            - classVersion
+            - rosterHash
+            - sessionId
+            - version
+            - dataVersion
+            - publicationId
+          additionalProperties: false
+      required:
+        - sessionId
+        - changed
+        - linkedCreated
+        - linkedVoided
+        - blockedLinks
+        - source
+      additionalProperties: false
+    ClassAttendanceSlotsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassAttendanceSlots"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassAttendanceSheetResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassAttendanceSheet"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassAttendanceWeekResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassAttendanceWeek"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassAttendanceHistoryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassAttendanceHistory"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassAttendanceReceiptResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassAttendanceReceipt"
         requestId:
           type: string
       required:

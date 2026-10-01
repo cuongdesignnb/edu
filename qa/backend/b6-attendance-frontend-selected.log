@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-attendance-workspace.test.ts (6 tests) 24ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  03:41:54
+   Duration  531ms (transform 141ms, setup 43ms, collect 148ms, tests 24ms, environment 0ms, prepare 111ms)
+
+EXIT_CODE=0

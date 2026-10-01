@@ -1,0 +1,56 @@
+
+Running 5 tests using 1 worker
+
+(node:37240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\attendance-contract.spec.ts:22:5 › attendance saves only changed displayed pupils and source then publishes and opens real own history (1.4s)
+  ok 2 tests\native-ui-contract\attendance-contract.spec.ts:23:5 › attendance API failure retries and malformed foreign source hides roster and all save actions (873ms)
+  x  3 tests\native-ui-contract\attendance-contract.spec.ts:24:5 › subject attendance chooses actual own lesson and hides class publication and conduct actions on mobile (10.5s)
+(node:35304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 tests\native-ui-contract\attendance-contract.spec.ts:25:5 › slot failure does not request a default morning sheet and weekly uses native exceptions and own cell history (1.0s)
+  ok 5 tests\native-ui-contract\attendance-contract.spec.ts:26:5 › save conflict retains the entered draft and asks for reload without a second blind write (628ms)
+
+
+  1) tests\native-ui-contract\attendance-contract.spec.ts:24:5 › subject attendance chooses actual own lesson and hides class publication and conduct actions on mobile 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('Học sinh điểm danh API', { exact: true }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('Học sinh điểm danh API', { exact: true }).first() with timeout 10000ms
+      - waiting for getByText('Học sinh điểm danh API', { exact: true }).first()
+        22 × locator resolved to <p class="truncate font-semibold text-ink">Học sinh điểm danh API</p>
+           - unexpected value "hidden"
+
+
+      22 | test('attendance saves only changed displayed pupils and source then publishes and opens real own history',async({page})=>{const s=state();await open(page,s);await expect(page.getByText('Học sinh điểm danh API',{exact:true}).first()).toBeVisible();await expect(page.getByText(/Sĩ số 1 = 0 có mặt/)).toBeVisible();await page.getByRole('radio',{name:'Đi muộn',exact:true}).first().click();await page.getByRole('textbox',{name:'Ghi chú cho Học sinh điểm danh API'}).first().fill('Ghi chú điểm danh công khai');await page.getByRole('button',{name:'Lưu điểm danh',exact:true}).first().click();await expect(page.getByRole('button',{name:'Lịch sử',exact:true}).first()).toBeVisible();const saved=s.requests.find(r=>r.path===att+'/save')!;expect(saved.body).toMatchObject({source:{sessionId:null,version:null,rosterHash:'a'.repeat(64)},entries:[{studentId,recordVersion:null,status:'LATE',note:'Ghi chú điểm danh công khai'}],linkConduct:false});expect(s.requests.filter(r=>r.path===att+'/save')).toHaveLength(1);await page.getByRole('button',{name:'Công bố cho phụ huynh',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Công bố',exact:true}).click();await expect(page.getByRole('button',{name:'Đã công bố cho phụ huynh',exact:true})).toBeVisible();await page.getByRole('button',{name:'Lịch sử',exact:true}).first().click();await expect(page.getByText('Lý do: Lý do nguồn thật')).toBeVisible();await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+      23 | test('attendance API failure retries and malformed foreign source hides roster and all save actions',async({page})=>{const s=state();s.mode='outage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByText('Học sinh điểm danh API',{exact:true})).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại'}).click();await expect(page.getByText('Học sinh điểm danh API',{exact:true}).first()).toBeVisible();s.mode='malformed';await page.reload();await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();await expect(page.getByRole('button',{name:'Lưu điểm danh',exact:true})).toHaveCount(0);expect(s.unexpected).toEqual([]);});
+    > 24 | test('subject attendance chooses actual own lesson and hides class publication and conduct actions on mobile',async({page})=>{const s=state();s.mode='subject';await page.setViewportSize({width:390,height:844});await open(page,s);await expect(page.getByText('Học sinh điểm danh API',{exact:true}).first()).toBeVisible();await expect(page.getByRole('combobox',{name:'Buổi / tiết'})).toHaveValue('period-2');await expect(page.getByRole('button',{name:'Công bố cho phụ huynh',exact:true})).toHaveCount(0);await expect(page.getByRole('checkbox',{name:/Tạo ghi nhận thi đua/})).toBeDisabled();expect(s.requests.filter(r=>r.path===att+'/sheet').every(r=>r.method==='GET')).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});
+         |                                                                                                                                                                                                                                                                                                                  ^
+      25 | test('slot failure does not request a default morning sheet and weekly uses native exceptions and own cell history',async({page})=>{const s=state();s.mode='slotsoutage';await open(page,s);await expect(page.getByRole('button',{name:'Thử lại'})).toBeVisible();expect(s.requests.some(r=>r.path===att+'/sheet')).toBe(false);s.mode='ready';await page.goto(base+'/attendance/weekly?week=2026-09-28');await expect(page.getByText('Học sinh điểm danh API',{exact:true})).toBeVisible();await expect(page.getByRole('region',{name:'Ma trận chuyên cần'})).toBeVisible();await page.getByRole('button',{name:/Học sinh điểm danh API.*02\/10.*Đi muộn/}).click();await expect(page.getByText('Lý do: Lý do nguồn thật')).toBeVisible();expect(s.unexpected).toEqual([]);});
+      26 | test('save conflict retains the entered draft and asks for reload without a second blind write',async({page})=>{const s=state();s.mode='conflict';await open(page,s);await page.getByRole('radio',{name:'Đi muộn',exact:true}).first().click();await page.getByRole('button',{name:'Lưu điểm danh',exact:true}).first().click();await expect(page.getByRole('dialog')).toBeVisible();expect(s.requests.filter(r=>r.path===att+'/save')).toHaveLength(1);expect(s.saved).toBe(false);expect(s.unexpected).toEqual([]);});
+      27 |
+        at D:\Edu\tests\native-ui-contract\attendance-contract.spec.ts:24:306
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-attendance-browser-artifacts-final\attendance-contract-subjec-745b3-d-conduct-actions-on-mobile\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-attendance-browser-artifacts-final\attendance-contract-subjec-745b3-d-conduct-actions-on-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-attendance-browser-artifacts-final\attendance-contract-subjec-745b3-d-conduct-actions-on-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-attendance-browser-artifacts-final\attendance-contract-subjec-745b3-d-conduct-actions-on-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\attendance-contract.spec.ts:24:5 › subject attendance chooses actual own lesson and hides class publication and conduct actions on mobile 
+  4 passed (16.8s)

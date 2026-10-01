@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('native attendance commands require displayed null or existing source versions and exclude private or subject rights overrides',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={classVersion:1,rosterHash:'a'.repeat(64),sessionId:null,version:null,dataVersion:null,publicationId:null},value={date:'2026-10-02',slot:'morning',source,entries:[{studentId:id,recordVersion:null,status:'UNMARKED',note:''}],linkConduct:false};validateSchema('ClassAttendanceSave',value);
+ for(const bad of [{...value,role:'HOMEROOM'},{...value,schoolId:id},{...value,entries:[{...value.entries[0],internalNote:'PRIVATE'}]},{...value,source:{...source,version:0}},{...value,source:{classVersion:1}},{...value,reason:'x'}])assert.throws(()=>validateSchema('ClassAttendanceSave',bad));
+ for(const name of ['getClassAttendanceSlots','getClassAttendanceSheet','getClassAttendanceWeek','getClassAttendanceHistory']){const op=operations.find(o=>o.id===name);assert.equal(op.permission,'attendance.read');assert.equal(op.auth,'staff');assert.equal(op.readOnly,true);assert.deepEqual(op.parameters.filter(p=>p.in==='path').slice(0,3).map(p=>p.name),['schoolId','yearId','classId']);}
+});
 test('staff preview context has a minimal context schema and independent school authority',()=>{
  const op=operations.find(operation=>operation.id==='getParentAccessPreviewContext');assert.equal(op.response,'ParentContext');assert.equal(op.permission,'parent_access.preview');assert.equal(op.auth,'staff');assert.equal(op.scope,'school');assert.equal(op.method,'GET');assert.equal(op.path,'/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/context');assert.equal(op.readOnly,true);
  const value={viewId:'da72b470-4b45-4f5f-b89d-179c0cdf454a',school:{name:'Trường kiểm thử',slug:'preview-test',publicContactPhone:null,shortName:null,motto:null,publicContactEmail:null,publicAddress:null},student:{displayName:'Con riêng',classLabel:'6A',schoolYearLabel:'2026–2027'},allowedSections:['teachers'],allowDownload:false,csrfToken:'synthetic-preview-csrf',expiresAt:'2026-10-01T01:01:00Z',today:'2026-10-01',year:{label:'2026–2027',startsOn:'2026-09-01',endsOn:'2027-06-01'},relationshipLabel:'Mẹ',linkExpiresAt:'2026-11-01T00:00:00Z',lastPublishedAt:null};validateSchema('ParentContext',value,true);
@@ -45,7 +50,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,352);assert.equal(new Set(operations.map(op=>op.id )).size,352);
+  assert.equal(operations.length,358);assert.equal(new Set(operations.map(op=>op.id )).size,358);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
