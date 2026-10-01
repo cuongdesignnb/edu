@@ -1262,3 +1262,33 @@ Actual ADR-052/053 evidence: 145/145 full PostgreSQL, 36 verified migrations,
 exit0. Selected overview and fixture workflows each ran 2/2 separately. Runtime
 297 operations / 390 schemas, 94 unactivated candidates. The implementation
 report retains failed attempts, image provenance and all outstanding B6/B7 gates.
+
+## ADR-054 — Reviewed, atomic guardian contact and relationship save
+
+The existing guardian dialog saves a contact, its relationship to one student and
+the preferred contact choice together. A purpose-bound guardian-form read now
+returns the minimal student identity/version, current primary relationship
+identities/versions and the selected contact/relationship versions. Both current
+guardian.read and guardian.manage are required independently; student.read is not
+used to acquire family authority. Class scope excludes other students and must
+still be current when a command or its cached acknowledgement is requested.
+
+The native save uses the school command lock and one PostgreSQL transaction.
+It checks all displayed versions and primary references before writes, clears
+other primary relationships only for this student and increments the student's
+version for the family change. A repeated command key returns its original
+receipt only after current authorization; a new key with the old student version
+cannot create a duplicate contact. New contacts do not merge by phone. They start
+UNVERIFIED with canReceiveInfo=false; editing a relationship preserves its
+verification and receiving choice. Verification remains a separate command.
+
+A shared contact can be changed only with School authority or management of all
+affected current classes. An authorized relationship-only edit can retain the
+unchanged contact without acquiring other siblings. Archived contacts and foreign
+student/contact/relationship pairings are rejected. The frontend candidate uses
+the displayed form source, omits an unchanged masked phone and requires a full
+phone for a new or changed value. It issues one command, checks its actual
+acknowledgement and retains the same key for a manual retry after acknowledgement
+loss. These two workflow extensions leave existing operation/schema definitions
+intact. Their test evidence is recorded separately; UI activation and B7 remain
+pending. No parent account, parent link secret or extra business domain is added.

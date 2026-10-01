@@ -1,0 +1,41 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-8e5192841c7d Creating
+ Container edumanage_backend_test-runner-run-8e5192841c7d Created
+✔ B6 atomic guardian save creates unverified contacts, replays one receipt and prevents duplicate new commands (1298.050834ms)
+✔ B6 atomic guardian save serializes competing displayed student versions (518.363339ms)
+✔ B6 guardian form grants class family authority without student read or unscoped sibling data (939.097964ms)
+✔ B6 atomic guardian edits preserve verified receiving choices and reject stale contact versions without partial priority changes (825.143134ms)
+✔ B6 guardian save detects independently changed primary references and preserves every row on failure (802.488477ms)
+✔ B6 guardian save rejects masked phones, foreign pairings and mutation of archived contacts (682.230441ms)
+✔ B6 guardian form and cached saves recheck enrollment end and grant expiry in the same session (995.135976ms)
+✖ B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault (495.52246ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7410.872864
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:2667:1
+✖ B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault (495.52246ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:validation_error","title":"VALIDATION_ERROR","status":422,"code":"VALIDATION_ERROR","requestId":"1d05f365-ed5d-4c29-91a9-e88762c57146"}
+
+  422 !== 500
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2671:55)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 422,
+    expected: 500,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

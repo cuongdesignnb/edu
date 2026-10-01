@@ -390,6 +390,16 @@ export interface ApiSchemas {
   "GuardianHistoryEvent": { "id": string; "actorId": (string) | null; "actorName": (string) | null; "action": string; "targetType": string; "targetId": string; "at": string; "reason": (string) | null; };
   "GuardianDetails": { "guardian": ApiSchemas["Guardian"]; "today": string; "canEditContact": boolean; "canViewHistory": boolean; "historyHasMore": (boolean) | null; "relationships": Array<ApiSchemas["GuardianProfileRelationship"]>; "history": (Array<ApiSchemas["GuardianHistoryEvent"]>) | null; };
   "GuardianDetailsResponse": { "data": ApiSchemas["GuardianDetails"]; "requestId": string; };
+  "GuardianPrimaryRef": { "id": string; "version": number; };
+  "GuardianFormContact": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "fullName": string; "phone": (string) | null; "email": (string) | null; "status": "ACTIVE" | "ARCHIVED"; };
+  "GuardianFormRelationship": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentId": string; "guardianId": string; "relationshipLabel": string; "isPrimary": boolean; "canReceiveInfo": boolean; "status": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "verifiedAt": (string) | null; };
+  "GuardianFormStudent": { "id": string; "version": number; "name": string; "code": string; };
+  "GuardianFormTarget": { "guardian": ApiSchemas["GuardianFormContact"]; "relationship": ApiSchemas["GuardianFormRelationship"]; "canEditContact": boolean; };
+  "GuardianFormContext": { "student": ApiSchemas["GuardianFormStudent"]; "today": string; "primaryContacts": Array<ApiSchemas["GuardianPrimaryRef"]>; "target": (ApiSchemas["GuardianFormTarget"] | (null) | null); };
+  "GuardianFormContextResponse": { "data": ApiSchemas["GuardianFormContext"]; "requestId": string; };
+  "GuardianSaveRequest": { "expectedStudentVersion": number; "expectedPrimaryContacts": Array<ApiSchemas["GuardianPrimaryRef"]>; "guardianId"?: string; "relationshipId"?: string; "expectedGuardianVersion"?: number; "expectedRelationshipVersion"?: number; "fullName": string; "relationshipLabel": string; "phone"?: string; "email": (string) | null; "isPrimary": boolean; };
+  "GuardianSaveResult": { "studentId": string; "studentVersion": number; "guardian": ApiSchemas["GuardianFormContact"]; "relationship": ApiSchemas["GuardianFormRelationship"]; };
+  "GuardianSaveResultResponse": { "data": ApiSchemas["GuardianSaveResult"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3362,6 +3372,26 @@ export const apiOperations = {
     "list": false,
     "permission": "guardian.read",
     "readOnly": true
+  },
+  "getStudentGuardianForm": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}/guardian-form",
+    "auth": "staff",
+    "request": null,
+    "response": "GuardianFormContext",
+    "list": false,
+    "permission": "guardian.manage+guardian.read",
+    "readOnly": true
+  },
+  "saveStudentGuardian": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}/guardians/save",
+    "auth": "staff",
+    "request": "GuardianSaveRequest",
+    "response": "GuardianSaveResult",
+    "list": false,
+    "permission": "guardian.manage+guardian.read",
+    "readOnly": false
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

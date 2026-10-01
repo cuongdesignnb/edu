@@ -403,6 +403,24 @@ for(const path of ['/schools/{schoolId}/guardian-directory','/schools/{schoolId}
  spec.paths[path].get.description='Current authorized family contacts and pupil references, with independent link/audit panels; no parent accounts, unscoped siblings or reusable link secrets.';
  operations.find(o=>o.id===spec.paths[path].get.operationId).description=spec.paths[path].get.description;
 }
+// ADR-054: the existing guardian form is one scoped, versioned transaction.
+spec.components.schemas.GuardianPrimaryRef=object({id:uuid,version:versionPositive});
+const primaryRefs={type:'array',maxItems:1000,uniqueItems:true,items:{$ref:'#/components/schemas/GuardianPrimaryRef'}};
+spec.components.schemas.GuardianFormContact=object({...structuredClone(spec.components.schemas.Guardian.properties),id:uuid});
+spec.components.schemas.GuardianFormRelationship=object({...structuredClone(spec.components.schemas.Relationship.properties),id:uuid,studentId:uuid,guardianId:uuid});
+spec.components.schemas.GuardianFormStudent=object({id:uuid,version:versionPositive,name:label,code:label});
+spec.components.schemas.GuardianFormTarget=object({guardian:{$ref:'#/components/schemas/GuardianFormContact'},relationship:{$ref:'#/components/schemas/GuardianFormRelationship'},canEditContact:{type:'boolean'}});
+spec.components.schemas.GuardianFormContext=object({student:{$ref:'#/components/schemas/GuardianFormStudent'},today:studentDate,primaryContacts:primaryRefs,target:nullableMatrixRef('GuardianFormTarget')});
+spec.components.schemas.GuardianFormContextResponse=object({data:{$ref:'#/components/schemas/GuardianFormContext'},requestId:label});
+spec.components.schemas.GuardianSaveRequest=object({expectedStudentVersion:versionPositive,expectedPrimaryContacts:primaryRefs,guardianId:uuid,relationshipId:uuid,expectedGuardianVersion:versionPositive,expectedRelationshipVersion:versionPositive,
+ fullName:structuredClone(spec.components.schemas.GuardianCreate.properties.fullName),relationshipLabel:structuredClone(spec.components.schemas.RelationshipCreate.properties.relationshipLabel),phone:{type:'string',minLength:8,maxLength:32},email:structuredClone(spec.components.schemas.Guardian.properties.email),isPrimary:{type:'boolean'}},['expectedStudentVersion','expectedPrimaryContacts','fullName','relationshipLabel','email','isPrimary']);
+spec.components.schemas.GuardianSaveResult=object({studentId:uuid,studentVersion:versionPositive,guardian:{$ref:'#/components/schemas/GuardianFormContact'},relationship:{$ref:'#/components/schemas/GuardianFormRelationship'}});
+spec.components.schemas.GuardianSaveResultResponse=object({data:{$ref:'#/components/schemas/GuardianSaveResult'},requestId:label});
+const guardianFormPath='/schools/{schoolId}/students/{studentId}/guardian-form',guardianSavePath='/schools/{schoolId}/students/{studentId}/guardians/save',guardianParams=['schoolId','studentId'].map(name=>({name,in:'path',required:true,schema:uuid}));
+extendOperation('getGuardian','getStudentGuardianForm',guardianFormPath,'guardian.manage+guardian.read','GuardianFormContext',false,['SC20','SC22'],[...guardianParams,{name:'relationshipId',in:'query',schema:uuid}]);
+extendOperation('createRelationship','saveStudentGuardian',guardianSavePath,'guardian.manage+guardian.read','GuardianSaveResult',false,['SC20','SC22'],guardianParams,'GuardianSaveRequest');
+spec.paths[guardianSavePath].post.responses['200']=structuredClone(spec.paths[guardianSavePath].post.responses['201']);
+for(const [path,method]of [[guardianFormPath,'get'],[guardianSavePath,'post']]){spec.paths[path][method].description='Current pupil-bound guardian form and atomic save, with displayed contact/relationship/student/primary versions, no phone merge, no automatic verification and no parent accounts.';operations.find(o=>o.id===spec.paths[path][method].operationId).description=spec.paths[path][method].description;}
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

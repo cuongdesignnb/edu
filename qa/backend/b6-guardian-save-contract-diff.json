@@ -1,0 +1,21 @@
+{
+  "baseCommit": "761ea18b3d9b928fa53b6c8009312ed6881fe300",
+  "operationsChanged": [],
+  "operationsAdded": [
+    "getStudentGuardianForm",
+    "saveStudentGuardian"
+  ],
+  "schemasChanged": [],
+  "schemasAdded": [
+    "GuardianFormContact",
+    "GuardianFormContext",
+    "GuardianFormContextResponse",
+    "GuardianFormRelationship",
+    "GuardianFormStudent",
+    "GuardianFormTarget",
+    "GuardianPrimaryRef",
+    "GuardianSaveRequest",
+    "GuardianSaveResult",
+    "GuardianSaveResultResponse"
+  ]
+}

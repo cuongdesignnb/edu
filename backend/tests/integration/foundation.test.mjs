@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,297);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,299);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2613,6 +2613,64 @@ async function guardianFixture(){
   const second=await nativePupil(f,{fullName:'Học sinh bí mật lớp thứ hai giả',studentCode:'OTHER-PRIVATE',initialClassId:secondClass}),related=await f.post('relationships',{studentId:second.id,guardianId:p.initialGuardian.id,relationshipLabel:'Mẹ',isPrimary:false});assert.equal(related.statusCode,201,related.body);
   return {...f,p,second,secondClass,secondRelationship:related.json().data,guardianId:p.initialGuardian.id,root:`/api/v1/schools/${f.schoolId}`};
 }
+
+async function guardianFormFor(f,studentId,relationshipId){
+  const response=await request('GET',`/api/v1/schools/${f.schoolId}/students/${studentId}/guardian-form`+(relationshipId?`?relationshipId=${relationshipId}`:''));assert.equal(response.statusCode,200,response.body);return response.json().data;
+}
+function guardianSaveInput(form,patch={}){
+  return {expectedStudentVersion:form.student.version,expectedPrimaryContacts:form.primaryContacts,fullName:form.target?.guardian.fullName??'Giám hộ mới giả',relationshipLabel:form.target?.relationship.relationshipLabel??'Bố',email:form.target?.guardian.email??null,isPrimary:true,
+    ...(form.target?{guardianId:form.target.guardian.id,relationshipId:form.target.relationship.id,expectedGuardianVersion:form.target.guardian.version,expectedRelationshipVersion:form.target.relationship.version}:{phone:'0915555555'}),...patch};
+}
+test('B6 atomic guardian save creates unverified contacts, replays one receipt and prevents duplicate new commands',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f),form=await guardianFormFor(f,p.id),path=`students/${p.id}/guardians/save`,body=guardianSaveInput(form),key=crypto.randomUUID();
+  const response=await f.post(path,body,key);assert.equal(response.statusCode,201,response.body);const saved=response.json().data;assert.equal(saved.relationship.status,'UNVERIFIED');assert.equal(saved.relationship.canReceiveInfo,false);assert.equal(saved.guardian.phone,body.phone);assert.equal(saved.studentVersion,form.student.version+1);
+  const replay=await f.post(path,body,key);assert.equal(replay.statusCode,201,replay.body);assert.deepEqual(replay.json().data,saved);
+  const duplicate=await f.post(path,body);assert.equal(duplicate.statusCode,409,duplicate.body);assert.equal(duplicate.json().code,'VERSION_CONFLICT');
+  const fresh=await guardianFormFor(f,p.id),samePhone=await f.post(path,guardianSaveInput(fresh,{fullName:'Liên hệ cùng số khác giả'}));assert.equal(samePhone.statusCode,201,samePhone.body);assert.notEqual(samePhone.json().data.guardian.id,saved.guardian.id);
+  const rows=(await db.transaction(tx=>tx.query('SELECT guardian_id,is_primary,status,can_receive_info FROM app.guardian_relationships WHERE school_id=$1 AND student_id=$2',[f.schoolId,p.id]),{schoolId:f.schoolId})).rows;assert.equal(rows.length,2);assert.equal(rows.filter(row=>row.is_primary).length,1);assert.ok(rows.every(row=>row.status==='UNVERIFIED'&&!row.can_receive_info));
+});
+test('B6 atomic guardian save serializes competing displayed student versions',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f),form=await guardianFormFor(f,p.id),path=`students/${p.id}/guardians/save`,body=guardianSaveInput(form);
+  const responses=await Promise.all([f.post(path,body),f.post(path,{...body,fullName:'Giám hộ cạnh tranh giả'})]);assert.deepEqual(responses.map(row=>row.statusCode).sort(),[201,409]);
+  const actual=(await db.transaction(tx=>tx.query('SELECT count(*)::int AS count FROM app.guardian_relationships WHERE school_id=$1 AND student_id=$2',[f.schoolId,p.id]),{schoolId:f.schoolId})).rows[0];assert.equal(actual.count,1);
+});
+test('B6 guardian form grants class family authority without student read or unscoped sibling data',async()=>{
+  const f=await guardianFixture(),role=await f.role([{action:'guardian.read',scopes:['CLASS']},{action:'guardian.manage',scopes:['CLASS']}]),grant=await f.grant(f.target,role.id,{scopeType:'CLASS',classId:f.classId});
+  jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));const form=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id);assert.equal(form.target.canEditContact,false);assert.deepEqual(Object.keys(form.student).sort(),['code','id','name','version']);assert.equal(JSON.stringify(form).includes(f.second.id),false);
+  const path=`students/${f.p.id}/guardians/save`,body=guardianSaveInput(form,{relationshipLabel:'Người giám hộ'}),key=crypto.randomUUID();let response=await f.post(path,body,key);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data.guardian.version,form.target.guardian.version);assert.equal(response.json().data.relationship.status,'UNVERIFIED');
+  assert.equal((await request('GET',f.root+`/students/${f.p.id}/details`)).statusCode,403);assert.equal((await request('GET',f.root+`/students/${f.p.id}/guardian-form?relationshipId=${f.secondRelationship.id}`)).statusCode,404);
+  const updated=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id);response=await f.post(path,guardianSaveInput(updated,{fullName:'Tên liên hệ dùng chung đã đổi giả'}));assert.equal(response.statusCode,403,response.body);assert.equal(response.json().code,'SHARED_GUARDIAN_SCOPE');
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id]),{schoolId:f.schoolId});response=await f.post(path,body,key);assert.equal(response.statusCode,403,response.body);
+});
+test('B6 atomic guardian edits preserve verified receiving choices and reject stale contact versions without partial priority changes',async()=>{
+  const f=await guardianFixture(),rel=f.p.initialRelationship;const verified=await f.post(`relationships/${rel.id}/verify`,{expectedVersion:rel.version,canReceiveInfo:false,verificationNote:'Đã đối chiếu nguồn giả'});assert.equal(verified.statusCode,200,verified.body);
+  const form=await guardianFormFor(f,f.p.id,rel.id),path=`students/${f.p.id}/guardians/save`,saved=await f.post(path,guardianSaveInput(form,{fullName:'Tên liên hệ cập nhật giả',phone:'0916666666',email:'guardian@example.invalid',relationshipLabel:'Người giám hộ',isPrimary:false}));assert.equal(saved.statusCode,200,saved.body);const actual=saved.json().data;assert.equal(actual.relationship.status,'VERIFIED');assert.equal(actual.relationship.canReceiveInfo,false);assert.equal(actual.relationship.verifiedAt,form.target.relationship.verifiedAt);assert.equal(actual.guardian.version,form.target.guardian.version+1);
+  const fresh=await guardianFormFor(f,f.p.id,rel.id),body=guardianSaveInput(fresh,{expectedGuardianVersion:form.target.guardian.version,phone:'0917777777'}),failed=await f.post(path,body);assert.equal(failed.statusCode,409,failed.body);const after=await guardianFormFor(f,f.p.id,rel.id);assert.deepEqual(after,fresh);
+});
+test('B6 guardian save detects independently changed primary references and preserves every row on failure',async()=>{
+  const f=await guardianFixture(),form=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id),other=await f.post('guardians',{fullName:'Liên hệ ưu tiên khác giả',phone:'0918888888'});assert.equal(other.statusCode,201,other.body);
+  const primary=await f.post('relationships',{studentId:f.p.id,guardianId:other.json().data.id,relationshipLabel:'Bố',isPrimary:true});assert.equal(primary.statusCode,201,primary.body);const before=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id);assert.equal(before.student.version,form.student.version);assert.deepEqual(before.primaryContacts,[{id:primary.json().data.id,version:primary.json().data.version}]);assert.equal(before.target.relationship.version,form.target.relationship.version+1);assert.equal(before.target.relationship.isPrimary,false);
+  const failed=await f.post(`students/${f.p.id}/guardians/save`,guardianSaveInput(form,{phone:'0917777777'}));assert.equal(failed.statusCode,409,failed.body);assert.equal(failed.json().code,'GUARDIAN_PRIMARY_CHANGED');assert.deepEqual(await guardianFormFor(f,f.p.id,f.p.initialRelationship.id),before);
+});
+test('B6 guardian save rejects masked phones, foreign pairings and mutation of archived contacts',async()=>{
+  const f=await guardianFixture(),form=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id),path=`students/${f.p.id}/guardians/save`,body=guardianSaveInput(form);
+  for(const patch of [{phone:'0912 *** 222'},{expectedGuardianVersion:undefined},{actorId:f.target},{canReceiveInfo:true}]){const failed=await f.post(path,{...body,...patch});assert.equal(failed.statusCode,422,failed.body);}
+  const foreign=await f.post(path,{...body,relationshipId:f.secondRelationship.id});assert.equal(foreign.statusCode,404,foreign.body);assert.deepEqual(await guardianFormFor(f,f.p.id,f.p.initialRelationship.id),form);
+  await db.transaction(tx=>tx.query("UPDATE app.guardians SET status='ARCHIVED' WHERE school_id=$1 AND id=$2",[f.schoolId,f.guardianId]),{schoolId:f.schoolId});const archived=await f.post(path,body);assert.equal(archived.statusCode,409,archived.body);assert.equal(archived.json().code,'GUARDIAN_ARCHIVED');
+});
+test('B6 guardian form and cached saves recheck enrollment end and grant expiry in the same session',async()=>{
+  const f=await guardianFixture(),role=await f.role([{action:'guardian.read',scopes:['CLASS']},{action:'guardian.manage',scopes:['CLASS']}]),grant=await f.grant(f.target,role.id,{scopeType:'CLASS',classId:f.classId});jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));
+  const form=await guardianFormFor(f,f.p.id,f.p.initialRelationship.id),path=`students/${f.p.id}/guardians/save`,body=guardianSaveInput(form),key=crypto.randomUUID(),saved=await f.post(path,body,key);assert.equal(saved.statusCode,200,saved.body);
+  await db.transaction(tx=>tx.query("UPDATE app.enrollments SET ends_on=$3,status='ENDED' WHERE school_id=$1 AND id=$2",[f.schoolId,f.p.initialEnrollment.id,f.today]),{schoolId:f.schoolId});assert.equal((await request('GET',f.root+`/students/${f.p.id}/guardian-form`)).statusCode,404);assert.equal((await f.post(path,body,key)).statusCode,404);
+  await db.transaction(async tx=>{await tx.query("UPDATE app.enrollments SET ends_on=NULL,status='ACTIVE' WHERE school_id=$1 AND id=$2",[f.schoolId,f.p.initialEnrollment.id]);await tx.query('UPDATE app.role_grants SET valid_until=$3 WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id,new Date(Date.now()-1).toISOString()]);},{schoolId:f.schoolId});assert.equal((await request('GET',f.root+`/students/${f.p.id}/guardian-form`)).statusCode,403);assert.equal((await f.post(path,body,key)).statusCode,403);
+});
+test('B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f,{initialGuardian:{fullName:'Liên hệ ưu tiên nguồn giả',relationshipLabel:'Mẹ',phone:'0912222222'}}),form=await guardianFormFor(f,p.id),body=guardianSaveInput(form),path=`students/${p.id}/guardians/save`,key=crypto.randomUUID();
+  const snapshot=()=>db.transaction(async tx=>{const result={};for(const table of ['guardians','guardian_relationships','students','audit_events','idempotency_keys'])result[table]=(await tx.query(`SELECT count(*)::int AS count FROM app.${table} WHERE school_id=$1`,[f.schoolId])).rows[0].count;return result;},{schoolId:f.schoolId}),before=await snapshot(),original=db.transaction;let injected=false;
+  db.transaction=function(fn,context){return original.call(this,async tx=>{const query=tx.query;tx.query=function(sql,...args){if(typeof sql==='string'&&sql.startsWith('UPDATE app.students SET updated_at=now()')&&args[0]?.[0]===f.schoolId&&args[0]?.[1]===p.id){injected=true;return query.call(this,'SELECT $1::uuid',['injected-invalid-uuid']);}return query.call(this,sql,...args);};try{return await fn(tx);}finally{tx.query=query;}},context);};
+  try{const failed=await f.post(path,body,key);assert.equal(failed.statusCode,422,failed.body);assert.equal(failed.json().code,'VALIDATION_ERROR');assert.equal(injected,true);}finally{db.transaction=original;}
+  assert.deepEqual(await snapshot(),before);assert.deepEqual(await guardianFormFor(f,p.id),form);const retry=await f.post(path,body,key);assert.equal(retry.statusCode,201,retry.body);assert.equal(retry.json().data.relationship.status,'UNVERIFIED');
+});
 
 test('B6 school guardian directory uses SQL folded search, literal wildcards, signed keysets and independent link counters',async()=>{
   const f=await guardianFixture();await nativePupil(f,{fullName:'Học sinh có dấu phần trăm giả',initialGuardian:{fullName:'Tên %_ giám hộ giả',relationshipLabel:'Bố',phone:'0913333333'}});

@@ -1,0 +1,21 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-d9c2fd496665 Creating
+ Container edumanage_backend_test-runner-run-d9c2fd496665 Created
+✔ B6 atomic guardian save creates unverified contacts, replays one receipt and prevents duplicate new commands (1044.837308ms)
+✔ B6 atomic guardian save serializes competing displayed student versions (259.61427ms)
+✔ B6 guardian form grants class family authority without student read or unscoped sibling data (439.642972ms)
+✔ B6 atomic guardian edits preserve verified receiving choices and reject stale contact versions without partial priority changes (391.610758ms)
+✔ B6 guardian save detects independently changed primary references and preserves every row on failure (313.235723ms)
+✔ B6 guardian save rejects masked phones, foreign pairings and mutation of archived contacts (301.405577ms)
+✔ B6 guardian form and cached saves recheck enrollment end and grant expiry in the same session (366.309758ms)
+✔ B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault (265.790645ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4328.650463

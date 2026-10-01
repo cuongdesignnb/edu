@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,297);assert.equal(new Set(operations.map(op=>op.id)).size,297);
+  assert.equal(operations.length,299);assert.equal(new Set(operations.map(op=>op.id)).size,299);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -56,6 +56,14 @@ test('member profile separates denied panels and exact native authority without 
   assert.equal(operations.find(op=>op.id==='listMemberHistory').permission,'member.read+audit.read');
   const choice={id,version:1,label:'Vai trò',code:'REAL',systemRole:false,canDelegate:false,delegationUntil:null};validateSchema('MemberRoleChoice',choice,true);
   assert.throws(()=>validateSchema('MemberRoleChoice',{...choice,permissions:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+});
+test('atomic guardian save requires displayed student and primary versions without verification or actor fields',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={expectedStudentVersion:2,expectedPrimaryContacts:[{id,version:3}],fullName:'Giám hộ giả',relationshipLabel:'Mẹ',email:null,isPrimary:true,phone:'0912222222'};
+  validateSchema('GuardianSaveRequest',value);
+  for(const bad of [{...value,expectedStudentVersion:undefined},{...value,expectedPrimaryContacts:undefined},{...value,actorId:id},{...value,studentId:id},{...value,status:'VERIFIED'},{...value,canReceiveInfo:true},{...value,expectedPrimaryContacts:[{id,version:3,guardianId:id}]}])assert.throws(()=>validateSchema('GuardianSaveRequest',bad),error=>error.status===422);
+  const form={student:{id,version:2,name:'Học sinh giả',code:'SOURCE'},today:'2026-10-01',primaryContacts:[],target:null};validateSchema('GuardianFormContext',form,true);
+  for(const field of ['dateOfBirth','internalNote','otherStudentIds'])assert.throws(()=>validateSchema('GuardianFormContext',{...form,student:{...form.student,[field]:'private'}},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  for(const name of ['getStudentGuardianForm','saveStudentGuardian'])assert.equal(operations.find(op=>op.id===name).permission,'guardian.manage+guardian.read');
 });
 test('assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority',()=>{
   const id='da72b470-4b45-4f5f-b89d-179c0cdf454a';validateSchema('AssignmentCreate',{memberId:id,classId:id,kind:'HOMEROOM',startsOn:'2026-10-01',expectedClassVersion:4,expectedMemberVersion:2});

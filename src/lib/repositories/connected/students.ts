@@ -6,7 +6,8 @@ import {dateDays,inclusiveDate} from '../../api/dates';
 import {apiPage,apiList} from '../../api/lists';
 import {displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {RepoError} from '../errors';
-import {guardianDirectoryRow,guardianProfile} from './guardian-mapping';
+import {guardianDirectoryRow,guardianProfile,guardianContact} from './guardian-mapping';
+import {guardianSaveBody,type GuardianSaveInput} from './guardian-form';
 
 export interface StudentCreateInput {
   code?:string;fullName:string;dob:string;gender:Gender;classId:ID;startDate:string;
@@ -51,6 +52,13 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
 }
 
 export const connectedStudentsRepo=withStaffAccess({
+  async saveGuardian(_ctx:Ctx,schoolId:ID,input:GuardianSaveInput){
+    const body=guardianSaveBody(schoolId,input),result=await formResult(http('saveStudentGuardian',{params:{schoolId,studentId:input.studentId},body}),{expectedStudentVersion:'studentVersion',expectedGuardianVersion:'guardianVersion',expectedRelationshipVersion:'relationshipVersion',relationshipLabel:'relation'}),view=result.data;
+    const contact=guardianContact(view.guardian,schoolId),row=view.relationship;
+    if(view.studentId!==input.studentId||view.studentVersion<=body.expectedStudentVersion||row.studentId!==input.studentId||row.guardianId!==contact.id||contact.fullName!==body.fullName||contact.email!==body.email||body.phone!==undefined&&contact.phone!==body.phone||row.relationshipLabel!==body.relationshipLabel||row.isPrimary!==body.isPrimary||input.relationshipId&&row.id!==input.relationshipId||input.guardianId&&contact.id!==input.guardianId)throw new RepoError('NETWORK','Chưa xác minh được kết quả lưu giám hộ. Hãy giữ nội dung để thử lại.');
+    if(!input.relationshipId&&(row.status!=='UNVERIFIED'||row.canReceiveInfo!==false)||input.source.target&&(contact.version<input.source.target.guardian.version||row.version<=input.source.target.relationship.version||row.status!==input.source.target.relationship.status||row.canReceiveInfo!==input.source.target.relationship.canReceiveInfo))throw new RepoError('NETWORK','Trạng thái hoặc phiên bản giám hộ không khớp xác nhận lưu.');
+    return {...row,id:requiredId(row.id),schoolId,version:displayedVersion(row.version),studentVersion:displayedVersion(view.studentVersion),guardian:contact,relation:row.relationshipLabel,verification:row.status.toLowerCase(),nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+  },
   async setVerification(_ctx:Ctx,schoolId:ID,relationshipId:ID,status:'verified'|'revoked',note:string,source:{version:number;canReceiveInfo?:boolean}){
     if(!['verified','revoked'].includes(status))throw new RepoError('VALIDATION','Trạng thái xác minh không hợp lệ.');
     if(note.trim().length<3)throw new RepoError('VALIDATION','Ghi căn cứ xác minh hoặc lý do thu hồi ít nhất 3 ký tự.',{fieldErrors:{note:'Nhập căn cứ hoặc lý do ít nhất 3 ký tự.'}});

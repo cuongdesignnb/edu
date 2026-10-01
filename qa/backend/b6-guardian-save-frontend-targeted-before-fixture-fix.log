@@ -1,0 +1,39 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ❯ tests/unit/api-guardians-adapter.test.ts (17 tests | 1 failed) 38ms
+   ✓ native guardian directory and profile candidates > sends search and verification filters to the server and preserves real null link counts and current classes 14ms
+   ✓ native guardian directory and profile candidates > retains verified relationships without receiving permission and leaves denied panels null 1ms
+   ✓ native guardian directory and profile candidates > rejects wrong contacts, relationships and populated denied panels instead of rendering private data 2ms
+   ✓ native guardian directory and profile candidates > requires source versions and actual nullable contact fields 1ms
+   ✓ native guardian directory and profile candidates > uses actual authorized link metadata and rejects a sibling link or a reusable secret 2ms
+   ✓ native guardian directory and profile candidates > returns server summary and propagates server failures without fabricated zero counters 1ms
+   ✓ native guardian directory and profile candidates > rejects revoked request ownership and invalid filters before returning results 1ms
+   ✓ native relationship verification commands > sends the displayed version and explicit receiving permission, separately from verification 2ms
+   ✓ native relationship verification commands > requires reviewed version and explicit receiving choice before issuing a verification request 1ms
+   ✓ native relationship verification commands > retries revocation with the same command key after a lost acknowledgement and propagates version conflicts 1ms
+   ✓ native atomic guardian save candidates > uses displayed form versions in one command and omits unchanged masked phone without changing verification 1ms
+   × native atomic guardian save candidates > creates a new unverified contact with the actual full phone and retries a lost acknowledgement with the same key 5ms
+     → Chưa xác minh được kết quả lưu giám hộ. Hãy giữ nội dung để thử lại.
+   ✓ native atomic guardian save candidates > requires the reviewed school, student, relationship and nonzero source versions before making a request 1ms
+   ✓ native atomic guardian save candidates > permits a relationship-only edit on a shared contact and rejects contact changes or new masked phones 1ms
+   ✓ native atomic guardian save candidates > accepts actual nullable phone sources and omits their unchanged blank form input 1ms
+   ✓ native atomic guardian save candidates > rejects mismatched acknowledgements and propagates conflict details without fetching replacement versions 2ms
+   ✓ native atomic guardian save candidates > loads only the chosen source and rejects sibling form selections or revoked request ownership 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-guardians-adapter.test.ts > native atomic guardian save candidates > creates a new unverified contact with the actual full phone and retries a lost acknowledgement with the same key
+RepoError: Chưa xác minh được kết quả lưu giám hộ. Hãy giữ nội dung để thử lại.
+ ❯ Object.saveGuardian src/lib/repositories/connected/students.ts:58:455
+
+ ❯ Object.saveGuardian src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-guardians-adapter.test.ts:75:312
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 passed (17)
+   Start at  08:36:49
+   Duration  739ms (transform 140ms, setup 99ms, collect 149ms, tests 38ms, environment 0ms, prepare 219ms)

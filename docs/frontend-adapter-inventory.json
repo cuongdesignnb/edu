@@ -2,7 +2,7 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_ADAPTERS_PENDING",
   "methodCount": 231,
-  "candidateCount": 94,
+  "candidateCount": 96,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3630,7 +3630,17 @@
         "input: { studentId: ID; guardianId?: ID; relationshipId?: ID; fullName: string; relation: GuardianRelationship[\"relation\"]; phone: string; email?: string; isPrimaryContact: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "NOT_STARTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "saveGuardian",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": false,
+        "evidence": [
+          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",
@@ -4001,6 +4011,16 @@
       "repository": "staffRepo",
       "method": "handoverReceipt",
       "file": "src/lib/repositories/connected/staff.ts",
+      "status": "IMPLEMENTED",
+      "activated": false,
+      "evidence": [
+        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+      ]
+    },
+    {
+      "repository": "studentsExtraRepo",
+      "method": "guardianForm",
+      "file": "src/lib/repositories/connected/students-extra.ts",
       "status": "IMPLEMENTED",
       "activated": false,
       "evidence": [

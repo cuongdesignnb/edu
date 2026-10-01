@@ -11,6 +11,7 @@ import {studentDetails} from './student-details';
 import {canEditGuardianContact} from './guardian-policy';
 import {guardianDirectory,guardianDirectorySummary} from './guardian-directory';
 import {guardianDetails} from './guardian-details';
+import {authorizeGuardianChanges,guardianForm,saveGuardian} from './guardian-save';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class StudentsService {
     for(const id of ['listStudents','getStudent','getClassStudent','listClassStudents','createStudent','updateStudent',
       'listStudentEnrollments','createEnrollment','listGuardians','createGuardian','getGuardian','updateGuardian',
       'listRelationships','createRelationship','verifyRelationship','revokeRelationship','listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails',
-      'listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'])handlers[id]=c=>this.handle(c);
+      'listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails','getStudentGuardianForm','saveStudentGuardian'])handlers[id]=c=>this.handle(c);
     return handlers;
   }
   private async studentScope(tx:Transaction,c:RequestContext,studentId:string,action:string){
@@ -51,6 +52,10 @@ export class StudentsService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,operation=c.operation.id,studentId=c.params.studentId??String(c.body.studentId??'');
+    if(operation==='getStudentGuardianForm')return this.db.transaction(async tx=>{
+      const access=await this.studentScope(tx,c,studentId,'guardian.manage');await this.studentScope(tx,c,studentId,'guardian.read');
+      return {data:await guardianForm(tx,c,access)};
+    },{schoolId});
     if(['listGuardianDirectory','getGuardianDirectorySummary','getGuardianDetails'].includes(operation))return this.db.transaction(async tx=>{
       const access=await this.permissions.collection(tx,c.principal!,'guardian.read',schoolId);
       if(operation==='getGuardianDetails')return {data:await guardianDetails(tx,c,access)};
@@ -65,6 +70,10 @@ export class StudentsService {
     },{schoolId});
     const write=c.operation.method!=='GET';
     const authorize=async(tx:Transaction)=>{
+      if(operation==='saveStudentGuardian'){
+        const access=await this.studentScope(tx,c,studentId,'guardian.manage');await this.studentScope(tx,c,studentId,'guardian.read');
+        await authorizeGuardianChanges(tx,c,access);return access;
+      }
       if(operation==='createStudent'){
         const access=await this.permissions.require(tx,c.principal!,c.operation.permission,{schoolId,classId:c.body.initialClassId as string|undefined,date:c.body.startsOn as string|undefined});
         if(c.body.initialGuardian)await this.permissions.require(tx,c.principal!,'guardian.manage',{schoolId,classId:c.body.initialClassId as string|undefined});
@@ -100,6 +109,7 @@ export class StudentsService {
     };
     const work=async(tx:Transaction):Promise<Result>=>{
       const access=await authorize(tx);
+      if(operation==='saveStudentGuardian')return {data:await saveGuardian(tx,c),status:c.body.guardianId?200:201};
       if(operation==='listStudents'||operation==='listClassStudents'){
         const allowed=access as unknown as {all:boolean;classIds:string[];today:string};
         const query={...c.query,...(c.params.classId?{classId:c.params.classId}:{})};
@@ -178,6 +188,8 @@ export class StudentsService {
           [schoolId,c.principal!.userId,c.body.guardianId]);
           if(!fresh)await this.guardianScope(tx,c,String(c.body.guardianId));
         }
+        if(c.body.isPrimary){const cleared=(await tx.query<Row>('UPDATE app.guardian_relationships SET is_primary=false WHERE school_id=$1 AND student_id=$2 AND is_primary RETURNING id,version',[schoolId,studentId])).rows;
+          for(const row of cleared)await audit(tx,c,'relationship',String(row.id),{isPrimary:false,version:row.version});}
         const data=await insertResource(tx,resource('relationship'),schoolId,c.body,{can_receive_info:false});
         await audit(tx,c,'relationship',String(data.id));return {data,status:201};
       }

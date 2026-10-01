@@ -16243,6 +16243,355 @@
         "requestId"
       ],
       "additionalProperties": false
+    },
+    "GuardianPrimaryRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormContact": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "nullable": true,
+          "maxLength": 32
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "fullName",
+        "phone",
+        "email",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormRelationship": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "guardianId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "relationshipLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "isPrimary": {
+          "type": "boolean"
+        },
+        "canReceiveInfo": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "UNVERIFIED",
+            "VERIFIED",
+            "REVOKED"
+          ]
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentId",
+        "guardianId",
+        "relationshipLabel",
+        "isPrimary",
+        "canReceiveInfo",
+        "status",
+        "verifiedAt"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormStudent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "name",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormTarget": {
+      "type": "object",
+      "properties": {
+        "guardian": {
+          "$ref": "#/components/schemas/GuardianFormContact"
+        },
+        "relationship": {
+          "$ref": "#/components/schemas/GuardianFormRelationship"
+        },
+        "canEditContact": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "guardian",
+        "relationship",
+        "canEditContact"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormContext": {
+      "type": "object",
+      "properties": {
+        "student": {
+          "$ref": "#/components/schemas/GuardianFormStudent"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "primaryContacts": {
+          "type": "array",
+          "maxItems": 1000,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/components/schemas/GuardianPrimaryRef"
+          }
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/GuardianFormTarget"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "student",
+        "today",
+        "primaryContacts",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianFormContextResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/GuardianFormContext"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianSaveRequest": {
+      "type": "object",
+      "properties": {
+        "expectedStudentVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expectedPrimaryContacts": {
+          "type": "array",
+          "maxItems": 1000,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/components/schemas/GuardianPrimaryRef"
+          }
+        },
+        "guardianId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "relationshipId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expectedGuardianVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expectedRelationshipVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "relationshipLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 32
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "nullable": true
+        },
+        "isPrimary": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "expectedStudentVersion",
+        "expectedPrimaryContacts",
+        "fullName",
+        "relationshipLabel",
+        "email",
+        "isPrimary"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianSaveResult": {
+      "type": "object",
+      "properties": {
+        "studentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "studentVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "guardian": {
+          "$ref": "#/components/schemas/GuardianFormContact"
+        },
+        "relationship": {
+          "$ref": "#/components/schemas/GuardianFormRelationship"
+        }
+      },
+      "required": [
+        "studentId",
+        "studentVersion",
+        "guardian",
+        "relationship"
+      ],
+      "additionalProperties": false
+    },
+    "GuardianSaveResultResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/GuardianSaveResult"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -65109,6 +65458,318 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/GuardianDetailsResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getStudentGuardianForm",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/students/{studentId}/guardian-form",
+      "title": "getStudentGuardianForm",
+      "tag": "Students",
+      "permission": "guardian.manage+guardian.read",
+      "scope": "school",
+      "request": null,
+      "response": "GuardianFormContext",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC20",
+        "SC22"
+      ],
+      "description": "Current pupil-bound guardian form and atomic save, with displayed contact/relationship/student/primary versions, no phone merge, no automatic verification and no parent accounts.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "studentId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "relationshipId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuardianFormContextResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "saveStudentGuardian",
+      "method": "POST",
+      "path": "/api/v1/schools/{schoolId}/students/{studentId}/guardians/save",
+      "title": "saveStudentGuardian",
+      "tag": "Students",
+      "permission": "guardian.manage+guardian.read",
+      "scope": "school",
+      "request": "GuardianSaveRequest",
+      "response": "GuardianSaveResult",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC20",
+        "SC22"
+      ],
+      "description": "Current pupil-bound guardian form and atomic save, with displayed contact/relationship/student/primary versions, no phone merge, no automatic verification and no parent accounts.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "studentId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GuardianSaveRequest"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuardianSaveResultResponse"
+              }
+            }
+          }
+        },
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuardianSaveResultResponse"
               }
             }
           }

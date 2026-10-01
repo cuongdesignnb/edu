@@ -1366,7 +1366,8 @@
       "status": "TESTED",
       "evidence": [
         "backend/src/modules; B2 TypeScript build",
-        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks"
+        "qa/backend/b2-integration.log; 21/21 real PostgreSQL checks",
+        "ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN."
       ]
     },
     {
@@ -3529,6 +3530,30 @@
       "evidence": [
         "qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate."
       ]
+    },
+    {
+      "operationId": "getStudentGuardianForm",
+      "screenIds": [
+        "SC20",
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "saveStudentGuardian",
+      "screenIds": [
+        "SC20",
+        "SC22"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -4107,7 +4132,9 @@
         "listTransfers",
         "createTransfer",
         "approveTransfer",
-        "rejectTransfer"
+        "rejectTransfer",
+        "getStudentGuardianForm",
+        "saveStudentGuardian"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4138,7 +4165,9 @@
         "createRelationship",
         "verifyRelationship",
         "revokeRelationship",
-        "getGuardianDetails"
+        "getGuardianDetails",
+        "getStudentGuardianForm",
+        "saveStudentGuardian"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

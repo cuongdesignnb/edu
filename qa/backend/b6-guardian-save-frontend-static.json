@@ -1,0 +1,14 @@
+[
+  {
+    "startedAt": "2026-10-01T08:39:37.7135455+07:00",
+    "exitCode": 0,
+    "output": "",
+    "name": "frontend-typecheck"
+  },
+  {
+    "startedAt": "2026-10-01T08:39:40.6410601+07:00",
+    "exitCode": 0,
+    "output": "",
+    "name": "frontend-scoped-lint"
+  }
+]
