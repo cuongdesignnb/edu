@@ -1,7 +1,7 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {connectedStudentsRepo} from '@/lib/repositories/connected/students';
 import {connectedStudentsExtraRepo} from '@/lib/repositories/connected/students-extra';
-import {authenticationChanged,authorizationChanged,captureStaffAccess,setStaffCsrf} from '@/lib/api/client';
+import {authenticationChanged,authorizationChanged,captureStaffAccess,onStaffMutationAcknowledged,setStaffCsrf} from '@/lib/api/client';
 import type {Ctx} from '@/lib/repositories/core';
 import {guardianFormSource} from '@/lib/repositories/connected/guardian-form';
 import type {ApiSchemas} from '@/lib/api/generated';
@@ -89,4 +89,14 @@ describe('native atomic guardian save candidates',()=>{
   it('loads only the chosen source and rejects sibling form selections or revoked request ownership',async()=>{
     const fetcher=vi.fn().mockResolvedValueOnce(envelope(rawForm())).mockResolvedValueOnce(envelope({...rawForm(),student:{...rawForm().student,id}}));vi.stubGlobal('fetch',fetcher);expect(await connectedStudentsExtraRepo.guardianForm(ctx,schoolId,studentId,relId)).toMatchObject({schoolId,student:{version:5},target:{guardian:{version:3},relationship:{version:3}}});expect(fetcher.mock.calls[0][0]).toContain(`guardian-form?relationshipId=${relId}`);await expect(connectedStudentsExtraRepo.guardianForm(ctx,schoolId,studentId,relId)).rejects.toMatchObject({code:'READ_ERROR'});const old={staffOwner:captureStaffAccess()} as Ctx;authorizationChanged();await expect(connectedStudentsRepo.saveGuardian(old,schoolId,saveInput())).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
   });
+});
+
+
+it('keeps a guardian save key and withholds mutation notification until the relationship and pupil versions are confirmed',async()=>{
+  const fetcher=vi.fn().mockResolvedValueOnce(envelope({...saveAck(),studentVersion:5})).mockResolvedValueOnce(envelope(saveAck())),ack=vi.fn(),off=onStaffMutationAcknowledged(ack);vi.stubGlobal('fetch',fetcher);
+  try{await expect(connectedStudentsRepo.saveGuardian(ctx,schoolId,saveInput())).rejects.toMatchObject({code:'NETWORK'});expect(ack).not.toHaveBeenCalled();await connectedStudentsRepo.saveGuardian(ctx,schoolId,saveInput());expect(ack).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);}finally{off();}
+});
+it.each([{...relation(),id:studentId,version:4,status:'VERIFIED',canReceiveInfo:false},{...relation(),version:4,status:'REVOKED',canReceiveInfo:false},{...relation(),version:4,status:'VERIFIED',canReceiveInfo:true}])('does not acknowledge verification until the reviewed relationship and explicit receiving permission match',async bad=>{
+  const fetcher=vi.fn().mockResolvedValueOnce(envelope(bad)).mockResolvedValueOnce(envelope({...relation(),version:4,status:'VERIFIED',canReceiveInfo:false})),ack=vi.fn(),off=onStaffMutationAcknowledged(ack);vi.stubGlobal('fetch',fetcher);
+  try{await expect(connectedStudentsRepo.setVerification(ctx,schoolId,relId,'verified','Căn cứ đối chiếu',{version:3,canReceiveInfo:false})).rejects.toMatchObject({code:'NETWORK'});expect(ack).not.toHaveBeenCalled();await connectedStudentsRepo.setVerification(ctx,schoolId,relId,'verified','Căn cứ đối chiếu',{version:3,canReceiveInfo:false});expect(ack).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);}finally{off();}
 });

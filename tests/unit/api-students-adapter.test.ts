@@ -1,6 +1,6 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {connectedStudentsRepo,nativeStudent} from '@/lib/repositories/connected/students';
-import {authenticationChanged,authorizationChanged,captureStaffAccess,setStaffCsrf} from '@/lib/api/client';
+import {authenticationChanged,authorizationChanged,captureStaffAccess,onStaffMutationAcknowledged,setStaffCsrf} from '@/lib/api/client';
 import type {ApiSchemas} from '@/lib/api/generated';
 import type {Ctx} from '@/lib/repositories/core';
 
@@ -75,4 +75,14 @@ describe('native student directory and profile candidates',()=>{
     await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'READ_ERROR'});await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
     const old={staffOwner:captureStaffAccess()} as Ctx;authorizationChanged();await expect(connectedStudentsRepo.profile(old,schoolId,id)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
   });
+});
+
+
+it.each([{...row(),dateOfBirth:'2010-01-01'},{...row(),initialEnrollment:{...row().initialEnrollment,classId:guardianId}},{...row(),initialRelationship:{...row().initialRelationship,status:'VERIFIED',canReceiveInfo:true}}])('keeps an atomic student-create intent until the actual pupil, enrollment and unverified guardian are confirmed',async bad=>{
+  const fetcher=vi.fn().mockResolvedValueOnce(envelope(bad)).mockResolvedValueOnce(envelope(row())),ack=vi.fn(),off=onStaffMutationAcknowledged(ack);vi.stubGlobal('fetch',fetcher);
+  try{await expect(connectedStudentsRepo.create(ctx,schoolId,input)).rejects.toMatchObject({code:'NETWORK'});expect(ack).not.toHaveBeenCalled();await connectedStudentsRepo.create(ctx,schoolId,input);expect(ack).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].body).toBe(fetcher.mock.calls[1][1].body);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);}finally{off();}
+});
+it('does not consume a student edit whose submitted private note is not acknowledged',async()=>{
+  const patch={fullName:input.fullName,dob:input.dob,gender:input.gender,version:4,internalNote:null},fetcher=vi.fn().mockResolvedValueOnce(envelope({...row(),version:5,internalNote:'Nội dung sai'})).mockResolvedValueOnce(envelope({...row(),version:5,internalNote:null})),ack=vi.fn(),off=onStaffMutationAcknowledged(ack);vi.stubGlobal('fetch',fetcher);
+  try{await expect(connectedStudentsRepo.update(ctx,schoolId,id,patch)).rejects.toMatchObject({code:'NETWORK'});expect(ack).not.toHaveBeenCalled();await connectedStudentsRepo.update(ctx,schoolId,id,patch);expect(ack).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetcher.mock.calls[1][1].headers['Idempotency-Key']);}finally{off();}
 });

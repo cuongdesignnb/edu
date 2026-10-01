@@ -53,23 +53,29 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
 
 export const connectedStudentsRepo=withStaffAccess({
   async saveGuardian(_ctx:Ctx,schoolId:ID,input:GuardianSaveInput){
-    const body=guardianSaveBody(schoolId,input),result=await formResult(http('saveStudentGuardian',{params:{schoolId,studentId:input.studentId},body}),{expectedStudentVersion:'studentVersion',expectedGuardianVersion:'guardianVersion',expectedRelationshipVersion:'relationshipVersion',relationshipLabel:'relation'}),view=result.data;
-    const contact=guardianContact(view.guardian,schoolId),row=view.relationship;
-    if(view.studentId!==input.studentId||view.studentVersion<=body.expectedStudentVersion||row.studentId!==input.studentId||row.guardianId!==contact.id||contact.fullName!==body.fullName||contact.email!==body.email||body.phone!==undefined&&contact.phone!==body.phone||row.relationshipLabel!==body.relationshipLabel||row.isPrimary!==body.isPrimary||input.relationshipId&&row.id!==input.relationshipId||input.guardianId&&contact.id!==input.guardianId)throw new RepoError('NETWORK','Chưa xác minh được kết quả lưu giám hộ. Hãy giữ nội dung để thử lại.');
-    if(!input.relationshipId&&(row.status!=='UNVERIFIED'||row.canReceiveInfo!==false)||input.source.target&&(contact.version<input.source.target.guardian.version||row.version<=input.source.target.relationship.version||row.status!==input.source.target.relationship.status||row.canReceiveInfo!==input.source.target.relationship.canReceiveInfo))throw new RepoError('NETWORK','Trạng thái hoặc phiên bản giám hộ không khớp xác nhận lưu.');
-    return {...row,id:requiredId(row.id),schoolId,version:displayedVersion(row.version),studentVersion:displayedVersion(view.studentVersion),guardian:contact,relation:row.relationshipLabel,verification:row.status.toLowerCase(),nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+    const body=guardianSaveBody(schoolId,input);
+    const acknowledge=(view:ApiSchemas['GuardianSaveResult'])=>{
+      const contact=guardianContact(view.guardian,schoolId),row=view.relationship;
+      if(view.studentId!==input.studentId||view.studentVersion<=body.expectedStudentVersion||row.studentId!==input.studentId||row.guardianId!==contact.id||contact.fullName!==body.fullName||contact.email!==body.email||body.phone!==undefined&&contact.phone!==body.phone||row.relationshipLabel!==body.relationshipLabel||row.isPrimary!==body.isPrimary||input.relationshipId&&row.id!==input.relationshipId||input.guardianId&&contact.id!==input.guardianId)throw new RepoError('NETWORK','Chưa xác minh được kết quả lưu giám hộ. Hãy giữ nội dung để thử lại.');
+      if(!input.relationshipId&&(row.status!=='UNVERIFIED'||row.canReceiveInfo!==false)||input.source.target&&(contact.version<input.source.target.guardian.version||row.version<=input.source.target.relationship.version||row.status!==input.source.target.relationship.status||row.canReceiveInfo!==input.source.target.relationship.canReceiveInfo))throw new RepoError('NETWORK','Trạng thái hoặc phiên bản giám hộ không khớp xác nhận lưu.');
+      return {...row,id:requiredId(row.id),schoolId,version:displayedVersion(row.version),studentVersion:displayedVersion(view.studentVersion),guardian:contact,relation:row.relationshipLabel,verification:row.status.toLowerCase(),nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+    };
+    const result=await formResult(http('saveStudentGuardian',{params:{schoolId,studentId:input.studentId},body,validateData:view=>{acknowledge(view);return true;}}),{expectedStudentVersion:'studentVersion',expectedGuardianVersion:'guardianVersion',expectedRelationshipVersion:'relationshipVersion',relationshipLabel:'relation'});
+    return acknowledge(result.data);
   },
   async setVerification(_ctx:Ctx,schoolId:ID,relationshipId:ID,status:'verified'|'revoked',note:string,source:{version:number;canReceiveInfo?:boolean}){
     if(!['verified','revoked'].includes(status))throw new RepoError('VALIDATION','Trạng thái xác minh không hợp lệ.');
     if(note.trim().length<3)throw new RepoError('VALIDATION','Ghi căn cứ xác minh hoặc lý do thu hồi ít nhất 3 ký tự.',{fieldErrors:{note:'Nhập căn cứ hoặc lý do ít nhất 3 ký tự.'}});
     const expectedVersion=displayedVersion(source.version);
     if(status==='verified'&&typeof source.canReceiveInfo!=='boolean')throw new RepoError('VALIDATION','Chọn rõ quyền nhận thông tin trước khi xác minh.',{fieldErrors:{canReceiveInfo:'Chọn có hoặc không cho nhận thông tin.'}});
+    const acknowledge=(row:ApiSchemas['Relationship'])=>{
+      if(row.id!==relationshipId||row.status!==(status==='verified'?'VERIFIED':'REVOKED')||row.canReceiveInfo!==(status==='verified'?source.canReceiveInfo:false)||displayedVersion(row.version)<=expectedVersion)throw new RepoError('NETWORK','Chưa xác minh được kết quả cập nhật quan hệ. Hãy tải lại hồ sơ.');
+      return {...row,id:requiredId(row.id),schoolId,studentId:requiredId(row.studentId),guardianId:requiredId(row.guardianId),relation:row.relationshipLabel,verification:status,nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+    };
     const params={schoolId,relationshipId},data=await formResult(status==='verified'
-      ?http('verifyRelationship',{params,body:{expectedVersion,canReceiveInfo:source.canReceiveInfo!,verificationNote:note.trim()}})
-      :http('revokeRelationship',{params,body:{expectedVersion,reason:note.trim()}}),{verificationNote:'note',reason:'note'});
-    const row=data.data;
-    if(row.id!==relationshipId||row.status!==(status==='verified'?'VERIFIED':'REVOKED')||row.canReceiveInfo!==(status==='verified'?source.canReceiveInfo:false)||displayedVersion(row.version)<=expectedVersion)throw new RepoError('NETWORK','Chưa xác minh được kết quả cập nhật quan hệ. Hãy tải lại hồ sơ.');
-    return {...row,id:requiredId(row.id),schoolId,studentId:requiredId(row.studentId),guardianId:requiredId(row.guardianId),relation:row.relationshipLabel,verification:status,nativeVerification:row.status,isPrimaryContact:row.isPrimary};
+      ?http('verifyRelationship',{params,body:{expectedVersion,canReceiveInfo:source.canReceiveInfo!,verificationNote:note.trim()},validateData:row=>{acknowledge(row);return true;}})
+      :http('revokeRelationship',{params,body:{expectedVersion,reason:note.trim()},validateData:row=>{acknowledge(row);return true;}}),{verificationNote:'note',reason:'note'});
+    return acknowledge(data.data);
   },
   async guardians(_ctx:Ctx,schoolId:ID,q:ListQuery){
     const verification=q.filters?.verification,states:Record<string,string>={verified:'VERIFIED',unverified:'UNVERIFIED',revoked:'REVOKED'};
@@ -97,18 +103,25 @@ export const connectedStudentsRepo=withStaffAccess({
     if(view.student.id!==studentId)throw new RepoError('READ_ERROR','Máy chủ trả sai hồ sơ học sinh.');return profileView(view,schoolId);
   },
   async create(_ctx:Ctx,schoolId:ID,input:StudentCreateInput){
+    const confirm=(data:ApiSchemas['Student'])=>{
+      confirmedFields(data,input);if(input.code?.trim()&&data.studentCode!==input.code.trim().toUpperCase())throw new RepoError('NETWORK','Chưa xác minh được mã học sinh đã nhập.');
+      const enrollment=data.initialEnrollment;
+      if(!enrollment||enrollment.studentId!==data.id||enrollment.classId!==input.classId||enrollment.startsOn!==input.startDate)throw new RepoError('NETWORK','Chưa xác minh được lớp ban đầu của học sinh. Giữ nội dung để thử lại.');
+      if(input.guardian){const guardian=data.initialGuardian,relationship=data.initialRelationship;
+      if(!guardian||!guardian.id||!relationship||!relationship.id||relationship.studentId!==data.id||relationship.guardianId!==guardian.id||relationship.relationshipLabel!==input.guardian.relation||relationship.isPrimary!==true||relationship.status!=='UNVERIFIED'||relationship.canReceiveInfo!==false||guardian.fullName!==input.guardian.fullName.trim().replace(/\s+/g,' ')||guardian.phone!==input.guardian.phone.trim())throw new RepoError('NETWORK','Chưa xác minh được quan hệ giám hộ. Giữ nội dung để thử lại.');}
+      return true;
+    };
     const result=await formResult(http('createStudent',{params:{schoolId},body:{...(input.code?.trim()?{studentCode:input.code.trim().toUpperCase()}:{}),fullName:input.fullName.trim(),dateOfBirth:dateDays(input.dob,0),gender:reviewedGender(input.gender),initialClassId:requiredId(input.classId),startsOn:dateDays(input.startDate,0),
-      ...(input.guardian?{initialGuardian:{fullName:input.guardian.fullName.trim(),relationshipLabel:input.guardian.relation,phone:input.guardian.phone.trim()}}:{})}}),fields);
-    confirmedFields(result.data,input);if(input.code?.trim()&&result.data.studentCode!==input.code.trim().toUpperCase())throw new RepoError('NETWORK','Chưa xác minh được mã học sinh đã nhập.');
-    const enrollment=result.data.initialEnrollment;
-    if(!enrollment||enrollment.studentId!==result.data.id||enrollment.classId!==input.classId||enrollment.startsOn!==input.startDate)throw new RepoError('NETWORK','Chưa xác minh được lớp ban đầu của học sinh. Giữ nội dung để thử lại.');
-    if(input.guardian){const guardian=result.data.initialGuardian,relationship=result.data.initialRelationship;
-      if(!guardian||!guardian.id||!relationship||!relationship.id||relationship.studentId!==result.data.id||relationship.guardianId!==guardian.id||relationship.relationshipLabel!==input.guardian.relation||relationship.isPrimary!==true||relationship.status!=='UNVERIFIED'||relationship.canReceiveInfo!==false||guardian.fullName!==input.guardian.fullName.trim().replace(/\s+/g,' ')||guardian.phone!==input.guardian.phone.trim())throw new RepoError('NETWORK','Chưa xác minh được quan hệ giám hộ. Giữ nội dung để thử lại.');}
+      ...(input.guardian?{initialGuardian:{fullName:input.guardian.fullName.trim(),relationshipLabel:input.guardian.relation,phone:input.guardian.phone.trim()}}:{})},validateData:confirm}),fields);
     return nativeStudent(result.data,schoolId);
   },
   async update(_ctx:Ctx,schoolId:ID,studentId:ID,patch:StudentPatchInput){
-    const result=await formResult(http('updateStudent',{params:{schoolId,studentId},body:{expectedVersion:displayedVersion(patch.version),fullName:patch.fullName.trim(),dateOfBirth:dateDays(patch.dob,0),gender:reviewedGender(patch.gender),...(patch.internalNote!==undefined?{internalNote:patch.internalNote}:{})}}),fields);
-    if(result.data.id!==studentId||result.data.version<=patch.version)throw new RepoError('NETWORK','Chưa xác minh được hồ sơ vừa cập nhật.');confirmedFields(result.data,patch);
-    if(patch.internalNote!==undefined&&result.data.internalNote!==patch.internalNote)throw new RepoError('NETWORK','Chưa xác minh được ghi chú vừa lưu.');return nativeStudent(result.data,schoolId);
+    const confirm=(data:ApiSchemas['Student'])=>{
+      if(data.id!==studentId||data.version<=patch.version)throw new RepoError('NETWORK','Chưa xác minh được hồ sơ vừa cập nhật.');confirmedFields(data,patch);
+      if(patch.internalNote!==undefined&&data.internalNote!==patch.internalNote)throw new RepoError('NETWORK','Chưa xác minh được ghi chú vừa lưu.');
+      return true;
+    };
+    const result=await formResult(http('updateStudent',{params:{schoolId,studentId},body:{expectedVersion:displayedVersion(patch.version),fullName:patch.fullName.trim(),dateOfBirth:dateDays(patch.dob,0),gender:reviewedGender(patch.gender),...(patch.internalNote!==undefined?{internalNote:patch.internalNote}:{})},validateData:confirm}),fields);
+    return nativeStudent(result.data,schoolId);
   },
 });

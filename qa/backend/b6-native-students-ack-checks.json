@@ -1,0 +1,43 @@
+{
+  "phase": "B6_UNACTIVATED_STUDENT_GUARDIAN_ACK_GUARDS",
+  "baseCommit": "b464449e542e68465dac21f1693791b344708a1a",
+  "frontendTargetedApi": {
+    "passed": 36,
+    "total": 36,
+    "files": 2,
+    "exitCode": 0,
+    "durationSeconds": 0.482,
+    "log": "b6-native-students-ack-api-targeted.log"
+  },
+  "frontendAllUnit": {
+    "passed": 239,
+    "total": 239,
+    "files": 27,
+    "apiCases": 198,
+    "historicalSyntheticTests": 41,
+    "exitCode": 0,
+    "durationSeconds": 9.5,
+    "log": "b6-native-students-ack-all-unit-final.log"
+  },
+  "frontendTypecheckExitCode": 0,
+  "changedSourceLintExitCode": 0,
+  "initialTypecheckExitCode": 2,
+  "initialTypecheckFailure": "Incorrect generated schema name GuardianRelationship; corrected to Relationship.",
+  "studentGuardianFacadeActivated": false,
+  "activatedCandidates": 90,
+  "activatedLegacyMethods": 83,
+  "coreSourceImplemented": 38,
+  "coreSourceTested": 0,
+  "backendSourceChanged": false,
+  "browserRunInThisPhase": false,
+  "buildRunInThisPhase": false,
+  "postgresRunInThisPhase": false,
+  "backendUnitContractRunInThisPhase": false,
+  "precedingEvidence": "b6-native-support-checks.json",
+  "intendedLocalUrl": "http://127.0.0.1:18763",
+  "completedDockerAppServing": false,
+  "physicalBackupRestore": "NOT_RUN",
+  "releaseLoadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "volumesDeleted": false
+}
