@@ -42,3 +42,37 @@ describe('native student form commands',()=>{
     fetcher.mockImplementationOnce(async()=>{authorizationChanged();return envelope(row());});await expect(connectedStudentsRepo.create(ctx,schoolId,input)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(3);
   });
 });
+
+const year={id,version:2,name:'Năm nguồn thật',status:'ACTIVE',startsOn:'2026-01-01',endsOn:'2027-01-01'};
+const summary=()=>({year,referenceDate:'2026-10-01',today:'2026-10-01',years:[year],classes:[{id:classId,version:3,yearId:id,name:'Lớp nguồn thật',status:'ACTIVE'}],kpi:{students:2,studying:1,unverified:null,activeLinks:null},canSeeGuardians:false,canSeeLinks:false,canCreate:false,canTransfer:false,canExport:false});
+const dirRow=()=>({...meta,studentCode:'SOURCE',fullName:'Tên nguồn thật',dateOfBirth:null,gender:null,status:'LEFT',enrollmentId:guardianId,enrollmentVersion:3,classId,className:'Lớp nguồn thật',yearId:id,yearName:year.name,enrollmentInEffect:false,guardianCount:null,verifiedGuardians:null,activeLinks:null});
+const pageEnvelope=(data:unknown[],total:number)=>new Response(JSON.stringify({data,requestId:'directory-unit',page:{limit:10,nextCursor:null,hasMore:false,total}}));
+const profile=()=>({student:{...row(),dateOfBirth:null,gender:null,initialGuardian:undefined,initialRelationship:undefined,initialEnrollment:undefined},level:'FULL',today:'2026-10-01',year,referenceDate:'2026-10-01',selectedEnrollment:null,history:[],group:null,positions:[],relationships:null,links:null,accessLog:null,accessLogHasMore:null,internalNote:null,
+  perms:{edit:false,transfer:false,seeGuardians:false,editGuardians:false,verifyGuardians:false,manageLinks:false,issueLinks:false,revokeLinks:false,seeInternalNote:false,seeBirthDate:true}});
+describe('native student directory and profile candidates',()=>{
+  it('sends filters to the SQL directory and retrieves only identifiers for selection across pages',async()=>{
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope(summary())).mockResolvedValueOnce(pageEnvelope([dirRow()],2)).mockResolvedValueOnce(new Response(JSON.stringify({data:[{id},{id:guardianId}],requestId:'ids-unit',page:{limit:100,nextCursor:null,hasMore:false,total:2}})));vi.stubGlobal('fetch',fetcher);
+    const result=await connectedStudentsRepo.list(ctx,schoolId,{page:1,pageSize:10,q:'dang',sort:'name',dir:'desc',filters:{status:'left',classId}});
+    expect(result.items[0]).toMatchObject({code:'SOURCE',dob:null,gender:null,status:'left',nativeStatus:'LEFT',guardianCount:null,activeLinks:null,enrollmentVersion:3,enrollmentInEffect:false});expect(result.allIds).toEqual([id,guardianId]);expect(result.kpi.unverified).toBeNull();expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(String(fetcher.mock.calls[1][0])).toContain('student-directory?');const url=new URL(String(fetcher.mock.calls[1][0]),'http://localhost');expect(Object.fromEntries(url.searchParams)).toMatchObject({yearId:id,classId,status:'LEFT',q:'dang',sort:'fullName',dir:'desc'});expect(String(fetcher.mock.calls[2][0])).toContain('student-directory/ids?');
+  });
+  it('retains nullable source fields and distinguishes an ended class from an effective current enrollment',async()=>{
+    const ended={...row().initialEnrollment,status:'ENDED',startsOn:'2026-01-01',endsOn:'2026-09-01',className:'Lớp đã rời thật',yearName:year.name,yearStatus:'ACTIVE',referenceDate:'2026-10-01',inEffect:false,homeroomName:null};
+    const fetcher=vi.fn().mockResolvedValue(envelope({...profile(),selectedEnrollment:ended,history:[ended]}));vi.stubGlobal('fetch',fetcher);const result=await connectedStudentsRepo.profile(ctx,schoolId,id,classId,year.id);
+    expect(result.currentClass).toBeNull();expect(result.lastClass).toMatchObject({name:'Lớp đã rời thật',homeroom:null,enrollmentVersion:1});expect(result.student).toMatchObject({dob:null,gender:null});expect(result.student).not.toHaveProperty('internalNote');expect(result.relationships).toBeNull();expect(result.accessLog).toBeNull();expect(result.history[0].endDate).toBe('2026-08-31');expect(result.history[0].endsOn).toBe('2026-09-01');expect(String(fetcher.mock.calls[0][0])).toContain('yearId='+id);
+  });
+  it('keeps link metadata and native event names without creating a readable existing token',async()=>{
+    const v=profile(),link={...meta,studentId:id,yearId:id,relationshipId:guardianId,allowedSections:['overview','teachers'],allowDownload:false,expiresAt:'2026-10-02T00:00:00Z',revokedAt:null,revokeReason:null,issuedBy:id,issuedByName:null,guardianName:'Giám hộ thật',relationshipLabel:'Mẹ',yearName:year.name,status:'ACTIVE',opens:4,lastOpenedAt:'2026-10-01T00:00:00Z'};
+    const fetcher=vi.fn().mockResolvedValue(envelope({...v,perms:{...v.perms,manageLinks:true},links:[link],accessLog:[{id,accessLinkId:id,eventKind:'READ',occurredAt:'2026-10-01T00:00:00Z',deviceSummary:null,section:'teachers',guardianName:'Giám hộ thật',relationshipLabel:'Mẹ'}],accessLogHasMore:true}));vi.stubGlobal('fetch',fetcher);const result=await connectedStudentsRepo.profile(ctx,schoolId,id);
+    expect(result.links?.[0]).toMatchObject({status:'active',opens:4,modules:['teachers'],issuedByName:null});expect(result.links?.[0]).not.toHaveProperty('token');expect(result.links?.[0]).not.toHaveProperty('link');expect(result.accessLog?.[0]).toMatchObject({event:'READ',device:null});expect(result.accessLogHasMore).toBe(true);
+  });
+  it('rejects mismatched or incomplete projections and denied private panels instead of fabricating data',async()=>{
+    const v=profile(),fetcher=vi.fn().mockResolvedValueOnce(envelope({...v,student:{...v.student,id:guardianId}})).mockResolvedValueOnce(envelope({...v,student:{...v.student,gender:undefined}})).mockResolvedValueOnce(envelope({...v,relationships:[]})).mockResolvedValueOnce(envelope({...v,perms:{...v.perms,seeGuardians:true}})).mockResolvedValueOnce(envelope({...v,student:{...v.student,internalNote:'Nội dung ngoài quyền'}}));vi.stubGlobal('fetch',fetcher);
+    for(let i=0;i<5;i++)await expect(connectedStudentsRepo.profile(ctx,schoolId,id)).rejects.toMatchObject({code:'READ_ERROR'});
+  });
+  it('propagates API failures and stops composite reads owned by revoked access before the next request',async()=>{
+    const fetcher=vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({code:'DEPENDENCY_UNAVAILABLE'}),{status:503})).mockImplementationOnce(async()=>{authorizationChanged();return envelope(summary());});vi.stubGlobal('fetch',fetcher);
+    await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'READ_ERROR'});await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
+    const old={staffOwner:captureStaffAccess()} as Ctx;authorizationChanged();await expect(connectedStudentsRepo.profile(old,schoolId,id)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+});

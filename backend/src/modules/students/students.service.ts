@@ -6,6 +6,8 @@ import { Commands,audit } from '../../common/commands';
 import { Problem,validation,notFound } from '../../common/problem';
 import { placeEnrollment } from './enrollment';
 import {studentForm,nextStudentCode} from './student-form';
+import {studentDirectory,studentDirectorySummary} from './student-directory';
+import {studentDetails} from './student-details';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 @Injectable()
@@ -15,7 +17,7 @@ export class StudentsService {
     const handlers:Record<string,Handler>={};
     for(const id of ['listStudents','getStudent','getClassStudent','listClassStudents','createStudent','updateStudent',
       'listStudentEnrollments','createEnrollment','listGuardians','createGuardian','getGuardian','updateGuardian',
-      'listRelationships','createRelationship','verifyRelationship','revokeRelationship'])handlers[id]=c=>this.handle(c);
+      'listRelationships','createRelationship','verifyRelationship','revokeRelationship','listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'])handlers[id]=c=>this.handle(c);
     return handlers;
   }
   private async studentScope(tx:Transaction,c:RequestContext,studentId:string,action:string){
@@ -45,6 +47,12 @@ export class StudentsService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,operation=c.operation.id,studentId=c.params.studentId??String(c.body.studentId??'');
+    if(['listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'].includes(operation))return this.db.transaction(async tx=>{
+      const access=await this.permissions.collection(tx,c.principal!,'student.read',schoolId,operation==='getStudentDetails');
+      if(operation==='getStudentDetails')return {data:await studentDetails(tx,c,access)};
+      if(operation==='getStudentDirectorySummary')return {data:await studentDirectorySummary(tx,c,access)};
+      return studentDirectory(tx,c,access,operation==='listStudentDirectoryIds');
+    },{schoolId});
     const write=c.operation.method!=='GET';
     const authorize=async(tx:Transaction)=>{
       if(operation==='createStudent'){

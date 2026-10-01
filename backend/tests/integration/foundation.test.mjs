@@ -92,7 +92,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,290);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,294);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2508,4 +2508,89 @@ test('B6 real CSV gender mapping normalizes supported values, preserves unmapped
     let update=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth\n${code},Tên import mới giả,2011-09-30\n`,'STUDENTS',classId);update=await validateCsv(csrf,worker,update,mapping.filter(m=>m.targetField!=='gender'),'UPSERT_VERIFIED_CODE');update=await commitCsv(csrf,worker,update);assert.equal(update.status,'COMPLETED');assert.deepEqual((await read()).rows[0],{gender:'Nữ',full_name:'Tên import mới giả'});
     let invalid=await importCsv(csrf,worker,`studentCode,fullName,dateOfBirth,gender\nBAD-${prefix},Giới tính không rõ giả,2011-09-30,other\n`,'STUDENTS',classId);invalid=await validateCsv(csrf,worker,invalid,mapping);assert.equal(invalid.summary.invalid,1);const rows=await request('GET',`/api/v1/schools/${schoolA}/imports/${invalid.id}/rows`);assert.equal(rows.statusCode,200,rows.body);assert.equal(rows.json().data[0].errors[0].field,'gender');const blocked=await request('POST',`/api/v1/schools/${schoolA}/imports/${invalid.id}/commit`,{expectedVersion:invalid.version,previewHash:invalid.previewHash},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(blocked.statusCode,422,blocked.body);
   }finally{await worker.close();}
+});
+
+async function nativePupil(f,body={}){
+  const reply=await f.post('students',{fullName:'Học sinh thư mục giả',initialClassId:f.classId,startsOn:f.today,...body});assert.equal(reply.statusCode,201,reply.body);return reply.json().data;
+}
+test('B6 native student directory applies Vietnamese keysets, exact SQL filters and minimal selected identifiers',async()=>{
+  const f=await staffUiFixture(),names=['Đặng Thị An','đặng thị an','Lê Quốc Ánh','Trần Đức Bình','Nguyễn Minh Bình','Lê Văn Đạt','Nguyễn Anh','Tên %_ giả'],students=[];
+  for(const name of names)students.push(await nativePupil(f,{fullName:name,...(name===names[0]?{initialGuardian:{fullName:'Giám hộ thư mục giả',relationshipLabel:'Mẹ',phone:'0912222222'}}:{})}));
+  const root=`/api/v1/schools/${f.schoolId}/student-directory`,summary=await request('GET',root+'-summary');assert.equal(summary.statusCode,200,summary.body);const view=summary.json().data;
+  assert.equal(view.kpi.students,8);assert.equal(view.kpi.unverified,8);assert.equal(view.kpi.activeLinks,0);assert.equal(view.classes[0].id,f.classId);assert.equal(view.today,f.today);
+  for(const dir of ['asc','desc']){const ids=[];let cursor;do{const result=await request('GET',`${root}?sort=fullName&dir=${dir}&limit=2${cursor?'&cursor='+encodeURIComponent(cursor):''}`);assert.equal(result.statusCode,200,result.body);const page=result.json();assert.equal(page.page.total,8);ids.push(...page.data.map(r=>r.id));cursor=page.page.nextCursor;}while(cursor);assert.equal(new Set(ids).size,8);assert.deepEqual(new Set(ids),new Set(students.map(s=>s.id)));}
+  const folded=await request('GET',root+'?q=dang');assert.equal(folded.statusCode,200,folded.body);assert.equal(folded.json().page.total,2);assert.equal(folded.json().data.find(s=>s.id===students[0].id).guardianCount,1);
+  const literal=await request('GET',root+'?q='+encodeURIComponent('%_'));assert.equal(literal.statusCode,200,literal.body);assert.equal(literal.json().page.total,1);assert.equal(literal.json().data[0].fullName,names.at(-1));
+  const ids=await request('GET',root+'/ids?q=dang&guardian=unverified');assert.equal(ids.statusCode,200,ids.body);assert.equal(ids.json().page.total,2);for(const row of ids.json().data)assert.deepEqual(Object.keys(row),['id']);
+  const first=await request('GET',root+'?limit=1'),cursor=first.json().page.nextCursor;assert.ok(cursor);assert.equal((await request('GET',root+'?limit=1&q=dang&cursor='+encodeURIComponent(cursor))).statusCode,422);
+  assert.equal((await request('GET',root+'?classId='+classA)).statusCode,404);assert.equal((await request('GET',root+'?yearId='+seedId('year:A'))).statusCode,404);assert.equal((await request('GET',root+'?sort=phone')).statusCode,422);
+});
+
+test('B6 native student projections separate school roster authority from family, note and link authority in the same session',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f,{dateOfBirth:'2011-09-30',gender:'Nữ',initialGuardian:{fullName:'Liên hệ riêng giả',relationshipLabel:'Mẹ',phone:'0912222222'}});
+  await db.transaction(tx=>tx.query("UPDATE app.students SET internal_note='Ghi chú riêng của gia đình giả' WHERE school_id=$1 AND id=$2",[f.schoolId,p.id]),{schoolId:f.schoolId});
+  const read=await f.role([{action:'student.read',scopes:['SCHOOL']}]);await f.grant(f.target,read.id);const privateRole=await f.role([{action:'guardian.read',scopes:['SCHOOL']}]),linkRole=await f.role([{action:'parent_access.manage',scopes:['SCHOOL']}]);
+  const privateGrant=await f.grant(f.target,privateRole.id),linkGrant=await f.grant(f.target,linkRole.id);jar.delete('edu_staff');await login('teacher-a@example.invalid');
+  const root=`/api/v1/schools/${f.schoolId}`,url=root+`/students/${p.id}/details`;let response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data.relationships[0].guardian.phone,'0912222222');assert.equal(response.json().data.internalNote,'Ghi chú riêng của gia đình giả');assert.deepEqual(response.json().data.links,[]);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=ANY($2::uuid[])',[f.schoolId,[privateGrant.id,linkGrant.id]]),{schoolId:f.schoolId});
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);const v=response.json().data;assert.equal(v.student.dateOfBirth,'2011-09-30');assert.equal(v.perms.seeBirthDate,true);assert.equal(v.relationships,null);assert.equal(v.links,null);assert.equal(v.accessLog,null);assert.equal(v.internalNote,null);assert.equal(v.perms.seeInternalNote,false);assert.equal(response.body.includes('Liên hệ riêng giả'),false);assert.equal(response.body.includes('0912222222'),false);
+  response=await request('GET',root+'/student-directory');assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data[0].guardianCount,null);assert.equal(response.json().data[0].activeLinks,null);
+  const summary=await request('GET',root+'/student-directory-summary');assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.kpi.unverified,null);assert.equal(summary.json().data.kpi.activeLinks,null);
+  assert.equal((await request('GET',root+'/student-directory?guardian=unverified')).statusCode,403);assert.equal((await request('GET',root+'/student-directory/ids?guardian=unverified')).statusCode,403);
+  assert.equal((await request('GET',root+`/students/${seedId('student:A:1')}/details`)).statusCode,404);
+});
+
+test('B6 archived student history uses an explicit included date and stored group, position and teacher sources',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f),y=Number(f.today.slice(0,4)),lo=`${y-2}-01-01`,hi=`${y-1}-01-01`;
+  const past=await db.transaction(async tx=>{
+    await tx.query("UPDATE app.memberships SET work_display_name='Giáo viên lịch sử nguồn giả' WHERE school_id=$1 AND id=$2",[f.schoolId,f.target]);
+    const year=(await tx.query("INSERT INTO app.academic_years(school_id,code,name,starts_on,ends_on,status) VALUES($1,'PAST','Năm nguồn lưu trữ giả',$2,$3,'ARCHIVED') RETURNING id",[f.schoolId,lo,hi])).rows[0].id;
+    const grade=(await tx.query('SELECT grade_level_id FROM app.classes WHERE school_id=$1 AND id=$2',[f.schoolId,f.classId])).rows[0].grade_level_id;
+    const cls=(await tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,status) VALUES($1,$2,$3,'PAST','Lớp lịch sử nguồn giả','ARCHIVED') RETURNING id",[f.schoolId,year,grade])).rows[0].id;
+    const enrollment=(await tx.query("INSERT INTO app.enrollments(school_id,student_id,class_id,year_id,starts_on,ends_on,status) VALUES($1,$2,$3,$4,$5,$6,'ENDED') RETURNING id",[f.schoolId,p.id,cls,year,lo,hi])).rows[0].id;
+    const group=(await tx.query("INSERT INTO app.class_groups(school_id,class_id,name) VALUES($1,$2,'Tổ lịch sử nguồn giả') RETURNING id",[f.schoolId,cls])).rows[0].id;
+    await tx.query('INSERT INTO app.group_memberships(school_id,class_id,group_id,enrollment_id,starts_on,ends_on) VALUES($1,$2,$3,$4,$5,$6)',[f.schoolId,cls,group,enrollment,lo,hi]);
+    const position=(await tx.query("INSERT INTO app.class_positions(school_id,class_id,code,name) VALUES($1,$2,'PAST','Lớp trưởng lịch sử giả') RETURNING id",[f.schoolId,cls])).rows[0].id;
+    await tx.query('INSERT INTO app.position_assignments(school_id,class_id,position_id,enrollment_id,starts_on,ends_on) VALUES($1,$2,$3,$4,$5,$6)',[f.schoolId,cls,position,enrollment,lo,hi]);
+    await tx.query('UPDATE app.class_groups SET sort_order=2 WHERE school_id=$1 AND id=$2',[f.schoolId,group]);
+    await tx.query("UPDATE app.class_positions SET name='Lớp trưởng lịch sử đã đổi tên giả' WHERE school_id=$1 AND id=$2",[f.schoolId,position]);
+    const role=(await tx.query("SELECT id FROM app.roles WHERE school_id=$1 AND code='HOMEROOM'",[f.schoolId])).rows[0].id;
+    const grant=(await tx.query("INSERT INTO app.role_grants(school_id,member_id,role_id,scope_type,class_id,valid_from,valid_until,granted_by) VALUES($1,$2,$3,'CLASS',$4,$5,$6,$7) RETURNING id",[f.schoolId,f.target,role,cls,lo+'T00:00:00Z',hi+'T00:00:00Z',seedId('user:admin-a')])).rows[0].id;
+    await tx.query("INSERT INTO app.teaching_assignments(school_id,member_id,class_id,role_grant_id,kind,starts_on,ends_on) VALUES($1,$2,$3,$4,'HOMEROOM',$5,$6)",[f.schoolId,f.target,cls,grant,lo,hi]);
+    return {year,cls,enrollment,group,position};
+  },{schoolId:f.schoolId});
+  const root=`/api/v1/schools/${f.schoolId}`,reference=nextDate(hi,-1),list=await request('GET',root+'/student-directory?yearId='+past.year);assert.equal(list.statusCode,200,list.body);assert.equal(list.json().page.total,1);assert.equal(list.json().data[0].classId,past.cls);assert.equal(list.json().data[0].enrollmentInEffect,true);
+  const response=await request('GET',root+`/students/${p.id}/details?yearId=${past.year}`);assert.equal(response.statusCode,200,response.body);const v=response.json().data;assert.equal(v.referenceDate,reference);assert.equal(v.selectedEnrollment.id,past.enrollment);assert.equal(v.selectedEnrollment.inEffect,true);assert.equal(v.group.id,past.group);assert.equal(v.positions[0].id,past.position);assert.equal(v.selectedEnrollment.homeroomName,'Giáo viên lịch sử nguồn giả');assert.equal(v.history.length,2);assert.equal(v.student.gender,null);
+  const summary=await request('GET',root+'/student-directory-summary?yearId='+past.year);assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.referenceDate,reference);assert.equal(summary.json().data.classes[0].status,'ARCHIVED');
+  const byClass=await request('GET',root+`/students/${p.id}/details?classId=${past.cls}`);assert.equal(byClass.statusCode,200,byClass.body);assert.equal(byClass.json().data.year.id,past.year);assert.equal(byClass.json().data.referenceDate,reference);assert.equal(byClass.json().data.group.version,2);assert.equal(byClass.json().data.group.assignmentVersion,1);assert.equal(byClass.json().data.positions[0].version,2);assert.equal(byClass.json().data.positions[0].assignmentVersion,1);
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',root+`/students/${p.id}/details?classId=${past.cls}&yearId=${past.year}`)).statusCode,403);
+});
+
+test('B6 subject pupil projection remains minimal and class history cannot retain family access after enrollment ends',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f,{startsOn:nextDate(f.today,-1),dateOfBirth:'2011-09-30',gender:'Nam',initialGuardian:{fullName:'Liên hệ lớp cũ giả',relationshipLabel:'Mẹ',phone:'0912222222'}}),future=await nativePupil(f,{startsOn:nextDate(f.today,1),fullName:'Học sinh chưa đến lớp giả'});
+  const subject=(await db.transaction(tx=>tx.query("INSERT INTO app.subjects(school_id,code,name) VALUES($1,'MINIMAL','Môn đọc tối thiểu giả') RETURNING id",[f.schoolId]),{schoolId:f.schoolId})).rows[0].id;
+  const reader=await f.role([{action:'student.read',scopes:['SUBJECT']}]);await f.grant(f.target,reader.id,{scopeType:'SUBJECT',classId:f.classId,subjectId:subject});
+  const classReader=await f.role([{action:'student.read',scopes:['CLASS']},{action:'guardian.read',scopes:['CLASS']}]);await f.grant(f.other,classReader.id,{scopeType:'CLASS',classId:f.classId});
+  const root=`/api/v1/schools/${f.schoolId}`,url=root+`/students/${p.id}/details?classId=${f.classId}`;jar.delete('edu_staff');await login('teacher-a@example.invalid');let response=await request('GET',url);assert.equal(response.statusCode,200,response.body);let v=response.json().data;assert.equal(v.level,'SUBJECT_MINIMAL');assert.equal(v.student.dateOfBirth,null);assert.equal(v.student.gender,'Nam');assert.equal(v.relationships,null);assert.equal(v.positions,null);assert.equal(v.internalNote,null);assert.equal(response.body.includes('0912222222'),false);
+  assert.equal((await request('GET',root+'/student-directory')).statusCode,403);assert.equal((await request('GET',root+`/students/${future.id}/details?classId=${f.classId}`)).statusCode,404);
+  jar.delete('edu_staff');await login('teacher-b@example.invalid');response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().data.relationships[0].guardian.fullName,'Liên hệ lớp cũ giả');
+  await db.transaction(async tx=>{await tx.query('UPDATE app.enrollments SET ends_on=$3,status=\'ENDED\' WHERE school_id=$1 AND id=$2',[f.schoolId,p.initialEnrollment.id,f.today]);await tx.query("UPDATE app.students SET internal_note='Ghi chú sau khi chuyển lớp giả' WHERE school_id=$1 AND id=$2",[f.schoolId,p.id]);},{schoolId:f.schoolId});
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);v=response.json().data;assert.equal(v.level,'FULL');assert.equal(v.selectedEnrollment.inEffect,false);assert.equal(v.relationships,null);assert.equal(v.student.dateOfBirth,null);assert.equal(v.perms.seeGuardians,false);assert.equal(v.internalNote,null);assert.equal(response.body.includes('Liên hệ lớp cũ giả'),false);
+});
+
+test('B6 pupil link metadata reflects real events, bounded recent history and revocation without returning reusable secrets',async()=>{
+  const f=await staffUiFixture(),p=await nativePupil(f,{initialGuardian:{fullName:'Giám hộ mở link giả',relationshipLabel:'Mẹ',phone:'0912222222'}}),rel=p.initialRelationship;
+  const verified=await f.post(`relationships/${rel.id}/verify`,{expectedVersion:rel.version,canReceiveInfo:true,verificationNote:'Đã xác minh quan hệ của fixture giả'});assert.equal(verified.statusCode,200,verified.body);
+  const issued=await f.post('parent-access',{studentId:p.id,yearId:p.initialEnrollment.yearId,relationshipId:rel.id,allowedSections:['overview','teachers'],allowDownload:false,expiresAt:new Date(Date.now()+86400000).toISOString()});assert.equal(issued.statusCode,201,issued.body);const access=issued.json().data.access,token=issued.json().data.link.split('#token=')[1];assert.ok(token);
+  await db.transaction(async tx=>{for(let i=0;i<103;i++)await tx.query("INSERT INTO app.parent_access_events(school_id,access_link_id,event_kind,request_id,device_summary,created_at) VALUES($1,$2,$3,$4,'Thiết bị tổng hợp giả',now()-($5::text||' seconds')::interval)",[f.schoolId,access.id,i===0?'STAFF_PREVIEW':i===1?'EXCHANGED':'READ',crypto.randomUUID(),i]);},{schoolId:f.schoolId});
+  const root=`/api/v1/schools/${f.schoolId}`,url=root+`/students/${p.id}/details`;let response=await request('GET',url);assert.equal(response.statusCode,200,response.body);let v=response.json().data;assert.equal(v.links[0].opens,102);assert.ok(v.links[0].lastOpenedAt);assert.equal(v.links[0].status,'ACTIVE');assert.equal(v.accessLog.length,100);assert.equal(v.accessLogHasMore,true);assert.equal(v.accessLog[0].eventKind,'STAFF_PREVIEW');assert.equal(response.body.includes(token),false);for(const key of ['tokenHash','token','link','ipDailyHash','requestId'])assert.equal(Object.hasOwn(v.links[0],key),false);
+  let summary=await request('GET',root+'/student-directory-summary');assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.kpi.activeLinks,1);assert.equal(summary.json().data.kpi.unverified,0);
+  const revoked=await f.post(`parent-access/${access.id}/revoke`,{expectedVersion:access.version,reason:'Thu hồi link giả để kiểm tra hồ sơ'});assert.equal(revoked.statusCode,200,revoked.body);
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);v=response.json().data;assert.equal(v.links[0].status,'REVOKED');assert.equal(v.links[0].opens,102);assert.ok(v.links[0].revokedAt);assert.equal(v.links[0].revokeReason,'Thu hồi link giả để kiểm tra hồ sơ');summary=await request('GET',root+'/student-directory-summary');assert.equal(summary.json().data.kpi.activeLinks,0);
+});
+
+test('B6 an unconfigured school directory returns actual null year context without fabricated class or student data',async()=>{
+  const schoolId=await operationalUiSchool();jar.delete('edu_staff');await login('admin-a@example.invalid');const root=`/api/v1/schools/${schoolId}/student-directory`;
+  const summary=await request('GET',root+'-summary');assert.equal(summary.statusCode,200,summary.body);assert.equal(summary.json().data.year,null);assert.equal(summary.json().data.referenceDate,null);assert.deepEqual(summary.json().data.years,[]);assert.deepEqual(summary.json().data.classes,[]);assert.deepEqual(summary.json().data.kpi,{students:0,studying:0,unverified:0,activeLinks:0});
+  for(const path of [root,root+'/ids']){const response=await request('GET',path);assert.equal(response.statusCode,200,response.body);assert.deepEqual(response.json().data,[]);assert.equal(response.json().page.total,0);}
 });

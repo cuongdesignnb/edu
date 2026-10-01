@@ -14539,6 +14539,1152 @@
         "relationshipLabel"
       ],
       "additionalProperties": false
+    },
+    "StudentYear": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "name",
+        "status",
+        "startsOn",
+        "endsOn"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectoryClass": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "yearId",
+        "name",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectoryRow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentCode": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Nam",
+            "Nữ",
+            null
+          ],
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "LEFT",
+            "GRADUATED",
+            "ARCHIVED"
+          ]
+        },
+        "enrollmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "enrollmentVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "className": {
+          "type": "string"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearName": {
+          "type": "string"
+        },
+        "enrollmentInEffect": {
+          "type": "boolean"
+        },
+        "guardianCount": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "verifiedGuardians": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "activeLinks": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentCode",
+        "fullName",
+        "dateOfBirth",
+        "gender",
+        "status",
+        "enrollmentId",
+        "enrollmentVersion",
+        "classId",
+        "className",
+        "yearId",
+        "yearName",
+        "enrollmentInEffect",
+        "guardianCount",
+        "verifiedGuardians",
+        "activeLinks"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectoryId": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectoryRowPage": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/StudentDirectoryRow"
+          }
+        },
+        "page": {
+          "$ref": "#/components/schemas/PageInfo"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "page",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectoryIdPage": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/StudentDirectoryId"
+          }
+        },
+        "page": {
+          "$ref": "#/components/schemas/PageInfo"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "page",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectorySummary": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/StudentYear"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "years": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/StudentYear"
+          }
+        },
+        "classes": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/components/schemas/StudentDirectoryClass"
+          }
+        },
+        "kpi": {
+          "type": "object",
+          "properties": {
+            "students": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "studying": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unverified": {
+              "type": "integer",
+              "minimum": 0,
+              "nullable": true
+            },
+            "activeLinks": {
+              "type": "integer",
+              "minimum": 0,
+              "nullable": true
+            }
+          },
+          "required": [
+            "students",
+            "studying",
+            "unverified",
+            "activeLinks"
+          ],
+          "additionalProperties": false
+        },
+        "canSeeGuardians": {
+          "type": "boolean"
+        },
+        "canSeeLinks": {
+          "type": "boolean"
+        },
+        "canCreate": {
+          "type": "boolean"
+        },
+        "canTransfer": {
+          "type": "boolean"
+        },
+        "canExport": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "year",
+        "referenceDate",
+        "today",
+        "years",
+        "classes",
+        "kpi",
+        "canSeeGuardians",
+        "canSeeLinks",
+        "canCreate",
+        "canTransfer",
+        "canExport"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDirectorySummaryResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/StudentDirectorySummary"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "StudentHistory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ENDED",
+            "CANCELLED"
+          ]
+        },
+        "className": {
+          "type": "string"
+        },
+        "yearName": {
+          "type": "string"
+        },
+        "yearStatus": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "homeroomName": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentId",
+        "classId",
+        "yearId",
+        "startsOn",
+        "endsOn",
+        "status",
+        "className",
+        "yearName",
+        "yearStatus",
+        "referenceDate",
+        "homeroomName"
+      ],
+      "additionalProperties": false
+    },
+    "StudentSelectedEnrollment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "startsOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "endsOn": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "ENDED",
+            "CANCELLED"
+          ]
+        },
+        "className": {
+          "type": "string"
+        },
+        "yearName": {
+          "type": "string"
+        },
+        "yearStatus": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "homeroomName": {
+          "type": "string",
+          "nullable": true
+        },
+        "inEffect": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentId",
+        "classId",
+        "yearId",
+        "startsOn",
+        "endsOn",
+        "status",
+        "className",
+        "yearName",
+        "yearStatus",
+        "referenceDate",
+        "homeroomName",
+        "inEffect"
+      ],
+      "additionalProperties": false
+    },
+    "StudentProfileCore": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentCode": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "preferredName": {
+          "type": "string",
+          "nullable": true,
+          "maxLength": 100
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "LEFT",
+            "GRADUATED",
+            "ARCHIVED"
+          ]
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Nam",
+            "Nữ",
+            null
+          ],
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentCode",
+        "fullName",
+        "preferredName",
+        "dateOfBirth",
+        "status",
+        "gender"
+      ],
+      "additionalProperties": false
+    },
+    "StudentGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "assignmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assignmentVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "assignmentId",
+        "version",
+        "assignmentVersion"
+      ],
+      "additionalProperties": false
+    },
+    "StudentPosition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "assignmentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assignmentVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "code",
+        "assignmentId",
+        "version",
+        "assignmentVersion"
+      ],
+      "additionalProperties": false
+    },
+    "StudentRelationship": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "guardianId": {
+          "type": "string",
+          "format": "uuid",
+          "nullable": true
+        },
+        "relationshipLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "isPrimary": {
+          "type": "boolean"
+        },
+        "canReceiveInfo": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "UNVERIFIED",
+            "VERIFIED",
+            "REVOKED"
+          ]
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "verifiedByName": {
+          "type": "string",
+          "nullable": true
+        },
+        "guardian": {
+          "$ref": "#/components/schemas/Guardian"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentId",
+        "guardianId",
+        "relationshipLabel",
+        "isPrimary",
+        "canReceiveInfo",
+        "status",
+        "revokedAt",
+        "verifiedByName",
+        "guardian"
+      ],
+      "additionalProperties": false
+    },
+    "StudentAccessLink": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "relationshipId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "allowedSections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "overview",
+              "teachers",
+              "attendance",
+              "conduct",
+              "timetable",
+              "duties",
+              "activities",
+              "announcements",
+              "documents"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "allowDownload": {
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "revokeReason": {
+          "type": "string",
+          "nullable": true
+        },
+        "issuedBy": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issuedByName": {
+          "type": "string",
+          "nullable": true
+        },
+        "guardianName": {
+          "type": "string"
+        },
+        "relationshipLabel": {
+          "type": "string"
+        },
+        "yearName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "EXPIRED",
+            "REVOKED"
+          ]
+        },
+        "opens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastOpenedAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "createdAt",
+        "updatedAt",
+        "studentId",
+        "yearId",
+        "relationshipId",
+        "allowedSections",
+        "allowDownload",
+        "expiresAt",
+        "revokedAt",
+        "revokeReason",
+        "issuedBy",
+        "issuedByName",
+        "guardianName",
+        "relationshipLabel",
+        "yearName",
+        "status",
+        "opens",
+        "lastOpenedAt"
+      ],
+      "additionalProperties": false
+    },
+    "StudentAccessEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "accessLinkId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "eventKind": {
+          "type": "string"
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deviceSummary": {
+          "type": "string",
+          "nullable": true
+        },
+        "section": {
+          "type": "string",
+          "nullable": true
+        },
+        "guardianName": {
+          "type": "string"
+        },
+        "relationshipLabel": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "accessLinkId",
+        "eventKind",
+        "occurredAt",
+        "deviceSummary",
+        "section",
+        "guardianName",
+        "relationshipLabel"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDetails": {
+      "type": "object",
+      "properties": {
+        "student": {
+          "$ref": "#/components/schemas/StudentProfileCore"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "FULL",
+            "SUBJECT_MINIMAL"
+          ]
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "year": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/StudentYear"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date",
+          "nullable": true
+        },
+        "selectedEnrollment": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/StudentSelectedEnrollment"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "history": {
+          "type": "array",
+          "maxItems": 2000,
+          "items": {
+            "$ref": "#/components/schemas/StudentHistory"
+          }
+        },
+        "group": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/StudentGroup"
+            },
+            {
+              "type": "object",
+              "nullable": true,
+              "enum": [
+                null
+              ]
+            }
+          ]
+        },
+        "positions": {
+          "type": "array",
+          "maxItems": 1000,
+          "nullable": true,
+          "items": {
+            "$ref": "#/components/schemas/StudentPosition"
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "maxItems": 1000,
+          "nullable": true,
+          "items": {
+            "$ref": "#/components/schemas/StudentRelationship"
+          }
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 1000,
+          "nullable": true,
+          "items": {
+            "$ref": "#/components/schemas/StudentAccessLink"
+          }
+        },
+        "accessLog": {
+          "type": "array",
+          "maxItems": 100,
+          "nullable": true,
+          "items": {
+            "$ref": "#/components/schemas/StudentAccessEvent"
+          }
+        },
+        "accessLogHasMore": {
+          "type": "boolean",
+          "nullable": true
+        },
+        "internalNote": {
+          "type": "string",
+          "maxLength": 4000,
+          "nullable": true
+        },
+        "perms": {
+          "type": "object",
+          "properties": {
+            "edit": {
+              "type": "boolean"
+            },
+            "transfer": {
+              "type": "boolean"
+            },
+            "seeGuardians": {
+              "type": "boolean"
+            },
+            "editGuardians": {
+              "type": "boolean"
+            },
+            "verifyGuardians": {
+              "type": "boolean"
+            },
+            "manageLinks": {
+              "type": "boolean"
+            },
+            "issueLinks": {
+              "type": "boolean"
+            },
+            "revokeLinks": {
+              "type": "boolean"
+            },
+            "seeInternalNote": {
+              "type": "boolean"
+            },
+            "seeBirthDate": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "edit",
+            "transfer",
+            "seeGuardians",
+            "editGuardians",
+            "verifyGuardians",
+            "manageLinks",
+            "issueLinks",
+            "revokeLinks",
+            "seeInternalNote",
+            "seeBirthDate"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "student",
+        "level",
+        "today",
+        "year",
+        "referenceDate",
+        "selectedEnrollment",
+        "history",
+        "group",
+        "positions",
+        "relationships",
+        "links",
+        "accessLog",
+        "accessLogHasMore",
+        "internalNote",
+        "perms"
+      ],
+      "additionalProperties": false
+    },
+    "StudentDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/StudentDetails"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -62193,6 +63339,744 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/HandoverResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "listStudentDirectory",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/student-directory",
+      "title": "listStudentDirectory",
+      "tag": "Students",
+      "permission": "student.read",
+      "scope": "school",
+      "request": null,
+      "response": "StudentDirectoryRow",
+      "list": true,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC16"
+      ],
+      "description": "Purpose-bound student projection under current school/class/subject/time authority; family, internal notes and link metadata require independent grants. No reusable parent token.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "LEFT",
+              "GRADUATED",
+              "ARCHIVED"
+            ]
+          }
+        },
+        {
+          "name": "guardian",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "unverified"
+            ]
+          }
+        },
+        {
+          "name": "q",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "fullName",
+              "studentCode",
+              "className"
+            ]
+          }
+        },
+        {
+          "name": "dir",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "cursor",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentDirectoryRowPage"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "listStudentDirectoryIds",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/student-directory/ids",
+      "title": "listStudentDirectoryIds",
+      "tag": "Students",
+      "permission": "student.read",
+      "scope": "school",
+      "request": null,
+      "response": "StudentDirectoryId",
+      "list": true,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC16"
+      ],
+      "description": "Purpose-bound student projection under current school/class/subject/time authority; family, internal notes and link metadata require independent grants. No reusable parent token.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "LEFT",
+              "GRADUATED",
+              "ARCHIVED"
+            ]
+          }
+        },
+        {
+          "name": "guardian",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "unverified"
+            ]
+          }
+        },
+        {
+          "name": "q",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "fullName",
+              "studentCode",
+              "className"
+            ]
+          }
+        },
+        {
+          "name": "dir",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "cursor",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentDirectoryIdPage"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getStudentDirectorySummary",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/student-directory-summary",
+      "title": "getStudentDirectorySummary",
+      "tag": "Students",
+      "permission": "student.read",
+      "scope": "school",
+      "request": null,
+      "response": "StudentDirectorySummary",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC16"
+      ],
+      "description": "Purpose-bound student projection under current school/class/subject/time authority; family, internal notes and link metadata require independent grants. No reusable parent token.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentDirectorySummaryResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getStudentDetails",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/students/{studentId}/details",
+      "title": "getStudentDetails",
+      "tag": "Students",
+      "permission": "student.read",
+      "scope": "school",
+      "request": null,
+      "response": "StudentDetails",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "SC18",
+        "SC19",
+        "CL02",
+        "CL03"
+      ],
+      "description": "Purpose-bound student projection under current school/class/subject/time authority; family, internal notes and link metadata require independent grants. No reusable parent token.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "studentId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentDetailsResponse"
               }
             }
           }

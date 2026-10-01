@@ -362,6 +362,24 @@ export interface ApiSchemas {
   "HandoverApprove": { "expectedVersion": number; "previewHash"?: string; };
   "HandoverReview": { "expectedVersion": number; "previewHash": string; "expectedFromAssignmentVersion": number; "expectedClassVersion": number; "expectedToMemberVersion": number; };
   "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
+  "StudentYear": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "startsOn": string; "endsOn": string; };
+  "StudentDirectoryClass": { "id": string; "version": number; "yearId": string; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; };
+  "StudentDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "dateOfBirth": (string) | null; "gender": ("Nam" | "Nữ" | null) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "enrollmentId": string; "enrollmentVersion": number; "classId": string; "className": string; "yearId": string; "yearName": string; "enrollmentInEffect": boolean; "guardianCount": (number) | null; "verifiedGuardians": (number) | null; "activeLinks": (number) | null; };
+  "StudentDirectoryId": { "id": string; };
+  "StudentDirectoryRowPage": { "data": Array<ApiSchemas["StudentDirectoryRow"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "StudentDirectoryIdPage": { "data": Array<ApiSchemas["StudentDirectoryId"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "StudentDirectorySummary": { "year": (ApiSchemas["StudentYear"] | (null) | null); "referenceDate": (string) | null; "today": string; "years": Array<ApiSchemas["StudentYear"]>; "classes": Array<ApiSchemas["StudentDirectoryClass"]>; "kpi": { "students": number; "studying": number; "unverified": (number) | null; "activeLinks": (number) | null; }; "canSeeGuardians": boolean; "canSeeLinks": boolean; "canCreate": boolean; "canTransfer": boolean; "canExport": boolean; };
+  "StudentDirectorySummaryResponse": { "data": ApiSchemas["StudentDirectorySummary"]; "requestId": string; };
+  "StudentHistory": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; };
+  "StudentSelectedEnrollment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; "inEffect": boolean; };
+  "StudentProfileCore": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName": (string) | null; "dateOfBirth": (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "gender": ("Nam" | "Nữ" | null) | null; };
+  "StudentGroup": { "id": string; "name": string; "assignmentId": string; "version": number; "assignmentVersion": number; };
+  "StudentPosition": { "id": string; "name": string; "code": string; "assignmentId": string; "version": number; "assignmentVersion": number; };
+  "StudentRelationship": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "guardianId": (string) | null; "relationshipLabel": string; "isPrimary": boolean; "canReceiveInfo": boolean; "status": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "verifiedAt"?: (string) | null; "revokedAt": (string) | null; "verifiedByName": (string) | null; "guardian": ApiSchemas["Guardian"]; };
+  "StudentAccessLink": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentId": string; "yearId": string; "relationshipId": string; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt": (string) | null; "revokeReason": (string) | null; "issuedBy": string; "issuedByName": (string) | null; "guardianName": string; "relationshipLabel": string; "yearName": string; "status": "ACTIVE" | "EXPIRED" | "REVOKED"; "opens": number; "lastOpenedAt": (string) | null; };
+  "StudentAccessEvent": { "id": string; "accessLinkId": string; "eventKind": string; "occurredAt": string; "deviceSummary": (string) | null; "section": (string) | null; "guardianName": string; "relationshipLabel": string; };
+  "StudentDetails": { "student": ApiSchemas["StudentProfileCore"]; "level": "FULL" | "SUBJECT_MINIMAL"; "today": string; "year": (ApiSchemas["StudentYear"] | (null) | null); "referenceDate": (string) | null; "selectedEnrollment": (ApiSchemas["StudentSelectedEnrollment"] | (null) | null); "history": Array<ApiSchemas["StudentHistory"]>; "group": (ApiSchemas["StudentGroup"] | (null) | null); "positions": (Array<ApiSchemas["StudentPosition"]>) | null; "relationships": (Array<ApiSchemas["StudentRelationship"]>) | null; "links": (Array<ApiSchemas["StudentAccessLink"]>) | null; "accessLog": (Array<ApiSchemas["StudentAccessEvent"]>) | null; "accessLogHasMore": (boolean) | null; "internalNote": (string) | null; "perms": { "edit": boolean; "transfer": boolean; "seeGuardians": boolean; "editGuardians": boolean; "verifyGuardians": boolean; "manageLinks": boolean; "issueLinks": boolean; "revokeLinks": boolean; "seeInternalNote": boolean; "seeBirthDate": boolean; }; };
+  "StudentDetailsResponse": { "data": ApiSchemas["StudentDetails"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3264,6 +3282,46 @@ export const apiOperations = {
     "list": false,
     "permission": "assignment.manage",
     "readOnly": false
+  },
+  "listStudentDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/student-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "StudentDirectoryRow",
+    "list": true,
+    "permission": "student.read",
+    "readOnly": true
+  },
+  "listStudentDirectoryIds": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/student-directory/ids",
+    "auth": "staff",
+    "request": null,
+    "response": "StudentDirectoryId",
+    "list": true,
+    "permission": "student.read",
+    "readOnly": true
+  },
+  "getStudentDirectorySummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/student-directory-summary",
+    "auth": "staff",
+    "request": null,
+    "response": "StudentDirectorySummary",
+    "list": false,
+    "permission": "student.read",
+    "readOnly": true
+  },
+  "getStudentDetails": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/students/{studentId}/details",
+    "auth": "staff",
+    "request": null,
+    "response": "StudentDetails",
+    "list": false,
+    "permission": "student.read",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

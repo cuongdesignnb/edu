@@ -344,6 +344,44 @@ spec.components.schemas.StudentCreate.properties.initialGuardian={$ref:'#/compon
 Object.assign(spec.components.schemas.Student.properties,{initialEnrollment:{$ref:'#/components/schemas/Enrollment'},initialGuardian:{$ref:'#/components/schemas/Guardian'},initialRelationship:{$ref:'#/components/schemas/Relationship'},internalNote:{type:'string',maxLength:4000,nullable:true}});
 spec.components.schemas.StudentPatch.properties.internalNote={type:'string',maxLength:4000,nullable:true};
 spec.components.schemas.StudentDetail.properties.internalNote.nullable=true;
+// ADR-051: SQL directory and explicit historical/current student projections.
+const studentDate={type:'string',format:'date'},studentNullableDate={...studentDate,nullable:true},nullableLabel={type:'string',nullable:true};
+spec.components.schemas.StudentYear=object({id:uuid,version:versionPositive,name:label,status:structuredClone(spec.components.schemas.Year.properties.status),startsOn:studentDate,endsOn:studentDate});
+spec.components.schemas.StudentDirectoryClass=object({id:uuid,version:versionPositive,yearId:uuid,name:label,status:structuredClone(spec.components.schemas.Class.properties.status)});
+spec.components.schemas.StudentDirectoryRow=object({id:uuid,version:versionPositive,createdAt:timestamp,updatedAt:timestamp,studentCode:label,fullName:label,dateOfBirth:studentNullableDate,gender:studentGender,status:structuredClone(spec.components.schemas.Student.properties.status),
+ enrollmentId:uuid,enrollmentVersion:versionPositive,classId:uuid,className:label,yearId:uuid,yearName:label,enrollmentInEffect:{type:'boolean'},guardianCount:{...count,nullable:true},verifiedGuardians:{...count,nullable:true},activeLinks:{...count,nullable:true}});
+spec.components.schemas.StudentDirectoryId=object({id:uuid});
+for(const name of ['StudentDirectoryRow','StudentDirectoryId'])spec.components.schemas[name+'Page']=object({data:{type:'array',items:{$ref:'#/components/schemas/'+name}},page:{$ref:'#/components/schemas/PageInfo'},requestId:label});
+spec.components.schemas.StudentDirectorySummary=object({year:nullableMatrixRef('StudentYear'),referenceDate:studentNullableDate,today:studentDate,years:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/StudentYear'}},classes:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/StudentDirectoryClass'}},
+ kpi:object({students:count,studying:count,unverified:{...count,nullable:true},activeLinks:{...count,nullable:true}}),canSeeGuardians:{type:'boolean'},canSeeLinks:{type:'boolean'},canCreate:{type:'boolean'},canTransfer:{type:'boolean'},canExport:{type:'boolean'}});
+spec.components.schemas.StudentDirectorySummaryResponse=object({data:{$ref:'#/components/schemas/StudentDirectorySummary'},requestId:label});
+const studentListParams=[{name:'schoolId',in:'path',required:true,schema:uuid},...['yearId','classId'].map(name=>({name,in:'query',schema:uuid})),{name:'status',in:'query',schema:structuredClone(spec.components.schemas.Student.properties.status)},
+ {name:'guardian',in:'query',schema:{type:'string',enum:['unverified']}},{name:'q',in:'query',schema:{type:'string',maxLength:200}},{name:'sort',in:'query',schema:{type:'string',enum:['fullName','studentCode','className']}},{name:'dir',in:'query',schema:{type:'string',enum:['asc','desc']}},
+ {name:'limit',in:'query',schema:{type:'integer',minimum:1,maximum:100}},{name:'cursor',in:'query',schema:{type:'string',maxLength:4000}}];
+extendOperation('listStudents','listStudentDirectory','/schools/{schoolId}/student-directory','student.read','StudentDirectoryRow',true,['SC16'],studentListParams);
+extendOperation('listStudents','listStudentDirectoryIds','/schools/{schoolId}/student-directory/ids','student.read','StudentDirectoryId',true,['SC16'],structuredClone(studentListParams));
+extendOperation('getStudent','getStudentDirectorySummary','/schools/{schoolId}/student-directory-summary','student.read','StudentDirectorySummary',false,['SC16'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'yearId',in:'query',schema:uuid}]);
+const studentHistoryProps={...structuredClone(spec.components.schemas.Enrollment.properties),className:label,yearName:label,yearStatus:structuredClone(spec.components.schemas.Year.properties.status),referenceDate:studentDate,homeroomName:nullableLabel};
+spec.components.schemas.StudentHistory=object(studentHistoryProps);
+spec.components.schemas.StudentSelectedEnrollment=object({...studentHistoryProps,inEffect:{type:'boolean'}});
+spec.components.schemas.StudentProfileCore=object(Object.fromEntries(Object.entries(spec.components.schemas.Student.properties).filter(([name])=>!['initialEnrollment','initialGuardian','initialRelationship','internalNote'].includes(name)).map(([name,value])=>[name,structuredClone(value)])));
+spec.components.schemas.StudentGroup=object({id:uuid,name:label,assignmentId:uuid,version:versionPositive,assignmentVersion:versionPositive});
+spec.components.schemas.StudentPosition=object({id:uuid,name:label,code:label,assignmentId:uuid,version:versionPositive,assignmentVersion:versionPositive});
+spec.components.schemas.StudentRelationship=object({...structuredClone(spec.components.schemas.Relationship.properties),revokedAt:{...timestamp,nullable:true},verifiedByName:nullableLabel,guardian:{$ref:'#/components/schemas/Guardian'}},[...spec.components.schemas.Relationship.required,'revokedAt','verifiedByName','guardian']);
+spec.components.schemas.StudentAccessLink=object({id:uuid,version:versionPositive,createdAt:timestamp,updatedAt:timestamp,studentId:uuid,yearId:uuid,relationshipId:uuid,
+ allowedSections:structuredClone(spec.components.schemas.ParentAccess.properties.allowedSections),allowDownload:{type:'boolean'},expiresAt:timestamp,revokedAt:{...timestamp,nullable:true},revokeReason:nullableLabel,issuedBy:uuid,issuedByName:nullableLabel,
+ guardianName:label,relationshipLabel:label,yearName:label,status:{type:'string',enum:['ACTIVE','EXPIRED','REVOKED']},opens:count,lastOpenedAt:{...timestamp,nullable:true}});
+spec.components.schemas.StudentAccessEvent=object({id:uuid,accessLinkId:uuid,eventKind:label,occurredAt:timestamp,deviceSummary:nullableLabel,section:nullableLabel,guardianName:label,relationshipLabel:label});
+spec.components.schemas.StudentDetails=object({student:{$ref:'#/components/schemas/StudentProfileCore'},level:{type:'string',enum:['FULL','SUBJECT_MINIMAL']},today:studentDate,year:nullableMatrixRef('StudentYear'),referenceDate:studentNullableDate,selectedEnrollment:nullableMatrixRef('StudentSelectedEnrollment'),
+ history:{type:'array',maxItems:2000,items:{$ref:'#/components/schemas/StudentHistory'}},group:nullableMatrixRef('StudentGroup'),positions:{type:'array',maxItems:1000,nullable:true,items:{$ref:'#/components/schemas/StudentPosition'}},
+ relationships:{type:'array',maxItems:1000,nullable:true,items:{$ref:'#/components/schemas/StudentRelationship'}},links:{type:'array',maxItems:1000,nullable:true,items:{$ref:'#/components/schemas/StudentAccessLink'}},accessLog:{type:'array',maxItems:100,nullable:true,items:{$ref:'#/components/schemas/StudentAccessEvent'}},accessLogHasMore:{type:'boolean',nullable:true},internalNote:{type:'string',maxLength:4000,nullable:true},
+ perms:object(Object.fromEntries(['edit','transfer','seeGuardians','editGuardians','verifyGuardians','manageLinks','issueLinks','revokeLinks','seeInternalNote','seeBirthDate'].map(name=>[name,{type:'boolean'}])))});
+spec.components.schemas.StudentDetailsResponse=object({data:{$ref:'#/components/schemas/StudentDetails'},requestId:label});
+extendOperation('getStudent','getStudentDetails','/schools/{schoolId}/students/{studentId}/details','student.read','StudentDetails',false,['SC18','SC19','CL02','CL03'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'studentId',in:'path',required:true,schema:uuid},...['yearId','classId'].map(name=>({name,in:'query',schema:uuid}))]);
+for(const path of ['/schools/{schoolId}/student-directory','/schools/{schoolId}/student-directory/ids','/schools/{schoolId}/student-directory-summary','/schools/{schoolId}/students/{studentId}/details']){
+ spec.paths[path].get.description='Purpose-bound student projection under current school/class/subject/time authority; family, internal notes and link metadata require independent grants. No reusable parent token.';
+ const op=operations.find(o=>o.id===spec.paths[path].get.operationId);op.description=spec.paths[path].get.description;
+}
 const mapping = JSON.parse(await fs.readFile(path.join(source, 'api/frontend-api-map.json'), 'utf8'));
 const permissions = JSON.parse(await fs.readFile(path.join(source, 'api/permissions.json'), 'utf8'));
 const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates.json'), 'utf8'));

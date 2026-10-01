@@ -3446,6 +3446,53 @@
       "evidence": [
         "qa/backend/b6-handover-integration.log: 127/127 exit0, 35 migrations/checksum replay; b6-handover-unit-contract.log: 23/23; b6-handover-frontend-unit.log: 125/125; native UI activation/E2E remain pending"
       ]
+    },
+    {
+      "operationId": "listStudentDirectory",
+      "screenIds": [
+        "SC16"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "listStudentDirectoryIds",
+      "screenIds": [
+        "SC16"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getStudentDirectorySummary",
+      "screenIds": [
+        "SC16"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getStudentDetails",
+      "screenIds": [
+        "SC18",
+        "SC19",
+        "CL02",
+        "CL03"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-student-read-model-integration.log: 138/138 PostgreSQL integration, 36 migrations/checksum replay; 25/25 backend contract/unit, 136/136 frontend API unit; source TypeScript/scoped lint exit0; SQL directory and current/historical pupil projections with independent family/link authority. Candidates remain unactivated; browser/E2E NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -3964,7 +4011,10 @@
       "screenId": "SC16",
       "scope": "core",
       "operationIds": [
-        "listStudents"
+        "listStudents",
+        "listStudentDirectory",
+        "listStudentDirectoryIds",
+        "getStudentDirectorySummary"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -3992,7 +4042,8 @@
         "createGuardian",
         "listRelationships",
         "createRelationship",
-        "issueParentAccess"
+        "issueParentAccess",
+        "getStudentDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4004,7 +4055,8 @@
       "scope": "core",
       "operationIds": [
         "getStudent",
-        "updateStudent"
+        "updateStudent",
+        "getStudentDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4422,7 +4474,8 @@
       "screenId": "CL02",
       "scope": "core",
       "operationIds": [
-        "listClassStudents"
+        "listClassStudents",
+        "getStudentDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -4434,7 +4487,8 @@
       "scope": "core",
       "operationIds": [
         "createTransfer",
-        "getClassStudent"
+        "getClassStudent",
+        "getStudentDetails"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

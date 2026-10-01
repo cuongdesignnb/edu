@@ -1,0 +1,33 @@
+
+ RUN  v3.2.7 D:/Edu
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-students-adapter.test.ts [ tests/unit/api-students-adapter.test.ts ]
+Error: Transform failed with 1 error:
+D:/Edu/tests/unit/api-students-adapter.test.ts:73:56: ERROR: Expected ")" but found "s"
+  Plugin: vite:esbuild
+  File: D:/Edu/tests/unit/api-students-adapter.test.ts:73:56
+
+  Expected ")" but found "s"
+  71 |      for(let i=0;i<4;i++)await expect(connectedStudentsRepo.profile(ctx,schoolId,id)).rejects.toMatchObject({code:'READ_ERROR'});
+  72 |    });
+  73 |    it('propagates API failures and stops a revoked owner's composite directory read before the next request',async()=>{
+     |                                                          ^
+  74 |      const fetcher=vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({code:'DEPENDENCY_UNAVAILABLE'}),{status:503})).mockImplementationOnce(async()=>{authorizationChanged();return envelope(summary());});vi.stubGlobal('fetch',fetcher);
+  75 |      await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'NETWORK'});await expect(connectedStudentsRepo.list(ctx,schoolId,{})).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
+
+ ❯ failureErrorWithLog node_modules/esbuild/lib/main.js:1467:15
+ ❯ node_modules/esbuild/lib/main.js:736:50
+ ❯ responseCallbacks.<computed> node_modules/esbuild/lib/main.js:603:9
+ ❯ handleIncomingPacket node_modules/esbuild/lib/main.js:658:12
+ ❯ Socket.readFromStdout node_modules/esbuild/lib/main.js:581:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  07:06:40
+   Duration  344ms (transform 30ms, setup 38ms, collect 0ms, tests 0ms, environment 0ms, prepare 120ms)

@@ -1,8 +1,9 @@
 import type {ID,Gender,GuardianRelationship} from '../../model/types';
-import type {Ctx} from '../core';
+import type {Ctx,ListQuery} from '../core';
 import type {ApiSchemas} from '../../api/generated';
 import {http} from '../../api/client';
-import {dateDays} from '../../api/dates';
+import {dateDays,inclusiveDate} from '../../api/dates';
+import {apiPage,apiList} from '../../api/lists';
 import {displayedVersion,formResult,requiredId,requiredValue,withStaffAccess} from './common';
 import {RepoError} from '../errors';
 
@@ -23,8 +24,49 @@ function reviewedGender(value:Gender){if(!['Nam','Nữ'].includes(value))throw n
 function confirmedFields(row:ApiSchemas['Student'],input:{fullName:string;dob:string;gender:Gender}){
   if(!row.id||!Number.isInteger(row.version)||row.version<1||row.fullName!==input.fullName.trim().replace(/\s+/g,' ')||row.dateOfBirth!==input.dob||row.gender!==input.gender)throw new RepoError('NETWORK','Máy chủ chưa xác nhận đầy đủ nội dung hồ sơ. Giữ nội dung để thử lại.');
 }
+function directoryRow(row:ApiSchemas['StudentDirectoryRow'],schoolId:ID){
+  const source=nativeStudent(row,schoolId);
+  return {id:source.id,code:source.code,fullName:source.fullName,dob:source.dob,gender:source.gender,status:source.status,nativeStatus:source.nativeStatus,version:source.version,
+    classId:requiredId(row.classId),className:requiredValue(row.className,'className'),yearId:requiredId(row.yearId),yearLabel:row.yearName,
+    enrollmentId:requiredId(row.enrollmentId),enrollmentVersion:displayedVersion(row.enrollmentVersion),enrollmentInEffect:requiredValue(row.enrollmentInEffect,'enrollmentInEffect'),
+    guardianCount:requiredValue(row.guardianCount,'guardianCount'),verifiedGuardians:requiredValue(row.verifiedGuardians,'verifiedGuardians'),activeLinks:requiredValue(row.activeLinks,'activeLinks'),avatarTone:'blue'};
+}
+function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
+  const student=nativeStudent(requiredValue(view.student,'student'),schoolId),selected=requiredValue(view.selectedEnrollment,'selectedEnrollment'),perms=requiredValue(view.perms,'perms');
+  const family=requiredValue(view.relationships,'relationships'),links=requiredValue(view.links,'links'),logs=requiredValue(view.accessLog,'accessLog'),positions=requiredValue(view.positions,'positions');
+  if(perms.seeGuardians&&family===null||perms.manageLinks&&(links===null||logs===null)||view.level==='FULL'&&positions===null)throw new RepoError('READ_ERROR','Máy chủ chưa trả đủ phần hồ sơ được phép xem.');
+  if(!perms.seeGuardians&&family!==null||!perms.manageLinks&&(links!==null||logs!==null)||!perms.seeInternalNote&&(view.internalNote!==null||Object.hasOwn(view.student,'internalNote')))throw new RepoError('READ_ERROR','Phản hồi hồ sơ vượt quyền đang được xác nhận.');
+  const classView=selected?{id:requiredId(selected.classId),name:selected.className,yearId:requiredId(selected.yearId),yearLabel:selected.yearName,homeroom:selected.homeroomName,referenceDate:view.referenceDate,enrollmentId:requiredId(selected.id),enrollmentVersion:displayedVersion(selected.version)}:null;
+  return {student:{...student,...(perms.seeInternalNote?{internalNote:requiredValue(view.internalNote,'internalNote')}:{})},level:view.level==='FULL'?'full' as const:'subject-minimal' as const,
+    today:requiredValue(view.today,'today'),year:requiredValue(view.year,'year'),referenceDate:requiredValue(view.referenceDate,'referenceDate'),currentClass:selected?.inEffect?classView:null,lastClass:selected&&!selected.inEffect?classView:null,
+    selectedEnrollment:selected,group:requiredValue(view.group,'group')?.name??null,positions:positions===null?null:positions.map(p=>p.name),nativePositions:positions,
+    history:requiredValue(view.history,'history').map(e=>({...e,schoolId,studentId:requiredId(e.studentId),classId:requiredId(e.classId),yearId:requiredId(e.yearId),startDate:e.startsOn,endDate:e.endsOn===null?null:inclusiveDate(e.endsOn),status:e.status.toLowerCase(),className:e.className,yearLabel:e.yearName,homeroom:e.homeroomName})),
+    relationships:family===null?null:family.map(r=>({...r,schoolId,studentId:requiredId(r.studentId),guardianId:requiredId(r.guardianId),relation:r.relationshipLabel,isPrimaryContact:r.isPrimary,verification:r.status.toLowerCase(),
+      guardian:{...r.guardian,schoolId,phoneMasked:r.guardian.phone===null?null:requiredValue(r.guardian.phone,'guardian.phone').replace(/(\d{4})\d+(\d{3})$/,'$1 *** $2')}})),
+    links:links===null?null:links.map(l=>({...l,schoolId,studentId:requiredId(l.studentId),yearId:requiredId(l.yearId),relationshipId:requiredId(l.relationshipId),modules:requiredValue(l.allowedSections,'allowedSections').filter(s=>s!=='overview'),
+      issuedAt:l.createdAt,relation:l.relationshipLabel,yearLabel:l.yearName,status:l.status.toLowerCase(),nativeStatus:l.status})),
+    accessLog:logs===null?null:logs.map(l=>({...l,schoolId,accessId:requiredId(l.accessLinkId),at:l.occurredAt,event:l.eventKind,device:l.deviceSummary,module:l.section,label:`Link cấp cho ${l.relationshipLabel.toLowerCase()} (${l.guardianName})`})),
+    accessLogHasMore:requiredValue(view.accessLogHasMore,'accessLogHasMore'),perms};
+}
 
 export const connectedStudentsRepo=withStaffAccess({
+  async list(_ctx:Ctx,schoolId:ID,q:ListQuery){
+    const summary=(await http('getStudentDirectorySummary',{params:{schoolId},query:{yearId:q.filters?.yearId}})).data;
+    const statuses:Record<string,string>={studying:'ACTIVE',left:'LEFT',graduated:'GRADUATED',archived:'ARCHIVED'},status=q.filters?.status,guardian=q.filters?.guardian;
+    if(status&&!statuses[status]||guardian&&guardian!=='unverified')throw new RepoError('VALIDATION','Bộ lọc học sinh không hợp lệ.');
+    const sorts:Record<string,string>={name:'fullName',code:'studentCode',class:'className',fullName:'fullName',studentCode:'studentCode',className:'className'};
+    if(q.sort&&!sorts[q.sort])throw new RepoError('VALIDATION','Cách sắp xếp học sinh không hợp lệ.');
+    const options={params:{schoolId},query:{yearId:summary.year?.id,classId:q.filters?.classId,status:status?statuses[status]:undefined,guardian,q:q.q,sort:q.sort?sorts[q.sort]:'fullName',dir:q.dir??'asc'}};
+    const page=await apiPage('listStudentDirectory',options,q,row=>directoryRow(row,schoolId));
+    if(page.items.some(row=>row.yearId!==summary.year?.id))throw new RepoError('READ_ERROR','Năm học đã thay đổi. Hãy tải lại danh sách.');
+    if(!page.allIds.length&&page.total>0&&page.total<=10000){const ids=await apiList('listStudentDirectoryIds',options,10000);if(ids.length!==page.total)throw new RepoError('READ_ERROR','Danh sách chọn đã thay đổi. Hãy tải lại.');page.allIds=ids.map(row=>requiredId(row.id));}
+    return {...page,kpi:requiredValue(summary.kpi,'kpi'),year:requiredValue(summary.year,'year'),referenceDate:requiredValue(summary.referenceDate,'referenceDate'),today:summary.today,
+      yearOptions:summary.years,classOptions:summary.classes,canSeeGuardians:summary.canSeeGuardians,canSeeLinks:summary.canSeeLinks,canCreate:summary.canCreate,canTransfer:summary.canTransfer,canExport:summary.canExport,canSelectAll:page.total<=10000};
+  },
+  async profile(_ctx:Ctx,schoolId:ID,studentId:ID,classId?:ID,yearId?:ID){
+    const view=(await http('getStudentDetails',{params:{schoolId,studentId},query:{classId,yearId}})).data;
+    if(view.student.id!==studentId)throw new RepoError('READ_ERROR','Máy chủ trả sai hồ sơ học sinh.');return profileView(view,schoolId);
+  },
   async create(_ctx:Ctx,schoolId:ID,input:StudentCreateInput){
     const result=await formResult(http('createStudent',{params:{schoolId},body:{...(input.code?.trim()?{studentCode:input.code.trim().toUpperCase()}:{}),fullName:input.fullName.trim(),dateOfBirth:dateDays(input.dob,0),gender:reviewedGender(input.gender),initialClassId:requiredId(input.classId),startsOn:dateDays(input.startDate,0),
       ...(input.guardian?{initialGuardian:{fullName:input.guardian.fullName.trim(),relationshipLabel:input.guardian.relation,phone:input.guardian.phone.trim()}}:{})}}),fields);

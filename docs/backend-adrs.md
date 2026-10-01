@@ -1120,3 +1120,79 @@ integration, zero skipped, 24/24 backend contract/unit and 131/131 frontend API 
 TypeScript/scoped lint exit0. Runtime is 290 operations/362 schemas with 88
 unactivated candidates. Failed contract/integration attempts and required remaining
 acceptance are preserved in the implementation report.
+
+## ADR-051 — SQL student directory and explicit historical profile
+
+The existing student list/profile needs names, class/year labels, family/link
+counters, enrollment history, groups and positions. The generic student endpoint
+only checked enrollments at today's date, so an archived year could appear empty.
+Four explicit operations supply the school directory, its filtered identifier
+projection and summary, and a purpose-bound student profile. The supplied handoff
+remains unchanged; the generated native contract and client describe these fields.
+
+The school directory requires a current SCHOOL student.read grant. Class/subject
+rights do not grant the school directory. PostgreSQL selects each pupil's latest
+non-cancelled enrollment beginning on/before the chosen year's display reference,
+then filters/counts/sorts and signs keysets. A year defaults to the actual ACTIVE
+year, or null when unconfigured. Its display reference is today's school-local
+date clamped inside [startsOn, endsOn); an archived year's last included day is
+endsOn minus one day. This date never replaces the current authorization date.
+An ended enrollment remains explicitly marked out of effect; future enrollments
+are not invented as current classes. Given/full Vietnamese name and class/name
+composite keys preserve source components. Folded searches escape literal %/_;
+guardian filters require independent guardian.read before SQL counts/selection.
+
+Directory family counters require SCHOOL guardian.read; link counts independently
+require SCHOOL parent_access.manage or parent_access.issue. Denied counts are null,
+with explicit capability flags, rather than zero. Verified counts require an
+active guardian and a live VERIFIED/can-receive-info relationship. Active-link
+counts use actual expiry/revocation and relationship eligibility. Summary year and
+class labels are minimal picker metadata for this purpose, not year/class mutation
+or pupil/family rights. Choices have explicit bounds and fail on overflow.
+
+Profiles authorize from current grants and membership, including assignment and
+grant expiry. Scoped readers see only enrollment history in their authorized
+classes; future class enrollment alone cannot admit a subject reader. SUBJECT
+profiles keep the minimal pupil fields and no groups/positions. A CLASS grant on
+one historical class does not upgrade a chosen SUBJECT class's projection. School
+student.read retains the basic birth-date field already supplied by the school
+directory and the existing school profile. A class reader needs independent
+guardian.read at a current enrollment to see the birth date. Family contacts and
+internal notes always require independent guardian.read; link metadata requires
+the relevant parent-access grant. Merely opening a former class does not preserve
+access to today's family after the enrollment ends. Unknown birth/gender/note
+values remain source null and are distinguished from denied panels by flags.
+
+History returns real enrollment versions, date bounds, class/year labels and
+teacher assignment labels at an explicit included reference. Selected groups and
+positions come from uncancelled, dated enrollment assignments. No guessed dates,
+teacher names, replacement source versions or fallback current class are added.
+History/relationship/link/position overflows fail explicitly. The profile returns
+the newest 100 actual parent events with accessLogHasMore; it does not claim this
+is the complete event archive. Opens/last-opened derive from EXCHANGED and READ,
+excluding STAFF_PREVIEW. Logs exclude IP hashes, session data and request IDs.
+
+Existing links return metadata, actual expiry/revocation, guardian relation, issuer
+and source version. No token, token hash or reusable link is reconstructed. The
+old UI's reveal/QR action must be adapted to one-time issuance/reissue results
+before activation. Parents continue using private links without user accounts.
+
+The candidate list adapter delegates every filter/sort to SQL and obtains only
+filtered UUIDs for cross-page selection (bounded to 10,000); it does not download
+the tenant and filter in the browser. Profile adapters retain denied arrays as
+null, the ended selected enrollment, native status and actual unknown values.
+They keep current staff ownership and propagate read failures. All candidates
+remain unactivated; root provider/facade/UI, browser/reload/multi-tab/visual QA and
+the rest of B6/B7 remain required. Actual test evidence is recorded separately.
+
+Class-only profile requests use that actual class's year when yearId is omitted.
+The profile core has a dedicated schema excluding creation-only contact payloads
+and internal notes. Group/position definitions expose their own versions separately
+from assignmentVersion. Native enrollment endsOn stays exclusive; the legacy
+display endDate is its last included day.
+
+Actual ADR-051 checks: 36 migrations/checksum replay verified; 138/138 PostgreSQL
+integration, zero skipped; 25/25 backend contract/unit; 136/136 frontend API unit,
+18 files; backend/frontend TypeScript and scoped lint exit0. Runtime: 294 operations,
+380 schemas, 90 unactivated candidates. Failed attempts and outstanding browser,
+frontend activation and B7 acceptance are retained in the implementation report.

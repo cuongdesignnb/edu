@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,290);assert.equal(new Set(operations.map(op=>op.id)).size,290);
+  assert.equal(operations.length,294);assert.equal(new Set(operations.map(op=>op.id)).size,294);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -92,4 +92,15 @@ test('student forms persist nullable gender and an atomic unverified guardian wi
   validateSchema('StudentPatch',{expectedVersion:3,gender:null,internalNote:null});
   for(const bad of [{...value,gender:'UNKNOWN'},{...value,actorId:id},{...value,schoolId:id},{...value,initialGuardian:{...value.initialGuardian,status:'VERIFIED',canReceiveInfo:true}}])assert.throws(()=>validateSchema('StudentCreate',bad),error=>error.status===422);
   const student={id,version:1,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),studentCode:'HS26001',fullName:'Học sinh cũ giả',dateOfBirth:null,gender:null,status:'ACTIVE'};validateSchema('Student',student,true);validateSchema('StudentDetail',{student,enrollments:[],internalNote:null},true);
+});
+
+test('student read models distinguish denied and unknown values and exclude reusable parent tokens',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',time=new Date().toISOString(),student={id,version:1,createdAt:time,updatedAt:time,studentCode:'SOURCE',fullName:'Tên nguồn giả',dateOfBirth:null,gender:null,status:'LEFT'};
+  const row={...student,enrollmentId:id,enrollmentVersion:2,classId:id,className:'Lớp nguồn giả',yearId:id,yearName:'Năm nguồn giả',enrollmentInEffect:false,guardianCount:null,verifiedGuardians:null,activeLinks:null};validateSchema('StudentDirectoryRow',row,true);
+  const value={student:{...student,preferredName:null},level:'SUBJECT_MINIMAL',today:'2026-10-01',year:null,referenceDate:null,selectedEnrollment:null,history:[],group:null,positions:null,relationships:null,links:null,accessLog:null,accessLogHasMore:null,internalNote:null,perms:Object.fromEntries(['edit','transfer','seeGuardians','editGuardians','verifyGuardians','manageLinks','issueLinks','revokeLinks','seeInternalNote','seeBirthDate'].map(key=>[key,false]))};validateSchema('StudentDetails',value,true);
+  for(const key of ['internalNote','initialGuardian','initialRelationship'])assert.throws(()=>validateSchema('StudentDetails',{...value,student:{...value.student,[key]:{}}},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  for(const bad of [{...row,internalNote:'private'},{...row,guardianPhone:'private'}])assert.throws(()=>validateSchema('StudentDirectoryRow',bad,true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  const link={id,version:1,createdAt:time,updatedAt:time,studentId:id,yearId:id,relationshipId:id,allowedSections:['overview'],allowDownload:false,expiresAt:time,revokedAt:null,revokeReason:null,issuedBy:id,issuedByName:null,guardianName:'Tên giả',relationshipLabel:'Mẹ',yearName:'Năm giả',status:'ACTIVE',opens:0,lastOpenedAt:null};validateSchema('StudentAccessLink',link,true);
+  for(const key of ['token','tokenHash','link'])assert.throws(()=>validateSchema('StudentAccessLink',{...link,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  for(const op of ['listStudentDirectory','listStudentDirectoryIds','getStudentDirectorySummary','getStudentDetails'])assert.equal(operations.find(o=>o.id===op).permission,'student.read');
 });
