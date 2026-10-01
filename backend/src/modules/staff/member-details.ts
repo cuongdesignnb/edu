@@ -6,7 +6,7 @@ import {Problem,validation} from '../../common/problem';
 import type {RequestContext} from '../../api.router';
 
 /** A purpose-bound choice does not expose a role's permission catalog. */
-async function schoolRoleChoices(tx:Transaction,schoolId:string,grants:Grant[]){
+export async function schoolRoleChoices(tx:Transaction,schoolId:string,grants:Grant[]){
   const rows=(await tx.query<Row>(`SELECT r.id,r.version,r.label,r.code,r.system_role,
     ARRAY(SELECT p.action_code FROM app.role_permissions p WHERE p.school_id=r.school_id AND p.role_id=r.id AND 'SCHOOL'=ANY(p.allowed_scopes) ORDER BY p.action_code) AS actions
     FROM app.roles r WHERE r.school_id=$1 AND r.status='ACTIVE' AND EXISTS(SELECT 1 FROM app.role_permissions p WHERE p.school_id=r.school_id AND p.role_id=r.id AND 'SCHOOL'=ANY(p.allowed_scopes))
@@ -73,5 +73,13 @@ export async function memberHistory(tx:Transaction,c:RequestContext){
   const result=await listResource(tx,auditResource,schoolId,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},
     {sql:`(t.target_type='member' AND t.target_id=$1::uuid OR t.target_type='assignment' AND EXISTS(SELECT 1 FROM app.teaching_assignments a WHERE a.school_id=t.school_id AND a.member_id=$1 AND a.id=t.target_id)
       OR t.target_type='grant' AND EXISTS(SELECT 1 FROM app.role_grants g WHERE g.school_id=t.school_id AND g.member_id=$1 AND g.id=t.target_id))`,values:[memberId]},c.principal!.userId);
+  result.data=result.data.map(auditView);return result;
+}
+
+export async function staffActivity(tx:Transaction,c:RequestContext){
+  for(const field of Object.keys(c.query))if(!['limit','cursor','sort','dir','action'].includes(field))validation(field,'Bộ lọc nhật ký nhân sự không hợp lệ');
+  if(c.query.sort&&!['id','createdAt'].includes(c.query.sort))validation('sort','Sắp xếp nhật ký nhân sự không hợp lệ');
+  const result=await listResource(tx,auditResource,c.params.schoolId!,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},
+    {sql:"t.target_type IN ('member','assignment','grant','role','invitation','handover')",values:[]},c.principal!.userId);
   result.data=result.data.map(auditView);return result;
 }

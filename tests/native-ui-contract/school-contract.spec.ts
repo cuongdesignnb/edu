@@ -53,7 +53,7 @@ test.describe('Native school browser contract — intercepted API, separate from
     await page.goto(web);await expect(page.getByText('Chưa có năm học',{exact:true})).toBeVisible();
     await page.getByRole('link',{name:'Tạo năm học',exact:true}).click();await expect(page.getByRole('heading',{name:'Tạo năm học',exact:true})).toBeVisible();
     expect(forbiddenReads).toEqual([]);expect(await page.evaluate(()=>Object.keys(localStorage))).toEqual([]);
-    await page.screenshot({path:'qa/backend/b6-native-school-bootstrap-desktop.png',fullPage:true});
+    await page.screenshot({path:`qa/backend/${process.env.EDU_NATIVE_QA_PREFIX??'b6-native-school'}-school-bootstrap-desktop.png`,fullPage:true});
   });
 
   test('keeps a reviewed school profile through background refresh and reloads explicitly after conflict',async({page})=>{
@@ -111,6 +111,6 @@ test.describe('Native school browser contract — intercepted API, separate from
     });
     await page.goto(`${web}/academic-years/${yearId}`);await expect(page.getByText('Không có quyền xem lớp của năm học',{exact:true})).toBeVisible();
     expect(requests.some(path=>path.includes('/classes')||path.includes('/dictionaries')||path.includes('/members'))).toBe(false);
-    await page.screenshot({path:'qa/backend/b6-native-school-year-only-desktop.png',fullPage:true});
+    await page.screenshot({path:`qa/backend/${process.env.EDU_NATIVE_QA_PREFIX??'b6-native-school'}-school-year-only-desktop.png`,fullPage:true});
   });
 });

@@ -37,7 +37,7 @@ describe('native staff command adapters',()=>{
     await expect(connectedStaffRepo.invite(previous,schoolId,{fullName:'Người mới',email:'new@example.invalid',roleTemplateIds:[],days:2,proposedDuty:''})).rejects.toMatchObject({code:'NO_SESSION'});expect(fetcher).not.toHaveBeenCalled();
   });
   it('retains zero/multiple invitation roles, the agreed lifetime and optional delegation expiry without synthetic grants',async()=>{
-    const fetcher=vi.fn().mockResolvedValueOnce(envelope({...invitation,roleIds:[]})).mockResolvedValueOnce(envelope(invitation));vi.stubGlobal('fetch',fetcher);
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope({...invitation,roleIds:[]})).mockResolvedValueOnce(envelope({...invitation,workDisplayName:'Nhân sự',proposedDuty:'Giáo viên',roleIds:[roleId,memberId]}));vi.stubGlobal('fetch',fetcher);
     const empty=await connectedStaffRepo.invite(ctx,schoolId,{fullName:' Nhân sự mời API ',email:' teacher@example.invalid ',proposedDuty:' Chưa phân công ',roleTemplateIds:[],days:30});expect(empty.roleTemplateIds).toEqual([]);
     expect(JSON.parse(fetcher.mock.calls[0][1].body)).toEqual({workDisplayName:'Nhân sự mời API',email:'teacher@example.invalid',proposedDuty:'Chưa phân công',roleIds:[],expiresInDays:30});
     const roles=[roleId,memberId],until='2026-10-01T00:00:00Z';await connectedStaffRepo.invite(ctx,schoolId,{fullName:'Nhân sự',email:'teacher@example.invalid',proposedDuty:'Giáo viên',roleTemplateIds:roles,days:7,validUntil:until});expect(JSON.parse(fetcher.mock.calls[1][1].body)).toMatchObject({roleIds:roles,expiresInDays:7,validUntil:until});
@@ -48,7 +48,7 @@ describe('native staff command adapters',()=>{
     await expect(connectedStaffRepo.invite(ctx,schoolId,{fullName:'Nhân sự',email:'teacher@example.invalid',proposedDuty:'',roleTemplateIds:[roleId],days:7})).rejects.toMatchObject({code:'VALIDATION',fieldErrors:{roleTemplateIds:'Vượt quyền',days:'Sai hạn',fullName:'Thiếu tên'}});
   });
   it('lists only real invitation pages with actual inviter labels and validates the revoke ACK',async()=>{
-    const fetcher=vi.fn().mockResolvedValueOnce(envelope([{...invitation,inviterName:'Người mời thực'}],{limit:100,total:1,hasMore:false,nextCursor:null})).mockResolvedValueOnce(envelope({...invitation,status:'REVOKED'}));vi.stubGlobal('fetch',fetcher);
+    const fetcher=vi.fn().mockResolvedValueOnce(envelope([{...invitation,inviterName:'Người mời thực'}],{limit:100,total:1,hasMore:false,nextCursor:null})).mockResolvedValueOnce(envelope({...invitation,status:'REVOKED',version:4}));vi.stubGlobal('fetch',fetcher);
     expect((await connectedStaffRepo.invitations(ctx,schoolId))[0]).toMatchObject({inviterName:'Người mời thực',fullName:'Nhân sự mời API',version:3});const revoked=await connectedStaffRepo.revokeInvitation(ctx,schoolId,memberId,3,'Thu hồi đúng phiên bản');expect(revoked.status).toBe('revoked');expect(JSON.parse(fetcher.mock.calls[1][1].body)).toEqual({expectedVersion:3,reason:'Thu hồi đúng phiên bản'});
   });
   it('rejects lifecycle metadata missing from the server rather than fabricating empty grants or join dates',async()=>{

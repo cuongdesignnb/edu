@@ -5,7 +5,7 @@ import type {Ctx} from '@/lib/repositories/core';
 
 const ctx={today:'1900-01-01'} as Ctx,schoolId='00000000-0000-4000-8000-000000000001',memberId='00000000-0000-4000-8000-000000000002',classId='00000000-0000-4000-8000-000000000003';
 const input={membershipId:memberId,classId,kind:'homeroom' as const,validFrom:'2026-10-01',validTo:'2026-12-31',memberVersion:8,classVersion:4};
-const row={id:classId,version:2,createdAt:'2026-10-01T00:00:00Z',updatedAt:'2026-10-01T00:00:00Z',memberId,classId,roleGrantId:memberId,kind:'HOMEROOM',startsOn:'2026-10-01',endsOn:'2027-01-01',revokedAt:null};
+const row={id:classId,version:2,createdAt:'2026-10-01T00:00:00Z',updatedAt:'2026-10-01T00:00:00Z',memberId,classId,roleGrantId:memberId,kind:'HOMEROOM',subjectId:null,startsOn:'2026-10-01',endsOn:'2027-01-01',revokedAt:null};
 const preview={memberId,memberVersion:8,classId,classVersion:4,kind:'HOMEROOM',subjectId:null,scopeName:'Lớp thật',referenceDate:'2026-10-01',startsOn:'2026-10-01',endsOn:'2027-01-01',grantStartsAt:'2026-09-30T15:00:00Z',grantEndsAt:'2026-12-31T15:00:00Z',added:['conduct.adjust.request','native.future.action'],kept:['student.read'],notIncluded:[],warnings:['Cảnh báo thật']};
 const envelope=(data:unknown)=>new Response(JSON.stringify({data,requestId:'assignment-adapter'}));
 beforeEach(()=>{authenticationChanged();setStaffCsrf('staff-csrf');});

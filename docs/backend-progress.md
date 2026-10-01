@@ -303,6 +303,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getGuardianDetails | SC22 | TESTED | qa/backend/b6-guardian-read-model-integration.log: 145/145 PostgreSQL, live family/class scope, shared contact writes, independent panels and replay reauthorization; unit/contract and frontend candidate evidence are separate. |
 | getStudentGuardianForm | SC20, SC22 | TESTED | ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN. |
 | saveStudentGuardian | SC20, SC22 | TESTED | ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN. |
+| getStaffInvitationOptions | SC10 | TESTED | qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim. |
+| listStaffActivity | SC10, SC15 | TESTED | qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -336,12 +338,12 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC07 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
 | SC08 | core | TESTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
 | SC09 | core | IMPLEMENTED | IMPLEMENTED |  | Native school facade and displayed-version forms; scoped/null DTO panels, no-year bootstrap and school-clock source are implemented. Intercepted browser contract checks are separate from pending PostgreSQL E2E; linked staff/file/search workflows remain pending. |
-| SC10 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC11 | core | IMPLEMENTED | NOT_STARTED |  |  |
-| SC12 | core | TESTED | NOT_STARTED |  |  |
-| SC13 | core | TESTED | NOT_STARTED |  |  |
-| SC14 | core | TESTED | NOT_STARTED |  |  |
-| SC15 | core | TESTED | NOT_STARTED |  |  |
+| SC10 | core | IMPLEMENTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
+| SC11 | core | IMPLEMENTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
+| SC12 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
+| SC13 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
+| SC14 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
+| SC15 | core | TESTED | IMPLEMENTED |  | B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E. |
 | SC16 | core | IMPLEMENTED | NOT_STARTED |  |  |
 | SC17 | core | IMPLEMENTED | NOT_STARTED |  |  |
 | SC18 | core | IMPLEMENTED | NOT_STARTED |  |  |

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,299);assert.equal(new Set(operations.map(op=>op.id)).size,299);
+  assert.equal(operations.length,301);assert.equal(new Set(operations.map(op=>op.id)).size,301);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -56,6 +56,13 @@ test('member profile separates denied panels and exact native authority without 
   assert.equal(operations.find(op=>op.id==='listMemberHistory').permission,'member.read+audit.read');
   const choice={id,version:1,label:'Vai trò',code:'REAL',systemRole:false,canDelegate:false,delegationUntil:null};validateSchema('MemberRoleChoice',choice,true);
   assert.throws(()=>validateSchema('MemberRoleChoice',{...choice,permissions:[]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+});
+test('invitation choices use invitation authority and never lend role metadata or contacts',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={roles:[{id,version:1,label:'Vai trò',code:'ACTUAL',systemRole:false,canDelegate:false,delegationUntil:null}]};
+  validateSchema('StaffInvitationOptions',value,true);
+  for(const field of ['permissions','actions','memberCount','email'])assert.throws(()=>validateSchema('StaffInvitationOptions',{roles:[{...value.roles[0],[field]:[]}]},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  assert.equal(operations.find(op=>op.id==='getStaffInvitationOptions').permission,'member.manage');
+  assert.equal(operations.find(op=>op.id==='listStaffActivity').permission,'audit.read');
 });
 test('atomic guardian save requires displayed student and primary versions without verification or actor fields',()=>{
   const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={expectedStudentVersion:2,expectedPrimaryContacts:[{id,version:3}],fullName:'Giám hộ giả',relationshipLabel:'Mẹ',email:null,isPrimary:true,phone:'0912222222'};

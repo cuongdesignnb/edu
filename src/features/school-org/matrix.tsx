@@ -27,7 +27,7 @@ export function AssignmentMatrix() {
   const [revoke, setRevoke] = useState<{ cell: CellData; label: string } | null>(null);
   const [search, setSearch] = useState("");
   const [onlyConflicts, setOnlyConflicts] = useState(false);
-  const cmd = useCommand((c, id: string, reason: string) => staffRepo.revokeAssignment(c, school.id, id, reason), { success: "Đã thu hồi phân công" });
+  const cmd = useCommand((c, cell: CellData, reason: string) => staffRepo.revokeAssignment(c, school.id, cell.assignmentId, reason, cell.version), { success: "Đã thu hồi phân công" });
   return (
     <div className="page">
       <PageHeader title="Ma trận phân công" subtitle="Ai phụ trách lớp nào, môn nào, trong thời gian nào" breadcrumbs={[{ label: "Nhà trường", href: `/school/${school.id}` }, { label: "Ma trận phân công" }]}>
@@ -35,26 +35,28 @@ export function AssignmentMatrix() {
       </PageHeader>
       <QueryState query={q} skeleton="table">
         {(d) => {
+          if (!d.year) return <Card><EmptyState title="Chưa có năm học" description="Tạo năm học trước khi xem ma trận phân công." /></Card>;
+          const selectedYear = d.year;
           const archived = d.year.status === "archived";
           const canAssign = d.canAssign && !archived;
           const rows = d.rows.filter((r) => matches(search, r.className, r.homeroom?.name, ...Object.values(r.bySubject).map((x) => x?.name)) && (!onlyConflicts || r.conflicts.length));
           const conflictCount = d.rows.filter((r) => r.conflicts.length).length;
           const cellMenu = (cell: CellData, label: string, classId: string, kind: "homeroom" | "subject"): MenuItem[] => [
-            { label: "Xem hồ sơ & phân công", icon: <UserRound />, href: `/school/${school.id}/teachers/${cell.membershipId}` },
+            ...(d.canViewMembers ? [{ label: "Xem hồ sơ & phân công", icon: <UserRound />, href: `/school/${school.id}/teachers/${cell.membershipId}` }] : []),
             ...(canAssign && kind === "homeroom" ? [{ label: "Bàn giao chủ nhiệm", icon: <RefreshCw />, href: `/school/${school.id}/handovers?class=${classId}` }] : []),
             ...(canAssign ? [{ label: "Thu hồi phân công", icon: <Ban />, danger: true, separatorBefore: true, onSelect: () => setRevoke({ cell, label }) }] : []),
           ];
           const renderCell = (cell: CellData | null, label: string, classId: string, kind: "homeroom" | "subject", subjectId?: string) => cell ? (
             <div className="flex items-start justify-between gap-1">
               <div className="min-w-0">
-                <p className={clsx("truncate text-[13px] font-semibold", cell.memberStatus === "active" ? "text-ink" : "text-warning-text")}>{cell.name}</p>
+                <p className={clsx("truncate text-[13px] font-semibold", cell.accessActive ? "text-ink" : "text-warning-text")}>{cell.name}</p>
                 <p className="text-[11.5px] text-muted">từ {fmtDate(cell.validFrom)}{cell.validTo ? ` đến ${fmtDate(cell.validTo)}` : ""}</p>
-                {cell.memberStatus !== "active" && <p className="text-[11.5px] font-medium text-warning-text">Thành viên bị khóa</p>}
+                {!cell.accessActive && <p className="text-[11.5px] font-medium text-warning-text">{cell.memberStatus === "suspended" ? "Thành viên tạm khóa" : cell.memberStatus === "revoked" ? "Thành viên đã thu hồi" : !cell.identityActive ? "Tài khoản không hoạt động" : !cell.roleActive ? "Mẫu quyền không hoạt động" : "Quyền hiện tại không hiệu lực"}</p>}
               </div>
               <ActionMenu label={`Thao tác ${label}`} items={cellMenu(cell, label, classId, kind)} />
             </div>
           ) : canAssign ? (
-            <button type="button" onClick={() => setAssign({ kind, classId, subjectId, yearId: d.year.id })} className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong py-2 text-[12.5px] font-semibold text-primary-strong hover:bg-primary-light" aria-label={`Phân công ${label}`}>
+            <button type="button" onClick={() => setAssign({ kind, classId, subjectId, yearId: selectedYear.id })} className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong py-2 text-[12.5px] font-semibold text-primary-strong hover:bg-primary-light" aria-label={`Phân công ${label}`}>
               <Plus className="size-3.5" aria-hidden />Phân công
             </button>
           ) : <span className="text-[12.5px] text-muted">Chưa phân công</span>;
@@ -123,7 +125,7 @@ export function AssignmentMatrix() {
       <ConfirmDialog open={!!revoke} onOpenChange={(o) => { if (!o) setRevoke(null); }} busy={cmd.pending} title="Thu hồi phân công" variant="danger" confirmLabel="Thu hồi"
         object={revoke ? `${revoke.cell.name} — ${revoke.label}` : undefined} reasonLabel="Lý do thu hồi" reasonRequired
         consequence="Quyền theo phân công này dừng ở lần đọc/ghi kế tiếp. Dữ liệu đã ghi và tác giả lịch sử được giữ nguyên."
-        onConfirm={async (reason) => { if (!revoke) return; const r = await cmd.run(revoke.cell.assignmentId, reason); if (r) setRevoke(null); }} />
+        onConfirm={async (reason) => { if (!revoke) return; const r = await cmd.run(revoke.cell, reason); if (r) setRevoke(null); }} />
     </div>
   );
 }

@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 97,
-  "activatedCandidateCount": 64,
-  "activatedLegacyMethodCount": 61,
+  "candidateCount": 100,
+  "activatedCandidateCount": 84,
+  "activatedLegacyMethodCount": 77,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -2993,13 +2993,13 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "teachers",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3015,13 +3015,13 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "invitations",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3038,13 +3038,13 @@
         "membershipId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "member",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3061,13 +3061,13 @@
         "input: { fullName: string; email: string; proposedDuty: string; roleTemplateIds: ID[]; days: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "invite",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3084,13 +3084,13 @@
         "inviteId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "revokeInvitation",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3109,13 +3109,13 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "setMembershipStatus",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3134,13 +3134,13 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "setMemberRoles",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3157,13 +3157,13 @@
         "yearId?: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "assignmentMatrix",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3180,13 +3180,13 @@
         "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "previewAssignment",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3203,13 +3203,13 @@
         "input: { membershipId: ID; kind: \"homeroom\" | \"subject\"; classId: ID; subjectId?: ID; validFrom: string; validTo?: string; reason?: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "assign",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3227,13 +3227,13 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "revokeAssignment",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3250,13 +3250,13 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "handoverPreview",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3273,13 +3273,13 @@
         "input: { classId: ID; toMembershipId: ID; effectiveDate: string; note: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "handover",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3295,13 +3295,13 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "roles",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3318,13 +3318,13 @@
         "roleId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "role",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -3344,13 +3344,13 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "staffRepo",
         "method": "saveRole",
         "file": "src/lib/repositories/connected/staff.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
           "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
@@ -4021,10 +4021,40 @@
     },
     {
       "repository": "staffRepo",
+      "method": "invitationOptions",
+      "file": "src/lib/repositories/connected/staff.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "staffRepo",
+      "method": "assignmentClasses",
+      "file": "src/lib/repositories/connected/staff.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "staffRepo",
+      "method": "staffActivity",
+      "file": "src/lib/repositories/connected/staff.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "staffRepo",
       "method": "handoverReceipt",
       "file": "src/lib/repositories/connected/staff.ts",
       "status": "IMPLEMENTED",
-      "activated": false,
+      "activated": true,
       "evidence": [
         "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]

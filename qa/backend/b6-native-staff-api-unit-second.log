@@ -1,0 +1,112 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-client.test.ts (11 tests) 41ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 45ms
+ ✓ tests/unit/api-query-boundary.test.ts (5 tests) 31ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 42ms
+ ✓ tests/unit/api-auth-adapter.test.ts (7 tests) 37ms
+ ✓ tests/unit/api-school-adapter.test.ts (22 tests) 51ms
+ ✓ tests/unit/api-students-adapter.test.ts (11 tests) 48ms
+ ✓ tests/unit/api-platform-adapter.test.ts (13 tests) 47ms
+ ❯ tests/unit/api-member-details.test.ts (5 tests | 1 failed) 30ms
+   ✓ native member details adapter > preserves unavailable panels, actual count, nullable contacts and every native action without inferring authority 9ms
+   × native member details adapter > keeps server assignment activity/dates and minimal role choices while traversing actual audit pages 14ms
+     → expected { …(10) } to match object { actorId: null, …(3) }
+(6 matching properties omitted from actual)
+   ✓ native member details adapter > does not replace a newly denied audit read with an empty history 3ms
+   ✓ native member details adapter > does not begin a history read after retained render ownership or profile response ownership changes 2ms
+   ✓ native member details adapter > surfaces missing profile data and oversized history instead of inventing nulls or truncating records 2ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 36ms
+ ✓ tests/unit/api-handover-adapter.test.ts (8 tests) 45ms
+ ❯ tests/unit/api-assignment-adapter.test.ts (8 tests | 1 failed) 50ms
+   × native assignment adapters > previews chosen dates and native action codes with CSRF but no mutation retry key or acknowledgement 22ms
+     → expected { …(7) } to deeply equal { …(8) }
+   ✓ native assignment adapters > saves both reviewed source versions, sends an exclusive end and keeps returned grant/version metadata 20ms
+   ✓ native assignment adapters > requires reviewed versions and valid subjects before sending a save request 1ms
+   ✓ native assignment adapters > revokes with the displayed assignment version without truncating historical dates to the browser clock 1ms
+   ✓ native assignment adapters > maps field errors and classifies failed read-only previews as read errors without fake permission results 2ms
+   ✓ native assignment adapters > preserves an unconfigured matrix and unavailable profile links instead of fabricating an academic year 1ms
+   ✓ native assignment adapters > maps real matrix dates, versions, colors, nullable cells and server access flags without inferring activity 1ms
+   ✓ native assignment adapters > rejects obsolete render ownership before preview, save, revoke or matrix requests 1ms
+ ❯ tests/unit/api-staff-adapter.test.ts (9 tests | 1 failed) 51ms
+   ✓ native staff command adapters > sends one atomic role replacement with the displayed version, keeping returned grant IDs and expiry 28ms
+   ✓ native staff command adapters > requires versions before any lifecycle or role request and does not fetch a fresh version to overwrite 2ms
+   ✓ native staff command adapters > maps permanent ending to the native end command and keeps the acknowledged reason/time 2ms
+   ✓ native staff command adapters > does not submit a stale form through the new identity or permission scope 1ms
+   × native staff command adapters > retains zero/multiple invitation roles, the agreed lifetime and optional delegation expiry without synthetic grants 11ms
+     → Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+   ✓ native staff command adapters > keeps native validation/conflicts and translates the existing invitation form field names 3ms
+   ✓ native staff command adapters > lists only real invitation pages with actual inviter labels and validates the revoke ACK 1ms
+   ✓ native staff command adapters > rejects lifecycle metadata missing from the server rather than fabricating empty grants or join dates 1ms
+   ✓ native staff command adapters > explains actual policy failures while retaining native problem metadata instead of claiming a version conflict 1ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (17 tests) 56ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 33ms
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 40ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 22ms
+ ✓ tests/unit/api-parent-credential.test.ts (3 tests) 8ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 36ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 8ms
+ ✓ tests/unit/api-school-read-capability.test.ts (1 test) 3ms
+ ✓ tests/unit/api-context.test.ts (1 test) 6ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 2186ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  2173ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-assignment-adapter.test.ts > native assignment adapters > previews chosen dates and native action codes with CSRF but no mutation retry key or acknowledgement
+AssertionError: expected { …(7) } to deeply equal { …(8) }
+
+- Expected
++ Received
+
+@@ -4,7 +4,6 @@
+    "expectedClassVersion": 4,
+    "expectedMemberVersion": 8,
+    "kind": "HOMEROOM",
+    "memberId": "00000000-0000-4000-8000-000000000002",
+    "startsOn": "2026-10-01",
+-   "subjectId": null,
+  }
+
+ ❯ tests/unit/api-assignment-adapter.test.ts:19:37
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/api-member-details.test.ts > native member details adapter > keeps server assignment activity/dates and minimal role choices while traversing actual audit pages
+AssertionError: expected { …(10) } to match object { actorId: null, …(3) }
+(6 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "action": "revokeAssignment",
++   "action": "Thu hồi phân công",
+    "actorId": null,
+    "actorName": "Tác giả thật",
+    "reason": "Lý do thật",
+  }
+
+ ❯ tests/unit/api-member-details.test.ts:26:330
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/api-staff-adapter.test.ts > native staff command adapters > retains zero/multiple invitation roles, the agreed lifetime and optional delegation expiry without synthetic grants
+RepoError: Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+ ❯ http src/lib/api/client.ts:128:69
+
+ ❯ formResult src/lib/repositories/connected/common.ts:19:14
+ ❯ Object.invite src/lib/repositories/connected/staff.ts:138:15
+ ❯ Object.invite src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-staff-adapter.test.ts:43:64
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 20 passed (23)
+      Tests  3 failed | 171 passed (174)
+   Start at  10:38:03
+   Duration  3.31s (transform 1.84s, setup 1.19s, collect 6.02s, tests 2.95s, environment 6ms, prepare 3.09s)

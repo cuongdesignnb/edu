@@ -3554,6 +3554,29 @@
       "evidence": [
         "ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getStaffInvitationOptions",
+      "screenIds": [
+        "SC10"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim."
+      ]
+    },
+    {
+      "operationId": "listStaffActivity",
+      "screenIds": [
+        "SC10",
+        "SC15"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-native-staff-integration-full.log: full PostgreSQL 155/155 exit0, 36 migrations; current invitation/delegation/time/foreign-scope checks and SQL-bounded staff audit checks; no browser E2E claim."
+      ]
     }
   ],
   "screens": [
@@ -4034,11 +4057,15 @@
         "revokeInvitation",
         "inviteSchoolStaff",
         "listStaffDirectory",
-        "getStaffDirectorySummary"
+        "getStaffDirectorySummary",
+        "getStaffInvitationOptions",
+        "listStaffActivity"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4058,8 +4085,10 @@
         "listMemberHistory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "IMPLEMENTED"
     },
     {
@@ -4074,8 +4103,10 @@
         "getStaffAssignmentMatrix"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4086,8 +4117,10 @@
         "createRole"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4103,8 +4136,10 @@
         "getRoleDetails"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4117,11 +4152,14 @@
         "getHandoverPreview",
         "getHandover",
         "getHandoverByRequest",
-        "reviewHandover"
+        "reviewHandover",
+        "listStaffActivity"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "B6 native staff source activated: directory, member details, assignment matrix, scoped role editing, reviewed assignments and durable handover; guarded read panels and semantic ACK validation; controlled API browser tests are separate from pending PostgreSQL E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {

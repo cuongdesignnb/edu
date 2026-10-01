@@ -17,7 +17,10 @@ export async function readHandoverPreview(schoolId:string,classId:string,input:H
   return {...view,current:requiredValue(view.current,'current'),openItems:requiredValue(view.openItems,'openItems'),previewHash:requiredValue(view.previewHash,'previewHash'),toMemberVersion:requiredValue(view.toMemberVersion,'toMemberVersion')};
 }
 export async function readHandoverReceipt(schoolId:string,clientRequestId:string){
-  return (await http('getHandoverByRequest',{params:{schoolId,requestId:clientRequestId}})).data;
+  const row=(await http('getHandoverByRequest',{params:{schoolId,requestId:clientRequestId}})).data;
+  if(row.clientRequestId!==clientRequestId)throw new RepoError('READ_ERROR','Biên nhận không khớp mã yêu cầu.');
+  if(row.status==='APPLIED'&&(!row.appliedAssignment||!row.appliedAt||row.appliedAssignmentId!==row.appliedAssignment.id||row.appliedAssignment.memberId!==row.toMemberId||row.appliedAssignment.classId!==row.classId||row.appliedAssignment.startsOn!==row.effectiveOn||row.appliedAssignment.kind!=='HOMEROOM'))throw new RepoError('READ_ERROR','Biên nhận chưa xác minh được phân công đã áp dụng.');
+  return row;
 }
 function sameIntent(row:Receipt,input:HandoverInput){
   if(!row.id||row.clientRequestId!==input.clientRequestId||row.classId!==input.classId||row.fromAssignmentId!==input.fromAssignmentId||row.toMemberId!==input.toMembershipId||row.effectiveOn!==input.effectiveDate||row.reason.trim()!==input.note.trim())
@@ -39,15 +42,15 @@ export async function applyHandover(schoolId:string,input:HandoverInput){
   try{receipt=sameIntent(await readHandoverReceipt(schoolId,input.clientRequestId),input);}catch(error){access.assertCurrent();if(!isRepoError(error)||error.code!=='NOT_FOUND')throw error;}
   access.assertCurrent();
   if(!receipt){
-    receipt=sameIntent((await formResult(http('createHandover',{params:{schoolId},body:{classId:input.classId,fromAssignmentId:input.fromAssignmentId,toMemberId:input.toMembershipId,effectiveOn:date,reason:note,clientRequestId:input.clientRequestId,previewHash:input.previewHash,...source},idempotencyKey:`${input.clientRequestId}:handover:create`}),fields)).data,input);
+    receipt=sameIntent((await formResult(http('createHandover',{params:{schoolId},body:{classId:input.classId,fromAssignmentId:input.fromAssignmentId,toMemberId:input.toMembershipId,effectiveOn:date,reason:note,clientRequestId:input.clientRequestId,previewHash:input.previewHash,...source},idempotencyKey:`${input.clientRequestId}:handover:create`,validateData:row=>{sameIntent(row,input);return row.status==='SUBMITTED'||row.status==='APPLIED';}}),fields)).data,input);
     access.assertCurrent();
   }
   if(receipt.status==='APPLIED')return applied(receipt,input,schoolId);
   if(receipt.status!=='SUBMITTED')throw new RepoError('CONFLICT','Biên nhận bàn giao không còn ở trạng thái chờ áp dụng.');
   if(receipt.previewHash!==input.previewHash){
-    receipt=sameIntent((await formResult(http('reviewHandover',{params:{schoolId,handoverId:requiredId(receipt.id)},body:{expectedVersion:receipt.version,previewHash:input.previewHash,...source},idempotencyKey:`${input.clientRequestId}:handover:review:${input.previewHash}`}),fields)).data,input);
+    receipt=sameIntent((await formResult(http('reviewHandover',{params:{schoolId,handoverId:requiredId(receipt.id)},body:{expectedVersion:receipt.version,previewHash:input.previewHash,...source},idempotencyKey:`${input.clientRequestId}:handover:review:${input.previewHash}`,validateData:row=>{sameIntent(row,input);return row.status==='SUBMITTED'&&row.previewHash===input.previewHash;}}),fields)).data,input);
     access.assertCurrent();if(receipt.status!=='SUBMITTED'||receipt.previewHash!==input.previewHash)throw new RepoError('NETWORK','Chưa xác minh được nguồn bàn giao vừa xem lại.');
   }
-  receipt=sameIntent((await formResult(http('approveHandover',{params:{schoolId,handoverId:requiredId(receipt.id)},body:{expectedVersion:receipt.version,previewHash:input.previewHash},idempotencyKey:`${input.clientRequestId}:handover:approve:${receipt.version}`}),fields)).data,input);
+  receipt=sameIntent((await formResult(http('approveHandover',{params:{schoolId,handoverId:requiredId(receipt.id)},body:{expectedVersion:receipt.version,previewHash:input.previewHash},idempotencyKey:`${input.clientRequestId}:handover:approve:${receipt.version}`,validateData:row=>{sameIntent(row,input);applied(row,input,schoolId);return true;}}),fields)).data,input);
   access.assertCurrent();return applied(receipt,input,schoolId);
 }

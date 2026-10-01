@@ -279,6 +279,10 @@ staffList.parameters.push({name:'status',in:'query',schema:{type:'string',enum:[
 extendOperation('getMember','getStaffDirectorySummary','/schools/{schoolId}/staff-directory-summary','member.read','StaffDirectorySummary',false,['SC10']);
 // ADR-044: member details keep assignment, role management and audit authority independent.
 spec.components.schemas.MemberRoleChoice=object({id:uuid,version:{type:'integer',minimum:1},label,code:label,systemRole:{type:'boolean'},canDelegate:{type:'boolean'},delegationUntil:{...timestamp,nullable:true}});
+spec.components.schemas.StaffInvitationOptions=object({roles:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/MemberRoleChoice'}}});
+spec.components.schemas.StaffInvitationOptionsResponse=object({data:{$ref:'#/components/schemas/StaffInvitationOptions'},requestId:label});
+extendOperation('getMember','getStaffInvitationOptions','/schools/{schoolId}/staff-invitation-options','member.manage','StaffInvitationOptions',false,['SC10']);
+spec.paths['/schools/{schoolId}/staff-invitation-options'].get.parameters=spec.paths['/schools/{schoolId}/staff-invitation-options'].get.parameters.filter(p=>p.name==='schoolId');
 spec.components.schemas.MemberAssignmentDetails=object({id:uuid,version:{type:'integer',minimum:1},classId:uuid,className:label,yearName:label,memberId:uuid,roleGrantId:uuid,
   kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectId:{...uuid,nullable:true},subjectName:{type:'string',nullable:true},startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date',nullable:true},revokedAt:{...timestamp,nullable:true},
   grantValidFrom:timestamp,grantValidUntil:{...timestamp,nullable:true},grantRevokedAt:{...timestamp,nullable:true},roleLabel:label,roleStatus:{type:'string',enum:['ACTIVE','ARCHIVED']},createdAt:timestamp,createdBy:{...uuid,nullable:true},createdByName:{type:'string',nullable:true},live:{type:'boolean'}});
@@ -288,6 +292,8 @@ spec.components.schemas.MemberDetails=object({member:{$ref:'#/components/schemas
 spec.components.schemas.MemberDetailsResponse=object({data:{$ref:'#/components/schemas/MemberDetails'},requestId:label});
 extendOperation('getMember','getMemberDetails','/schools/{schoolId}/members/{memberId}/details','member.read','MemberDetails',false,['SC11']);
 extendOperation('listSchoolAudit','listMemberHistory','/schools/{schoolId}/members/{memberId}/history','member.read+audit.read','AuditEvent',true,['SC11']);
+extendOperation('listSchoolAudit','listStaffActivity','/schools/{schoolId}/staff-activity','audit.read','AuditEvent',true,['SC10','SC15']);
+spec.paths['/schools/{schoolId}/staff-activity'].get.parameters=spec.paths['/schools/{schoolId}/staff-activity'].get.parameters.filter(p=>p.in==='path'||['limit','cursor','sort','dir','action'].includes(p.name));
 spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters=spec.paths['/schools/{schoolId}/members/{memberId}/history'].get.parameters.filter(p=>p.in==='path'||['limit','cursor','sort','dir'].includes(p.name));
 // ADR-047: role readers keep exact native scopes and independently authorized panels.
 spec.components.schemas.RolePatch.properties.reason={type:'string',minLength:3,maxLength:1000};

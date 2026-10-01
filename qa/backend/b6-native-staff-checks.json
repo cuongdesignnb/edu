@@ -1,0 +1,137 @@
+{
+  "phase": "B6_NATIVE_STAFF_PARTIAL",
+  "baseCommit": "8a6fa9f6c3c7e6310dcb8ebe1fe3a5b4fb644231",
+  "frontendTypecheckExitCode": 0,
+  "frontendBuildExitCode": 0,
+  "frontendScopedLintExitCode": 0,
+  "frontendExistingLintWarnings": 2,
+  "backendTypecheckExitCode": 0,
+  "backendScopedLintExitCode": 0,
+  "frontendApiUnit": {
+    "passed": 182,
+    "total": 182,
+    "files": 24,
+    "exitCode": 0,
+    "durationSeconds": 4.64,
+    "log": "b6-native-staff-api-unit-final.log"
+  },
+  "frontendAllUnit": {
+    "passed": 223,
+    "total": 223,
+    "files": 27,
+    "historicalSyntheticTests": 41,
+    "exitCode": 0,
+    "durationSeconds": 10.05,
+    "log": "b6-native-staff-all-unit-final.log"
+  },
+  "backendUnitContract": {
+    "passed": 28,
+    "total": 28,
+    "skipped": 0,
+    "exitCode": 0,
+    "durationMs": 598.4858,
+    "log": "b6-native-staff-backend-unit-contract.log"
+  },
+  "postgresIntegration": {
+    "passed": 155,
+    "total": 155,
+    "skipped": 0,
+    "exitCode": 0,
+    "durationMs": 349878.402378,
+    "migrationCount": 36,
+    "image": "sha256:819c9c991a29073656d9e765f08d8cc58a5e844d2e93439f70c79822731f64cf",
+    "log": "b6-native-staff-integration-full.log",
+    "isolatedComposeProject": "edumanage_backend_test",
+    "postgresHostPortPublished": false
+  },
+  "browserContract": {
+    "passed": 19,
+    "total": 19,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 25430.982,
+    "exitCode": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "run": {
+      "prefix": "b6-native-staff",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T03:54:56.735Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 40152,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T03:55:23.232Z",
+      "exitCode": 0
+    },
+    "log": "b6-native-staff-browser-final.log"
+  },
+  "portBefore": {
+    "listeners": [],
+    "listenerCount": 0,
+    "checkedAt": "2026-10-01T10:47:36.9958884+07:00",
+    "port": 18763
+  },
+  "portAfter": {
+    "listenerCount": 0,
+    "listeners": [],
+    "checkedAt": "2026-10-01T10:58:32.8136621+07:00",
+    "port": 18763
+  },
+  "apiOperationStatuses": {
+    "TESTED": 289,
+    "IMPLEMENTED": 12
+  },
+  "uiSourceStatuses": {
+    "IMPLEMENTED": 35,
+    "STATIC_UNVERIFIED": 3,
+    "NOT_STARTED": 80
+  },
+  "otherScreenStatuses": {
+    "STATIC_UNVERIFIED": 10
+  },
+  "coreScreenCount": 118,
+  "screenRegistryCount": 128,
+  "candidateCount": 100,
+  "activatedCandidates": 84,
+  "activatedLegacyMethods": 77,
+  "legacyMethods": 231,
+  "failedAttempts": {
+    "postgresIntegration": {
+      "passed": 154,
+      "failed": 1,
+      "total": 155,
+      "log": "b6-native-staff-integration-initial.log",
+      "reason": "stale registry count299 after adding two operations"
+    },
+    "browserContract": {
+      "passed": 16,
+      "failed": 2,
+      "total": 18,
+      "log": "b6-native-staff-browser-initial.log",
+      "reason": "accessible-name locator and incorrect expected503 message"
+    },
+    "otherFailureLogsRetained": true
+  },
+  "postgresBrowserE2E": "NOT_RUN",
+  "parentNativeViewIdCsrfProjection": "NOT_IMPLEMENTED",
+  "allCoreNativeUiAcceptance": "NOT_RUN",
+  "finalDockerApplication": "NOT_RUN",
+  "rootDeployScriptsMerge": "PENDING_COMPLETE_IMPLEMENTATION",
+  "apiWebRestartPersistence": "NOT_RUN",
+  "physicalBackupRestore": "NOT_RUN",
+  "smtpProcessDiskDrills": "NOT_RUN",
+  "releaseLoadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "volumesDeleted": false,
+  "unrelatedProjectsChanged": false,
+  "intendedLocalUrl": "http://127.0.0.1:18763",
+  "completedDockerAppServing": false
+}

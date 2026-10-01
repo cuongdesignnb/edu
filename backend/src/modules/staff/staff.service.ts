@@ -7,7 +7,7 @@ import { permissions as actionAllowlist } from '../../common/contract';
 import { Problem,validation,notFound } from '../../common/problem';
 import { InvitationsService,invitationDto } from '../identity/invitations.service';
 import {staffDirectory,staffDirectorySummary} from './staff-directory';
-import {memberDetails,memberHistory} from './member-details';
+import {memberDetails,memberHistory,schoolRoleChoices,staffActivity} from './member-details';
 import {assignmentMatrix} from './assignment-matrix';
 import {roleDetails,roleSummaryResource,ownsHeldRole,validateLiveRoleExpiry} from './role-details';
 import type { RequestContext,Result,Handler } from '../../api.router';
@@ -34,7 +34,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['listStaffActivity','getStaffInvitationOptions','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewStaffAssignment','previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -52,6 +52,10 @@ export class StaffService {
         return op==='listStaffDirectory'?staffDirectory(tx,c,grants):{data:await staffDirectorySummary(tx,schoolId,grants)};
       }
       if(op==='getStaffAssignmentMatrix')return {data:await assignmentMatrix(tx,c,await this.policy.grants(tx,c.principal!.userId,schoolId))};
+      if(op==='getStaffInvitationOptions'){
+        if(Object.keys(c.query).length)validation('query','Lựa chọn lời mời không nhận bộ lọc');
+        return {data:{roles:await schoolRoleChoices(tx,schoolId,await this.policy.grants(tx,c.principal!.userId,schoolId))}};
+      }
       if(op==='listMembers'){
         if(picker)return listResource(tx,pickerResource,schoolId,c.query,undefined,c.principal!.userId);
         const result=await listResource(tx,resource('member'),schoolId,c.query,undefined,c.principal!.userId);
@@ -60,6 +64,7 @@ export class StaffService {
       }
       if(op==='getMemberDetails')return {data:await memberDetails(tx,c,this.policy,await this.schoolRoleGrants(tx,schoolId,c.params.memberId!))};
       if(op==='listMemberHistory')return memberHistory(tx,c);
+      if(op==='listStaffActivity')return staffActivity(tx,c);
       if(op==='getMember'){
         const member=dto(resource('member'),await getResource(tx,resource('member'),schoolId,c.params.memberId!));
         member.grants=(await this.policy.grants(tx,String(member.userId),schoolId)).map(grantDto);
@@ -139,7 +144,7 @@ export class StaffService {
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
     };
     if(op==='previewStaffAssignment')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:true});
-    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['listRoles','getRole','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
+    if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getStaffInvitationOptions','listRoles','getRole','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
     return this.commands.execute(c,authorize,work);
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}

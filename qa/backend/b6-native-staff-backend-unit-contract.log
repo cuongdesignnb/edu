@@ -1,0 +1,36 @@
+✔ all operation IDs are unique, including the explicit frontend workflow extensions (1.2062ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (9.8586ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (7.3606ms)
+✔ login rejects spoofed role, school and unknown fields (1.1983ms)
+✔ private user DTO rejects secrets and unknown properties (4.1306ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.3073ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (30.2046ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (9.4777ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (21.0513ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (3.8733ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (12.1747ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (2.006ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (19.5188ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (19.2137ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (16.3356ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (30.9707ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (57.2791ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (34.1784ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (5.2456ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.7756ms)
+✔ grant action and class scope stay together (1.3285ms)
+✔ subject grants never authorize management without explicit subject policy (0.2302ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.2043ms)
+✔ a custom class grant authorizes only its delegated action and class (0.2201ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.2491ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.6387ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.327ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (180.244ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 598.4858

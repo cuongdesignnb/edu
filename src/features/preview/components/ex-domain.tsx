@@ -10,7 +10,6 @@ import { ErrorState, Skeleton } from "@/components/ui/states";
 import { SchoolContextProvider } from "@/components/layout/shells";
 import { SchoolsTable } from "@/features/platform/schools-table";
 import { AssignDrawer } from "@/features/school-org/assign-drawer";
-import { PermissionSummary } from "@/features/school-org/permission-summary";
 import { ClassHeroCard } from "@/features/teacher/shared";
 import { QrImage, LinkBox, QrPrintCard, accessUrl, logLabel, ACCESS_STATUS } from "@/features/students/shared";
 import { StatusBadge } from "@/components/ui/badge";
@@ -59,7 +58,7 @@ function MemberPermissions() {
   const q = useRepo(["preview-member", "m-a-lan"], (ctx) => staffRepo.member(ctx, A, "m-a-lan"));
   if (q.isLoading) return <Loading />;
   if (q.error || !q.data) return <ErrorState compact error={q.error} onRetry={() => q.refetch()} />;
-  return <div className="space-y-2"><p className="text-[13px] font-semibold text-ink">{q.data.user.displayName}</p><PermissionSummary m={q.data} compact /></div>;
+  return <div className="space-y-2"><p className="text-[13px] font-semibold text-ink">{q.data.user.displayName}</p><p className="text-sm text-muted">Minh họa cũ: {q.data.roles.map(r => r.name).join(", ") || "Theo phân công lớp/môn"}.</p></div>;
 }
 
 function AccessCard() {

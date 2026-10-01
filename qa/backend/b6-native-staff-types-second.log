@@ -1,0 +1,12 @@
+src/features/school-org/handover.tsx(164,58): error TS2345: Argument of type '{ classId: string; toMembershipId: string; effectiveDate: string; note: string; }' is not assignable to parameter of type 'HandoverInput'.
+  Type '{ classId: string; toMembershipId: string; effectiveDate: string; note: string; }' is missing the following properties from type 'HandoverInput': clientRequestId, fromAssignmentId, fromAssignmentVersion, classVersion, and 2 more.
+src/features/school-org/member-detail.tsx(47,31): error TS2339: Property 'to' does not exist on type '"active" | "revoked" | "suspended" | "invited"'.
+  Property 'to' does not exist on type '"active"'.
+src/features/school-org/member-detail.tsx(47,85): error TS2339: Property 'to' does not exist on type '"active" | "revoked" | "suspended" | "invited"'.
+  Property 'to' does not exist on type '"active"'.
+src/features/school-org/member-detail.tsx(91,81): error TS2339: Property 'to' does not exist on type '"active" | "revoked" | "ended"'.
+  Property 'to' does not exist on type '"active"'.
+src/features/school-org/member-detail.tsx(92,56): error TS2339: Property 'to' does not exist on type '"active" | "revoked" | "ended"'.
+  Property 'to' does not exist on type '"active"'.
+src/features/school-org/roles.tsx(153,80): error TS2551: Property 'membershipId' does not exist on type '{ grantId: string; memberId: string; name: string; scopeType: "SCHOOL" | "CLASS" | "SUBJECT"; classId: string | null; subjectId: string | null; validFrom: string; validUntil: string | null; }'. Did you mean 'memberId'?
+src/features/school-org/roles.tsx(153,125): error TS2551: Property 'membershipId' does not exist on type '{ grantId: string; memberId: string; name: string; scopeType: "SCHOOL" | "CLASS" | "SUBJECT"; classId: string | null; subjectId: string | null; validFrom: string; validUntil: string | null; }'. Did you mean 'memberId'?

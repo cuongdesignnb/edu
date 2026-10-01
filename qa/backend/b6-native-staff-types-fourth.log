@@ -1,0 +1,1 @@
+src/features/school-org/handover.tsx(48,53): error TS2367: This comparison appears to be unintentional because the types '"staff" | "platform"' and '"parent"' have no overlap.

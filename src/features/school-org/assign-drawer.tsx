@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, MinusCircle, PlusCircle, ShieldCheck } from "lucide-react";
 import { schoolRepo, staffRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
@@ -10,33 +10,37 @@ import { Combobox } from "@/components/ui/combobox";
 import { DateField, ErrorSummary, RadioGroup, SelectField, TextArea } from "@/components/ui/form";
 import { Callout } from "@/components/ui/card";
 import { ErrorState, Skeleton } from "@/components/ui/states";
+import { nativeActionLabel } from "@/lib/api/action-labels";
 import { FormError, fmtRange, useDirtyClose, useFormErrors } from "./common";
 
 export interface AssignPrefill { membershipId?: string; kind?: "homeroom" | "subject"; classId?: string; subjectId?: string; yearId?: string }
 const LABELS = { membershipId: "Giáo viên", classId: "Lớp", subjectId: "Môn", validFrom: "Hiệu lực từ", validTo: "Hiệu lực đến" };
 
 /** O06 — create a grant (person → duty → class/subject → validity) with the O07 permission preview before saving. */
-export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | null; onClose: () => void }) {
+export function AssignDrawer({prefill,onClose}:{prefill:AssignPrefill|null;onClose:()=>void}) { return prefill ? <AssignForm key={JSON.stringify(prefill)} prefill={prefill} onClose={onClose} /> : null; }
+function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () => void }) {
   const { school, yearId: ctxYear } = useSchool();
   const ctx = useCtx();
   const open = !!prefill;
   const yearId = prefill?.yearId ?? ctxYear;
   const opts = useRepo(["school-form-options", school.id], (c) => schoolRepo.formOptions(c, school.id), { enabled: open });
-  const classes = useRepo(["school-class-options", school.id, yearId], (c) => schoolRepo.classOptions(c, school.id, yearId), { enabled: open });
-  const initial = useMemo(() => ({
+  const classes = useRepo(["school-assignment-classes", school.id, yearId], (c) => staffRepo.assignmentClasses(c, school.id, yearId), { enabled: open && !!yearId });
+  const [initial] = useState(() => ({
     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
     validFrom: ctx.today as string | undefined, validTo: undefined as string | undefined, reason: "",
-  }), [prefill, ctx.today]);
+  }));
   const [v, setV] = useState(initial);
   const [step, setStep] = useState<"form" | "preview">("form");
-  useEffect(() => { setV(initial); setStep("form"); }, [initial]);
+  const [attempt, setAttempt] = useState(0);
+  const [reviewed, setReviewed] = useState<Awaited<ReturnType<typeof staffRepo.previewAssignment>> | null>(null);
   const { errors, setErrors, onError, clear } = useFormErrors();
   const dirty = open && JSON.stringify(v) !== JSON.stringify(initial);
   const close = () => { setErrors({}); setStep("form"); onClose(); };
   const { beforeClose, confirmNode } = useDirtyClose(dirty, close);
 
-  const preview = useRepo(["assign-preview", school.id, v.membershipId, v.kind, v.classId, v.subjectId], (c) => staffRepo.previewAssignment(c, school.id, { membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined }), { enabled: open && step === "preview" });
-  const cmd = useCommand((c, input: Parameters<typeof staffRepo.assign>[2]) => staffRepo.assign(c, school.id, input), { success: "Đã lưu phân công", onError: (e) => { onError(e); setStep("form"); } });
+  const preview = useRepo(["assign-preview", school.id, v, attempt], (c) => staffRepo.previewAssignment(c, school.id, { membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: v.validFrom!, validTo: v.validTo, reason: v.reason.trim() || undefined }), { enabled: open && step === "preview" });
+  useEffect(() => { if (step === "preview" && preview.data && !reviewed) setReviewed(preview.data); }, [step, preview.data, reviewed]);
+  const cmd = useCommand((c, input: Parameters<typeof staffRepo.assign>[2]) => staffRepo.assign(c, school.id, input), { success: "Đã lưu phân công", onError: (e) => { onError(e); setErrors(s => ({ ...s, _form: e.message })); }, silentError: true });
 
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k as string); };
   const toPreview = () => {
@@ -46,11 +50,13 @@ export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | nu
     if (v.kind === "subject" && !v.subjectId) local.subjectId = "Chọn môn";
     if (!v.validFrom) local.validFrom = "Chọn ngày bắt đầu";
     if (v.validFrom && v.validTo && v.validTo < v.validFrom) local.validTo = "Ngày kết thúc phải sau ngày bắt đầu";
+    if (v.reason.trim() && v.reason.trim().length < 5) local._form = "Ghi chú tối thiểu 5 ký tự hoặc để trống.";
     setErrors(local);
-    if (!Object.keys(local).length) setStep("preview");
+    if (!Object.keys(local).length) { setReviewed(null); setAttempt(n => n + 1); setStep("preview"); }
   };
   const save = async () => {
-    const r = await cmd.run({ membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: v.validFrom!, validTo: v.validTo, reason: v.reason.trim() || undefined });
+    if (!reviewed || preview.error) return;
+    const r = await cmd.run({ membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: reviewed.validFrom, validTo: reviewed.validTo, reason: v.reason.trim() || undefined, memberVersion: reviewed.memberVersion, classVersion: reviewed.classVersion });
     if (r) close();
   };
 
@@ -63,8 +69,8 @@ export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | nu
         title={step === "form" ? "Gán phân công" : "Xem thay đổi quyền"} description={step === "form" ? "Người → nhiệm vụ → lớp/môn → thời gian hiệu lực." : "Kiểm tra quyền được thêm trước khi xác nhận."}
         footer={step === "form"
           ? <><Button variant="ghost" onClick={() => { if (beforeClose()) close(); }}>Hủy</Button><Button variant="primary" icon={<ShieldCheck className="size-4" />} onClick={toPreview}>Xem trước quyền</Button></>
-          : <><Button variant="ghost" icon={<ArrowLeft className="size-4" />} onClick={() => setStep("form")} disabled={cmd.pending}>Quay lại sửa</Button><Button variant="primary" loading={cmd.pending} disabled={!preview.data} onClick={save}>Xác nhận phân công</Button></>}>
-        {opts.error || classes.error ? <ErrorState error={opts.error ?? classes.error} onRetry={() => { opts.refetch(); classes.refetch(); }} compact /> : !opts.data || !classes.data ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : !opts.data.canAssign || !opts.data.teachers || !opts.data.subjects ? <Callout tone="neutral">Bạn không có quyền phân công giáo viên.</Callout> : step === "form" ? (
+          : <><Button variant="ghost" icon={<ArrowLeft className="size-4" />} onClick={() => { setReviewed(null); setStep("form"); }} disabled={cmd.pending}>Quay lại sửa</Button><Button variant="primary" loading={cmd.pending} disabled={!reviewed || !!preview.error} onClick={save}>Xác nhận phân công</Button></>}>
+        {!yearId ? <Callout tone="neutral">Tạo hoặc chọn năm học trước khi phân công.</Callout> : opts.error || classes.error ? <ErrorState error={opts.error ?? classes.error} onRetry={() => { opts.refetch(); classes.refetch(); }} compact /> : !opts.data || !classes.data ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : !opts.data.canAssign || !opts.data.teachers || !opts.data.subjects ? <Callout tone="neutral">Bạn không có quyền phân công giáo viên.</Callout> : step === "form" ? (
           <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); toPreview(); }}>
             <ErrorSummary errors={Object.fromEntries(Object.entries(errors).filter(([k]) => k !== "_form"))} labels={LABELS} />
             <FormError message={errors._form} />
@@ -93,14 +99,16 @@ export function AssignDrawer({ prefill, onClose }: { prefill: AssignPrefill | nu
             <div className="rounded-xl border border-line bg-[#f7fbff] p-3.5 text-sm">
               <p className="font-semibold text-ink">{teacher?.name}</p>
               <p className="text-body">{v.kind === "homeroom" ? "Chủ nhiệm" : "Bộ môn"} · {cls?.name}{v.kind === "subject" && subject ? ` — ${subject.name}` : ""}</p>
-              <p className="text-muted">Hiệu lực: {fmtRange(v.validFrom, v.validTo)}</p>
+              <p className="text-muted">Hiệu lực: {fmtRange(reviewed?.validFrom ?? v.validFrom, reviewed?.validTo ?? v.validTo)}</p>
             </div>
-            {preview.isLoading ? <Skeleton className="h-40" /> : preview.error ? <ErrorState error={preview.error} onRetry={() => preview.refetch()} compact /> : preview.data && (
+            <FormError message={errors._form} />
+            {preview.isLoading ? <Skeleton className="h-40" /> : preview.error ? <ErrorState error={preview.error} onRetry={() => { setReviewed(null); setAttempt(n => n + 1); }} compact /> : reviewed && (
               <>
-                <PermList title={`Quyền được thêm (${preview.data.added.length})`} tone="add" items={preview.data.added} empty="Không có quyền mới — người này đã có các quyền này trong lớp." />
-                {preview.data.kept.length > 0 && <PermList title={`Đã có, giữ nguyên (${preview.data.kept.length})`} tone="keep" items={preview.data.kept} />}
-                {preview.data.notIncluded.length > 0 && <PermList title="Không bao gồm (chỉ dành cho GVCN)" tone="none" items={preview.data.notIncluded} />}
-                <Callout tone="info">Phạm vi: <b>{preview.data.scope}</b>. Giáo viên nhận thông báo phân công; lớp xuất hiện trong “Lớp học của tôi” từ ngày hiệu lực.</Callout>
+                <PermList title={`Quyền được thêm (${reviewed.added.length})`} tone="add" items={reviewed.added} empty="Không có quyền mới — người này đã có các quyền này trong lớp." />
+                {reviewed.kept.length > 0 && <PermList title={`Đã có, giữ nguyên (${reviewed.kept.length})`} tone="keep" items={reviewed.kept} />}
+                {reviewed.notIncluded.length > 0 && <PermList title="Không bao gồm (chỉ dành cho GVCN)" tone="none" items={reviewed.notIncluded} />}
+                {reviewed.warnings.map(w => <Callout key={w} tone="warning">{w}</Callout>)}
+                <Callout tone="info">Phạm vi: <b>{reviewed.scope}</b>. Giáo viên nhận thông báo phân công; lớp xuất hiện trong “Lớp học của tôi” từ ngày hiệu lực.</Callout>
               </>
             )}
           </div>
@@ -119,7 +127,7 @@ function PermList({ title, items, tone, empty }: { title: string; items: string[
       <p className="mb-1.5 text-[13.5px] font-semibold text-ink">{title}</p>
       {items.length === 0 ? <p className="text-[13px] text-muted">{empty}</p> : (
         <ul className="grid gap-1 sm:grid-cols-2">
-          {items.map((i) => <li key={i} className="flex items-start gap-2 text-[13px] text-body"><Icon className={`mt-0.5 size-4 flex-none ${color}`} aria-hidden />{i}</li>)}
+          {items.map((i) => <li key={i} className="flex items-start gap-2 text-[13px] text-body"><Icon className={`mt-0.5 size-4 flex-none ${color}`} aria-hidden />{nativeActionLabel(i).label}</li>)}
         </ul>
       )}
     </div>

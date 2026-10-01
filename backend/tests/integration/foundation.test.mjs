@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,299);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,301);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2727,4 +2727,30 @@ test('B6 bounded school class overview preserves query results, local JIT prefer
   },{schoolId:f.schoolId,userId:c.principal.userId,readOnly:true});
   await assert.rejects(db.transaction(async tx=>{const context=await service.context(tx,c);await tx.query("SET LOCAL jit='on'");await schoolClassOverview(tx,{...context,year:{...context.year,id:'invalid-uuid'}});},{schoolId:f.schoolId,userId:c.principal.userId,readOnly:true}),error=>error.code==='22P02');
   const actual=await db.app.query('SHOW jit');assert.equal(actual.rows[0].jit,'on');
+});
+
+
+test('B6 native invitation choices require current invitation authority, preserve delegation ceilings and never borrow a role catalog',async()=>{
+  const f=await staffUiFixture(),inviter=await f.role([{action:'member.manage',scopes:['SCHOOL']}]),reader=await f.role([{action:'school.read',scopes:['SCHOOL']}]),manager=await f.role([{action:'role.manage',scopes:['SCHOOL']}]),classOnly=await f.role([{action:'student.read',scopes:['CLASS']}]);
+  const short=new Date(Date.now()+1800000).toISOString(),long=new Date(Date.now()+3600000).toISOString();
+  const inviteGrant=await f.grant(f.target,inviter.id);await f.grant(f.target,reader.id,{validUntil:long});const manageGrant=await f.grant(f.target,manager.id,{validFrom:new Date(Date.now()+60000).toISOString(),validUntil:short});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const base=`/api/v1/schools/${f.schoolId}`,url=`${base}/staff-invitation-options`;
+  let response=await request('GET',url);assert.equal(response.statusCode,200,response.body);let choices=response.json().data.roles;
+  assert.ok(choices.length);assert.ok(choices.every(r=>r.canDelegate===false));assert.ok(!choices.some(r=>r.id===classOnly.id));
+  for(const row of choices)assert.deepEqual(Object.keys(row).sort(),['id','version','label','code','systemRole','canDelegate','delegationUntil'].sort());
+  assert.equal((await request('GET',`${base}/roles`)).statusCode,403);assert.equal((await request('GET',`${base}/members/${f.other}/details`)).statusCode,403);assert.equal((await request('GET',`${url}?purpose=role-catalog`)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/staff-invitation-options`)).statusCode,404);
+  await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_from=now()-interval '1 minute' WHERE school_id=$1 AND id=$2",[f.schoolId,manageGrant.id]),{schoolId:f.schoolId});
+  response=await request('GET',url);assert.equal(response.statusCode,200,response.body);choices=response.json().data.roles;const choice=choices.find(r=>r.id===reader.id);assert.equal(choice.canDelegate,true);assert.equal(choice.delegationUntil,short);assert.equal(choices.find(r=>r.id===f.adminRole).canDelegate,false);
+  for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,inviteGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);}
+});
+
+test('B6 native staff activity is SQL-bounded to staff targets, rechecks audit authority and keeps foreign and family records out',async()=>{
+  const f=await staffUiFixture(),auditRole=await f.role([{action:'audit.read',scopes:['SCHOOL']}]),grant=await f.grant(f.target,auditRole.id),action=`staff-activity-${crypto.randomUUID()}`,ids=[];
+  for(const [schoolId,targetType]of [[f.schoolId,'member'],[f.schoolId,'student'],[schoolB,'member']]){
+    const id=crypto.randomUUID();ids.push(id);await db.transaction(tx=>tx.query("INSERT INTO app.audit_events(id,school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,redacted_after) VALUES($1,$2,$3,'STAFF',$4,$5,$1,$6,$7)",[id,schoolId,seedId('user:admin-a'),action,targetType,crypto.randomUUID(),{status:'ACTIVE',unknownPrivate:'must-not-expose'}]),{schoolId});
+  }
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');const base=`/api/v1/schools/${f.schoolId}`,url=`${base}/staff-activity?action=${encodeURIComponent(action)}&limit=1`;
+  const response=await request('GET',url);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,1);assert.deepEqual(response.json().data.map(r=>r.id),[ids[0]]);assert.equal(response.body.includes('must-not-expose'),false);assert.equal(response.json().page.hasMore,false);
+  assert.equal((await request('GET',`${base}/members/${f.other}/details`)).statusCode,403);assert.equal((await request('GET',`${url}&targetType=student`)).statusCode,422);assert.equal((await request('GET',`${url}&actorId=${seedId('user:admin-a')}`)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/staff-activity`)).statusCode,404);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,grant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',url)).statusCode,403);
 });

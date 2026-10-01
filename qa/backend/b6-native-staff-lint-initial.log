@@ -1,0 +1,85 @@
+
+D:\Edu\src\app\global-error.tsx
+  16:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+D:\Edu\src\features\reports\school-reports.tsx
+  79:9  warning  The 'weeks' logical expression could make the dependencies of useMemo Hook (at line 89) change on every render. To fix this, wrap the initialization of 'weeks' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\Edu\src\features\school-org\assign-drawer.tsx
+  23:36  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:23:36
+  21 |   const ctx = useCtx();
+  22 |   const open = !!prefill;
+> 23 |   const today = useRef(ctx.today); today.current = ctx.today;
+     |                                    ^^^^^^^^^^^^^ Cannot update ref during render
+  24 |   const yearId = prefill?.yearId ?? ctxYear;
+  25 |   const opts = useRepo(["school-form-options", school.id], (c) => schoolRepo.formOptions(c, school.id), { enabled: open });
+  26 |   const classes = useRepo(["school-assignment-classes", school.id, yearId], (c) => staffRepo.assignmentClasses(c, school.id, yearId), { enabled: open && !!yearId });   react-hooks/refs
+  29:16  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:29:16
+  27 |   const initial = useMemo(() => ({
+  28 |     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
+> 29 |     validFrom: today.current as string | undefined, validTo: undefined as string | undefined, reason: "",
+     |                ^^^^^^^^^^^^^ Cannot access ref value during render
+  30 |   }), [prefill]);
+  31 |   const [v, setV] = useState(initial);
+  32 |   const [step, setStep] = useState<"form" | "preview">("form");                         react-hooks/refs
+  29:16  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:29:16
+  27 |   const initial = useMemo(() => ({
+  28 |     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
+> 29 |     validFrom: today.current as string | undefined, validTo: undefined as string | undefined, reason: "",
+     |                ^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  30 |   }), [prefill]);
+  31 |   const [v, setV] = useState(initial);
+  32 |   const [step, setStep] = useState<"form" | "preview">("form");  react-hooks/refs
+  29:16  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:29:16
+  27 |   const initial = useMemo(() => ({
+  28 |     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
+> 29 |     validFrom: today.current as string | undefined, validTo: undefined as string | undefined, reason: "",
+     |                ^^^^^^^^^^^^^ Cannot access ref value during render
+  30 |   }), [prefill]);
+  31 |   const [v, setV] = useState(initial);
+  32 |   const [step, setStep] = useState<"form" | "preview">("form");                         react-hooks/refs
+  29:16  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:29:16
+  27 |   const initial = useMemo(() => ({
+  28 |     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
+> 29 |     validFrom: today.current as string | undefined, validTo: undefined as string | undefined, reason: "",
+     |                ^^^^^^^^^^^^^ Cannot access ref value during render
+  30 |   }), [prefill]);
+  31 |   const [v, setV] = useState(initial);
+  32 |   const [step, setStep] = useState<"form" | "preview">("form");                         react-hooks/refs
+  29:16  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+D:\Edu\src\features\school-org\assign-drawer.tsx:29:16
+  27 |   const initial = useMemo(() => ({
+  28 |     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
+> 29 |     validFrom: today.current as string | undefined, validTo: undefined as string | undefined, reason: "",
+     |                ^^^^^^^^^^^^^ Passing a ref to a function may read its value during render
+  30 |   }), [prefill]);
+  31 |   const [v, setV] = useState(initial);
+  32 |   const [step, setStep] = useState<"form" | "preview">("form");  react-hooks/refs
+
+D:\Edu\src\features\school-org\roles.tsx
+  97:6  warning  React Hook useMemo has a missing dependency: 'd'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 9 problems (6 errors, 3 warnings)

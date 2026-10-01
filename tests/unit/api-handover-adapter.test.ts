@@ -33,7 +33,7 @@ describe('durable native handover adapters',()=>{
   });
   it('does not fabricate a success from a foreign receipt, stale approval or missing applied assignment',async()=>{
     const fetcher=vi.fn().mockResolvedValueOnce(envelope({...receipt(),toMemberId:schoolId})).mockResolvedValueOnce(envelope(receipt())).mockResolvedValueOnce(new Response(JSON.stringify({code:'STALE_PREVIEW'}),{status:409})).mockResolvedValueOnce(envelope({...receipt('APPLIED',2),appliedAssignment:null}));vi.stubGlobal('fetch',fetcher);
-    await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'NETWORK'});await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'CONFLICT',details:{problemCode:'STALE_PREVIEW'}});await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'NETWORK'});expect(fetcher).toHaveBeenCalledTimes(4);
+    await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'NETWORK'});await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'CONFLICT',details:{problemCode:'STALE_PREVIEW'}});await expect(connectedStaffRepo.handover(ctx,schoolId,input)).rejects.toMatchObject({code:'READ_ERROR'});expect(fetcher).toHaveBeenCalledTimes(4);
   });
   it('retains chosen preview dates, real null current teacher and actual open counts without demo-clock substitution',async()=>{
     const view={className:'Lớp thật',classVersion:8,referenceDate:'2026-10-01',effectiveOn:input.effectiveDate,canHandover:true,current:null,openItems:checklist,previewHash:null,toMemberVersion:null},fetcher=vi.fn().mockResolvedValue(envelope(view));vi.stubGlobal('fetch',fetcher);

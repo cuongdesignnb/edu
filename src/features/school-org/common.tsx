@@ -7,6 +7,14 @@ import type { AcademicYear, AssignmentStatus } from "@/lib/model/types";
 import { fmtDate, type StatusLabel } from "@/lib/formatters";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { useUnsavedChanges } from "@/components/ui/guards";
+import { QueryState, ErrorState } from "@/components/ui/states";
+
+/** Keep the reviewed draft through a transport read failure; authorization errors still unmount it. */
+export function SchoolSourceState<T>({ query, children }: { query: {data?:T;isLoading:boolean;error:RepoError|null;refetch:()=>unknown}; children:(data:T)=>ReactNode }) {
+  const retained = query.error?.code === 'READ_ERROR' && query.data !== undefined;
+  return <>{retained && <div className="page"><CalloutRead error={query.error!} retry={query.refetch} /></div>}<QueryState query={retained ? {...query,error:null} : query} skeleton="detail">{children}</QueryState></>;
+}
+function CalloutRead({error,retry}:{error:RepoError;retry:()=>unknown}) { return <div className="card"><ErrorState error={error} onRetry={() => retry()} compact /></div>; }
 
 export const yearStatus: Record<AcademicYear["status"], StatusLabel> = {
   draft: { label: "Nháp", tone: "neutral" },
@@ -14,7 +22,7 @@ export const yearStatus: Record<AcademicYear["status"], StatusLabel> = {
   archived: { label: "Lưu trữ — chỉ xem", tone: "neutral" },
 };
 
-export const assignmentStatusLabel = (a: { status: AssignmentStatus; validFrom: string; validTo?: string; live?: boolean }, today: string): StatusLabel => {
+export const assignmentStatusLabel = (a: { status: AssignmentStatus; validFrom: string; validTo?: string | null; live?: boolean }, today: string): StatusLabel => {
   if (a.status === "revoked") return { label: "Đã thu hồi", tone: "danger" };
   if (a.status === "ended" || (a.validTo && a.validTo < today)) return { label: "Đã kết thúc", tone: "neutral" };
   if (a.validFrom > today) return { label: "Chưa bắt đầu", tone: "info" };
@@ -22,7 +30,7 @@ export const assignmentStatusLabel = (a: { status: AssignmentStatus; validFrom: 
   return { label: "Đang hiệu lực", tone: "success" };
 };
 
-export function fmtRange(from?: string, to?: string) {
+export function fmtRange(from?: string | null, to?: string | null) {
   return `${fmtDate(from)} – ${to ? fmtDate(to) : "không thời hạn"}`;
 }
 

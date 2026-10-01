@@ -342,6 +342,8 @@ export interface ApiSchemas {
   "StaffDirectorySummary": { "kpi": { "total": number; "active": number; "suspended": number; "pendingInvites": (number) | null; }; "departments": Array<string>; "roleLabels": Array<string>; "canInvite": boolean; "canSuspend": boolean; "canAssign": boolean; "canExport": boolean; "canViewInvitations": boolean; };
   "StaffDirectorySummaryResponse": { "data": ApiSchemas["StaffDirectorySummary"]; "requestId": string; };
   "MemberRoleChoice": { "id": string; "version": number; "label": string; "code": string; "systemRole": boolean; "canDelegate": boolean; "delegationUntil": (string) | null; };
+  "StaffInvitationOptions": { "roles": Array<ApiSchemas["MemberRoleChoice"]>; };
+  "StaffInvitationOptionsResponse": { "data": ApiSchemas["StaffInvitationOptions"]; "requestId": string; };
   "MemberAssignmentDetails": { "id": string; "version": number; "classId": string; "className": string; "yearName": string; "memberId": string; "roleGrantId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId": (string) | null; "subjectName": (string) | null; "startsOn": string; "endsOn": (string) | null; "revokedAt": (string) | null; "grantValidFrom": string; "grantValidUntil": (string) | null; "grantRevokedAt": (string) | null; "roleLabel": string; "roleStatus": "ACTIVE" | "ARCHIVED"; "createdAt": string; "createdBy": (string) | null; "createdByName": (string) | null; "live": boolean; };
   "MemberDetails": { "member": ApiSchemas["Member"]; "referenceDate": string; "joinedOn": (string) | null; "accessActive": boolean; "otherSchools": number; "assignments": (Array<ApiSchemas["MemberAssignmentDetails"]>) | null; "roleChoices": (Array<ApiSchemas["MemberRoleChoice"]>) | null; "canAssign": boolean; "canSuspend": boolean; "canRole": boolean; "canViewHistory": boolean; "isSelf": boolean; };
   "MemberDetailsResponse": { "data": ApiSchemas["MemberDetails"]; "requestId": string; };
@@ -3213,6 +3215,16 @@ export const apiOperations = {
     "permission": "member.read",
     "readOnly": true
   },
+  "getStaffInvitationOptions": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/staff-invitation-options",
+    "auth": "staff",
+    "request": null,
+    "response": "StaffInvitationOptions",
+    "list": false,
+    "permission": "member.manage",
+    "readOnly": true
+  },
   "getMemberDetails": {
     "method": "GET",
     "path": "/api/v1/schools/{schoolId}/members/{memberId}/details",
@@ -3231,6 +3243,16 @@ export const apiOperations = {
     "response": "AuditEvent",
     "list": true,
     "permission": "member.read+audit.read",
+    "readOnly": true
+  },
+  "listStaffActivity": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/staff-activity",
+    "auth": "staff",
+    "request": null,
+    "response": "AuditEvent",
+    "list": true,
+    "permission": "audit.read",
     "readOnly": true
   },
   "getRoleDetails": {

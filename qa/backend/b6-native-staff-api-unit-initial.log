@@ -1,0 +1,157 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-lists-fragments.test.ts (10 tests) 34ms
+ ✓ tests/unit/api-support-adapter.test.ts (5 tests) 31ms
+ ✓ tests/unit/api-session.test.ts (9 tests) 51ms
+ ✓ tests/unit/api-session-adapter.test.ts (2 tests) 30ms
+ ✓ tests/unit/api-platform-adapter.test.ts (13 tests) 52ms
+ ✓ tests/unit/api-auth-adapter.test.ts (7 tests) 44ms
+ ✓ tests/unit/api-rollover-adapter.test.ts (8 tests) 56ms
+ ✓ tests/unit/api-students-adapter.test.ts (11 tests) 48ms
+ ✓ tests/unit/api-school-adapter.test.ts (22 tests) 65ms
+ ✓ tests/unit/api-role-adapter.test.ts (5 tests) 35ms
+ ✓ tests/unit/api-handover-adapter.test.ts (8 tests) 43ms
+ ❯ tests/unit/api-assignment-adapter.test.ts (8 tests | 2 failed) 55ms
+   × native assignment adapters > previews chosen dates and native action codes with CSRF but no mutation retry key or acknowledgement 20ms
+     → expected [ 'Đề nghị điều chỉnh thi đua', …(1) ] to deeply equal [ 'conduct.adjust.request', …(1) ]
+   × native assignment adapters > saves both reviewed source versions, sends an exclusive end and keeps returned grant/version metadata 20ms
+     → Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+   ✓ native assignment adapters > requires reviewed versions and valid subjects before sending a save request 4ms
+   ✓ native assignment adapters > revokes with the displayed assignment version without truncating historical dates to the browser clock 4ms
+   ✓ native assignment adapters > maps field errors and classifies failed read-only previews as read errors without fake permission results 3ms
+   ✓ native assignment adapters > preserves an unconfigured matrix and unavailable profile links instead of fabricating an academic year 1ms
+   ✓ native assignment adapters > maps real matrix dates, versions, colors, nullable cells and server access flags without inferring activity 1ms
+   ✓ native assignment adapters > rejects obsolete render ownership before preview, save, revoke or matrix requests 1ms
+ ✓ tests/unit/api-guardians-adapter.test.ts (17 tests) 54ms
+ ❯ tests/unit/api-staff-adapter.test.ts (9 tests | 3 failed) 62ms
+   ✓ native staff command adapters > sends one atomic role replacement with the displayed version, keeping returned grant IDs and expiry 29ms
+   ✓ native staff command adapters > requires versions before any lifecycle or role request and does not fetch a fresh version to overwrite 2ms
+   ✓ native staff command adapters > maps permanent ending to the native end command and keeps the acknowledged reason/time 1ms
+   ✓ native staff command adapters > does not submit a stale form through the new identity or permission scope 1ms
+   × native staff command adapters > retains zero/multiple invitation roles, the agreed lifetime and optional delegation expiry without synthetic grants 9ms
+     → Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+   ✓ native staff command adapters > keeps native validation/conflicts and translates the existing invitation form field names 6ms
+   × native staff command adapters > lists only real invitation pages with actual inviter labels and validates the revoke ACK 3ms
+     → Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+   × native staff command adapters > rejects lifecycle metadata missing from the server rather than fabricating empty grants or join dates 6ms
+     → expected TypeError: Cannot read properties of unde… to match object { code: 'READ_ERROR' }
+   ✓ native staff command adapters > explains actual policy failures while retaining native problem metadata instead of claiming a version conflict 3ms
+ ✓ tests/unit/api-scope-guard.test.ts (5 tests) 10ms
+ ✓ tests/unit/api-staff-directory.test.ts (6 tests) 39ms
+ ❯ tests/unit/api-member-details.test.ts (5 tests | 1 failed) 33ms
+   ✓ native member details adapter > preserves unavailable panels, actual count, nullable contacts and every native action without inferring authority 11ms
+   × native member details adapter > keeps server assignment activity/dates and minimal role choices while traversing actual audit pages 15ms
+     → expected { …(29) } to match object { version: 7, …(5) }
+(24 matching properties omitted from actual)
+   ✓ native member details adapter > does not replace a newly denied audit read with an empty history 3ms
+   ✓ native member details adapter > does not begin a history read after retained render ownership or profile response ownership changes 1ms
+   ✓ native member details adapter > surfaces missing profile data and oversized history instead of inventing nulls or truncating records 2ms
+ ✓ tests/unit/api-client.test.ts (11 tests) 95ms
+ ✓ tests/unit/api-parent-credential.test.ts (3 tests) 8ms
+ ✓ tests/unit/api-query-boundary.test.ts (5 tests) 47ms
+ ✓ tests/unit/api-school-read-capability.test.ts (1 test) 4ms
+ ✓ tests/unit/api-context.test.ts (1 test) 7ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 2756ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  2740ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/api-assignment-adapter.test.ts > native assignment adapters > previews chosen dates and native action codes with CSRF but no mutation retry key or acknowledgement
+AssertionError: expected [ 'Đề nghị điều chỉnh thi đua', …(1) ] to deeply equal [ 'conduct.adjust.request', …(1) ]
+
+- Expected
++ Received
+
+  [
+-   "conduct.adjust.request",
+-   "native.future.action",
++   "Đề nghị điều chỉnh thi đua",
++   "Quyền chưa có nhãn hiển thị",
+  ]
+
+ ❯ tests/unit/api-assignment-adapter.test.ts:17:228
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/api-assignment-adapter.test.ts > native assignment adapters > saves both reviewed source versions, sends an exclusive end and keeps returned grant/version metadata
+RepoError: Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+ ❯ http src/lib/api/client.ts:128:69
+
+ ❯ formResult src/lib/repositories/connected/common.ts:19:14
+ ❯ Object.assign src/lib/repositories/connected/staff.ts:86:18
+ ❯ Object.assign src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-assignment-adapter.test.ts:23:102
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/api-member-details.test.ts > native member details adapter > keeps server assignment activity/dates and minimal role choices while traversing actual audit pages
+AssertionError: expected { …(29) } to match object { version: 7, …(5) }
+(24 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "createdBy": null,
+    "createdByName": null,
+    "live": false,
+    "validFrom": "2099-09-01",
+-   "validUntil": null,
+    "version": 7,
+  }
+
+ ❯ tests/unit/api-member-details.test.ts:26:105
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/api-staff-adapter.test.ts > native staff command adapters > retains zero/multiple invitation roles, the agreed lifetime and optional delegation expiry without synthetic grants
+RepoError: Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+ ❯ http src/lib/api/client.ts:128:69
+
+ ❯ formResult src/lib/repositories/connected/common.ts:19:14
+ ❯ Object.invite src/lib/repositories/connected/staff.ts:139:15
+ ❯ Object.invite src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-staff-adapter.test.ts:43:64
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/unit/api-staff-adapter.test.ts > native staff command adapters > lists only real invitation pages with actual inviter labels and validates the revoke ACK
+RepoError: Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.
+ ❯ http src/lib/api/client.ts:128:69
+
+ ❯ Object.revokeInvitation src/lib/repositories/connected/staff.ts:149:29
+ ❯ Object.revokeInvitation src/lib/repositories/connected/common.ts:12:21
+ ❯ tests/unit/api-staff-adapter.test.ts:52:166
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/unit/api-staff-adapter.test.ts > native staff command adapters > rejects lifecycle metadata missing from the server rather than fabricating empty grants or join dates
+AssertionError: expected TypeError: Cannot read properties of unde… to match object { code: 'READ_ERROR' }
+
+- Expected
++ Received
+
+- {
+-   "code": "READ_ERROR",
++ TypeError {
++   "message": "Cannot read properties of undefined (reading 'map')",
+  }
+
+ ❯ tests/unit/api-staff-adapter.test.ts:56:5
+     54|   it('rejects lifecycle metadata missing from the server rather than f…
+     55|     const {schoolRoleGrants:_omit,...missing}=member;vi.stubGlobal('fe…
+     56|     await expect(connectedStaffRepo.setMemberRoles(ctx,schoolId,member…
+       |     ^
+     57|   });
+     58|   it('explains actual policy failures while retaining native problem m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed | 20 passed (23)
+      Tests  6 failed | 168 passed (174)
+   Start at  10:36:55
+   Duration  3.84s (transform 2.43s, setup 1.39s, collect 6.09s, tests 3.66s, environment 7ms, prepare 4.02s)
