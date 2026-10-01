@@ -19917,6 +19917,8 @@
                   "/conduct",
                   "/timetable",
                   "/groups",
+                  "/seating",
+                  "/duties",
                   "/activities",
                   "/announcements",
                   "/files",
@@ -20464,6 +20466,534 @@
       "required": [
         "data",
         "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassGroupWorkspace": {
+      "type": "object",
+      "properties": {
+        "schoolId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "classVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "canEdit": {
+          "type": "boolean"
+        },
+        "groupsVisible": {
+          "type": "boolean"
+        },
+        "students": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "studentCode": {
+                "type": "string"
+              },
+              "fullName": {
+                "type": "string"
+              },
+              "groupId": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "enrollmentId",
+              "studentCode",
+              "fullName",
+              "groupId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "name": {
+                "type": "string"
+              },
+              "sortOrder": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "name",
+              "sortOrder"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "positionDefinitions": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "singleHolder": {
+                "type": "boolean"
+              },
+              "groupId": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "code",
+              "name",
+              "singleHolder",
+              "groupId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "holders": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "positionId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "startsOn": {
+                "type": "string",
+                "format": "date"
+              },
+              "endsOn": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "positionId",
+              "enrollmentId",
+              "startsOn",
+              "endsOn"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schoolId",
+        "yearId",
+        "classId",
+        "today",
+        "referenceDate",
+        "classVersion",
+        "readOnly",
+        "canEdit",
+        "groupsVisible",
+        "students",
+        "groups",
+        "positionDefinitions",
+        "holders"
+      ],
+      "additionalProperties": false
+    },
+    "ClassSeatingWorkspace": {
+      "type": "object",
+      "properties": {
+        "schoolId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "classId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "classVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "canEdit": {
+          "type": "boolean"
+        },
+        "groupsVisible": {
+          "type": "boolean"
+        },
+        "students": {
+          "type": "array",
+          "maxItems": 5000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "enrollmentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "studentCode": {
+                "type": "string"
+              },
+              "fullName": {
+                "type": "string"
+              },
+              "groupId": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "enrollmentId",
+              "studentCode",
+              "fullName",
+              "groupId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "groupNames": {
+          "type": "array",
+          "maxItems": 100,
+          "nullable": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "latestRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "plan": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "effectiveOn": {
+              "type": "string",
+              "format": "date"
+            },
+            "endsOn": {
+              "type": "string",
+              "format": "date",
+              "nullable": true
+            },
+            "rows": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "nullable": true
+            },
+            "cols": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "nullable": true
+            },
+            "note": {
+              "type": "string",
+              "maxLength": 120,
+              "nullable": true
+            },
+            "seats": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "row": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "column": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 199
+                  },
+                  "enrollmentId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "key",
+                  "row",
+                  "column",
+                  "enrollmentId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "revision",
+            "effectiveOn",
+            "endsOn",
+            "rows",
+            "cols",
+            "note",
+            "seats"
+          ],
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "history": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "effectiveOn": {
+                "type": "string",
+                "format": "date"
+              },
+              "endsOn": {
+                "type": "string",
+                "format": "date",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "ACTIVE",
+                  "ARCHIVED"
+                ]
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdByName": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "version",
+              "revision",
+              "effectiveOn",
+              "endsOn",
+              "status",
+              "createdAt",
+              "createdByName"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schoolId",
+        "yearId",
+        "classId",
+        "today",
+        "referenceDate",
+        "classVersion",
+        "readOnly",
+        "canEdit",
+        "groupsVisible",
+        "students",
+        "groupNames",
+        "latestRevision",
+        "plan",
+        "history"
+      ],
+      "additionalProperties": false
+    },
+    "ClassGroupWorkspaceResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ClassGroupWorkspace"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassSeatingWorkspaceResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ClassSeatingWorkspace"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ClassSeatingRevisionSave": {
+      "type": "object",
+      "properties": {
+        "effectiveOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "seats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Seat"
+          },
+          "maxItems": 200
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "required": [
+        "effectiveOn",
+        "seats",
+        "expectedRevision"
       ],
       "additionalProperties": false
     }
@@ -76120,6 +76650,482 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ClassWorkspaceOverviewResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getClassGroupWorkspace",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/group-workspace",
+      "title": "getClassGroupWorkspace",
+      "tag": "Classroom",
+      "permission": "class.read",
+      "scope": "school",
+      "request": null,
+      "response": "ClassGroupWorkspace",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL13"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassGroupWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getClassSeatingWorkspace",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/seating-workspace",
+      "title": "getClassSeatingWorkspace",
+      "tag": "Classroom",
+      "permission": "class.read",
+      "scope": "school",
+      "request": null,
+      "response": "ClassSeatingWorkspace",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL14"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassSeatingWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "saveClassSeatingRevision",
+      "method": "POST",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/seating-revisions",
+      "title": "saveClassSeatingRevision",
+      "tag": "Classroom",
+      "permission": "seating.manage",
+      "scope": "school",
+      "request": "ClassSeatingRevisionSave",
+      "response": "SeatingPlan",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL14"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ClassSeatingRevisionSave"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatingPlanResponse"
               }
             }
           }

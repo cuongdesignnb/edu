@@ -1,0 +1,23 @@
+{
+  "baseline": "f14ce3261e98482f3beb678c1730c91d13bf75e5",
+  "existingOperationsUnchanged": 343,
+  "existingSchemasUnchanged": 462,
+  "changedSchemas": [
+    "ClassWorkspaceHeader"
+  ],
+  "headerChange": "Organization tab routes to independently authorized groups, seating, or duties; duty.read can navigate without management.",
+  "permissionsUnchanged": true,
+  "rolesUnchanged": true,
+  "addedOperations": [
+    "getClassGroupWorkspace",
+    "getClassSeatingWorkspace",
+    "saveClassSeatingRevision"
+  ],
+  "addedSchemas": [
+    "ClassGroupWorkspace",
+    "ClassGroupWorkspaceResponse",
+    "ClassSeatingRevisionSave",
+    "ClassSeatingWorkspace",
+    "ClassSeatingWorkspaceResponse"
+  ]
+}

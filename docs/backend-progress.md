@@ -347,6 +347,9 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listTeacherClassDirectory | TE02 | TESTED | qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate. |
 | getClassWorkspaceHeader | CL01 | TESTED | qa/backend/b6-class-header-postgres-selected-visual-corrected.log: real PostgreSQL 3/3 on current image; exact school/year/class/current assignment/grant rights, independent minimal fields, real publish/withdraw and parent-link counters, foreign/future/expired/revoked/ended denial. Header only; CL01 overview and full current-tree regression remain separate. |
 | getClassWorkspaceOverview | CL01 | TESTED | qa/backend/b6-class-overview-postgres-final.log: 10/10 selected PostgreSQL checks, zero failed/skipped/cancelled; exact DAILY source, publish/withdraw, own SUBJECT lessons, current revoke, holiday/archive/future scope, actual conduct/adjustment transitions and complete100/101 panel bounds. Backend49/49, frontend373/373, selected Edge11/11 intercepted contracts; current full PostgreSQL/E2E/B7 NOT_RUN. |
+| getClassGroupWorkspace | CL13 | TESTED | qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN. |
+| getClassSeatingWorkspace | CL14 | TESTED | qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN. |
+| saveClassSeatingRevision | CL14 | TESTED | qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -432,8 +435,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | CL10 | core | TESTED | NOT_STARTED |  |  |
 | CL11 | core | TESTED | NOT_STARTED |  |  |
 | CL12 | core | TESTED | NOT_STARTED |  |  |
-| CL13 | core | TESTED | NOT_STARTED |  |  |
-| CL14 | core | TESTED | NOT_STARTED |  |  |
+| CL13 | core | TESTED | IMPLEMENTED |  | Native dated organization groups/positions and atomic seating revisions; setup and retry preserve actual IDs, displayed versions and idempotency. Four desktop/mobile screenshots inspected; Edge12/12 intercepted contracts. PostgreSQL browser E2E and whole-screen acceptance remain pending. |
+| CL14 | core | TESTED | IMPLEMENTED |  | Native dated organization groups/positions and atomic seating revisions; setup and retry preserve actual IDs, displayed versions and idempotency. Four desktop/mobile screenshots inspected; Edge12/12 intercepted contracts. PostgreSQL browser E2E and whole-screen acceptance remain pending. |
 | CL15 | core | TESTED | NOT_STARTED |  |  |
 | CL16 | core | TESTED | NOT_STARTED |  |  |
 | CL17 | core | TESTED | NOT_STARTED |  |  |

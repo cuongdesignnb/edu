@@ -139,7 +139,7 @@ export function ClassRoster() {
                 <GroupsSummary />
               </div>
             )}
-            <ChangeGroupDialog open={!!groupFor} onOpenChange={(o) => { if (!o) setGroupFor(null); }} schoolId={schoolId} classId={classId} student={groupFor} groups={d.groups} />
+            <ChangeGroupDialog open={!!groupFor} onOpenChange={(o) => { if (!o) setGroupFor(null); }} schoolId={schoolId} yearId={yearId} classId={classId} expectedClassVersion={header.class.version} student={groupFor} groups={d.groups} />
             <TransferDialog open={transfer.open} onOpenChange={(o) => setTransfer((t) => ({ ...t, open: o }))} schoolId={schoolId} yearId={yearId} classId={classId} preset={transfer.preset} students={d.rows} />
           </div>
         );
@@ -150,16 +150,16 @@ export function ClassRoster() {
 
 function SeatingPreview() {
   const { schoolId, yearId, classId, base, can, readOnly } = useClassroom();
-  const q = useRepo(["class-seating", classId], (ctx) => classroomRepo.seating(ctx, schoolId, yearId, classId));
+  const q = useRepo(["class-seating", schoolId, yearId, classId], (ctx) => classroomRepo.seating(ctx, schoolId, yearId, classId));
   return (
     <Card>
       <CardHeader title="Sơ đồ lớp" icon={<LayoutGrid className="size-5 text-primary" />}
         action={<ButtonLink href={`${base}/seating`} size="sm" icon={can("seating.manage") && !readOnly ? <Pencil className="size-4" /> : <Eye className="size-4" />}>{can("seating.manage") && !readOnly ? "Cập nhật sơ đồ" : "Xem sơ đồ"}</ButtonLink>} />
       <div className="px-4 pb-4">
-        {q.isLoading ? <Skeleton className="h-72" /> : !q.data?.plan ? <EmptyState compact title="Chưa có sơ đồ lớp" description="Tạo sơ đồ để xếp chỗ ngồi theo phiên bản." /> : (
+        {q.isError ? <p role="alert" className="error-text">{q.error.message}</p> : q.isLoading ? <Skeleton className="h-72" /> : !q.data?.plan ? <EmptyState compact title="Chưa có sơ đồ lớp" description="Tạo sơ đồ để xếp chỗ ngồi theo phiên bản." /> : (
           <Link href={`${base}/seating`} className="block" aria-label="Mở sơ đồ lớp">
             <ClassroomFrame compact>
-              <SeatMapView compact rows={q.data.plan.rows} cols={q.data.plan.cols} seats={q.data.plan.seats} names={new Map(q.data.students.map((s) => [s.id, s.fullName]))} />
+              {q.data.plan.rows!==null&&q.data.plan.cols!==null?<SeatMapView compact rows={q.data.plan.rows} cols={q.data.plan.cols} seats={q.data.plan.seats} names={new Map(q.data.students.map((s) => [s.id, s.fullName]))} />:<p className="text-sm text-muted">Sơ đồ này chưa có vị trí ghế.</p>}
             </ClassroomFrame>
             <p className="mt-2 text-[12px] text-muted">Phiên bản {q.data.plan.version} · áp dụng từ {fmtDate(q.data.plan.effectiveDate)}{q.data.unseated.length ? ` · ${q.data.unseated.length} học sinh chưa có chỗ` : ""}</p>
           </Link>
@@ -177,17 +177,17 @@ function GroupsSummary() {
     <Card>
       <CardHeader title="Tổ & Chức vụ" icon={<Users2 className="size-5 text-primary" />} action={<ButtonLink href={`${base}/groups`} size="sm" icon={<UserRound className="size-4" />}>{can("groups.manage") && !readOnly ? "Phân vai trò" : "Xem chi tiết"}</ButtonLink>} />
       <div className="px-4 pb-4">
-        {q.isLoading ? <Skeleton className="h-40" /> : q.data && (
+        {q.isError ? <p role="alert" className="error-text">{q.error.message}</p> : q.isLoading ? <Skeleton className="h-40" /> : q.data && (
           <>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 xl:grid-cols-2">
               {q.data.groups.map((g, i) => {
-                const leader = q.data!.positions.find((p) => p.position === "group_leader" && p.groupId === g.id);
-                const special = q.data!.positions.filter((p) => p.position !== "group_leader" && g.members.some((m) => m.id === p.studentId));
+                const leaders = q.data!.positions.filter((p) => p.groupId === g.id);
+                const special = q.data!.positions.filter((p) => p.groupId === null && g.members.some((m) => m.id === p.studentId));
                 return (
                   <Link key={g.id} href={`${base}/groups`} className="rounded-xl border border-line bg-white p-2.5 hover:border-[#9cc7f5]">
                     <p className={`-mx-2.5 -mt-2.5 mb-2 rounded-t-xl px-2.5 py-1.5 text-[14px] font-bold ${TONES[i % 4]}`}>{g.name} <span className="text-[11.5px] font-normal">({g.members.length} học sinh)</span></p>
-                    {special.map((p) => <p key={p.id} className="flex items-start gap-1.5 text-[12px]"><Crown className="mt-0.5 size-3.5 flex-none text-warning" aria-hidden /><span><b className="text-ink">{positionLabel[p.position as StudentPositionKey]}</b><span className="block text-muted">{p.studentName}</span></span></p>)}
-                    <p className="flex items-start gap-1.5 text-[12px]"><UserRound className="mt-0.5 size-3.5 flex-none text-primary" aria-hidden /><span><b className="text-ink">Tổ trưởng</b><span className="block text-muted">{leader?.studentName ?? "Chưa phân công"}</span></span></p>
+                    {special.map((p) => <p key={p.id} className="flex items-start gap-1.5 text-[12px]"><Crown className="mt-0.5 size-3.5 flex-none text-warning" aria-hidden /><span><b className="text-ink">{p.positionName}</b><span className="block text-muted">{p.studentName}</span></span></p>)}
+                    {leaders.map(p=><p key={p.id} className="flex items-start gap-1.5 text-[12px]"><UserRound className="mt-0.5 size-3.5 flex-none text-primary" aria-hidden /><span><b className="text-ink">{p.positionName}</b><span className="block text-muted">{p.studentName}</span></span></p>)}
                   </Link>
                 );
               })}

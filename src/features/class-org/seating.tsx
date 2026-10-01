@@ -21,7 +21,7 @@ interface Layout { rows: number; cols: number; seats: Record<string, string | nu
 
 function toLayout(p: Data["plan"], rows = 6, cols = 6): Layout {
   const seats: Record<string, string | null> = {};
-  const r = p?.rows ?? rows, c = p?.cols ?? cols;
+  const r = p ? p.rows ?? 0 : rows, c = p ? p.cols ?? 0 : cols;
   for (let i = 1; i <= r; i++) for (let j = 1; j <= c; j++) seats[seatKey(i, j)] = null;
   p?.seats.forEach((s) => { if (s.seat in seats) seats[s.seat] = s.studentId; });
   return { rows: r, cols: c, seats };
@@ -37,7 +37,7 @@ const seatLabel = (k: string) => { const m = k.match(/^r(\d+)c(\d+)$/); return m
 /** CL14 — seating editor (C066 / O24): select-then-place (no drag required), undo/redo, effective date, versions. */
 export function SeatingEditor() {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["class-seating", classId], (ctx) => classroomRepo.seating(ctx, schoolId, yearId, classId));
+  const q = useRepo(["class-seating", schoolId, yearId, classId], (ctx) => classroomRepo.seating(ctx, schoolId, yearId, classId));
   const [nonce, setNonce] = useState(0);
   return (
     <div className="page">
@@ -49,7 +49,7 @@ export function SeatingEditor() {
 }
 
 function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
-  const { schoolId, classId, readOnly } = useClassroom();
+  const { schoolId, yearId, classId, readOnly } = useClassroom();
   const ctx = useCtx();
   const editable = d.canEdit && !readOnly;
   const base = useMemo(() => toLayout(d.plan), [d.plan]);
@@ -57,7 +57,7 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
   const [idx, setIdx] = useState(0);
   const layout = stack[idx];
   const [sel, setSel] = useState<{ kind: "student"; id: string } | { kind: "seat"; key: string } | null>(null);
-  const [date, setDate] = useState<string | undefined>(ctx.today);
+  const [date, setDate] = useState<string | undefined>(d.date < d.today ? d.today : d.date);
   const [note, setNote] = useState("");
   const [fit, setFit] = useState(false);
   const [listMode, setListMode] = useState(false);
@@ -66,8 +66,8 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
   const names = useMemo(() => new Map(d.students.map((s) => [s.id, s.fullName])), [d.students]);
   const seatOf = useMemo(() => { const m = new Map<string, string>(); Object.entries(layout.seats).forEach(([k, v]) => { if (v) m.set(v, k); }); return m; }, [layout]);
   const unseated = d.students.filter((s) => !seatOf.has(s.id));
-  const dirty = !same(layout, base);
-  const latestVersion = Math.max(0, ...d.history.map((h) => h.version));
+  const dirty = !same(layout, base) || note.trim().length > 0 || date !== (d.date < d.today ? d.today : d.date);
+  const latestVersion = d.latestRevision;
 
   const push = (next: Layout) => { const s = stack.slice(0, idx + 1); s.push(next); setStack(s); setIdx(s.length - 1); setErr(undefined); };
   const place = (studentId: string, key: string) => {
@@ -97,7 +97,7 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
   const setSize = (rows: number, cols: number) => push(resize(layout, rows, cols));
   const lostOnShrink = (rows: number, cols: number) => Object.entries(layout.seats).filter(([k, v]) => { const m = k.match(/^r(\d+)c(\d+)$/)!; return v && (Number(m[1]) > rows || Number(m[2]) > cols); }).length;
 
-  const save = useCommand((c) => classroomRepo.saveSeating(c, schoolId, classId, { rows: layout.rows, cols: layout.cols, seats: Object.entries(layout.seats).map(([seat, studentId]) => ({ seat, studentId })), effectiveDate: date!, basedOnVersion: latestVersion, note: note.trim() || undefined }), {
+  const save = useCommand((c) => classroomRepo.saveSeating(c, schoolId, classId, { yearId, rows: layout.rows, cols: layout.cols, seats: Object.entries(layout.seats).map(([seat, studentId]) => ({ seat, studentId })), effectiveDate: date!, basedOnVersion: latestVersion, note: note.trim() || undefined }), {
     success: (p) => `Đã lưu sơ đồ phiên bản ${p.version}, áp dụng từ ${fmtDate(p.effectiveDate)}`,
     onError: (e) => { if (e.code === "CONFLICT") setConflict(e); else if (e.code === "VALIDATION") setErr(e.fieldErrors ? Object.values(e.fieldErrors).join("; ") : e.message); },
   });
@@ -127,7 +127,7 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
               <ul className="divide-y divide-line rounded-xl border border-line">
                 {d.students.map((s) => (
                   <li key={s.id} className="flex flex-wrap items-center gap-2 px-3 py-2 text-sm">
-                    <span className="min-w-0 flex-1"><b className="text-ink">{s.fullName}</b> <span className="text-muted">· {s.groupName ?? "Chưa phân tổ"}</span></span>
+                    <span className="min-w-0 flex-1"><b className="text-ink">{s.fullName}</b> <span className="text-muted">· {d.groupsVisible ? s.groupName ?? "Chưa phân tổ" : "Không có quyền xem tổ"}</span></span>
                     <select className="select w-full sm:w-[230px]" aria-label={`Ghế của ${s.fullName}`} value={seatOf.get(s.id) ?? ""} onChange={(e) => { if (e.target.value) place(s.id, e.target.value); else { const k = seatOf.get(s.id); if (k) clear(k); } }}>
                       <option value="">Chưa có chỗ</option>
                       {Object.keys(layout.seats).map((k) => <option key={k} value={k}>{seatLabel(k)}{layout.seats[k] && layout.seats[k] !== s.id ? ` — đổi với ${shortName(names.get(layout.seats[k]!) ?? "")}` : ""}</option>)}

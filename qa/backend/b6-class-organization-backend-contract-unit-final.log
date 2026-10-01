@@ -1,0 +1,147 @@
+✖ staff preview context has a minimal context schema and independent school authority (2.172ms)
+✖ class workspace header has exact year routing and explicitly permits absent independent period metadata (0.4534ms)
+✖ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (0.4214ms)
+✖ native organization seating save requires the displayed revision and rejects actor or scope authority in its body (1.0411ms)
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (1.0365ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (16.2342ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (34.7056ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (25.8519ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (18.2124ms)
+✔ login rejects spoofed role, school and unknown fields (5.7537ms)
+✔ private user DTO rejects secrets and unknown properties (6.8101ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.3135ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (46.0881ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (48.0221ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (37.405ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (37.3307ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (20.9451ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (4.9684ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (57.127ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (30.9216ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (37.7518ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (84.9998ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (105.8552ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (31.6276ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (5.6208ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (7.0585ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (6.0067ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (7.5168ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (16.4032ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (11.8258ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (10.6151ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (27.9098ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (11.4874ms)
+✖ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (0.7691ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (9.7348ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (10.6847ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (22.6101ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.9155ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (1.813ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (3.7155ms)
+✔ grant action and class scope stay together (1.3361ms)
+✔ subject grants never authorize management without explicit subject policy (0.2562ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.1746ms)
+✔ a custom class grant authorizes only its delegated action and class (0.1955ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.4836ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (4.7734ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.5929ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (3.9813ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (2.2107ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (280.7661ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 44
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2708.4959
+
+✖ failing tests:
+
+test at tests\contract\schemas.test.mjs:4:1
+✖ staff preview context has a minimal context schema and independent school authority (2.172ms)
+  TypeError: Cannot read properties of undefined (reading 'response')
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:5:102)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at tests\contract\schemas.test.mjs:9:1
+✖ class workspace header has exact year routing and explicitly permits absent independent period metadata (0.4534ms)
+  TypeError: Cannot read properties of undefined (reading 'auth')
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:10:80)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests\contract\schemas.test.mjs:15:1
+✖ class workspace overview is exact-class staff read with nullable panels bounded previews and no private source objects (0.4214ms)
+  TypeError: Cannot read properties of undefined (reading 'auth')
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:16:82)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests\contract\schemas.test.mjs:22:1
+✖ native organization seating save requires the displayed revision and rejects actor or scope authority in its body (1.0411ms)
+  Error: can't resolve reference contract#/components/schemas/ClassSeatingRevisionSave from id #
+      at Object.code (D:\Edu\backend\node_modules\ajv\dist\vocabularies\core\ref.js:21:19)
+      at keywordCode (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:464:13)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:185:25
+      at CodeGen.code (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:439:13)
+      at CodeGen.block (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:568:18)
+      at schemaKeywords (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:185:13)
+      at typeAndKeywords (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:128:5)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:70:9
+      at CodeGen.code (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:439:13)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:37:166 {
+    missingRef: 'contract#/components/schemas/ClassSeatingRevisionSave',
+    missingSchema: 'contract'
+  }
+
+test at tests\contract\schemas.test.mjs:28:1
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (1.0365ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  337 !== 346
+  
+      at TestContext.<anonymous> (file:///D:/Edu/backend/tests/contract/schemas.test.mjs:29:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 337,
+    expected: 346,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\contract\schemas.test.mjs:238:1
+✖ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (0.7691ms)
+  Error: can't resolve reference contract#/components/schemas/ParentPublishedOverview from id #
+      at Object.code (D:\Edu\backend\node_modules\ajv\dist\vocabularies\core\ref.js:21:19)
+      at keywordCode (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:464:13)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:185:25
+      at CodeGen.code (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:439:13)
+      at CodeGen.block (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:568:18)
+      at schemaKeywords (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:185:13)
+      at typeAndKeywords (D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:128:5)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:70:9
+      at CodeGen.code (D:\Edu\backend\node_modules\ajv\dist\compile\codegen\index.js:439:13)
+      at D:\Edu\backend\node_modules\ajv\dist\compile\validate\index.js:37:166 {
+    missingRef: 'contract#/components/schemas/ParentPublishedOverview',
+    missingSchema: 'contract'
+  }
+EXIT_CODE=1

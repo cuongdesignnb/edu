@@ -1,0 +1,36 @@
+ Container edumanage_backend_test-runner-run-a57608d0b7d0 Creating 
+ Container edumanage_backend_test-runner-run-a57608d0b7d0 Created 
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (1744.653641ms)
+✔ B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts (688.110825ms)
+✔ B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope (416.930561ms)
+✖ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (274.781373ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4084.164335
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1745:1
+✖ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (274.781373ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:resource_not_found","title":"RESOURCE_NOT_FOUND","status":404,"code":"RESOURCE_NOT_FOUND","requestId":"bdde002a-cf1b-46ab-906a-c685fa8fced2"}
+  
+  404 !== 422
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1751:178)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 422,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

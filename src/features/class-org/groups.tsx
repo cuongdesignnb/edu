@@ -1,27 +1,26 @@
 "use client";
 import { useMemo, useRef, useState, type DragEvent } from "react";
 import { clsx } from "clsx";
-import { Crown, Info, MoveRight, X, GripVertical, UserRound } from "lucide-react";
-import type { StudentPositionKey } from "@/lib/model/types";
+import { Crown, Info, MoveRight, X, GripVertical, UserRound, Plus } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
-import { fmtDate, positionLabel } from "@/lib/formatters";
+import { fmtDate } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { ClassOrgNav } from "./org-nav";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DateField, SelectField } from "@/components/ui/form";
+import { DateField, SelectField, TextField } from "@/components/ui/form";
+import { Drawer } from "@/components/ui/dialog";
 import { QueryState } from "@/components/ui/states";
 
 type Data = Awaited<ReturnType<typeof classroomRepo.groups>>;
-const UNIQUE: StudentPositionKey[] = ["class_monitor", "secretary", "vice_study", "vice_labor"];
 const COL_TONE = ["bg-[#fff4e0] text-[#9a5700]", "bg-[#f1ecff] text-[#5b3cc4]", "bg-[#e6f7f0] text-[#05744f]", "bg-[#e8f3ff] text-[#0659c2]"];
 
 /** CL13 — groups & positions board (C065 / O23): drag-and-drop AND keyboard/select moves, effective date. */
 export function GroupsBoard() {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["class-groups", classId], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId));
+  const q = useRepo(["class-groups", schoolId, yearId, classId], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId));
   return (
     <div className="page">
       <ClassHeader title="Tổ & chức vụ" subtitle="Phân tổ và giao chức vụ cho học sinh theo ngày hiệu lực" crumbs={[{ label: "Tổ & chức vụ" }]} />
@@ -33,18 +32,19 @@ export function GroupsBoard() {
 }
 
 function Board({ d }: { d: Data }) {
-  const { schoolId, classId, readOnly } = useClassroom();
+  const { schoolId, yearId, classId, readOnly } = useClassroom();
   const ctx = useCtx();
   const editable = d.canEdit && !readOnly;
-  const [date, setDate] = useState<string | undefined>(ctx.today);
+  const [date, setDate] = useState<string | undefined>(d.date < d.today ? d.today : d.date);
+  const [configuration, setConfiguration] = useState<"group" | "position" | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [target, setTarget] = useState("");
   const [dragOver, setDragOver] = useState<string | null>(null);
   const [posErr, setPosErr] = useState<Record<string, string>>({});
   const [posPick, setPosPick] = useState<Record<string, string>>({});
-  const students = useMemo(() => [...d.groups.flatMap((g) => g.members.map((m) => ({ ...m, groupId: g.id as string | null, groupName: g.name }))), ...d.unassigned.map((m) => ({ ...m, positions: [] as StudentPositionKey[], groupId: null, groupName: "Chưa phân tổ" }))], [d]);
+  const students = useMemo(() => [...d.groups.flatMap((g) => g.members.map((m) => ({ ...m, groupId: g.id as string | null, groupName: g.name }))), ...d.unassigned.map((m) => ({ ...m, groupId: null, groupName: "Chưa phân tổ" }))], [d]);
   const byId = new Map(students.map((s) => [s.id, s]));
-  const move = useCommand((c, sid: string, groupId: string | null) => classroomRepo.setGroup(c, schoolId, classId, { studentIds: [sid], groupId, effectiveDate: date! }), {
+  const move = useCommand((c, sid: string, groupId: string | null) => classroomRepo.setGroup(c, schoolId, classId, { yearId, studentIds: [sid], groupId, effectiveDate: date!, expectedClassVersion: d.classVersion }), {
     success: () => "Đã chuyển tổ", onSuccess: () => { setPicked(null); setTarget(""); },
   });
   const posKey = useRef("");
@@ -64,8 +64,8 @@ function Board({ d }: { d: Data }) {
     await setPos.run(input);
   };
   const onDrop = (e: DragEvent, groupId: string | null) => { e.preventDefault(); setDragOver(null); const sid = e.dataTransfer.getData("text/plain"); if (sid) doMove(sid, groupId); };
-  const columns = [...d.groups.map((g, i) => ({ id: g.id as string | null, name: g.name, tone: COL_TONE[i % 4], members: g.members })), { id: null, name: "Chưa phân tổ", tone: "bg-neutral-bg text-neutral-text", members: d.unassigned.map((u) => ({ ...u, positions: [] as StudentPositionKey[] })) }];
-  const holder = (p: StudentPositionKey, groupId?: string) => d.positions.find((x) => x.position === p && (!groupId || x.groupId === groupId));
+  const columns = [...d.groups.map((g, i) => ({ id: g.id as string | null, name: g.name, tone: COL_TONE[i % 4], members: g.members })), { id: null, name: "Chưa phân tổ", tone: "bg-neutral-bg text-neutral-text", members: d.unassigned }];
+  const positionRows=d.positionDefinitions.flatMap(p=>{const holders=d.positions.filter(h=>h.positionId===p.id),options=students.filter(s=>p.groupId===null||s.groupId===p.groupId).map(s=>({value:s.id,label:s.fullName}));return (p.singleHolder?[holders[0]]:[...holders,undefined]).map((h,index)=>({p,h,index,options}));});
 
   return (
     <div className="space-y-5">
@@ -76,6 +76,7 @@ function Board({ d }: { d: Data }) {
           <SelectField label="Chuyển sang tổ" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="Chọn tổ…" options={[...d.groups.map((g) => ({ value: g.id, label: g.name })), { value: "none", label: "Chưa phân tổ" }]} />
           <Button variant="primary" icon={<MoveRight className="size-4" />} loading={move.pending} disabled={!picked || !target || !date} onClick={() => picked && doMove(picked, target === "none" ? null : target)}>Chuyển</Button>
           <p className="text-[12.5px] text-muted md:col-span-4">Kéo thả thẻ học sinh giữa các cột, hoặc bấm vào thẻ để chọn rồi bấm “Chuyển vào đây” ở cột đích (dùng được bằng bàn phím).</p>
+          <Button size="sm" variant="secondary" icon={<Plus className="size-4" />} onClick={() => setConfiguration("group")}>Thêm tổ</Button>
         </Card>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -92,7 +93,7 @@ function Board({ d }: { d: Data }) {
                     onClick={() => setPicked((p) => (p === m.id ? null : m.id))} aria-pressed={picked === m.id}
                     className={clsx("flex w-full items-center gap-2 rounded-lg border px-2 py-1.5 text-left text-[13px]", picked === m.id ? "border-primary bg-primary-light" : "border-line bg-white hover:border-[#9cc7f5]", editable && "cursor-grab", !editable && "cursor-default")}>
                     {editable && <GripVertical className="size-3.5 flex-none text-faint" aria-hidden />}
-                    <span className="min-w-0 flex-1"><span className="block truncate font-medium text-ink">{m.fullName}</span>{m.positions.length > 0 && <span className="block truncate text-[11.5px] text-warning-text">{m.positions.map((p) => positionLabel[p]).join(", ")}</span>}</span>
+                    <span className="min-w-0 flex-1"><span className="block truncate font-medium text-ink">{m.fullName}</span>{m.positions.length > 0 && <span className="block truncate text-[11.5px] text-warning-text">{m.positions.join(", ")}</span>}</span>
                   </button>
                 </li>
               ))}
@@ -105,20 +106,24 @@ function Board({ d }: { d: Data }) {
       </div>
 
       <Card>
-        <CardHeader title="Chức vụ trong lớp" icon={<Crown className="size-5 text-warning" />} subtitle={`Hiệu lực tại ${fmtDate(d.date)} · Lớp trưởng, Bí thư, Lớp phó là duy nhất; mỗi tổ một tổ trưởng`} />
+        <CardHeader title="Chức vụ trong lớp" icon={<Crown className="size-5 text-warning" />} subtitle={`Hiệu lực tại ${fmtDate(d.date)} · Theo cấu hình chức vụ của lớp`} action={editable && <Button size="sm" variant="secondary" icon={<Plus className="size-4" />} onClick={() => setConfiguration("position")}>Thêm chức vụ</Button>} />
         <div className="grid gap-3 px-5 pb-5 lg:grid-cols-2">
-          {UNIQUE.map((p) => <PositionRow key={p} label={positionLabel[p]} current={holder(p)} options={students.map((s) => ({ value: s.id, label: s.fullName }))} editable={editable} busy={setPos.pending} error={posErr[p]}
-            pick={posPick[p] ?? ""} onPick={(v) => setPosPick((x) => ({ ...x, [p]: v }))}
-            onAssign={(sid) => date && runPos(p, { studentId: sid, position: p, effectiveDate: date })}
-            onRemove={(sid) => date && runPos(p, { studentId: sid, position: p, effectiveDate: date, remove: true })} />)}
-          {d.groups.map((g) => <PositionRow key={g.id} label={`Tổ trưởng ${g.name}`} current={holder("group_leader", g.id)} options={g.members.map((s) => ({ value: s.id, label: s.fullName }))} editable={editable} busy={setPos.pending} error={posErr[g.id]}
-            pick={posPick[g.id] ?? ""} onPick={(v) => setPosPick((x) => ({ ...x, [g.id]: v }))}
-            onAssign={(sid) => date && runPos(g.id, { studentId: sid, position: "group_leader", effectiveDate: date })}
-            onRemove={(sid) => date && runPos(g.id, { studentId: sid, position: "group_leader", effectiveDate: date, remove: true })} />)}
+          {d.positionDefinitions.length === 0 && <p className="text-sm text-muted">Chưa cấu hình chức vụ cho lớp.</p>}
+          {positionRows.map(({p,h,index,options})=><PositionRow key={h?.id??p.id+":"+index} label={p.name} current={h} options={options} editable={editable} busy={setPos.pending} error={posErr[p.id]}
+            pick={posPick[p.id] ?? ""} onPick={(v) => setPosPick((x) => ({ ...x, [p.id]: v }))}
+            onAssign={(sid) => date && runPos(p.id, { yearId, studentId:sid,positionId:p.id,effectiveDate:date })}
+            onRemove={(sid) => date && h && runPos(p.id, { yearId, studentId:sid,positionId:p.id,effectiveDate:date,remove:true,assignmentId:h.id,expectedVersion:h.version })} />)}
         </div>
       </Card>
+      {editable && configuration && <OrganizationDrawer key={configuration} kind={configuration} d={d} onClose={() => setConfiguration(null)} />}
     </div>
   );
+}
+
+function OrganizationDrawer({kind,d,onClose}:{kind:"group"|"position";d:Data;onClose:()=>void}){
+ const {schoolId,classId}=useClassroom();const [name,setName]=useState("");const [groupId,setGroupId]=useState("");const [singleHolder,setSingleHolder]=useState(true);const [error,setError]=useState("");const [code]=useState(()=>"p_"+crypto.randomUUID().replaceAll("-",""));
+ const save=useCommand(async c=>kind==="group"?classroomRepo.createGroup(c,schoolId,classId,name.trim(),Math.max(-1,...d.groups.map(g=>g.sortOrder))+1):classroomRepo.createPosition(c,schoolId,classId,{code,name:name.trim(),singleHolder,groupId:groupId||undefined}),{success:kind==="group"?"Đã thêm tổ":"Đã thêm chức vụ",onSuccess:onClose,onError:e=>setError(e.message)});
+ return <Drawer open onOpenChange={open=>{if(!open)onClose();}} title={kind==="group"?"Thêm tổ":"Thêm chức vụ"} busy={save.pending} footer={<><Button variant="ghost" disabled={save.pending} onClick={onClose}>Hủy</Button><Button variant="primary" loading={save.pending} disabled={!name.trim()} onClick={()=>void save.run()}>Lưu</Button></>}><div className="space-y-4"><TextField label={kind==="group"?"Tên tổ":"Tên chức vụ"} required value={name} onChange={e=>setName(e.target.value)} maxLength={200} />{kind==="position"&&<><SelectField label="Phạm vi chức vụ" value={groupId} onChange={e=>setGroupId(e.target.value)} options={[{value:"",label:"Cả lớp"},...d.groups.map(g=>({value:g.id,label:g.name}))]} /><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={singleHolder} onChange={e=>setSingleHolder(e.target.checked)} />Chỉ một học sinh giữ chức vụ tại cùng thời điểm</label></>}{error&&<p role="alert" className="error-text">{error}</p>}</div></Drawer>;
 }
 
 function PositionRow({ label, current, options, editable, busy, error, pick, onPick, onAssign, onRemove }: {
@@ -133,7 +138,7 @@ function PositionRow({ label, current, options, editable, busy, error, pick, onP
         {current && <span className="text-[12px] text-muted">từ {fmtDate(current.validFrom)}</span>}
         {editable && current && <Button size="sm" variant="ghost" className="ml-auto" icon={<X className="size-3.5" />} disabled={busy} onClick={() => onRemove(current.studentId)}>Bỏ chức vụ</Button>}
       </div>
-      {editable && (
+      {editable && !current && (
         <div className="mt-2 flex flex-wrap items-end gap-2">
           <select className="select min-w-0 flex-1" aria-label={`Chọn học sinh cho ${label}`} value={pick} onChange={(e) => onPick(e.target.value)}>
             <option value="">Chọn học sinh…</option>

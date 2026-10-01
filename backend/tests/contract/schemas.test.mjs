@@ -19,8 +19,14 @@ test('class workspace overview is exact-class staff read with nullable panels bo
  for(const bad of [{...v,studentId:id},{...v,internalNote:'secret'},{...v,tasks:[{kind:'role-spoof',count:1}]},{...v,lessons:[{...lesson,memberId:id}]},{...v,lessons:Array.from({length:101},()=>lesson)},{...v,groups:{items:[],noGroup:0,totalStudents:0,students:[]}}])assert.throws(()=>validateSchema('ClassWorkspaceOverview',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
 });
 
+test('native organization seating save requires the displayed revision and rejects actor or scope authority in its body',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',v={effectiveOn:'2026-10-01',expectedRevision:0,seats:[{key:'A1',row:0,column:0,enrollmentId:id}],note:'Ghi chú sơ đồ'};validateSchema('ClassSeatingRevisionSave',v);
+ for(const bad of [{effectiveOn:v.effectiveOn,seats:v.seats},{...v,actorId:id},{...v,schoolId:id},{...v,note:'x'.repeat(121)}])assert.throws(()=>validateSchema('ClassSeatingRevisionSave',bad));
+ const op=operations.find(o=>o.id==='saveClassSeatingRevision');assert.equal(op.permission,'seating.manage');assert.equal(op.request,'ClassSeatingRevisionSave');assert.equal(op.method,'POST');
+});
+
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,343);assert.equal(new Set(operations.map(op=>op.id )).size,343);
+  assert.equal(operations.length,346);assert.equal(new Set(operations.map(op=>op.id )).size,346);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

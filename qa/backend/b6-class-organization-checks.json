@@ -1,0 +1,118 @@
+{
+  "checkpoint": "B6 class organization; full goal remains active",
+  "baseline": "f14ce3261e98482f3beb678c1730c91d13bf75e5",
+  "recordedAt": "2026-10-01T14:49:31.738665+00:00",
+  "contract": {
+    "operations": 346,
+    "schemas": 468,
+    "semanticDiff": {
+      "baseline": "f14ce3261e98482f3beb678c1730c91d13bf75e5",
+      "existingOperationsUnchanged": 343,
+      "existingSchemasUnchanged": 462,
+      "changedSchemas": [
+        "ClassWorkspaceHeader"
+      ],
+      "headerChange": "Organization tab routes to independently authorized groups, seating, or duties; duty.read can navigate without management.",
+      "permissionsUnchanged": true,
+      "rolesUnchanged": true,
+      "addedOperations": [
+        "getClassGroupWorkspace",
+        "getClassSeatingWorkspace",
+        "saveClassSeatingRevision"
+      ],
+      "addedSchemas": [
+        "ClassGroupWorkspace",
+        "ClassGroupWorkspaceResponse",
+        "ClassSeatingRevisionSave",
+        "ClassSeatingWorkspace",
+        "ClassSeatingWorkspaceResponse"
+      ]
+    }
+  },
+  "migrations": {
+    "count": 46,
+    "newMigration": false,
+    "fullCurrentReplay": "NOT_RERUN"
+  },
+  "postgres": {
+    "status": "PASS_SELECTED_ONLY",
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 9531.675682,
+    "log": "b6-class-organization-postgres-nav.log",
+    "runnerImage": "sha256:d113081559dc74be2bc2c896c313af507c3699b39d11e314f6fda7055a0c8d66",
+    "fullCurrentRegression": "NOT_RERUN"
+  },
+  "backendUnitContracts": {
+    "passed": 50,
+    "durationMs": 985.747934,
+    "log": "b6-class-organization-backend-contract-unit-image.log"
+  },
+  "frontendUnit": {
+    "passed": 382,
+    "files": 45,
+    "durationSeconds": 10.81,
+    "apiTests": 341,
+    "historicalSyntheticTests": 41
+  },
+  "browser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "selectedFiles": [
+      "tests/native-ui-contract/class-header-contract.spec.ts",
+      "tests/native-ui-contract/class-organization-contract.spec.ts"
+    ],
+    "startTime": "2026-10-01T14:47:51.736Z",
+    "duration": 19996.170000000002,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "ownedNextPid": 38628,
+    "ownedNextClosed": true,
+    "screenshotsInspected": [
+      "groups-desktop",
+      "groups-mobile",
+      "seating-desktop",
+      "seating-mobile"
+    ]
+  },
+  "build": "PASS",
+  "backendTypes": "PASS",
+  "backendLint": "PASS",
+  "frontendTypes": "PASS",
+  "changedFrontendLint": "PASS",
+  "fullRootLint": "NOT_RERUN",
+  "facade": {
+    "nativeCandidates": 138,
+    "activatedNativeCandidates": 138,
+    "matchedLegacyMethods": 123,
+    "legacyMethods": 231,
+    "remainingLegacyMethods": 108
+  },
+  "operationStatuses": {
+    "IMPLEMENTED": 12,
+    "TESTED": 334
+  },
+  "coreScreens": {
+    "IMPLEMENTED": 65,
+    "NOT_STARTED": 50,
+    "STATIC_UNVERIFIED": 3
+  },
+  "latestOsPortCheck": {
+    "checkedAt": "2026-10-01T21:48:36.6887884+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "dockerReleaseUrl": "NOT_SERVING",
+  "postgresBrowserE2E": "NOT_RUN",
+  "releaseRestartPersistence": "NOT_RUN",
+  "physicalBackupRestore": "NOT_RUN",
+  "releaseWorkloadPerformance": "NOT_RUN",
+  "productionDeployed": false,
+  "userZipTouched": false,
+  "retainedVolumesDeleted": false
+}

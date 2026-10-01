@@ -1,0 +1,23 @@
+{
+  "prefix": "b6-class-organization",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T14:46:47.427Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/class-header-contract.spec.ts",
+    "tests/native-ui-contract/class-organization-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 45848,
+  "playwrightExitCode": 1,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T14:47:18.372Z",
+  "exitCode": 1
+}

@@ -8,6 +8,7 @@ import type { Handler,RequestContext,Result } from '../../api.router';
 import {teacherClassDirectory} from './teacher-class-directory';
 import {classWorkspaceHeader} from './class-workspace-header';
 import {classWorkspaceOverview} from './class-workspace-overview';
+import {classOrganizationWorkspace} from './class-organization-workspace';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const group:Resource={table:'app.class_groups',fields:{...meta,classId:'class_id',name:'name',sortOrder:'sort_order'},writeFields:['name','sortOrder'],search:['name'],filters:{}};
@@ -21,13 +22,14 @@ export class ClassroomService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
   handlers():Record<string,Handler>{
     return {...Object.fromEntries(['listGroups','createGroup','updateGroup','assignGroup','listPositions','createPosition','updatePosition',
-      'listPositionAssignments','assignPosition','endPositionAssignment','listSeatingPlans','createSeatingPlan','getSeatingPlan','updateSeatingPlan','activateSeatingPlan'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),listTeacherClassDirectory:(c:RequestContext)=>teacherClassDirectory(this.db,this.policy,c),getClassWorkspaceHeader:(c:RequestContext)=>classWorkspaceHeader(this.db,this.policy,c),getClassWorkspaceOverview:(c:RequestContext)=>classWorkspaceOverview(this.db,this.policy,c)};
+      'listPositionAssignments','assignPosition','endPositionAssignment','listSeatingPlans','createSeatingPlan','getSeatingPlan','updateSeatingPlan','activateSeatingPlan','saveClassSeatingRevision'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),listTeacherClassDirectory:(c:RequestContext)=>teacherClassDirectory(this.db,this.policy,c),getClassWorkspaceHeader:(c:RequestContext)=>classWorkspaceHeader(this.db,this.policy,c),getClassWorkspaceOverview:(c:RequestContext)=>classWorkspaceOverview(this.db,this.policy,c),getClassGroupWorkspace:(c:RequestContext)=>classOrganizationWorkspace(this.db,this.policy,c,'GROUPS'),getClassSeatingWorkspace:(c:RequestContext)=>classOrganizationWorkspace(this.db,this.policy,c,'SEATING')};
   }
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,date=c.body.effectiveOn??c.body.startsOn??c.body.endsOn??c.query.onDate;
     const allowed=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,date:date as string|undefined});
     const cls=await getResource(tx,resource('class'),schoolId,classId,c.operation.method!=='GET');
     const year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
+    if(c.params.yearId&&year.id!==c.params.yearId)notFound();
     if(c.operation.method!=='GET'&&(cls.status==='ARCHIVED'||year.status==='ARCHIVED'))throw new Problem(409,'YEAR_ARCHIVED');
     return {schoolId,classId,cls,year,...allowed};
   }
@@ -111,35 +113,41 @@ export class ClassroomService {
         const page=await listResource(tx,seating,ctx.schoolId,c.query,predicate,c.principal!.userId);return {...page,data:page.data.map(item=>this.seatingDto(item))};
       }
       if(op==='getSeatingPlan')return {data:this.seatingDto(dto(seating,await this.row(tx,seating,c,c.params.planId!)))};
-      if(op==='createSeatingPlan'||op==='updateSeatingPlan'){
+      if(op==='createSeatingPlan'||op==='updateSeatingPlan'||op==='saveClassSeatingRevision'){
         const day=String(c.body.effectiveOn);this.dateRange(ctx,day);if(day<ctx.today)validation('effectiveOn','Ngày áp dụng không trước hôm nay');
         const seats=c.body.seats as Seat[];await this.validateSeats(tx,c,seats,day);
         let plan:Row;
-        if(op==='createSeatingPlan'){
+        if(op!=='updateSeatingPlan'){
           const latest=Number((await one<{n:number}>(tx,'SELECT coalesce(max(revision),0) AS n FROM app.seating_plans WHERE school_id=$1 AND class_id=$2',[ctx.schoolId,ctx.classId]))!.n);
           if(c.body.expectedRevision!==undefined&&c.body.expectedRevision!==latest)throw new Problem(409,'SEATING_REVISION_CONFLICT',undefined,latest||undefined);
-          plan=(await one<Row>(tx,'INSERT INTO app.seating_plans(school_id,class_id,revision,effective_on,layout,created_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',[ctx.schoolId,ctx.classId,latest+1,day,{seats},c.principal!.userId]))!;
+          const layout=op==='saveClassSeatingRevision'?{seats,note:typeof c.body.note==='string'?c.body.note.trim():null}:{seats};
+          plan=(await one<Row>(tx,'INSERT INTO app.seating_plans(school_id,class_id,revision,effective_on,layout,created_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',[ctx.schoolId,ctx.classId,latest+1,day,layout,c.principal!.userId]))!;
         }else{
           plan=await this.row(tx,seating,c,c.params.planId!,true);this.version(plan,c.body.expectedVersion);if(plan.status!=='DRAFT')throw new Problem(409,'SEATING_IMMUTABLE');
           await tx.query('DELETE FROM app.seat_assignments WHERE school_id=$1 AND plan_id=$2',[ctx.schoolId,plan.id]);
           plan=(await one<Row>(tx,'UPDATE app.seating_plans SET effective_on=$3,layout=$4 WHERE school_id=$1 AND id=$2 RETURNING *',[ctx.schoolId,plan.id,day,{seats}]))!;
         }
         for(const seat of seats)await tx.query('INSERT INTO app.seat_assignments(school_id,class_id,plan_id,seat_key,enrollment_id) VALUES($1,$2,$3,$4,$5)',[ctx.schoolId,ctx.classId,plan.id,seat.key,seat.enrollmentId]);
-        await audit(tx,c,'seatingPlan',String(plan.id));return {data:this.seatingDto(dto(seating,plan)),status:op==='createSeatingPlan'?201:200};
+        await audit(tx,c,'seatingPlan',String(plan.id));
+        if(op==='saveClassSeatingRevision')return {data:await this.activateSeats(tx,c,ctx,plan),status:201};
+        return {data:this.seatingDto(dto(seating,plan)),status:op==='createSeatingPlan'?201:200};
       }
       if(op==='activateSeatingPlan'){
         const plan=await this.row(tx,seating,c,c.params.planId!,true);this.version(plan,c.body.expectedVersion);if(plan.status!=='DRAFT')throw new Problem(409,'SEATING_IMMUTABLE');
-        if(String(plan.effective_on)<ctx.today)validation('effectiveOn','Ngày áp dụng không trước hôm nay');await this.validateSeats(tx,c,(plan.layout as {seats:Seat[]}).seats,String(plan.effective_on));
-        const later=await one<{effective_on:string}>(tx,"SELECT effective_on FROM app.seating_plans WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on>$3 ORDER BY effective_on LIMIT 1",[ctx.schoolId,ctx.classId,plan.effective_on]);
-        await tx.query("UPDATE app.seating_plans SET status='ARCHIVED' WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on=$3",[ctx.schoolId,ctx.classId,plan.effective_on]);
-        await tx.query("UPDATE app.seating_plans SET ends_on=$3 WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on<$3 AND (ends_on IS NULL OR ends_on>$3)",[ctx.schoolId,ctx.classId,plan.effective_on]);
-        const row=await one<Row>(tx,"UPDATE app.seating_plans SET status='ACTIVE',ends_on=$3 WHERE school_id=$1 AND id=$2 RETURNING *",[ctx.schoolId,plan.id,later?.effective_on??ctx.year.ends_on]);await audit(tx,c,'seatingPlan',String(plan.id));return {data:this.seatingDto(dto(seating,row!))};
+        return {data:await this.activateSeats(tx,c,ctx,plan)};
       }
       throw new Error('Classroom operation registry mismatch');
     };
     return c.operation.method==='GET'?this.db.transaction(work,{schoolId:c.params.schoolId}):this.commands.execute(c,authorize,work);
   }
   private dateRange(ctx:Awaited<ReturnType<ClassroomService['context']>>,day:string){if(day<String(ctx.year.starts_on)||day>=String(ctx.year.ends_on))validation('onDate','Ngày ngoài năm học');}
+  private async activateSeats(tx:Transaction,c:RequestContext,ctx:Awaited<ReturnType<ClassroomService['context']>>,plan:Row){
+    if(String(plan.effective_on)<ctx.today)validation('effectiveOn','Ngày áp dụng không trước hôm nay');await this.validateSeats(tx,c,(plan.layout as {seats:Seat[]}).seats,String(plan.effective_on));
+    const later=await one<{effective_on:string}>(tx,"SELECT effective_on FROM app.seating_plans WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on>$3 ORDER BY effective_on LIMIT 1",[ctx.schoolId,ctx.classId,plan.effective_on]);
+    await tx.query("UPDATE app.seating_plans SET status='ARCHIVED' WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on=$3",[ctx.schoolId,ctx.classId,plan.effective_on]);
+    await tx.query("UPDATE app.seating_plans SET ends_on=$3 WHERE school_id=$1 AND class_id=$2 AND status='ACTIVE' AND effective_on<$3 AND (ends_on IS NULL OR ends_on>$3)",[ctx.schoolId,ctx.classId,plan.effective_on]);
+    const row=await one<Row>(tx,"UPDATE app.seating_plans SET status='ACTIVE',ends_on=$3 WHERE school_id=$1 AND id=$2 RETURNING *",[ctx.schoolId,plan.id,later?.effective_on??ctx.year.ends_on]);await audit(tx,c,'seatingPlan',String(plan.id));return this.seatingDto(dto(seating,row!));
+  }
   private async closeGroup(tx:Transaction,schoolId:string,row:Row,day:string){
     await tx.query(`UPDATE app.group_memberships SET ${String(row.starts_on)>=day?'cancelled_at=now()':'ends_on=$3'} WHERE school_id=$1 AND id=$2`,String(row.starts_on)>=day?[schoolId,row.id]:[schoolId,row.id,day]);
   }

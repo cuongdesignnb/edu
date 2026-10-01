@@ -1,0 +1,42 @@
+ Container edumanage_backend_test-runner-run-e39688fd0cfa Creating 
+ Container edumanage_backend_test-runner-run-e39688fd0cfa Created 
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (1547.618004ms)
+✔ B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts (693.610579ms)
+✔ B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope (372.239323ms)
+✖ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (179.862465ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3889.668569
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1745:1
+✖ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (179.862465ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   422,
+  +   422
+  -   201,
+  -   409
+    ]
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1748:76)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 422, 422 ],
+    expected: [ 201, 409 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-class-organization-adapter.test.ts (8 tests) 27ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  21:30:07
+   Duration  590ms (transform 176ms, setup 62ms, collect 182ms, tests 27ms, environment 0ms, prepare 120ms)
+
+EXIT_CODE=0

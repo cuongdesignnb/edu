@@ -8,6 +8,7 @@ import {withStaffAccess} from './common';
 import {http} from '../../api/client';
 import {nativeClassHeader} from './classroom-header';
 import {nativeClassOverview} from './classroom-overview';
+import {readGroupWorkspace,readSeatingWorkspace,moveClassGroup,changeClassPosition,saveClassSeating} from './classroom-organization';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -42,6 +43,13 @@ async function cards(schoolId:string,includeEnded=false){
   return rows.map(row=>nativeTeacherClass(row,schoolId)).sort((a,b)=>Number(b.live)-Number(a.live)||Number(b.duties.some(d=>d.live&&d.kind==='homeroom'))-Number(a.duties.some(d=>d.live&&d.kind==='homeroom'))||a.name.localeCompare(b.name,'vi')||a.id.localeCompare(b.id));
 }
 export const connectedClassroomRepo=withStaffAccess({
+  async groups(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readGroupWorkspace(schoolId,yearId,classId);},
+  async seating(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readSeatingWorkspace(schoolId,yearId,classId);},
+  async setGroup(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof moveClassGroup>[2]){return moveClassGroup(schoolId,classId,input);},
+  async setPosition(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof changeClassPosition>[2]){return changeClassPosition(schoolId,classId,input);},
+  async saveSeating(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof saveClassSeating>[2]){return saveClassSeating(schoolId,classId,input);},
+  async createGroup(_ctx:Ctx,schoolId:string,classId:string,name:string,sortOrder:number){return (await http('createGroup',{params:{schoolId,classId},body:{name,sortOrder}})).data;},
+  async createPosition(_ctx:Ctx,schoolId:string,classId:string,input:ApiSchemas['PositionCreate']){return (await http('createPosition',{params:{schoolId,classId},body:input})).data;},
   async header(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return nativeClassHeader((await http('getClassWorkspaceHeader',{params:{schoolId,yearId,classId}})).data,schoolId,yearId,classId);},
   async overview(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return nativeClassOverview((await http('getClassWorkspaceOverview',{params:{schoolId,yearId,classId}})).data,schoolId,yearId,classId);},
   async teacherClasses(_ctx:Ctx,schoolId:string,includeEnded=false){return cards(schoolId,includeEnded);},

@@ -8,7 +8,7 @@ const tabs=[
   ['overview','Tổng quan','',['class.read']],['students','Học sinh','/students',['student.read']],
   ['attendance','Điểm danh','/attendance',['attendance.read','attendance.record']],
   ['conduct','Thi đua','/conduct',['conduct.read','conduct.record','conduct.review','conduct.adjust.approve']],
-  ['timetable','Lịch lớp','/timetable',['schedule.read']],['groups','Tổ & sơ đồ','/groups',['group.manage','seating.manage','duty.manage']],
+  ['timetable','Lịch lớp','/timetable',['schedule.read']],['groups','Tổ & sơ đồ','/groups',['group.manage','seating.manage','duty.read','duty.manage']],
   ['activities','Hoạt động','/activities',['activity.read','activity.manage','evidence.read','evidence.manage']],
   ['announcements','Thông báo','/announcements',['announcement.read','announcement.manage']],
   ['files','Tệp lớp','/files',['file.read','file.manage']],['reports','Báo cáo','/reports',['report.read']],
@@ -87,7 +87,7 @@ export async function classWorkspaceHeader(db:Database,policy:Permissions,c:Requ
       today:access.today,referenceDate:ctx.referenceDate,homeroom:homeroom?{name:homeroom.name,contactVisible,workEmail:contactVisible?homeroom.work_email:null,workPhone:contactVisible?homeroom.work_phone:null}:null,
       studentCount:roster?.total??null,maleCount:roster&&has('student.read')?roster.male:null,femaleCount:roster&&has('student.read')?roster.female:null,
       myDuties:[...new Set(duties.map(d=>d.kind==='HOMEROOM'?'Chủ nhiệm':d.subject_name!))],viaSchoolRole,workspaceKind,actions,
-      tabs:tabs.filter(([, , ,required])=>required.some(a=>actions.includes(a))).map(([key,label,path])=>({key,label,path})),
+      tabs:tabs.filter(([, , ,required])=>required.some(a=>actions.includes(a))).map(([key,label,path])=>({key,label,path:key==='groups'?(actions.includes('group.manage')?'/groups':actions.includes('seating.manage')?'/seating':'/duties'):path})),
       summary:{weekIndex:week?.week_number??null,weekStatus:period?.status??null,pending,links,lastPublishedAt:published.at?.toISOString()??null},
       readOnly:cls.status==='ARCHIVED'||cls.year_status==='ARCHIVED'}};
   },{schoolId:c.params.schoolId,userId:c.principal!.userId,readOnly:true});

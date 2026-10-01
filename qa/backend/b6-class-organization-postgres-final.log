@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-7dc38b6f4864 Creating 
+ Container edumanage_backend_test-runner-run-7dc38b6f4864 Created 
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (1726.861702ms)
+✔ B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts (702.759907ms)
+✔ B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope (434.143683ms)
+✔ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (388.503567ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4202.855983
+EXIT_CODE=0

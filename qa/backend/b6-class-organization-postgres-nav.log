@@ -1,0 +1,18 @@
+ Container edumanage_backend_test-runner-run-113869414127 Creating 
+ Container edumanage_backend_test-runner-run-113869414127 Created 
+✔ B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads (2309.564079ms)
+✔ B6 class workspace header isolates school year class subject fields and actual publication link counters (2404.379868ms)
+✔ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (1204.404583ms)
+✔ B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments (850.643193ms)
+✔ B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts (701.041056ms)
+✔ B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope (563.808059ms)
+✔ B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes (401.77052ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9531.675682
+EXIT_CODE=0

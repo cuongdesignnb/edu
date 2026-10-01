@@ -10,8 +10,8 @@ import { DateField, ErrorSummary, RadioGroup, SelectField, TextArea } from "@/co
 import { useUnsavedChanges } from "@/components/ui/guards";
 
 /** O23 quick — move one student to another group from an effective date. */
-export function ChangeGroupDialog({ open, onOpenChange, schoolId, classId, student, groups }: {
-  open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; classId: string;
+export function ChangeGroupDialog({ open, onOpenChange, schoolId, yearId, classId, expectedClassVersion, student, groups }: {
+  open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; yearId: string; classId: string; expectedClassVersion:number;
   student: { id: string; fullName: string; groupId?: string } | null; groups: { id: string; name: string }[];
 }) {
   const ctx = useCtx();
@@ -30,7 +30,7 @@ export function ChangeGroupDialog({ open, onOpenChange, schoolId, classId, stude
     if (groupId === (student?.groupId ?? "")) e.groupId = "Tổ mới trùng với tổ hiện tại";
     setErr(e);
     if (Object.keys(e).length || !student || !date) return;
-    void cmd.run({ studentIds: [student.id], groupId: groupId || null, effectiveDate: date });
+    void cmd.run({ yearId, expectedClassVersion, studentIds: [student.id], groupId: groupId || null, effectiveDate: date });
   };
   return (
     <Modal open={open} onOpenChange={onOpenChange} title="Đổi tổ" description={student ? `Học sinh: ${student.fullName}` : undefined} size="sm" busy={cmd.pending}

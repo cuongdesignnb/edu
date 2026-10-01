@@ -1,0 +1,545 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts",
+      "tests/native-ui-contract/class-header-contract.spec.ts",
+      "tests/native-ui-contract/class-organization-contract.spec.ts"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-class-organization-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-class-organization-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "class-header-contract.spec.ts",
+      "file": "class-header-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "class header keeps exact delegated CLASS without teacher self and nullable independent panels",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 888,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:49.044Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6ac0a2fa6e6ca158b933-52cbc226ce1a9772f4bc",
+          "file": "class-header-contract.spec.ts",
+          "line": 20,
+          "column": 5
+        },
+        {
+          "title": "class header fits mobile while denying absent roster denominator and invented period state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 537,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:50.219Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6ac0a2fa6e6ca158b933-fac984467df53b144ebd",
+          "file": "class-header-contract.spec.ts",
+          "line": 25,
+          "column": 5
+        },
+        {
+          "title": "class header uses actual school authority without fetching a denied teacher directory",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 595,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:50.766Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6ac0a2fa6e6ca158b933-1904cfb1aa612f91b353",
+          "file": "class-header-contract.spec.ts",
+          "line": 28,
+          "column": 5
+        },
+        {
+          "title": "class header preserves teacher full cards and actual current contact counters and published status",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 582,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:51.370Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6ac0a2fa6e6ca158b933-8631f156ae331c7e267d",
+          "file": "class-header-contract.spec.ts",
+          "line": 31,
+          "column": 5
+        },
+        {
+          "title": "class header errors remove private panels and outage retry confirms a fresh exact receipt",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 783,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:51.961Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6ac0a2fa6e6ca158b933-caef1a4b2fdbe2e68121",
+          "file": "class-header-contract.spec.ts",
+          "line": 34,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "title": "class-organization-contract.spec.ts",
+      "file": "class-organization-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "organization groups create actual setup move pupils and assign or end configured positions with displayed versions",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1153,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:52.769Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-3c685fd7a8a78b6af164",
+          "file": "class-organization-contract.spec.ts",
+          "line": 26,
+          "column": 5
+        },
+        {
+          "title": "organization seating saves actual coordinates note and revision atomically then reloads the returned version",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 983,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:53.932Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-e6626022fa4427707bb5",
+          "file": "class-organization-contract.spec.ts",
+          "line": 32,
+          "column": 5
+        },
+        {
+          "title": "organization seating keeps an unsaved change visible when the displayed revision conflicts",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 567,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:54.923Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-b85307df6ed35693965a",
+          "file": "class-organization-contract.spec.ts",
+          "line": 35,
+          "column": 5
+        },
+        {
+          "title": "organization source failures do not become an empty group or seating source and malformed or denied receipts remove all pupil controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1024,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:55.499Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-11a4f52203554d07d396",
+          "file": "class-organization-contract.spec.ts",
+          "line": 38,
+          "column": 5
+        },
+        {
+          "title": "organization group and seating keep the existing layout readable at390px without page overflow",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 795,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:56.532Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-cf148ef40d1e2c70bad4",
+          "file": "class-organization-contract.spec.ts",
+          "line": 41,
+          "column": 5
+        },
+        {
+          "title": "organization position setup retries an uncertain write with the same configured code and idempotency key",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10003,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:46:57.336Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-c5853b9503f35d8515a9",
+          "file": "class-organization-contract.spec.ts",
+          "line": 44,
+          "column": 5
+        },
+        {
+          "title": "organization seating-only authority navigates directly to the permitted source and exposes no group or duty links",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 10634,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Không có quyền xem tổ')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Không có quyền xem tổ') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Không có quyền xem tổ')\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Không có quyền xem tổ')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Không có quyền xem tổ') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Không có quyền xem tổ')\u001b[22m\n\n    at D:\\Edu\\tests\\native-ui-contract\\class-organization-contract.spec.ts:48:528",
+                    "location": {
+                      "file": "D:\\Edu\\tests\\native-ui-contract\\class-organization-contract.spec.ts",
+                      "column": 528,
+                      "line": 48
+                    },
+                    "snippet": "  46 | });\n  47 | test('organization seating-only authority navigates directly to the permitted source and exposes no group or duty links',async({page})=>{\n> 48 |  const s=state();s.seatOnly=true;await routes(page,s);await page.goto(base+'/seating');await expect(page.getByRole('button',{name:'Lưu phiên bản 2',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Tổ & sơ đồ',exact:true}).first()).toHaveAttribute('href',base+'/seating');await expect(page.getByRole('link',{name:'Tổ & chức vụ',exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Trực nhật',exact:true})).toHaveCount(0);await expect(page.getByText('Không có quyền xem tổ',{exact:false})).toBeVisible();expect(s.requests.some(r=>r.path.endsWith('/group-workspace'))).toBe(false);expect(s.unexpected).toEqual([]);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^\n  49 | });\n  50 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\class-organization-contract.spec.ts",
+                        "column": 528,
+                        "line": 48
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Không có quyền xem tổ')\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Không có quyền xem tổ') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Không có quyền xem tổ')\u001b[22m\n\n\n  46 | });\n  47 | test('organization seating-only authority navigates directly to the permitted source and exposes no group or duty links',async({page})=>{\n> 48 |  const s=state();s.seatOnly=true;await routes(page,s);await page.goto(base+'/seating');await expect(page.getByRole('button',{name:'Lưu phiên bản 2',exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Tổ & sơ đồ',exact:true}).first()).toHaveAttribute('href',base+'/seating');await expect(page.getByRole('link',{name:'Tổ & chức vụ',exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Trực nhật',exact:true})).toHaveCount(0);await expect(page.getByText('Không có quyền xem tổ',{exact:false})).toBeVisible();expect(s.requests.some(r=>r.path.endsWith('/group-workspace'))).toBe(false);expect(s.unexpected).toEqual([]);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^\n  49 | });\n  50 |\n    at D:\\Edu\\tests\\native-ui-contract\\class-organization-contract.spec.ts:48:528"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T14:47:07.351Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-organization-browser-artifacts-final\\class-organization-contrac-f6d9b-oses-no-group-or-duty-links\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-organization-browser-artifacts-final\\class-organization-contrac-f6d9b-oses-no-group-or-duty-links\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Edu\\qa\\backend\\b6-class-organization-browser-artifacts-final\\class-organization-contrac-f6d9b-oses-no-group-or-duty-links\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\Edu\\tests\\native-ui-contract\\class-organization-contract.spec.ts",
+                    "column": 528,
+                    "line": 48
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "41aec06d3431d4280b76-9a2d4a24640a2bc8ac65",
+          "file": "class-organization-contract.spec.ts",
+          "line": 47,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-01T14:46:48.587Z",
+    "duration": 29751.433,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -638,7 +638,7 @@ spec.components.schemas.ClassWorkspaceHeader=object({
  year:object({id:uuid,version:{type:'integer',minimum:1},code:label,name:label,startsOn:studentDate,endsOn:studentDate,status:{type:'string',enum:['DRAFT','ACTIVE','ARCHIVED']}}),grade:label,today:studentDate,referenceDate:studentDate,
  homeroom:{...object({name:label,contactVisible:{type:'boolean'},workEmail:nullableLabel,workPhone:nullableLabel}),nullable:true},
  studentCount:{...count,nullable:true},maleCount:{...count,nullable:true},femaleCount:{...count,nullable:true},myDuties:{type:'array',uniqueItems:true,items:label},viaSchoolRole:{type:'boolean'},workspaceKind:{type:'string',enum:['TEACHER','SCHOOL','CLASS']},actions:{type:'array',uniqueItems:true,items:label},
- tabs:{type:'array',maxItems:10,items:object({key:{type:'string',enum:['overview','students','attendance','conduct','timetable','groups','activities','announcements','files','reports']},label:label,path:{type:'string',enum:['','/students','/attendance','/conduct','/timetable','/groups','/activities','/announcements','/files','/reports']}})},
+ tabs:{type:'array',maxItems:10,items:object({key:{type:'string',enum:['overview','students','attendance','conduct','timetable','groups','activities','announcements','files','reports']},label:label,path:{type:'string',enum:['','/students','/attendance','/conduct','/timetable','/groups','/seating','/duties','/activities','/announcements','/files','/reports']}})},
  summary:object({weekIndex:{type:'integer',minimum:1,nullable:true},weekStatus:{type:'string',enum:['OPEN','IN_REVIEW','LOCKED','PUBLISHED',null],nullable:true},pending:{...count,nullable:true},links:{...object({studentsWithLink:count,opened:count}),nullable:true},lastPublishedAt:{type:'string',format:'date-time',nullable:true}}),readOnly:{type:'boolean'},
 });
 spec.components.schemas.ClassWorkspaceHeaderResponse=object({data:{$ref:'#/components/schemas/ClassWorkspaceHeader'},requestId:label});
@@ -657,6 +657,20 @@ spec.components.schemas.ClassWorkspaceOverview=object({schoolId:uuid,yearId:uuid
 });
 spec.components.schemas.ClassWorkspaceOverviewResponse=object({data:{$ref:'#/components/schemas/ClassWorkspaceOverview'},requestId:label});
 extendOperation('getClassOverview','getClassWorkspaceOverview','/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-overview','class.read','ClassWorkspaceOverview',false,['CL01'],['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})));
+const organizationContext={schoolId:uuid,yearId:uuid,classId:uuid,today:studentDate,referenceDate:studentDate,classVersion:{type:'integer',minimum:1},readOnly:{type:'boolean'},canEdit:{type:'boolean'},groupsVisible:{type:'boolean'},students:{type:'array',maxItems:5000,items:object({id:uuid,enrollmentId:uuid,studentCode:label,fullName:label,groupId:{...uuid,nullable:true}})}};
+spec.components.schemas.ClassGroupWorkspace=object({...organizationContext,groups:{type:'array',maxItems:100,items:object({id:uuid,version:{type:'integer',minimum:1},name:label,sortOrder:{type:'integer'}})},
+ positionDefinitions:{type:'array',maxItems:500,items:object({id:uuid,version:{type:'integer',minimum:1},code:label,name:label,singleHolder:{type:'boolean'},groupId:{...uuid,nullable:true}})},
+ holders:{type:'array',maxItems:5000,items:object({id:uuid,version:{type:'integer',minimum:1},positionId:uuid,enrollmentId:uuid,startsOn:studentDate,endsOn:studentDate})}});
+spec.components.schemas.ClassSeatingWorkspace=object({...organizationContext,groupNames:{type:'array',maxItems:100,nullable:true,items:object({id:uuid,name:label})},latestRevision:{type:'integer',minimum:0},plan:{...object({id:uuid,version:{type:'integer',minimum:1},revision:{type:'integer',minimum:1},effectiveOn:studentDate,endsOn:{...studentDate,nullable:true},rows:{type:'integer',minimum:1,maximum:200,nullable:true},cols:{type:'integer',minimum:1,maximum:200,nullable:true},note:{type:'string',maxLength:120,nullable:true},seats:{type:'array',maxItems:500,items:object({key:label,row:{type:'integer',minimum:0,maximum:199},column:{type:'integer',minimum:0,maximum:199},enrollmentId:{...uuid,nullable:true}})}}),nullable:true},
+ history:{type:'array',maxItems:500,items:object({id:uuid,version:{type:'integer',minimum:1},revision:{type:'integer',minimum:1},effectiveOn:studentDate,endsOn:{...studentDate,nullable:true},status:{type:'string',enum:['DRAFT','ACTIVE','ARCHIVED']},createdAt:{type:'string',format:'date-time'},createdByName:nullableLabel})}});
+for(const [id,schema,path,screen] of [['getClassGroupWorkspace','ClassGroupWorkspace','group-workspace','CL13'],['getClassSeatingWorkspace','ClassSeatingWorkspace','seating-workspace','CL14']]){
+ spec.components.schemas[schema+'Response']=object({data:{$ref:'#/components/schemas/'+schema},requestId:label});
+ extendOperation('getClassOverview',id,'/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/'+path,'class.read',schema,false,[screen],[...['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})),{name:'onDate',in:'query',schema:studentDate}]);
+}
+spec.components.schemas.ClassSeatingRevisionSave=structuredClone(spec.components.schemas.SeatingCreate);
+spec.components.schemas.ClassSeatingRevisionSave.required.push('expectedRevision');
+spec.components.schemas.ClassSeatingRevisionSave.properties.note={type:'string',maxLength:120};
+extendOperation('createSeatingPlan','saveClassSeatingRevision','/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/seating-revisions','seating.manage','SeatingPlan',false,['CL14'],['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})),'ClassSeatingRevisionSave');
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

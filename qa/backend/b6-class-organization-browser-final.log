@@ -1,0 +1,19 @@
+
+Running 12 tests using 1 worker
+
+(node:60052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 tests\native-ui-contract\class-header-contract.spec.ts:20:5 › class header keeps exact delegated CLASS without teacher self and nullable independent panels (967ms)
+  ok  2 tests\native-ui-contract\class-header-contract.spec.ts:25:5 › class header fits mobile while denying absent roster denominator and invented period state (563ms)
+  ok  3 tests\native-ui-contract\class-header-contract.spec.ts:28:5 › class header uses actual school authority without fetching a denied teacher directory (657ms)
+  ok  4 tests\native-ui-contract\class-header-contract.spec.ts:31:5 › class header preserves teacher full cards and actual current contact counters and published status (674ms)
+  ok  5 tests\native-ui-contract\class-header-contract.spec.ts:34:5 › class header errors remove private panels and outage retry confirms a fresh exact receipt (862ms)
+  ok  6 tests\native-ui-contract\class-organization-contract.spec.ts:26:5 › organization groups create actual setup move pupils and assign or end configured positions with displayed versions (1.2s)
+  ok  7 tests\native-ui-contract\class-organization-contract.spec.ts:32:5 › organization seating saves actual coordinates note and revision atomically then reloads the returned version (1.1s)
+  ok  8 tests\native-ui-contract\class-organization-contract.spec.ts:35:5 › organization seating keeps an unsaved change visible when the displayed revision conflicts (587ms)
+  ok  9 tests\native-ui-contract\class-organization-contract.spec.ts:38:5 › organization source failures do not become an empty group or seating source and malformed or denied receipts remove all pupil controls (969ms)
+  ok 10 tests\native-ui-contract\class-organization-contract.spec.ts:41:5 › organization group and seating keep the existing layout readable at390px without page overflow (899ms)
+  ok 11 tests\native-ui-contract\class-organization-contract.spec.ts:44:5 › organization position setup retries an uncertain write with the same configured code and idempotency key (9.9s)
+  ok 12 tests\native-ui-contract\class-organization-contract.spec.ts:47:5 › organization seating-only authority navigates directly to the permitted source and exposes no group or duty links (562ms)
+
+  12 passed (20.0s)

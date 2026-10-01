@@ -4078,6 +4078,39 @@
       "evidence": [
         "qa/backend/b6-class-overview-postgres-final.log: 10/10 selected PostgreSQL checks, zero failed/skipped/cancelled; exact DAILY source, publish/withdraw, own SUBJECT lessons, current revoke, holiday/archive/future scope, actual conduct/adjustment transitions and complete100/101 panel bounds. Backend49/49, frontend373/373, selected Edge11/11 intercepted contracts; current full PostgreSQL/E2E/B7 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getClassGroupWorkspace",
+      "screenIds": [
+        "CL13"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "getClassSeatingWorkspace",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN."
+      ]
+    },
+    {
+      "operationId": "saveClassSeatingRevision",
+      "screenIds": [
+        "CL14"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-organization-postgres-nav.log: 7/7 selected PostgreSQL checks; exact dated group/position holders, immutable dated seating, atomic save/replay/race, school/year/class denial, independent group/seating/duty navigation and immediate revoke. Backend50/50; frontend382/382; Edge12/12 intercepted contracts, not PostgreSQL browser E2E. Full current PostgreSQL/migration replay/B7 NOT_RUN."
+      ]
     }
   ],
   "screens": [
@@ -5374,11 +5407,14 @@
         "listPositionAssignments",
         "endPositionAssignment",
         "assignGroup",
-        "assignPosition"
+        "assignPosition",
+        "getClassGroupWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native dated organization groups/positions and atomic seating revisions; setup and retry preserve actual IDs, displayed versions and idempotency. Four desktop/mobile screenshots inspected; Edge12/12 intercepted contracts. PostgreSQL browser E2E and whole-screen acceptance remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5389,11 +5425,15 @@
         "createSeatingPlan",
         "getSeatingPlan",
         "updateSeatingPlan",
-        "activateSeatingPlan"
+        "activateSeatingPlan",
+        "getClassSeatingWorkspace",
+        "saveClassSeatingRevision"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native dated organization groups/positions and atomic seating revisions; setup and retry preserve actual IDs, displayed versions and idempotency. Four desktop/mobile screenshots inspected; Edge12/12 intercepted contracts. PostgreSQL browser E2E and whole-screen acceptance remain pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
