@@ -19472,6 +19472,204 @@
         "requestId"
       ],
       "additionalProperties": false
+    },
+    "TeacherClassCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "schoolId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "yearId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "yearLabel": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "ARCHIVED"
+          ]
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "live": {
+          "type": "boolean"
+        },
+        "motto": {
+          "type": "string",
+          "nullable": true
+        },
+        "studentCount": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "roomLabel": {
+          "type": "string",
+          "nullable": true
+        },
+        "homeroomName": {
+          "type": "string",
+          "nullable": true
+        },
+        "assignments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "HOMEROOM",
+                  "SUBJECT"
+                ]
+              },
+              "subjectName": {
+                "type": "string",
+                "nullable": true
+              },
+              "startsOn": {
+                "type": "string",
+                "format": "date"
+              },
+              "endsOn": {
+                "type": "string",
+                "format": "date",
+                "nullable": true
+              },
+              "live": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ACTIVE",
+                  "ENDED",
+                  "REVOKED",
+                  "NOT_CURRENT"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "subjectName",
+              "startsOn",
+              "endsOn",
+              "live",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextLesson": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "startsAtLocal": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "endsAtLocal": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "periodNumber": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "subjectName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "date",
+            "startsAtLocal",
+            "endsAtLocal",
+            "periodNumber",
+            "subjectName"
+          ],
+          "additionalProperties": false,
+          "nullable": true
+        }
+      },
+      "required": [
+        "id",
+        "schoolId",
+        "yearId",
+        "name",
+        "yearLabel",
+        "status",
+        "today",
+        "referenceDate",
+        "live",
+        "motto",
+        "studentCount",
+        "roomLabel",
+        "homeroomName",
+        "assignments",
+        "actions",
+        "nextLesson"
+      ],
+      "additionalProperties": false
+    },
+    "TeacherClassCardPage": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/components/schemas/TeacherClassCard"
+          }
+        },
+        "page": {
+          "$ref": "#/components/schemas/PageInfo"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "page",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -74648,6 +74846,184 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/GuardianSaveResultResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "listTeacherClassDirectory",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/me/class-directory",
+      "title": "listTeacherClassDirectory",
+      "tag": "Teacher",
+      "permission": "teacher.self",
+      "scope": "school",
+      "request": null,
+      "response": "TeacherClassCard",
+      "list": true,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "TE02"
+      ],
+      "description": "Own current class cards and optional ended self assignment history. Current class metadata, roster counts, capabilities and next own dated lesson require fresh independent authority; ended cards have no current panels. SQL keysets bind the actor and grants.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "includeEnded",
+          "in": "query",
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "name",
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "dir",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "cursor",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherClassCardPage"
               }
             }
           }

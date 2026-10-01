@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-teacher-classes-adapter.test.ts (6 tests) 15ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  19:04:24
+   Duration  479ms (transform 118ms, setup 35ms, collect 127ms, tests 15ms, environment 0ms, prepare 102ms)
+
+exitCode=0

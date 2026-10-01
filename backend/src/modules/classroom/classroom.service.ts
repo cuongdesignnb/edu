@@ -5,6 +5,7 @@ import { Permissions } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation,notFound } from '../../common/problem';
 import type { Handler,RequestContext,Result } from '../../api.router';
+import {teacherClassDirectory} from './teacher-class-directory';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const group:Resource={table:'app.class_groups',fields:{...meta,classId:'class_id',name:'name',sortOrder:'sort_order'},writeFields:['name','sortOrder'],search:['name'],filters:{}};
@@ -17,8 +18,8 @@ type Seat={key:string;row:number;column:number;enrollmentId:string|null};
 export class ClassroomService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
   handlers():Record<string,Handler>{
-    return Object.fromEntries(['listGroups','createGroup','updateGroup','assignGroup','listPositions','createPosition','updatePosition',
-      'listPositionAssignments','assignPosition','endPositionAssignment','listSeatingPlans','createSeatingPlan','getSeatingPlan','updateSeatingPlan','activateSeatingPlan'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));
+    return {...Object.fromEntries(['listGroups','createGroup','updateGroup','assignGroup','listPositions','createPosition','updatePosition',
+      'listPositionAssignments','assignPosition','endPositionAssignment','listSeatingPlans','createSeatingPlan','getSeatingPlan','updateSeatingPlan','activateSeatingPlan'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),listTeacherClassDirectory:(c:RequestContext)=>teacherClassDirectory(this.db,this.policy,c)};
   }
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,date=c.body.effectiveOn??c.body.startsOn??c.body.endsOn??c.query.onDate;

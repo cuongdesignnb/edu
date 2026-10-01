@@ -1,0 +1,82 @@
+ Container edumanage_backend_test-runner-run-897c25d6370a Creating
+ Container edumanage_backend_test-runner-run-897c25d6370a Created
+✔ staff preview context has a minimal context schema and independent school authority (13.773716ms)
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.942913ms)
+✔ atomic school roles require a displayed version and unique explicit role IDs without actor authority (13.309637ms)
+✔ reviewed parent issuance requires every reviewed source version and rejects contact/token/actor fields (12.451867ms)
+✔ parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly (14.472782ms)
+✔ school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations (10.022814ms)
+✔ login rejects spoofed role, school and unknown fields (3.170182ms)
+✔ private user DTO rejects secrets and unknown properties (7.901074ms)
+✔ platform first administrator supports server start time and rejects scope spoofing or excessive invitation lifetime (0.601543ms)
+✔ school overview accepts explicit unavailable panels and rejects private directory fields (44.661091ms)
+✔ directory represents invitations without fake memberships and keeps unavailable invitation KPI explicit (12.980493ms)
+✔ member profile separates denied panels and exact native authority without exposing other school metadata (25.07129ms)
+✔ invitation choices use invitation authority and never lend role metadata or contacts (4.113133ms)
+✔ atomic guardian save requires displayed student and primary versions without verification or actor fields (15.308743ms)
+✔ assignment preview is a CSRF-protected read-only POST and preserves explicit source versions without actor authority (2.01952ms)
+✔ assignment matrix represents a real unconfigured year and empty cells without borrowing profiles, rosters or permissions (22.817395ms)
+✔ role details retain exact native scopes and denied panels without exposing staff contacts or a fabricated editable system role (18.609212ms)
+✔ handover receipts retain unknown legacy metadata and strict reviewed source fields without exposing the internal state (11.53172ms)
+✔ student forms persist nullable gender and an atomic unverified guardian without accepting actor or result state (25.161478ms)
+✔ student read models distinguish denied and unknown values and exclude reusable parent tokens (39.766471ms)
+✔ guardian projections exclude student private profiles and audit snapshots and require explicit denied panels (24.284456ms)
+✔ student-create options are a minimal write-purpose class projection without roster or borrowed catalogs (6.334263ms)
+✔ parent context metadata distinguishes year, link and session bounds without child private fields (0.615209ms)
+✔ parent attendance month preserves real session/holiday counts and rejects private fields or invented calendar states (8.965093ms)
+✔ parent teacher directory requires explicit nullable work metadata and minimal unique weekdays without raw staff identity (5.98627ms)
+✔ parent duty schedule exposes only concrete published tasks with explicit status and year/date metadata (14.067623ms)
+✔ parent weekly timetable requires explicit published status, timezone and nullable pinned metadata without raw source fields (5.712738ms)
+✔ parent document directory requires real independent capabilities and minimal report fields without storage keys (5.839681ms)
+✔ parent shared content keeps pinned nullable metadata and independent attachments without raw sources or recipients (17.882174ms)
+✔ parent conduct display exposes published own history and explicit absent metadata without staff rules or cohort identity (6.688786ms)
+✔ parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields (18.090047ms)
+✔ announcement HTML retains paragraph/list formatting while dropping executable markup, URLs and tracking resources (4.238458ms)
+✔ operation evidence validates metadata values and omits secret-like values and unknown fields (1.842833ms)
+✔ parent month keeps actual sessions, mixed days and unmarked outside the attendance denominator (21.150975ms)
+✔ parent month infers neither Sunday holidays nor missing-day presence and preserves actual published holiday names (0.786765ms)
+✔ parent month clips only to real exclusive year bounds and rejects malformed/outside-year selection (0.798558ms)
+✔ parent month rejects missing calendar days, shifted date sources, unknown statuses and foreign date rows (0.89948ms)
+✔ grant action and class scope stay together (1.294901ms)
+✔ subject grants never authorize management without explicit subject policy (0.300732ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.240798ms)
+✔ a custom class grant authorizes only its delegated action and class (0.14756ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.337729ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (5.18667ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.813396ms)
+✔ parent weekly timetable uses real Monday/calendar bounds and clips partial academic weeks (4.884199ms)
+✔ parent weekly timetable rejects a source exceeding the total bound before response serialization (8.273101ms)
+✔ XLSX parser bounds sparse dimensions and rejects formulas before workbook allocation (110.63186ms)
+ℹ tests 47
+ℹ suites 0
+ℹ pass 46
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 765.971707
+
+✖ failing tests:
+
+test at tests/contract/schemas.test.mjs:9:1
+✖ all operation IDs are unique, including the explicit frontend workflow extensions (0.942913ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  341 !== 340
+
+      at TestContext.<anonymous> (file:///srv/api/tests/contract/schemas.test.mjs:10:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 341,
+    expected: 340,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exitCode=1

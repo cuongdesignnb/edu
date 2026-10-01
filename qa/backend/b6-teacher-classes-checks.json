@@ -1,0 +1,247 @@
+{
+  "checkpoint": "B6 TE02 own teacher classes; goal incomplete",
+  "baselineCommit": "bc618da4685158afcbf3f4247726fe8e005794d9",
+  "contract": {
+    "operations": 341,
+    "schemas": 459,
+    "existingSemanticsChanged": false,
+    "newOperations": [
+      "listTeacherClassDirectory"
+    ],
+    "newSchemas": [
+      "TeacherClassCard",
+      "TeacherClassCardPage"
+    ]
+  },
+  "postgres": {
+    "full": {
+      "tests": 185,
+      "pass": 185,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 746036.726853
+    },
+    "selected": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 10299.822142
+    },
+    "migrationsAppliedAndReplayed": 46,
+    "image": "sha256:03c3d383c927052e9452a35c701f3bf11bf085a74977e72b27de2a2b806a9dd7",
+    "selectedSortRepair": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 16685.728289
+    }
+  },
+  "backendUnitContracts": {
+    "tests": 47,
+    "pass": 47,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 557.019012
+  },
+  "frontend": {
+    "tests": 361,
+    "files": 42,
+    "durationSeconds": 10.96,
+    "apiRegressions": 320,
+    "historicalSyntheticRegressions": 41
+  },
+  "controlledBrowser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "passed": 88,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMs": 89770.86200000001,
+    "ownedNextPid": 60160,
+    "ownedNextClosed": true,
+    "ownedNextExit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "inspectedScreenshots": [
+      {
+        "file": "b6-teacher-classes-teacher-classes-desktop.png",
+        "finding": "Preserved teacher shell and two class cards; home attendance button and subject-only next lesson with nullable period/room; readable work-only names.",
+        "sha256": "e1aebc88803a7e5942177b624f8dc04f70fe1821eb74f6c5e89335f5347b2eb0"
+      },
+      {
+        "file": "b6-teacher-classes-teacher-classes-mobile.png",
+        "finding": "Both cards and buttons readable at390px without horizontal overflow; unknown period is not invented.",
+        "sha256": "b66efb90dd01ebec16f8800dd5c82b5e1f8628724949c0058315d2c101705d1b"
+      }
+    ]
+  },
+  "checks": {
+    "backendTypes": 0,
+    "backendLintWarnings": 0,
+    "frontendTypes": 0,
+    "changedFrontendLintWarnings": 0,
+    "nextProductionBuild": 0,
+    "sdk": 0,
+    "facadeInventory": 0,
+    "contractSemanticDiff": 0,
+    "integrationSyntax": 0,
+    "fullRootLint": "NOT_RERUN"
+  },
+  "progress": {
+    "operations": {
+      "TESTED": 329,
+      "IMPLEMENTED": 12
+    },
+    "coreScreens": {
+      "IMPLEMENTED": 62,
+      "STATIC_UNVERIFIED": 3,
+      "NOT_STARTED": 53
+    },
+    "nativeFacades": 129,
+    "activatedLegacyMethods": 116,
+    "legacyTotal": 231,
+    "legacyRemaining": 115,
+    "newSourceScreens": [
+      "TE02"
+    ]
+  },
+  "failedOrAbortedRuns": [
+    {
+      "evidence": "b6-teacher-classes-postgres-selected-initial.log",
+      "reason": "Overlapping synthetic same class/subject assignment fixture; guard unchanged."
+    },
+    {
+      "evidence": "b6-teacher-classes-postgres-selected-before-query-validation.log",
+      "reason": "Purpose did not reject alternate memberId selector; strict whitelist added."
+    },
+    {
+      "evidence": "b6-teacher-classes-frontend-types-initial.log",
+      "reason": "Missing Card import in navigation error state; fixed."
+    },
+    {
+      "evidence": "b6-teacher-classes-backend-contract-unit-initial.log",
+      "reason": "Stale340-operation invariant,46/47, not PASS."
+    },
+    {
+      "evidence": "b6-teacher-classes-postgres-full-aborted-stale-count.log",
+      "reason": "Explicitly stopped only verified owned runner8b8da83343a6 after stale count failure. Aborted, not PASS."
+    },
+    {
+      "evidence": "b6-teacher-classes-initial-browser-results-final.json",
+      "reason": "86/88; two error selectors expected headings instead of actual paragraphs. Corrected without UI/guard changes."
+    }
+  ],
+  "portAfter": {
+    "checkedAt": "2026-10-01T19:42:28.5008595+07:00",
+    "port": 18763,
+    "listeners": [],
+    "listenerCount": 0
+  },
+  "releaseStatus": "NOT_SERVING_FINAL_RELEASE",
+  "production": "NOT_AUTHORIZED",
+  "remaining": [
+    "Classroom header and bounded overview; remaining staff specialist workflows and facades",
+    "Real PostgreSQL browser E2E for two schools/class/subject/time/current revoke/publish/withdraw",
+    "Root deploy/scripts merge and final Docker loopback release18763",
+    "Restart data/files/worker persistence",
+    "Physical isolated backup/restore and failure drills",
+    "Required release workload and latency/error/CPU/RSS/pool measurements"
+  ],
+  "abortedFullRun": {
+    "tests": 25,
+    "pass": 23,
+    "fail": 1,
+    "cancelled": 1,
+    "skipped": 0,
+    "durationMs": 84366.776012,
+    "status": "ABORTED_NOT_PASS"
+  },
+  "initialControlledBrowser": {
+    "startTime": "2026-10-01T12:10:34.712Z",
+    "duration": 112689.14600000001,
+    "expected": 86,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "failedFullBeforeSort": {
+    "tests": 184,
+    "pass": 183,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 707787.504006,
+    "status": "FAILED_NOT_PASS"
+  },
+  "sortDiagnostics": {
+    "kind": "INDIVIDUAL_READS_NOT_RELEASE_WORKLOAD_OR_PERCENTILES",
+    "before": [
+      {
+        "kind": "individual-sort-diagnostic-not-release-benchmark",
+        "sort": "classCount",
+        "elapsedMs": 4611.058126,
+        "jit": "on",
+        "statementTimeout": "5s",
+        "schools": 2883,
+        "total": 2883,
+        "rows": 2,
+        "counts": [
+          1704,
+          2
+        ]
+      },
+      {
+        "kind": "individual-sort-diagnostic-not-release-benchmark",
+        "sort": "staffCount",
+        "elapsedMs": 4661.778219999999,
+        "jit": "on",
+        "statementTimeout": "5s",
+        "schools": 2883,
+        "total": 2883,
+        "rows": 2,
+        "counts": [
+          2515,
+          5
+        ]
+      }
+    ],
+    "after": [
+      {
+        "kind": "individual-sort-diagnostic-not-release-benchmark",
+        "sort": "classCount",
+        "elapsedMs": 271.20939699999997,
+        "jit": "on",
+        "statementTimeout": "5s",
+        "schools": 2886,
+        "total": 2886,
+        "rows": 2,
+        "counts": [
+          1707,
+          2
+        ]
+      },
+      {
+        "kind": "individual-sort-diagnostic-not-release-benchmark",
+        "sort": "staffCount",
+        "elapsedMs": 219.97033,
+        "jit": "on",
+        "statementTimeout": "5s",
+        "schools": 2886,
+        "total": 2886,
+        "rows": 2,
+        "counts": [
+          2517,
+          5
+        ]
+      }
+    ],
+    "timeoutMarker": "2026-10-01 12:20:23.958 UTC; ERROR canceling statement due to statement timeout; SQL/parameters excluded"
+  }
+}

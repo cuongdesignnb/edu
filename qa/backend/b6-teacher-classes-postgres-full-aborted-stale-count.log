@@ -1,0 +1,67 @@
+ Container edumanage_backend_test-runner-run-6b50422ff5f0 Creating
+ Container edumanage_backend_test-runner-run-6b50422ff5f0 Created
+✖ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (444.461494ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (73.793821ms)
+✔ BE02 cross-school enrollment FK rejects write using the real runtime role (9.882229ms)
+✔ BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection (3.797808ms)
+✔ BE04 bootstrap only exposes the authenticated user memberships without tenant (10.599025ms)
+✔ BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B (6836.60299ms)
+✔ BE06 revoked membership is checked during an existing session and B stays independent (58.266141ms)
+✔ B6 self context carries only own current duties and separates self-profile from school contacts (14917.622002ms)
+✔ BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting (100.44057ms)
+✔ BE10 concurrent profile patches serialize with a single version winner (57.052315ms)
+✔ B6 password/session commands use actual cookies, reject bad passwords and revoke every session after change (369.475828ms)
+{"checkpoint":"parent-without-context","queryMs":6.492,"planExecutionMs":0.017,"planRows":0}
+✔ BE21 parent runtime role cannot select raw student rows (17.096596ms)
+✔ B0 health ready checks actual migrations, database and private storage (29.699959ms)
+✔ B2 class lists use SQL scope and cross-school details deny before serialization (318.222502ms)
+✔ BE09 idempotent organization create/retry/concurrency performs one write (113.189857ms)
+✔ B2 required idempotency, class capacity/reference validation and version conflicts (175.895958ms)
+✔ B2 signed cursor rejects scope/filter modification and delivers distinct pages (3941.537231ms)
+✔ B2 subject student projection omits family/internal notes and denies guardians (576.099235ms)
+✔ B2 guardian create does not merge matching phone, relationships start unverified (195.312953ms)
+✔ BE07 existing identity invitation requires its session and preserves password/other school (7240.517496ms)
+✔ B1 password reset token is encrypted, single-use and revokes all prior sessions (142.736064ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (915.389811ms)
+✔ B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview (1716.087388ms)
+✔ B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs (504.110231ms)
+
+Interrupted while running:
+
+⚠ tests/integration/foundation.test.mjs (tests/integration/foundation.test.mjs:1:1)
+✖ tests/integration/foundation.test.mjs (84361.851621ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 23
+ℹ fail 1
+ℹ cancelled 1
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84366.776012
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:105:1
+✖ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (444.461494ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  341 !== 340
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:106:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 341,
+    expected: 340,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:1:1
+✖ tests/integration/foundation.test.mjs (84361.851621ms)
+  'Promise resolution is still pending but the event loop has already resolved'
+
+exitCode=1

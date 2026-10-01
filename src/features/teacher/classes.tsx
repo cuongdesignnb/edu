@@ -23,16 +23,16 @@ export function TeacherClasses({ schoolId }: { schoolId: string }) {
         quote={["Mỗi lớp học là một hành trình", "cùng học sinh lớn lên"]} illustration="/assets/illustrations/teachers-trio.png" />
       <Card className="card-pad flex flex-wrap items-center gap-4">
         <div className="min-w-0 flex-1 text-[13.5px] text-body">Chỉ hiển thị lớp có phân công còn hiệu lực. Quyền trong mỗi lớp theo đúng nhiệm vụ (chủ nhiệm hoặc môn được giao) và thời gian hiệu lực.</div>
-        <div className="w-full sm:w-auto sm:min-w-[300px]"><Toggle checked={ended} onChange={setEnded} label="Hiện cả phân công đã kết thúc" description="Lớp năm cũ / phân công đã thu hồi — chỉ để tra cứu" /></div>
+        <div className="w-full sm:w-auto sm:min-w-[300px]"><Toggle checked={ended} onChange={setEnded} label="Hiện cả phân công đã kết thúc" description="Lịch sử phân công của bạn — không cấp quyền mở lớp" /></div>
       </Card>
       <QueryState query={q} skeleton="cards">
-        {(list) => list.length === 0 ? (
+        {(list) => <QueryState query={acts} skeleton="cards">{(currentActions) => list.length === 0 ? (
           <Card><EmptyState title="Chưa có lớp được phân công" description="Khi nhà trường phân công, lớp sẽ hiện ở đây. Giáo viên không tự thêm lớp." /></Card>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {list.map((c) => {
               const base = `/classroom/${schoolId}/${c.yearId}/${c.id}`;
-              const a = acts.data?.[c.id] ?? [];
+              const a = c.actions.filter(action => currentActions[c.id]?.includes(action));
               const isHr = c.duties.some((d) => d.kind === "homeroom" && d.live);
               return (
                 <Card key={c.id} as="article" className={c.live ? "flex flex-col" : "flex flex-col opacity-90"}>
@@ -47,26 +47,26 @@ export function TeacherClasses({ schoolId }: { schoolId: string }) {
                     <div className="flex flex-wrap gap-1.5">
                       {c.duties.map((d) => <Badge key={d.id} tone={d.live ? "info" : "neutral"} dot={false} title={`Hiệu lực ${fmtDate(d.validFrom)}${d.validTo ? ` – ${fmtDate(d.validTo)}` : ""}`}>{d.label}{d.live ? "" : " (đã kết thúc)"}</Badge>)}
                     </div>
-                    <p className="flex items-center gap-2 text-body"><Users className="size-4 text-muted" aria-hidden />Sĩ số: <b className="text-ink">{c.size} học sinh</b></p>
-                    <p className="flex items-center gap-2 text-body"><MapPin className="size-4 text-muted" aria-hidden />Phòng: <b className="text-ink">{c.room}</b> · GVCN: <b className="text-ink">{c.homeroom}</b></p>
-                    <p className="flex items-start gap-2 text-body"><CalendarDays className="mt-0.5 size-4 flex-none text-muted" aria-hidden /><span>Tiết gần nhất: {c.nextLesson ? <b className="text-ink">{c.nextLesson.subject} – Tiết {c.nextLesson.period} ({c.nextLesson.start}), {fmtDateLong(c.nextLesson.date)}</b> : <span className="text-muted">Không có tiết của bạn trong 7 ngày tới</span>}</span></p>
+                    <p className="flex items-center gap-2 text-body"><Users className="size-4 text-muted" aria-hidden />Sĩ số: <b className="text-ink">{c.size === null ? "Không có quyền xem" : `${c.size} học sinh`}</b></p>
+                    <p className="flex items-center gap-2 text-body"><MapPin className="size-4 text-muted" aria-hidden />Phòng: <b className="text-ink">{c.live ? c.room ?? "Chưa phân phòng" : "Không còn quyền xem"}</b> · GVCN: <b className="text-ink">{c.live ? c.homeroom ?? "Chưa phân công" : "Không còn quyền xem"}</b></p>
+                    <p className="flex items-start gap-2 text-body"><CalendarDays className="mt-0.5 size-4 flex-none text-muted" aria-hidden /><span>Tiết gần nhất: {c.nextLesson ? <b className="text-ink">{c.nextLesson.subject} – {c.nextLesson.period === null ? "Tiết học" : `Tiết ${c.nextLesson.period}`} ({c.nextLesson.start}), {fmtDateLong(c.nextLesson.date)}</b> : <span className="text-muted">{a.includes("schedule.read") ? "Không có tiết của bạn trong 7 ngày tới" : "Không có quyền xem lịch"}</span>}</span></p>
                     {c.duties.map((d) => <p key={d.id} className="flex items-center gap-2 text-[12.5px] text-muted"><History className="size-3.5" aria-hidden />{d.label}: từ {fmtDate(d.validFrom)}{d.validTo ? ` đến ${fmtDate(d.validTo)}` : ""}</p>)}
                   </div>
                   <div className="flex flex-wrap gap-2 border-t border-line p-4">
-                    {c.live ? (
+                    {c.live && a.includes("class.view") ? (
                       <>
                         <ButtonLink href={base} size="sm" variant="primary">Mở lớp</ButtonLink>
                         {a.includes("roster.view") && <ButtonLink href={`${base}/students`} size="sm" icon={<Users className="size-4" />}>Học sinh</ButtonLink>}
                         {a.includes("attendance.record") && isHr && <ButtonLink href={`${base}/attendance`} size="sm">Điểm danh</ButtonLink>}
-                        <ButtonLink href={`${base}/timetable`} size="sm" icon={<BookOpen className="size-4" />}>Lịch lớp</ButtonLink>
+                        {a.includes("schedule.read") && <ButtonLink href={`${base}/timetable`} size="sm" icon={<BookOpen className="size-4" />}>Lịch lớp</ButtonLink>}
                       </>
-                    ) : <p className="text-[13px] text-muted">Phân công đã kết thúc — không còn quyền thao tác trong lớp này.</p>}
+                    ) : <p className="text-[13px] text-muted">{c.live ? "Quyền mở lớp không còn hiệu lực. Hãy tải lại dữ liệu." : "Phân công đã kết thúc — không còn quyền thao tác trong lớp này."}</p>}
                   </div>
                 </Card>
               );
             })}
           </div>
-        )}
+        )}</QueryState>}
       </QueryState>
     </div>
   );

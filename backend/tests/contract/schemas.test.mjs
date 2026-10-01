@@ -7,7 +7,7 @@ test('staff preview context has a minimal context schema and independent school 
  for(const bad of [{context:value},{...value,attendance:[]},{...value,token:'secret'},{...value,student:{...value.student,id:value.viewId}}])assert.throws(()=>validateSchema('ParentContext',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
 });
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,340);assert.equal(new Set(operations.map(op=>op.id )).size,340);
+  assert.equal(operations.length,341);assert.equal(new Set(operations.map(op=>op.id )).size,341);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

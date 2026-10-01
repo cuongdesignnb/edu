@@ -457,6 +457,8 @@ export interface ApiSchemas {
   "GuardianSaveRequest": { "expectedStudentVersion": number; "expectedPrimaryContacts": Array<ApiSchemas["GuardianPrimaryRef"]>; "guardianId"?: string; "relationshipId"?: string; "expectedGuardianVersion"?: number; "expectedRelationshipVersion"?: number; "fullName": string; "relationshipLabel": string; "phone"?: string; "email": (string) | null; "isPrimary": boolean; };
   "GuardianSaveResult": { "studentId": string; "studentVersion": number; "guardian": ApiSchemas["GuardianFormContact"]; "relationship": ApiSchemas["GuardianFormRelationship"]; };
   "GuardianSaveResultResponse": { "data": ApiSchemas["GuardianSaveResult"]; "requestId": string; };
+  "TeacherClassCard": { "id": string; "schoolId": string; "yearId": string; "name": string; "yearLabel": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "today": string; "referenceDate": string; "live": boolean; "motto": (string) | null; "studentCount": (number) | null; "roomLabel": (string) | null; "homeroomName": (string) | null; "assignments": Array<{ "id": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectName": (string) | null; "startsOn": string; "endsOn": (string) | null; "live": boolean; "status": "ACTIVE" | "ENDED" | "REVOKED" | "NOT_CURRENT"; }>; "actions": Array<string>; "nextLesson": ({ "date": string; "startsAtLocal": string; "endsAtLocal": string; "periodNumber": (number) | null; "subjectName": string; }) | null; };
+  "TeacherClassCardPage": { "data": Array<ApiSchemas["TeacherClassCard"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -3859,6 +3861,16 @@ export const apiOperations = {
     "list": false,
     "permission": "guardian.manage+guardian.read",
     "readOnly": false
+  },
+  "listTeacherClassDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/class-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherClassCard",
+    "list": true,
+    "permission": "teacher.self",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

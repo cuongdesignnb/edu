@@ -18,6 +18,7 @@ import { Brand } from "./brand";
 import { platformNav, schoolNav, teacherNav, accountNav } from "./nav";
 import { DemoScenarioBanner, useLeaveGuard } from "@/components/ui/guards";
 import { EmptyState, ErrorState, PageSkeleton } from "@/components/ui/states";
+import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
 
 const PROMO = { image: "/assets/illustrations/school-sidebar.png", title: "Cùng nhau kiến tạo nền giáo dục tốt đẹp hơn", text: "EduManage đồng hành cùng nhà trường trên hành trình xây dựng môi trường học tập hiện đại, hiệu quả và nhân văn." };
@@ -195,10 +196,11 @@ function TeacherFrame({ schoolId, children }: { schoolId: string; children: Reac
   const ws = me.data?.workspaces.find((w) => w.school.id === schoolId);
   const nav = teacherNav(schoolId, (classes.data ?? []).map((c) => ({ id: c.id, yearId: c.yearId, name: c.name, role: c.duties.some((d) => d.kind === "homeroom") ? "Chủ nhiệm" : c.duties.map((d) => d.label).join(", ") })));
   const role = ws ? [ws.duties.slice(0, 2).join(" · ")].join("") || "Giáo viên" : "Giáo viên";
+  const content = classes.error ? <div className="page"><Card className="card-pad"><ErrorState error={classes.error} onRetry={() => classes.refetch()} /></Card></div> : children;
   return (
     <Frame nav={nav} homeHref={`/teacher/${schoolId}`} schoolId={schoolId} roleLabel={role} promo={{ ...PROMO, text: "EduManage đồng hành cùng thầy cô trên hành trình truyền cảm hứng và phát triển thế hệ tương lai." }}
       search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />}>
-      {children}
+      {content}
     </Frame>
   );
 }

@@ -621,6 +621,15 @@ for(const id of ['getExport','downloadExport']){
   const op=Object.values(spec.paths).flatMap(p=>Object.values(p)).find(op=>op?.operationId===id);
   op.responses['410']={description:'Bản xuất đã hết thời hạn tải.',content:{'application/problem+json':{schema:{$ref:'#/components/schemas/Error'}}}};
 }
+// ADR-078: own class cards use current assignment/grant authority; ended
+// assignments are self history and carry no current class panels or actions.
+spec.components.schemas.TeacherClassCard=object({id:uuid,schoolId:uuid,yearId:uuid,name:label,yearLabel:label,status:structuredClone(spec.components.schemas.Class.properties.status),today:studentDate,referenceDate:studentDate,live:{type:'boolean'},motto:nullableLabel,studentCount:{...count,nullable:true},roomLabel:nullableLabel,homeroomName:nullableLabel,
+ assignments:{type:'array',minItems:1,items:object({id:uuid,kind:{type:'string',enum:['HOMEROOM','SUBJECT']},subjectName:nullableLabel,startsOn:studentDate,endsOn:{...studentDate,nullable:true},live:{type:'boolean'},status:{type:'string',enum:['ACTIVE','ENDED','REVOKED','NOT_CURRENT']}})},actions:{type:'array',uniqueItems:true,items:label},
+ nextLesson:{...object({date:studentDate,startsAtLocal:{type:'string',pattern:'^([01][0-9]|2[0-3]):[0-5][0-9]$'},endsAtLocal:{type:'string',pattern:'^([01][0-9]|2[0-3]):[0-5][0-9]$'},periodNumber:{type:'integer',minimum:1,nullable:true},subjectName:label}),nullable:true}});
+spec.components.schemas.TeacherClassCardPage=object({data:{type:'array',maxItems:100,items:{$ref:'#/components/schemas/TeacherClassCard'}},page:{$ref:'#/components/schemas/PageInfo'},requestId:label});
+extendOperation('listMyClasses','listTeacherClassDirectory','/schools/{schoolId}/me/class-directory','teacher.self','TeacherClassCard',true,['TE02'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'includeEnded',in:'query',schema:{type:'boolean'}},{name:'sort',in:'query',schema:{type:'string',enum:['name','id']}},{name:'dir',in:'query',schema:{type:'string',enum:['asc','desc']}},{name:'limit',in:'query',schema:{type:'integer',minimum:1,maximum:100}},{name:'cursor',in:'query',schema:{type:'string',maxLength:4000}}]);
+const teacherDirectoryOp=operations.find(op=>op.id==='listTeacherClassDirectory');
+spec.paths['/schools/{schoolId}/me/class-directory'].get.description=teacherDirectoryOp.description='Own current class cards and optional ended self assignment history. Current class metadata, roster counts, capabilities and next own dated lesson require fresh independent authority; ended cards have no current panels. SQL keysets bind the actor and grants.';
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

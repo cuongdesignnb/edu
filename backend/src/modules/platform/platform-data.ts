@@ -14,6 +14,9 @@ export const adminResource:Resource={table:`(SELECT m.*,u.email_normalized AS lo
  WHERE EXISTS(SELECT 1 FROM app.role_grants g JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.code='SCHOOL_ADMIN'
  WHERE g.school_id=m.school_id AND g.member_id=m.id AND g.scope_type='SCHOOL'))`,fields:{...meta,userId:'user_id',workDisplayName:'work_display_name',status:'status',shareWorkContact:'share_work_contact',loginEmail:'login_email'},writeFields:[],search:['work_display_name','login_email'],filters:{status:'status'}};
 export interface OperationalCounts extends Row {class_count:number;staff_count:number;admin_count:number;admin_labels:string[];onboarding:Record<string,boolean>;link_opens_30d:string}
+/** Only aggregate-sort pages use minimal counts before their SQL limit. Full
+ * selected-row metadata is added by the platform handler in the same snapshot. */
+export const schoolCountSortResource:Resource={...schoolListResource,table:`(SELECT s.*,coalesce(s.short_name,s.name) AS display_short_name,coalesce(s.province,'') AS display_province,platform.school_admin_labels(s.id) AS search_admin_labels,counts.class_count,counts.staff_count FROM platform.schools s CROSS JOIN LATERAL platform.school_sort_counts(s.id) counts)`,fields:Object.fromEntries(Object.entries(schoolListResource.fields).filter(([key])=>!['adminNames','onboarding'].includes(key)))};
 export async function schoolView(tx:Transaction,row:Row){
   const counts=(await one<OperationalCounts>(tx,'SELECT * FROM platform.operational_counts($1)',[row.id]))!;
   return {...dto(schoolResource,{...row,display_short_name:row.short_name??row.name,display_province:row.province??''}),classCount:counts.class_count,staffCount:counts.staff_count,adminNames:counts.admin_labels,onboarding:counts.onboarding};

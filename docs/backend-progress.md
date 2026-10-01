@@ -344,6 +344,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getParentPublishedOverview | PA02 | TESTED | qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview |
 | previewParentPublishedOverview | SC25, PA02 | TESTED | qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview |
 | getParentAccessPreviewContext | SC25 | TESTED | qa/backend/b6-parent-preview-integration-selected.log |
+| listTeacherClassDirectory | TE02 | TESTED | qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -412,7 +413,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC42 | core | TESTED | IMPLEMENTED |  | Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun. |
 | SC43 | core | TESTED | IMPLEMENTED |  | Native support facade: SQL pages/options/counts, exact consent actions and reviewed versions/reasons, semantic ACK before retry cleanup, owned draft/audit read boundaries. Actual frontend231/231 (190 API+41 historical synthetic), targeted support13/13, typecheck/build/lint exit0;24/24 intercepted-response browser contracts in qa/backend/b6-native-support-browser-final.log, NOT PostgreSQL E2E. Audit export and full native acceptance/B7 remain pending; backend unchanged, prior155 PostgreSQL/28 contract not rerun. |
 | TE01 | core | TESTED | NOT_STARTED |  |  |
-| TE02 | core | TESTED | NOT_STARTED |  |  |
+| TE02 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-teacher-classes-browser-results-final.json: TE02 source uses both native own-class facades, strict/current owner receipts and existing cards/navigation; Edge 88/88 uses intercepted APIs, not PostgreSQL browser E2E or B7 acceptance. |
 | TE03 | core | TESTED | NOT_STARTED |  |  |
 | TE04 | core | TESTED | NOT_STARTED |  |  |
 | TE05 | core | TESTED | NOT_STARTED |  |  |

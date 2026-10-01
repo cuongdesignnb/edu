@@ -1,0 +1,3 @@
+src/components/layout/shells.tsx(198,58): error TS2304: Cannot find name 'Card'.
+src/components/layout/shells.tsx(198,156): error TS2304: Cannot find name 'Card'.
+exitCode=2

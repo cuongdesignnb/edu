@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 127,
-  "activatedCandidateCount": 127,
-  "activatedLegacyMethodCount": 114,
+  "candidateCount": 129,
+  "activatedCandidateCount": 129,
+  "activatedLegacyMethodCount": 116,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -759,7 +759,17 @@
         "includeEnded = false"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "classroomRepo",
+        "method": "teacherClasses",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "classroomRepo",
@@ -4190,7 +4200,17 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "teacherExtraRepo",
+        "method": "myClassActions",
+        "file": "src/lib/repositories/connected/classroom.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "teacherExtraRepo",

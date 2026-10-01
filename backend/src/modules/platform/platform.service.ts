@@ -9,6 +9,7 @@ import {validateSchoolWebsite} from '../../common/school-website';
 import { InvitationsService } from '../identity/invitations.service';
 import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,operationView,type OperationalCounts } from './platform-data';
 import {operationsOverview} from './operations-overview';
+import {schoolCountSortResource} from './platform-data';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
@@ -58,7 +59,10 @@ export class PlatformService {
         const value=(await one<{codeTaken:boolean;slugTaken:boolean}>(tx,'SELECT EXISTS(SELECT 1 FROM platform.schools WHERE code=$1) AS "codeTaken",EXISTS(SELECT 1 FROM platform.schools WHERE slug=$2) AS "slugTaken"',[c.query.code??'',c.query.slug??'']))!;return {data:value};
       }
       if(op==='listPlatformSchools'){
-        return listResource(tx,schoolListResource,null,c.query,undefined,c.principal!.userId);
+        if(!['classCount','staffCount'].includes(c.query.sort??''))return listResource(tx,schoolListResource,null,c.query,undefined,c.principal!.userId);
+        const page=await listResource(tx,schoolCountSortResource,null,c.query,undefined,c.principal!.userId);
+        for(const item of page.data){const counts=(await one<OperationalCounts>(tx,'SELECT * FROM platform.operational_counts($1)',[item.id]))!;item.adminNames=counts.admin_labels;item.onboarding=counts.onboarding;}
+        return page;
       }
       if(op==='getPlatformSchool')return {data:await schoolView(tx,await this.school(tx,schoolId!))};
       if(op==='listPlatformAudit'){

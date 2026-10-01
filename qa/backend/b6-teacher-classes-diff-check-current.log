@@ -1,0 +1,10 @@
+warning: in the working copy of '.gitignore', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/scripts/generate-contract.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/scripts/inventory-frontend.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/contract/schemas.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/integration/foundation.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/backend-adrs.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/components/layout/shells.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/features/teacher/classes.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/lib/repositories/index.ts', CRLF will be replaced by LF the next time Git touches it
+exitCode=0

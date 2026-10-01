@@ -1,0 +1,14 @@
+{
+  "baselineCommit": "bc618da4685158afcbf3f4247726fe8e005794d9",
+  "existingOperationsChanged": [],
+  "existingSchemasChanged": [],
+  "newOperations": [
+    "listTeacherClassDirectory"
+  ],
+  "newSchemas": [
+    "TeacherClassCard",
+    "TeacherClassCardPage"
+  ],
+  "operationCount": 341,
+  "schemaCount": 459
+}

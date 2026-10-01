@@ -7,6 +7,7 @@ import {connectedStaffRepo} from './connected/staff';
 import {connectedSupportRepo} from './connected/support';
 import {connectedStudentsRepo} from './connected/students';
 import {connectedStudentsExtraRepo} from './connected/students-extra';
+import {connectedClassroomRepo,connectedTeacherExtraRepo} from './connected/classroom';
 import {connectedParentRepo,connectedParentExtraRepo,type ParentRepositoryInterface} from './connected/parent';
 
 import {connectedPlatformExtraRepo} from './connected/platform';
@@ -21,7 +22,7 @@ export const supportRepo=apiRepository<typeof import('./support').supportRepo,ty
 export const platformExtraRepo=apiRepository<typeof import('./platform-extra').platformExtraRepo,typeof connectedPlatformExtraRepo>(connectedPlatformExtraRepo);
 export const authDemoRepo=apiRepository<typeof import('./platform-extra').authDemoRepo,typeof connectedAuthRepo>(connectedAuthRepo);
 export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,typeof connectedStudentsExtraRepo>(connectedStudentsExtraRepo);
-export const classroomRepo=apiRepository<typeof import('./classroom').classroomRepo,object>({});
+export const classroomRepo=apiRepository<typeof import('./classroom').classroomRepo,typeof connectedClassroomRepo>(connectedClassroomRepo);
 export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,object>({});
 export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,object>({});
 export const activitiesRepo=apiRepository<typeof import('./activities').activitiesRepo,object>({});
@@ -29,7 +30,7 @@ export const announcementsRepo=apiRepository<typeof import('./announcements').an
 export const reportsRepo=apiRepository<typeof import('./reports').reportsRepo,object>({});
 export const parentRepo=apiRepository<ParentRepositoryInterface,typeof connectedParentRepo>(connectedParentRepo);
 export const searchRepo=apiRepository<typeof import('./search').searchRepo,object>({});
-export const teacherExtraRepo=apiRepository<typeof import('./teacher-extra').teacherExtraRepo,object>({});
+export const teacherExtraRepo=apiRepository<typeof import('./teacher-extra').teacherExtraRepo,typeof connectedTeacherExtraRepo>(connectedTeacherExtraRepo);
 export const schoolOpsRepo=apiRepository<typeof import('./school-ops-extra').schoolOpsRepo,object>({});
 export const schoolOrgRepo=apiRepository<typeof import('./school-org-extra').schoolOrgRepo,object>({});
 export const parentExtraRepo=apiRepository<{grantedYear:typeof connectedParentExtraRepo.grantedYear},typeof connectedParentExtraRepo>(connectedParentExtraRepo);

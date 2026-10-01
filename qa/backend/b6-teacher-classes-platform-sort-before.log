@@ -1,0 +1,5 @@
+ Container edumanage_backend_test-runner-run-5f13c9e7243c Creating
+ Container edumanage_backend_test-runner-run-5f13c9e7243c Created
+{"kind":"individual-sort-diagnostic-not-release-benchmark","sort":"classCount","elapsedMs":4611.058126,"jit":"on","statementTimeout":"5s","schools":2883,"total":2883,"rows":2,"counts":[1704,2]}
+{"kind":"individual-sort-diagnostic-not-release-benchmark","sort":"staffCount","elapsedMs":4661.778219999999,"jit":"on","statementTimeout":"5s","schools":2883,"total":2883,"rows":2,"counts":[2515,5]}
+exitCode=0

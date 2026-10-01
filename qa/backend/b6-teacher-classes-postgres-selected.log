@@ -1,0 +1,13 @@
+ Container edumanage_backend_test-runner-run-31497bed36cf Creating
+ Container edumanage_backend_test-runner-run-31497bed36cf Created
+✔ B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history (8827.116888ms)
+✔ B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history (654.953766ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10299.822142
+exitCode=0

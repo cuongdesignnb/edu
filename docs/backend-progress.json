@@ -4045,6 +4045,17 @@
       "evidence": [
         "qa/backend/b6-parent-preview-integration-selected.log"
       ]
+    },
+    {
+      "operationId": "listTeacherClassDirectory",
+      "screenIds": [
+        "TE02"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate."
+      ]
     }
   ],
   "screens": [
@@ -5109,11 +5120,14 @@
       "screenId": "TE02",
       "scope": "core",
       "operationIds": [
-        "listMyClasses"
+        "listMyClasses",
+        "listTeacherClassDirectory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-teacher-classes-browser-results-final.json: TE02 source uses both native own-class facades, strict/current owner receipts and existing cards/navigation; Edge 88/88 uses intercepted APIs, not PostgreSQL browser E2E or B7 acceptance."
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -1,0 +1,16 @@
+ Container edumanage_backend_test-runner-run-79008af9be85 Creating
+ Container edumanage_backend_test-runner-run-79008af9be85 Created
+✔ B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history (10649.396975ms)
+✔ B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history (1149.854624ms)
+✔ B6 minimal platform school sort counts equal the operational projection, restore tenant scope and deny non-operators (2315.077027ms)
+✔ B6 platform school wizard creates its optional admin invitation atomically and redacts form metadata (1161.888263ms)
+✔ B6 platform administrator search labels preserve current aggregate semantics and restore tenant context while denying other roles (530.136376ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16685.728289
+exitCode=0

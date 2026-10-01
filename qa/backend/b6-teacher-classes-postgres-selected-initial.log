@@ -1,0 +1,34 @@
+ Container edumanage_backend_test-runner-run-7c254488797f Creating
+ Container edumanage_backend_test-runner-run-7c254488797f Created
+✖ B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history (2080.650399ms)
+✔ B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history (680.430073ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3606.064023
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1548:1
+✖ B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history (2080.650399ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:schedule_conflict","title":"SCHEDULE_CONFLICT","status":409,"code":"SCHEDULE_CONFLICT","requestId":"22c052d8-1b34-430c-b585-0740156911bd"}
+
+  409 !== 201
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1551:238)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 201,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exitCode=1

@@ -103,7 +103,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,340);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,341);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -1545,6 +1545,29 @@ test('B5 withdrawn announcements redact retained staff notifications instead of 
   const history=await request('GET',`/api/v1/me/notifications?schoolId=${schoolA}&kind=announcement&limit=1`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().data[0].id,id);assert.equal(history.json().data[0].targetId,null);assert.equal(history.json().data[0].accessible,false);
 });
 
+test('B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history',async()=>{
+ const csrf=await login('admin-a@example.invalid'),home=await conductFixture(csrf),teacher=await activateFixtureClass(home),subject=await conductFixture(csrf);await activateFixtureClass(subject);
+ const member=(await db.transaction(tx=>tx.query('SELECT m.id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,teacher.email]),{schoolId:schoolA})).rows[0];
+ const assigned=await home.post('assignments',{classId:subject.classId,memberId:member.id,subjectId:seedId('subject:A:math'),kind:'SUBJECT',startsOn:'2026-09-28',endsOn:'2027-06-01',reason:'Phân công môn kiểm thử thẻ lớp riêng'});assert.equal(assigned.statusCode,201,assigned.body);
+ const day=nextDate(await schoolToday(),1),entry={weekday:new Date(`${day}T00:00:00Z`).getUTCDay()||7,periodNumber:1,subjectId:seedId('subject:A:math'),memberId:member.id,startsAtLocal:'08:00',endsAtLocal:'08:45'};
+ const timetable=await subject.post(`classes/${subject.classId}/timetables`,{startsOn:day,endsOn:nextDate(day,1),entries:[entry]});assert.equal(timetable.statusCode,201,timetable.body);assert.equal((await subject.post(`classes/${subject.classId}/timetables/${timetable.json().data.id}/publish`,{expectedSourceVersion:timetable.json().data.dataVersion})).statusCode,200);
+ const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');await login(teacher.email);const teacherCookie=jar.get('edu_staff'),url=`/api/v1/schools/${schoolA}/me/class-directory`;
+ const response=await request('GET',url);assert.equal(response.statusCode,200,response.body);const rows=response.json().data;assert.equal(rows.length,2);for(const row of rows)validateSchema('TeacherClassCard',row,true);
+ const h=rows.find(r=>r.id===home.classId),s=rows.find(r=>r.id===subject.classId);assert.equal(h.live,true);assert.equal(h.studentCount,2);assert.ok(h.actions.includes('group.manage'));assert.ok(h.actions.includes('guardian.read'));assert.equal(s.live,true);assert.equal(s.studentCount,2);assert.ok(s.actions.includes('schedule.read'));assert.equal(s.actions.includes('group.manage'),false);assert.equal(s.actions.includes('guardian.read'),false);assert.equal(s.actions.includes('parent_access.issue'),false);assert.deepEqual(s.nextLesson,{date:day,startsAtLocal:entry.startsAtLocal,endsAtLocal:entry.endsAtLocal,periodNumber:1,subjectName:'Toán'});assert.equal(s.assignments[0].subjectName,'Toán');assert.equal(h.homeroomName,'Chủ nhiệm thông báo kiểm thử');
+ assert.ok(!JSON.stringify(rows).match(/workEmail|workPhone|userId|memberId|studentId|relationshipId|tokenHash|internalNote/));assert.equal((await request('GET',url.replace(schoolA,schoolB))).statusCode,404);assert.equal((await request('GET',url+'?memberId='+seedId('member:A:teacher-b'))).statusCode,422);
+ const first=await request('GET',url+'?limit=1');assert.equal(first.statusCode,200,first.body);const cursor=first.json().page.nextCursor;assert.ok(cursor);const second=await request('GET',url+'?limit=1&cursor='+encodeURIComponent(cursor));assert.equal(second.statusCode,200,second.body);assert.notEqual(second.json().data[0].id,first.json().data[0].id);assert.equal((await request('GET',url+'?limit=1&includeEnded=true&cursor='+encodeURIComponent(cursor))).statusCode,422);
+ jar.set('edu_staff',adminCookie);const grant=(await db.transaction(tx=>tx.query('SELECT g.* FROM app.teaching_assignments a JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id WHERE a.school_id=$1 AND a.id=$2',[schoolA,assigned.json().data.id]),{schoolId:schoolA})).rows[0];assert.equal((await home.post(`grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Thu hồi phân công môn kiểm thử thẻ lớp'})).statusCode,200);jar.set('edu_staff',teacherCookie);
+ const current=await request('GET',url);assert.equal(current.statusCode,200,current.body);assert.deepEqual(current.json().data.map(r=>r.id),[home.classId]);assert.equal((await request('GET',url+'?limit=1&cursor='+encodeURIComponent(cursor))).statusCode,422);
+ const history=await request('GET',url+'?includeEnded=true');assert.equal(history.statusCode,200,history.body);const ended=history.json().data.find(r=>r.id===subject.classId);validateSchema('TeacherClassCard',ended,true);assert.equal(ended.live,false);assert.deepEqual(ended.actions,[]);for(const key of ['motto','studentCount','roomLabel','homeroomName','nextLesson'])assert.equal(ended[key],null);assert.equal(ended.assignments[0].status,'REVOKED');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/classes/${subject.classId}/overview`)).statusCode,404);
+});
+
+test('B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history',async()=>{
+ const csrf=await login('admin-a@example.invalid'),f=await conductFixture(csrf),teacher=await activateFixtureClass(f),member=(await db.transaction(tx=>tx.query('SELECT m.id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,teacher.email]),{schoolId:schoolA})).rows[0];
+ const grant=(await db.transaction(tx=>tx.query('SELECT g.id FROM app.teaching_assignments a JOIN app.role_grants g ON g.school_id=a.school_id AND g.id=a.role_grant_id WHERE a.school_id=$1 AND a.member_id=$2 AND a.class_id=$3',[schoolA,member.id,f.classId]),{schoolId:schoolA})).rows[0];jar.delete('edu_staff');await login(teacher.email);const url=`/api/v1/schools/${schoolA}/me/class-directory`;
+ for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '1 minute',valid_until=now()-interval '1 second' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[schoolA,grant.id]),{schoolId:schoolA});for(const suffix of ['', '?includeEnded=true']){const denied=await request('GET',url+suffix);assert.equal(denied.statusCode,403,denied.body);}}
+ await db.transaction(async tx=>{await tx.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,grant.id]);await tx.query("UPDATE app.memberships SET status='SUSPENDED' WHERE school_id=$1 AND id=$2",[schoolA,member.id]);},{schoolId:schoolA});assert.equal((await request('GET',url+'?includeEnded=true')).statusCode,404);
+});
+
 test('B5 dashboards count real scoped rows, keep homeroom and subject tasks separate and immediately recheck revocation',async()=>{
   const csrf=await login('admin-a@example.invalid'),home=await conductFixture(csrf),teacher=await activateFixtureClass(home),subject=await conductFixture(csrf);await activateFixtureClass(subject);
   const member=(await db.transaction(tx=>tx.query('SELECT m.id FROM app.memberships m JOIN identity.users u ON u.id=m.user_id WHERE m.school_id=$1 AND u.email_normalized=$2',[schoolA,teacher.email]),{schoolId:schoolA})).rows[0];
@@ -1940,6 +1963,19 @@ test('B6 rollover preview uses exact end-year enrollment, minimal workflow autho
     assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
     jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.equal((await request('GET',`${base}/academic-years/${source.id}/rollover-preview`)).statusCode,403);
   }finally{jar.set('edu_staff',adminCookie);}
+});
+
+test('B6 minimal platform school sort counts equal the operational projection, restore tenant scope and deny non-operators',async()=>{
+ const schoolId=await operationalUiSchool(),operator=seedId('user:operator'),query='SELECT * FROM platform.school_sort_counts($1)';
+ for(const id of [schoolId,schoolA,schoolB])await db.transaction(async tx=>{
+  const before=(await tx.query("SELECT current_setting('app.school_id',true) AS school")).rows[0].school;
+  const minimal=(await tx.query(query,[id])).rows[0],full=(await tx.query('SELECT * FROM platform.operational_counts($1)',[id])).rows[0];assert.deepEqual(minimal,{class_count:full.class_count,staff_count:full.staff_count});assert.deepEqual(Object.keys(minimal).sort(),['class_count','staff_count']);assert.equal((await tx.query("SELECT current_setting('app.school_id',true) AS school")).rows[0].school,before);
+ },{schoolId:schoolA,userId:operator,readOnly:true});
+ await db.transaction(tx=>tx.query("UPDATE app.memberships SET status='SUSPENDED' WHERE school_id=$1 AND user_id=$2",[schoolId,seedId('user:teacher-a')]),{schoolId});
+ await db.transaction(async tx=>{const minimal=(await tx.query(query,[schoolId])).rows[0],full=(await tx.query('SELECT * FROM platform.operational_counts($1)',[schoolId])).rows[0];assert.equal(minimal.staff_count,1);assert.equal(minimal.staff_count,full.staff_count);},{userId:operator,readOnly:true});
+ for(const context of [{readOnly:true},{schoolId:schoolA,userId:seedId('user:admin-a'),readOnly:true},{schoolId:schoolA,parent:true,readOnly:true}])await assert.rejects(db.transaction(tx=>tx.query(query,[schoolId]),context),error=>error.code==='42501');
+ const csrf=await login('operator@example.invalid');assert.ok(csrf);
+ for(const sort of ['classCount','staffCount'])for(const dir of ['asc','desc']){const url=`/api/v1/platform/schools?sort=${sort}&dir=${dir}&limit=2`,page=await request('GET',url);assert.equal(page.statusCode,200,page.body);assert.ok(page.json().data.every(row=>Array.isArray(row.adminNames)&&typeof row.onboarding==='object'));const counts=page.json().data.map(row=>row[sort]);assert.ok(dir==='asc'?counts[0]<=counts[1]:counts[0]>=counts[1]);const cursor=page.json().page.nextCursor;assert.ok(cursor);const next=await request('GET',url+'&cursor='+encodeURIComponent(cursor));assert.equal(next.statusCode,200,next.body);assert.equal(new Set([...page.json().data,...next.json().data].map(row=>row.id)).size,4);assert.equal(next.json().page.total,page.json().page.total);}
 });
 
 test('B6 platform school wizard creates its optional admin invitation atomically and redacts form metadata',async()=>{
