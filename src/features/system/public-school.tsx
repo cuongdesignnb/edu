@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Globe, Newspaper, Link2, PauseCircle, ArrowLeft, Paperclip, Download, CalendarDays, ShieldCheck } from "lucide-react";
 import { announcementsRepo } from "@/lib/repositories";
-import { useRepo } from "@/lib/query/hooks";
+import { useRepo, useCommand } from "@/lib/query/hooks";
 import { fmtBytes, fmtDate, schoolStatus } from "@/lib/formatters";
 import { PublicShell } from "@/components/layout/shells";
 import { Breadcrumbs } from "@/components/layout/page";
@@ -124,6 +124,7 @@ export function PublicNewsPage({ slug, id }: { slug: string; id: string }) {
 
 function NewsBody({ d }: { d: NewsData }) {
   const n = d.news;
+  const download = useCommand((_ctx, file: NewsData['news']['attachments'][number]) => downloadFileAsset(file));
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <Breadcrumbs items={[{ label: d.school.name, href: `/schools/${d.school.slug}` }, { label: "Tin công khai", href: `/schools/${d.school.slug}` }, { label: n.title }]} />
@@ -141,10 +142,11 @@ function NewsBody({ d }: { d: NewsData }) {
               {n.attachments.map((f) => (
                 <li key={f.id} className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="min-w-0 flex-1 truncate text-body">{f.name} <span className="text-muted">({fmtBytes(f.size)})</span></span>
-                  <Button size="sm" variant="secondary" icon={<Download className="size-4" />} onClick={() => downloadFileAsset(f)}>Tải về</Button>
+                  <Button size="sm" variant="secondary" disabled={download.pending} icon={<Download className="size-4" />} onClick={() => download.run(f)}>Tải về</Button>
                 </li>
               ))}
             </ul>
+            {download.error && <Callout tone="danger" title="Chưa tải được tệp">{download.error.message} Hãy thử tải lại.</Callout>}
           </div>
         )}
       </Card>

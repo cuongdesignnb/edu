@@ -518,6 +518,13 @@ export interface ApiSchemas {
   "TeacherAnnouncementReadInput": { "sources": Array<ApiSchemas["TeacherAnnouncementSource"]>; };
   "TeacherAnnouncementReadReceipt": { "schoolId": string; "memberId": string; "items": Array<{ "source": ApiSchemas["TeacherAnnouncementSource"]; "receiptId": string; "readAt": string; }>; };
   "TeacherAnnouncementReadReceiptResponse": { "data": ApiSchemas["TeacherAnnouncementReadReceipt"]; "requestId": string; };
+  "PublicSchoolCard": { "name": string; "shortName": (string) | null; "slug": string; "address": (string) | null; "publicPhone": (string) | null; "publicEmail": (string) | null; "website": (string) | null; "motto": string; "publicIntro": string; "accentColor": string; "status": "active" | "suspended" | "archived"; "level": (string) | null; };
+  "PublicNewsSource": { "rootId": string; "publicationId": string; };
+  "PublicNewsSummary": { "id": string; "title": string; "summary": string; "publishedAt": string; };
+  "PublicSchoolWorkspace": { "school": ApiSchemas["PublicSchoolCard"]; "news": Array<ApiSchemas["PublicNewsSummary"]>; };
+  "PublicSchoolWorkspaceResponse": { "data": ApiSchemas["PublicSchoolWorkspace"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "PublicNewsWorkspace": { "school": { "name": string; "slug": string; }; "news": { "id": string; "title": string; "summary": string; "publishedAt": string; "body": Array<{ "type": "p" | "h" | "li"; "text": string; }>; "source": ApiSchemas["PublicNewsSource"]; "attachments": Array<{ "id": string; "name": string; "mime": string; "size": number; }>; }; };
+  "PublicNewsWorkspaceResponse": { "data": ApiSchemas["PublicNewsWorkspace"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4210,6 +4217,36 @@ export const apiOperations = {
     "list": false,
     "permission": "teacher.self",
     "readOnly": false
+  },
+  "getPublicSchoolWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}/workspace",
+    "auth": "none",
+    "request": null,
+    "response": "PublicSchoolWorkspace",
+    "list": false,
+    "permission": "public",
+    "readOnly": true
+  },
+  "getPublicNewsWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}/announcements/{announcementId}/workspace",
+    "auth": "none",
+    "request": null,
+    "response": "PublicNewsWorkspace",
+    "list": false,
+    "permission": "public",
+    "readOnly": true
+  },
+  "downloadPublicNewsFile": {
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}/announcements/{announcementId}/revisions/{publicationId}/files/{fileId}",
+    "auth": "none",
+    "request": null,
+    "response": "File",
+    "list": false,
+    "permission": "public",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

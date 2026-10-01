@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('public workspaces expose exact published projections and no staff or parent authentication',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',school={name:'Trường công khai',shortName:null,slug:'public-school',address:null,publicPhone:null,publicEmail:null,website:null,motto:'',publicIntro:'',accentColor:'#2876bc',status:'active',level:null},news={id,title:'Tin hiện hành',summary:'Nội dung công khai',publishedAt:'2026-10-02T01:00:00Z'};validateSchema('PublicSchoolWorkspace',{school,news:[news]},true);validateSchema('PublicNewsWorkspace',{school:{name:school.name,slug:school.slug},news:{...news,body:[{type:'p',text:'Nội dung'}],source:{rootId:id,publicationId:id},attachments:[]}},true);
+ for(const extra of ['studentCount','students','internalNote','schoolId','staffSnapshot'])assert.throws(()=>validateSchema('PublicSchoolCard',{...school,[extra]:'private'},true));
+ for(const operationId of ['getPublicSchoolWorkspace','getPublicNewsWorkspace','downloadPublicNewsFile']){const op=operations.find(o=>o.id===operationId);assert.equal(op.auth,'none');assert.equal(op.scope,'none');assert.equal(op.permission,'public');assert.equal(op.method,'GET');assert.ok(op.responses['200']);}
+});
+test('existing synchronous auth invitation position message and publication handlers have actual success schemas',()=>{
+ for(const [id,status,original]of [['forgotPassword','200','202'],['inviteStaff','201','202'],['inviteSchoolAdmin','201','202'],['inviteSchoolStaff','201','202'],['assignPosition','201','200'],['postSchoolMessage','201','200'],['postPlatformTicketMessage','201','200'],['publishSchoolAnnouncement','200','202'],['publishClassAnnouncement','200','202'],['commitRollover','200','202'],['issueReviewedParentAccess','201','200']]){const op=operations.find(o=>o.id===id);assert.deepEqual(op.responses[status].content['application/json'].schema,op.responses[original].content['application/json'].schema);}
+});
 test('native duty and attendance acknowledgements declare their actual HTTP200 without changing explicit HTTP201 creation',()=>{
  for(const id of ['saveClassDutyTask','removeClassDutyTask','saveClassAttendanceSheet','publishClassAttendanceSheet']){const op=operations.find(o=>o.id===id);assert.equal(op.method,'POST');assert.equal(op.responses['201'],undefined);assert.equal(op.responses['200'].content['application/json'].schema.$ref,`#/components/schemas/${op.response}Response`);}
  for(const id of ['requestPlatformSupportAccess','saveClassSeatingRevision']){const op=operations.find(o=>o.id===id);assert.ok(op.responses['201'].content['application/json'].schema.$ref);assert.equal(op.responses['200'],undefined);}
@@ -65,7 +73,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,369);assert.equal(new Set(operations.map(op=>op.id )).size,369);
+  assert.equal(operations.length,372);assert.equal(new Set(operations.map(op=>op.id )).size,372);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

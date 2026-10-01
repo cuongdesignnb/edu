@@ -1,0 +1,14 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-public-announcements.test.ts (6 tests) 14ms
+ ✓ tests/unit/api-file-byte-ownership.test.ts (5 tests) 13ms
+ ✓ tests/unit/api-native-facade.test.ts (3 tests) 2106ms
+   ✓ connected root boundary > has no runtime route dependency on fixtures, IndexedDB, legacy repositories or demo sessions  2098ms
+
+ Test Files  3 passed (3)
+      Tests  14 passed (14)
+   Start at  05:11:54
+   Duration  3.10s (transform 498ms, setup 119ms, collect 2.00s, tests 2.13s, environment 1ms, prepare 327ms)
+
+EXIT_CODE=0

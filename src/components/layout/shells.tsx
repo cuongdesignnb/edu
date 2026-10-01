@@ -225,10 +225,10 @@ export function PublicShell({ children, schoolName }: { children: ReactNode; sch
     <div className="flex min-h-dvh flex-col bg-app">
       <DemoScenarioBanner compact />
       <header className="border-b border-line bg-white">
-        <div className="mx-auto flex h-[68px] max-w-6xl items-center gap-4 px-4">
+        <div className="mx-auto flex min-h-[68px] max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:flex-nowrap sm:py-0">
           <Brand />
           {schoolName && <span className="hidden truncate text-sm font-semibold text-ink sm:block">· {schoolName}</span>}
-          <nav className="ml-auto flex items-center gap-4 text-sm" aria-label="Liên kết">
+          <nav className="ml-auto flex items-center gap-4 whitespace-nowrap text-sm" aria-label="Liên kết">
             <Link href="/privacy" className="text-body hover:text-primary-strong">Quyền riêng tư</Link>
             <Link href="/terms" className="hidden text-body hover:text-primary-strong sm:inline">Điều kiện sử dụng</Link>
             <Link href="/login" className="btn btn-secondary btn-sm">Nhân sự đăng nhập</Link>

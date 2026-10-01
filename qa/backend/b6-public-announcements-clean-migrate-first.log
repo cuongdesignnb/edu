@@ -1,0 +1,5 @@
+ Container edumanage_backend_test-runner-run-2d3864723ec9 Creating 
+ Container edumanage_backend_test-runner-run-2d3864723ec9 Created 
+{"status":"FAILED","code":"Migration failed 002-invariants.sql (42704)"}
+
+EXIT_CODE=1

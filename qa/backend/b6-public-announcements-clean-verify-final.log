@@ -1,0 +1,4 @@
+ Container edumanage_backend_test-runner-run-27ab50e4c85d Creating 
+ Container edumanage_backend_test-runner-run-27ab50e4c85d Created 
+{"schemaRevision":"049-platform-overview-counts.sql","migrations":49,"rolesSafe":true,"forceRls":true}
+EXIT_CODE=0

@@ -9,6 +9,7 @@ import {connectedStudentsRepo} from './connected/students';
 import {connectedStudentsExtraRepo} from './connected/students-extra';
 import {connectedAttendanceRepo} from './connected/attendance';
 import {connectedAnnouncementsRepo} from './connected/announcements';
+import {connectedPublicAnnouncementsRepo} from './connected/public-announcements';
 import {connectedSchoolOpsRepo} from './connected/school-ops';
 import {connectedClassroomRepo,connectedTeacherExtraRepo} from './connected/classroom';
 import {connectedParentRepo,connectedParentExtraRepo,type ParentRepositoryInterface} from './connected/parent';
@@ -29,7 +30,7 @@ export const classroomRepo=apiRepository<typeof import('./classroom').classroomR
 export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,typeof connectedAttendanceRepo>(connectedAttendanceRepo);
 export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,object>({});
 export const activitiesRepo=apiRepository<typeof import('./activities').activitiesRepo,object>({});
-export const announcementsRepo=apiRepository<typeof import('./announcements').announcementsRepo,typeof connectedAnnouncementsRepo>(connectedAnnouncementsRepo);
+export const announcementsRepo=apiRepository<typeof import('./announcements').announcementsRepo,typeof connectedAnnouncementsRepo & typeof connectedPublicAnnouncementsRepo>({...connectedAnnouncementsRepo,...connectedPublicAnnouncementsRepo});
 export const reportsRepo=apiRepository<typeof import('./reports').reportsRepo,object>({});
 export const parentRepo=apiRepository<ParentRepositoryInterface,typeof connectedParentRepo>(connectedParentRepo);
 export const searchRepo=apiRepository<typeof import('./search').searchRepo,object>({});

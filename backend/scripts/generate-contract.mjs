@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import YAML from 'yaml';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import {extendAnnouncementContract} from './announcement-contract.mjs';
+import {extendPublicAnnouncementContract} from './public-announcement-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -736,6 +737,16 @@ for(const paths of Object.values(spec.paths))for(const op of Object.values(paths
 // The existing link-issuance service creates its one-time link with HTTP201.
 // Keep its HTTP200 envelope and validate the actual creation response as well.
 for(const paths of Object.values(spec.paths))for(const op of Object.values(paths))if(op?.operationId==='issueParentAccess')op.responses['201']=structuredClone(op.responses['200']);
+// ADR-090: explicit statuses observed in the existing synchronous handlers.
+// Keep their original envelopes and documented statuses; validate the actual
+// status too. No undeclared status or unvalidated JSON success is accepted.
+const synchronousStatuses={forgotPassword:[200,202],inviteStaff:[201,202],inviteSchoolAdmin:[201,202],inviteSchoolStaff:[201,202],assignPosition:[201,200],postSchoolMessage:[201,200],postPlatformTicketMessage:[201,200],publishSchoolAnnouncement:[200,202],publishClassAnnouncement:[200,202],commitRollover:[200,202],issueReviewedParentAccess:[201,200]};
+for(const paths of Object.values(spec.paths))for(const op of Object.values(paths))if(synchronousStatuses[op?.operationId]){
+ const [actual,original]=synchronousStatuses[op.operationId];
+ if(!op.responses[String(original)]?.content?.['application/json'])throw new Error('Missing success envelope '+op.operationId);
+ op.responses[String(actual)]=structuredClone(op.responses[String(original)]);
+}
+extendPublicAnnouncementContract(spec,extendOperation,{object,uuid,label,count,timestamp,operations});
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

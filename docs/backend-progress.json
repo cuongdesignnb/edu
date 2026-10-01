@@ -4393,6 +4393,39 @@
       "evidence": [
         "qa/backend/b6-teacher-announcements-postgres-source-repair-final.log: actual PostgreSQL10/10, migration048/checksum replay, own immutable publication receipts, atomic batch, current teacher/subject/class/date grants and replay revocation; browser4/4 intercepted API, not PostgreSQL E2E."
       ]
+    },
+    {
+      "operationId": "getPublicSchoolWorkspace",
+      "screenIds": [
+        "SY01"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-public-announcements-postgres-final.log: 10/10 PostgreSQL; current PUBLIC snapshots/file scopes and migration049 verified; browser contracts separate."
+      ]
+    },
+    {
+      "operationId": "getPublicNewsWorkspace",
+      "screenIds": [
+        "SY02"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-public-announcements-postgres-final.log: 10/10 PostgreSQL; current PUBLIC snapshots/file scopes and migration049 verified; browser contracts separate."
+      ]
+    },
+    {
+      "operationId": "downloadPublicNewsFile",
+      "screenIds": [
+        "SY02"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-public-announcements-postgres-final.log: 10/10 PostgreSQL; current PUBLIC snapshots/file scopes and migration049 verified; browser contracts separate."
+      ]
     }
   ],
   "screens": [
@@ -6206,22 +6239,29 @@
       "screenId": "SY01",
       "scope": "core",
       "operationIds": [
-        "getPublicSchool"
+        "getPublicSchool",
+        "getPublicSchoolWorkspace"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Public school/news use native API snapshots and exact publication downloads. Edge4/4 intercepted contract and inspected desktop/mobile are not PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {
       "screenId": "SY02",
       "scope": "core",
       "operationIds": [
-        "getPublicAnnouncement"
+        "getPublicAnnouncement",
+        "getPublicNewsWorkspace",
+        "downloadPublicNewsFile"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Public school/news use native API snapshots and exact publication downloads. Edge4/4 intercepted contract and inspected desktop/mobile are not PostgreSQL browser E2E."
+      ],
       "apiStatus": "TESTED"
     },
     {

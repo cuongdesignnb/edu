@@ -70,13 +70,13 @@ export class WorkerRunner {
       if(process.env.APP_ENV!=='test')process.stderr.write(JSON.stringify({event:'job_failed',jobId:job.id,kind:job.kind,code})+'\n');
     }finally{clearInterval(timer);}
   }
-  private async mailClaim(){
+  private async mailClaim(mailId?:string){
     return this.db.transaction(tx=>one<Mail>(tx,`WITH candidate AS (
       SELECT id FROM identity.mail_outbox WHERE attempts<5 AND run_after<=now() AND encrypted_payload<>''
       AND (status IN ('PENDING','FAILED') OR (status='LEASED' AND lease_until<=now()))
-      ORDER BY run_after,id FOR UPDATE SKIP LOCKED LIMIT 1
+      ${mailId?'AND id=$2::uuid':''} ORDER BY run_after,id FOR UPDATE SKIP LOCKED LIMIT 1
     ) UPDATE identity.mail_outbox q SET status='LEASED',attempts=q.attempts+1,lease_owner=$1,lease_until=now()+interval '60 seconds'
-      FROM candidate c WHERE q.id=c.id RETURNING q.*`,[this.owner]));
+      FROM candidate c WHERE q.id=c.id RETURNING q.*`,mailId?[this.owner,mailId]:[this.owner]));
   }
   private async mailGuard(tx:Transaction,mail:Mail){
     if(!await one(tx,"SELECT id FROM identity.mail_outbox WHERE id=$1 AND status='LEASED' AND lease_owner=$2 AND lease_until>now() FOR UPDATE",[mail.id,this.owner]))throw new Problem(409,'JOB_LEASE_LOST');
@@ -117,6 +117,8 @@ export class WorkerRunner {
       if(process.env.APP_ENV!=='test')process.stderr.write(JSON.stringify({event:'mail_failed',mailId:mail.id,code})+'\n');
     }
   }
+  /** A worker may retry one known mail while retaining the same lease and delivery checks. */
+  async processMail(mailId?:string){const mail=await this.mailClaim(mailId);if(!mail)return 0;await this.deliver(mail);return 1;}
   async processOnce(){
     const schools=(await this.db.app.query<{id:string}>('SELECT id FROM platform.schools ORDER BY id')).rows;
     let processed=0;
@@ -124,7 +126,7 @@ export class WorkerRunner {
       const jobs:Job[]=[];for(let slot=0;slot<2;slot++){const job=await this.claim(school.id);if(job)jobs.push(job);}
       await Promise.all(jobs.map(job=>this.run(job)));processed+=jobs.length;
     }
-    const mail=await this.mailClaim();if(mail){await this.deliver(mail);processed++;}
+    processed+=await this.processMail();
     await this.db.app.query(`INSERT INTO platform.runtime_heartbeats(worker_id,started_at,last_healthy_at,processed_jobs)
       VALUES($1,$2,now(),$3) ON CONFLICT(worker_id) DO UPDATE SET last_healthy_at=excluded.last_healthy_at,processed_jobs=excluded.processed_jobs`,[this.owner,this.startedAt,processed]);
     return processed;

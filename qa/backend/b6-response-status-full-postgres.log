@@ -1,0 +1,2228 @@
+ Container edumanage_backend_test-runner-run-103be5f3df8b Creating 
+ Container edumanage_backend_test-runner-run-103be5f3df8b Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 446.197268
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 77.609349
+  type: 'test'
+  ...
+# Subtest: BE02 cross-school enrollment FK rejects write using the real runtime role
+ok 3 - BE02 cross-school enrollment FK rejects write using the real runtime role
+  ---
+  duration_ms: 10.662586
+  type: 'test'
+  ...
+# Subtest: BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection
+ok 4 - BE03 no-tenant denies and SET LOCAL cannot leak across a reused connection
+  ---
+  duration_ms: 4.68543
+  type: 'test'
+  ...
+# Subtest: BE04 bootstrap only exposes the authenticated user memberships without tenant
+ok 5 - BE04 bootstrap only exposes the authenticated user memberships without tenant
+  ---
+  duration_ms: 11.920868
+  type: 'test'
+  ...
+# Subtest: BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B
+ok 6 - BE05 HOMEROOM A plus SUBJECT B cannot authorize seating or guardians in B
+  ---
+  duration_ms: 7634.199064
+  type: 'test'
+  ...
+# Subtest: BE06 revoked membership is checked during an existing session and B stays independent
+ok 7 - BE06 revoked membership is checked during an existing session and B stays independent
+  ---
+  duration_ms: 58.243421
+  type: 'test'
+  ...
+# Subtest: B6 self context carries only own current duties and separates self-profile from school contacts
+ok 8 - B6 self context carries only own current duties and separates self-profile from school contacts
+  ---
+  duration_ms: 14396.251363
+  type: 'test'
+  ...
+# Subtest: BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting
+ok 9 - BE08 CSRF, credential validation, cookie flags, session rotation and rate limiting
+  ---
+  duration_ms: 100.03579
+  type: 'test'
+  ...
+# Subtest: BE10 concurrent profile patches serialize with a single version winner
+ok 10 - BE10 concurrent profile patches serialize with a single version winner
+  ---
+  duration_ms: 52.794575
+  type: 'test'
+  ...
+# Subtest: B6 password/session commands use actual cookies, reject bad passwords and revoke every session after change
+ok 11 - B6 password/session commands use actual cookies, reject bad passwords and revoke every session after change
+  ---
+  duration_ms: 332.891949
+  type: 'test'
+  ...
+# {"checkpoint":"parent-without-context","queryMs":5.597,"planExecutionMs":0.025,"planRows":0}
+# Subtest: BE21 parent runtime role cannot select raw student rows
+ok 12 - BE21 parent runtime role cannot select raw student rows
+  ---
+  duration_ms: 20.329372
+  type: 'test'
+  ...
+# Subtest: B0 health ready checks actual migrations, database and private storage
+ok 13 - B0 health ready checks actual migrations, database and private storage
+  ---
+  duration_ms: 28.029452
+  type: 'test'
+  ...
+# Subtest: B2 class lists use SQL scope and cross-school details deny before serialization
+ok 14 - B2 class lists use SQL scope and cross-school details deny before serialization
+  ---
+  duration_ms: 319.107177
+  type: 'test'
+  ...
+# Subtest: BE09 idempotent organization create/retry/concurrency performs one write
+ok 15 - BE09 idempotent organization create/retry/concurrency performs one write
+  ---
+  duration_ms: 79.171275
+  type: 'test'
+  ...
+# Subtest: B2 required idempotency, class capacity/reference validation and version conflicts
+ok 16 - B2 required idempotency, class capacity/reference validation and version conflicts
+  ---
+  duration_ms: 141.152757
+  type: 'test'
+  ...
+# Subtest: B2 signed cursor rejects scope/filter modification and delivers distinct pages
+ok 17 - B2 signed cursor rejects scope/filter modification and delivers distinct pages
+  ---
+  duration_ms: 4068.64662
+  type: 'test'
+  ...
+# Subtest: B2 subject student projection omits family/internal notes and denies guardians
+ok 18 - B2 subject student projection omits family/internal notes and denies guardians
+  ---
+  duration_ms: 454.682611
+  type: 'test'
+  ...
+# Subtest: B2 guardian create does not merge matching phone, relationships start unverified
+ok 19 - B2 guardian create does not merge matching phone, relationships start unverified
+  ---
+  duration_ms: 122.115051
+  type: 'test'
+  ...
+# Subtest: BE07 existing identity invitation requires its session and preserves password/other school
+ok 20 - BE07 existing identity invitation requires its session and preserves password/other school
+  ---
+  duration_ms: 6890.308673
+  type: 'test'
+  ...
+# Subtest: B1 password reset token is encrypted, single-use and revokes all prior sessions
+not ok 21 - B1 password reset token is encrypted, single-use and revokes all prior sessions
+  ---
+  duration_ms: 68.569816
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:357:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:360:115)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B2 staff delegation stays within the ceiling, custom class scope and immediate revocation
+ok 22 - B2 staff delegation stays within the ceiling, custom class scope and immediate revocation
+  ---
+  duration_ms: 932.471148
+  type: 'test'
+  ...
+# Subtest: B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview
+not ok 23 - B2 transfers serialize capacity, handover removes the old teacher and rollover binds its preview
+  ---
+  duration_ms: 307.013707
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:417:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:452:123)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs
+ok 24 - B2 scoped guardian creation cannot acquire an unrelated family through relationship IDs
+  ---
+  duration_ms: 528.233939
+  type: 'test'
+  ...
+# Subtest: B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets
+not ok 25 - B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets
+  ---
+  duration_ms: 1968.178729
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:506:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:553:261)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely
+ok 26 - B2 imports parse real CSV, bind stale previews, avoid name/phone merges and retain invalid rows safely
+  ---
+  duration_ms: 11527.002391
+  type: 'test'
+  ...
+# Subtest: B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries
+ok 27 - B2/B5 timetable import checks assignments and overlapping slots, creates only a draft and deduplicates retries
+  ---
+  duration_ms: 7672.587931
+  type: 'test'
+  ...
+# Subtest: B2 imports update only verified codes, create class drafts and staff invitations with work profiles
+ok 28 - B2 imports update only verified codes, create class drafts and staff invitations with work profiles
+  ---
+  duration_ms: 16622.087886
+  type: 'test'
+  ...
+# Subtest: B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority
+ok 29 - B2 large import resumes after a lost chunk without duplicating applied rows and checks current school authority
+  ---
+  duration_ms: 9995.181072
+  type: 'test'
+  ...
+# Subtest: B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections
+ok 30 - B3 attendance starts unmarked, versions every source change and publishes immutable one-student projections
+  ---
+  duration_ms: 538.779541
+  type: 'test'
+  ...
+# Subtest: B3 subject attendance requires its actual lesson and cannot borrow daily access from another class
+ok 31 - B3 subject attendance requires its actual lesson and cannot borrow daily access from another class
+  ---
+  duration_ms: 656.848356
+  type: 'test'
+  ...
+# Subtest: B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version
+ok 32 - B3 a simultaneous attendance edit and publish has one winner and never publishes a mixed source version
+  ---
+  duration_ms: 192.092907
+  type: 'test'
+  ...
+# Subtest: B3 rule sets require explicit points, immutable issuance and effective week application
+ok 33 - B3 rule sets require explicit points, immutable issuance and effective week application
+  ---
+  duration_ms: 488.581956
+  type: 'test'
+  ...
+# Subtest: B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source
+ok 34 - B3 conduct reviews preserve facts, lock READY projections and publish only the exact pinned source
+  ---
+  duration_ms: 936.222846
+  type: 'test'
+  ...
+# Subtest: B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts
+ok 35 - B3 conduct linked attendance detects stale sources and subject teachers see only their own lesson facts
+  ---
+  duration_ms: 1142.807201
+  type: 'test'
+  ...
+# Subtest: B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview
+ok 36 - B3 approved adjustments retain old facts and atomically replace the current publication with a reviewed preview
+  ---
+  duration_ms: 562.3636
+  type: 'test'
+  ...
+# Subtest: B3 a simultaneous conduct record and lock/publish has one source winner
+ok 37 - B3 a simultaneous conduct record and lock/publish has one source winner
+  ---
+  duration_ms: 346.212521
+  type: 'test'
+  ...
+# Subtest: B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings
+ok 38 - B3 attendance linkage deduplicates, excludes corrected drafts and leaves locked scores unchanged with explicit warnings
+  ---
+  duration_ms: 495.739194
+  type: 'test'
+  ...
+# Subtest: B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context
+ok 39 - B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context
+  ---
+  duration_ms: 1179.930591
+  type: 'test'
+  ...
+# Subtest: B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request
+ok 40 - B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request
+  ---
+  duration_ms: 549.763322
+  type: 'test'
+  ...
+# Subtest: B4 private documents stream only with both download rights, and teacher contact projections use shared work fields
+ok 41 - B4 private documents stream only with both download rights, and teacher contact projections use shared work fields
+  ---
+  duration_ms: 983.653671
+  type: 'test'
+  ...
+# Subtest: B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity
+ok 42 - B4 expired links, suspended schools, CSRF and exchange throttles deny without creating a parent identity
+  ---
+  duration_ms: 501.306813
+  type: 'test'
+  ...
+# Subtest: B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason
+not ok 43 - B1 delegated grants and invitation acceptance stay inside the current expiry ceiling; backdated assignments require a reason
+  ---
+  duration_ms: 147.782922
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1062:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"d4f1e50a-284c-4fc0-aea9-c85c2f8a154f"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1071:207)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B2 shrinking class capacity checks planned future occupancy peaks, rather than only today
+ok 44 - B2 shrinking class capacity checks planned future occupancy peaks, rather than only today
+  ---
+  duration_ms: 126.935103
+  type: 'test'
+  ...
+# Subtest: B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties
+not ok 45 - B5 dated groups retain moves and same-day cancellations, require current class versions and end group-leader duties
+  ---
+  duration_ms: 411.115749
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1094:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"2cfb3fb0-7798-41cb-8837-8db952b62754"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1104:196)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened
+not ok 46 - B5 position holders serialize and remain valid conduct sources; locked source history cannot be shortened
+  ---
+  duration_ms: 268.985806
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1116:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    -   201,
+        409,
+    +   500
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 201
+    1: 409
+  actual:
+    0: 409
+    1: 500
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1118:213)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads
+ok 47 - B5 seating validates effective enrollment and unique seats, preserves dated revisions and denies subject-only reads
+  ---
+  duration_ms: 698.475308
+  type: 'test'
+  ...
+# Subtest: B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically
+not ok 48 - B2/B5 a transfer closes dated groups/positions and retains cancelled future plans atomically
+  ---
+  duration_ms: 330.040056
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1152:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"f7819fae-03f6-4d92-a10d-c9c7f0fb5c48"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1157:192)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history
+ok 49 - B5 timetable materializes bounded future lessons, publishes child-only projections and preserves past/source history
+  ---
+  duration_ms: 820.546876
+  type: 'test'
+  ...
+# Subtest: B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions
+ok 50 - B5 timetable rejects teacher/room collisions and revoked assignments, skips holidays and revalidates source versions
+  ---
+  duration_ms: 1156.445601
+  type: 'test'
+  ...
+# Subtest: B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes
+ok 51 - B6 class student attendance counts only exact enrolled morning sources and follows actual publication withdrawal without private notes
+  ---
+  duration_ms: 497.216206
+  type: 'test'
+  ...
+# Subtest: B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority
+ok 52 - B6 class student attendance and shared profile enforce fresh independent subject class and dated homeroom authority
+  ---
+  duration_ms: 675.276633
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 53 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 738.58745
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 54 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 558.450668
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+ok 55 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 448.486512
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+ok 56 - B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+  ---
+  duration_ms: 412.369009
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+ok 57 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 582.925441
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+ok 58 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 369.726739
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+ok 59 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 420.651925
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+ok 60 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 476.033401
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+ok 61 - B6 attendance workspace saves selected pupils only, preserves UNMARKED and exposes real versioned own history without internal facts
+  ---
+  duration_ms: 426.015256
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+ok 62 - B6 attendance workspace concurrent create and replay enforce source roster record versions and fresh revocation
+  ---
+  duration_ms: 665.053262
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+ok 63 - B6 attendance workspace edits published sources atomically with reason immutable replacements and rollback on incomplete rows
+  ---
+  duration_ms: 528.710951
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+ok 64 - B6 attendance workspace weekly uses dated membership saved morning only and masks holiday future or other granularities
+  ---
+  duration_ms: 457.264406
+  type: 'test'
+  ...
+# Subtest: B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+ok 65 - B6 attendance workspace subject reads and records only own live lesson while daily rights and fresh assignment revocation remain independent
+  ---
+  duration_ms: 448.008622
+  type: 'test'
+  ...
+# Subtest: B6 class roster returns exact dated pupils organization and SQL search without contacts and masks historical family facts
+ok 66 - B6 class roster returns exact dated pupils organization and SQL search without contacts and masks historical family facts
+  ---
+  duration_ms: 356.366572
+  type: 'test'
+  ...
+# Subtest: B6 class roster separates subject pupil reads family link and organization authority and rechecks current revocation
+ok 67 - B6 class roster separates subject pupil reads family link and organization authority and rechecks current revocation
+  ---
+  duration_ms: 335.730727
+  type: 'test'
+  ...
+# Subtest: B6 class roster transfer choices preserve dated displayed enrollment versions and submit one idempotent request without moving pupils
+ok 68 - B6 class roster transfer choices preserve dated displayed enrollment versions and submit one idempotent request without moving pupils
+  ---
+  duration_ms: 358.972497
+  type: 'test'
+  ...
+# Subtest: B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+ok 69 - B6 class duty board retains selected group targets edits dated published tasks atomically and follows parent withdrawal
+  ---
+  duration_ms: 1072.974069
+  type: 'test'
+  ...
+# Subtest: B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+ok 70 - B6 class duty board separates read manage publish and preview and denies revoked foreign or archived scope
+  ---
+  duration_ms: 458.495294
+  type: 'test'
+  ...
+# Subtest: B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+ok 71 - B6 class duty atomic publication race and idempotent replay create one source and reject stale displayed targets
+  ---
+  duration_ms: 350.225888
+  type: 'test'
+  ...
+# Subtest: B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+ok 72 - B6 class duty selected targets use the canonical group publication flow and reject duplicate or foreign database targets
+  ---
+  duration_ms: 425.495001
+  type: 'test'
+  ...
+# Subtest: B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history
+ok 73 - B5 duties publish only individual tasks, reject foreign enrollment and retain immutable publication/withdraw history
+  ---
+  duration_ms: 472.499207
+  type: 'test'
+  ...
+# Subtest: B5 group duties expand the effective group at publication and retain the individual targets after later moves
+ok 74 - B5 group duties expand the effective group at publication and retain the individual targets after later moves
+  ---
+  duration_ms: 778.697146
+  type: 'test'
+  ...
+# Subtest: B5 activities count only explicit participants, preserve published states and require current source/review authority
+ok 75 - B5 activities count only explicit participants, preserve published states and require current source/review authority
+  ---
+  duration_ms: 1059.752298
+  type: 'test'
+  ...
+# Subtest: B5 approved activity results are explicit conduct sources and locked approved facts protect their source history
+ok 76 - B5 approved activity results are explicit conduct sources and locked approved facts protect their source history
+  ---
+  duration_ms: 474.301874
+  type: 'test'
+  ...
+# Subtest: B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability
+ok 77 - B5 evidence stays private until review and publication; parent documents remain child-bound and filter file availability
+  ---
+  duration_ms: 30902.822309
+  type: 'test'
+  ...
+# Subtest: B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads
+not ok 78 - B5 class announcements retain immutable publication across edits, bind one recipient and reject foreign class reads
+  ---
+  duration_ms: 478.521849
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1594:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"d3de2b06-31d8-431a-bca4-1f8a792ce481"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1595:55)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 public school announcements sanitize content and keep draft/private replacements out of the public projection
+not ok 79 - B5 public school announcements sanitize content and keep draft/private replacements out of the public projection
+  ---
+  duration_ms: 485.345426
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1614:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"b1e1b613-25e6-41c5-85d2-432cd9f36d4e"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1615:55)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss
+not ok 80 - B5 scheduled announcements wait for their due time, publish once through a worker and safely replay after an acknowledgement loss
+  ---
+  duration_ms: 643.077371
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1629:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"ad3f7b49-8057-4fbe-9d8f-142a1fc0035d"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1630:55)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot
+not ok 81 - B5 scheduled publication rechecks the creator grant and reports a failed queue without exposing a parent snapshot
+  ---
+  duration_ms: 849.234558
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1643:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"91f87bf8-b4cd-46eb-bdec-e17fd932b68a"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1644:104)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn
+not ok 82 - B5 announcement attachments remain private to one child, obey link download rights and disappear when archived or withdrawn
+  ---
+  duration_ms: 980.943902
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1660:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"b784bb6c-a357-4239-b1b4-abbed84d3c60"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1661:55)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 school settings persist with version guards, affect only new link expiry and suppress work contacts without changing old link permissions
+ok 83 - B5 school settings persist with version guards, affect only new link expiry and suppress work contacts without changing old link permissions
+  ---
+  duration_ms: 2953.409272
+  type: 'test'
+  ...
+# Subtest: B5 disabling homeroom publication takes effect inside existing sessions and restores only after an explicit setting change
+not ok 84 - B5 disabling homeroom publication takes effect inside existing sessions and restores only after an explicit setting change
+  ---
+  duration_ms: 575.336382
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1712:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"6e456daa-08b7-4c72-81f9-e252c01eb2e1"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1713:128)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B3 configured second approval rejects self approval in API and SQL, while a different scoped approver permits atomic adjustment
+ok 85 - B3 configured second approval rejects self approval in API and SQL, while a different scoped approver permits atomic adjustment
+  ---
+  duration_ms: 715.627249
+  type: 'test'
+  ...
+# Subtest: B5 personal notifications paginate across actual memberships, deduplicate publication events and deny foreign recipients and cross-user cursors
+not ok 86 - B5 personal notifications paginate across actual memberships, deduplicate publication events and deny foreign recipients and cross-user cursors
+  ---
+  duration_ms: 470.096308
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1743:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"c278f9a3-d098-48db-857e-4fa84ebe4f11"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1744:94)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 withdrawn announcements redact retained staff notifications instead of exposing a stale published target
+not ok 87 - B5 withdrawn announcements redact retained staff notifications instead of exposing a stale published target
+  ---
+  duration_ms: 466.576009
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1773:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"19d742ae-4edc-4f33-a38f-2a3b437b1a8e"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1774:103)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history
+not ok 88 - B6 TE02 own class cards separate home and subject authority, actual next lessons and ended self history
+  ---
+  duration_ms: 516.417098
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1782:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"fa900de2-828e-4248-9887-a0dc594c9d02"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1783:92)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history
+not ok 89 - B6 TE02 current self authority rejects future expired revoked and suspended membership without borrowing assignment history
+  ---
+  duration_ms: 465.255315
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1798:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"b386d608-5eff-4087-aa4c-3172df4d2cf3"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1799:89)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace header isolates school year class subject fields and actual publication link counters
+not ok 90 - B6 class workspace header isolates school year class subject fields and actual publication link counters
+  ---
+  duration_ms: 469.117595
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1805:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"5fc3cb56-5eb8-41fb-b0ca-e0118c05a5d7"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1806:92)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels
+not ok 91 - B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels
+  ---
+  duration_ms: 466.663315
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1829:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"2faf4a33-155e-4246-8eaa-8b43803130e9"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1830:89)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments
+not ok 92 - B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments
+  ---
+  duration_ms: 478.815091
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1841:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"6d62abed-f705-4199-aa73-307c4ff07457"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1842:89)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers
+ok 93 - B6 class workspace overview keeps custom CLASS school-only foreign scope and current grant-time authority independent of panel readers
+  ---
+  duration_ms: 407.55852
+  type: 'test'
+  ...
+# Subtest: B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators
+not ok 94 - B6 class workspace overview uses exact DAILY morning marks source publication withdrawal and distinct afternoon lesson denominators
+  ---
+  duration_ms: 467.959619
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1862:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"7ff6e194-3599-41ea-8916-d97f6904a445"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1863:81)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke
+not ok 95 - B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke
+  ---
+  duration_ms: 467.060278
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1877:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"37d4a05f-f9e3-4a43-bdc3-b32aafd5314f"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1878:92)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks
+ok 96 - B6 class workspace overview respects actual holiday absence and archived or future year sources without inferred current tasks
+  ---
+  duration_ms: 236.807727
+  type: 'test'
+  ...
+# Subtest: B6 class workspace overview follows actual conduct review lock and adjustment transitions without exposing their private sources
+not ok 97 - B6 class workspace overview follows actual conduct review lock and adjustment transitions without exposing their private sources
+  ---
+  duration_ms: 460.688253
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1909:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"477a0194-7a55-4880-b82e-38893cadd88e"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1910:81)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class workspace overview accepts complete100-row panels and rejects larger sources before returning a partial success
+ok 98 - B6 class workspace overview accepts complete100-row panels and rejects larger sources before returning a partial success
+  ---
+  duration_ms: 353.940187
+  type: 'test'
+  ...
+# Subtest: B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts
+not ok 99 - B6 class organization workspaces keep exact dated group holders and immutable seating revisions without family contacts
+  ---
+  duration_ms: 272.13397
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1945:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"eac287dc-9b77-4b44-8a2b-6b8a404ee6c5"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1953:141)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope
+ok 100 - B6 class organization workspaces keep custom group and seating rights separate and immediately deny revoked class scope
+  ---
+  duration_ms: 473.865867
+  type: 'test'
+  ...
+# Subtest: B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+ok 101 - B6 class organization atomic seating saves activate once reject stale revisions and preserve prior layouts on invalid future writes
+  ---
+  duration_ms: 307.464959
+  type: 'test'
+  ...
+# Subtest: B5 dashboards count real scoped rows, keep homeroom and subject tasks separate and immediately recheck revocation
+not ok 102 - B5 dashboards count real scoped rows, keep homeroom and subject tasks separate and immediately recheck revocation
+  ---
+  duration_ms: 465.932989
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1994:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"fbfcaaed-a863-4f26-9eda-5e3f96e55661"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1995:93)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 teacher schedule is own dated teaching and announcement feed reads only current publications across draft edits
+not ok 103 - B5 teacher schedule is own dated teaching and announcement feed reads only current publications across draft edits
+  ---
+  duration_ms: 1143.358749
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2011:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"e6f3acab-69dc-49d5-ab10-59db442613d9"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2012:83)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 dashboard attendance counters and publication tasks follow persisted marks, publish/withdraw and current school policy
+not ok 104 - B5 dashboard attendance counters and publication tasks follow persisted marks, publish/withdraw and current school policy
+  ---
+  duration_ms: 464.890972
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2023:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"490e281e-cfe6-469a-a893-aea2b4df767d"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2024:127)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation
+not ok 105 - B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation
+  ---
+  duration_ms: 183.558693
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2037:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"42872c11-e4f3-4b7a-9858-5fb6db651555"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2044:273)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 platform settings and operation records persist actual state, redact artifacts and reauthorize command replays
+ok 106 - B5 platform settings and operation records persist actual state, redact artifacts and reauthorize command replays
+  ---
+  duration_ms: 222.535842
+  type: 'test'
+  ...
+# Subtest: B1 platform admin invitations obey operator expiry ceilings and acceptance rolls back after authority expires
+not ok 107 - B1 platform admin invitations obey operator expiry ceilings and acceptance rolls back after authority expires
+  ---
+  duration_ms: 78.093725
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2073:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"0780bac2-fb04-43fc-9af5-b02fa32c908f"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2077:243)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 support tickets persist both sides, preserve queue states and exact timestamp pagination, and deny other schools
+not ok 108 - B5 support tickets persist both sides, preserve queue states and exact timestamp pagination, and deny other schools
+  ---
+  duration_ms: 166.823684
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2082:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"32113a62-c211-4812-a7f2-afb65cd50ce4"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2086:152)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B1 support requests require independent current school consent, retain immutable scope and bind tickets/classes/actions/time
+ok 109 - B1 support requests require independent current school consent, retain immutable scope and bind tickets/classes/actions/time
+  ---
+  duration_ms: 346.12286
+  type: 'test'
+  ...
+# Subtest: B1 explicitly selected support grants authorize only scoped metadata GETs, audit the actual operator and force read-only SQL
+ok 110 - B1 explicitly selected support grants authorize only scoped metadata GETs, audit the actual operator and force read-only SQL
+  ---
+  duration_ms: 233.638919
+  type: 'test'
+  ...
+# Subtest: B1 school-wide support metadata never exposes import rows/downloads and expires without fallback to operator privileges
+ok 111 - B1 school-wide support metadata never exposes import rows/downloads and expires without fallback to operator privileges
+  ---
+  duration_ms: 3502.567523
+  type: 'test'
+  ...
+# Subtest: B1 an operator who also has school-admin rights still cannot self-approve or combine selected support scope with ordinary rights
+ok 112 - B1 an operator who also has school-admin rights still cannot self-approve or combine selected support scope with ordinary rights
+  ---
+  duration_ms: 186.029859
+  type: 'test'
+  ...
+# Subtest: B5 signed native keysets cross a nullable sort boundary without dropping or repeating persisted schools
+ok 113 - B5 signed native keysets cross a nullable sort boundary without dropping or repeating persisted schools
+  ---
+  duration_ms: 1088.325385
+  type: 'test'
+  ...
+# Subtest: B5 report SQL uses real scoped counts and immutable CSV export content while live attendance changes
+not ok 114 - B5 report SQL uses real scoped counts and immutable CSV export content while live attendance changes
+  ---
+  duration_ms: 468.041836
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2154:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"a68b461b-262d-4113-8205-c64c720f3b8c"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async reportFixture (file:///srv/api/tests/integration/foundation.test.mjs:2146:82)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2155:11)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 published report exports pin revisions across replacement and withdrawal without exposing drafts
+not ok 115 - B5 published report exports pin revisions across replacement and withdrawal without exposing drafts
+  ---
+  duration_ms: 462.905933
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2170:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"18840b43-a58c-45f6-a9c9-84944d1bc2b9"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async reportFixture (file:///srv/api/tests/integration/foundation.test.mjs:2146:82)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2171:11)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 export XLSX/PDF are actual files with literal formula text, Vietnamese font and private download authorization
+not ok 116 - B5 export XLSX/PDF are actual files with literal formula text, Vietnamese font and private download authorization
+  ---
+  duration_ms: 464.422102
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2186:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"09fbd87d-e7be-472b-a47a-fa7f642cabee"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async reportFixture (file:///srv/api/tests/integration/foundation.test.mjs:2146:82)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2187:11)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 subject reports remain own lesson attendance and scoped activities without school/family/conduct/export access
+ok 117 - B5 subject reports remain own lesson attendance and scoped activities without school/family/conduct/export access
+  ---
+  duration_ms: 7934.667739
+  type: 'test'
+  ...
+# Subtest: B5 export workers and all file paths reauthorize revocation, expiry and cancellation, and replay completed work safely
+not ok 118 - B5 export workers and all file paths reauthorize revocation, expiry and cancellation, and replay completed work safely
+  ---
+  duration_ms: 471.625563
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2205:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"8cc250bc-980c-457d-aa6e-f51778c0e631"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async reportFixture (file:///srv/api/tests/integration/foundation.test.mjs:2146:82)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2206:11)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B5 conduct/activity/progress/link reports use actual pinned scores, explicit participant denominators and anonymous link use
+not ok 119 - B5 conduct/activity/progress/link reports use actual pinned scores, explicit participant denominators and anonymous link use
+  ---
+  duration_ms: 460.417491
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2217:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"85d61ba8-823f-4158-b444-118d940a82a1"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async reportFixture (file:///srv/api/tests/integration/foundation.test.mjs:2146:82)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2218:11)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 organization display fields persist with versions and tenant-safe references instead of being silently ignored
+not ok 120 - B6 organization display fields persist with versions and tenant-safe references instead of being silently ignored
+  ---
+  duration_ms: 210.562801
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2233:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    valid fixture login must succeed
+    
+    401 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 401
+  operator: 'strictEqual'
+  stack: |-
+    login (file:///srv/api/tests/integration/foundation.test.mjs:59:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2250:39)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 year wizard creates bounded terms, weeks, published holidays and independent draft rules atomically and idempotently
+ok 121 - B6 year wizard creates bounded terms, weeks, published holidays and independent draft rules atomically and idempotently
+  ---
+  duration_ms: 634.244037
+  type: 'test'
+  ...
+# Subtest: B6 class form assigns homeroom atomically, denies foreign/backdated inputs, requires handover and preserves archived history
+not ok 122 - B6 class form assigns homeroom atomically, denies foreign/backdated inputs, requires handover and preserves archived history
+  ---
+  duration_ms: 87.701563
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2291:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"6b418621-b5f9-407b-842f-9aa520300dc8"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2297:192)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 organization projections scope counts in SQL and a year-only grant cannot copy or publish rules
+ok 123 - B6 organization projections scope counts in SQL and a year-only grant cannot copy or publish rules
+  ---
+  duration_ms: 6260.674752
+  type: 'test'
+  ...
+# Subtest: B6 purpose-bound form pickers use current write authority, exclude contacts/roles/counts and deny normal directory access
+not ok 124 - B6 purpose-bound form pickers use current write authority, exclude contacts/roles/counts and deny normal directory access
+  ---
+  duration_ms: 94.44591
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2335:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"96bb0074-4282-46dd-bf18-1127c08704ed"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2338:175)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 rollover preview uses exact end-year enrollment, minimal workflow authority and immediate revocation
+not ok 125 - B6 rollover preview uses exact end-year enrollment, minimal workflow authority and immediate revocation
+  ---
+  duration_ms: 341.322803
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2358:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"b62435c4-d912-4b85-8a99-3c0a58100842"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2372:181)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 minimal platform school sort counts equal the operational projection, restore tenant scope and deny non-operators
+ok 126 - B6 minimal platform school sort counts equal the operational projection, restore tenant scope and deny non-operators
+  ---
+  duration_ms: 1864.7441
+  type: 'test'
+  ...
+# Subtest: B6 platform school wizard creates its optional admin invitation atomically and redacts form metadata
+not ok 127 - B6 platform school wizard creates its optional admin invitation atomically and redacts form metadata
+  ---
+  duration_ms: 979.628299
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2404:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"a23458ac-5049-46b8-90eb-c9d828ea4534"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2422:280)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 platform school form readers never lend admin or read authority to a create-only operator
+ok 128 - B6 platform school form readers never lend admin or read authority to a create-only operator
+  ---
+  duration_ms: 201.693855
+  type: 'test'
+  ...
+# Subtest: B6 school overview keeps current scoped totals, actual setup and publication metadata without lending school-wide reads
+not ok 129 - B6 school overview keeps current scoped totals, actual setup and publication metadata without lending school-wide reads
+  ---
+  duration_ms: 2862.264863
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2439:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"aac63e78-158b-48b5-bce1-54637759297f"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2454:199)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 support choices/counts are scoped SQL metadata, ticket message/status save atomically and an operator only relinquishes its own grant
+ok 130 - B6 support choices/counts are scoped SQL metadata, ticket message/status save atomically and an operator only relinquishes its own grant
+  ---
+  duration_ms: 996.13515
+  type: 'test'
+  ...
+# Subtest: B6 platform audit filters exact actors and whole local date boundaries before pagination and denies school-only staff
+ok 131 - B6 platform audit filters exact actors and whole local date boundaries before pagination and denies school-only staff
+  ---
+  duration_ms: 420.913584
+  type: 'test'
+  ...
+# Subtest: B6 school support metadata does not borrow consent authority, counts in SQL and rechecks permission before replay
+not ok 132 - B6 school support metadata does not borrow consent authority, counts in SQL and rechecks permission before replay
+  ---
+  duration_ms: 803.603206
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2500:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"00d9ec5f-0cc7-4a9e-8f42-9289f4e459c5"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2513:181)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 school audit uses the school timezone and exact SQL filters with tenant-safe history options
+ok 133 - B6 school audit uses the school timezone and exact SQL filters with tenant-safe history options
+  ---
+  duration_ms: 810.622526
+  type: 'test'
+  ...
+# Subtest: B6 operational probes use worker-only cycle evidence, actual backup records and purpose-bound aggregate authority
+ok 134 - B6 operational probes use worker-only cycle evidence, actual backup records and purpose-bound aggregate authority
+  ---
+  duration_ms: 6070.193783
+  type: 'test'
+  ...
+# Subtest: B6 atomic school-role replacement retains expiry/class scopes, detects independent grants and rolls back all failures
+ok 135 - B6 atomic school-role replacement retains expiry/class scopes, detects independent grants and rolls back all failures
+  ---
+  duration_ms: 463.222251
+  type: 'test'
+  ...
+# Subtest: B6 school-role replacement prevents self edits, last-admin removal, ceiling/expiry breaches and unauthorized cached replay
+ok 136 - B6 school-role replacement prevents self edits, last-admin removal, ceiling/expiry breaches and unauthorized cached replay
+  ---
+  duration_ms: 364.248317
+  type: 'test'
+  ...
+# Subtest: B6 ending a membership revokes all current/future grants and assignments without deleting history or other schools
+ok 137 - B6 ending a membership revokes all current/future grants and assignments without deleting history or other schools
+  ---
+  duration_ms: 479.846786
+  type: 'test'
+  ...
+# Subtest: B6 native school invitations persist all roles/profile, replay once and accept multiple or zero grants atomically
+not ok 138 - B6 native school invitations persist all roles/profile, replay once and accept multiple or zero grants atomically
+  ---
+  duration_ms: 201.17894
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2617:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"8a8f6b5d-598c-4e81-a95e-dc3aeb032339"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2619:299)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 zero-role invitation still rechecks current inviter membership and mail authority before acceptance
+not ok 139 - B6 zero-role invitation still rechecks current inviter membership and mail authority before acceptance
+  ---
+  duration_ms: 143.964738
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2635:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"96c5aa13-920e-4427-96e2-2fc4afd747be"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2636:230)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 expired staff invitations cannot be revoked as pending or delivered, and preserve their history
+not ok 140 - B6 expired staff invitations cannot be revoked as pending or delivered, and preserve their history
+  ---
+  duration_ms: 146.606177
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2644:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"49046dd0-c5da-4c25-a4b4-52bf575bb95a"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2645:221)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 staff directory combines authorized pending invitations in SQL, searches folded work data and counts before keysets
+not ok 141 - B6 staff directory combines authorized pending invitations in SQL, searches folded work data and counts before keysets
+  ---
+  duration_ms: 378.494973
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2653:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"8a5e0631-3030-4cc8-9ead-075d13db7da0"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2660:200)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 directory read does not lend invitation, role catalog, assignment or export authority and revocation invalidates opaque scope cursors
+not ok 142 - B6 directory read does not lend invitation, role catalog, assignment or export authority and revocation invalidates opaque scope cursors
+  ---
+  duration_ms: 219.593599
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:2673:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"709b7cde-401f-428f-ae69-71907241e869"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:2675:192)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 Vietnamese composite keysets preserve given/full-name order, case/diacritic ties and nullable departments in both directions
+ok 143 - B6 Vietnamese composite keysets preserve given/full-name order, case/diacritic ties and nullable departments in both directions
+  ---
+  duration_ms: 569.621971
+  type: 'test'
+  ...
+# Subtest: B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access
+ok 144 - B6 locked identities keep their directory lifecycle but have no effective grants, and active KPI does not fabricate access
+  ---
+  duration_ms: 190.105587
+  type: 'test'
+  ...
+# Subtest: B6 member details return real coarse other-school counts and work contacts without opening another tenant
+ok 145 - B6 member details return real coarse other-school counts and work contacts without opening another tenant
+  ---
+  duration_ms: 375.990761
+  type: 'test'
+  ...
+# Subtest: B6 member aggregate checks current school authority, target membership and SQL role before returning any count
+ok 146 - B6 member aggregate checks current school authority, target membership and SQL role before returning any count
+  ---
+  duration_ms: 311.842658
+  type: 'test'
+  ...
+# Subtest: B6 member effective permissions and assignment history follow native grant time, membership, identity and assignment dates
+ok 147 - B6 member effective permissions and assignment history follow native grant time, membership, identity and assignment dates
+  ---
+  duration_ms: 722.138578
+  type: 'test'
+  ...
+# Subtest: B6 member role choices respect action-specific delegation expiry without borrowing a role catalog
+ok 148 - B6 member role choices respect action-specific delegation expiry without borrowing a role catalog
+  ---
+  duration_ms: 353.724379
+  type: 'test'
+  ...
+# Subtest: B6 member history filters member, assignment and grant events before counting/keysets, with independent audit authority
+ok 149 - B6 member history filters member, assignment and grant events before counting/keysets, with independent audit authority
+  ---
+  duration_ms: 544.49953
+  type: 'test'
+  ...
+# Subtest: B6 personal notifications traverse more than 100 real own memberships without truncating global totals or opaque pages
+ok 150 - B6 personal notifications traverse more than 100 real own memberships without truncating global totals or opaque pages
+  ---
+  duration_ms: 91765.110817
+  type: 'test'
+  ...
+# Subtest: B6 assignment preview is read-only, uses school-local instants and preserves displayed source versions before saving
+ok 151 - B6 assignment preview is read-only, uses school-local instants and preserves displayed source versions before saving
+  ---
+  duration_ms: 562.681779
+  type: 'test'
+  ...
+# Subtest: B6 assignment preview compares exact subject scopes, rejects overlapping windows and rechecks expired delegation on repeated POST
+ok 152 - B6 assignment preview compares exact subject scopes, rejects overlapping windows and rechecks expired delegation on repeated POST
+  ---
+  duration_ms: 810.261547
+  type: 'test'
+  ...
+# Subtest: B6 assignment preview detects source member changes, rejects malformed/foreign proposals and advertises future/configured publication timing
+ok 153 - B6 assignment preview detects source member changes, rejects malformed/foreign proposals and advertises future/configured publication timing
+  ---
+  duration_ms: 410.370825
+  type: 'test'
+  ...
+# Subtest: B6 assignment matrix returns actual nullable cells and minimal work names under independent assignment-read authority
+ok 154 - B6 assignment matrix returns actual nullable cells and minimal work names under independent assignment-read authority
+  ---
+  duration_ms: 501.183352
+  type: 'test'
+  ...
+# Subtest: B6 assignment matrix keeps an unconfigured year explicit and archived display reference separate from authority
+ok 155 - B6 assignment matrix keeps an unconfigured year explicit and archived display reference separate from authority
+  ---
+  duration_ms: 312.548551
+  type: 'test'
+  ...
+# Subtest: B6 role metadata keeps native scopes and real counts without lending member/audit access or treating custom class grants as assignments
+ok 156 - B6 role metadata keeps native scopes and real counts without lending member/audit access or treating custom class grants as assignments
+  ---
+  duration_ms: 548.336478
+  type: 'test'
+  ...
+# Subtest: B6 role details show only independently authorized holders/history and save scoped deltas with a displayed version
+ok 157 - B6 role details show only independently authorized holders/history and save scoped deltas with a displayed version
+  ---
+  duration_ms: 16912.25767
+  type: 'test'
+  ...
+# Subtest: B6 future held roles and immutable system templates cannot be edited by their holder
+ok 158 - B6 future held roles and immutable system templates cannot be edited by their holder
+  ---
+  duration_ms: 307.183679
+  type: 'test'
+  ...
+# Subtest: B6 editing live roles cannot expand permissions beyond the current editor expiry ceiling
+ok 159 - B6 editing live roles cannot expand permissions beyond the current editor expiry ceiling
+  ---
+  duration_ms: 304.791247
+  type: 'test'
+  ...
+# Subtest: B6 handover preview reads real current source/counts under purpose authority without member, family or role catalog access
+ok 160 - B6 handover preview reads real current source/counts under purpose authority without member, family or role catalog access
+  ---
+  duration_ms: 444.148029
+  type: 'test'
+  ...
+# Subtest: B6 handover applies exactly once with school-local cutoffs, durable receipts, own-actor recovery and preserved source authorship
+ok 161 - B6 handover applies exactly once with school-local cutoffs, durable receipts, own-actor recovery and preserved source authorship
+  ---
+  duration_ms: 1111.874179
+  type: 'test'
+  ...
+# Subtest: B6 changed handover sources fail before submission or application and require an explicit review of the same pending receipt
+ok 162 - B6 changed handover sources fail before submission or application and require an explicit review of the same pending receipt
+  ---
+  duration_ms: 2046.525167
+  type: 'test'
+  ...
+# Subtest: B6 open-item changes invalidate handover review and linked source grants are never extended at the cutoff
+ok 163 - B6 open-item changes invalidate handover review and linked source grants are never extended at the cutoff
+  ---
+  duration_ms: 1630.050859
+  type: 'test'
+  ...
+# Subtest: B6 handover receipts remain actor/school bound, recheck delegation and deny immutable-source replacement
+ok 164 - B6 handover receipts remain actor/school bound, recheck delegation and deny immutable-source replacement
+  ---
+  duration_ms: 868.365012
+  type: 'test'
+  ...
+# Subtest: B6 student creation allocates actual codes and atomically retains enrollment, gender and a separate unverified guardian
+ok 165 - B6 student creation allocates actual codes and atomically retains enrollment, gender and a separate unverified guardian
+  ---
+  duration_ms: 256.368516
+  type: 'test'
+  ...
+# Subtest: B6 student form failures roll back every row and optional contacts require independent current authority on replay
+ok 166 - B6 student form failures roll back every row and optional contacts require independent current authority on replay
+  ---
+  duration_ms: 392.296084
+  type: 'test'
+  ...
+# Subtest: B6 student edits retain displayed versions and never replay internal notes after private profile authority is revoked
+ok 167 - B6 student edits retain displayed versions and never replay internal notes after private profile authority is revoked
+  ---
+  duration_ms: 347.343037
+  type: 'test'
+  ...
+# Subtest: B6 student unknown historic gender remains null and invalid gender/guardian state cannot be fabricated
+ok 168 - B6 student unknown historic gender remains null and invalid gender/guardian state cannot be fabricated
+  ---
+  duration_ms: 171.113959
+  type: 'test'
+  ...
+# Subtest: B6 real CSV gender mapping normalizes supported values, preserves unmapped sources and retains invalid rows
+ok 169 - B6 real CSV gender mapping normalizes supported values, preserves unmapped sources and retains invalid rows
+  ---
+  duration_ms: 8761.353205
+  type: 'test'
+  ...
+# Subtest: B6 native student directory applies Vietnamese keysets, exact SQL filters and minimal selected identifiers
+ok 170 - B6 native student directory applies Vietnamese keysets, exact SQL filters and minimal selected identifiers
+  ---
+  duration_ms: 531.591474
+  type: 'test'
+  ...
+# Subtest: B6 native student projections separate school roster authority from family, note and link authority in the same session
+ok 171 - B6 native student projections separate school roster authority from family, note and link authority in the same session
+  ---
+  duration_ms: 374.040841
+  type: 'test'
+  ...
+# Subtest: B6 archived student history uses an explicit included date and stored group, position and teacher sources
+ok 172 - B6 archived student history uses an explicit included date and stored group, position and teacher sources
+  ---
+  duration_ms: 242.705038
+  type: 'test'
+  ...
+# Subtest: B6 subject pupil projection remains minimal and class history cannot retain family access after enrollment ends
+ok 173 - B6 subject pupil projection remains minimal and class history cannot retain family access after enrollment ends
+  ---
+  duration_ms: 373.381587
+  type: 'test'
+  ...
+# Subtest: B6 pupil link metadata reflects real events, bounded recent history and revocation without returning reusable secrets
+ok 174 - B6 pupil link metadata reflects real events, bounded recent history and revocation without returning reusable secrets
+  ---
+  duration_ms: 282.586558
+  type: 'test'
+  ...
+# Subtest: B6 an unconfigured school directory returns actual null year context without fabricated class or student data
+ok 175 - B6 an unconfigured school directory returns actual null year context without fabricated class or student data
+  ---
+  duration_ms: 155.383573
+  type: 'test'
+  ...
+# Subtest: B6 verified family counters remain verified when receiving permission is explicitly disabled
+ok 176 - B6 verified family counters remain verified when receiving permission is explicitly disabled
+  ---
+  duration_ms: 223.096861
+  type: 'test'
+  ...
+# Subtest: B6 atomic guardian save creates unverified contacts, replays one receipt and prevents duplicate new commands
+ok 177 - B6 atomic guardian save creates unverified contacts, replays one receipt and prevents duplicate new commands
+  ---
+  duration_ms: 274.600741
+  type: 'test'
+  ...
+# Subtest: B6 atomic guardian save serializes competing displayed student versions
+ok 178 - B6 atomic guardian save serializes competing displayed student versions
+  ---
+  duration_ms: 202.797978
+  type: 'test'
+  ...
+# Subtest: B6 guardian form grants class family authority without student read or unscoped sibling data
+ok 179 - B6 guardian form grants class family authority without student read or unscoped sibling data
+  ---
+  duration_ms: 365.778359
+  type: 'test'
+  ...
+# Subtest: B6 atomic guardian edits preserve verified receiving choices and reject stale contact versions without partial priority changes
+ok 180 - B6 atomic guardian edits preserve verified receiving choices and reject stale contact versions without partial priority changes
+  ---
+  duration_ms: 303.194116
+  type: 'test'
+  ...
+# Subtest: B6 guardian save detects independently changed primary references and preserves every row on failure
+ok 181 - B6 guardian save detects independently changed primary references and preserves every row on failure
+  ---
+  duration_ms: 321.630163
+  type: 'test'
+  ...
+# Subtest: B6 guardian save rejects masked phones, foreign pairings and mutation of archived contacts
+ok 182 - B6 guardian save rejects masked phones, foreign pairings and mutation of archived contacts
+  ---
+  duration_ms: 277.983224
+  type: 'test'
+  ...
+# Subtest: B6 guardian form and cached saves recheck enrollment end and grant expiry in the same session
+ok 183 - B6 guardian form and cached saves recheck enrollment end and grant expiry in the same session
+  ---
+  duration_ms: 361.963304
+  type: 'test'
+  ...
+# Subtest: B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault
+ok 184 - B6 atomic guardian save rolls back contacts, relationships, primary changes, audit and receipt after a real SQL fault
+  ---
+  duration_ms: 249.432646
+  type: 'test'
+  ...
+# Subtest: B6 school guardian directory uses SQL folded search, literal wildcards, signed keysets and independent link counters
+ok 185 - B6 school guardian directory uses SQL folded search, literal wildcards, signed keysets and independent link counters
+  ---
+  duration_ms: 445.76558
+  type: 'test'
+  ...
+# Subtest: B6 class guardian reads exclude all unscoped sibling relationships and immediately lose access after enrollment or grant ends
+ok 186 - B6 class guardian reads exclude all unscoped sibling relationships and immediately lose access after enrollment or grant ends
+  ---
+  duration_ms: 330.407075
+  type: 'test'
+  ...
+# Subtest: B6 shared guardian contact edits require management of every affected class and current read authority even for a replay
+ok 187 - B6 shared guardian contact edits require management of every affected class and current read authority even for a replay
+  ---
+  duration_ms: 585.837832
+  type: 'test'
+  ...
+# Subtest: B6 guardian profile exposes real verification and revocation metadata but removes link and audit panels when their separate rights end
+ok 188 - B6 guardian profile exposes real verification and revocation metadata but removes link and audit panels when their separate rights end
+  ---
+  duration_ms: 465.630596
+  type: 'test'
+  ...
+# Subtest: B6 partial student write acknowledgements redact unsubmitted protected fields including stored old receipts
+ok 189 - B6 partial student write acknowledgements redact unsubmitted protected fields including stored old receipts
+  ---
+  duration_ms: 274.996227
+  type: 'test'
+  ...
+# Subtest: B6 bounded school class overview preserves query results, local JIT preference and the five-second runtime timeout
+ok 190 - B6 bounded school class overview preserves query results, local JIT preference and the five-second runtime timeout
+  ---
+  duration_ms: 166.569045
+  type: 'test'
+  ...
+# Subtest: B6 native invitation choices require current invitation authority, preserve delegation ceilings and never borrow a role catalog
+ok 191 - B6 native invitation choices require current invitation authority, preserve delegation ceilings and never borrow a role catalog
+  ---
+  duration_ms: 368.998202
+  type: 'test'
+  ...
+# Subtest: B6 native staff activity is SQL-bounded to staff targets, rechecks audit authority and keeps foreign and family records out
+ok 192 - B6 native staff activity is SQL-bounded to staff targets, rechecks audit authority and keeps foreign and family records out
+  ---
+  duration_ms: 243.675703
+  type: 'test'
+  ...
+# Subtest: B6 student-create choices use current class write authority without borrowing roster, year or class readers
+ok 193 - B6 student-create choices use current class write authority without borrowing roster, year or class readers
+  ---
+  duration_ms: 390.801283
+  type: 'test'
+  ...
+# Subtest: B6 parent-issue purpose readers paginate over 1000 pupils, keep current class/time authority and expose no contact or token
+ok 194 - B6 parent-issue purpose readers paginate over 1000 pupils, keep current class/time authority and expose no contact or token
+  ---
+  duration_ms: 719.491051
+  type: 'test'
+  ...
+# Subtest: B6 reviewed parent issuance rejects stale sources, rotates atomically, converts local dates and never replays secrets
+not ok 195 - B6 reviewed parent issuance rejects stale sources, rotates atomically, converts local dates and never replays secrets
+  ---
+  duration_ms: 404.107253
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:3300:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"451deb58-7b51-4f4d-a7f3-8c6f70aa3c96"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3308:68)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 parent metadata directory keeps manage scope, current capabilities, real counts and no borrowed contact/catalog data
+ok 196 - B6 parent metadata directory keeps manage scope, current capabilities, real counts and no borrowed contact/catalog data
+  ---
+  duration_ms: 817.141072
+  type: 'test'
+  ...
+# Subtest: B6 parent metadata masks independently authorized contact, paginates anonymous history and tracks only actual replacement facts
+ok 197 - B6 parent metadata masks independently authorized contact, paginates anonymous history and tracks only actual replacement facts
+  ---
+  duration_ms: 1135.787696
+  type: 'test'
+  ...
+# Subtest: B6 parent attendance month exposes only real child sessions and published scoped holiday labels without borrowing overview
+ok 198 - B6 parent attendance month exposes only real child sessions and published scoped holiday labels without borrowing overview
+  ---
+  duration_ms: 1175.989597
+  type: 'test'
+  ...
+# Subtest: B6 parent attendance calendar SQL function checks exact child/year/school/current session and cannot expose raw calendar tables
+ok 199 - B6 parent attendance calendar SQL function checks exact child/year/school/current session and cannot expose raw calendar tables
+  ---
+  duration_ms: 538.295311
+  type: 'test'
+  ...
+# Subtest: B6 parent teacher directory uses own live class assignments, shared work fields and only current published schedule weekdays
+ok 200 - B6 parent teacher directory uses own live class assignments, shared work fields and only current published schedule weekdays
+  ---
+  duration_ms: 918.785313
+  type: 'test'
+  ...
+# Subtest: B6 parent teacher SQL denies foreign or missing context, honors current enrollment/grant/contact changes and never grants raw memberships
+ok 201 - B6 parent teacher SQL denies foreign or missing context, honors current enrollment/grant/contact changes and never grants raw memberships
+  ---
+  duration_ms: 521.714062
+  type: 'test'
+  ...
+# Subtest: B6 parent monthly denominator includes only actual own DAILY publications and keeps LESSON attendance separate
+ok 202 - B6 parent monthly denominator includes only actual own DAILY publications and keeps LESSON attendance separate
+  ---
+  duration_ms: 882.655522
+  type: 'test'
+  ...
+# Subtest: B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff
+ok 203 - B6 parent published dated projections retain old enrollment history and exclude old-class plans from the transfer cutoff
+  ---
+  duration_ms: 686.535609
+  type: 'test'
+  ...
+# Subtest: B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal
+ok 204 - B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal
+  ---
+  duration_ms: 1113.171247
+  type: 'test'
+  ...
+# Subtest: B6 parent timetable week keeps pinned published period/status/work labels, own holiday calendar and independent preview through replacement and withdrawal
+ok 205 - B6 parent timetable week keeps pinned published period/status/work labels, own holiday calendar and independent preview through replacement and withdrawal
+  ---
+  duration_ms: 2860.442521
+  type: 'test'
+  ...
+# Subtest: B6 parent timetable week SQL denies foreign/current-section contexts and raw sources, clips the year and follows transfer or link revocation
+ok 206 - B6 parent timetable week SQL denies foreign/current-section contexts and raw sources, clips the year and follows transfer or link revocation
+  ---
+  duration_ms: 838.62105
+  type: 'test'
+  ...
+# Subtest: B6 parent documents complete directory and metadata use actual published reports, independent view/download rights and matching scoped previews
+ok 207 - B6 parent documents complete directory and metadata use actual published reports, independent view/download rights and matching scoped previews
+  ---
+  duration_ms: 2149.721924
+  type: 'test'
+  ...
+# Subtest: B6 parent file guards deny raw storage, foreign contexts, expiry and revocation committed between file open and final stream check
+ok 208 - B6 parent file guards deny raw storage, foreign contexts, expiry and revocation committed between file open and final stream check
+  ---
+  duration_ms: 677.362772
+  type: 'test'
+  ...
+# Subtest: B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal
+ok 209 - B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal
+  ---
+  duration_ms: 972.966802
+  type: 'test'
+  ...
+# Subtest: B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights
+not ok 210 - B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights
+  ---
+  duration_ms: 523.568706
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:3578:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"c278dfc1-8643-4a8e-8d09-93e2de581681"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async announcementFixture (file:///srv/api/tests/integration/foundation.test.mjs:1577:103)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3579:54)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 parent conduct display pins published own decimals and metadata and exposes only the same child revision history through adjustment and withdrawal
+ok 211 - B6 parent conduct display pins published own decimals and metadata and exposes only the same child revision history through adjustment and withdrawal
+  ---
+  duration_ms: 755.194294
+  type: 'test'
+  ...
+# Subtest: B6 parent conduct metadata and history deny wrong school child year section session, raw sources and revoked relationships
+ok 212 - B6 parent conduct metadata and history deny wrong school child year section session, raw sources and revoked relationships
+  ---
+  duration_ms: 530.981139
+  type: 'test'
+  ...
+# {"checkpoint":"platform-school-page-real-cohort","schools":3280,"firstRows":1,"firstMs":6.669429000001401}
+# Subtest: B6 platform school pagination counts its real base cohort without computing every school aggregate and preserves filters search metadata and current denial
+ok 213 - B6 platform school pagination counts its real base cohort without computing every school aggregate and preserves filters search metadata and current denial
+  ---
+  duration_ms: 120.793777
+  type: 'test'
+  ...
+# Subtest: B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections
+not ok 214 - B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections
+  ---
+  duration_ms: 722.296721
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:3650:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:response_status_contract_error","title":"RESPONSE_STATUS_CONTRACT_ERROR","status":500,"code":"RESPONSE_STATUS_CONTRACT_ERROR","requestId":"7858893d-9c6b-432a-89b1-291f65908ac4"}
+    
+    500 !== 201
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 201
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    activateFixtureClass (file:///srv/api/tests/integration/foundation.test.mjs:1585:183)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3651:132)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights
+ok 215 - B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights
+  ---
+  duration_ms: 1938.767445
+  type: 'test'
+  ...
+# Subtest: B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants
+ok 216 - B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants
+  ---
+  duration_ms: 438.799897
+  type: 'test'
+  ...
+# Subtest: B6 platform administrator search labels preserve current aggregate semantics and restore tenant context while denying other roles
+ok 217 - B6 platform administrator search labels preserve current aggregate semantics and restore tenant context while denying other roles
+  ---
+  duration_ms: 424.295382
+  type: 'test'
+  ...
+# Subtest: B6 staff preview context returns only current own safe metadata without overview panels or cookie adoption and expires every temporary session
+ok 218 - B6 staff preview context returns only current own safe metadata without overview panels or cookie adoption and expires every temporary session
+  ---
+  duration_ms: 419.238488
+  type: 'test'
+  ...
+# Subtest: B6 staff preview context keeps current class year school and grant-time scope independent from issuance and public parent sessions
+ok 219 - B6 staff preview context keeps current class year school and grant-time scope independent from issuance and public parent sessions
+  ---
+  duration_ms: 366.131563
+  type: 'test'
+  ...
+1..219
+# tests 219
+# suites 0
+# pass 169
+# fail 50
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 362889.446209
+
+EXIT_CODE=1

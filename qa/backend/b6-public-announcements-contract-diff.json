@@ -1,0 +1,369 @@
+{
+  "before": {
+    "operations": 369,
+    "schemas": 518
+  },
+  "after": {
+    "operations": 372,
+    "schemas": 525
+  },
+  "removedOperations": [],
+  "addedOperations": [
+    "getPublicSchoolWorkspace",
+    "getPublicNewsWorkspace",
+    "downloadPublicNewsFile"
+  ],
+  "changedSchemas": [],
+  "addedSchemas": [
+    "PublicSchoolCard",
+    "PublicNewsSource",
+    "PublicNewsSummary",
+    "PublicSchoolWorkspace",
+    "PublicSchoolWorkspaceResponse",
+    "PublicNewsWorkspace",
+    "PublicNewsWorkspaceResponse"
+  ],
+  "changedOperations": [
+    {
+      "id": "forgotPassword",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "inviteSchoolAdmin",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "201",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "postPlatformTicketMessage",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "200",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "201",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "commitRollover",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "inviteStaff",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "201",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "assignPosition",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "200",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "201",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "publishSchoolAnnouncement",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "publishClassAnnouncement",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "postSchoolMessage",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "200",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "201",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "inviteSchoolStaff",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "201",
+        "202",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    },
+    {
+      "id": "issueReviewedParentAccess",
+      "fields": [
+        "responses"
+      ],
+      "oldStatuses": [
+        "200",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ],
+      "newStatuses": [
+        "200",
+        "201",
+        "400",
+        "401",
+        "403",
+        "404",
+        "409",
+        "422",
+        "429",
+        "500",
+        "503"
+      ]
+    }
+  ]
+}

@@ -15,11 +15,12 @@ for(const name of (await fs.readdir(directory)).filter(n=>n.endsWith('.ts')).sor
   };visit(file);
 }
 const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo',connectedSchoolRepo:'schoolRepo',connectedPlatformRepo:'platformRepo',connectedPlatformExtraRepo:'platformExtraRepo',connectedSupportRepo:'supportRepo',connectedStaffRepo:'staffRepo',connectedStudentsRepo:'studentsRepo',connectedStudentsExtraRepo:'studentsExtraRepo',connectedParentRepo:'parentRepo',connectedParentExtraRepo:'parentExtraRepo'};
-Object.assign(aliases,{connectedClassroomRepo:'classroomRepo',connectedTeacherExtraRepo:'teacherExtraRepo',connectedAttendanceRepo:'attendanceRepo',connectedAnnouncementsRepo:'announcementsRepo',connectedSchoolOpsRepo:'schoolOpsRepo'});
+Object.assign(aliases,{connectedClassroomRepo:'classroomRepo',connectedTeacherExtraRepo:'teacherExtraRepo',connectedAttendanceRepo:'attendanceRepo',connectedAnnouncementsRepo:'announcementsRepo',connectedPublicAnnouncementsRepo:'announcementsRepo',connectedSchoolOpsRepo:'schoolOpsRepo'});
 const facadeSource=await fs.readFile(path.join(directory,'index.ts'),'utf8'),facade=ts.createSourceFile('index.ts',facadeSource,ts.ScriptTarget.Latest,true),activated=new Set();
 const inspectFacade=node=>{
   if(ts.isVariableDeclaration(node)&&node.initializer&&ts.isCallExpression(node.initializer)&&node.initializer.expression.getText(facade)==='apiRepository'){
     const target=node.initializer.arguments[0];if(target&&ts.isIdentifier(target))activated.add(target.text);
+    if(target&&ts.isObjectLiteralExpression(target))for(const property of target.properties)if(ts.isSpreadAssignment(property)&&ts.isIdentifier(property.expression))activated.add(property.expression.text);
   }
   ts.forEachChild(node,inspectFacade);
 };inspectFacade(facade);

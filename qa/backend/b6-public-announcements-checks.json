@@ -1,0 +1,175 @@
+{
+  "recordedAtUtc": "2026-10-01T22:35:38.097953+00:00",
+  "baseCommit": "1d6169d7fc6484a69db031db251e07a176f8fa93",
+  "sourceState": "uncommitted checkpoint; runner image immutable",
+  "runnerImage": "sha256:24dc440573c05944eedbea375ff54eb50dc87f9fd7cb014108912b7cf4712017",
+  "contract": {
+    "operations": 372,
+    "schemas": 525,
+    "existingSchemaChanges": 0,
+    "existingResponseStatusChanges": 11,
+    "diff": "b6-public-announcements-contract-diff.json"
+  },
+  "migrations": {
+    "count": 49,
+    "retainedTestApplyReplayChecksum": "PASS",
+    "freshCleanCurrentRevision": "PASS",
+    "database": "edumanage_clean_20261002_0537_local",
+    "firstApplied": 49,
+    "replayApplied": 0,
+    "rolesSafe": true,
+    "forceRls": true,
+    "logs": [
+      "b6-public-announcements-clean-bootstrap-final.log",
+      "b6-public-announcements-clean-migrate-first-final.log",
+      "b6-public-announcements-clean-migrate-replay-final.log",
+      "b6-public-announcements-clean-verify-final.log"
+    ],
+    "initialMissingBootstrap": {
+      "status": "FAIL",
+      "database": "edumanage_clean_20261002_0535_local",
+      "appliedBeforeFailure": 1,
+      "failedMigration": "002-invariants.sql",
+      "code": "42704",
+      "cause": "Test setup omitted required admin/bootstrap btree_gist extension. A separate pristine database was bootstrapped correctly; original failed database retained.",
+      "log": "b6-public-announcements-clean-migrate-first.log"
+    }
+  },
+  "postgresFocused": {
+    "status": "PASS",
+    "tests": 10,
+    "pass": 10,
+    "fail": 0,
+    "durationMs": 21659.550215,
+    "log": "b6-public-announcements-postgres-final.log",
+    "initial": {
+      "status": "FAIL",
+      "tests": 10,
+      "pass": 9,
+      "fail": 1,
+      "log": "b6-public-announcements-postgres-initial.log"
+    }
+  },
+  "postgresFull": {
+    "status": "PASS",
+    "operations": 372,
+    "tests": 224,
+    "pass": 224,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 507069.986658,
+    "exitCode": 0,
+    "log": "b6-public-announcements-full-postgres.log"
+  },
+  "previousFullRuns": [
+    {
+      "status": "FAIL",
+      "operations": 369,
+      "tests": 219,
+      "pass": 169,
+      "fail": 50,
+      "durationMs": 362889.446209,
+      "log": "b6-response-status-full-postgres.log"
+    },
+    {
+      "status": "FAIL",
+      "operations": 369,
+      "tests": 219,
+      "pass": 216,
+      "fail": 3,
+      "durationMs": 1018484.920065,
+      "log": "b6-response-status-sync-full-postgres.log"
+    }
+  ],
+  "backendUnitContract": {
+    "status": "PASS",
+    "tests": 62,
+    "durationMs": 580.8325,
+    "log": "b6-public-announcements-backend-unit-contract-final.log"
+  },
+  "frontendUnit": {
+    "status": "PASS",
+    "tests": 425,
+    "files": 53,
+    "apiTests": 384,
+    "historicalSyntheticTests": 41,
+    "durationSeconds": 10.62,
+    "log": "b6-public-announcements-frontend-full-unit.log"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "status": "PASS",
+    "tests": 4,
+    "durationMs": 3398.277,
+    "skipped": 0,
+    "failed": 0,
+    "flaky": 0,
+    "results": "b6-public-announcements-responsive-browser-results-final.json",
+    "ownedNextPid": 52092,
+    "ownedNextClosed": true,
+    "beforeAndAfterOsPort18763Listeners": 0,
+    "inspectedScreenshots": [
+      "b6-public-announcements-responsive-desktop.png",
+      "b6-public-announcements-responsive-mobile.png"
+    ]
+  },
+  "frontend": {
+    "nativeCandidates": 167,
+    "activatedNative": 167,
+    "legacyTotal": 231,
+    "connectedLegacy": 148,
+    "remainingLegacy": 83,
+    "mockFallbackInConnectedMode": false,
+    "core": {
+      "total": 118,
+      "implemented": 79,
+      "notStarted": 36,
+      "staticUnverified": 3,
+      "wholeScreenPostgresBrowserAccepted": 0
+    }
+  },
+  "dockerLocal": {
+    "url": "http://127.0.0.1:18763",
+    "releaseStatus": "NOT_SERVING",
+    "rootDeployScriptsMerge": "NOT_DONE"
+  },
+  "remaining": [
+    "83 legacy repository methods",
+    "36 core screens and3 static verifications",
+    "whole current PostgreSQL browser E2E",
+    "root deploy/scripts and Docker release",
+    "restart database/file/worker persistence",
+    "physical backup/restore and failure drills",
+    "release100-reader/10-writer load measurement"
+  ],
+  "productionDeployed": false,
+  "volumeDeleted": false,
+  "otherProjectChanged": false,
+  "userZipStaged": false,
+  "goalStatus": "ACTIVE",
+  "checks": {
+    "backendBuildTypes": {
+      "status": "PASS",
+      "log": "b6-public-announcements-backend-final-typecheck-build.log"
+    },
+    "backendLint": {
+      "status": "PASS",
+      "log": "b6-public-announcements-backend-final-lint.log"
+    },
+    "frontendBuild": {
+      "status": "PASS",
+      "log": "b6-public-announcements-responsive-build.log"
+    },
+    "frontendTypes": {
+      "status": "PASS",
+      "log": "b6-public-announcements-frontend-typecheck-final.log"
+    },
+    "frontendLint": {
+      "status": "PASS",
+      "errors": 0,
+      "existingWarnings": 2,
+      "log": "b6-public-announcements-frontend-full-lint.log"
+    }
+  }
+}

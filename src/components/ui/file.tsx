@@ -43,9 +43,11 @@ export function FileDropzone({ accept, maxBytes, multiple, onFiles, label = "Ké
 }
 
 export type StaffFileSource={kind:'staff_api';schoolId:string;fileId:string;owner:{assertCurrent:()=>void}};
-type PreviewSource = Pick<FileAsset, "name" | "mime" | "size"> & {source?:FileAsset['source']|StaffFileSource};
+export type PublicFileSource={kind:'public_api';schoolSlug:string;announcementId:string;publicationId:string;fileId:string};
+type PreviewSource = Pick<FileAsset, "name" | "mime" | "size"> & {source?:FileAsset['source']|StaffFileSource|PublicFileSource};
 async function actualBlob(file:PreviewSource){
   if(file.source?.kind==='staff_api'){const s=file.source;s.owner.assertCurrent();const value=await download('downloadFile',{params:{schoolId:s.schoolId,fileId:s.fileId}});s.owner.assertCurrent();if(value.blob.type!==file.mime||value.blob.size!==file.size)throw new RepoError('READ_ERROR','Nội dung tệp không khớp thông tin đã tải.');return value.blob;}
+  if(file.source?.kind==='public_api'){const s=file.source,value=await download('downloadPublicNewsFile',{params:{schoolSlug:s.schoolSlug,announcementId:s.announcementId,publicationId:s.publicationId,fileId:s.fileId}});if(value.blob.type!==file.mime||value.blob.size!==file.size)throw new RepoError('READ_ERROR','Nội dung tệp không khớp thông tin đã công bố.');return value.blob;}
   if(file.source?.kind==='blob')return getBlob(file.source.blobKey);
   throw new RepoError('READ_ERROR','Tệp chưa có nội dung được xác nhận từ API.');
 }
@@ -76,7 +78,7 @@ export function useFileUrl(file?: PreviewSource | null) {
 }
 
 export async function downloadFileAsset(file: PreviewSource) {
-  if (file.source?.kind === "blob"||file.source?.kind==='staff_api') {
+  if (file.source?.kind === "blob"||file.source?.kind==='staff_api'||file.source?.kind==='public_api') {
     const b = await actualBlob(file);
     if (b) downloadBlob(b, file.name);
     return !!b;

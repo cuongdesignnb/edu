@@ -25354,6 +25354,294 @@
         "requestId"
       ],
       "additionalProperties": false
+    },
+    "PublicSchoolCard": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "shortName": {
+          "type": "string",
+          "nullable": true
+        },
+        "slug": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string",
+          "nullable": true
+        },
+        "publicPhone": {
+          "type": "string",
+          "nullable": true
+        },
+        "publicEmail": {
+          "type": "string",
+          "nullable": true
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 2048,
+          "nullable": true
+        },
+        "motto": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "publicIntro": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "suspended",
+            "archived"
+          ]
+        },
+        "level": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [
+        "name",
+        "shortName",
+        "slug",
+        "address",
+        "publicPhone",
+        "publicEmail",
+        "website",
+        "motto",
+        "publicIntro",
+        "accentColor",
+        "status",
+        "level"
+      ],
+      "additionalProperties": false
+    },
+    "PublicNewsSource": {
+      "type": "object",
+      "properties": {
+        "rootId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "publicationId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "rootId",
+        "publicationId"
+      ],
+      "additionalProperties": false
+    },
+    "PublicNewsSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "summary",
+        "publishedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PublicSchoolWorkspace": {
+      "type": "object",
+      "properties": {
+        "school": {
+          "$ref": "#/components/schemas/PublicSchoolCard"
+        },
+        "news": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/PublicNewsSummary"
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "school",
+        "news"
+      ],
+      "additionalProperties": false
+    },
+    "PublicSchoolWorkspaceResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/PublicSchoolWorkspace"
+        },
+        "page": {
+          "$ref": "#/components/schemas/PageInfo"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "page",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "PublicNewsWorkspace": {
+      "type": "object",
+      "properties": {
+        "school": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "slug": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "slug"
+          ],
+          "additionalProperties": false
+        },
+        "news": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "publishedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "body": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "p",
+                      "h",
+                      "li"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50000
+                  }
+                },
+                "required": [
+                  "type",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 500
+            },
+            "source": {
+              "$ref": "#/components/schemas/PublicNewsSource"
+            },
+            "attachments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "mime": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "mime",
+                  "size"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 100
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "summary",
+            "publishedAt",
+            "body",
+            "source",
+            "attachments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "school",
+        "news"
+      ],
+      "additionalProperties": false
+    },
+    "PublicNewsWorkspaceResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/PublicNewsWorkspace"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -26037,6 +26325,16 @@
         }
       },
       "responses": {
+        "200": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AckResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -28973,6 +29271,16 @@
         }
       },
       "responses": {
+        "201": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -29922,6 +30230,16 @@
       },
       "responses": {
         "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportMessageResponse"
+              }
+            }
+          }
+        },
+        "201": {
           "description": "Thành công",
           "content": {
             "application/json": {
@@ -36642,6 +36960,16 @@
         }
       },
       "responses": {
+        "200": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolloverResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -37815,6 +38143,16 @@
         }
       },
       "responses": {
+        "201": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -47737,6 +48075,16 @@
       },
       "responses": {
         "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionAssignmentResponse"
+              }
+            }
+          }
+        },
+        "201": {
           "description": "Thành công",
           "content": {
             "application/json": {
@@ -60194,6 +60542,16 @@
         }
       },
       "responses": {
+        "200": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -61430,6 +61788,16 @@
         }
       },
       "responses": {
+        "200": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicationResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -65709,6 +66077,16 @@
       },
       "responses": {
         "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportMessageResponse"
+              }
+            }
+          }
+        },
+        "201": {
           "description": "Thành công",
           "content": {
             "application/json": {
@@ -71369,6 +71747,16 @@
         }
       },
       "responses": {
+        "201": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationResponse"
+              }
+            }
+          }
+        },
         "202": {
           "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
           "content": {
@@ -78928,6 +79316,16 @@
             }
           }
         },
+        "201": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentAccessIssuedResponse"
+              }
+            }
+          }
+        },
         "400": {
           "description": "Sai cú pháp hoặc Content-Type.",
           "content": {
@@ -85158,6 +85556,452 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TeacherAnnouncementReadReceiptResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getPublicSchoolWorkspace",
+      "method": "GET",
+      "path": "/api/v1/public/schools/{schoolSlug}/workspace",
+      "title": "getPublicSchoolWorkspace",
+      "tag": "Public",
+      "permission": "public",
+      "scope": "none",
+      "request": null,
+      "response": "PublicSchoolWorkspace",
+      "list": false,
+      "auth": "none",
+      "async_job": false,
+      "frontend_ids": [
+        "SY01"
+      ],
+      "description": "Public identity and current immutable PUBLIC publications only. No pupil lookup, recipient identities, internal notes or upload-directory exposure. File streams require the exact live publication and current safe document association.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "cursor",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicSchoolWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getPublicNewsWorkspace",
+      "method": "GET",
+      "path": "/api/v1/public/schools/{schoolSlug}/announcements/{announcementId}/workspace",
+      "title": "getPublicNewsWorkspace",
+      "tag": "Public",
+      "permission": "public",
+      "scope": "none",
+      "request": null,
+      "response": "PublicNewsWorkspace",
+      "list": false,
+      "auth": "none",
+      "async_job": false,
+      "frontend_ids": [
+        "SY02"
+      ],
+      "description": "Public identity and current immutable PUBLIC publications only. No pupil lookup, recipient identities, internal notes or upload-directory exposure. File streams require the exact live publication and current safe document association.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "announcementId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicNewsWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "downloadPublicNewsFile",
+      "method": "GET",
+      "path": "/api/v1/public/schools/{schoolSlug}/announcements/{announcementId}/revisions/{publicationId}/files/{fileId}",
+      "title": "downloadPublicNewsFile",
+      "tag": "Public",
+      "permission": "public",
+      "scope": "none",
+      "request": null,
+      "response": "File",
+      "list": false,
+      "auth": "none",
+      "async_job": false,
+      "frontend_ids": [
+        "SY02"
+      ],
+      "description": "Public identity and current immutable PUBLIC publications only. No pupil lookup, recipient identities, internal notes or upload-directory exposure. File streams require the exact live publication and current safe document association.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolSlug",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "announcementId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "publicationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "fileId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Tải file sau khi kiểm tra quyền lại; no-store.",
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
               }
             }
           }

@@ -35,8 +35,7 @@ export class PlatformService {
     }
   }
   private async overview(tx:Transaction,c:RequestContext){
-    const row=(await one<Row>(tx,`SELECT count(*)::int AS total,count(*) FILTER(WHERE s.status='ACTIVE')::int AS active,count(*) FILTER(WHERE s.status='DRAFT')::int AS draft,count(*) FILTER(WHERE s.status='SUSPENDED')::int AS suspended,
-      coalesce(sum(op.staff_count) FILTER(WHERE s.status='ACTIVE'),0)::int AS staff,coalesce(sum(op.link_opens_30d),0)::int AS opens FROM platform.schools s CROSS JOIN LATERAL platform.operational_counts(s.id) op`))!;
+    const row=(await one<Row>(tx,'SELECT * FROM platform.overview_counts()'))!;
     const tickets=(await one<{n:number}>(tx,"SELECT count(*)::int AS n FROM platform.support_tickets WHERE status NOT IN ('RESOLVED','CLOSED')"))!.n,asOf=(await one<{at:Date}>(tx,'SELECT now() AS at'))!.at.toISOString();
     const descriptions:Record<string,string>={total:'Tổng số trường',active:'Trường hoạt động',draft:'Trường nháp',suspended:'Trường tạm dừng',staff:'Nhân sự tại trường hoạt động',opens:'Lượt mở và xem link trong 30 ngày',tickets:'Yêu cầu hỗ trợ chưa hoàn tất'},metrics=Object.entries({...row,tickets}).map(([key,value])=>({key,label:descriptions[key],value:Number(value),denominator:null,unit:key==='staff'?'nhân sự':key==='opens'?'lượt':key==='tickets'?'yêu cầu':'trường',asOf}));
     const support=await one(tx,"SELECT id FROM platform.operator_grants WHERE user_id=$1 AND action_code='platform.support' AND revoked_at IS NULL AND valid_from<=now() AND (valid_until IS NULL OR valid_until>now())",[c.principal!.userId]);

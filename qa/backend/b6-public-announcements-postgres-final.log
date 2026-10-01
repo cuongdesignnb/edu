@@ -1,0 +1,73 @@
+ Container edumanage_backend_test-runner-run-5dea61fdf86f Creating 
+ Container edumanage_backend_test-runner-run-5dea61fdf86f Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 457.087003
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 79.571459
+  type: 'test'
+  ...
+# Subtest: B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets
+ok 3 - B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets
+  ---
+  duration_ms: 2085.676828
+  type: 'test'
+  ...
+# Subtest: B6 public school news paginate more than 100 actual PUBLIC publications without private draft or cross-school identities
+ok 4 - B6 public school news paginate more than 100 actual PUBLIC publications without private draft or cross-school identities
+  ---
+  duration_ms: 5363.325628
+  type: 'test'
+  ...
+# Subtest: B6 platform overview aggregate returns actual school counts restores tenant context and denies school parent worker or revoked operators
+ok 5 - B6 platform overview aggregate returns actual school counts restores tenant context and denies school parent worker or revoked operators
+  ---
+  duration_ms: 262.38185
+  type: 'test'
+  ...
+# Subtest: B6 public news retain the immutable visible revision until republication and block new reads immediately on withdrawal
+ok 6 - B6 public news retain the immutable visible revision until republication and block new reads immediately on withdrawal
+  ---
+  duration_ms: 288.747753
+  type: 'test'
+  ...
+# Subtest: B6 public school identity allows official contact for suspended and archived schools but never draft identity or inactive news
+ok 7 - B6 public school identity allows official contact for suspended and archived schools but never draft identity or inactive news
+  ---
+  duration_ms: 217.951674
+  type: 'test'
+  ...
+# Subtest: B6 public attachments stream only actual ready current publication bytes and deny private expired archived foreign or stale files
+ok 8 - B6 public attachments stream only actual ready current publication bytes and deny private expired archived foreign or stale files
+  ---
+  duration_ms: 9260.941802
+  type: 'test'
+  ...
+# Subtest: B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke
+ok 9 - B6 class workspace overview separates home and own subject lessons groups and bounded activity progress with current revoke
+  ---
+  duration_ms: 2057.000997
+  type: 'test'
+  ...
+# Subtest: B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation
+ok 10 - B2 platform creates only metadata drafts, bootstraps admin roles/invitations and requires an active administrator for activation
+  ---
+  duration_ms: 797.345863
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21659.550215
+EXIT_CODE=0
