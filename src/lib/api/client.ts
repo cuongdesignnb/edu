@@ -7,6 +7,7 @@ export interface ApiOptions<K extends OperationId> {
   params?:Record<string,string>;query?:Record<string,string|number|boolean|null|undefined>;
   body?:ApiRequest<K>;multipart?:FormData;idempotencyKey?:string;signal?:AbortSignal;
   parentViewId?:string;parentCsrf?:string;supportAccessId?:string;
+  validateData?:(data:ApiData<K>)=>boolean;
 }
 interface HttpProblem {code?:string;status?:number;currentVersion?:number;requestId?:string;fieldErrors?:{path:string;message:string}[]}
 let staffCsrf:string|null=null,bootstrapCsrf:string|null=null,bootstrapPending:Promise<string>|null=null;
@@ -124,6 +125,7 @@ export async function http<K extends OperationId>(id:K,options:ApiOptions<K>={})
   try{result=await response.json() as ApiEnvelope<ApiData<K>>;}catch{if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Không xác minh được phản hồi máy chủ. Hãy giữ nội dung và thử lại.');}
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(!result||typeof result!=='object'||!Object.hasOwn(result,'data')||typeof result.requestId!=='string')throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Phản hồi API không đúng hợp đồng.');
+  if(options.validateData&&!options.validateData(result.data))throw new RepoError(apiOperations[id].readOnly?'READ_ERROR':'NETWORK','Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.');
   if(apiOperations[id].auth==='staff')assertStaffAccess(epoch,identity);
   if(hash)retries.delete(hash);if(hash&&apiOperations[id].auth==='staff')mutationListeners.forEach(fn=>fn());return result;
 }

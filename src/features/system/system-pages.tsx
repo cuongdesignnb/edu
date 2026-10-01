@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShieldOff, PauseCircle, Wrench, RefreshCw, ArrowLeft, Home, School, Mail, Phone, CheckCircle2, HelpCircle, LogIn } from "lucide-react";
 import { sessionRepo } from "@/lib/repositories";
-import { authDemoRepo } from "@/lib/repositories/platform-extra";
+import { authDemoRepo } from "@/lib/repositories";
 import { useRepo, useSession } from "@/lib/query/hooks";
 import { schoolStatus } from "@/lib/formatters";
 import { Button, ButtonLink } from "@/components/ui/button";

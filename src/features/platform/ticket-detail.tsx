@@ -4,10 +4,10 @@ import Link from "next/link";
 import { MessageSquareText, Send, Info, KeyRound, Building2, UserCheck, ShieldAlert } from "lucide-react";
 import type { SupportTicket } from "@/lib/model/types";
 import { platformRepo, SUPPORT_SCOPE_LABEL } from "@/lib/repositories";
-import { effectiveGrantStatus } from "@/lib/repositories/platform";
+
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDateTime } from "@/lib/formatters";
-import { demoNowISO } from "@/lib/demo/clock";
+import { demoNowISO } from "@/lib/calendar";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ export function TicketDetail({ ticketId }: { ticketId: string }) {
 }
 
 function Body({ d }: { d: Data }) {
+  const [reviewed,setReviewed]=useState(d.ticket);
   const t = d.ticket;
   const [text, setText] = useState("");
   const [status, setStatus] = useState<SupportTicket["status"] | "">("");
@@ -36,8 +37,8 @@ function Body({ d }: { d: Data }) {
   const [assign, setAssign] = useState(false);
   const [request, setRequest] = useState(false);
   useUnsavedChanges(!!text.trim() || (!!status && status !== t.status));
-  const cmd = useCommand((ctx, v: { text?: string; status?: SupportTicket["status"] }) => platformRepo.updateTicket(ctx, t.id, v), {
-    success: "Đã ghi cập nhật (mô phỏng)", onSuccess: () => { setText(""); setStatus(""); }, onError: (e) => setErr(e.fieldErrors?.text),
+  const cmd = useCommand((ctx, v: { text?: string; status?: SupportTicket["status"] }) => platformRepo.updateTicket(ctx, t.id, {...v,version:reviewed.version}), {
+    success: "Đã ghi cập nhật", onSuccess: (result) => { setReviewed({...d.ticket,...result});setText(""); setStatus(""); }, onError: (e) => setErr(e.fieldErrors?.text??e.message),
   });
   const submit = () => {
     const st = status && status !== t.status ? status : undefined;
@@ -64,7 +65,7 @@ function Body({ d }: { d: Data }) {
           <Card>
             <CardHeader title="Cập nhật xử lý" icon={<Send className="size-5" />} subtitle={`${t.updates.length} cập nhật`} />
             <div className="px-5 pb-2">
-              <Timeline items={[...t.updates].reverse().map((u, i) => ({ id: `${u.at}-${i}`, at: u.at, title: u.side === "platform" ? "Nền tảng" : "Nhà trường", detail: u.text, actor: d.people[u.by] ?? "", tone: u.side === "platform" ? "blue" : "green" }))} empty="Chưa có cập nhật nào." />
+              <Timeline items={[...t.updates].reverse().map((u, i) => ({ id: `${u.at}-${i}`, at: u.at, title: u.side === "platform" ? "Nền tảng" : "Nhà trường", detail: u.text, actor: u.by ? d.people[u.by] : u.byName ?? "", tone: u.side === "platform" ? "blue" : "green" }))} empty="Chưa có cập nhật nào." />
             </div>
             <div className="space-y-3 border-t border-line p-5">
               <TextArea label="Thêm cập nhật" rows={3} maxChars={500} value={text} onChange={(e) => setText(e.target.value)} error={err} helper="Không ghi số giấy tờ, số điện thoại hay thông tin học sinh vào cập nhật." />
@@ -80,7 +81,7 @@ function Body({ d }: { d: Data }) {
           <Card>
             <CardHeader title="Thông tin" icon={<Building2 className="size-5" />} />
             <dl className="divide-y divide-line px-5 pb-4">
-              <InfoRow label="Trường"><Link href={`/platform/schools/${d.school.id}`} className="text-primary-strong hover:underline">{d.school.shortName}</Link></InfoRow>
+              <InfoRow label="Trường"><Link href={`/platform/schools/${d.school.id}`} className="text-primary-strong hover:underline">{d.school.name}</Link></InfoRow>
               <InfoRow label="Người gửi">{d.people[t.createdBy] ?? "—"}</InfoRow>
               <InfoRow label="Người xử lý">{t.assigneeUserId ? d.people[t.assigneeUserId] : <span className="text-warning-text">Chưa phân công</span>}</InfoRow>
               <InfoRow label="Ưu tiên"><StatusBadge status={t.priority} map={TICKET_PRIORITY} /></InfoRow>
@@ -93,7 +94,7 @@ function Body({ d }: { d: Data }) {
               {d.grants.length === 0 && <li className="text-sm text-muted">Chưa có quyền hỗ trợ nào cho trường này. Nền tảng chỉ xem cấu hình vận hành.</li>}
               {d.grants.map((g) => (
                 <li key={g.id} className="rounded-xl border border-line p-3 text-sm">
-                  <div className="flex flex-wrap items-center gap-2"><StatusBadge status={effectiveGrantStatus(g, now)} map={GRANT_STATUS} />{g.ticketId === t.id && <Badge tone="info" dot={false}>Gắn với yêu cầu này</Badge>}</div>
+                  <div className="flex flex-wrap items-center gap-2"><StatusBadge status={g.status} map={GRANT_STATUS} />{g.ticketId === t.id && <Badge tone="info" dot={false}>Gắn với yêu cầu này</Badge>}</div>
                   <p className="mt-1.5 text-body">{g.scopes.map((s) => SUPPORT_SCOPE_LABEL[s]).join(", ")}</p>
                   <p className="mt-0.5 text-[12.5px] text-muted">{g.validFrom ? `${fmtDateTime(g.validFrom)} → ` : "Đến "}{fmtDateTime(g.validTo)}</p>
                 </li>
@@ -101,7 +102,7 @@ function Body({ d }: { d: Data }) {
             </ul>
           </Card>
           <Callout tone="warning" icon={<ShieldAlert />} title="Không đăng nhập thay người dùng">Nền tảng không có chức năng đăng nhập thành giáo viên hay quản trị trường. Mọi thao tác hỗ trợ dữ liệu cần nhà trường cho phép, có thời hạn và được ghi nhật ký.</Callout>
-          <Callout tone="neutral" icon={<Info />}>Cập nhật ở đây là mô phỏng: không gửi email hay tin nhắn cho nhà trường.</Callout>
+          <Callout tone="neutral" icon={<Info />}>Cập nhật được lưu trong yêu cầu hỗ trợ để hai bên theo dõi.</Callout>
         </div>
       </div>
       <AssignDialog ticket={assign ? t : null} onClose={() => setAssign(false)} />

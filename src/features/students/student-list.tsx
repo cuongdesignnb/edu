@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Upload, Eye, Pencil, Shuffle, FileSpreadsheet, FileText, GraduationCap, Users, ShieldAlert, Link2 } from "lucide-react";
 import { schoolRepo, studentsRepo } from "@/lib/repositories";
-import { studentsExtraRepo } from "@/lib/repositories/students-extra";
+import { studentsExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, studentStatus } from "@/lib/formatters";
 import { downloadCSV, downloadXLSX, type ExportColumn } from "@/lib/export";

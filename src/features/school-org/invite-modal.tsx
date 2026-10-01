@@ -10,7 +10,7 @@ import { Checkbox, ErrorSummary, NumberField, TextField } from "@/components/ui/
 import { Callout } from "@/components/ui/card";
 import { DemoTag } from "@/components/ui/badge";
 import { fmtDate } from "@/lib/formatters";
-import { addDays } from "@/lib/demo/clock";
+import { addDays } from "@/lib/calendar";
 import { useCtx } from "@/lib/query/hooks";
 import { FormError, useDirtyClose, useFormErrors } from "./common";
 

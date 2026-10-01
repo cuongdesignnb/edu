@@ -1,22 +1,40 @@
-/**
- * MockRepository facade. Screens call these async functions through the hooks in
- * src/lib/query. When a backend exists, replace the implementations behind the same
- * signatures (see docs/frontend-data-contract.md).
- */
-export { sessionRepo } from "./session";
-export { platformRepo } from "./platform";
-export { schoolRepo } from "./school";
-export { staffRepo } from "./staff";
-export { studentsRepo, accessStatus } from "./students";
-export { classroomRepo } from "./classroom";
-export { attendanceRepo } from "./attendance";
-export { conductRepo } from "./conduct";
-export { activitiesRepo, UPLOAD_LIMITS } from "./activities";
-export { announcementsRepo } from "./announcements";
-export { reportsRepo, SCHOOL_REPORTS, CLASS_REPORTS, type ReportData } from "./reports";
-export { supportRepo, SUPPORT_SCOPE_LABEL } from "./support";
-export { parentRepo, type ParentKey } from "./parent";
-export { searchRepo, type SearchHit } from "./search";
-export { RepoError, isRepoError, errorMessage, type RepoErrorCode } from "./errors";
-export { makeCtx, type Ctx, type ListQuery, type Page } from "./core";
-export { initStore, resetStore, subscribe, getBlob } from "./store";
+/** Connected application facade. Legacy modules contribute compile-time interfaces only. */
+import {apiRepository} from './connected/facade';
+import {connectedSessionRepo} from './connected/session';
+import {connectedPlatformRepo} from './connected/platform';
+
+import {connectedPlatformExtraRepo} from './connected/platform';
+import {connectedAuthRepo} from './connected/auth';
+
+export const sessionRepo=apiRepository<typeof import('./session').sessionRepo,typeof connectedSessionRepo>(connectedSessionRepo);
+export const platformRepo=apiRepository<typeof import('./platform').platformRepo,typeof connectedPlatformRepo>(connectedPlatformRepo);
+export const schoolRepo=apiRepository<typeof import('./school').schoolRepo,object>({});
+export const staffRepo=apiRepository<typeof import('./staff').staffRepo,object>({});
+export const studentsRepo=apiRepository<typeof import('./students').studentsRepo,object>({});
+export const supportRepo=apiRepository<typeof import('./support').supportRepo,object>({});
+export const platformExtraRepo=apiRepository<typeof import('./platform-extra').platformExtraRepo,typeof connectedPlatformExtraRepo>(connectedPlatformExtraRepo);
+export const authDemoRepo=apiRepository<typeof import('./platform-extra').authDemoRepo,typeof connectedAuthRepo>(connectedAuthRepo);
+export const studentsExtraRepo=apiRepository<typeof import('./students-extra').studentsExtraRepo,object>({});
+export const classroomRepo=apiRepository<typeof import('./classroom').classroomRepo,object>({});
+export const attendanceRepo=apiRepository<typeof import('./attendance').attendanceRepo,object>({});
+export const conductRepo=apiRepository<typeof import('./conduct').conductRepo,object>({});
+export const activitiesRepo=apiRepository<typeof import('./activities').activitiesRepo,object>({});
+export const announcementsRepo=apiRepository<typeof import('./announcements').announcementsRepo,object>({});
+export const reportsRepo=apiRepository<typeof import('./reports').reportsRepo,object>({});
+export const parentRepo=apiRepository<typeof import('./parent').parentRepo,object>({});
+export const searchRepo=apiRepository<typeof import('./search').searchRepo,object>({});
+export const teacherExtraRepo=apiRepository<typeof import('./teacher-extra').teacherExtraRepo,object>({});
+export const schoolOpsRepo=apiRepository<typeof import('./school-ops-extra').schoolOpsRepo,object>({});
+export const schoolOrgRepo=apiRepository<typeof import('./school-org-extra').schoolOrgRepo,object>({});
+export const parentExtraRepo=apiRepository<typeof import('./parent-extra').parentExtraRepo,object>({});
+export const activitiesExtraRepo=apiRepository<typeof import('./activities-extra').activitiesExtraRepo,object>({});
+export {accessStatus,UPLOAD_LIMITS,SCHOOL_REPORTS,CLASS_REPORTS,SUPPORT_SCOPE_LABEL,PASSWORD_RULES,passwordErrors} from './connected/statics';
+export type {ReportData} from './reports';
+export type {ParentKey} from './parent';
+export type {SearchHit} from './search';
+export {RepoError,isRepoError,errorMessage,type RepoErrorCode} from './errors';
+export type {Ctx,ListQuery,Page} from './core';
+export {makeConnectedCtx as makeCtx} from '../api/context';
+export {unavailableBlob as getBlob} from './connected/statics';
+export type {ServiceState} from './platform-extra';
+export type {ImportKind,ImportKindInfo} from './students-extra';

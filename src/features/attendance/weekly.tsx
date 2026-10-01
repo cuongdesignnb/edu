@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, CalendarRange, Download, FileSpreadsheet, Ca
 import type { AttendanceStatus } from "@/lib/model/types";
 import { attendanceRepo } from "@/lib/repositories";
 import { useCtx, useRepo } from "@/lib/query/hooks";
-import { addDays, mondayOf, weekdayOf } from "@/lib/demo/clock";
+import { addDays, mondayOf, weekdayOf } from "@/lib/calendar";
 import { attendanceStatus, fmtDate, fmtDayMonth, matches, weekdayLabel } from "@/lib/formatters";
 import { downloadCSV, downloadXLSX, slugFile } from "@/lib/export";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";

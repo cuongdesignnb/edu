@@ -1,13 +1,13 @@
 "use client";
 import { FlaskConical, Activity, PanelsTopLeft, Save, UserCog } from "lucide-react";
 import { setScenario, type ReadMode, type WriteMode } from "@/lib/demo/scenario";
-import { useSession } from "@/lib/query/hooks";
+import { useSession } from "@/lib/query/demo-hooks";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/form";
-import { useScenario } from "@/components/ui/guards";
+import { useScenario } from "@/lib/query/demo-scenario";
 import { PERSONA_NAMES, STATES, OVERLAYS } from "../data";
 import { STATE_EXAMPLES } from "./examples";
 import { LiveSaveDemo } from "./live-form";

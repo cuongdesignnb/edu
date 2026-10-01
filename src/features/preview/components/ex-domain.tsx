@@ -1,7 +1,7 @@
 "use client";
 import { useState, type ReactNode } from "react";
-import { announcementsRepo, classroomRepo, conductRepo, reportsRepo, staffRepo, studentsRepo } from "@/lib/repositories";
-import { useRepo } from "@/lib/query/hooks";
+import { announcementsRepo, classroomRepo, conductRepo, reportsRepo, staffRepo, studentsRepo } from "@/lib/repositories/demo-index";
+import { useRepo } from "@/lib/query/demo-hooks";
 import type { SnapshotRow } from "@/lib/model/types";
 import { registryById } from "@/lib/routing/registry";
 import { Button } from "@/components/ui/button";

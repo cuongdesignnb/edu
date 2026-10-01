@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Info } from "lucide-react";
-import { useSession } from "@/lib/query/hooks";
+import { useSession } from "@/lib/query/demo-hooks";
 import { REGISTRY } from "@/lib/routing/registry";
 import { actorMatches, SwitchPersona, type Need } from "../states/real-overlays";
 

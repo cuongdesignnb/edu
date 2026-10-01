@@ -1,0 +1,7 @@
+{
+  "qaPid": 42028,
+  "terminationReturnValue": 0,
+  "port": 18763,
+  "previousStopAttempt": "Stop-Process failed",
+  "terminationMethod": "Verified Win32_Process instance only"
+}

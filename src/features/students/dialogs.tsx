@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Printer, ShieldCheck, ShieldOff, Info, ExternalLink } from "lucide-react";
 import type { GuardianRelationship, ParentModule } from "@/lib/model/types";
 import { schoolRepo, studentsRepo } from "@/lib/repositories";
-import { studentsExtraRepo } from "@/lib/repositories/students-extra";
+import { studentsExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, parentModuleLabel, verificationStatus } from "@/lib/formatters";
 import { Modal, ConfirmDialog } from "@/components/ui/dialog";

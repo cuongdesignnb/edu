@@ -2,7 +2,7 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ExternalLink, LogIn } from "lucide-react";
-import { useSession } from "@/lib/query/hooks";
+import { useSession } from "@/lib/query/demo-hooks";
 import { writeParentToken } from "@/lib/demo/session";
 import type { Persona } from "@/lib/routing/registry";
 import { Button } from "@/components/ui/button";

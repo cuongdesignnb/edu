@@ -1,14 +1,13 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle, RefreshCw, FlaskConical } from "lucide-react";
 import { Modal } from "./dialog";
 import { Button } from "./button";
 import type { RepoError } from "@/lib/repositories";
-import { getScenario, onScenarioChange, setScenario } from "@/lib/demo/scenario";
 import { fmtDateTime } from "@/lib/formatters";
-import { IS_DEMO } from "@/lib/demo/session";
+import { IS_DEMO } from "@/lib/data-mode";
 
 /* ------------------------------ C045 / O32 unsaved changes ------------------------------ */
 interface GuardApi { register: (id: string, dirty: boolean, save?: () => Promise<boolean>) => void; confirm: (proceed: () => void) => void }
@@ -89,23 +88,4 @@ export function ConflictDialog({ error, onReload, onClose, mine }: { error: Repo
 }
 
 /* ------------------------------ C047 demo scenario banner ------------------------------ */
-export function useScenario() {
-  return useSyncExternalStore((cb) => { const off = onScenarioChange(cb); window.addEventListener("storage", cb); return () => { off(); window.removeEventListener("storage", cb); }; }, getScenario, getScenario);
-}
-
-export function DemoScenarioBanner({ compact }: { compact?: boolean }) {
-  const s = useScenario();
-  if (!IS_DEMO) return null;
-  const special = s.write !== "normal" || s.read !== "normal";
-  const label = s.write === "offline" ? "Đang mô phỏng mất mạng: mọi thao tác lưu sẽ thất bại" : s.write === "fail-next" ? "Lần lưu kế tiếp sẽ lỗi mạng (mô phỏng)" : s.write === "conflict-next" ? "Lần lưu kế tiếp sẽ xung đột phiên bản (mô phỏng)" : s.read === "error-next" ? "Lần tải kế tiếp sẽ lỗi (mô phỏng)" : s.read === "slow" ? "Đang mô phỏng mạng chậm" : "";
-  return (
-    <div className={special ? "no-print flex flex-wrap items-center gap-2 bg-warning-bg px-4 py-1.5 text-[12.5px] text-warning-text" : "no-print flex flex-wrap items-center gap-2 bg-[#0b3f80] px-4 py-1 text-[12px] text-white/90"} role="note">
-      <FlaskConical className="size-3.5 flex-none" aria-hidden />
-      <span className="font-semibold">Bản demo</span>
-      {!compact && <span className="hidden lg:inline">— dữ liệu giả định, chưa có backend thật, chưa xác thực/phân quyền bảo mật thật. Không dùng cho dữ liệu học sinh thật.</span>}
-      {special && <span className="font-semibold">· {label}</span>}
-      {special && <button type="button" className="underline" onClick={() => setScenario({ write: "normal", read: "normal" })}>Tắt kịch bản</button>}
-      <Link href="/demo" className="ml-auto underline" data-no-guard>Đổi vai trò / kịch bản</Link>
-    </div>
-  );
-}
+export function DemoScenarioBanner(_props:{compact?:boolean}){return null;}

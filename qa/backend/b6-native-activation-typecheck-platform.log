@@ -1,0 +1,80 @@
+src/app/platform/page.tsx(64,20): error TS18047: 'd.recent' is possibly 'null'.
+src/components/layout/shells.tsx(106,43): error TS2345: Argument of type '() => { school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to parameter of type '() => SchoolCtx | null'.
+  Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to type 'SchoolCtx | null'.
+    Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; }' is not assignable to type 'SchoolCtx'.
+      The types of 'school.level' are incompatible between these types.
+        Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+          Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/auth/reset-form.tsx(19,80): error TS2554: Expected 0 arguments, but got 1.
+src/features/auth/reset-form.tsx(22,15): error TS2367: This comparison appears to be unintentional because the types '"present" | "missing"' and '"valid"' have no overlap.
+src/features/auth/reset-form.tsx(22,76): error TS2339: Property 'expiresAt' does not exist on type '{ state: "present" | "missing"; }'.
+src/features/auth/security-panel.tsx(23,20): error TS2339: Property 'expire' does not exist on type '{ session: StaffSession | null; actor: Actor; signIn: (actor: Actor, via?: "invitation" | "login" | "demo") => void; signOut: () => Promise<void>; }'.
+src/features/class-org/roster.tsx(43,203): error TS2353: Object literal may only specify known properties, and 'placeholderData' does not exist in type 'ReadOptions<unknown>'.
+src/features/class-org/roster.tsx(43,221): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/features/class-org/roster.tsx(52,33): error TS2339: Property 'rows' does not exist on type '{}'.
+src/features/class-org/roster.tsx(96,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/features/class-org/roster.tsx(107,55): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/features/platform/audit-log.tsx(90,75): error TS2322: Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }[]' is not assignable to type 'Row[]'.
+  Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }' is not assignable to type 'Row'.
+    Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }' is not assignable to type 'AuditEvent'.
+      Types of property 'actorId' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+src/features/platform/invite-admin-dialog.tsx(32,37): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/platform/operations.tsx(5,34): error TS2305: Module '"@/lib/repositories"' has no exported member 'ServiceState'.
+src/features/platform/operations.tsx(57,229): error TS2339: Property 'retention' does not exist on type '{ id: string; kind: string; state: "failed" | "queued" | "running" | "succeeded"; at: string; startedAt: string | undefined; finishedAt: string | undefined; summary: { [key: string]: unknown; } | undefined; }'.
+src/features/platform/operations.tsx(88,68): error TS2339: Property 'seededAt' does not exist on type '{ schema: string; migratedAt: string | null; migrations: number; schools: number; users: number; auditEvents: number; }'.
+src/features/platform/operations.tsx(89,64): error TS2339: Property 'revision' does not exist on type '{ schema: string; migratedAt: string | null; migrations: number; schools: number; users: number; auditEvents: number; }'.
+src/features/platform/school-admins.tsx(21,29): error TS2537: Type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "revoked" | "active" | "suspended"; since: string; }[] | null' has no matching index signature for type 'number'.
+src/features/platform/school-admins.tsx(22,32): error TS2537: Type '{ id: string; schoolId: string; email: string; fullName: string; version: number; createdAt: string; updatedAt: string; expiresAt: string; status: "pending" | "accepted" | "declined" | "revoked" | "expired"; }[] | null' has no matching index signature for type 'number'.
+src/features/platform/school-admins.tsx(36,18): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(39,64): error TS2554: Expected 3-5 arguments, but got 2.
+src/features/platform/school-admins.tsx(72,8): error TS18047: 'd.history' is possibly 'null'.
+src/features/platform/school-admins.tsx(73,8): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-admins.tsx(91,132): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(92,10): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(93,77): error TS2322: Type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "revoked" | "active" | "suspended"; since: string; }[] | null' is not assignable to type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "revoked" | "active" | "suspended"; since: string; }[]'.
+  Type 'null' is not assignable to type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "revoked" | "active" | "suspended"; since: string; }[]'.
+src/features/platform/school-admins.tsx(98,10): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-admins.tsx(99,86): error TS2488: Type '{ id: string; schoolId: string; email: string; fullName: string; version: number; createdAt: string; updatedAt: string; expiresAt: string; status: "pending" | "accepted" | "declined" | "revoked" | "expired"; }[] | null' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/features/platform/school-profile.tsx(38,24): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(39,22): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-profile.tsx(40,32): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(o: { [s: string]: boolean; } | ArrayLike<boolean>): [string, boolean][]', gave the following error.
+    Argument of type '{ profileDone?: boolean | undefined; adminAssigned?: boolean | undefined; yearCreated?: boolean | undefined; classesCreated?: boolean | undefined; teachersInvited?: boolean | undefined; studentsImported?: boolean | undefined; homeroomAssigned?: boolean | undefined; rulesPublished?: boolean | undefined; } | undefined' is not assignable to parameter of type '{ [s: string]: boolean; } | ArrayLike<boolean>'.
+      Type 'undefined' is not assignable to type '{ [s: string]: boolean; } | ArrayLike<boolean>'.
+  Overload 2 of 2, '(o: {}): [string, any][]', gave the following error.
+    Argument of type '{ profileDone?: boolean | undefined; adminAssigned?: boolean | undefined; yearCreated?: boolean | undefined; classesCreated?: boolean | undefined; teachersInvited?: boolean | undefined; studentsImported?: boolean | undefined; homeroomAssigned?: boolean | undefined; rulesPublished?: boolean | undefined; } | undefined' is not assignable to parameter of type '{}'.
+      Type 'undefined' is not assignable to type '{}'.
+src/features/platform/school-profile.tsx(109,14): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(110,14): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(117,30): error TS18047: 'd.history' is possibly 'null'.
+src/features/platform/school-profile.tsx(122,65): error TS2322: Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+  Types of property 'level' are incompatible.
+    Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+      Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/platform/school-wizard.tsx(89,25): error TS2345: Argument of type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to parameter of type 'SetStateAction<School | null>'.
+  Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+    Types of property 'level' are incompatible.
+      Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+        Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/platform/school-wizard.tsx(200,15): error TS18047: 'd.data.invitations' is possibly 'null'.
+src/features/platform/support-grants.tsx(21,67): error TS2537: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }>' has no matching index signature for type 'number'.
+src/features/platform/support-grants.tsx(26,66): error TS2740: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }>' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+src/features/platform/support-grants.tsx(35,123): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/support-grants.tsx(43,127): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/support-grants.tsx(76,71): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/ticket-detail.tsx(67,194): error TS2538: Type 'undefined' cannot be used as an index type.
+src/features/platform/ticket-detail.tsx(83,145): error TS2339: Property 'shortName' does not exist on type '{ id: string; name: string; status: "draft" | "active" | "suspended" | "archived"; }'.
+src/features/platform/ticket-detail.tsx(96,112): error TS2345: Argument of type '{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }' is not assignable to parameter of type 'SupportGrant'.
+  Types of property 'requestedBy' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/platform/tickets-table.tsx(31,223): error TS2339: Property 'updates' does not exist on type '{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; createdBy: string; ... 8 more ...; messageCount: number; }'.
+src/features/students/imports.tsx(7,34): error TS2305: Module '"@/lib/repositories"' has no exported member 'ImportKind'.
+src/features/students/imports.tsx(7,51): error TS2305: Module '"@/lib/repositories"' has no exported member 'ImportKindInfo'.
+src/features/students/imports.tsx(43,31): error TS7006: Parameter 'c' implicitly has an 'any' type.
+tests/unit/flows.test.ts(3,68): error TS2305: Module '"@/lib/repositories"' has no exported member 'resetStore'.
+tests/unit/flows.test.ts(296,12): error TS18047: 'd.history' is possibly 'null'.
+tests/unit/flows.test.ts(297,12): error TS18047: 'd.history' is possibly 'null'.

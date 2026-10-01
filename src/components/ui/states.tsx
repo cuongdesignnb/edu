@@ -55,7 +55,7 @@ export function ErrorState({ error, onRetry, compact }: { error: RepoError | Err
   if (code === "FORBIDDEN") return <DeniedState compact={compact} message={error?.message} />;
   if (code === "REVOKED") return <DeniedState compact={compact} revoked message={error?.message} />;
   if (code === "SUSPENDED") return <SuspendedState compact={compact} />;
-  if (code === "NO_SESSION") return <EmptyState compact={compact} icon={<Clock3 className="size-6" />} title="Phiên demo đã hết hoặc chưa chọn vai trò" description="Đây là bản mô phỏng — hãy chọn lại vai trò demo." action={<ButtonLink href="/demo" variant="primary" size="sm">Chọn vai trò demo</ButtonLink>} />;
+  if (code === "NO_SESSION") return <EmptyState compact={compact} icon={<Clock3 className="size-6" />} title="Phiên đã hết hoặc chưa đăng nhập" description="Hãy đăng nhập lại bằng tài khoản nhân sự được nhà trường mời." action={<ButtonLink href="/login" variant="primary" size="sm">Đăng nhập</ButtonLink>} />;
   if (code === "NOT_FOUND") return <EmptyState compact={compact} icon={<FileQuestion className="size-6" />} title="Không tìm thấy" description={error?.message ?? "Dữ liệu không tồn tại hoặc không thuộc phạm vi của bạn."} action={<ButtonLink href="/" size="sm">Về trang chính</ButtonLink>} />;
   return (
     <EmptyState compact={compact} icon={<WifiOff className="size-6" />} title="Không tải được dữ liệu" description={error?.message ?? "Đã có lỗi khi đọc dữ liệu. Nội dung bạn đang nhập (nếu có) vẫn được giữ."}

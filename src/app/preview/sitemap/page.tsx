@@ -1,6 +1,1 @@
-"use client";
-import { SitemapView } from "@/features/preview/sitemap";
-
-export default function Page() {
-  return <SitemapView />;
-}
+import {notFound} from "next/navigation"; export default function DisabledLab(){notFound();}

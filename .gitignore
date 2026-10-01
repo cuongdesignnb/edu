@@ -18,3 +18,5 @@ qa/backend/private/
 
 # derived copies for /preview (regenerate with node scripts/copy-references.mjs)
 public/preview-references/evidence/
+## Native browser diagnostics remain local; reviewed logs/results/screenshots are tracked.
+/qa/backend/b6-native-activation-browser-artifacts*/

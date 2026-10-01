@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { Download, XCircle, FileSpreadsheet, FileText, Printer, Info, Clock } from "lucide-react";
 import { reportsRepo } from "@/lib/repositories";
-import { schoolOpsRepo } from "@/lib/repositories/school-ops-extra";
+import { schoolOpsRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { fmtDateTime, fmtNumber, fmtRelative } from "@/lib/formatters";
-import { demoNowISO } from "@/lib/demo/clock";
+import { demoNowISO } from "@/lib/calendar";
 import { DataTable, FilterBar, Pagination, useClientList, type Column } from "@/components/data/table";
 import { Badge, PUBLICATION_STATUS, StatusBadge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";

@@ -1,0 +1,47 @@
+
+Running 6 tests using 1 worker
+
+(node:22672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\auth-contract.spec.ts:34:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › ignores a persisted demo persona and requires actual API authentication (729ms)
+  x  2 tests\native-ui-contract\auth-contract.spec.ts:41:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement (45.2s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) tests\native-ui-contract\auth-contract.spec.ts:41:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.fill: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByLabel(/^Email công việc(?: \(bắt buộc\))?$/)
+
+
+      50 |       return route.fulfill({status:404,json:{code:'NOT_FOUND',requestId:'browser-contract'}});
+      51 |     });
+    > 52 |     await page.goto('/login');await page.getByLabel(/^Email công việc(?: \(bắt buộc\))?$/).fill('synthetic@example.invalid');await page.getByLabel(/^Mật khẩu(?: \(bắt buộc\))?$/).fill(password);await page.getByRole('button',{name:'Đăng nhập',exact:true}).click();
+         |                                                                                            ^
+      53 |     await expect(page.locator('#login-error')).toBeVisible();await expect(page.getByLabel(/^Mật khẩu(?: \(bắt buộc\))?$/)).toHaveValue(password);await expect(page).toHaveURL(/\/login$/);
+      54 |     await page.getByRole('button',{name:'Đăng nhập',exact:true}).click();await expect(page).toHaveURL(/\/choose-school$/);
+      55 |     expect(commands).toHaveLength(2);expect(commands[0].key).toBeTruthy();expect(commands[1]).toEqual(commands[0]);await noPersistence(page);
+        at D:\Edu\tests\native-ui-contract\auth-contract.spec.ts:52:92
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    qa\backend\b6-native-activation-browser-artifacts-final\auth-contract-Native-brows-9f93b-vigating-on-acknowledgement\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: qa\backend\b6-native-activation-browser-artifacts-final\auth-contract-Native-brows-9f93b-vigating-on-acknowledgement\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    qa\backend\b6-native-activation-browser-artifacts-final\auth-contract-Native-brows-9f93b-vigating-on-acknowledgement\trace.zip
+    Usage:
+
+        npx playwright show-trace qa\backend\b6-native-activation-browser-artifacts-final\auth-contract-Native-brows-9f93b-vigating-on-acknowledgement\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests\native-ui-contract\auth-contract.spec.ts:41:7 › Native browser contract with intercepted API responses — PostgreSQL E2E remains separate › keeps a failed login form and retries the same intent before navigating on acknowledgement
+  4 did not run
+  1 passed (47.2s)
+  1 error was not a part of any test, see above for details

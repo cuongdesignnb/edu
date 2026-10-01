@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PanelsTopLeft, Info, CheckCircle2 } from "lucide-react";
-import { useSession } from "@/lib/query/hooks";
+import { useSession } from "@/lib/query/demo-hooks";
 import { registryById } from "@/lib/routing/registry";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -21,7 +21,7 @@ type Row = Awaited<ReturnType<typeof platformRepo.listSchools>>["items"][number]
 export function SchoolsTable({ pageSize = 8, showCreate = true }: { pageSize?: number; showCreate?: boolean }) {
   const list = useListQuery({ pageSize, sort: "name", dir: "asc" });
   const q = useRepo(["platform-schools", list.query], (ctx) => platformRepo.listSchools(ctx, list.query));
-  const [status, setStatus] = useState<{ id: string; name: string; to: SchoolStatus } | null>(null);
+  const [status, setStatus] = useState<{ id: string; name: string; version: number; to: SchoolStatus } | null>(null);
   const router = useRouter();
 
   const columns: Column<Row>[] = [
@@ -35,9 +35,9 @@ export function SchoolsTable({ pageSize = 8, showCreate = true }: { pageSize?: n
       <span onClick={(e) => e.stopPropagation()}><ActionMenu label={`Thao tác với ${r.name}`} items={[
         { label: "Mở hồ sơ trường", icon: <Eye />, href: `/platform/schools/${r.id}` },
         { label: "Quản trị trường", icon: <UserCog />, href: `/platform/schools/${r.id}/admins` },
-        ...(r.status !== "active" && r.status !== "archived" ? [{ label: "Kích hoạt", icon: <Power />, onSelect: () => setStatus({ id: r.id, name: r.name, to: "active" }), separatorBefore: true }] : []),
-        ...(r.status === "active" ? [{ label: "Tạm dừng", icon: <PauseCircle />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, to: "suspended" }), separatorBefore: true }] : []),
-        ...(r.status === "suspended" ? [{ label: "Lưu trữ", icon: <Archive />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, to: "archived" }) }] : []),
+        ...(r.status !== "active" && r.status !== "archived" ? [{ label: "Kích hoạt", icon: <Power />, onSelect: () => setStatus({ id: r.id, name: r.name, version:r.version, to: "active" }), separatorBefore: true }] : []),
+        ...(r.status === "active" ? [{ label: "Tạm dừng", icon: <PauseCircle />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, version:r.version, to: "suspended" }), separatorBefore: true }] : []),
+        ...(r.status === "suspended" ? [{ label: "Lưu trữ", icon: <Archive />, danger: true, onSelect: () => setStatus({ id: r.id, name: r.name, version:r.version, to: "archived" }) }] : []),
       ]} /></span>
     ) },
   ];

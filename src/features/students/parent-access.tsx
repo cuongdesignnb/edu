@@ -7,7 +7,7 @@ import type { ParentModule } from "@/lib/model/types";
 import { schoolRepo, studentsRepo } from "@/lib/repositories";
 import { useCtx, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, fmtNumber, parentModuleLabel } from "@/lib/formatters";
-import { diffDays } from "@/lib/demo/clock";
+import { diffDays } from "@/lib/calendar";
 import { useSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
 import { KpiCard } from "@/components/data/kpi";

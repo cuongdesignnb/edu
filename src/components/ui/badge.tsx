@@ -54,6 +54,4 @@ export const PUBLICATION_STATUS: Record<string, { label: string; tone: Tone }> =
   retired: { label: "Ngừng áp dụng", tone: "neutral" },
 };
 
-export function DemoTag({ children = "Mô phỏng" }: { children?: ReactNode }) {
-  return <span className="demo-tag">{children}</span>;
-}
+export function DemoTag(_props: { children?: ReactNode }) { return null; }

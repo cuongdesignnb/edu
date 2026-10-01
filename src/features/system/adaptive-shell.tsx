@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
 import { useSession } from "@/lib/query/hooks";
-import { isExpired } from "@/lib/demo/session";
-import { demoNowISO } from "@/lib/demo/clock";
+import { isExpired } from "@/lib/api/session";
+import { demoNowISO } from "@/lib/calendar";
 import { AccountShell, PublicShell } from "@/components/layout/shells";
 import { PageSkeleton } from "@/components/ui/states";
 

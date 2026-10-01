@@ -12,6 +12,11 @@ const input={name:'Trường API',shortName:'API',code:'API',slug:'truong-api',l
 const envelope=(data:unknown,page?:unknown)=>new Response(JSON.stringify({data,requestId:'platform-adapter',...(page?{page}:{})}));
 beforeEach(()=>{authenticationChanged();setStaffCsrf('test-csrf');vi.mocked(refreshStaffContext).mockResolvedValue({platformActions:['platform.schools.read']} as Awaited<ReturnType<typeof refreshStaffContext>>);});
 afterEach(()=>{authenticationChanged();vi.unstubAllGlobals();});
+it('reads grant totals and school choices from the API without deriving counters from a displayed page',async()=>{
+  const grants={active:7,requested:13,expired:19,revoked:23,declined:29,inactive:31},schools=[{id,name:'Trường tổng hợp API',status:'ACTIVE'}];
+  const fetcher=vi.fn().mockResolvedValue(envelope({grants,schools}));vi.stubGlobal('fetch',fetcher);
+  expect(await connectedPlatformExtraRepo.grantSummary(ctx)).toEqual({grants,schools});expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toBe('/api/v1/platform/support-options');
+});
 
 describe('platform school adapter candidates',()=>{
   it('shows only observed operational states and actual backup records without simulated schedules',async()=>{

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, BookOpenText, ArrowLeft, LifeBuoy, ListOrdered } from "lucide-react";
 import { matches } from "@/lib/formatters";
-import { authDemoRepo } from "@/lib/repositories/platform-extra";
+import { authDemoRepo } from "@/lib/repositories";
 import { useRepo, useSession } from "@/lib/query/hooks";
 import { PageHeader } from "@/components/layout/page";
 import { Card, Callout } from "@/components/ui/card";

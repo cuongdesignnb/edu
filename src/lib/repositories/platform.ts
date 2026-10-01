@@ -12,7 +12,7 @@ import { staffName, staffNameById } from "./selectors";
  * guardian, attendance or conduct data is returned by any function here.
  */
 export interface SchoolRow {
-  id: ID; name: string; shortName: string; slug: string; code: string; province: string; level: School["level"];
+  id: ID; version:number; name: string; shortName: string; slug: string; code: string; province: string; level: School["level"];
   status: SchoolStatus; adminNames: string[]; classCount: number; staffCount: number; createdAt: string; onboardingDone: number; onboardingTotal: number;
 }
 
@@ -22,7 +22,7 @@ function schoolRow(db: import("@/lib/model/types").DemoDB, s: School): SchoolRow
   const year = db.years.find((y) => y.schoolId === s.id && y.status === "active");
   const steps = Object.values(s.onboarding);
   return {
-    id: s.id, name: s.name, shortName: s.shortName, slug: s.slug, code: s.code, province: s.province, level: s.level, status: s.status,
+    id: s.id, version:s.version, name: s.name, shortName: s.shortName, slug: s.slug, code: s.code, province: s.province, level: s.level, status: s.status,
     adminNames: admins.map((m) => staffNameById(db, m.userId, false)),
     classCount: db.classes.filter((c) => c.schoolId === s.id && (!year || c.yearId === year.id) && c.status !== "draft").length,
     staffCount: db.memberships.filter((m) => m.schoolId === s.id && m.status === "active").length,

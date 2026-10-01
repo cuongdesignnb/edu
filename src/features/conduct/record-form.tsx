@@ -4,7 +4,7 @@ import { Info, Link2, ShieldAlert, Copy } from "lucide-react";
 import type { ConductRule, RuleSet } from "@/lib/model/types";
 import { conductRepo, type Ctx, type RepoError } from "@/lib/repositories";
 import { useCommand } from "@/lib/query/hooks";
-import { demoToday } from "@/lib/demo/clock";
+import { demoToday } from "@/lib/calendar";
 import { fmtDate, fmtDateTime, fmtPoints } from "@/lib/formatters";
 import { useClassroom } from "@/features/classroom/context";
 import { Modal } from "@/components/ui/dialog";

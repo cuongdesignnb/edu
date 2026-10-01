@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { UserRound, ShieldCheck, Link2, History, CalendarCheck, Lock, ArrowLeftRight, ExternalLink, Users2, StickyNote } from "lucide-react";
 import { sessionRepo, studentsRepo } from "@/lib/repositories";
-import { teacherExtraRepo } from "@/lib/repositories/teacher-extra";
+import { teacherExtraRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { attendanceStatus, fmtDate, fmtDateTime, positionLabel, studentStatus, verificationStatus } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";

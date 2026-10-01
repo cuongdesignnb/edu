@@ -1,8 +1,8 @@
 "use client";
 import { useState, type ReactNode } from "react";
 import { Link2, Link2Off, Clock3, Users, School, Info, Download } from "lucide-react";
-import { activitiesRepo, studentsRepo } from "@/lib/repositories";
-import { useRepo } from "@/lib/query/hooks";
+import { activitiesRepo, studentsRepo } from "@/lib/repositories/demo-index";
+import { useRepo } from "@/lib/query/demo-hooks";
 import { fmtBytes, studentStatus, verificationStatus } from "@/lib/formatters";
 import { DataTable, FilterBar, Pagination, BulkSelectionBar, useListQuery, type Column } from "@/components/data/table";
 import { KpiCard } from "@/components/data/kpi";

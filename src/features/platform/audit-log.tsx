@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { ScrollText, FileSpreadsheet, FileDown, Eye } from "lucide-react";
 import type { AuditEvent } from "@/lib/model/types";
-import { platformRepo, makeCtx } from "@/lib/repositories";
+import { platformRepo, RepoError, errorMessage } from "@/lib/repositories";
 import { useRepo, useSession } from "@/lib/query/hooks";
 import { useToast } from "@/components/ui/toast";
 import { fmtDateTime, schoolStatus } from "@/lib/formatters";
-import { demoToday } from "@/lib/demo/clock";
+import { demoToday } from "@/lib/calendar";
 import { downloadCSV, downloadXLSX, type ExportColumn } from "@/lib/export";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, InfoRow } from "@/components/ui/card";
@@ -18,7 +18,7 @@ import { AuditDiff } from "@/components/ui/timeline";
 import { DataTable, FilterBar, Pagination, useListQuery, type Column } from "@/components/data/table";
 import { EmptyFiltered, EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 
-type Row = AuditEvent & { actorName: string };
+type Row = Awaited<ReturnType<typeof platformRepo.audit>>["items"][number];
 
 const ENTITY: Record<string, string> = { school: "Trường", invitation: "Lời mời", membership: "Thành viên", ticket: "Yêu cầu hỗ trợ", supportGrant: "Quyền hỗ trợ", platformSettings: "Cấu hình" };
 const COLUMNS: ExportColumn[] = [
@@ -46,14 +46,9 @@ export function AuditLog() {
   const exportRows = async (kind: "csv" | "xlsx") => {
     setExporting(kind);
     try {
-      const all = await platformRepo.audit(makeCtx(actor), { ...list.query, page: 1, pageSize: 100000 });
-      const rows = all.items.map((a) => ({ at: fmtDateTime(a.at), actor: a.actorName, action: a.action, entityType: ENTITY[a.entityType] ?? a.entityType, entity: a.entityLabel, reason: a.reason ?? "", before: a.before ? JSON.stringify(a.before) : "", after: a.after ? JSON.stringify(a.after) : "" }));
-      const name = `nhat-ky-nen-tang-${demoToday()}`;
-      if (kind === "csv") downloadCSV(COLUMNS, rows, `${name}.csv`);
-      else await downloadXLSX(COLUMNS, rows, `${name}.xlsx`, { title: "Nhật ký nền tảng (dữ liệu demo)", subtitle: `${rows.length} sự kiện theo bộ lọc hiện tại` });
-      toast.push({ tone: "success", title: `Đã tạo tệp ${kind.toUpperCase()} (${rows.length} sự kiện)`, detail: "Tệp tạo trên trình duyệt từ dữ liệu demo." });
-    } catch {
-      toast.push({ tone: "error", title: "Chưa xuất được tệp", detail: "Hãy thử lại." });
+      throw new RepoError('READ_ERROR','Chức năng xuất nhật ký chưa được nối API. Nội dung đang xem được giữ nguyên.');
+    } catch (error) {
+      toast.push({ tone: "error", title: "Chưa xuất được tệp", detail: errorMessage(error) });
     } finally { setExporting(""); }
   };
 
@@ -74,7 +69,7 @@ export function AuditLog() {
           <Button icon={<FileSpreadsheet className="size-4" />} loading={exporting === "xlsx"} disabled={!!exporting || !q.data?.total} onClick={() => exportRows("xlsx")}>Xuất XLSX</Button>
         </>} />
       <Card>
-        <CardHeader title="Sự kiện vận hành" icon={<ScrollText className="size-5" />} subtitle={q.data ? `${q.data.total} sự kiện theo bộ lọc · xuất tệp gồm toàn bộ kết quả lọc` : undefined} />
+        <CardHeader title="Sự kiện vận hành" icon={<ScrollText className="size-5" />} subtitle={q.data ? `${q.data.total} sự kiện theo bộ lọc` : undefined} />
         <FilterBar q={list.query.q ?? ""} onQ={list.setQ} placeholder="Tìm theo hành động, đối tượng, người thao tác…" onReset={list.reset} active={list.active}
           advanced={<>
             <DateField label="Từ ngày" value={f.from} onChange={(v) => list.setFilter("from", v)} />

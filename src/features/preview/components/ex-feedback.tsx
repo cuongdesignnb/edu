@@ -7,7 +7,7 @@ import { DemoScenarioBanner } from "@/components/ui/guards";
 import { DeniedState, EmptyState, ErrorState, PageSkeleton, SuspendedState } from "@/components/ui/states";
 import { attendanceStatus } from "@/lib/formatters";
 import { useToast } from "@/components/ui/toast";
-import { RepoError } from "@/lib/repositories";
+import { RepoError } from "@/lib/repositories/demo-index";
 import { UnsavedGuardDemo, REAL_OVERLAYS } from "../states/real-overlays";
 import { NeedPersona, Frame } from "./common";
 

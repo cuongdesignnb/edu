@@ -52,12 +52,12 @@ export function PageHeader({ title, subtitle, quote, illustration, actions, brea
 export function AppFooter() {
   return (
     <footer className="no-print mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line bg-white/60 px-5 py-4 text-[13px] text-muted">
-      <div className="flex items-center gap-3"><Brand compact href="/" /><div><p className="font-bold text-ink">EduManage</p><p className="text-[12px]">Nền tảng quản lý trường học — bản demo</p></div></div>
+      <div className="flex items-center gap-3"><Brand compact href="/" /><div><p className="font-bold text-ink">EduManage</p><p className="text-[12px]">Nền tảng quản lý trường học</p></div></div>
       <nav className="ml-auto flex flex-wrap gap-x-4 gap-y-1" aria-label="Liên kết chân trang">
         <Link href="/terms" className="hover:text-primary-strong">Điều khoản sử dụng</Link>
         <Link href="/privacy" className="hover:text-primary-strong">Chính sách quyền riêng tư</Link>
         <Link href="/help" className="hover:text-primary-strong">Hướng dẫn & hỗ trợ</Link>
-        <span>© 2026 EduManage (bản demo)</span>
+        <span>© 2026 EduManage</span>
       </nav>
     </footer>
   );

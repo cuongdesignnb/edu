@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { FileWarning, Mail, Phone, ListTree } from "lucide-react";
-import { authDemoRepo } from "@/lib/repositories/platform-extra";
+import { authDemoRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { PublicShell } from "@/components/layout/shells";
 import { Card, Callout } from "@/components/ui/card";

@@ -16,6 +16,7 @@ import { QueryState } from "@/components/ui/states";
 
 /** AU06 — personal profile: only personal fields are editable; assignments are read-only. */
 export function ProfilePage() {
+  const [formRevision,setFormRevision]=useState(0);
   const q = useRepo(["me"], (ctx) => sessionRepo.me(ctx));
   return (
     <QueryState query={q} skeleton="form">
@@ -24,7 +25,7 @@ export function ProfilePage() {
           <PageHeader title="Hồ sơ cá nhân" subtitle="Thông tin hiển thị với đồng nghiệp trong các trường bạn tham gia" breadcrumbs={[{ label: "Tài khoản", href: "/account/profile" }, { label: "Hồ sơ cá nhân" }]}
             quote={["Mỗi thầy cô", "là một ngọn lửa thắp sáng tương lai"]} illustration="/assets/illustrations/teachers-trio.png" />
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-            <ProfileForm me={me} onReload={() => q.refetch()} />
+            <ProfileForm key={formRevision} me={me} onReload={async()=>{const result=await q.refetch();if(result.data&&!result.error)setFormRevision(value=>value+1);}} />
             <Memberships me={me} />
           </div>
         </div>
@@ -34,22 +35,21 @@ export function ProfilePage() {
 }
 
 function ProfileForm({ me, onReload }: { me: Me; onReload: () => void }) {
-  const u = me.user;
+  const [u,setReviewed]=useState(me.user);
   const initial = { fullName: u.fullName, workPhone: u.workPhone, bio: u.bio ?? "" };
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  // keep the form in sync when the saved version changes (after save or reload)
-  useEffect(() => { setForm({ fullName: u.fullName, workPhone: u.workPhone, bio: u.bio ?? "" }); setErrors({}); }, [u.version, u.fullName, u.workPhone, u.bio]);
   const dirty = form.fullName !== initial.fullName || form.workPhone !== initial.workPhone || form.bio !== initial.bio;
   const save = useCommand((ctx, f: typeof form) => sessionRepo.updateProfile(ctx, { ...f, version: u.version }), {
     success: "Đã lưu hồ sơ cá nhân",
+    onSuccess:r=>{setReviewed(r);setForm({fullName:r.fullName,workPhone:r.workPhone,bio:r.bio??""});},
     onError: (e) => { if (e.fieldErrors) setErrors(e.fieldErrors); },
   });
   const submit = async (e?: FormEvent) => {
     e?.preventDefault();
     const errs: Record<string, string> = {};
     if (form.fullName.trim().length < 3) errs.fullName = "Họ tên tối thiểu 3 ký tự";
-    if (!/^[0-9 *+().-]{8,20}$/.test(form.workPhone.trim())) errs.workPhone = "Số liên hệ công việc chưa hợp lệ (8–20 ký tự số, khoảng trắng, dấu *)";
+    if (form.workPhone.trim()&&!/^[0-9 *+().-]{8,20}$/.test(form.workPhone.trim())) errs.workPhone = "Số liên hệ công việc chưa hợp lệ (8–20 ký tự số, khoảng trắng, dấu *)";
     if (form.bio.length > 300) errs.bio = "Giới thiệu tối đa 300 ký tự";
     setErrors(errs);
     if (Object.keys(errs).length) return false;
@@ -62,7 +62,7 @@ function ProfileForm({ me, onReload }: { me: Me; onReload: () => void }) {
       <form className="space-y-4 px-5 pb-5" onSubmit={submit} noValidate>
         <div className="flex items-center gap-4">
           <Avatar name={form.fullName || u.fullName} tone={u.avatarTone} size={64} />
-          <p className="text-[13px] text-muted">Ảnh đại diện dùng chữ viết tắt của họ tên. Bản demo không tải ảnh người thật.</p>
+          <p className="text-[13px] text-muted">Ảnh đại diện dùng chữ viết tắt của họ tên.</p>
         </div>
         <ErrorSummary errors={errors} labels={{ fullName: "Họ và tên", workPhone: "Số liên hệ công việc", bio: "Giới thiệu" }} />
         <div className="grid gap-4 md:grid-cols-2">
@@ -70,9 +70,9 @@ function ProfileForm({ me, onReload }: { me: Me; onReload: () => void }) {
           <Field label="Email công việc" helper="Email do nhà trường dùng để mời — không tự đổi được.">
             <div className="input-icon"><Lock className="size-4" aria-hidden /><input className="input" value={u.email} readOnly aria-readonly="true" aria-label="Email công việc (chỉ đọc)" /></div>
           </Field>
-          <div data-field="workPhone"><TextField label="Số liên hệ công việc" required value={form.workPhone} onChange={(e) => setForm({ ...form, workPhone: e.target.value })} error={errors.workPhone} helper="Số giả định đã che một phần. Không nhập số cá nhân nhạy cảm." inputMode="tel" /></div>
+          <div data-field="workPhone"><TextField label="Số liên hệ công việc" value={form.workPhone} onChange={(e) => setForm({ ...form, workPhone: e.target.value })} error={errors.workPhone} helper="Số liên hệ dùng trong công việc và hiển thị với đồng nghiệp." inputMode="tel" /></div>
           <Field label="Danh xưng" helper="Theo hồ sơ nhân sự của trường.">
-            <input className="input" value={u.honorific ?? "Không dùng"} readOnly aria-readonly="true" aria-label="Danh xưng (chỉ đọc)" />
+            <input className="input" value={u.honorific ?? "Chưa có thông tin"} readOnly aria-readonly="true" aria-label="Danh xưng (chỉ đọc)" />
           </Field>
         </div>
         <div data-field="bio"><TextArea label="Giới thiệu ngắn" rows={3} maxChars={300} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} error={errors.bio} helper="Hiển thị với đồng nghiệp trong trường." /></div>

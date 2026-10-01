@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Users, ShieldCheck, ShieldAlert, Link2, Eye, Pencil, ShieldOff, Ban, History, Info, UserRound, Phone, Mail, Star } from "lucide-react";
 import { studentsRepo } from "@/lib/repositories";
-import { studentsExtraRepo } from "@/lib/repositories/students-extra";
+import { studentsExtraRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, fmtNumber, verificationStatus } from "@/lib/formatters";
 import { useSchool } from "@/components/layout/shells";

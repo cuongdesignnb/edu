@@ -5,10 +5,10 @@ import { ArrowLeft, Pencil, User, Users, History, Lock, Eye, RefreshCw, Ban, Pri
   CalendarCheck, Trophy, CalendarDays, Brush, Sparkles, Megaphone, UsersRound, FileText, ShieldCheck, ShieldOff, Link2, QrCode, Star, Circle } from "lucide-react";
 import type { ParentModule } from "@/lib/model/types";
 import { studentsRepo } from "@/lib/repositories";
-import { studentsExtraRepo } from "@/lib/repositories/students-extra";
+import { studentsExtraRepo } from "@/lib/repositories";
 import { useRepo, useCtx } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, studentStatus, verificationStatus, parentModuleLabel, positionLabel } from "@/lib/formatters";
-import { diffDays } from "@/lib/demo/clock";
+import { diffDays } from "@/lib/calendar";
 import { useSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, CardLink, Callout, InfoRow } from "@/components/ui/card";

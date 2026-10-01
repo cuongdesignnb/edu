@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { KeyRound, ShieldCheck, Clock, Undo2, Plus, Info } from "lucide-react";
 import { platformRepo, SUPPORT_SCOPE_LABEL } from "@/lib/repositories";
-import { platformExtraRepo } from "@/lib/repositories/platform-extra";
+import { platformExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDateTime, fmtNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";
@@ -13,31 +13,29 @@ import { StatusBadge } from "@/components/ui/badge";
 import { ActionMenu } from "@/components/ui/menu";
 import { InlineSelect } from "@/components/ui/form";
 import { ConfirmDialog } from "@/components/ui/dialog";
-import { DataTable, FilterBar, Pagination, useClientList, type Column } from "@/components/data/table";
-import { EmptyFiltered, EmptyState, QueryState } from "@/components/ui/states";
+import { DataTable, FilterBar, Pagination, useListQuery, type Column } from "@/components/data/table";
+import { EmptyFiltered, EmptyState, QueryState, ErrorState } from "@/components/ui/states";
 import { GRANT_STATUS } from "./support-labels";
 import { RequestSupportDialog } from "./support-request-dialog";
 
-type Row = Awaited<ReturnType<typeof platformRepo.supportGrants>>[number];
+type Data=Awaited<ReturnType<typeof platformRepo.supportGrants>>;
+type Row=Data["items"][number];
+type Summary=Awaited<ReturnType<typeof platformExtraRepo.grantSummary>>;
 
 /** PL08 — temporary support access: view, request (O34), withdraw/end early. Approval is school-side only. */
 export function SupportGrants() {
-  const q = useRepo(["platform-grants"], (ctx) => platformRepo.supportGrants(ctx));
-  return <QueryState query={q} skeleton="table">{(rows) => <Body rows={rows} />}</QueryState>;
+  const list=useListQuery({pageSize:10});
+  const q=useRepo(["platform-grants",list.query],ctx=>platformRepo.supportGrants(ctx,list.query));
+  const summary=useRepo(["platform-grant-summary"],ctx=>platformExtraRepo.grantSummary(ctx));
+  return <><QueryState query={q} skeleton="table">{data=><Body data={data} list={list} summary={summary.data} />}</QueryState>{summary.error&&<div className="page"><ErrorState compact error={summary.error} onRetry={()=>summary.refetch()} /></div>}</>;
 }
-
-function Body({ rows }: { rows: Row[] }) {
-  const [status, setStatus] = useState("");
-  const [school, setSchool] = useState("");
-  const [request, setRequest] = useState(false);
-  const [target, setTarget] = useState<Row | null>(null);
-  const filtered = useMemo(() => rows.filter((g) => (!status || g.status === status) && (!school || g.schoolId === school)), [rows, status, school]);
-  const list = useClientList(filtered, { search: (g) => `${g.schoolName} ${g.reason} ${g.requestedByName} ${g.scopes.map((s) => SUPPORT_SCOPE_LABEL[s]).join(" ")}`, pageSize: 10 });
-  const schools = useMemo(() => [...new Map(rows.map((g) => [g.schoolId, g.schoolName])).entries()].map(([value, label]) => ({ value, label })), [rows]);
-  const cmd = useCommand((ctx, id: string, reason: string) => platformExtraRepo.relinquishGrant(ctx, id, reason), { success: "Đã cập nhật quyền hỗ trợ", onSuccess: () => setTarget(null) });
-  const count = (s: string) => rows.filter((g) => g.status === s).length;
-  const active = !!(list.q || status || school);
-  const reset = () => { list.setQ(""); setStatus(""); setSchool(""); };
+function Body({data,list,summary}:{data:Data;list:ReturnType<typeof useListQuery>;summary?:Summary}) {
+  const rows=data.items,status=list.query.filters?.status??"",school=list.query.filters?.schoolId??"";
+  const [request,setRequest]=useState(false),[target,setTarget]=useState<Row|null>(null);
+  const schools=summary?.schools.map(s=>({value:s.id,label:s.name}))??[];
+  const cmd=useCommand((ctx,id:string,reason:string)=>platformExtraRepo.relinquishGrant(ctx,id,reason,target?.version),{success:"Đã cập nhật quyền hỗ trợ",onSuccess:()=>setTarget(null)});
+  const count=(state:'active'|'requested'|'expired'|'revoked'|'declined')=>summary?.grants[state];
+  const active=list.active,reset=list.reset;
   const cols: Column<Row>[] = [
     { key: "school", header: "Trường", cell: (g) => <span className="whitespace-nowrap font-semibold text-ink">{g.schoolName}</span> },
     { key: "scopes", header: "Phạm vi · lý do", cell: (g) => <span className="block min-w-[220px] text-[13px]">{g.scopes.map((s) => SUPPORT_SCOPE_LABEL[s]).join("; ")}<span className="block text-muted">Lý do: {g.reason}</span></span> },
@@ -56,18 +54,18 @@ function Body({ rows }: { rows: Row[] }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard label="Đang hiệu lực" value={fmtNumber(count("active"))} icon={<ShieldCheck className="size-7" />} tone="green" hint="Có thể bị trường thu hồi bất kỳ lúc nào" />
         <KpiCard label="Chờ nhà trường" value={fmtNumber(count("requested"))} icon={<Clock className="size-7" />} tone="amber" hint="Đề nghị chưa được xử lý" />
-        <KpiCard label="Đã kết thúc" value={fmtNumber(count("expired") + count("revoked") + count("declined"))} icon={<KeyRound className="size-7" />} tone="neutral" hint="Hết hạn, thu hồi hoặc từ chối" />
+        <KpiCard label="Đã kết thúc" value={summary?fmtNumber(summary.grants.expired+summary.grants.revoked+summary.grants.declined):"—"} icon={<KeyRound className="size-7" />} tone="neutral" hint="Hết hạn, thu hồi hoặc từ chối" />
       </div>
       <Card>
-        <CardHeader title="Danh sách quyền hỗ trợ" icon={<KeyRound className="size-5" />} subtitle={`${rows.length} bản ghi`} />
-        <FilterBar q={list.q} onQ={list.setQ} placeholder="Tìm theo trường, lý do, phạm vi…" onReset={reset} active={active}>
-          <InlineSelect label="Lọc trạng thái" allLabel="Tất cả trạng thái" value={status} onChange={(v) => { setStatus(v); list.setPage(1); }} options={Object.entries(GRANT_STATUS).map(([value, s]) => ({ value, label: s.label }))} />
-          <InlineSelect label="Lọc trường" allLabel="Tất cả trường" value={school} onChange={(v) => { setSchool(v); list.setPage(1); }} options={schools} />
+        <CardHeader title="Danh sách quyền hỗ trợ" icon={<KeyRound className="size-5" />} subtitle={`${data.total} bản ghi`} />
+        <FilterBar q={list.query.q??""} onQ={list.setQ} placeholder="Tìm theo trường, lý do, phạm vi…" onReset={reset} active={active}>
+          <InlineSelect label="Lọc trạng thái" allLabel="Tất cả trạng thái" value={status} onChange={(v) => { list.setFilter("status",v); }} options={Object.entries(GRANT_STATUS).map(([value, s]) => ({ value, label: s.label }))} />
+          <InlineSelect label="Lọc trường" allLabel="Tất cả trường" value={school} onChange={(v) => { list.setFilter("schoolId",v); }} options={schools} />
         </FilterBar>
         {rows.length === 0 ? <EmptyState compact icon={<KeyRound className="size-6" />} title="Chưa có quyền hỗ trợ nào" /> : (
           <>
-            <div className="px-4"><DataTable caption="Quyền hỗ trợ tạm thời" rows={list.items} columns={cols} rowKey={(g) => g.id} empty={<EmptyFiltered what="quyền hỗ trợ" onReset={reset} />} minWidth={760} /></div>
-            <Pagination page={list.page} pageCount={list.pageCount} total={list.total} pageSize={list.pageSize} onPage={list.setPage} what="bản ghi" />
+            <div className="px-4"><DataTable caption="Quyền hỗ trợ tạm thời" rows={data.items} columns={cols} rowKey={(g) => g.id} empty={<EmptyFiltered what="quyền hỗ trợ" onReset={reset} />} minWidth={760} /></div>
+            <Pagination page={data.page} pageCount={data.pageCount} total={data.total} pageSize={data.pageSize} onPage={list.setPage} what="bản ghi" />
           </>
         )}
       </Card>

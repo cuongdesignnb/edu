@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { School as SchoolIcon, UserCog, ClipboardCheck, PartyPopper, Save, ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, Link2, Copy } from "lucide-react";
 import type { School } from "@/lib/model/types";
 import { platformRepo } from "@/lib/repositories";
-import { platformExtraRepo } from "@/lib/repositories/platform-extra";
+import { platformExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fold, fmtDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";
@@ -34,7 +34,7 @@ export function SchoolWizard() {
   const [f, setF] = useState<Form>(EMPTY);
   const [slugTouched, setSlugTouched] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [created, setCreated] = useState<School | null>(null);
+  const [created, setCreated] = useState<Awaited<ReturnType<typeof platformRepo.createSchool>> | null>(null);
   const provinces = useRepo(["platform-schools", "provinces"], (ctx) => platformRepo.listSchools(ctx, { pageSize: 1 }));
   const ident = useRepo(["school-identity", f.code, f.slug], (ctx) => platformExtraRepo.checkSchoolIdentity(ctx, f.code, f.slug), { enabled: !!(f.code || f.slug), staleTime: 0 });
   const dirty = !created && JSON.stringify(f) !== JSON.stringify(EMPTY);
@@ -119,7 +119,7 @@ export function SchoolWizard() {
               )}
               {step === 1 && (
                 <div className="space-y-4">
-                  <Callout tone="info" icon={<UserCog />}>Người này nhận lời mời quản trị trường đầu tiên. Bản demo tạo đường dẫn lời mời, <b>không gửi email</b>. Có thể bỏ qua và mời sau — nhưng trường không kích hoạt được khi chưa có quản trị.</Callout>
+                  <Callout tone="info" icon={<UserCog />}>Người này nhận lời mời quản trị trường đầu tiên. Hệ thống gửi email chứa đường dẫn lời mời riêng. Có thể bỏ qua và mời sau — nhưng trường không kích hoạt được khi chưa có quản trị.</Callout>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div data-field="adminName"><TextField label="Họ tên quản trị" value={f.adminName} onChange={(e) => set("adminName", e.target.value)} error={errors.adminName} /></div>
                     <div data-field="adminEmail"><TextField label="Email công việc" type="email" value={f.adminEmail} onChange={(e) => set("adminEmail", e.target.value)} error={errors.adminEmail} placeholder="quantri@truong.edu.test" /></div>
@@ -194,11 +194,10 @@ function WizardAside() {
   );
 }
 
-function Done({ school, invited, onAnother }: { school: School; invited: boolean; onAnother: () => void }) {
+function Done({ school, invited, onAnother }: { school: Awaited<ReturnType<typeof platformRepo.createSchool>>; invited: boolean; onAnother: () => void }) {
   const d = useRepo(["platform-school", school.id], (ctx) => platformRepo.school(ctx, school.id));
   const toast = useToast();
-  const inv = d.data?.invitations.find((i) => i.status === "pending");
-  const link = inv ? `${typeof window !== "undefined" ? window.location.origin : ""}/invitations/${inv.id}` : "";
+  const inv = d.data?.invitations?.find((i) => i.status === "pending");
   return (
     <Card className="p-5 sm:p-7">
       <div className="flex flex-wrap items-start gap-4">
@@ -208,15 +207,11 @@ function Done({ school, invited, onAnother }: { school: School; invited: boolean
           <p className="mt-1 text-[14px] text-body">Trạng thái: <Badge tone="neutral">Chờ kích hoạt</Badge>. Trường chưa hoạt động cho đến khi nền tảng kích hoạt.</p>
         </div>
       </div>
-      {invited && inv ? (
+      {invited ? (
         <div className="mt-5 rounded-xl border border-line bg-[#f7fbff] p-4">
-          <p className="flex items-center gap-2 text-sm font-semibold text-ink"><Link2 className="size-4 text-primary" aria-hidden />Lời mời quản trị đầu tiên <DemoTag>Không gửi email</DemoTag></p>
-          <p className="mt-1 text-[13.5px] text-body">{inv.fullName} — {inv.email} · hạn {fmtDateTime(inv.expiresAt)}</p>
-          <p className="mt-2 break-all rounded-lg border border-line bg-white px-3 py-2 font-mono text-[12.5px] text-ink">{link}</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <Button size="sm" icon={<Copy className="size-4" />} onClick={async () => { try { await navigator.clipboard.writeText(link); toast.push({ tone: "success", title: "Đã sao chép đường dẫn lời mời" }); } catch { toast.push({ tone: "warning", title: "Không sao chép được", detail: "Hãy chọn và sao chép thủ công." }); } }}>Sao chép</Button>
-            <ButtonLink size="sm" href={`/invitations/${inv.id}`} target="_blank">Mở lời mời (demo)</ButtonLink>
-          </div>
+          <p className="flex items-center gap-2 text-sm font-semibold text-ink"><Link2 className="size-4 text-primary" aria-hidden />Lời mời quản trị đầu tiên</p>
+          <p className="mt-1 text-[13.5px] text-body">{inv?`${inv.fullName} — ${inv.email} · hạn ${fmtDateTime(inv.expiresAt)}`:"Lời mời đã được tạo cùng hồ sơ trường. Đang tải thông tin lời mời."}</p>
+          <p className="mt-2 text-sm text-muted">Đường dẫn riêng được gửi qua email. Không sao chép lại mã bí mật từ danh sách lời mời.</p>
         </div>
       ) : (
         <Callout className="mt-5" tone="warning" icon={<AlertTriangle />}>Đã lưu nháp, chưa có quản trị đầu tiên. Hãy mời quản trị trước khi kích hoạt.</Callout>

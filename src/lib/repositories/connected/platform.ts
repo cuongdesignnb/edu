@@ -99,6 +99,7 @@ export const connectedPlatformExtraRepo=withStaffAccess({
   async operators(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.operators;},
   async ticketStats(_ctx:Ctx){return (await http('getPlatformSupportOptions')).data.queue;},
   async supportTargets(_ctx:Ctx,schoolId?:ID){const value=(await http('getPlatformSupportOptions',{query:{schoolId}})).data;return {schools:value.schools,tickets:value.tickets};},
+  async grantSummary(_ctx:Ctx){const value=(await http('getPlatformSupportOptions')).data;return {grants:value.grants,schools:value.schools};},
   async assignTicket(_ctx:Ctx,ticketId:ID,assigneeUserId:ID,expectedVersion?:number){return supportTicket((await http('updatePlatformTicket',{params:{ticketId},body:{expectedVersion:displayedVersion(expectedVersion),assigneeId:assigneeUserId}})).data);},
   async relinquishGrant(_ctx:Ctx,grantId:ID,reason:string,expectedVersion?:number){return supportGrant((await http('relinquishPlatformSupportAccess',{params:{supportAccessId:grantId},body:{expectedVersion:displayedVersion(expectedVersion),reason:commandReason(reason)}})).data);},
 });

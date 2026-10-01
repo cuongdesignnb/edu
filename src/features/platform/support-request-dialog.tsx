@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { KeyRound, ShieldAlert } from "lucide-react";
 import type { SupportScope } from "@/lib/model/types";
 import { platformRepo, SUPPORT_SCOPE_LABEL } from "@/lib/repositories";
-import { platformExtraRepo } from "@/lib/repositories/platform-extra";
+import { platformExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { Modal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";

@@ -304,133 +304,133 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | getStudentGuardianForm | SC20, SC22 | TESTED | ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN. |
 | saveStudentGuardian | SC20, SC22 | TESTED | ADR054; qa/backend/b6-guardian-save-integration.log: 151/151 full PostgreSQL exit0, zero skipped, 36 migrations verified; separate fault-targeted.log: 8/8 selected including SQL rollback and same-session enrollment/grant expiry. Backend unit/contract 27/27, frontend API unit 153/153; TypeScript/scoped lint exit0. UI activation, browser/E2E and B7 NOT_RUN. |
 
-| screenId | Scope | API status | UI status | Static mapping |
-|---|---|---|---|---|
-| AU01 | core | TESTED | NOT_STARTED |  |
-| AU02 | core | TESTED | NOT_STARTED |  |
-| AU03 | core | TESTED | NOT_STARTED |  |
-| AU04 | core | TESTED | NOT_STARTED |  |
-| AU05 | core | TESTED | NOT_STARTED |  |
-| AU06 | core | TESTED | NOT_STARTED |  |
-| AU07 | core | TESTED | NOT_STARTED |  |
-| AU08 | core | TESTED | NOT_STARTED |  |
-| AU09 | core | TESTED | NOT_STARTED |  |
-| AU10 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD. |
-| PL01 | core | TESTED | NOT_STARTED |  |
-| PL02 | core | TESTED | NOT_STARTED |  |
-| PL03 | core | TESTED | NOT_STARTED |  |
-| PL04 | core | TESTED | NOT_STARTED |  |
-| PL05 | core | TESTED | NOT_STARTED |  |
-| PL06 | core | TESTED | NOT_STARTED |  |
-| PL07 | core | TESTED | NOT_STARTED |  |
-| PL08 | core | TESTED | NOT_STARTED |  |
-| PL09 | core | TESTED | NOT_STARTED |  |
-| PL10 | core | TESTED | NOT_STARTED |  |
-| PL11 | core | TESTED | NOT_STARTED |  |
-| SC01 | core | TESTED | NOT_STARTED |  |
-| SC02 | core | TESTED | NOT_STARTED |  |
-| SC03 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC04 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC05 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC06 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC07 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC08 | core | TESTED | NOT_STARTED |  |
-| SC09 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC10 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC11 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC12 | core | TESTED | NOT_STARTED |  |
-| SC13 | core | TESTED | NOT_STARTED |  |
-| SC14 | core | TESTED | NOT_STARTED |  |
-| SC15 | core | TESTED | NOT_STARTED |  |
-| SC16 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC17 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC18 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC19 | core | TESTED | NOT_STARTED |  |
-| SC20 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC21 | core | TESTED | NOT_STARTED |  |
-| SC22 | core | IMPLEMENTED | NOT_STARTED |  |
-| SC23 | core | TESTED | NOT_STARTED |  |
-| SC24 | core | TESTED | NOT_STARTED |  |
-| SC25 | core | TESTED | NOT_STARTED |  |
-| SC26 | core | TESTED | NOT_STARTED |  |
-| SC27 | core | TESTED | NOT_STARTED |  |
-| SC28 | core | TESTED | NOT_STARTED |  |
-| SC29 | core | TESTED | NOT_STARTED |  |
-| SC30 | core | TESTED | NOT_STARTED |  |
-| SC31 | core | TESTED | NOT_STARTED |  |
-| SC32 | core | TESTED | NOT_STARTED |  |
-| SC33 | core | TESTED | NOT_STARTED |  |
-| SC34 | core | TESTED | NOT_STARTED |  |
-| SC35 | core | TESTED | NOT_STARTED |  |
-| SC36 | core | TESTED | NOT_STARTED |  |
-| SC37 | core | TESTED | NOT_STARTED |  |
-| SC38 | core | TESTED | NOT_STARTED |  |
-| SC39 | core | TESTED | NOT_STARTED |  |
-| SC40 | core | TESTED | NOT_STARTED |  |
-| SC41 | core | TESTED | NOT_STARTED |  |
-| SC42 | core | TESTED | NOT_STARTED |  |
-| SC43 | core | TESTED | NOT_STARTED |  |
-| TE01 | core | TESTED | NOT_STARTED |  |
-| TE02 | core | TESTED | NOT_STARTED |  |
-| TE03 | core | TESTED | NOT_STARTED |  |
-| TE04 | core | TESTED | NOT_STARTED |  |
-| TE05 | core | TESTED | NOT_STARTED |  |
-| TE06 | core | TESTED | NOT_STARTED |  |
-| CL01 | core | TESTED | NOT_STARTED |  |
-| CL02 | core | TESTED | NOT_STARTED |  |
-| CL03 | core | TESTED | NOT_STARTED |  |
-| CL04 | core | TESTED | NOT_STARTED |  |
-| CL05 | core | TESTED | NOT_STARTED |  |
-| CL06 | core | TESTED | NOT_STARTED |  |
-| CL07 | core | TESTED | NOT_STARTED |  |
-| CL08 | core | TESTED | NOT_STARTED |  |
-| CL09 | core | TESTED | NOT_STARTED |  |
-| CL10 | core | TESTED | NOT_STARTED |  |
-| CL11 | core | TESTED | NOT_STARTED |  |
-| CL12 | core | TESTED | NOT_STARTED |  |
-| CL13 | core | TESTED | NOT_STARTED |  |
-| CL14 | core | TESTED | NOT_STARTED |  |
-| CL15 | core | TESTED | NOT_STARTED |  |
-| CL16 | core | TESTED | NOT_STARTED |  |
-| CL17 | core | TESTED | NOT_STARTED |  |
-| CL18 | core | TESTED | NOT_STARTED |  |
-| CL19 | core | TESTED | NOT_STARTED |  |
-| CL20 | core | TESTED | NOT_STARTED |  |
-| CL21 | core | TESTED | NOT_STARTED |  |
-| CL22 | core | TESTED | NOT_STARTED |  |
-| CL23 | core | TESTED | NOT_STARTED |  |
-| CL24 | core | TESTED | NOT_STARTED |  |
-| CL25 | core | TESTED | NOT_STARTED |  |
-| CL26 | core | TESTED | NOT_STARTED |  |
-| PA01 | core | TESTED | NOT_STARTED |  |
-| PA02 | core | TESTED | NOT_STARTED |  |
-| PA03 | core | TESTED | NOT_STARTED |  |
-| PA04 | core | TESTED | NOT_STARTED |  |
-| PA05 | core | TESTED | NOT_STARTED |  |
-| PA06 | core | TESTED | NOT_STARTED |  |
-| PA07 | core | TESTED | NOT_STARTED |  |
-| PA08 | core | TESTED | NOT_STARTED |  |
-| PA09 | core | TESTED | NOT_STARTED |  |
-| PA10 | core | TESTED | NOT_STARTED |  |
-| PA11 | core | TESTED | NOT_STARTED |  |
-| PA12 | core | TESTED | NOT_STARTED |  |
-| PA13 | core | TESTED | NOT_STARTED |  |
-| PA14 | core | TESTED | NOT_STARTED |  |
-| SY01 | core | TESTED | NOT_STARTED |  |
-| SY02 | core | TESTED | NOT_STARTED |  |
-| SY03 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Trang chính sách cần chủ dự án duyệt, nội dung tĩnh. |
-| SY04 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Điều kiện sử dụng tĩnh, không billing. |
-| SY05 | core | TESTED | NOT_STARTED |  |
-| SY06 | core | TESTED | NOT_STARTED |  |
-| SY07 | core | TESTED | NOT_STARTED | Frontend boundary cho 503/maintenance; healthReady cung cấp tín hiệu. |
-| SY08 | core | TESTED | NOT_STARTED | Not-found/error boundary frontend, xử lý status từ API. |
-| DV01 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV02 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV03 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV04 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV05 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV06 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| DV07 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |
-| EX01 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |
-| EX02 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |
-| EX03 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |
+| screenId | Scope | API status | UI status | Static mapping | UI evidence |
+|---|---|---|---|---|---|
+| AU01 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU02 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU03 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU04 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU05 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU06 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU07 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU08 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU09 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| AU10 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Nội dung hướng dẫn được version cùng frontend, không cần backend CRUD. |  |
+| PL01 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL02 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL03 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL04 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL05 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL06 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL07 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL08 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL09 | core | TESTED | NOT_STARTED |  |  |
+| PL10 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| PL11 | core | TESTED | IMPLEMENTED |  | Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending. |
+| SC01 | core | TESTED | NOT_STARTED |  |  |
+| SC02 | core | TESTED | NOT_STARTED |  |  |
+| SC03 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC04 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC05 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC06 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC07 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC08 | core | TESTED | NOT_STARTED |  |  |
+| SC09 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC10 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC11 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC12 | core | TESTED | NOT_STARTED |  |  |
+| SC13 | core | TESTED | NOT_STARTED |  |  |
+| SC14 | core | TESTED | NOT_STARTED |  |  |
+| SC15 | core | TESTED | NOT_STARTED |  |  |
+| SC16 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC17 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC18 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC19 | core | TESTED | NOT_STARTED |  |  |
+| SC20 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC21 | core | TESTED | NOT_STARTED |  |  |
+| SC22 | core | IMPLEMENTED | NOT_STARTED |  |  |
+| SC23 | core | TESTED | NOT_STARTED |  |  |
+| SC24 | core | TESTED | NOT_STARTED |  |  |
+| SC25 | core | TESTED | NOT_STARTED |  |  |
+| SC26 | core | TESTED | NOT_STARTED |  |  |
+| SC27 | core | TESTED | NOT_STARTED |  |  |
+| SC28 | core | TESTED | NOT_STARTED |  |  |
+| SC29 | core | TESTED | NOT_STARTED |  |  |
+| SC30 | core | TESTED | NOT_STARTED |  |  |
+| SC31 | core | TESTED | NOT_STARTED |  |  |
+| SC32 | core | TESTED | NOT_STARTED |  |  |
+| SC33 | core | TESTED | NOT_STARTED |  |  |
+| SC34 | core | TESTED | NOT_STARTED |  |  |
+| SC35 | core | TESTED | NOT_STARTED |  |  |
+| SC36 | core | TESTED | NOT_STARTED |  |  |
+| SC37 | core | TESTED | NOT_STARTED |  |  |
+| SC38 | core | TESTED | NOT_STARTED |  |  |
+| SC39 | core | TESTED | NOT_STARTED |  |  |
+| SC40 | core | TESTED | NOT_STARTED |  |  |
+| SC41 | core | TESTED | NOT_STARTED |  |  |
+| SC42 | core | TESTED | NOT_STARTED |  |  |
+| SC43 | core | TESTED | NOT_STARTED |  |  |
+| TE01 | core | TESTED | NOT_STARTED |  |  |
+| TE02 | core | TESTED | NOT_STARTED |  |  |
+| TE03 | core | TESTED | NOT_STARTED |  |  |
+| TE04 | core | TESTED | NOT_STARTED |  |  |
+| TE05 | core | TESTED | NOT_STARTED |  |  |
+| TE06 | core | TESTED | NOT_STARTED |  |  |
+| CL01 | core | TESTED | NOT_STARTED |  |  |
+| CL02 | core | TESTED | NOT_STARTED |  |  |
+| CL03 | core | TESTED | NOT_STARTED |  |  |
+| CL04 | core | TESTED | NOT_STARTED |  |  |
+| CL05 | core | TESTED | NOT_STARTED |  |  |
+| CL06 | core | TESTED | NOT_STARTED |  |  |
+| CL07 | core | TESTED | NOT_STARTED |  |  |
+| CL08 | core | TESTED | NOT_STARTED |  |  |
+| CL09 | core | TESTED | NOT_STARTED |  |  |
+| CL10 | core | TESTED | NOT_STARTED |  |  |
+| CL11 | core | TESTED | NOT_STARTED |  |  |
+| CL12 | core | TESTED | NOT_STARTED |  |  |
+| CL13 | core | TESTED | NOT_STARTED |  |  |
+| CL14 | core | TESTED | NOT_STARTED |  |  |
+| CL15 | core | TESTED | NOT_STARTED |  |  |
+| CL16 | core | TESTED | NOT_STARTED |  |  |
+| CL17 | core | TESTED | NOT_STARTED |  |  |
+| CL18 | core | TESTED | NOT_STARTED |  |  |
+| CL19 | core | TESTED | NOT_STARTED |  |  |
+| CL20 | core | TESTED | NOT_STARTED |  |  |
+| CL21 | core | TESTED | NOT_STARTED |  |  |
+| CL22 | core | TESTED | NOT_STARTED |  |  |
+| CL23 | core | TESTED | NOT_STARTED |  |  |
+| CL24 | core | TESTED | NOT_STARTED |  |  |
+| CL25 | core | TESTED | NOT_STARTED |  |  |
+| CL26 | core | TESTED | NOT_STARTED |  |  |
+| PA01 | core | TESTED | NOT_STARTED |  |  |
+| PA02 | core | TESTED | NOT_STARTED |  |  |
+| PA03 | core | TESTED | NOT_STARTED |  |  |
+| PA04 | core | TESTED | NOT_STARTED |  |  |
+| PA05 | core | TESTED | NOT_STARTED |  |  |
+| PA06 | core | TESTED | NOT_STARTED |  |  |
+| PA07 | core | TESTED | NOT_STARTED |  |  |
+| PA08 | core | TESTED | NOT_STARTED |  |  |
+| PA09 | core | TESTED | NOT_STARTED |  |  |
+| PA10 | core | TESTED | NOT_STARTED |  |  |
+| PA11 | core | TESTED | NOT_STARTED |  |  |
+| PA12 | core | TESTED | NOT_STARTED |  |  |
+| PA13 | core | TESTED | NOT_STARTED |  |  |
+| PA14 | core | TESTED | NOT_STARTED |  |  |
+| SY01 | core | TESTED | NOT_STARTED |  |  |
+| SY02 | core | TESTED | NOT_STARTED |  |  |
+| SY03 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Trang chính sách cần chủ dự án duyệt, nội dung tĩnh. |  |
+| SY04 | core | NOT_REQUIRED | STATIC_UNVERIFIED | Điều kiện sử dụng tĩnh, không billing. |  |
+| SY05 | core | TESTED | NOT_STARTED |  |  |
+| SY06 | core | TESTED | NOT_STARTED |  |  |
+| SY07 | core | TESTED | NOT_STARTED | Frontend boundary cho 503/maintenance; healthReady cung cấp tín hiệu. |  |
+| SY08 | core | TESTED | NOT_STARTED | Not-found/error boundary frontend, xử lý status từ API. |  |
+| DV01 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV02 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV03 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV04 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV05 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV06 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| DV07 | internal | NOT_REQUIRED | STATIC_UNVERIFIED | Không đưa UI lab/demo vào API thật. |  |
+| EX01 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |  |
+| EX02 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |  |
+| EX03 | optional | NOT_REQUIRED | STATIC_UNVERIFIED | Mở rộng tắt mặc định, ngoài hợp đồng core. |  |

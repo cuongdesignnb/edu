@@ -40,7 +40,7 @@ export function ClassRoster() {
   const [groupFor, setGroupFor] = useState<Row | null>(null);
   const [transfer, setTransfer] = useState<{ open: boolean; preset: string | null }>({ open: false, preset: null });
   const all = useRepo(["class-roster", classId], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId));
-  const list = useRepo(["class-roster", classId, q, groupId, link], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId, { q, groupId: groupId || undefined, linkStatus: link || undefined }), { placeholderData: (p) => p });
+  const list = useRepo(["class-roster", classId, q, groupId, link], (ctx) => classroomRepo.roster(ctx, schoolId, yearId, classId, { q, groupId: groupId || undefined, linkStatus: link || undefined }));
   const side = can("groups.manage") || can("seating.manage") || can("student.profile.view");
   const indexOf = useMemo(() => new Map((all.data?.rows ?? []).map((r, i) => [r.id, i + 1])), [all.data]);
   const reset = () => { setQ(""); setGroupId(""); setLink(""); setPage(1); };

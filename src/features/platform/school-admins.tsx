@@ -13,21 +13,21 @@ import { ActionMenu } from "@/components/ui/menu";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { DataTable, type Column } from "@/components/data/table";
 import { Timeline } from "@/components/ui/timeline";
-import { EmptyState, QueryState } from "@/components/ui/states";
+import { DeniedState, EmptyState, QueryState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
 import { InviteAdminDialog } from "./invite-admin-dialog";
 
 type Data = Awaited<ReturnType<typeof platformRepo.school>>;
-type Admin = Data["admins"][number];
-type Inv = Data["invitations"][number];
+type Admin = NonNullable<Data["admins"]>[number];
+type Inv = NonNullable<Data["invitations"]>[number];
 
 /** PL05 — school admins, invitations, validity and history. Last-admin guard in UI and repository. */
 export function SchoolAdmins({ schoolId }: { schoolId: string }) {
   const q = useRepo(["platform-school", schoolId], (ctx) => platformRepo.school(ctx, schoolId));
-  return <QueryState query={q} skeleton="table">{(d) => <Body d={d} />}</QueryState>;
+  return <QueryState query={q} skeleton="table">{(d) => d.admins===null || d.invitations===null ? <DeniedState message="Bạn không có quyền quản lý quản trị và lời mời của trường." /> : <Body d={{...d,admins:d.admins,invitations:d.invitations}} />}</QueryState>;
 }
 
-function Body({ d }: { d: Data }) {
+function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations:NonNullable<Data["invitations"]>} }) {
   const toast = useToast();
   const s = d.school;
   const [invite, setInvite] = useState<null | "invite" | "replace">(null);
@@ -35,12 +35,9 @@ function Body({ d }: { d: Data }) {
   const [revokeInv, setRevokeInv] = useState<Inv | null>(null);
   const active = d.admins.filter((a) => a.status === "active");
   const isLast = (a: Admin) => a.status === "active" && active.length <= 1;
-  const revokeA = useCommand((ctx, m: string, reason: string) => platformRepo.revokeSchoolAdmin(ctx, s.id, m, reason), { success: "Đã thu hồi quyền quản trị", onSuccess: () => setRevokeAdmin(null) });
-  const revokeI = useCommand((ctx, id: string) => platformRepo.revokeInvitation(ctx, id), { success: "Đã thu hồi lời mời", onSuccess: () => setRevokeInv(null) });
-  const copy = async (id: string) => {
-    try { await navigator.clipboard.writeText(`${window.location.origin}/invitations/${id}`); toast.push({ tone: "success", title: "Đã sao chép đường dẫn lời mời (demo)" }); }
-    catch { toast.push({ tone: "warning", title: "Không sao chép được", detail: "Hãy mở lời mời và sao chép địa chỉ thủ công." }); }
-  };
+  const revokeA = useCommand((ctx, m: string, reason: string) => platformRepo.revokeSchoolAdmin(ctx, s.id, m, reason, revokeAdmin?.version), { success: "Đã thu hồi quyền quản trị", onSuccess: () => setRevokeAdmin(null) });
+  const revokeI = useCommand((ctx, id: string) => platformRepo.revokeInvitation(ctx, id, s.id, revokeInv?.version, "Thu hồi lời mời quản trị"), { success: "Đã thu hồi lời mời", onSuccess: () => setRevokeInv(null) });
+
 
   const adminCols: Column<Admin>[] = [
     { key: "name", header: "Quản trị", cell: (a) => <Identity name={a.name} sub={a.email} size={34} /> },
@@ -54,22 +51,21 @@ function Body({ d }: { d: Data }) {
     ) },
   ];
   const invCols: Column<Inv>[] = [
-    { key: "who", header: "Người được mời", cell: (i) => <span><span className="block font-semibold text-ink">{i.fullName}</span><span className="block text-[12.5px] text-muted">{i.email}{i.existingUserId ? " · đã có danh tính" : ""}</span></span> },
+    { key: "who", header: "Người được mời", cell: (i) => <span><span className="block font-semibold text-ink">{i.fullName}</span><span className="block text-[12.5px] text-muted">{i.email}</span></span> },
     { key: "status", header: "Trạng thái", cell: (i) => <StatusBadge status={i.status} map={invitationStatus} /> },
     { key: "created", header: "Ngày mời", cell: (i) => fmtDate(i.createdAt), hideBelow: "md" },
     { key: "expires", header: "Hạn chấp nhận", cell: (i) => fmtDateTime(i.expiresAt), hideBelow: "sm" },
     { key: "act", header: <span className="sr-only">Hành động</span>, align: "center", cell: (i) => (
       <ActionMenu label={`Thao tác với lời mời ${i.email}`} items={[
-        { label: "Mở lời mời (demo)", icon: <ExternalLink />, href: `/invitations/${i.id}` },
         ...(i.status === "pending" ? [
-          { label: "Sao chép đường dẫn", icon: <Copy />, onSelect: () => copy(i.id) },
+          { label: "Đường dẫn được gửi qua email khi tạo lời mời", icon: <MailPlus />, disabled: true },
           { label: "Thu hồi lời mời", icon: <Ban />, danger: true, onSelect: () => setRevokeInv(i), separatorBefore: true },
         ] : []),
       ]} />
     ) },
   ];
   const history = [
-    ...d.history.map((h) => ({ id: h.id, at: h.at, title: h.action, detail: h.reason ? `Lý do: ${h.reason}` : undefined, tone: "blue" as const })),
+    ...(d.history===null?[]:d.history.map((h) => ({ id: h.id, at: h.at, title: h.action, detail: h.reason ? `Lý do: ${h.reason}` : undefined, tone: "blue" as const }))),
     ...d.invitations.map((i) => ({ id: `inv-${i.id}`, at: i.createdAt, title: `Mời quản trị: ${i.fullName}`, detail: `${i.email} — hiện: ${invitationStatus[i.status].label.toLowerCase()}`, tone: "purple" as const })),
   ].sort((a, b) => b.at.localeCompare(a.at));
 
@@ -94,14 +90,14 @@ function Body({ d }: { d: Data }) {
         )}
       </Card>
       <Card>
-        <CardHeader title="Lời mời quản trị" icon={<Link2 className="size-5" />} subtitle="Lời mời chỉ là đường dẫn demo — không gửi email" />
+        <CardHeader title="Lời mời quản trị" icon={<Link2 className="size-5" />} subtitle="Lời mời được gửi qua email; không hiển thị lại mã bí mật" />
         {d.invitations.length === 0 ? <EmptyState compact icon={<Link2 className="size-6" />} title="Chưa có lời mời" /> : (
           <div className="px-4 pb-4"><DataTable caption="Lời mời quản trị" rows={[...d.invitations].sort((a, b) => b.createdAt.localeCompare(a.createdAt))} columns={invCols} rowKey={(i) => i.id} minWidth={560} /></div>
         )}
       </Card>
       <Card>
         <CardHeader title="Lịch sử" icon={<History className="size-5" />} action={<ButtonLink size="sm" variant="ghost" href="/platform/audit">Nhật ký nền tảng</ButtonLink>} />
-        <div className="px-5 pb-5"><Timeline items={history.slice(0, 10)} empty="Chưa có lịch sử quản trị." /></div>
+        <div className="px-5 pb-5">{d.history===null?<DeniedState message="Bạn không có quyền xem nhật ký." />:<Timeline items={history.slice(0, 10)} empty="Chưa có lịch sử quản trị." />}</div>
       </Card>
 
       <InviteAdminDialog open={!!invite} initialMode={invite ?? "invite"} onClose={() => setInvite(null)} schoolId={s.id} schoolName={s.name} admins={active.map((a) => ({ membershipId: a.membershipId, name: a.name }))} />

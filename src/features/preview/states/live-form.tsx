@@ -1,8 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { Save, RefreshCw, Undo2, CheckCircle2, WifiOff, UserRound } from "lucide-react";
-import { sessionRepo, type RepoError } from "@/lib/repositories";
-import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
+import { sessionRepo, type RepoError } from "@/lib/repositories/demo-index";
+import { useCommand, useRepo, useSession } from "@/lib/query/demo-hooks";
 import { fmtDateTime } from "@/lib/formatters";
 import { demoNowISO } from "@/lib/demo/clock";
 import { Button } from "@/components/ui/button";

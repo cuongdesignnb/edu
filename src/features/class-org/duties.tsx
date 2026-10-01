@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, Plus, Pencil, Trash2, Eye, Brush, Send } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
-import { addDays, mondayOf, weekdayOf } from "@/lib/demo/clock";
+import { addDays, mondayOf, weekdayOf } from "@/lib/calendar";
 import { fmtDate, fmtDateLong, fmtDayMonth, weekdayLabel } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { ClassOrgNav } from "./org-nav";

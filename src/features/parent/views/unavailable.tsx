@@ -4,10 +4,11 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, Link2Off, Ban, School, Lock, Phone, Mail, MapPin, Info } from "lucide-react";
 import { announcementsRepo } from "@/lib/repositories";
-import { writeParentToken } from "@/lib/demo/session";
+import { writeParentToken } from "@/lib/api/parent-credential";
 import { Brand } from "@/components/layout/brand";
 import { ButtonLink } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/states";
+import { Skeleton,ErrorState } from "@/components/ui/states";
+import type {RepoError} from "@/lib/repositories";
 
 const REASONS: Record<string, { title: string; text: string; icon: React.ReactNode }> = {
   expired: { title: "Đường dẫn đã hết hạn", text: "Link riêng này đã quá thời hạn sử dụng nhà trường đặt khi cấp. Thông tin của học sinh không còn hiển thị qua link này.", icon: <Clock3 className="size-7" /> },
@@ -24,7 +25,7 @@ export function ParentUnavailableView({ slug }: { slug: string }) {
   const r = REASONS[reason];
   // The tab no longer holds a usable link (except "module", where the link itself is still valid).
   useEffect(() => { if (reason !== "module") writeParentToken(slug, null); }, [reason, slug]);
-  const pub = useQuery({ queryKey: ["public-school-contact", slug], queryFn: () => announcementsRepo.publicSchool(slug).catch(() => null), retry: false });
+  const pub = useQuery({ queryKey: ["public-school-contact", slug], queryFn: () => announcementsRepo.publicSchool(slug), retry: false });
   const s = pub.data?.school;
 
   return (
@@ -46,7 +47,7 @@ export function ParentUnavailableView({ slug }: { slug: string }) {
           </div>
           <div className="border-t border-line bg-[#f7fbff] px-6 py-5 sm:px-8">
             <p className="text-[13px] font-semibold text-ink">Liên hệ công khai của nhà trường</p>
-            {pub.isLoading ? <Skeleton className="mt-2 h-16" /> : s ? (
+            {pub.isLoading ? <Skeleton className="mt-2 h-16" /> : pub.error?<ErrorState compact error={pub.error as RepoError} onRetry={()=>pub.refetch()} />:s ? (
               <ul className="mt-2 space-y-1.5 text-[13.5px] text-body">
                 <li className="font-semibold text-ink">{s.name}</li>
                 {s.address && <li className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 flex-none text-primary" aria-hidden />{s.address}</li>}

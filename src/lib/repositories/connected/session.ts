@@ -2,7 +2,7 @@ import type {ActionKey,ID,StaffNotification,StaffUser} from '../../model/types';
 import type {Ctx} from '../core';
 import type {Me} from '../session';
 import type {ApiSchemas} from '../../api/generated';
-import {http,authenticationChanged,captureStaffAccess} from '../../api/client';
+import {http,authenticationChanged,authorizationChanged,captureStaffAccess} from '../../api/client';
 import {apiList} from '../../api/lists';
 import {loginStaff,refreshStaffContext,readStaffContext} from '../../api/session';
 import {invitationCredential,consumeInvitation} from '../../api/fragments';
@@ -48,11 +48,13 @@ export const connectedSessionRepo={
     return {invitation:{id:row.id,schoolId:row.schoolId,email:row.email,fullName:row.workDisplayName??'',roleTemplateIds:[] as ID[],roleCodes:row.roleCodes??[],proposedDuty:(row.roleLabels??[]).join(', '),createdAt:row.createdAt,expiresAt:row.expiresAt,status:row.status.toLowerCase() as 'pending'|'accepted'|'declined'|'revoked'},school:{id:row.schoolId,name:row.schoolName,status:row.schoolStatus.toLowerCase() as 'draft'|'active'|'suspended'|'archived'},inviterName:row.inviterName??'',existingUser:row.requiresLogin?{email:row.email,fullName:row.workDisplayName??''}:undefined,signedInAsInvited:row.signedInAsInvited};
   },
   async respondInvitation(_ctx:Ctx,inviteId:ID,accept:boolean,fullName?:string,newPassword?:string){
+    assertStaffCtx(_ctx);const access=captureStaffAccess();
     const secret=invitationCredential(inviteId);
-    if(accept)await http('acceptInvitation',{body:{...secret,...(fullName!==undefined?{displayName:fullName}:{}),...(newPassword!==undefined?{newPassword}:{})}});
-    else await http('declineInvitation',{body:secret});
-    consumeInvitation(inviteId);
-    const value=readStaffContext();if(accept&&value){await refreshStaffContext();}
+    const validateData=(value:ApiSchemas['Ack'])=>value?.id===inviteId&&value.status===(accept?'ACCEPTED':'DECLINED');
+    if(accept)await http('acceptInvitation',{body:{...secret,...(fullName!==undefined?{displayName:fullName}:{}),...(newPassword!==undefined?{newPassword}:{})},validateData});
+    else await http('declineInvitation',{body:secret,validateData});
+    access.assertCurrent();consumeInvitation(inviteId);
+    const value=readStaffContext();if(accept)authorizationChanged();
     return {accepted:accept,userId:accept?value?.user.id??undefined:undefined};
   },
   async notifications(_ctx:Ctx,options:{unreadOnly?:boolean;schoolId?:ID}={}){

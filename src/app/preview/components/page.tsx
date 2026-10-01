@@ -1,6 +1,1 @@
-"use client";
-import { ComponentCatalog } from "@/features/preview/components/catalog";
-
-export default function Page() {
-  return <ComponentCatalog />;
-}
+import {notFound} from "next/navigation"; export default function DisabledLab(){notFound();}

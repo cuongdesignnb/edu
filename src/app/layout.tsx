@@ -9,8 +9,8 @@ import "@/styles/globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: { default: "EduManage — bản demo", template: "%s · EduManage" },
-  description: "Nền tảng quản lý nhà trường và lớp học — bản demo giao diện với dữ liệu giả định, chưa có backend thật.",
+  title: { default: "EduManage", template: "%s · EduManage" },
+  description: "Nền tảng quản lý nhà trường và lớp học.",
   robots: { index: false, follow: false },
 };
 

@@ -7,8 +7,9 @@ import { Building2, CalendarRange, Lock, Clock3, FlaskConical, Presentation } fr
 import type { AcademicYear, ActionKey, School } from "@/lib/model/types";
 import { useRepo, useSession } from "@/lib/query/hooks";
 import { schoolRepo, sessionRepo, classroomRepo } from "@/lib/repositories";
-import { isExpired } from "@/lib/demo/session";
-import { demoNowISO } from "@/lib/demo/clock";
+import { isExpired } from "@/lib/api/session";
+import { StaffPrivateScope } from "@/lib/query/native-provider";
+import { demoNowISO } from "@/lib/calendar";
 import { Sidebar } from "./sidebar";
 import { Topbar, GlobalSearch, NotificationBell, UserMenu } from "./topbar";
 import { AppFooter } from "./page";
@@ -27,15 +28,15 @@ export function RequireStaffSession({ children, kind = "staff" }: { children: Re
   useEffect(() => setMounted(true), []);
   if (!mounted) return <PageSkeleton />;
   if (!session || session.actor.kind === "anonymous") {
-    return <CenterCard><EmptyState icon={<FlaskConical className="size-6" />} title="Chưa chọn vai trò demo" description="Bản demo không có đăng nhập thật. Hãy chọn một vai trò trong danh sách demo, hoặc dùng màn hình đăng nhập mô phỏng." action={<><ButtonLink href="/demo" variant="primary">Chọn vai trò demo</ButtonLink><ButtonLink href="/login">Đăng nhập (mô phỏng)</ButtonLink></>} /></CenterCard>;
+    return <CenterCard><EmptyState icon={<FlaskConical className="size-6" />} title="Vui lòng đăng nhập" description="Đăng nhập bằng tài khoản nhân sự được nhà trường mời." action={<ButtonLink href="/login" variant="primary">Đăng nhập</ButtonLink>} /></CenterCard>;
   }
   if (isExpired(session, demoNowISO())) {
-    return <CenterCard><EmptyState icon={<Clock3 className="size-6" />} title="Phiên demo đã hết" description="Vì an toàn, hãy đăng nhập lại. Bản nháp đang soạn trong biểu mẫu (nếu có) đã được giữ trên trình duyệt ở mức cho phép." action={<ButtonLink href="/login" variant="primary">Đăng nhập lại (mô phỏng)</ButtonLink>} /></CenterCard>;
+    return <CenterCard><EmptyState icon={<Clock3 className="size-6" />} title="Phiên đã hết" description="Vì an toàn, hãy đăng nhập lại. Bản nháp đang soạn trong biểu mẫu (nếu có) đã được giữ trên trình duyệt ở mức cho phép." action={<ButtonLink href="/login" variant="primary">Đăng nhập lại</ButtonLink>} /></CenterCard>;
   }
   if (kind !== "any" && session.actor.kind !== kind) {
-    return <CenterCard><EmptyState icon={<Lock className="size-6" />} title="Không gian này không dành cho vai trò hiện tại" description={kind === "platform" ? "Chỉ tài khoản vận hành nền tảng mở được khu vực này." : "Tài khoản vận hành nền tảng không mặc định mở không gian nhà trường hoặc hồ sơ học sinh."} action={<ButtonLink href="/demo">Đổi vai trò demo</ButtonLink>} /></CenterCard>;
+    return <CenterCard><EmptyState icon={<Lock className="size-6" />} title="Không gian này không dành cho vai trò hiện tại" description={kind === "platform" ? "Chỉ tài khoản vận hành nền tảng mở được khu vực này." : "Tài khoản vận hành nền tảng không mặc định mở không gian nhà trường hoặc hồ sơ học sinh."} action={<ButtonLink href="/choose-school">Chọn không gian</ButtonLink>} /></CenterCard>;
   }
-  return <>{children}</>;
+  return <StaffPrivateScope>{children}</StaffPrivateScope>;
 }
 
 export function CenterCard({ children }: { children: ReactNode }) {
@@ -220,7 +221,7 @@ export function PublicShell({ children, schoolName }: { children: ReactNode; sch
         </div>
       </header>
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 [&>.page]:!p-0">{children}</main>
-      <footer className="border-t border-line bg-white/70 px-4 py-5 text-center text-[13px] text-muted">EduManage — bản demo dữ liệu giả định. Trang công khai không có công cụ tra cứu hồ sơ học sinh.</footer>
+      <footer className="border-t border-line bg-white/70 px-4 py-5 text-center text-[13px] text-muted">EduManage — Trang công khai không có công cụ tra cứu hồ sơ học sinh.</footer>
     </div>
   );
 }

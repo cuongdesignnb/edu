@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pencil, Power, PauseCircle, Archive, UserCog, Building2, ListChecks, Activity, History, ShieldAlert, CheckCircle2, Circle, Globe, LifeBuoy, KeyRound, Users, Layers } from "lucide-react";
 import type { School, SchoolStatus } from "@/lib/model/types";
 import { platformRepo } from "@/lib/repositories";
@@ -33,26 +33,26 @@ export function SchoolProfile({ schoolId }: { schoolId: string }) {
 
 function Body({ d, reload }: { d: Data; reload: () => void }) {
   const s = d.school;
-  const [status, setStatus] = useState<{ id: string; name: string; to: SchoolStatus } | null>(null);
+  const [status, setStatus] = useState<{ id: string; name: string; version: number; to: SchoolStatus } | null>(null);
   const [edit, setEdit] = useState(false);
-  const activeAdmins = d.admins.filter((a) => a.status === "active");
-  const pendingInv = d.invitations.filter((i) => i.status === "pending");
-  const steps = Object.entries(s.onboarding) as [keyof School["onboarding"], boolean][];
+  const activeAdmins = d.admins?.filter((a) => a.status === "active");
+  const pendingInv = d.invitations?.filter((i) => i.status === "pending");
+  const steps = Object.entries(s.onboarding ?? {}) as [keyof School["onboarding"], boolean][];
   const done = steps.filter(([, v]) => v).length;
   return (
     <div className="page">
-      <PageHeader title={s.name} subtitle={`${s.level} · ${s.province} · Mã ${s.code}`} badge={<StatusBadge status={s.status} map={schoolStatus} />}
+      <PageHeader title={s.name} subtitle={`${s.level ?? "Chưa cấu hình cấp học"} · ${s.province} · Mã ${s.code}`} badge={<StatusBadge status={s.status} map={schoolStatus} />}
         breadcrumbs={[{ label: "Tổng quan", href: "/platform" }, { label: "Danh sách trường", href: "/platform/schools" }, { label: s.shortName }]}
         actions={<>
           <Button icon={<Pencil className="size-4" />} onClick={() => setEdit(true)}>Sửa thông tin vận hành</Button>
-          {(s.status === "draft" || s.status === "suspended") && <Button variant="primary" icon={<Power className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, to: "active" })}>Kích hoạt</Button>}
-          {s.status === "active" && <Button variant="danger-soft" icon={<PauseCircle className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, to: "suspended" })}>Tạm dừng</Button>}
-          {s.status === "suspended" && <Button variant="ghost" icon={<Archive className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, to: "archived" })}>Lưu trữ</Button>}
+          {(s.status === "draft" || s.status === "suspended") && <Button variant="primary" icon={<Power className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, version:s.version, to: "active" })}>Kích hoạt</Button>}
+          {s.status === "active" && <Button variant="danger-soft" icon={<PauseCircle className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, version:s.version, to: "suspended" })}>Tạm dừng</Button>}
+          {s.status === "suspended" && <Button variant="ghost" icon={<Archive className="size-4" />} onClick={() => setStatus({ id: s.id, name: s.name, version:s.version, to: "archived" })}>Lưu trữ</Button>}
         </>} />
 
-      {s.status === "draft" && activeAdmins.length === 0 && (
+      {s.status === "draft" && activeAdmins?.length === 0 && (
         <Callout tone="warning" icon={<ShieldAlert />} title="Chưa kích hoạt được" action={<ButtonLink size="sm" href={`/platform/schools/${s.id}/admins`} variant="primary">Mời quản trị</ButtonLink>}>
-          Trường chưa có quản trị đang hoạt động{pendingInv.length ? ` (${pendingInv.length} lời mời đang chờ chấp nhận)` : ""}. Kích hoạt chỉ thực hiện được khi đã có quản trị.
+          Trường chưa có quản trị đang hoạt động{pendingInv?.length ? ` (${pendingInv?.length} lời mời đang chờ chấp nhận)` : ""}. Kích hoạt chỉ thực hiện được khi đã có quản trị.
         </Callout>
       )}
       {(s.status === "suspended" || s.status === "archived") && s.statusReason && (
@@ -97,7 +97,7 @@ function Body({ d, reload }: { d: Data; reload: () => void }) {
         <Card>
           <CardHeader title="Checklist khởi tạo" icon={<ListChecks className="size-5" />} subtitle="Nhà trường tự hoàn thành các bước sau kích hoạt" />
           <div className="space-y-3 px-5 pb-5">
-            <ProgressBar value={done} total={steps.length} label={`${done}/${steps.length} bước`} />
+            {steps.length?<ProgressBar value={done} total={steps.length} label={`${done}/${steps.length} bước`} />:<p className="text-sm text-muted">Chưa có thông tin checklist.</p>}
             <ul className="space-y-1.5">
               {steps.map(([k, v]) => <li key={k} className={`flex items-center gap-2 text-[13.5px] ${v ? "text-ink" : "text-muted"}`}>{v ? <CheckCircle2 className="size-4 text-success" aria-hidden /> : <Circle className="size-4" aria-hidden />}{ONBOARDING_LABELS[k]}<span className="sr-only">{v ? " — đã xong" : " — chưa xong"}</span></li>)}
             </ul>
@@ -105,16 +105,16 @@ function Body({ d, reload }: { d: Data; reload: () => void }) {
         </Card>
         <Card>
           <CardHeader title="Quản trị trường" icon={<UserCog className="size-5" />} action={<CardLink href={`/platform/schools/${s.id}/admins`}>Quản lý</CardLink>} />
-          <ul className="space-y-2.5 px-5 pb-5">
-            {d.admins.length === 0 && <li className="text-sm text-warning-text">Chưa có quản trị.</li>}
-            {d.admins.map((a) => <li key={a.membershipId} className="flex flex-wrap items-center gap-2 text-sm"><span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{a.name}</span><span className="block text-[12.5px] text-muted">{a.email}</span></span><StatusBadge status={a.status} map={{ active: { label: "Đang hoạt động", tone: "success" }, suspended: { label: "Tạm khóa", tone: "warning" }, revoked: { label: "Đã thu hồi", tone: "danger" } }} /></li>)}
-            {pendingInv.map((i) => <li key={i.id} className="flex flex-wrap items-center gap-2 text-sm"><span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{i.fullName}</span><span className="block text-[12.5px] text-muted">{i.email} · hạn {fmtDate(i.expiresAt)}</span></span><StatusBadge status={i.status} map={invitationStatus} /></li>)}
+          <ul className="space-y-2.5 px-5 pb-5">{d.admins===null&&<li className="text-sm text-muted">Bạn không có quyền xem danh sách quản trị.</li>}
+            {d.admins?.length === 0 && <li className="text-sm text-warning-text">Chưa có quản trị.</li>}
+            {d.admins?.map((a) => <li key={a.membershipId} className="flex flex-wrap items-center gap-2 text-sm"><span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{a.name}</span><span className="block text-[12.5px] text-muted">{a.email}</span></span><StatusBadge status={a.status} map={{ active: { label: "Đang hoạt động", tone: "success" }, suspended: { label: "Tạm khóa", tone: "warning" }, revoked: { label: "Đã thu hồi", tone: "danger" } }} /></li>)}
+            {pendingInv?.map((i) => <li key={i.id} className="flex flex-wrap items-center gap-2 text-sm"><span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{i.fullName}</span><span className="block text-[12.5px] text-muted">{i.email} · hạn {fmtDate(i.expiresAt)}</span></span><StatusBadge status={i.status} map={invitationStatus} /></li>)}
           </ul>
         </Card>
         <Card>
           <CardHeader title="Lịch sử vận hành" icon={<History className="size-5" />} action={<CardLink href="/platform/audit">Nhật ký</CardLink>} />
           <div className="px-5 pb-5">
-            <Timeline items={d.history.slice(0, 6).map((h) => ({ id: h.id, at: h.at, title: h.action, detail: h.reason ? `Lý do: ${h.reason}` : undefined, tone: h.action.includes("Tạm dừng") || h.action.includes("Lưu trữ") ? "amber" : h.action.includes("Kích hoạt") ? "green" : "blue" }))} empty="Chưa có sự kiện vận hành." />
+            <Timeline items={d.history?.slice(0, 6).map((h) => ({ id: h.id, at: h.at, title: h.action, detail: h.reason ? `Lý do: ${h.reason}` : undefined, tone: h.action.includes("Tạm dừng") || h.action.includes("Lưu trữ") ? "amber" : h.action.includes("Kích hoạt") ? "green" : "blue" })) ?? []} empty={d.history===null?"Bạn không có quyền xem nhật ký.":"Chưa có sự kiện vận hành."} />
           </div>
         </Card>
       </div>
@@ -124,15 +124,16 @@ function Body({ d, reload }: { d: Data; reload: () => void }) {
   );
 }
 
-function EditOpsDrawer({ open, onClose, school, reload }: { open: boolean; onClose: () => void; school: School; reload: () => void }) {
-  const init = { name: school.name, shortName: school.shortName, province: school.province, address: school.address, publicEmail: school.publicEmail, publicPhone: school.publicPhone };
+function EditOpsDrawer({ open, onClose, school, reload }: { open: boolean; onClose: () => void; school: Data["school"]; reload: () => void }) {
+  const [reviewed,setReviewed]=useState(school),wasOpen=useRef(false);
+  const init = { name: reviewed.name, shortName: reviewed.shortName, province: reviewed.province, address: reviewed.address, publicEmail: reviewed.publicEmail, publicPhone: reviewed.publicPhone };
   const [f, setF] = useState(init);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  useEffect(() => { if (open) { setF({ name: school.name, shortName: school.shortName, province: school.province, address: school.address, publicEmail: school.publicEmail, publicPhone: school.publicPhone }); setErrors({}); } }, [open, school]);
+  useEffect(()=>{if(open&&!wasOpen.current){setReviewed(school);setF({name:school.name,shortName:school.shortName,province:school.province,address:school.address,publicEmail:school.publicEmail,publicPhone:school.publicPhone});setErrors({});}wasOpen.current=open;},[open,school]);
   const dirty = open && JSON.stringify(f) !== JSON.stringify(init);
   useUnsavedChanges(dirty);
   const leave = useLeaveGuard();
-  const cmd = useCommand((ctx, v: typeof f) => platformRepo.updateSchoolOps(ctx, school.id, { ...v, version: school.version }), { success: "Đã lưu thông tin vận hành", onSuccess: onClose, onError: (e) => e.fieldErrors && setErrors(e.fieldErrors) });
+  const cmd = useCommand((ctx, v: typeof f) => platformRepo.updateSchoolOps(ctx, reviewed.id, { ...v, version: reviewed.version }), { success: "Đã lưu thông tin vận hành", onSuccess: onClose, onError: (e) => setErrors(e.fieldErrors??{form:e.message}) });
   const submit = () => {
     const e: Record<string, string> = {};
     if (f.name.trim().length < 5) e.name = "Tên trường tối thiểu 5 ký tự";

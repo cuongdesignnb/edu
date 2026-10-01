@@ -3,7 +3,7 @@ import { useState } from "react";
 import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, Info, CalendarCheck } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
-import { demoToday } from "@/lib/demo/clock";
+import { demoToday } from "@/lib/calendar";
 import { useParentView } from "@/features/parent/shell";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/button";

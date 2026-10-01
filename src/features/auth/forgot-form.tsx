@@ -2,14 +2,14 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Mail, Send, MailCheck, ArrowLeft, FlaskConical } from "lucide-react";
-import { authDemoRepo } from "@/lib/repositories/platform-extra";
+import { authDemoRepo } from "@/lib/repositories";
 import { useCommand } from "@/lib/query/hooks";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Callout } from "@/components/ui/card";
 import { TextField } from "@/components/ui/form";
 import { DemoTag } from "@/components/ui/badge";
 
-/** AU02 — generic result that never confirms whether an account exists. Nothing is sent. */
+/** AU02 — the server queues reset delivery without disclosing identity existence. */
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>();
@@ -35,13 +35,6 @@ export function ForgotPasswordForm() {
             <p className="mt-1">Nếu email này thuộc một nhân sự đang được nhà trường cấp quyền, hướng dẫn đặt lại mật khẩu sẽ được gửi tới hộp thư đó.</p>
           </div>
         </div>
-        <Callout tone="warning" icon={<FlaskConical />} title="Bản demo không gửi email">
-          Đã gửi hướng dẫn (mô phỏng, không gửi email). Để xem tiếp luồng, mở đường dẫn đặt lại mật khẩu mẫu bên dưới.
-        </Callout>
-        <div className="flex flex-wrap gap-2">
-          <ButtonLink href="/reset-password?token=demo-valid" variant="primary">Mở đường dẫn đặt lại (demo)</ButtonLink>
-          <ButtonLink href="/reset-password?token=demo-expired" variant="secondary">Xem đường dẫn đã hết hạn</ButtonLink>
-        </div>
         <Button variant="ghost" size="sm" onClick={() => { setDone(false); setEmail(""); }}>Nhập email khác</Button>
       </div>
     );
@@ -51,7 +44,7 @@ export function ForgotPasswordForm() {
     <form onSubmit={submit} noValidate className="space-y-4">
       <TextField label="Email công việc" type="email" required autoComplete="username" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} error={error}
         icon={<Mail className="size-4" />} helper="Kết quả luôn giống nhau để không tiết lộ email nào có tài khoản." />
-      <Button type="submit" variant="primary" size="lg" block loading={cmd.pending} icon={<Send className="size-4" />}>Gửi hướng dẫn (mô phỏng)</Button>
+      <Button type="submit" variant="primary" size="lg" block loading={cmd.pending} icon={<Send className="size-4" />}>Gửi hướng dẫn</Button>
       <Link href="/login" className="flex items-center justify-center gap-1.5 text-sm font-semibold text-primary-strong hover:underline"><ArrowLeft className="size-4" aria-hidden />Quay lại đăng nhập</Link>
     </form>
   );

@@ -4,7 +4,7 @@ import { School, CheckCircle2, Users, Link2, Clock, LifeBuoy, ArrowRight, Buildi
 import { platformRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtNumber, fmtPercent, fmtRelative } from "@/lib/formatters";
-import { demoNowISO } from "@/lib/demo/clock";
+import { demoNowISO } from "@/lib/calendar";
 import { PageHeader } from "@/components/layout/page";
 import { KpiCard } from "@/components/data/kpi";
 import { Card, CardHeader, CardLink } from "@/components/ui/card";
@@ -61,7 +61,9 @@ export default function PlatformOverview() {
               <Card>
                 <CardHeader title="Hoạt động gần đây" icon={<Clock className="size-5" />} action={<CardLink href="/platform/audit" />} />
                 <ul className="space-y-3.5 px-5 pb-5">
-                  {d.recent.map((e) => {
+                  {d.recent===null && <li className="text-sm text-muted">Bạn không có quyền xem nhật ký nền tảng.</li>}
+                  {d.recent?.length===0 && <li className="text-sm text-muted">Chưa có sự kiện vận hành.</li>}
+                  {d.recent?.map((e) => {
                     const ic = eventIcon(e.action);
                     return (
                       <li key={e.id} className="flex gap-3">

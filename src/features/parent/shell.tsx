@@ -8,7 +8,7 @@ import { Lock, ShieldCheck, Heart, Leaf, MoreHorizontal, X, Eye } from "lucide-r
 import type { ParentModule } from "@/lib/model/types";
 import { parentRepo, isRepoError, type ParentKey, type RepoError } from "@/lib/repositories";
 import { useQuery } from "@tanstack/react-query";
-import { readParentToken } from "@/lib/demo/session";
+import { readParentToken,parentLinkRevision } from "@/lib/api/parent-credential";
 import { PARENT_NAV } from "@/components/layout/nav";
 import { NavIcon } from "@/components/layout/icons";
 import { Brand } from "@/components/layout/brand";
@@ -42,19 +42,20 @@ export function unavailableReason(e: RepoError | null | undefined): string | nul
 export function useParentRead<T>(key: readonly unknown[], fn: (k: ParentKey, slug: string) => Promise<T>) {
   const p = useParent();
   const router = useRouter();
-  const q = useQuery<T, RepoError>({ queryKey: ["parent", (p.preview ? `preview:${"preview" in p.key ? p.key.preview.accessId : ""}` : `link:${"token" in p.key ? p.key.token : ""}`), p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
+  const previewId='preview' in p.key?p.key.preview.accessId:null;
+  const q = useQuery<T, RepoError>({ queryKey: ["parent", parentLinkRevision(), previewId, p.slug, ...key], queryFn: () => fn(p.key, p.slug), retry: false, staleTime: 0 });
   const reason = unavailableReason(q.error);
   useEffect(() => { if (reason && !p.preview) router.replace(`/p/${p.slug}/access-unavailable?reason=${reason}`); }, [reason, p.preview, p.slug, router]);
   return q;
 }
 
-/** Log a page view for the link's access log (demo; not a proof of who opened it). */
+/** View telemetry is separate from retrieving private content. */
 export function useParentView(module: ParentModule | "overview") {
   const p = useParent();
   useEffect(() => {
     if (p.preview) return;
     const dev = /Android/i.test(navigator.userAgent) ? "Điện thoại Android / Trình duyệt" : /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone / Safari" : "Máy tính / Trình duyệt";
-    parentRepo.logView(p.key, p.slug, module, `${dev} (demo)`);
+    void parentRepo.logView(p.key, p.slug, module, dev).catch(()=>undefined);
   }, [module, p.key, p.slug, p.preview]);
 }
 
@@ -66,7 +67,8 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
   const [token, setToken] = useState<string | null | undefined>(undefined);
   useEffect(() => { setToken(preview ? null : readParentToken(slug)); }, [slug, preview, pathname]);
   const key = useMemo<ParentKey | null>(() => (preview ? preview.key : token ? { token } : null), [preview, token]);
-  const ctxQ = useQuery({ queryKey: ["parent", preview ? `preview:${"preview" in preview.key ? preview.key.preview.accessId : ""}` : `link:${token}`, slug, "context"], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
+  const previewId=key&&'preview' in key?key.preview.accessId:null;
+  const ctxQ = useQuery({ queryKey: ["parent", parentLinkRevision(), previewId, slug, "context"], queryFn: () => parentRepo.context(key!, slug), enabled: !!key, retry: false });
   const reason = unavailableReason(ctxQ.error as RepoError | null);
   useEffect(() => { if (reason && !preview) router.replace(`/p/${slug}/access-unavailable?reason=${reason}`); }, [reason, preview, slug, router]);
   const base = preview?.base ?? `/p/${slug}`;

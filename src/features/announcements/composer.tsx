@@ -6,9 +6,9 @@ import {
 } from "lucide-react";
 import type { Announcement, AnnouncementScope } from "@/lib/model/types";
 import { announcementsRepo, type RepoError } from "@/lib/repositories";
-import { schoolOpsRepo } from "@/lib/repositories/school-ops-extra";
+import { schoolOpsRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
-import { addDays, demoNowISO, demoToday, localDateTime } from "@/lib/demo/clock";
+import { addDays, demoNowISO, demoToday, localDateTime } from "@/lib/calendar";
 import { fmtDateTime, fmtNumber } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, Callout } from "@/components/ui/card";

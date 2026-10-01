@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import type { TeacherRow } from "@/lib/repositories/staff";
 import { staffRepo } from "@/lib/repositories";
-import { schoolOrgRepo } from "@/lib/repositories/school-org-extra";
+import { schoolOrgRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";

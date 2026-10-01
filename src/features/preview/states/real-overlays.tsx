@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
 import { UserCog } from "lucide-react";
-import { activitiesRepo, conductRepo, platformRepo, schoolRepo, reportsRepo, sessionRepo, studentsRepo, type RepoError } from "@/lib/repositories";
-import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
+import { activitiesRepo, conductRepo, platformRepo, schoolRepo, reportsRepo, sessionRepo, studentsRepo, type RepoError } from "@/lib/repositories/demo-index";
+import { useCommand, useRepo, useSession } from "@/lib/query/demo-hooks";
 import { setScenario } from "@/lib/demo/scenario";
 import type { Actor } from "@/lib/permissions/can";
 import { SchoolContextProvider } from "@/components/layout/shells";
@@ -56,7 +56,7 @@ function O01({ open, close }: { open: boolean; close: () => void }) {
   if (!open) return null;
   if (list.isLoading) return <Modal open onOpenChange={close} title="Đang tải trường…"><Loading /></Modal>;
   if (!target) return <Modal open onOpenChange={close} title="Không có trường phù hợp"><p className="text-sm">Không còn trường đang hoạt động (ngoài A/B) để thử tạm dừng. Đặt lại dữ liệu demo ở trang chọn vai trò.</p></Modal>;
-  return <SchoolStatusDialog target={{ id: target.id, name: target.name, to: "suspended" }} onClose={close} />;
+  return <SchoolStatusDialog target={{ id: target.id, name: target.name, version:target.version, to: "suspended" }} onClose={close} />;
 }
 
 function O10({ open, close }: { open: boolean; close: () => void }) {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CalendarCheck, Trophy, Sparkles, LayoutList, Link2, ArrowRight, Download, Filter, Info, BookX } from "lucide-react";
 import { reportsRepo, schoolRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
-import { mondayOf } from "@/lib/demo/clock";
+import { mondayOf } from "@/lib/calendar";
 import { slugFile } from "@/lib/export";
 import { fmtDate, matches } from "@/lib/formatters";
 import { Card, CardHeader, Callout, IconTile, type PastelTone } from "@/components/ui/card";

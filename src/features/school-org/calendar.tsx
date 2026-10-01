@@ -15,7 +15,7 @@ import { ConfirmDialog, Modal } from "@/components/ui/dialog";
 import { DateField, InlineSelect, TextField } from "@/components/ui/form";
 import { Pagination } from "@/components/data/table";
 import { EmptyState, QueryState } from "@/components/ui/states";
-import { weekdayOf } from "@/lib/demo/clock";
+import { weekdayOf } from "@/lib/calendar";
 import { fmtDate } from "@/lib/formatters";
 import { TermDialog } from "./term-dialog";
 import { FormError, useFormErrors } from "./common";

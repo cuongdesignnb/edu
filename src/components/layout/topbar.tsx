@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import * as M from "@radix-ui/react-dropdown-menu";
 import { Bell, ChevronDown, Menu, Search, User, ShieldCheck, School, BookOpenText, LogOut, GraduationCap, Users, Building2 } from "lucide-react";
-import { useRepo, useSession } from "@/lib/query/hooks";
+import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
 import { searchRepo, sessionRepo, type SearchHit } from "@/lib/repositories";
 import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/dialog";
@@ -59,6 +59,7 @@ export function GlobalSearch({ schoolId, placeholder }: { schoolId?: string; pla
 /** C009 — user menu: profile / workspace / sign out of the DEMO. No fake role switcher. */
 export function UserMenu({ roleLabel }: { roleLabel: string }) {
   const { signOut, actor } = useSession();
+  const logout=useCommand(()=>signOut(),{changesAuthentication:true,onSuccess:()=>router.push("/login")});
   const router = useRouter();
   const me = useRepo(["me"], (ctx) => sessionRepo.me(ctx), { enabled: actor.kind !== "anonymous" });
   const name = me.data?.user.fullName ?? "…";
@@ -81,14 +82,14 @@ export function UserMenu({ roleLabel }: { roleLabel: string }) {
           <M.Separator className="my-1 h-px bg-line" />
           {[
             { href: "/account/profile", label: "Hồ sơ cá nhân", icon: <User className="size-4" /> },
-            { href: "/account/security", label: "Bảo mật và phiên demo", icon: <ShieldCheck className="size-4" /> },
+            { href: "/account/security", label: "Bảo mật và phiên", icon: <ShieldCheck className="size-4" /> },
             { href: "/choose-school", label: "Chọn không gian làm việc", icon: <School className="size-4" /> },
             { href: "/help", label: "Hướng dẫn sử dụng", icon: <BookOpenText className="size-4" /> },
           ].map((i) => (
             <M.Item key={i.href} asChild><Link href={i.href} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ink outline-none data-[highlighted]:bg-primary-light"><span className="text-muted">{i.icon}</span>{i.label}</Link></M.Item>
           ))}
           <M.Separator className="my-1 h-px bg-line" />
-          <M.Item onSelect={() => { signOut(); router.push("/demo"); }} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger-text outline-none data-[highlighted]:bg-danger-bg"><LogOut className="size-4" />Thoát phiên demo</M.Item>
+          <M.Item onSelect={() => { void logout.run(); }} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger-text outline-none data-[highlighted]:bg-danger-bg"><LogOut className="size-4" />Thoát phiên</M.Item>
         </M.Content>
       </M.Portal>
     </M.Root>

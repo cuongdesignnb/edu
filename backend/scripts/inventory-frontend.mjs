@@ -15,16 +15,25 @@ for(const name of (await fs.readdir(directory)).filter(n=>n.endsWith('.ts')).sor
   };visit(file);
 }
 const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo',connectedSchoolRepo:'schoolRepo',connectedPlatformRepo:'platformRepo',connectedPlatformExtraRepo:'platformExtraRepo',connectedSupportRepo:'supportRepo',connectedStaffRepo:'staffRepo',connectedStudentsRepo:'studentsRepo',connectedStudentsExtraRepo:'studentsExtraRepo'};
+const facadeSource=await fs.readFile(path.join(directory,'index.ts'),'utf8'),facade=ts.createSourceFile('index.ts',facadeSource,ts.ScriptTarget.Latest,true),activated=new Set();
+const inspectFacade=node=>{
+  if(ts.isVariableDeclaration(node)&&node.initializer&&ts.isCallExpression(node.initializer)&&node.initializer.expression.getText(facade)==='apiRepository'){
+    const target=node.initializer.arguments[0];if(target&&ts.isIdentifier(target))activated.add(target.text);
+  }
+  ts.forEachChild(node,inspectFacade);
+};inspectFacade(facade);
 for(const name of (await fs.readdir(path.join(directory,'connected'))).filter(n=>n.endsWith('.ts')).sort()){
   const source=await fs.readFile(path.join(directory,'connected',name),'utf8'),file=ts.createSourceFile(name,source,ts.ScriptTarget.Latest,true);
   const visit=node=>{
     if(ts.isVariableDeclaration(node)&&aliases[node.name.getText(file)]&&node.initializer){
       const initializer=ts.isCallExpression(node.initializer)&&node.initializer.expression.getText(file)==='withStaffAccess'?node.initializer.arguments[0]:node.initializer;
-      if(initializer&&ts.isObjectLiteralExpression(initializer))for(const member of initializer.properties)if((ts.isMethodDeclaration(member)||ts.isPropertyAssignment(member))&&member.name)candidates.push({repository:aliases[node.name.getText(file)],method:member.name.getText(file),file:`src/lib/repositories/connected/${name}`,status:'IMPLEMENTED',activated:false,evidence:['Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance.']});
+      if(initializer&&ts.isObjectLiteralExpression(initializer))for(const member of initializer.properties)if((ts.isMethodDeclaration(member)||ts.isPropertyAssignment(member))&&member.name)candidates.push({repository:aliases[node.name.getText(file)],method:member.name.getText(file),file:`src/lib/repositories/connected/${name}`,status:'IMPLEMENTED',activated:activated.has(node.name.getText(file)),evidence:['Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence.']});
     }
     ts.forEachChild(node,visit);
   };visit(file);
 }
-for(const method of methods){const candidate=candidates.find(c=>c.repository===method.repository&&c.method===method.method);if(candidate)method.connectedCandidate=candidate;}
-const file=path.join(root,'docs/frontend-adapter-inventory.json');await fs.writeFile(file,JSON.stringify({baseline:'14dfad5',mode:'CONNECTED_ADAPTERS_PENDING',methodCount:methods.length,candidateCount:candidates.length,methods,extensions:candidates.filter(c=>!methods.some(m=>m.repository===c.repository&&m.method===c.method))},null,2)+'\n');
-console.log(JSON.stringify({methodCount:methods.length,repositories:Object.fromEntries([...new Set(methods.map(m=>m.repository))].map(r=>[r,methods.filter(m=>m.repository===r).length]))}));
+for(const method of methods){const candidate=candidates.find(c=>c.repository===method.repository&&c.method===method.method);if(candidate){method.connectedCandidate=candidate;if(candidate.activated)method.status='IMPLEMENTED';}}
+const extensions=candidates.filter(c=>!methods.some(m=>m.repository===c.repository&&m.method===c.method));
+const inventory={baseline:'14dfad5',mode:activated.size?'CONNECTED_PARTIAL':'CONNECTED_ADAPTERS_PENDING',methodCount:methods.length,candidateCount:candidates.length,activatedCandidateCount:candidates.filter(c=>c.activated).length,activatedLegacyMethodCount:methods.filter(m=>m.connectedCandidate?.activated).length,methods,extensions};
+const file=path.join(root,'docs/frontend-adapter-inventory.json');await fs.writeFile(file,JSON.stringify(inventory,null,2)+'\n');
+console.log(JSON.stringify({methodCount:methods.length,candidateCount:inventory.candidateCount,activatedCandidateCount:inventory.activatedCandidateCount,activatedLegacyMethodCount:inventory.activatedLegacyMethodCount,repositories:Object.fromEntries([...new Set(methods.map(m=>m.repository))].map(r=>[r,methods.filter(m=>m.repository===r).length]))}));

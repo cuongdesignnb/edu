@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   attendanceRepo, classroomRepo, conductRepo, makeCtx, parentRepo, resetStore, staffRepo, studentsRepo, platformRepo, announcementsRepo, isRepoError,
-} from "@/lib/repositories";
+} from "@/lib/repositories/demo-index";
 import { SCHOOL_A, SCHOOL_B, YEAR_A, YEAR_B, CLASS_A_10A1, CLASS_A_10A2, CLASS_B_10A1, MINH_ANH } from "@/lib/fixtures/seed";
 import { setScenario } from "@/lib/demo/scenario";
 import { getDB } from "@/lib/repositories/store";
+
+// Historical synthetic domain regression only. These tests do not certify the API or native UI.
 
 const lan = makeCtx({ kind: "staff", userId: "u-lan" });
 const hung = makeCtx({ kind: "staff", userId: "u-hung" });
@@ -227,7 +229,7 @@ describe("F04 — school B policy: only school leaders publish", () => {
 
 describe("SC07 / NV-13 — new school year rollover", () => {
   it("creates a year, enrols chosen students into new classes, leaves the old year untouched", async () => {
-    const { schoolRepo } = await import("@/lib/repositories");
+    const { schoolRepo } = await import("@/lib/repositories/demo-index");
     const y = await schoolRepo.createYear(hanh, SCHOOL_A, { label: "2027–2028", startDate: "2027-08-01", endDate: "2028-07-31", terms: [{ name: "Học kỳ 1", startDate: "2027-09-06", endDate: "2028-01-09" }], holidays: [], copyRules: false });
     const cls = await schoolRepo.saveClass(hanh, SCHOOL_A, { yearId: y.id, gradeId: "g-a-11", name: "11A1", capacity: 45 });
     const pre = await schoolRepo.rolloverPreview(hanh, SCHOOL_A, YEAR_A);
@@ -243,7 +245,7 @@ describe("SC07 / NV-13 — new school year rollover", () => {
 
 describe("F11 / Q35 — lesson change with effective date and conflict detection", () => {
   it("detects a teacher already teaching another class; publishing is blocked; past dates refused", async () => {
-    const { classroomRepo } = await import("@/lib/repositories");
+    const { classroomRepo } = await import("@/lib/repositories/demo-index");
     const db = getDB();
     // Tuesday 06/10: find a period where Thầy Hùng teaches 10A2, then try to put him into 10A1 at that period
     const hungM = db.memberships.find((m) => m.userId === "u-hung" && m.schoolId === SCHOOL_A)!.id;
@@ -260,7 +262,7 @@ describe("F11 / Q35 — lesson change with effective date and conflict detection
 
 describe("Limitations closed in the final pass", () => {
   it("draft activities are visible only to people who can manage class activities", async () => {
-    const { activitiesRepo } = await import("@/lib/repositories");
+    const { activitiesRepo } = await import("@/lib/repositories/demo-index");
     const own = await activitiesRepo.list(lan, SCHOOL_A, YEAR_A, CLASS_A_10A1);
     expect(own.canManage).toBe(true);
     expect(own.items.some((a) => a.id === "act-4")).toBe(true);
@@ -276,7 +278,7 @@ describe("Limitations closed in the final pass", () => {
   });
 
   it("notifications stop linking through when the school is suspended", async () => {
-    const { sessionRepo } = await import("@/lib/repositories");
+    const { sessionRepo } = await import("@/lib/repositories/demo-index");
     expect((await sessionRepo.notifications(lan, { schoolId: SCHOOL_A })).some((n) => n.accessible)).toBe(true);
     getDB().schools.find((s) => s.id === SCHOOL_A)!.status = "suspended";
     expect((await sessionRepo.notifications(lan, { schoolId: SCHOOL_A })).filter((n) => n.kind !== "system").every((n) => !n.accessible)).toBe(true);

@@ -3,8 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { clsx } from "clsx";
 import { UploadCloud, FileText, FileWarning, Download, AlertCircle, Ban } from "lucide-react";
 import type { FileAsset } from "@/lib/model/types";
-import { getBlob } from "@/lib/repositories";
-import { syntheticDoc, syntheticImageSVG, svgDataUri } from "@/lib/files/synthetic";
+import { getBlob,RepoError,errorMessage } from "@/lib/repositories";
 import { downloadBlob } from "@/lib/export";
 import { fmtBytes } from "@/lib/formatters";
 import { Button } from "./button";
@@ -34,7 +33,7 @@ export function FileDropzone({ accept, maxBytes, multiple, onFiles, label = "Ké
         className={clsx("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-7 text-center transition-colors", over ? "border-primary bg-primary-light" : "border-line-strong bg-[#f9fbfe] hover:bg-primary-light/60", (error || local) && "border-danger", disabled && "cursor-not-allowed opacity-50")}>
         <UploadCloud className="size-7 text-primary" aria-hidden />
         <p className="text-sm font-semibold text-ink">{label}</p>
-        <p className="text-[12.5px] text-muted">{hint ?? `Tối đa ${fmtBytes(maxBytes)}.`} Tệp chỉ lưu trên trình duyệt này (mô phỏng), không tải lên máy chủ.</p>
+        <p className="text-[12.5px] text-muted">{hint ?? `Tối đa ${fmtBytes(maxBytes)}.`} Chọn tệp chưa tự động gửi biểu mẫu.</p>
         <input ref={input} type="file" hidden multiple={multiple} accept={accept.join(",")} onChange={(e) => { handle(e.target.files); e.target.value = ""; }} />
       </div>
       {(error || local) && <p className="error-text mt-1.5" role="alert"><AlertCircle className="size-3.5" aria-hidden />{error ?? local}</p>}
@@ -51,10 +50,11 @@ export function useFileUrl(file?: PreviewSource | null) {
   useEffect(() => {
     let revoke: string | null = null;
     let alive = true;
+    setUrl(null);
     setMissing(false);
     if (!file) { setUrl(null); return; }
     if (file.source.kind === "synthetic") {
-      setUrl(file.mime.startsWith("image/") ? svgDataUri(syntheticImageSVG(file.source.pattern, file.name.replace(/\.[a-z]+$/i, ""))) : null);
+      setMissing(true);
       return;
     }
     getBlob(file.source.blobKey).then((b) => {
@@ -62,7 +62,7 @@ export function useFileUrl(file?: PreviewSource | null) {
       if (!b) { setMissing(true); return; }
       revoke = URL.createObjectURL(b);
       setUrl(revoke);
-    });
+    }).catch(() => { if (alive) setMissing(true); });
     return () => { alive = false; if (revoke) URL.revokeObjectURL(revoke); };
   }, [file]);
   return { url, missing };
@@ -74,39 +74,25 @@ export async function downloadFileAsset(file: PreviewSource) {
     if (b) downloadBlob(b, file.name);
     return !!b;
   }
-  if (file.mime.startsWith("image/")) {
-    downloadBlob(new Blob([syntheticImageSVG(file.source.pattern, file.name)], { type: "image/svg+xml" }), file.name.replace(/\.[a-z]+$/i, "") + ".svg");
-    return true;
-  }
-  const d = syntheticDoc(file.source.pattern);
-  downloadBlob(new Blob([`﻿${d.title}\r\n\r\n${d.lines.join("\r\n")}\r\n\r\n(Tài liệu minh họa của bản demo EduManage)`], { type: "text/plain;charset=utf-8" }), file.name.replace(/\.[a-z]+$/i, "") + ".txt");
-  return true;
+  throw new RepoError('READ_ERROR','Tệp chưa có nội dung được xác nhận từ API.');
 }
 
 /** C035 — image / PDF (browser viewer) / synthetic document / unsupported / revoked fallback. */
 export function FilePreview({ file, revoked, className }: { file?: PreviewSource | null; revoked?: boolean; className?: string }) {
   const { url, missing } = useFileUrl(revoked ? null : file);
+  const [downloadError,setDownloadError]=useState<string|null>(null);
   if (revoked) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-danger-bg p-8 text-center text-danger-text", className)}><Ban className="size-7" aria-hidden /><p className="font-semibold">Tệp đã bị thu hồi</p><p className="text-sm">Không thể xem hoặc tải lần mới.</p></div>;
   if (!file) return null;
-  if (missing) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-warning-bg p-8 text-center text-warning-text", className)}><FileWarning className="size-7" aria-hidden /><p className="font-semibold">Không tìm thấy nội dung tệp trên trình duyệt này</p><p className="text-sm">Tệp tải lên chỉ lưu cục bộ theo từng trình duyệt (mô phỏng).</p></div>;
+  if (missing) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-warning-bg p-8 text-center text-warning-text", className)}><FileWarning className="size-7" aria-hidden /><p className="font-semibold">Chưa tải được nội dung tệp</p><p className="text-sm">Tệp chưa được nối với API hoặc không còn trong phạm vi được xem.</p></div>;
   if (file.mime.startsWith("image/") && url) return <img src={url} alt={`Xem trước: ${file.name}`} className={clsx("max-h-[60vh] w-full rounded-xl border border-line bg-[#f7fbff] object-contain", className)} />;
   if (file.mime === "application/pdf" && file.source.kind === "blob" && url) return <iframe title={`Xem trước ${file.name}`} src={url} className={clsx("h-[60vh] w-full rounded-xl border border-line", className)} />;
-  if (file.source.kind === "synthetic" && !file.mime.startsWith("image/")) {
-    const d = syntheticDoc(file.source.pattern);
-    return (
-      <article className={clsx("rounded-xl border border-line bg-white p-6 shadow-inner", className)}>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">Tài liệu minh họa</p>
-        <h3 className="mt-1 text-lg font-bold text-ink">{d.title}</h3>
-        <ul className="mt-3 space-y-1.5 text-sm text-body">{d.lines.map((l) => <li key={l}>{l}</li>)}</ul>
-      </article>
-    );
-  }
   return (
     <div className={clsx("flex flex-col items-center justify-center gap-3 rounded-xl bg-[#f7fbff] p-8 text-center", className)}>
       <FileText className="size-8 text-primary" aria-hidden />
       <p className="font-semibold text-ink">Không xem trước được định dạng này</p>
       <p className="text-sm text-muted">{file.name} · {fmtBytes(file.size)}</p>
-      <Button size="sm" icon={<Download className="size-4" />} onClick={() => downloadFileAsset(file)}>Tải xuống</Button>
+      {downloadError&&<p role="alert" className="text-sm text-danger-text">{downloadError}</p>}
+      <Button size="sm" icon={<Download className="size-4" />} onClick={async() => {setDownloadError(null);try{await downloadFileAsset(file);}catch(error){setDownloadError(errorMessage(error));}}}>Tải xuống</Button>
     </div>
   );
 }

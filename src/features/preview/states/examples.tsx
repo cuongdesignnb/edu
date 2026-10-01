@@ -2,8 +2,8 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { RefreshCw, UserX, MailX, Archive, Clock3, Trash2, ExternalLink, FileWarning } from "lucide-react";
-import { parentRepo } from "@/lib/repositories";
-import { useRepo, useSession } from "@/lib/query/hooks";
+import { parentRepo } from "@/lib/repositories/demo-index";
+import { useRepo, useSession } from "@/lib/query/demo-hooks";
 import { setScenario } from "@/lib/demo/scenario";
 import { attendanceStatus, matches, studentStatus } from "@/lib/formatters";
 import { registryById } from "@/lib/routing/registry";

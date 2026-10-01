@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, CalendarCheck, MapPin, CalendarDays } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
 import { useRepo, useCtx } from "@/lib/query/hooks";
-import { addDays, mondayOf, weekdayOf } from "@/lib/demo/clock";
+import { addDays, mondayOf, weekdayOf } from "@/lib/calendar";
 import { PERIODS } from "@/lib/domain/timetable";
 import { fmtDate, fmtDayMonth, weekdayLabel } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";

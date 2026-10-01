@@ -18,8 +18,8 @@ for(const screen of progress.screens){
 }
 await fs.writeFile(filename,JSON.stringify(progress,null,2)+'\n');
 const rows=progress.operations.map(op=>`| ${op.operationId} | ${op.screenIds.join(', ')} | ${op.status} | ${op.evidence.join('; ')} |`).join('\n');
-const screens=progress.screens.map(s=>`| ${s.screenId} | ${s.scope} | ${s.apiStatus??'NOT_REQUIRED'} | ${s.status} | ${s.staticReason} |`).join('\n');
+const screens=progress.screens.map(s=>`| ${s.screenId} | ${s.scope} | ${s.apiStatus??'NOT_REQUIRED'} | ${s.status} | ${s.staticReason} | ${s.evidence.join('; ')} |`).join('\n');
 await fs.writeFile(path.join(root,'docs/backend-progress.md'),'# Backend operation and screen progress\n\nBaseline `14dfad5`. UI status is separate from API evidence.\n\n'
   +'| operationId | screenId | Status | Evidence |\n|---|---|---|---|\n'+rows+'\n\n'
-  +'| screenId | Scope | API status | UI status | Static mapping |\n|---|---|---|---|---|\n'+screens+'\n');
+  +'| screenId | Scope | API status | UI status | Static mapping | UI evidence |\n|---|---|---|---|---|---|\n'+screens+'\n');
 console.log(`Updated ${ids.length} operations; connected UI is still pending until B6 evidence.`);

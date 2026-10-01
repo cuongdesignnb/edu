@@ -1,8 +1,8 @@
 "use client";
 import { useState, type ReactNode } from "react";
 import { Plus, Pencil, Archive, Search, Mail, Save, Trash2, X } from "lucide-react";
-import { schoolRepo, studentsRepo } from "@/lib/repositories";
-import { useRepo } from "@/lib/query/hooks";
+import { schoolRepo, studentsRepo } from "@/lib/repositories/demo-index";
+import { useRepo } from "@/lib/query/demo-hooks";
 import { fmtBytes } from "@/lib/formatters";
 import { Button, IconButton } from "@/components/ui/button";
 import { ActionMenu } from "@/components/ui/menu";
@@ -13,7 +13,7 @@ import { FileDropzone } from "@/components/ui/file";
 import { FilterBar } from "@/components/data/table";
 import { useToast } from "@/components/ui/toast";
 import { RichTextEditor, AudienceSelector } from "@/features/announcements/composer";
-import { announcementsRepo } from "@/lib/repositories";
+import { announcementsRepo } from "@/lib/repositories/demo-index";
 import type { BodyBlock } from "@/features/announcements/body";
 import { NeedPersona, Frame } from "./common";
 

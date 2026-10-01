@@ -1,6 +1,6 @@
 "use client";
 import { History } from "lucide-react";
-import { teacherExtraRepo } from "@/lib/repositories/teacher-extra";
+import { teacherExtraRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { attendanceStatus, fmtDateLong, fmtDateTime, fmtPoints } from "@/lib/formatters";
 import { Drawer } from "@/components/ui/dialog";

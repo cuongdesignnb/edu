@@ -6,8 +6,8 @@ import { schoolStatus } from "@/lib/formatters";
 import { ConfirmDialog } from "@/components/ui/dialog";
 
 /** O01 — change school status. Suspending never deletes data; platform-only. */
-export function SchoolStatusDialog({ target, onClose }: { target: { id: string; name: string; to: SchoolStatus } | null; onClose: () => void }) {
-  const cmd = useCommand((ctx, id: string, to: SchoolStatus, reason: string) => platformRepo.changeSchoolStatus(ctx, id, to, reason), {
+export function SchoolStatusDialog({ target, onClose }: { target: { id: string; name: string; version: number; to: SchoolStatus } | null; onClose: () => void }) {
+  const cmd = useCommand((ctx, id: string, to: SchoolStatus, reason: string) => platformRepo.changeSchoolStatus(ctx, id, to, reason, target?.version), {
     success: (s) => `${s.name}: ${schoolStatus[s.status].label}`, onSuccess: onClose,
   });
   if (!target) return null;
@@ -20,7 +20,7 @@ export function SchoolStatusDialog({ target, onClose }: { target: { id: string; 
   const t = text[target.to];
   return (
     <ConfirmDialog open onOpenChange={(o) => !o && onClose()} title={t.title} object={target.name} consequence={t.consequence} confirmLabel={t.label} variant={t.variant}
-      reasonLabel="Lý do" reasonRequired={target.to !== "active"} busy={cmd.pending} error={cmd.error?.code === "VALIDATION" ? cmd.error.message : undefined}
+      reasonLabel="Lý do" reasonRequired busy={cmd.pending} error={cmd.error?.message}
       onConfirm={(reason) => cmd.run(target.id, target.to, reason)} />
   );
 }

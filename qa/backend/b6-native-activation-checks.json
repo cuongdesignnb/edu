@@ -1,0 +1,66 @@
+{
+  "phase": "B6 account/platform native root activation; not full acceptance",
+  "backendProductionChanged": false,
+  "checks": {
+    "frontendTypecheck": {
+      "exitCode": 0,
+      "log": "b6-native-activation-typecheck-final.log"
+    },
+    "frontendBuild": {
+      "exitCode": 0,
+      "log": "b6-native-activation-build-final.log"
+    },
+    "frontendLint": {
+      "exitCode": 0,
+      "sourceWarnings": 3,
+      "log": "b6-native-activation-lint-final.log"
+    },
+    "backendScriptLint": {
+      "exitCode": 0,
+      "log": "b6-native-activation-backend-script-lint.log"
+    },
+    "nativeRunnerLint": {
+      "exitCode": 0,
+      "log": "b6-native-activation-runner-lint.log"
+    },
+    "frontendApiUnit": {
+      "passed": 167,
+      "total": 167,
+      "files": 22,
+      "exitCode": 0
+    },
+    "frontendAllUnit": {
+      "passed": 208,
+      "total": 208,
+      "historicalSyntheticCases": 41,
+      "exitCode": 0
+    },
+    "backendUnitContract": {
+      "passed": 27,
+      "total": 27,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    "browserContract": {
+      "passed": 7,
+      "total": 7,
+      "interceptedApi": true,
+      "postgreSqlE2E": false,
+      "exitCode": 0
+    }
+  },
+  "operations": {
+    "TESTED": 287,
+    "IMPLEMENTED": 12
+  },
+  "coreScreenSourceStates": {
+    "IMPLEMENTED": 19,
+    "STATIC_UNVERIFIED": 3,
+    "NOT_STARTED": 96
+  },
+  "activatedCandidates": 39,
+  "activatedLegacyMethods": 36,
+  "legacyMethods": 231,
+  "fullGoalComplete": false,
+  "productionDeployed": false
+}

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, Save, Send, CalendarClock, Info } from "lucide-react";
 import type { LessonChange } from "@/lib/model/types";
 import { classroomRepo, type RepoError } from "@/lib/repositories";
-import { schoolOpsRepo } from "@/lib/repositories/school-ops-extra";
+import { schoolOpsRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDateLong } from "@/lib/formatters";
 import { PERIODS } from "@/lib/domain/timetable";

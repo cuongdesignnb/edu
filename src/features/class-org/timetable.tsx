@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, CalendarDays, AlertTriangle, Send, Trash2, L
 import type { LessonChange } from "@/lib/model/types";
 import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
-import { addDays, mondayOf, weekdayOf } from "@/lib/demo/clock";
+import { addDays, mondayOf, weekdayOf } from "@/lib/calendar";
 import { PERIODS } from "@/lib/domain/timetable";
 import { fmtDate, fmtDateLong, fmtDayMonth, weekdayLabel } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, Clock3, Ban, UserRoundCheck, Building2, ArrowRight, Info, MailX } from "lucide-react";
-import { sessionRepo } from "@/lib/repositories";
+import { sessionRepo,passwordErrors } from "@/lib/repositories";
 import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
 import { fmtDateTime, invitationStatus, schoolStatus } from "@/lib/formatters";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -13,39 +13,38 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { SchoolMark } from "@/components/ui/avatar";
 import { EmptyState, QueryState } from "@/components/ui/states";
 
+import {PasswordField,PasswordRules} from "./password-field";
+import {ErrorSummary} from "@/components/ui/form";
+
 type Data = Awaited<ReturnType<typeof sessionRepo.invitation>>;
 
 /** AU04 — accept/decline a staff invitation; handles accepted/expired/revoked/declined (ST12). */
 export function InvitationView({ inviteId }: { inviteId: string }) {
-  const q = useRepo(["invitation", inviteId], (ctx) => sessionRepo.invitation(ctx, inviteId));
-  return <QueryState query={q} skeleton="none">{(d) => <InvitationBody d={d} />}</QueryState>;
+  const [response,setResponse]=useState<{accepted:boolean;userId?:string}|null>(null);
+  const q = useRepo(["invitation", inviteId], (ctx) => sessionRepo.invitation(ctx, inviteId), {enabled:!response});
+  const router=useRouter(),{signIn}=useSession();
+  if(response)return <EmptyState icon={response.accepted?<CheckCircle2 className="size-6" />:<MailX className="size-6" />} title={response.accepted?"Bạn đã trở thành thành viên của trường":"Đã từ chối lời mời"}
+    description={response.accepted?"Phân công lớp/môn cụ thể do nhà trường thực hiện sau.":"Tài khoản và các trường khác của bạn được giữ nguyên."}
+    action={response.accepted&&response.userId?<Button variant="primary" onClick={()=>{signIn({kind:'staff',userId:response.userId!},'invitation');router.push('/choose-school');}}>Vào không gian</Button>:<ButtonLink href="/login" variant={response.accepted?'primary':'secondary'}>{response.accepted?'Đăng nhập để tiếp tục':'Về đăng nhập'}</ButtonLink>} />;
+  return <QueryState query={q} skeleton="none">{(d) => <InvitationBody d={d} onResponse={setResponse} />}</QueryState>;
 }
 
-function InvitationBody({ d }: { d: Data }) {
+function InvitationBody({ d,onResponse }: { d: Data;onResponse:(response:{accepted:boolean;userId?:string})=>void }) {
   const { invitation: inv, school, inviterName, existingUser } = d;
-  const router = useRouter();
-  const { signIn } = useSession();
   const [fullName, setFullName] = useState(inv.fullName);
   const [nameError, setNameError] = useState<string>();
   const [declineOpen, setDeclineOpen] = useState(false);
-  const [acceptedUser, setAcceptedUser] = useState<string | null>(null);
-  const [entering, setEntering] = useState(false);
-  const accept = useCommand((ctx, name?: string) => sessionRepo.respondInvitation(ctx, inv.id, true, name), { success: `Đã chấp nhận lời mời của ${school.name}` });
-  const decline = useCommand((ctx) => sessionRepo.respondInvitation(ctx, inv.id, false), { success: "Đã từ chối lời mời", onSuccess: () => setDeclineOpen(false) });
-  const isAdminInvite = inv.roleTemplateIds.some((r) => r.endsWith("-role-admin"));
+  const [password,setPassword]=useState(""),[confirm,setConfirm]=useState(""),[errors,setErrors]=useState<Record<string,string>>({});
+  const accept = useCommand((ctx, name?: string, newPassword?:string) => sessionRepo.respondInvitation(ctx, inv.id, true, name, newPassword), {changesAuthentication:true,success:`Đã chấp nhận lời mời của ${school.name}`,onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+  const decline = useCommand((ctx) => sessionRepo.respondInvitation(ctx, inv.id, false), { success: "Đã từ chối lời mời", onSuccess: r => {setDeclineOpen(false);onResponse(r);} });
+  const isAdminInvite=inv.roleCodes.includes("SCHOOL_ADMIN");
 
   const onAccept = async () => {
     if (!existingUser && fullName.trim().length < 3) { setNameError("Họ tên tối thiểu 3 ký tự"); return; }
     setNameError(undefined);
-    const r = await accept.run(existingUser ? undefined : fullName);
-    if (r?.userId) setAcceptedUser(r.userId);
-  };
-
-  const enter = () => {
-    if (!acceptedUser) return;
-    setEntering(true);
-    signIn({ kind: "staff", userId: acceptedUser }, "invitation");
-    router.push("/choose-school");
+    if(!existingUser){const validation=passwordErrors(password,confirm);setErrors(validation);if(Object.keys(validation).length)return;}
+    const r=await accept.run(existingUser?undefined:fullName,existingUser?undefined:password);
+    if(r?.accepted){setPassword("");setConfirm("");onResponse(r);}
   };
 
   const header = (
@@ -70,16 +69,6 @@ function InvitationBody({ d }: { d: Data }) {
     </dl>
   );
 
-  if (acceptedUser) {
-    return (
-      <div className="space-y-4">
-        {header}
-        <EmptyState icon={<CheckCircle2 className="size-6" />} title="Bạn đã trở thành thành viên của trường"
-          description={<>Phân công lớp/môn cụ thể do nhà trường thực hiện sau. Nếu chưa được phân công, không gian sẽ hiển thị “Chưa được phân công”.</>}
-          action={<Button variant="primary" loading={entering} iconRight={<ArrowRight className="size-4" />} onClick={enter}>Vào không gian (demo)</Button>} />
-      </div>
-    );
-  }
 
   if (inv.status !== "pending") {
     const map = {
@@ -102,6 +91,7 @@ function InvitationBody({ d }: { d: Data }) {
     <div className="space-y-4">
       {header}
       {details}
+      <ErrorSummary errors={errors} labels={{form:"Lời mời",newPassword:"Mật khẩu mới",password:"Mật khẩu mới",confirm:"Nhập lại mật khẩu"}} />
       {existingUser ? (
         <Callout tone="info" icon={<UserRoundCheck />} title="Bạn đã có danh tính EduManage">
           Tài khoản <b>{existingUser.email}</b> ({existingUser.fullName}) đã tồn tại. Chấp nhận chỉ thêm thành viên tại {school.name}; không đổi mật khẩu, không thay đổi quyền hay dữ liệu ở trường khác.
@@ -110,16 +100,19 @@ function InvitationBody({ d }: { d: Data }) {
         <>
           <Callout tone="neutral" icon={<Info />}>Đây là lời mời cho nhân sự mới. Xác nhận họ tên hiển thị; nhà trường sẽ phân công lớp/môn sau khi bạn chấp nhận.</Callout>
           <TextField label="Họ và tên hiển thị" required value={fullName} onChange={(e) => setFullName(e.target.value)} error={nameError} autoComplete="name" />
+          <PasswordField id="invite-password" label="Mật khẩu mới" required value={password} onChange={e=>setPassword(e.target.value)} error={errors.password??errors.newPassword} autoComplete="new-password" />
+          <PasswordRules value={password} />
+          <PasswordField id="invite-confirm" label="Nhập lại mật khẩu mới" required value={confirm} onChange={e=>setConfirm(e.target.value)} error={errors.confirm} autoComplete="new-password" />
         </>
       )}
       {school.status !== "active" && (
         <Callout tone="warning" icon={<Building2 />}>Trường đang ở trạng thái “{schoolStatus[school.status].label}”. Sau khi chấp nhận, bạn chỉ làm việc được khi nền tảng kích hoạt trường.</Callout>
       )}
       <div className="flex flex-wrap gap-2">
-        <Button variant="primary" loading={accept.pending} icon={<CheckCircle2 className="size-4" />} onClick={onAccept}>Chấp nhận lời mời</Button>
+        <Button variant="primary" loading={accept.pending} disabled={!!existingUser&&!d.signedInAsInvited} icon={<CheckCircle2 className="size-4" />} onClick={onAccept}>Chấp nhận lời mời</Button>
         <Button variant="secondary" icon={<XCircle className="size-4" />} onClick={() => setDeclineOpen(true)} disabled={accept.pending}>Từ chối</Button>
       </div>
-      <p className="text-[12.5px] text-muted">Mô phỏng: lời mời chỉ là đường dẫn demo, không có email thật và không có xác thực thật.</p>
+      {existingUser&&!d.signedInAsInvited&&<Callout tone="warning" title="Đăng nhập đúng danh tính được mời" action={<ButtonLink href="/login">Đăng nhập</ButtonLink>}>Bạn cần đăng nhập bằng {existingUser.email}, sau đó quay lại đường dẫn lời mời.</Callout>}
       <ConfirmDialog open={declineOpen} onOpenChange={setDeclineOpen} title="Từ chối lời mời" object={`${school.name} — ${inv.proposedDuty}`}
         consequence="Lời mời sẽ không dùng được nữa. Tài khoản và các trường khác của bạn (nếu có) không bị ảnh hưởng." confirmLabel="Từ chối lời mời" variant="danger"
         busy={decline.pending} onConfirm={() => decline.run()} />

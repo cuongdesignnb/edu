@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Upload, Download, FileSpreadsheet, FileText, GraduationCap, Users, School as SchoolIcon, CalendarDays, History, CheckCircle2, RefreshCw, SkipForward, AlertTriangle, XCircle, Info, ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 import { schoolRepo, studentsRepo } from "@/lib/repositories";
-import { studentsExtraRepo, type ImportKind, type ImportKindInfo } from "@/lib/repositories/students-extra";
+import { studentsExtraRepo, type ImportKind, type ImportKindInfo } from "@/lib/repositories";
 import type { ImportRowInput } from "@/lib/repositories/students";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDateTime, fmtNumber, fold } from "@/lib/formatters";

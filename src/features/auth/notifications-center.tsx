@@ -7,7 +7,7 @@ import type { StaffNotification } from "@/lib/model/types";
 import { sessionRepo } from "@/lib/repositories";
 import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
 import { fmtDateTime, fmtRelative } from "@/lib/formatters";
-import { demoNowISO } from "@/lib/demo/clock";
+import { demoNowISO } from "@/lib/calendar";
 import { PageHeader } from "@/components/layout/page";
 import { Card, Callout } from "@/components/ui/card";
 import { Button, ButtonLink } from "@/components/ui/button";

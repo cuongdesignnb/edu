@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 import { ArrowLeft, ArrowRight, CheckCircle2, RefreshCw, History, Info, ClipboardList } from "lucide-react";
 import { schoolRepo, staffRepo } from "@/lib/repositories";
-import { schoolOrgRepo } from "@/lib/repositories/school-org-extra";
+import { schoolOrgRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool, SchoolYearBar } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
@@ -18,7 +18,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { Timeline } from "@/components/ui/timeline";
 import { DeniedState, EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 import { useUnsavedChanges } from "@/components/ui/guards";
-import { addDays } from "@/lib/demo/clock";
+import { addDays } from "@/lib/calendar";
 import { fmtDate } from "@/lib/formatters";
 import { FormError, useFormErrors } from "./common";
 

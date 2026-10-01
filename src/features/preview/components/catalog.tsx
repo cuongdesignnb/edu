@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Palette, Keyboard, Smartphone, Component as ComponentIcon, Info, UserCog } from "lucide-react";
 import { matches } from "@/lib/formatters";
-import { useSession } from "@/lib/query/hooks";
+import { useSession } from "@/lib/query/demo-hooks";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

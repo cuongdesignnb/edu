@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/query/hooks";
 import { PageSkeleton } from "@/components/ui/states";
-import { IS_DEMO } from "@/lib/demo/session";
+import { IS_DEMO } from "@/lib/data-mode";
 
 /** Root: route to the right workspace for the current demo session. */
 export default function Home() {

@@ -1292,3 +1292,36 @@ acknowledgement and retains the same key for a manual retry after acknowledgemen
 loss. These two workflow extensions leave existing operation/schema definitions
 intact. Their test evidence is recorded separately; UI activation and B7 remain
 pending. No parent account, parent link secret or extra business domain is added.
+
+## ADR-055 — Activate the native root in explicit domain phases
+
+The production application now imports a connected facade and native cookie/query
+provider. Legacy repository interfaces are compile-time types only. A missing
+method rejects with READ_ERROR; it does not import or invoke a legacy source.
+Pure formatting/rule metadata is separate from storage. Runtime dependency
+traversal of every app route rejects fixture, demo-session, IndexedDB and legacy
+repository dependencies. Design lab routes are disabled and optional academic
+results preview stays OFF. Historical synthetic regressions explicitly import
+the separate demo facade and cannot certify native behavior.
+
+This first activation phase exposes account and platform methods only. The
+inventory derives activation from actual facade arguments rather than assigning
+every candidate activated=true. Its 39 activated candidates match 36 of the 231
+old methods. Other domains remain unavailable, including the parent viewId/CSRF
+projection and native file pipeline. Audit reads are connected but exports wait
+for the server job path. These gaps are explicit B6 work, not accepted features.
+
+Commands keep their reviewed source versions. Dirty forms survive background
+refresh; an explicit conflict reload replaces the reviewed snapshot. Native
+authentication mutations validate the semantic acknowledgement before consuming
+an email credential, dropping the intent key, clearing a session or showing a
+terminal result. Terminal invitation/password-reset UI is outside the transient
+query payload, so invalidation cannot turn an acknowledged command into a missing
+link error. New identities receive no fabricated client session. Unknown totals,
+permission-separated panels and nullable own contact values remain explicit.
+
+Parent link intake removes the fragment and keeps it in memory without browser
+storage or raw-token query keys. This is transitional intake, not a native portal
+session or parent acceptance claim. Seven intercepted-response browser contract
+checks and API units are separate from the pending real PostgreSQL browser E2E,
+multi-tab, Docker restart, physical backup/restore and release-load gates.

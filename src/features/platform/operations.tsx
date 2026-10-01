@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Activity, DatabaseBackup, ListChecks, RefreshCw, HardDrive, CheckCircle2, AlertTriangle, Wrench, RotateCcw, ArrowRight, FlaskConical } from "lucide-react";
-import { platformExtraRepo, type ServiceState } from "@/lib/repositories/platform-extra";
+import { platformExtraRepo, type ServiceState } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDateTime, fmtNumber } from "@/lib/formatters";
 import type { StatusLabel } from "@/lib/formatters";
@@ -14,8 +14,8 @@ import { Modal } from "@/components/ui/dialog";
 import { QueryState } from "@/components/ui/states";
 
 const STATE: Record<ServiceState, StatusLabel> = {
-  operational: { label: "Hoạt động (mô phỏng)", tone: "success" },
-  degraded: { label: "Hạn chế (mô phỏng)", tone: "warning" },
+  operational: { label: "Hoạt động", tone: "success" },
+  degraded: { label: "Hạn chế", tone: "warning" },
   maintenance: { label: "Chưa kết nối", tone: "neutral" },
 };
 
@@ -30,8 +30,8 @@ export function Operations() {
           <PageHeader title="Tình trạng vận hành" subtitle="Trạng thái dịch vụ, sao lưu và checklist vận hành" badge={<DemoTag>Mô phỏng</DemoTag>}
             breadcrumbs={[{ label: "Tổng quan", href: "/platform" }, { label: "Tình trạng vận hành" }]}
             actions={<Button icon={<RefreshCw className="size-4" />} loading={q.isFetching} onClick={() => q.refetch()}>Kiểm tra lại</Button>} />
-          <Callout tone="warning" icon={<FlaskConical />} title="Số liệu dịch vụ và sao lưu là mô phỏng">
-            Bản demo chạy hoàn toàn trên trình duyệt: không có máy chủ, không có sao lưu hay khôi phục thật. Checklist bên dưới được tính từ dữ liệu demo hiện tại. Lần kiểm tra: {fmtDateTime(d.checkedAt)}.
+          <Callout tone="warning" icon={<FlaskConical />} title="Kết quả kiểm tra trên máy chủ">
+            Các trạng thái bên dưới phản ánh lần kiểm tra thực tế. Sao lưu chỉ được ghi hoàn tất sau khi công việc trên máy chủ thành công. Lần kiểm tra: {fmtDateTime(d.checkedAt)}.
           </Callout>
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
             <Card>
@@ -54,8 +54,8 @@ export function Operations() {
               <ul className="space-y-2.5 px-5">
                 {d.backups.map((b) => (
                   <li key={b.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-line px-3.5 py-2.5 text-sm">
-                    <span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{b.kind === "weekly" ? "Bản tuần" : "Bản ngày"} — {fmtDateTime(b.at)}</span><span className="block text-[12.5px] text-muted">{b.retention}</span></span>
-                    <StatusBadge status="sim" map={{ sim: { label: "Mô phỏng hoàn tất", tone: "neutral" } }} />
+                    <span className="min-w-0 flex-1"><span className="block font-semibold text-ink">{b.kind} — {fmtDateTime(b.at)}</span><span className="block text-[12.5px] text-muted">{b.finishedAt ? `Hoàn tất: ${fmtDateTime(b.finishedAt)}` : "Chưa hoàn tất"}</span></span>
+                    <StatusBadge status={b.state} map={{queued:{label:"Đang chờ",tone:"neutral"},running:{label:"Đang chạy",tone:"info"},succeeded:{label:"Hoàn tất",tone:"success"},failed:{label:"Thất bại",tone:"danger"}}} />
                   </li>
                 ))}
               </ul>
@@ -67,7 +67,7 @@ export function Operations() {
           </div>
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
             <Card>
-              <CardHeader title="Checklist vận hành" icon={<ListChecks className="size-5" />} subtitle="Tính từ dữ liệu demo hiện tại" />
+              <CardHeader title="Checklist vận hành" icon={<ListChecks className="size-5" />} subtitle="Tính từ dữ liệu máy chủ" />
               <ul className="divide-y divide-line border-t border-line">
                 {d.checklist.map((c) => (
                   <li key={c.key} className="flex items-start gap-3 px-5 py-3.5">
@@ -82,22 +82,22 @@ export function Operations() {
               </ul>
             </Card>
             <Card>
-              <CardHeader title="Kho dữ liệu demo" icon={<HardDrive className="size-5" />} subtitle="Thông tin thật của bản demo trên trình duyệt này" />
+              <CardHeader title="Cơ sở dữ liệu" icon={<HardDrive className="size-5" />} subtitle="Thông tin lần kiểm tra trên máy chủ" />
               <dl className="divide-y divide-line px-5 pb-5">
                 <InfoRow label="Lược đồ">{d.store.schema}</InfoRow>
-                <InfoRow label="Khởi tạo lúc">{fmtDateTime(d.store.seededAt)}</InfoRow>
-                <InfoRow label="Số lần ghi">{fmtNumber(d.store.revision)}</InfoRow>
+                <InfoRow label="Khởi tạo lúc">{fmtDateTime(d.store.migratedAt)}</InfoRow>
+                <InfoRow label="Số migration">{fmtNumber(d.store.migrations)}</InfoRow>
                 <InfoRow label="Trường · người dùng">{fmtNumber(d.store.schools)} · {fmtNumber(d.store.users)}</InfoRow>
                 <InfoRow label="Sự kiện nhật ký">{fmtNumber(d.store.auditEvents)}</InfoRow>
               </dl>
             </Card>
           </div>
-          <Modal open={!!explain} onOpenChange={(o) => !o && setExplain(null)} size="sm" title={explain === "restore" ? "Khôi phục chưa khả dụng trong bản demo" : "Sao lưu chưa khả dụng trong bản demo"}
+          <Modal open={!!explain} onOpenChange={(o) => !o && setExplain(null)} size="sm" title={explain === "restore" ? "Quy trình khôi phục" : "Quy trình sao lưu"}
             footer={<Button variant="primary" onClick={() => setExplain(null)}>Đã hiểu</Button>}>
             <div className="space-y-3 text-sm text-body">
-              <p className="flex gap-2.5"><Wrench className="mt-0.5 size-4 flex-none text-primary" aria-hidden />Bản demo không có máy chủ, nên không có gì để {explain === "restore" ? "khôi phục" : "sao lưu"}. Nút này không thực hiện thao tác nào.</p>
-              <p>Quy trình dự kiến khi có backend: sao lưu tự động theo lịch; khôi phục chỉ thực hiện khi có yêu cầu bằng văn bản, được nhà trường ủy quyền, ghi nhật ký và kiểm tra lại dữ liệu sau khôi phục.</p>
-              <p className="text-muted">Muốn làm mới dữ liệu demo trên trình duyệt, dùng “Đặt lại demo” trong trang chọn vai trò.</p>
+              <p className="flex gap-2.5"><Wrench className="mt-0.5 size-4 flex-none text-primary" aria-hidden />Thao tác này được thực hiện qua quy trình vận hành đã phê duyệt. Màn hình hiện tại chỉ hiển thị kết quả công việc.</p>
+              <p>Quy trình vận hành: sao lưu tự động theo lịch; khôi phục chỉ thực hiện khi có yêu cầu bằng văn bản, được nhà trường ủy quyền, ghi nhật ký và kiểm tra lại dữ liệu sau khôi phục.</p>
+
             </div>
           </Modal>
         </div>

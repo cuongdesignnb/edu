@@ -12,7 +12,7 @@ import {useNativeConnection} from './native-provider';
 
 export function useNativeSession(){
   const session=useSyncExternalStore(onStaffSessionChange,readStaffSession,()=>null);
-  return {session,actor:session?.actor??{kind:'anonymous' as const},signIn:adoptAuthenticatedSession,signOut:logoutStaff};
+  return {session,actor:session?.actor??{kind:'anonymous' as const},signIn:adoptAuthenticatedSession,signOut:logoutStaff,expire:logoutStaff};
 }
 /** The render owns this context; a delayed callback cannot adopt a newer identity. */
 export function useNativeCtx(schoolId?:string):Ctx{

@@ -25,7 +25,7 @@ export function AuthFrame({ title, subtitle, children, aside, wide }: { title: R
             <Link href="/help" className="hover:text-primary-strong">Hướng dẫn sử dụng</Link>
             <Link href="/privacy" className="hover:text-primary-strong">Quyền riêng tư</Link>
             <Link href="/terms" className="hover:text-primary-strong">Điều kiện sử dụng</Link>
-            <Link href="/demo" className="hover:text-primary-strong">Chọn vai trò demo</Link>
+
           </nav>
         </main>
       </div>
@@ -49,7 +49,7 @@ function AuthAside({ children }: { children?: ReactNode }) {
           <li className="hidden gap-2.5 sm:flex"><span className="icon-tile icon-tile-sm tone-purple !size-8" aria-hidden><ShieldCheck className="size-4" /></span><span>Phụ huynh không cần tài khoản: xem thông tin của con qua đường dẫn riêng.</span></li>
         </ul>
         {children}
-        <p className="mt-4 flex items-start gap-2 rounded-xl bg-warning-bg px-3 py-2 text-[12.5px] text-warning-text"><FlaskConical className="mt-0.5 size-3.5 flex-none" aria-hidden />Mô phỏng — không xác thực thật. Bản demo không gửi email và không lưu mật khẩu bạn nhập.</p>
+        <p className="mt-4 text-[12.5px] text-muted">Tài khoản nhân sự do nhà trường mời. Phụ huynh xem qua đường dẫn riêng.</p>
       </div>
     </aside>
   );

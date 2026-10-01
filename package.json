@@ -2,7 +2,7 @@
   "name": "edumanage-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "EduManage — frontend demo (mock data only, no backend)",
+  "description": "EduManage — PostgreSQL/API integration in progress",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:ui-contract": "node scripts/run-native-ui-contract.mjs",
     "progress": "node scripts/gen-progress.mjs"
   },
   "dependencies": {

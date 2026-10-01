@@ -1,26 +1,26 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2, Lock, ShieldCheck } from "lucide-react";
 import { parentRepo, type RepoError } from "@/lib/repositories";
-import { writeParentToken } from "@/lib/demo/session";
+import { writeParentToken,parentCredential,consumeParentCredential } from "@/lib/api/parent-credential";
 import { unavailableReason } from "@/features/parent/shell";
 import { Brand } from "@/components/layout/brand";
+import {ErrorState} from "@/components/ui/states";
 
 /**
- * PA01 — open a private link. No login/registration form: the token is validated, stored for
- * this tab only, and removed from the address bar; failures go to PA14 with a reason only.
+ * PA01 — fragment credentials stay in this page's memory. No parent account.
  */
 export function ParentAccessView({ slug }: { slug: string }) {
   const router = useRouter();
-  const sp = useSearchParams();
-  const token = sp.get("t")?.trim() ?? "";
   const started = useRef(false);
   const [state, setState] = useState<"opening" | "done">("opening");
+  const [error,setError]=useState<RepoError|null>(null),[attempt,setAttempt]=useState(0);
 
   useEffect(() => {
     if (started.current) return;
     started.current = true;
+    const token=parentCredential(slug);
     if (!token) {
       writeParentToken(slug, null);
       setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=invalid`), 0);
@@ -29,15 +29,20 @@ export function ParentAccessView({ slug }: { slug: string }) {
     parentRepo.open({ token }, slug).then(
       () => {
         writeParentToken(slug, token);
+        consumeParentCredential(slug);
         setState("done");
         setTimeout(() => router.replace(`/p/${slug}/overview`), 0);
       },
       (e: RepoError) => {
         writeParentToken(slug, null);
-        setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=${unavailableReason(e) ?? "invalid"}`), 0);
+        const reason=unavailableReason(e);
+        if(reason)setTimeout(() => router.replace(`/p/${slug}/access-unavailable?reason=${reason}`), 0);
+        else setError(e);
       },
     );
-  }, [token, slug, router]);
+  }, [slug, router,attempt]);
+
+  if(error)return <div className="flex min-h-dvh items-center justify-center bg-app p-4"><div className="card w-full max-w-lg p-6"><ErrorState error={error} onRetry={()=>{started.current=false;setError(null);setAttempt(n=>n+1);}} /></div></div>;
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-app p-4">

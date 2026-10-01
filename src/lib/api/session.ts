@@ -14,6 +14,7 @@ onAuthenticationChanged(()=>{generation++;current=null;context=null;pending=null
 
 /** Advisory UI context stays in memory; the server authorizes the HttpOnly cookie on every request. */
 export function readStaffSession(){return current;}
+export function isExpired(value:StaffSession,now=serverNowISO()){return !!value.expiresAt&&Date.parse(value.expiresAt)<=Date.parse(now);}
 export function readStaffContext(){return context;}
 export function onStaffSessionChange(fn:()=>void){listeners.add(fn);return()=>{listeners.delete(fn);};}
 export function serverNowISO(){return new Date(Date.now()+offset).toISOString();}
@@ -49,7 +50,7 @@ export async function loginStaff(email:string,password:string){
   const value=await refreshStaffContext();return {userId:value.user.id!,isPlatform:value.platformActions.length>0};
 }
 export async function logoutStaff(){
-  await http('logout');authenticationChanged();announce();
+  await http('logout',{validateData:value=>!!value?.id&&value.status==='REVOKED'});authenticationChanged();announce();
 }
 /** Compatibility with existing navigation: this cannot create a session or select an arbitrary actor. */
 export function adoptAuthenticatedSession(actor:Actor,via:StaffSession['via']='login'){
@@ -57,7 +58,8 @@ export function adoptAuthenticatedSession(actor:Actor,via:StaffSession['via']='l
   current={...current,via};emit();
 }
 export async function changeStaffPassword(currentPassword:string,newPassword:string){
-  await http('changePassword',{body:{currentPassword,newPassword}});authenticationChanged();announce();
+  const userId=context?.user.id;
+  await http('changePassword',{body:{currentPassword,newPassword},validateData:value=>!!value?.id&&value.status==='COMPLETED'&&(!userId||value.id===userId)});authenticationChanged();announce();
 }
 export function watchStaffAuthentication(refresh:()=>void){
   if(typeof BroadcastChannel==='undefined')return()=>{};

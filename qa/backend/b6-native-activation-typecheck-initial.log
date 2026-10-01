@@ -1,0 +1,370 @@
+src/app/platform/page.tsx(64,20): error TS18047: 'd.recent' is possibly 'null'.
+src/components/layout/shells.tsx(106,43): error TS2345: Argument of type '() => { school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to parameter of type '() => SchoolCtx | null'.
+  Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; } | null' is not assignable to type 'SchoolCtx | null'.
+    Type '{ school: { id: string; name: string; code: string; slug: string; shortName: string; status: SchoolStatus; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; ... 10 more ...; onboarding: { ...; } | undefined; }; ... 6 more ...; currentYearId: string | undefined; }' is not assignable to type 'SchoolCtx'.
+      The types of 'school.level' are incompatible between these types.
+        Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+          Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/auth/reset-form.tsx(19,80): error TS2554: Expected 0 arguments, but got 1.
+src/features/auth/reset-form.tsx(22,15): error TS2367: This comparison appears to be unintentional because the types '"present" | "missing"' and '"valid"' have no overlap.
+src/features/auth/reset-form.tsx(22,76): error TS2339: Property 'expiresAt' does not exist on type '{ state: "present" | "missing"; }'.
+src/features/auth/security-panel.tsx(23,20): error TS2339: Property 'expire' does not exist on type '{ session: StaffSession | null; actor: Actor; signIn: (actor: Actor, via?: "invitation" | "login" | "demo") => void; signOut: () => Promise<void>; }'.
+src/features/class-org/roster.tsx(43,203): error TS2353: Object literal may only specify known properties, and 'placeholderData' does not exist in type 'ReadOptions<unknown>'.
+src/features/class-org/roster.tsx(43,221): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/features/class-org/roster.tsx(52,33): error TS2339: Property 'rows' does not exist on type '{}'.
+src/features/class-org/roster.tsx(96,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/features/class-org/roster.tsx(107,55): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/features/class-org/student-profile.tsx(30,29): error TS18047: 'p.links' is possibly 'null'.
+src/features/class-org/student-profile.tsx(40,55): error TS2339: Property 'avatarTone' does not exist on type '{ internalNote?: string | null | undefined; initialRelationship?: { id: string | null; version: number; createdAt: string; updatedAt: string; studentId: string | null; guardianId: string | null; ... 4 more ...; verifiedAt?: string | ... 1 more ... | undefined; } | undefined; ... 13 more ...; createdAt: string; }'.
+src/features/class-org/student-profile.tsx(47,26): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(47,92): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/class-org/student-profile.tsx(56,57): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(56,78): error TS18047: 'p.positions' is possibly 'null'.
+src/features/class-org/student-profile.tsx(56,101): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/class-org/student-profile.tsx(101,74): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/class-org/student-profile.tsx(101,93): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/class-org/student-profile.tsx(113,22): error TS18047: 'p.relationships' is possibly 'null'.
+src/features/class-org/student-profile.tsx(115,26): error TS18047: 'p.relationships' is possibly 'null'.
+src/features/class-org/student-profile.tsx(119,62): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<VerificationStatus, StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<VerificationStatus, StatusLabel>'.
+src/features/class-org/student-profile.tsx(119,146): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<VerificationStatus, StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<VerificationStatus, StatusLabel>'.
+src/features/class-org/student-profile.tsx(131,22): error TS18047: 'p.links' is possibly 'null'.
+src/features/class-org/student-profile.tsx(133,26): error TS18047: 'p.links' is possibly 'null'.
+src/features/platform/audit-log.tsx(90,75): error TS2322: Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }[]' is not assignable to type 'Row[]'.
+  Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }' is not assignable to type 'Row'.
+    Type '{ id: string; level: "platform"; actorId: string | undefined; actorName: string; action: string; operationId: string; entityType: string; entityId: string | undefined; entityLabel: string; at: string; reason: string | undefined; before: { ...; } | undefined; after: { ...; } | undefined; }' is not assignable to type 'AuditEvent'.
+      Types of property 'actorId' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+src/features/platform/invite-admin-dialog.tsx(32,37): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/platform/operations.tsx(5,34): error TS2305: Module '"@/lib/repositories"' has no exported member 'ServiceState'.
+src/features/platform/operations.tsx(57,229): error TS2339: Property 'retention' does not exist on type '{ id: string; kind: string; state: "failed" | "queued" | "running" | "succeeded"; at: string; startedAt: string | undefined; finishedAt: string | undefined; summary: { [key: string]: unknown; } | undefined; }'.
+src/features/platform/operations.tsx(88,68): error TS2339: Property 'seededAt' does not exist on type '{ schema: string; migratedAt: string | null; migrations: number; schools: number; users: number; auditEvents: number; }'.
+src/features/platform/operations.tsx(89,64): error TS2339: Property 'revision' does not exist on type '{ schema: string; migratedAt: string | null; migrations: number; schools: number; users: number; auditEvents: number; }'.
+src/features/platform/school-admins.tsx(21,29): error TS2537: Type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "active" | "revoked" | "suspended"; since: string; }[] | null' has no matching index signature for type 'number'.
+src/features/platform/school-admins.tsx(22,32): error TS2537: Type '{ id: string; schoolId: string; email: string; fullName: string; version: number; createdAt: string; updatedAt: string; expiresAt: string; status: "expired" | "revoked" | "pending" | "accepted" | "declined"; }[] | null' has no matching index signature for type 'number'.
+src/features/platform/school-admins.tsx(36,18): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(39,64): error TS2554: Expected 3-5 arguments, but got 2.
+src/features/platform/school-admins.tsx(72,8): error TS18047: 'd.history' is possibly 'null'.
+src/features/platform/school-admins.tsx(73,8): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-admins.tsx(91,132): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(92,10): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-admins.tsx(93,77): error TS2322: Type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "active" | "revoked" | "suspended"; since: string; }[] | null' is not assignable to type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "active" | "revoked" | "suspended"; since: string; }[]'.
+  Type 'null' is not assignable to type '{ membershipId: string; userId: string; version: number; name: string; email: string; status: "active" | "revoked" | "suspended"; since: string; }[]'.
+src/features/platform/school-admins.tsx(98,10): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-admins.tsx(99,86): error TS2488: Type '{ id: string; schoolId: string; email: string; fullName: string; version: number; createdAt: string; updatedAt: string; expiresAt: string; status: "expired" | "revoked" | "pending" | "accepted" | "declined"; }[] | null' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/features/platform/school-profile.tsx(38,24): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(39,22): error TS18047: 'd.invitations' is possibly 'null'.
+src/features/platform/school-profile.tsx(40,32): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(o: { [s: string]: boolean; } | ArrayLike<boolean>): [string, boolean][]', gave the following error.
+    Argument of type '{ profileDone?: boolean | undefined; adminAssigned?: boolean | undefined; yearCreated?: boolean | undefined; classesCreated?: boolean | undefined; teachersInvited?: boolean | undefined; studentsImported?: boolean | undefined; homeroomAssigned?: boolean | undefined; rulesPublished?: boolean | undefined; } | undefined' is not assignable to parameter of type '{ [s: string]: boolean; } | ArrayLike<boolean>'.
+      Type 'undefined' is not assignable to type '{ [s: string]: boolean; } | ArrayLike<boolean>'.
+  Overload 2 of 2, '(o: {}): [string, any][]', gave the following error.
+    Argument of type '{ profileDone?: boolean | undefined; adminAssigned?: boolean | undefined; yearCreated?: boolean | undefined; classesCreated?: boolean | undefined; teachersInvited?: boolean | undefined; studentsImported?: boolean | undefined; homeroomAssigned?: boolean | undefined; rulesPublished?: boolean | undefined; } | undefined' is not assignable to parameter of type '{}'.
+      Type 'undefined' is not assignable to type '{}'.
+src/features/platform/school-profile.tsx(109,14): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(110,14): error TS18047: 'd.admins' is possibly 'null'.
+src/features/platform/school-profile.tsx(117,30): error TS18047: 'd.history' is possibly 'null'.
+src/features/platform/school-profile.tsx(122,65): error TS2322: Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+  Types of property 'level' are incompatible.
+    Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+      Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/platform/school-wizard.tsx(89,25): error TS2345: Argument of type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to parameter of type 'SetStateAction<School | null>'.
+  Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+    Types of property 'level' are incompatible.
+      Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+        Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/platform/school-wizard.tsx(200,15): error TS18047: 'd.data.invitations' is possibly 'null'.
+src/features/platform/support-grants.tsx(21,67): error TS2537: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }>' has no matching index signature for type 'number'.
+src/features/platform/support-grants.tsx(26,66): error TS2740: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }>' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+src/features/platform/support-grants.tsx(35,123): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/support-grants.tsx(43,127): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/support-grants.tsx(76,71): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/platform/ticket-detail.tsx(67,194): error TS2538: Type 'undefined' cannot be used as an index type.
+src/features/platform/ticket-detail.tsx(83,145): error TS2339: Property 'shortName' does not exist on type '{ id: string; name: string; status: "active" | "draft" | "suspended" | "archived"; }'.
+src/features/platform/ticket-detail.tsx(96,112): error TS2345: Argument of type '{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }' is not assignable to parameter of type 'SupportGrant'.
+  Types of property 'requestedBy' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/features/platform/tickets-table.tsx(31,223): error TS2339: Property 'updates' does not exist on type '{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; createdBy: string; ... 8 more ...; messageCount: number; }'.
+src/features/preview/components/ex-domain.tsx(62,135): error TS2739: Type '{ membership: Membership; user: { id: string; fullName: string; displayName: string; email: string; workPhone: string; avatarTone: "blue" | "green" | "amber" | "pink" | "purple"; }; ... 9 more ...; isSelf: boolean; }' is missing the following properties from type '{ membership: { id: string; schoolId: string; userId: string; version: number; staffCode: string | null; department: string | null; status: "active" | "revoked" | "suspended" | "invited"; ... 6 more ...; workDisplayName: string; }; ... 14 more ...; isSelf: boolean; }': schoolActionCodes, referenceDate, joinedOn, accessActive, canViewHistory
+src/features/school-ops/support.tsx(22,33): error TS2537: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }> | null' has no matching index signature for type 'number'.
+src/features/school-ops/support.tsx(23,35): error TS2537: Type 'Page<{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; createdBy: string; ... 8 more ...; messageCount: number; }>' has no matching index signature for type 'number'.
+src/features/school-ops/support.tsx(34,160): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/school-ops/support.tsx(52,65): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/school-ops/support.tsx(61,91): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/features/school-ops/support.tsx(108,43): error TS2339: Property 'filter' does not exist on type 'never[] | Page<{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; ... 9 more ...; messageCount: number; }>'.
+  Property 'filter' does not exist on type 'Page<{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; createdBy: string; ... 8 more ...; messageCount: number; }>'.
+src/features/school-ops/support.tsx(108,51): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/features/school-ops/support.tsx(109,59): error TS18046: 't' is of type 'unknown'.
+src/features/school-ops/support.tsx(109,70): error TS18046: 't' is of type 'unknown'.
+src/features/school-ops/support.tsx(109,80): error TS18046: 't' is of type 'unknown'.
+src/features/school-ops/support.tsx(112,86): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<"low" | "normal" | "high", { label: string; tone: "danger" | "info" | "neutral"; }>'.
+src/features/school-ops/support.tsx(112,114): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<"low" | "normal" | "high", { label: string; tone: "danger" | "info" | "neutral"; }>'.
+src/features/school-ops/support.tsx(131,124): error TS18046: 't' is of type 'unknown'.
+src/features/school-ops/support.tsx(131,207): error TS18046: 't' is of type 'unknown'.
+src/features/school-ops/support.tsx(132,34): error TS2339: Property 'length' does not exist on type 'Page<{ id: string; schoolId: string; title: string; body: string; status: "open" | "in_progress" | "waiting_school" | "resolved" | "closed"; priority: "low" | "normal" | "high"; createdBy: string; ... 8 more ...; messageCount: number; }>'.
+src/features/school-ops/support.tsx(137,50): error TS2322: Type 'Page<{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }> | null' is not assignable to type 'any[]'.
+  Type 'null' is not assignable to type 'any[]'.
+src/features/school-ops/support.tsx(193,64): error TS18047: 'data.grants' is possibly 'null'.
+src/features/school-ops/support.tsx(194,70): error TS2322: Type '{ id: string; schoolId: string; ticketId: string; operatorId: string; classId: string | undefined; version: number; scopes: SupportScope[]; allowedActions: string[]; reason: string; ... 11 more ...; revokedAt: string | undefined; }[] | null' is not assignable to type 'any[]'.
+  Type 'null' is not assignable to type 'any[]'.
+src/features/school-org/assign-drawer.tsx(38,155): error TS2345: Argument of type '{ membershipId: string; kind: "homeroom" | "subject"; classId: string; subjectId: string | undefined; }' is not assignable to parameter of type 'StaffAssignmentInput'.
+  Property 'validFrom' is missing in type '{ membershipId: string; kind: "homeroom" | "subject"; classId: string; subjectId: string | undefined; }' but required in type 'StaffAssignmentInput'.
+src/features/school-org/assign-drawer.tsx(57,19): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(59,19): error TS18048: 'opts.data.subjects' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(72,24): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/assign-drawer.tsx(81,26): error TS18048: 'opts.data.subjects' is possibly 'undefined'.
+src/features/school-org/calendar.tsx(75,108): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'SetStateAction<Term | null>'.
+  Type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to type 'Term'.
+    Types of property 'weekCount' are incompatible.
+      Type 'number | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/calendar.tsx(174,93): error TS2322: Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+  Type 'null' is not assignable to type 'boolean | undefined'.
+src/features/school-org/class-drawer.tsx(48,85): error TS2339: Property 'homeroomName' does not exist on type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassStatus; roomId: string | undefined; motto: string | undefined; version: number; }'.
+src/features/school-org/class-drawer.tsx(63,24): error TS2345: Argument of type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassRoom["status"]; roomId: string | undefined; motto: string | undefined; version: number; }' is not assignable to parameter of type 'ClassRow'.
+  Type '{ homeroomAssigned?: boolean | undefined; id: string; schoolId: string; yearId: string; gradeId: string; name: string; capacity: number; status: ClassStatus; roomId: string | undefined; motto: string | undefined; version: number; }' is missing the following properties from type 'ClassRow': yearLabel, gradeName, size, subjectTeacherCount, issues
+src/features/school-org/classes.tsx(93,52): error TS2322: Type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }[]' is not assignable to type 'ClassRow[]'.
+  Type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }' is not assignable to type 'ClassRow'.
+    Types of property 'size' are incompatible.
+      Type 'number | null' is not assignable to type 'number'.
+        Type 'null' is not assignable to type 'number'.
+src/features/school-org/dictionaries.tsx(42,63): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/dictionaries.tsx(43,67): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/dictionaries.tsx(44,61): error TS2322: Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }[]' is not assignable to type 'Item[]'.
+  Type '{ id: string; schoolId: string; code: string; name: string; status: "active" | "inactive"; version: number; inUse: boolean | undefined; level: number | null; color: string | undefined; capacity: number | null; }' is not assignable to type 'Item'.
+    Types of property 'inUse' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+src/features/school-org/handover.tsx(57,16): error TS18048: 'opts.data.teachers' is possibly 'undefined'.
+src/features/school-org/handover.tsx(164,58): error TS2345: Argument of type '{ classId: string; toMembershipId: string; effectiveDate: string; note: string; }' is not assignable to parameter of type 'HandoverInput'.
+  Type '{ classId: string; toMembershipId: string; effectiveDate: string; note: string; }' is missing the following properties from type 'HandoverInput': clientRequestId, fromAssignmentId, fromAssignmentVersion, classVersion, and 2 more.
+src/features/school-org/invite-modal.tsx(68,68): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/matrix.tsx(38,28): error TS18047: 'd.year' is possibly 'null'.
+src/features/school-org/matrix.tsx(57,96): error TS18047: 'd.year' is possibly 'null'.
+src/features/school-org/matrix.tsx(65,47): error TS18047: 'd.year' is possibly 'null'.
+src/features/school-org/member-detail.tsx(25,34): error TS2537: Type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }[] | null' has no matching index signature for type 'number'.
+src/features/school-org/member-detail.tsx(50,16): error TS18047: 'm.assignments' is possibly 'null'.
+src/features/school-org/member-detail.tsx(51,38): error TS2345: Argument of type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }' is not assignable to parameter of type '{ status: AssignmentStatus; validFrom: string; validTo?: string | undefined; live?: boolean | undefined; }'.
+  Property 'status' is missing in type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }' but required in type '{ status: AssignmentStatus; validFrom: string; validTo?: string | undefined; live?: boolean | undefined; }'.
+src/features/school-org/member-detail.tsx(54,26): error TS18047: 'm.assignments' is possibly 'null'.
+src/features/school-org/member-detail.tsx(54,56): error TS2339: Property 'status' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(54,83): error TS2339: Property 'validTo' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(54,96): error TS2339: Property 'validTo' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(69,82): error TS7053: Element implicitly has an 'any' type because expression of type '"active" | "revoked" | "suspended" | "invited"' can't be used to index type 'Record<MembershipStatus, StatusLabel>'.
+  Property 'invited' does not exist on type 'Record<MembershipStatus, StatusLabel>'.
+src/features/school-org/member-detail.tsx(79,14): error TS18047: 'm.assignments' is possibly 'null'.
+src/features/school-org/member-detail.tsx(87,58): error TS2345: Argument of type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }' is not assignable to parameter of type '{ status: AssignmentStatus; validFrom: string; validTo?: string | undefined; live?: boolean | undefined; }'.
+  Property 'status' is missing in type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }' but required in type '{ status: AssignmentStatus; validFrom: string; validTo?: string | undefined; live?: boolean | undefined; }'.
+src/features/school-org/member-detail.tsx(90,46): error TS2367: This comparison appears to be unintentional because the types '"HOMEROOM" | "SUBJECT"' and '"homeroom"' have no overlap.
+src/features/school-org/member-detail.tsx(90,73): error TS2339: Property 'status' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(91,48): error TS2339: Property 'status' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(95,185): error TS2367: This comparison appears to be unintentional because the types '"HOMEROOM" | "SUBJECT"' and '"homeroom"' have no overlap.
+src/features/school-org/member-detail.tsx(95,258): error TS2339: Property 'actions' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(96,100): error TS2339: Property 'validTo' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(97,106): error TS2339: Property 'reason' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(97,193): error TS2339: Property 'reason' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(97,204): error TS2339: Property 'reason' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/member-detail.tsx(112,32): error TS18047: 'm.history' is possibly 'null'.
+src/features/school-org/member-detail.tsx(112,104): error TS2339: Property 'entityLabel' does not exist on type '{ id: string; schoolId: string; actorId: string | null; actorName: string; action: string; entityType: string; entityId: string; at: string; reason: string | null; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/member-detail.tsx(130,272): error TS2339: Property 'name' does not exist on type '{ id: string | null; version: number; roleId: string | null; roleLabel: string; roleCode: string; assignmentStartsOn?: string | null | undefined; assignmentEndsOn?: string | null | undefined; ... 6 more ...; revokedAt?: string | ... 1 more ... | undefined; }'.
+src/features/school-org/member-detail.tsx(163,50): error TS18047: 'm.roleTemplates' is possibly 'null'.
+src/features/school-org/member-detail.tsx(163,91): error TS2339: Property 'name' does not exist on type '{ id: string; version: number; label: string; code: string; systemRole: boolean; canDelegate: boolean; delegationUntil: string | null; }'.
+src/features/school-org/member-detail.tsx(171,12): error TS18047: 'm.roleTemplates' is possibly 'null'.
+src/features/school-org/member-detail.tsx(172,31): error TS2339: Property 'actions' does not exist on type '{ id: string; version: number; label: string; code: string; systemRole: boolean; canDelegate: boolean; delegationUntil: string | null; }'.
+src/features/school-org/member-detail.tsx(172,45): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/features/school-org/member-detail.tsx(173,50): error TS2339: Property 'name' does not exist on type '{ id: string; version: number; label: string; code: string; systemRole: boolean; canDelegate: boolean; delegationUntil: string | null; }'.
+src/features/school-org/member-detail.tsx(173,148): error TS2339: Property 'description' does not exist on type '{ id: string; version: number; label: string; code: string; systemRole: boolean; canDelegate: boolean; delegationUntil: string | null; }'.
+src/features/school-org/overview.tsx(25,49): error TS2537: Type '{ tasks: string[]; severity: "blocked" | "attention"; yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; ... 14 more ...; version: number; }[] | null' has no matching index signature for type 'number'.
+src/features/school-org/overview.tsx(47,39): error TS2322: Type '{ tasks: string[]; severity: "blocked" | "attention"; yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; ... 14 more ...; version: number; }[] | null' is not assignable to type 'any[]'.
+  Type 'null' is not assignable to type 'any[]'.
+src/features/school-org/overview.tsx(73,54): error TS18047: 'k.activeClasses' is possibly 'null'.
+src/features/school-org/overview.tsx(73,72): error TS18047: 'k.prevClasses' is possibly 'null'.
+src/features/school-org/overview.tsx(76,55): error TS18047: 'k.students' is possibly 'null'.
+src/features/school-org/overview.tsx(76,68): error TS18047: 'k.prevStudents' is possibly 'null'.
+src/features/school-org/overview.tsx(166,8): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(168,12): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(229,8): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/overview.tsx(231,12): error TS18047: 'items' is possibly 'null'.
+src/features/school-org/permission-summary.tsx(17,16): error TS18047: 'm.assignments' is possibly 'null'.
+src/features/school-org/permission-summary.tsx(18,39): error TS2367: This comparison appears to be unintentional because the types '"HOMEROOM" | "SUBJECT"' and '"homeroom"' have no overlap.
+src/features/school-org/permission-summary.tsx(19,38): error TS2367: This comparison appears to be unintentional because the types '"HOMEROOM" | "SUBJECT"' and '"subject"' have no overlap.
+src/features/school-org/permission-summary.tsx(24,56): error TS2339: Property 'name' does not exist on type '{ id: string | null; version: number; roleId: string | null; roleLabel: string; roleCode: string; assignmentStartsOn?: string | null | undefined; assignmentEndsOn?: string | null | undefined; ... 6 more ...; revokedAt?: string | ... 1 more ... | undefined; }'.
+src/features/school-org/permission-summary.tsx(24,89): error TS2322: Type 'string[]' is not assignable to type 'ActionKey[]'.
+  Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/permission-summary.tsx(26,150): error TS2339: Property 'actions' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/permission-summary.tsx(27,105): error TS2339: Property 'validTo' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/permission-summary.tsx(27,128): error TS2339: Property 'actions' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/permission-summary.tsx(29,151): error TS2339: Property 'actions' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/permission-summary.tsx(30,104): error TS2339: Property 'validTo' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/permission-summary.tsx(30,127): error TS2339: Property 'actions' does not exist on type '{ schoolId: string; membershipId: string; type: "homeroom" | "subject"; validFrom: string; validUntil: string | null; label: string; id: string; version: number; classId: string; className: string; ... 17 more ...; live: boolean; }'.
+src/features/school-org/profile.tsx(27,92): error TS2322: Type '{ id: string; name: string; code: string; slug: string; shortName: string; status: School["status"]; level: "THPT" | "THCS" | "Tiểu học" | null; province: string; address: string; publicEmail: string; ... 9 more ...; onboarding: { ...; } | undefined; }' is not assignable to type 'School'.
+  Types of property 'level' are incompatible.
+    Type '"THPT" | "THCS" | "Tiểu học" | null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+      Type 'null' is not assignable to type '"THPT" | "THCS" | "Tiểu học"'.
+src/features/school-org/roles.tsx(73,50): error TS2345: Argument of type '() => Set<string>' is not assignable to parameter of type 'Set<ActionKey> | (() => Set<ActionKey>)'.
+  Type '() => Set<string>' is not assignable to type '() => Set<ActionKey>'.
+    Type 'Set<string>' is not assignable to type 'Set<ActionKey>'.
+      Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/roles.tsx(80,57): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/roles.tsx(84,119): error TS2345: Argument of type 'ActionKey[]' is not assignable to parameter of type '{ action: string; scopes: ("SUBJECT" | "SCHOOL" | "CLASS")[]; }[]'.
+  Type 'string' is not assignable to type '{ action: string; scopes: ("SUBJECT" | "SCHOOL" | "CLASS")[]; }'.
+    Type 'string' is not assignable to type '{ action: string; scopes: ("SUBJECT" | "SCHOOL" | "CLASS")[]; }'.
+src/features/school-org/roles.tsx(110,44): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/roles.tsx(111,83): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/roles.tsx(113,93): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/roles.tsx(113,115): error TS2345: Argument of type 'string' is not assignable to parameter of type 'ActionKey'.
+src/features/school-org/roles.tsx(129,41): error TS2322: Type 'string[]' is not assignable to type 'ActionKey[]'.
+  Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/roles.tsx(133,100): error TS2345: Argument of type 'Set<string>' is not assignable to parameter of type 'SetStateAction<Set<ActionKey>>'.
+  Type 'Set<string>' is not assignable to type 'Set<ActionKey>'.
+    Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/roles.tsx(143,19): error TS18047: 'd.members' is possibly 'null'.
+src/features/school-org/roles.tsx(144,48): error TS18047: 'd.members' is possibly 'null'.
+src/features/school-org/roles.tsx(144,80): error TS2551: Property 'membershipId' does not exist on type '{ grantId: string; memberId: string; name: string; scopeType: "SUBJECT" | "SCHOOL" | "CLASS"; classId: string | null; subjectId: string | null; validFrom: string; validUntil: string | null; }'. Did you mean 'memberId'?
+src/features/school-org/roles.tsx(144,125): error TS2551: Property 'membershipId' does not exist on type '{ grantId: string; memberId: string; name: string; scopeType: "SUBJECT" | "SCHOOL" | "CLASS"; classId: string | null; subjectId: string | null; validFrom: string; validUntil: string | null; }'. Did you mean 'memberId'?
+src/features/school-org/roles.tsx(149,57): error TS18047: 'd.history' is possibly 'null'.
+src/features/school-org/roles.tsx(149,129): error TS2339: Property 'after' does not exist on type '{ id: string; at: string; action: string; operationId: string; actorName: string; reason: string | undefined; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/roles.tsx(149,156): error TS2339: Property 'after' does not exist on type '{ id: string; at: string; action: string; operationId: string; actorName: string; reason: string | undefined; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/roles.tsx(149,173): error TS2339: Property 'before' does not exist on type '{ id: string; at: string; action: string; operationId: string; actorName: string; reason: string | undefined; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/roles.tsx(149,201): error TS2339: Property 'before' does not exist on type '{ id: string; at: string; action: string; operationId: string; actorName: string; reason: string | undefined; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/roles.tsx(154,70): error TS18047: 'd.members' is possibly 'null'.
+src/features/school-org/roles.tsx(156,33): error TS2322: Type 'string[]' is not assignable to type 'ActionKey[]'.
+  Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/roles.tsx(158,156): error TS2322: Type 'string[]' is not assignable to type 'ActionKey[]'.
+  Type 'string' is not assignable to type 'ActionKey'.
+src/features/school-org/rollover.tsx(46,32): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(48,55): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(49,60): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(65,50): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+  Type 'null' is not assignable to type 'number'.
+src/features/school-org/rollover.tsx(172,107): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(176,166): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(179,85): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(187,149): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/rollover.tsx(198,93): error TS18047: 'c.gradeLevel' is possibly 'null'.
+src/features/school-org/teachers.tsx(62,27): error TS2345: Argument of type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; } | null' is not assignable to parameter of type 'SetStateAction<TeacherRow | null>'.
+  Type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }' is not assignable to type 'SetStateAction<TeacherRow | null>'.
+    Type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }' is not assignable to type 'TeacherRow'.
+      Types of property 'membershipId' are incompatible.
+        Type 'string | null' is not assignable to type 'string'.
+          Type 'null' is not assignable to type 'string'.
+src/features/school-org/teachers.tsx(77,258): error TS2538: Type 'null' cannot be used as an index type.
+src/features/school-org/teachers.tsx(87,137): error TS2345: Argument of type 'TeacherRow' is not assignable to parameter of type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }'.
+  Type 'TeacherRow' is missing the following properties from type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }': version, accessActive, expiresAt
+src/features/school-org/teachers.tsx(149,60): error TS2322: Type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }[]' is not assignable to type 'TeacherRow[]'.
+  Type '{ id: string; version: number; membershipId: string | null; userId: string | null; fullName: string; displayName: string; email: string | null; department: string | null; staffCode: string | null; ... 7 more ...; avatarTone: string; }' is not assignable to type 'TeacherRow'.
+    Types of property 'membershipId' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/features/school-org/teachers.tsx(210,26): error TS18047: 'm.assignments' is possibly 'null'.
+src/features/school-org/teachers.tsx(210,64): error TS2367: This comparison appears to be unintentional because the types '"HOMEROOM" | "SUBJECT"' and '"homeroom"' have no overlap.
+src/features/school-org/teachers.tsx(248,34): error TS18047: 'm.history' is possibly 'null'.
+src/features/school-org/teachers.tsx(248,118): error TS2339: Property 'entityLabel' does not exist on type '{ id: string; schoolId: string; actorId: string | null; actorName: string; action: string; entityType: string; entityId: string; at: string; reason: string | null; changes: { field: string; before: string | null; after: string | null; }[]; }'.
+src/features/school-org/teachers.tsx(249,18): error TS18047: 'm.history' is possibly 'null'.
+src/features/school-org/teachers.tsx(275,45): error TS2339: Property 'existingUserId' does not exist on type '{ id: string; schoolId: string; version: number; email: string; fullName: string; proposedDuty: string; roleTemplateIds: string[]; createdAt: string; expiresAt: string; status: string; inviterName: string | undefined; deliveryState: "QUEUED" | ... 3 more ... | undefined; }'.
+src/features/school-org/year-detail.tsx(117,34): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'Term'.
+  Types of property 'weekCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/year-detail.tsx(130,139): error TS2345: Argument of type '{ id: string; schoolId: string; yearId: string; name: string; code: string; startDate: string; endDate: string; openingDate: string | undefined; weekCount: number | undefined; version: number; }' is not assignable to parameter of type 'Term'.
+  Types of property 'weekCount' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/features/school-org/year-detail.tsx(235,107): error TS2345: Argument of type '{ yearLabel: string; gradeName: string; size: number | null; homeroomName: string | undefined; homeroomUserId: string | undefined; homeroomMembershipId: string | undefined; subjectTeacherCount: number; ... 12 more ...; version: number; }' is not assignable to parameter of type 'ClassRow'.
+  Types of property 'size' are incompatible.
+    Type 'number | null' is not assignable to type 'number'.
+      Type 'null' is not assignable to type 'number'.
+src/features/school-org/years.tsx(27,116): error TS2345: Argument of type 'YearStatus' is not assignable to parameter of type '"active" | "archived"'.
+  Type '"draft"' is not assignable to type '"active" | "archived"'.
+src/features/students/dialogs.tsx(40,32): error TS2345: Argument of type '{ studentId: string; guardianId: string | undefined; relationshipId: string | undefined; fullName: string; relation: GuardianRelationship["relation"]; phone: string; email: string | undefined; isPrimaryContact: boolean; }' is not assignable to parameter of type 'GuardianSaveInput'.
+  Property 'source' is missing in type '{ studentId: string; guardianId: string | undefined; relationshipId: string | undefined; fullName: string; relation: GuardianRelationship["relation"]; phone: string; email: string | undefined; isPrimaryContact: boolean; }' but required in type 'GuardianSaveInput'.
+src/features/students/dialogs.tsx(63,102): error TS2554: Expected 6 arguments, but got 5.
+src/features/students/guardians.tsx(36,102): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(104,54): error TS2322: Type '{ id: string; at: string; title: string; detail: any; actor: string | null; tone: "blue" | "green" | "red"; }[]' is not assignable to type 'TimelineItem[]'.
+  Type '{ id: string; at: string; title: string; detail: any; actor: string | null; tone: "blue" | "green" | "red"; }' is not assignable to type 'TimelineItem'.
+    Types of property 'actor' are incompatible.
+      Type 'string | null' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(104,61): error TS18047: 'd.history' is possibly 'null'.
+src/features/students/guardians.tsx(104,173): error TS2339: Property 'entityLabel' does not exist on type '{ id: string; schoolId: string; actorName: string | null; actorId: string | null; entityType: string; entityId: string; action: string; targetType: string; targetId: string; at: string; reason: string | null; }'.
+src/features/students/guardians.tsx(125,89): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(126,24): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(128,28): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/guardians.tsx(140,285): error TS2322: Type 'string' is not assignable to type '"Mẹ" | "Bố" | "Ông" | "Bà" | "Người giám hộ khác"'.
+src/features/students/guardians.tsx(140,307): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/guardians.tsx(140,344): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/guardians.tsx(142,313): error TS18047: 'r.links' is possibly 'null'.
+src/features/students/imports.tsx(7,34): error TS2305: Module '"@/lib/repositories"' has no exported member 'ImportKind'.
+src/features/students/imports.tsx(7,51): error TS2305: Module '"@/lib/repositories"' has no exported member 'ImportKindInfo'.
+src/features/students/imports.tsx(43,31): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/features/students/student-form.tsx(139,43): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-form.tsx(139,55): error TS2322: Type '"Nam" | "Nữ" | null' is not assignable to type 'Gender'.
+  Type 'null' is not assignable to type 'Gender'.
+src/features/students/student-profile.tsx(58,22): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(59,21): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(59,100): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(59,144): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(60,36): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(61,16): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(62,62): error TS2339: Property 'token' does not exist on type '{ schoolId: string; studentId: string; yearId: string; relationshipId: string; modules: ("attendance" | "conduct" | "activities" | "teachers" | "timetable" | "duties" | "announcements" | "documents")[]; ... 20 more ...; lastOpenedAt: string | null; }'.
+src/features/students/student-profile.tsx(64,38): error TS2537: Type '{ schoolId: string; studentId: string; yearId: string; relationshipId: string; modules: ("attendance" | "conduct" | "activities" | "teachers" | "timetable" | "duties" | "announcements" | "documents")[]; ... 20 more ...; lastOpenedAt: string | null; }[] | null' has no matching index signature for type 'number'.
+src/features/students/student-profile.tsx(65,45): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(65,79): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(79,43): error TS2339: Property 'avatarTone' does not exist on type '{ internalNote?: string | null | undefined; initialRelationship?: { id: string | null; version: number; createdAt: string; updatedAt: string; studentId: string | null; guardianId: string | null; ... 4 more ...; verifiedAt?: string | ... 1 more ... | undefined; } | undefined; ... 13 more ...; createdAt: string; }'.
+src/features/students/student-profile.tsx(110,43): error TS18047: 'd.positions' is possibly 'null'.
+src/features/students/student-profile.tsx(110,64): error TS18047: 'd.positions' is possibly 'null'.
+src/features/students/student-profile.tsx(110,87): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<StudentPositionKey, string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<StudentPositionKey, string>'.
+src/features/students/student-profile.tsx(124,24): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(125,24): error TS18047: 'd.relationships' is possibly 'null'.
+src/features/students/student-profile.tsx(135,185): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(135,238): error TS2322: Type 'string' is not assignable to type '"Mẹ" | "Bố" | "Ông" | "Bà" | "Người giám hộ khác"'.
+src/features/students/student-profile.tsx(135,260): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(135,297): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-profile.tsx(136,175): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(137,186): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
+src/features/students/student-profile.tsx(138,281): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/features/students/student-profile.tsx(167,141): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/students/student-profile.tsx(167,211): error TS2551: Property 'endReason' does not exist on type '{ schoolId: string; studentId: string; classId: string; yearId: string; startDate: string; endDate: string | null; status: string; className: string; yearLabel: string; homeroom: string | null; ... 9 more ...; homeroomName: string | null; }'. Did you mean 'endsOn'?
+src/features/students/student-profile.tsx(180,226): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(185,18): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(187,22): error TS18047: 'links' is possibly 'null'.
+src/features/students/student-profile.tsx(187,89): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<"active" | "expired" | "revoked", StatusLabel>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<"active" | "expired" | "revoked", StatusLabel>'.
+src/features/students/student-profile.tsx(247,14): error TS18047: 'd.accessLog' is possibly 'null'.
+src/features/students/student-profile.tsx(251,27): error TS18047: 'd.accessLog' is possibly 'null'.
+src/features/students/student-profile.tsx(252,122): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<"revoked" | "issued" | "opened" | "viewed" | "blocked" | "reissued", string>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<"revoked" | "issued" | "opened" | "viewed" | "blocked" | "reissued", string>'.
+src/features/students/student-profile.tsx(252,164): error TS2345: Argument of type 'string | null' is not assignable to parameter of type '"overview" | ParentModule | undefined'.
+  Type 'null' is not assignable to type '"overview" | ParentModule | undefined'.
+tests/unit/flows.test.ts(3,68): error TS2305: Module '"@/lib/repositories"' has no exported member 'resetStore'.
+tests/unit/flows.test.ts(41,69): error TS2345: Argument of type '{ studentId: string; fullName: string; relation: string; phone: string; isPrimaryContact: false; }' is not assignable to parameter of type 'GuardianSaveInput'.
+  Property 'source' is missing in type '{ studentId: string; fullName: string; relation: string; phone: string; isPrimaryContact: false; }' but required in type 'GuardianSaveInput'.
+tests/unit/flows.test.ts(296,12): error TS18047: 'd.history' is possibly 'null'.
+tests/unit/flows.test.ts(297,12): error TS18047: 'd.history' is possibly 'null'.

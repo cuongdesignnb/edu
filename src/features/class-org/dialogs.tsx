@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { classroomRepo, studentsRepo } from "@/lib/repositories";
-import { teacherExtraRepo } from "@/lib/repositories/teacher-extra";
+import { teacherExtraRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { Modal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";

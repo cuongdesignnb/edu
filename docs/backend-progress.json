@@ -3566,8 +3566,10 @@
         "getMyContext"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3578,8 +3580,10 @@
         "forgotPassword"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3590,8 +3594,10 @@
         "resetPassword"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3604,8 +3610,10 @@
         "declineInvitation"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3615,8 +3623,10 @@
         "getMyContext"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3627,8 +3637,10 @@
         "updateMyProfile"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3641,8 +3653,10 @@
         "revokeMySession"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3652,8 +3666,10 @@
         "getMyContext"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3664,8 +3680,10 @@
         "readMyNotification"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3684,8 +3702,10 @@
         "listPlatformSchools"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3697,8 +3717,10 @@
         "getPlatformSchoolOptions"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3711,8 +3733,10 @@
         "checkPlatformSchoolIdentity"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3726,8 +3750,10 @@
         "getPlatformSupportOptions"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3741,8 +3767,10 @@
         "revokePlatformAdminInvitation"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3753,8 +3781,10 @@
         "getPlatformSupportOptions"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3769,8 +3799,10 @@
         "requestPlatformSupportAccess"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3783,8 +3815,10 @@
         "relinquishPlatformSupportAccess"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3807,8 +3841,10 @@
         "getPlatformOperationsOverview"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -3819,8 +3855,10 @@
         "updatePlatformSettings"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Root native account/platform source activation; b6-native-activation API unit 167/167 and seven intercepted-API browser contract checks; PostgreSQL browser E2E, whole-screen acceptance and B7 remain NOT_RUN. PL09 export and all other domain adapters are still pending."
+      ],
       "apiStatus": "TESTED"
     },
     {

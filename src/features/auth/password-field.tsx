@@ -3,7 +3,7 @@ import { forwardRef, useState, type InputHTMLAttributes, type ReactNode } from "
 import { Eye, EyeOff, Lock, Check, X } from "lucide-react";
 import { clsx } from "clsx";
 import { Field } from "@/components/ui/form";
-import { PASSWORD_RULES } from "@/lib/repositories/platform-extra";
+import { PASSWORD_RULES } from "@/lib/repositories";
 
 /** Password input with a visible label and a show/hide toggle. Value is never persisted. */
 export const PasswordField = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { label: ReactNode; error?: string; helper?: ReactNode; id: string; labelAction?: ReactNode }>(

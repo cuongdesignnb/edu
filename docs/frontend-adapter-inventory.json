@@ -1,8 +1,10 @@
 {
   "baseline": "14dfad5",
-  "mode": "CONNECTED_ADAPTERS_PENDING",
+  "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 96,
+  "candidateCount": 97,
+  "activatedCandidateCount": 39,
+  "activatedLegacyMethodCount": 36,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1390,15 +1392,15 @@
         "ctx: Ctx"
       ],
       "returnType": "Promise<OperationsView>",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "operations",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1413,15 +1415,15 @@
         "slug: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "checkSchoolIdentity",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1434,15 +1436,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "operators",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1455,15 +1457,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "ticketStats",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1478,15 +1480,15 @@
         "assigneeUserId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "assignTicket",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1501,15 +1503,15 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "relinquishGrant",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1522,15 +1524,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformExtraRepo",
         "method": "supportTargets",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1552,15 +1554,15 @@
         "email: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "authDemoRepo",
         "method": "requestPasswordReset",
         "file": "src/lib/repositories/connected/auth.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1573,15 +1575,15 @@
         "token: string | null"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "authDemoRepo",
         "method": "checkResetToken",
         "file": "src/lib/repositories/connected/auth.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1596,15 +1598,15 @@
         "confirm: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "authDemoRepo",
         "method": "completePasswordReset",
         "file": "src/lib/repositories/connected/auth.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1624,15 +1626,15 @@
       "line": 166,
       "parameters": [],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "authDemoRepo",
         "method": "healthCheck",
         "file": "src/lib/repositories/connected/auth.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1656,15 +1658,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "overview",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1678,15 +1680,15 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "listSchools",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1700,15 +1702,15 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "school",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1722,15 +1724,15 @@
         "input: { name: string; shortName: string; code: string; slug: string; level: School[\"level\"]; province: string; address: string; publicEmail: string; publicPhone: string; adminName: string; adminEmail: string; asDraft: boolean }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "createSchool",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1745,15 +1747,15 @@
         "patch: Partial<Pick<School, \"name\" | \"shortName\" | \"province\" | \"address\" | \"publicEmail\" | \"publicPhone\">> & { version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "updateSchoolOps",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1769,15 +1771,15 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "changeSchoolStatus",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1792,15 +1794,15 @@
         "input: { fullName: string; email: string; days: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "inviteSchoolAdmin",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1816,15 +1818,15 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "revokeSchoolAdmin",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1838,15 +1840,15 @@
         "inviteId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "revokeInvitation",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1860,15 +1862,15 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "tickets",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1882,15 +1884,15 @@
         "ticketId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "ticket",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1905,15 +1907,15 @@
         "input: { text?: string; status?: SupportTicket[\"status\"]; assigneeUserId?: ID }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "updateTicket",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1926,15 +1928,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "supportGrants",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1948,15 +1950,15 @@
         "input: { schoolId: ID; ticketId?: ID; scopes: SupportGrant[\"scopes\"]; reason: string; days: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "requestSupportGrant",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1970,15 +1972,15 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "audit",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -1991,15 +1993,15 @@
         "ctx: Ctx"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "settings",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2013,15 +2015,15 @@
         "patch: Omit<PlatformSettings, \"version\" | \"dateFormat\" | \"timezone\"> & { version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "platformRepo",
         "method": "saveSettings",
         "file": "src/lib/repositories/connected/platform.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2229,7 +2231,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2252,7 +2254,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2274,7 +2276,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2297,7 +2299,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2319,7 +2321,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2342,7 +2344,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2364,7 +2366,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2387,7 +2389,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2410,7 +2412,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2434,7 +2436,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2458,7 +2460,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2482,7 +2484,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2505,7 +2507,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2529,7 +2531,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2552,7 +2554,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2577,7 +2579,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2599,7 +2601,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2623,7 +2625,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2648,7 +2650,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2671,7 +2673,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2694,7 +2696,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2716,7 +2718,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2739,7 +2741,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2763,7 +2765,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2786,7 +2788,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2813,15 +2815,15 @@
         "password: string"
       ],
       "returnType": "Promise<{ userId: ID; isPlatform: boolean }>",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "demoLogin",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2834,15 +2836,15 @@
         "ctx: Ctx"
       ],
       "returnType": "Promise<Me>",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "me",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2856,15 +2858,15 @@
         "schoolId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "schoolActions",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2878,15 +2880,15 @@
         "patch: { fullName: string; workPhone: string; bio?: string; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "updateProfile",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2900,15 +2902,15 @@
         "inviteId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "invitation",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2924,15 +2926,15 @@
         "fullName?: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "respondInvitation",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2946,15 +2948,15 @@
         "opts: { unreadOnly?: boolean; schoolId?: ID } = {}"
       ],
       "returnType": "Promise<(StaffNotification & { schoolName: string; accessible: boolean })[]>",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "notifications",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2968,15 +2970,15 @@
         "ids: ID[] | \"all\""
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED",
+      "status": "IMPLEMENTED",
       "connectedCandidate": {
         "repository": "sessionRepo",
         "method": "markNotificationsRead",
         "file": "src/lib/repositories/connected/session.ts",
         "status": "IMPLEMENTED",
-        "activated": false,
+        "activated": true,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -2999,7 +3001,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3021,7 +3023,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3044,7 +3046,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3067,7 +3069,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3090,7 +3092,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3115,7 +3117,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3140,7 +3142,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3163,7 +3165,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3186,7 +3188,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3209,7 +3211,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3233,7 +3235,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3256,7 +3258,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3279,7 +3281,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3301,7 +3303,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3324,7 +3326,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3350,7 +3352,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3434,7 +3436,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3457,7 +3459,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3481,7 +3483,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3504,7 +3506,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3528,7 +3530,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3592,7 +3594,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3615,7 +3617,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3638,7 +3640,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3663,7 +3665,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3791,7 +3793,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3814,7 +3816,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3837,7 +3839,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3861,7 +3863,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3885,7 +3887,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3908,7 +3910,7 @@
         "status": "IMPLEMENTED",
         "activated": false,
         "evidence": [
-          "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
         ]
       }
     },
@@ -3988,13 +3990,23 @@
   ],
   "extensions": [
     {
+      "repository": "platformExtraRepo",
+      "method": "grantSummary",
+      "file": "src/lib/repositories/connected/platform.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
       "repository": "sessionRepo",
       "method": "sessions",
       "file": "src/lib/repositories/connected/session.ts",
       "status": "IMPLEMENTED",
-      "activated": false,
+      "activated": true,
       "evidence": [
-        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]
     },
     {
@@ -4002,9 +4014,9 @@
       "method": "revokeSession",
       "file": "src/lib/repositories/connected/session.ts",
       "status": "IMPLEMENTED",
-      "activated": false,
+      "activated": true,
       "evidence": [
-        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]
     },
     {
@@ -4014,7 +4026,7 @@
       "status": "IMPLEMENTED",
       "activated": false,
       "evidence": [
-        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]
     },
     {
@@ -4024,7 +4036,7 @@
       "status": "IMPLEMENTED",
       "activated": false,
       "evidence": [
-        "Frontend typecheck/lint; API transport/session unit checks are separate from browser acceptance."
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
       ]
     }
   ]

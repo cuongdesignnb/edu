@@ -1,0 +1,2 @@
+src/components/layout/topbar.tsx(91,42): error TS2552: Cannot find name 'logout'. Did you mean 'LogOut'?
+src/features/preview/states/real-overlays.tsx(59,89): error TS2339: Property 'version' does not exist on type 'SchoolRow'.

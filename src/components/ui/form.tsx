@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import * as Switch from "@radix-ui/react-switch";
 import * as Popover from "@radix-ui/react-popover";
 import { AlertCircle, CalendarDays, ChevronLeft, ChevronRight, Check } from "lucide-react";
-import { weekdayOf } from "@/lib/demo/clock";
+import { weekdayOf } from "@/lib/calendar";
 
 /* ------------------------------ Field ------------------------------ */
 export function Field({ label, htmlFor, required, helper, error, children, className, labelAction }: { label: ReactNode; htmlFor?: string; required?: boolean; helper?: ReactNode; error?: string; children: ReactNode; className?: string; labelAction?: ReactNode }) {

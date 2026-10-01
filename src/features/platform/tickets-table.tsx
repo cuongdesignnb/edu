@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, UserCheck, LifeBuoy, Inbox, Loader, Clock, CheckCircle2 } from "lucide-react";
 import { platformRepo } from "@/lib/repositories";
-import { platformExtraRepo } from "@/lib/repositories/platform-extra";
+import { platformExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
 import { fmtDateTime, fmtNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";
@@ -28,7 +28,7 @@ export function SupportQueue() {
   const stats = useRepo(["platform-ticket-stats"], (ctx) => platformExtraRepo.ticketStats(ctx));
   const [assign, setAssign] = useState<Row | null>(null);
   const cols: Column<Row>[] = [
-    { key: "title", header: "Yêu cầu", cell: (t) => <span className="block min-w-[220px]"><span className="block font-semibold text-ink">{t.title}</span><span className="block text-[12.5px] text-muted">{t.schoolName} · {t.updates.length} cập nhật</span></span> },
+    { key: "title", header: "Yêu cầu", cell: (t) => <span className="block min-w-[220px]"><span className="block font-semibold text-ink">{t.title}</span><span className="block text-[12.5px] text-muted">{t.schoolName} · {t.messageCount} cập nhật</span></span> },
     { key: "priority", header: "Ưu tiên", sortable: true, cell: (t) => <StatusBadge status={t.priority} map={TICKET_PRIORITY} /> },
     { key: "status", header: "Trạng thái", cell: (t) => <StatusBadge status={t.status} map={TICKET_STATUS} /> },
     { key: "assignee", header: "Người xử lý", cell: (t) => t.assigneeName || <span className="text-warning-text">Chưa phân công</span>, hideBelow: "md" },
@@ -76,11 +76,11 @@ export function SupportQueue() {
   );
 }
 
-export function AssignDialog({ ticket, onClose }: { ticket: { id: string; title: string; assigneeUserId?: string } | null; onClose: () => void }) {
+export function AssignDialog({ ticket, onClose }: { ticket: { id: string; title: string; version:number; assigneeUserId?: string } | null; onClose: () => void }) {
   const { actor } = useSession();
   const ops = useRepo(["platform-operators"], (ctx) => platformExtraRepo.operators(ctx), { enabled: !!ticket });
   const [who, setWho] = useState("");
-  const cmd = useCommand((ctx, id: string, uid: string) => platformExtraRepo.assignTicket(ctx, id, uid), { success: "Đã phân công người xử lý", onSuccess: onClose });
+  const cmd = useCommand((ctx, id: string, uid: string) => platformExtraRepo.assignTicket(ctx, id, uid, ticket?.version), { success: "Đã phân công người xử lý", onSuccess: onClose });
   const value = who || ticket?.assigneeUserId || (actor.kind === "platform" ? actor.userId : "");
   return (
     <Modal open={!!ticket} onOpenChange={(o) => { if (!o) { setWho(""); onClose(); } }} size="sm" busy={cmd.pending} title="Phân công người xử lý" description={ticket?.title}

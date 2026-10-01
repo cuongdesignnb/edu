@@ -28,8 +28,8 @@ export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins,
   useUnsavedChanges(dirty);
   const leave = useLeaveGuard();
   const cmd = useCommand((ctx, v: { fullName: string; email: string; days: number }) => platformRepo.inviteSchoolAdmin(ctx, schoolId, v), {
-    success: (i) => `Đã tạo lời mời cho ${i.email} (mô phỏng, không gửi email)`,
-    onSuccess: (i) => { onInvited?.(i.id); onClose(); },
+    success: (i) => `Đã tạo lời mời cho ${i.email}`,
+    onSuccess: (i) => { i.id && onInvited?.(i.id); onClose(); },
     onError: (e) => e.fieldErrors && setErrors(e.fieldErrors),
   });
   const submit = () => {
@@ -60,7 +60,7 @@ export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins,
         {mode === "replace" && replaced && (
           <Callout tone="warning" icon={<Info />}>{replaced.name} vẫn giữ quyền cho đến khi người mới chấp nhận lời mời. Sau đó thu hồi quyền của {replaced.name} trong danh sách quản trị — hệ thống không cho phép để trường mất người quản trị cuối.</Callout>
         )}
-        <p className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted"><DemoTag>Không gửi email</DemoTag>Lời mời chỉ tạo đường dẫn demo để mở trong trình duyệt.</p>
+        <p className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted">Hệ thống sẽ gửi email chứa đường dẫn riêng. Không hiển thị lại mã bí mật sau khi tạo.</p>
       </div>
     </Modal>
   );

@@ -1,0 +1,11 @@
+
+D:\Edu\src\app\global-error.tsx
+  16:15  warning  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+D:\Edu\src\features\reports\school-reports.tsx
+  79:9  warning  The 'weeks' logical expression could make the dependencies of useMemo Hook (at line 89) change on every render. To fix this, wrap the initialization of 'weeks' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\Edu\src\features\school-org\roles.tsx
+  92:6  warning  React Hook useMemo has a missing dependency: 'd'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 3 problems (0 errors, 3 warnings)

@@ -1,0 +1,331 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-native-activation-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-native-activation-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth-contract.spec.ts",
+      "file": "auth-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Native browser contract with intercepted API responses — PostgreSQL E2E remains separate",
+          "file": "auth-contract.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ignores a persisted demo persona and requires actual API authentication",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 658,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T02:28:44.245Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-c644a348057d54a485d7",
+              "file": "auth-contract.spec.ts",
+              "line": 34,
+              "column": 7
+            },
+            {
+              "title": "keeps a failed login form and retries the same intent before navigating on acknowledgement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 715,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T02:28:45.339Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-77e0d6b94cf486f1645f",
+              "file": "auth-contract.spec.ts",
+              "line": 41,
+              "column": 7
+            },
+            {
+              "title": "accepts a new invitation only after a matching ACK and preserves the result after cache invalidation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 837,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T02:28:46.063Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-f082bc19b47b5c6151c3",
+              "file": "auth-contract.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "requires the invited existing identity and does not offer a password replacement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 490,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T02:28:46.906Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-8e06fabfa74c8e5e0102",
+              "file": "auth-contract.spec.ts",
+              "line": 79,
+              "column": 7
+            },
+            {
+              "title": "keeps a reset draft after an invalid ACK and shows completion after authentication changes",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10629,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first() with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first() with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\u001b[22m\n\n    at D:\\Edu\\tests\\native-ui-contract\\auth-contract.spec.ts:90:126",
+                        "location": {
+                          "file": "D:\\Edu\\tests\\native-ui-contract\\auth-contract.spec.ts",
+                          "column": 126,
+                          "line": 90
+                        },
+                        "snippet": "  88 |     });\n  89 |     await page.goto('/reset-password#token=synthetic-reset-fragment');await page.getByLabel(/^Mật khẩu mới/).fill(password);await page.getByLabel(/^Nhập lại mật khẩu mới/).fill(password);await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();\n> 90 |     await expect(page.getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.',{exact:true}).first()).toBeVisible();await expect(page.getByLabel(/^Mật khẩu mới/)).toHaveValue(password);\n     |                                                                                                                              ^\n  91 |     await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();await expect(page.getByText('Đã đặt lại mật khẩu',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);expect(new URL(page.url()).hash).toBe('');await noPersistence(page);\n  92 |     await page.setViewportSize({width:390,height:844});await page.screenshot({path:'qa/backend/b6-native-activation-reset-mobile.png',fullPage:true});\n  93 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "D:\\Edu\\tests\\native-ui-contract\\auth-contract.spec.ts",
+                            "column": 126,
+                            "line": 90
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first() with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.', { exact: true }).first()\u001b[22m\n\n\n  88 |     });\n  89 |     await page.goto('/reset-password#token=synthetic-reset-fragment');await page.getByLabel(/^Mật khẩu mới/).fill(password);await page.getByLabel(/^Nhập lại mật khẩu mới/).fill(password);await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();\n> 90 |     await expect(page.getByText('Chưa xác minh được kết quả từ máy chủ. Hãy giữ nội dung để thử lại.',{exact:true}).first()).toBeVisible();await expect(page.getByLabel(/^Mật khẩu mới/)).toHaveValue(password);\n     |                                                                                                                              ^\n  91 |     await page.getByRole('button',{name:'Đặt lại mật khẩu',exact:true}).click();await expect(page.getByText('Đã đặt lại mật khẩu',{exact:true})).toBeVisible();expect(keys).toHaveLength(2);expect(keys[0]).toBe(keys[1]);expect(new URL(page.url()).hash).toBe('');await noPersistence(page);\n  92 |     await page.setViewportSize({width:390,height:844});await page.screenshot({path:'qa/backend/b6-native-activation-reset-mobile.png',fullPage:true});\n  93 |   });\n    at D:\\Edu\\tests\\native-ui-contract\\auth-contract.spec.ts:90:126"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-01T02:28:47.406Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-activation-browser-artifacts-final\\auth-contract-Native-brows-ca793-fter-authentication-changes\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-activation-browser-artifacts-final\\auth-contract-Native-brows-ca793-fter-authentication-changes\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "D:\\Edu\\qa\\backend\\b6-native-activation-browser-artifacts-final\\auth-contract-Native-brows-ca793-fter-authentication-changes\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\auth-contract.spec.ts",
+                        "column": 126,
+                        "line": 90
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-32636aa696191dff6a12",
+              "file": "auth-contract.spec.ts",
+              "line": 85,
+              "column": 7
+            },
+            {
+              "title": "retains a dirty profile and its reviewed version across background refresh and resolves conflict explicitly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 45000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "71a1811a2b0f6541361e-5e4d2742732036105b7d",
+              "file": "auth-contract.spec.ts",
+              "line": 95,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-01T02:28:43.777Z",
+    "duration": 14571.337,
+    "expected": 4,
+    "skipped": 1,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { activitiesRepo } from "@/lib/repositories";
-import { activitiesExtraRepo } from "@/lib/repositories/activities-extra";
+import { activitiesExtraRepo } from "@/lib/repositories";
 import { useCtx, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, fmtPercent, fmtRelative } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";

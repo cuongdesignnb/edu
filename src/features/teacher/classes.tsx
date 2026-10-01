@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Users, BookOpen, MapPin, CalendarDays, History } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
-import { teacherExtraRepo } from "@/lib/repositories/teacher-extra";
+import { teacherExtraRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateLong, classStatus } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";

@@ -12,7 +12,7 @@ import { Checkbox, DateField, ErrorSummary, TextField } from "@/components/ui/fo
 import { Stepper } from "@/components/ui/progress";
 import { DeniedState, QueryState } from "@/components/ui/states";
 import { useUnsavedChanges } from "@/components/ui/guards";
-import { addDays, weekdayOf } from "@/lib/demo/clock";
+import { addDays, weekdayOf } from "@/lib/calendar";
 import { fmtDate } from "@/lib/formatters";
 import { FormError, useFormErrors } from "./common";
 
