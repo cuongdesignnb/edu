@@ -12,6 +12,9 @@ export interface Resource {
   /** Equivalent base cohort for totals when there is no text search. Filters and
    * extra predicates must have identical columns and visibility in this table. */
   unsearchedCountTable?:string;
+  /** Equivalent searched cohort containing the same search/filter/extra columns.
+   * It must retain current authorization and can omit unrelated display work. */
+  searchedCountTable?:string;
 }
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 export const resources:Record<string,Resource>={
@@ -85,7 +88,7 @@ export async function listResource(tx:Transaction,r:Resource,schoolId:string|nul
   }
   const fingerprint=crypto.createHash('sha256').update(canonical({cursorVersion:composite?3:2,schoolId,principalId,table:r.table,
     query:{...query,cursor:undefined},extra,baseParameters,...(r.sortKeys?{sortKeys:r.sortKeys}:{})})).digest('hex');
-  const countTable=!query.q&&r.unsearchedCountTable?r.unsearchedCountTable:r.table;
+  const countTable=query.q?(r.searchedCountTable??r.table):(r.unsearchedCountTable??r.table);
   const count=(await one<{total:string}>(tx,`SELECT count(*) AS total FROM ${countTable} t WHERE ${where.join(' AND ')}`,values))!.total;
   if(query.cursor){
     const [payload,signature]=query.cursor.split('.');

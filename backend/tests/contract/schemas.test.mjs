@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,337);assert.equal(new Set(operations.map(op=>op.id )).size,337);
+  assert.equal(operations.length,339);assert.equal(new Set(operations.map(op=>op.id )).size,339);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -209,4 +209,11 @@ test('parent conduct display exposes published own history and explicit absent m
  const periodId='da72b470-4b45-4f5f-b89d-179c0cdf454a',publishedAt='2026-10-01T01:00:00Z',value={periodId,periodLabel:'Tuần 5',revision:1,basePoints:'80.10',bonusPoints:'0.20',penaltyPoints:'0.00',finalPoints:'80.30',classification:null,lines:[],publishedAt,adjusted:false,weekNumber:null,startsOn:null,endsOn:null,classLabel:null,ruleSetName:null,ruleSetRevision:null,minimumPoints:null,maximumPoints:null,timezone:'Asia/Ho_Chi_Minh',history:[{revision:1,publishedAt,total:'80.30',classification:null,current:true}]};validateSchema('ParentSharedConduct',value,true);
  for(const bad of [{...value,studentId:periodId},{...value,ruleSetId:periodId},{...value,rank:1},{...value,history:[{...value.history[0],staffSnapshot:{}}]},{...value,lines:[{label:'Nguồn',delta:'0.20',occurredAt:publishedAt,reason:'Công khai',date:'2026-10-01',internalNote:'private'}]},{...value,history:Array.from({length:1001},()=>value.history[0])}])assert.throws(()=>validateSchema('ParentSharedConduct',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  for(const id of ['getParentPublishedConduct','getParentPublishedConductDirectory'])assert.equal(operations.find(o=>o.id===id).permission,'parent.conduct');for(const id of ['previewParentPublishedConduct','previewParentPublishedConductDirectory'])assert.equal(operations.find(o=>o.id===id).permission,'parent_access.preview');
+});
+
+test('parent published overview requires explicit section absence, DAILY week facts and bounded purpose previews without private source fields',()=>{
+ const value={today:'2026-10-01',year:{startsOn:'2026-09-01',endsOn:'2027-06-01'},asOf:'2026-10-01T01:00:00Z',teachers:null,attendanceWeek:null,conduct:null,timetable:null,duties:null,activities:null,announcements:null};validateSchema('ParentPublishedOverview',value,true);
+ const week={granularity:'DAILY',weekStart:'2026-09-28',startsOn:'2026-09-28',endsOn:'2026-10-05',totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0},records:[]};validateSchema('ParentPublishedOverview',{...value,attendanceWeek:week,teachers:{today:value.today,classLabel:null,contactHours:null,teachers:[]},duties:{today:value.today,year:value.year,items:[]},activities:{items:[]},announcements:{items:[]}},true);
+ for(const bad of [{...value,teachers:undefined},{...value,students:[]},{...value,attendanceWeek:{...week,granularity:'LESSON'}},{...value,attendanceWeek:{...week,records:Array.from({length:1001},()=>({date:value.today,slotLabel:'Buổi sáng',status:'PRESENT',publishedAt:value.asOf}))}},{...value,duties:{today:value.today,year:value.year,items:Array.from({length:3},()=>({date:value.today,task:'Nhiệm vụ',status:'ASSIGNED',publishedAt:value.asOf}))}}])assert.throws(()=>validateSchema('ParentPublishedOverview',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+ assert.equal(operations.find(o=>o.id==='getParentPublishedOverview').permission,'parent.overview');assert.equal(operations.find(o=>o.id==='previewParentPublishedOverview').permission,'parent_access.preview');
 });

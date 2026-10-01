@@ -13,6 +13,7 @@ import {nativeParentContext} from './parent-context';
 import {nativeParentDocuments,nativeParentDocument} from './parent-documents';
 import {nativeParentActivity,nativeParentAnnouncement,nativeParentActivities,nativeParentAnnouncements} from './parent-shared';
 import {nativeParentConduct,nativeParentConductDirectory} from './parent-conduct';
+import {nativeParentOverview} from './parent-overview';
 
 /** Public reads use only a non-bearer view ID. A raw fragment is accepted only by open. */
 export type ParentKey={viewId:string}|{preview:{ctx:Ctx;schoolId:string;accessId:string}};
@@ -73,6 +74,14 @@ async function publishedConduct(key:ParentKey,slug:string,id?:string){
  }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
 }
 export const connectedParentRepo={
+  async overview(key:ParentKey,slug:string){
+    const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
+    const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
+    try{const context=await connectedParentRepo.context(key,slug);current();
+      const result='preview' in key?await http('previewParentPublishedOverview',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):await http('getParentPublishedOverview',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
+      current();return nativeParentOverview(result.data,context);
+    }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
+  },
   async conductList(key:ParentKey,slug:string){return publishedConduct(key,slug) as Promise<ReturnType<typeof nativeParentConduct>[]>;},
   async conductDetail(key:ParentKey,slug:string,id:string){return publishedConduct(key,slug,id) as Promise<ReturnType<typeof nativeParentConduct>>;},
   async activities(key:ParentKey,slug:string){return sharedContent(key,slug,'activities') as Promise<ReturnType<typeof nativeParentActivity>[]>;},

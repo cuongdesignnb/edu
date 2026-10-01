@@ -452,6 +452,21 @@ spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/duty-schedule']
 
 
 
+// PA02 reads a bounded, independently section-gated published composite snapshot.
+const overviewWeekTotals=object(Object.fromEntries(['present','late','excused','unexcused','unmarked','published','marked'].map(key=>[key,{type:'integer',minimum:0,maximum:1000}])));
+spec.components.schemas.ParentOverviewAttendanceWeek=object({granularity:{type:'string',enum:['DAILY']},weekStart:studentDate,startsOn:studentDate,endsOn:studentDate,totals:overviewWeekTotals,records:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentAttendance'}}});
+const nullableOverview=name=>({...structuredClone(spec.components.schemas[name]),nullable:true});
+const overviewDuties=nullableOverview('ParentDutySchedule');overviewDuties.properties.items.maxItems=2;
+const overviewActivities=nullableOverview('ParentSharedActivityDirectory');overviewActivities.properties.items.maxItems=3;
+const overviewAnnouncements=nullableOverview('ParentSharedAnnouncementDirectory');overviewAnnouncements.properties.items.maxItems=3;
+spec.components.schemas.ParentPublishedOverview=object({today:studentDate,year:object({startsOn:studentDate,endsOn:studentDate}),asOf:timestamp,
+ teachers:nullableOverview('ParentTeacherDirectory'),attendanceWeek:nullableOverview('ParentOverviewAttendanceWeek'),conduct:nullableOverview('ParentSharedConduct'),
+ timetable:nullableOverview('ParentTimetableWeek'),duties:overviewDuties,activities:overviewActivities,announcements:overviewAnnouncements});
+spec.components.schemas.ParentPublishedOverviewResponse=object({data:{$ref:'#/components/schemas/ParentPublishedOverview'},requestId:label});
+extendOperation('getParentContext','getParentPublishedOverview','/parent/{schoolSlug}/overview/published','parent.overview','ParentPublishedOverview',false,['PA02'],[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}}]);
+operations.find(value=>value.id==='getParentPublishedOverview').scope='parent';
+extendOperation('previewParent','previewParentPublishedOverview','/schools/{schoolId}/parent-access/{accessId}/preview/overview/published','parent_access.preview','ParentPublishedOverview',false,['SC25','PA02'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid}]);
+
 spec.components.schemas.StudentYear=object({id:uuid,version:versionPositive,name:label,status:structuredClone(spec.components.schemas.Year.properties.status),startsOn:studentDate,endsOn:studentDate});
 spec.components.schemas.StudentDirectoryClass=object({id:uuid,version:versionPositive,yearId:uuid,name:label,status:structuredClone(spec.components.schemas.Class.properties.status)});
 spec.components.schemas.StudentDirectoryRow=object({id:uuid,version:versionPositive,createdAt:timestamp,updatedAt:timestamp,studentCode:label,fullName:label,dateOfBirth:studentNullableDate,gender:studentGender,status:structuredClone(spec.components.schemas.Student.properties.status),

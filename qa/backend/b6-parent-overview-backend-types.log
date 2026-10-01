@@ -1,0 +1,3 @@
+src/modules/parents/overview-display.ts(28,53): error TS2339: Property 'status' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/overview-display.ts(28,141): error TS2339: Property 'status' does not exist on type '{ publishedAt: string; }'.
+exitCode=2

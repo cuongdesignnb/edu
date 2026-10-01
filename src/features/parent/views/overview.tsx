@@ -10,10 +10,11 @@ import { Avatar } from "@/components/ui/avatar";
 import { DonutProgress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/ui/states";
 import { NavIcon } from "@/components/layout/icons";
-import { fmtDate, fmtDateLong, fmtDateTime, fmtPercent, fmtPoints, submissionStatus } from "@/lib/formatters";
+import { fmtDate, fmtDateLong, fmtDateTime, fmtPercent, fmtPoints } from "@/lib/formatters";
 import { PState, usePRead, useHref, GRADE_TONE } from "./common";
 
 type Overview = Awaited<ReturnType<typeof parentRepo.overview>>;
+const SUBMISSION:Record<string,{label:string;tone:'neutral'|'warning'|'danger'|'success'|'info'}>={ASSIGNED:{label:'Được giao',tone:'neutral'},SUBMITTED:{label:'Chờ duyệt',tone:'warning'},NEEDS_REVISION:{label:'Cần bổ sung',tone:'danger'},APPROVED:{label:'Đã duyệt',tone:'success'},EXCUSED:{label:'Được miễn',tone:'info'}};
 
 const TINT = {
   blue: "bg-gradient-to-r from-[#eaf3ff] to-white",
@@ -32,9 +33,7 @@ export function ParentOverviewView() {
   const p = useParent();
   const ctx = p.context;
   const q = usePRead(["overview"], (k, s) => parentRepo.overview(k, s));
-  const has = (m: string) => p.modules.includes(m as never);
   const href = useHref();
-  const top = ["teachers", "attendance", "conduct"].filter(has).length;
 
   const notice = (
     <div className="flex items-start gap-3 rounded-2xl border border-[#cfe3fb] bg-[#eef6ff] px-4 py-3">
@@ -88,7 +87,9 @@ export function ParentOverviewView() {
       <div className="md:hidden">{notice}</div>
 
       <PState query={q}>
-        {(d) => (
+        {(d) => {
+          const has = (m:string) => d.modules.includes(m as never),top=["teachers","attendance","conduct"].filter(has).length;
+          return (
           <>
             <div className={clsx("grid grid-cols-1 gap-4", top >= 2 && "@2xl:grid-cols-2", top === 3 && "@5xl:grid-cols-3")}>
               {has("teachers") && <TeacherCard d={d} href={href("teachers")} />}
@@ -106,7 +107,7 @@ export function ParentOverviewView() {
                     <TintHeader tone="green" icon={<NavIcon name="broom" className="size-5" />} title="Trực nhật sắp tới của con" href={href("duties")} />
                     {d.duties.length ? (
                       <ul className="divide-y divide-line px-5 py-2">
-                        {d.duties.map((x) => <li key={x.date + x.task} className="flex items-center justify-between gap-3 py-2.5 text-sm"><span className="font-medium text-ink">{x.task}</span><span className="flex-none text-muted">{fmtDateLong(x.date)}</span></li>)}
+                        {d.duties.map((x,index) => <li key={x.date + x.task + index} className="flex items-center justify-between gap-3 py-2.5 text-sm"><span className="font-medium text-ink">{x.task}</span><span className="flex-none text-muted">{fmtDateLong(x.date)}</span></li>)}
                       </ul>
                     ) : <EmptyState compact title="Chưa có lịch trực nhật sắp tới" description="Lịch trực nhật của con sẽ hiện khi giáo viên công bố." />}
                   </Card>
@@ -116,11 +117,11 @@ export function ParentOverviewView() {
                     <TintHeader tone="purple" icon={<NavIcon name="users" className="size-5" />} title="Hoạt động của con" href={href("activities")} />
                     {d.activities.length ? (
                       <ul className="divide-y divide-line px-5 py-2">
-                        {d.activities.slice(0, 3).map((a) => (
+                        {d.activities.map((a) => (
                           <li key={a.id}>
                             <Link href={href(`activities/${a.id}`)} className="flex items-center gap-3 py-2.5 text-sm hover:text-primary-strong">
                               <span className="min-w-0 flex-1"><span className="block truncate font-medium text-ink">{a.title}</span><span className="text-[12.5px] text-muted">Hạn {fmtDate(a.dueDate)}</span></span>
-                              <Badge tone={submissionStatus[a.status as keyof typeof submissionStatus]?.tone ?? "neutral"}>{submissionStatus[a.status as keyof typeof submissionStatus]?.label ?? a.status}</Badge>
+                              <Badge tone={SUBMISSION[a.status].tone}>{SUBMISSION[a.status].label}</Badge>
                               <ChevronRight className="size-4 flex-none text-faint" aria-hidden />
                             </Link>
                           </li>
@@ -132,7 +133,7 @@ export function ParentOverviewView() {
               </div>
             )}
           </>
-        )}
+        );}}
       </PState>
     </div>
   );
@@ -174,10 +175,10 @@ function TeacherCard({ d, href }: { d: Overview; href: string }) {
               {t.email && <p className="mt-1 flex min-w-0 items-center gap-2 text-body"><Mail className="size-4 flex-none text-primary" aria-hidden /><a href={`mailto:${t.email}`} className="truncate hover:underline">{t.email}</a></p>}
             </div>
           </div>
-          <div className="mt-3 flex items-start gap-2 rounded-xl bg-[#f3f8ff] px-3 py-2.5 text-[13px] text-body">
+          {(t.contactHours||!t.phone&&!t.email)&&<div className="mt-3 flex items-start gap-2 rounded-xl bg-[#f3f8ff] px-3 py-2.5 text-[13px] text-body">
             <Clock3 className="mt-0.5 size-4 flex-none text-primary" aria-hidden />
-            <p>Thời gian liên hệ công việc: <span className="font-medium text-ink">{t.contactHours ?? "Theo lịch của nhà trường"}</span>{!t.phone && !t.email && <> · Nhà trường chưa chia sẻ số điện thoại/email giáo viên, vui lòng liên hệ văn phòng trường.</>}</p>
-          </div>
+            <p>{t.contactHours&&<>Thời gian liên hệ công việc: <span className="font-medium text-ink">{t.contactHours}</span></>}{!t.phone&&!t.email&&<>{t.contactHours&&" · "}Nhà trường chưa chia sẻ số điện thoại/email giáo viên, vui lòng liên hệ văn phòng trường.</>}</p>
+          </div>}
         </div>
       ) : <EmptyState compact title="Chưa có thông tin giáo viên chủ nhiệm" />}
     </Card>
@@ -191,21 +192,22 @@ function AttendanceCard({ d, href }: { d: Overview; href: string }) {
   return (
     <Card>
       <TintHeader tone="green" icon={<NavIcon name="calendarCheck" className="size-5" />} title="Điểm danh tuần này" href={href} />
-      {a && a.published > 0 ? (
+      {a && a.marked > 0 ? (
         <div className="flex items-center gap-5 px-5 py-4">
-          <DonutProgress value={attended} total={a.published} size={116} stroke={11} color="var(--color-success)" label={`Có mặt ${attended}/${a.published} buổi đã công bố`}>
-            <span className="text-[24px] font-bold text-ink">{attended}/{a.published}</span><span className="text-[11.5px] text-muted">Buổi đã công bố</span>
+          <DonutProgress value={attended} total={a.marked} size={116} stroke={11} color="var(--color-success)" label={`Có mặt ${attended}/${a.marked} buổi đã điểm danh`}>
+            <span className="text-[24px] font-bold text-ink">{attended}/{a.marked}</span><span className="max-w-[100px] text-center text-[10px] leading-tight text-muted">Buổi đã điểm danh</span>
           </DonutProgress>
           <div className="min-w-0 flex-1 text-[13px]">
             <p className="text-muted">Tỷ lệ chuyên cần</p>
-            <p className="text-[24px] font-bold text-ink">{fmtPercent(attended, a.published)}</p>
+            <p className="text-[24px] font-bold text-ink">{fmtPercent(attended, a.marked)}</p>
             <ul className="mt-2 space-y-1.5">
               {rows.map(([l, v, c]) => <li key={l} className="flex items-center gap-2"><span className="size-2.5 flex-none rounded-full" style={{ background: c }} aria-hidden /><span className="flex-1 text-body">{l}</span><span className="font-semibold tabular-nums text-ink">{v}</span></li>)}
             </ul>
+            {a.unmarked>0&&<p className="mt-2 text-[12px] text-muted">{a.unmarked} buổi công bố chưa có điểm danh, chưa tính vào tỷ lệ.</p>}
           </div>
         </div>
       ) : (
-        <EmptyState compact icon={<CalendarDays className="size-6" />} title="Chưa có dữ liệu công bố tuần này" description={<>Điểm danh chỉ hiển thị sau khi giáo viên công bố. Chưa công bố không có nghĩa là vắng hay có mặt. <Link href={href} className="font-semibold text-primary-strong hover:underline">Xem theo tháng</Link></>} />
+        <EmptyState compact icon={<CalendarDays className="size-6" />} title={a&&a.unmarked>0?"Chưa có buổi được điểm danh tuần này":"Chưa có dữ liệu công bố tuần này"} description={<>{a&&a.unmarked>0&&`${a.unmarked} buổi công bố chưa có điểm danh. `}Điểm danh chỉ hiển thị sau khi giáo viên công bố. Chưa công bố không có nghĩa là vắng hay có mặt. <Link href={href} className="font-semibold text-primary-strong hover:underline">Xem theo tháng</Link></>} />
       )}
     </Card>
   );
@@ -219,29 +221,29 @@ function ConductCard({ d, href, detailHref, wide }: { d: Overview; href: string;
       {c ? (
         <div className="px-5 py-4">
           <div className="flex items-center gap-4">
-            <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-gradient-to-b from-[#ffd46b] to-[#f59e0b] text-white shadow-[0_4px_12px_rgb(245_158_11/0.35)]" aria-hidden>
-              <span className="text-[24px] font-extrabold leading-none">{c.total}</span><span className="text-[10.5px] font-semibold">điểm</span>
+            <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-gradient-to-b from-[#ffd46b] to-[#f59e0b] text-white shadow-[0_4px_12px_rgb(245_158_11/0.35)]" role="img" aria-label={`Điểm thi đua chính thức đã công bố: ${c.total}`}>
+              <span className="font-extrabold leading-none" style={{fontSize:Math.min(24,104/c.total.length)}}>{c.total}</span><span className="text-[10.5px] font-semibold">điểm</span>
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[13px] text-muted">Xếp loại thi đua</p>
-              <p className="text-[22px] font-bold text-ink">{c.grade}</p>
-              <div className="mt-0.5 flex flex-wrap items-center gap-1.5"><Badge tone={GRADE_TONE(c.gradeTone)}>Tuần {c.weekIndex}</Badge>{c.adjusted && <Badge tone="purple">Đã điều chỉnh · bản {c.versionNo}</Badge>}</div>
+              <p className="text-[22px] font-bold text-ink">{c.grade??"Chưa chia sẻ xếp loại"}</p>
+              <div className="mt-0.5 flex flex-wrap items-center gap-1.5"><Badge tone={GRADE_TONE(c.gradeTone)}>{c.periodLabel}</Badge>{c.adjusted && <Badge tone="purple">Đã điều chỉnh · bản {c.versionNo}</Badge>}</div>
             </div>
           </div>
           {c.items.length ? (
             <ul className="mt-3 divide-y divide-line text-[13px]">
               {c.items.slice(0, 4).map((i, idx) => (
                 <li key={idx} className="flex items-center gap-2 py-1.5">
-                  {i.points >= 0 ? <CheckCircle2 className="size-4 flex-none text-success" aria-hidden /> : <MinusCircle className="size-4 flex-none text-danger" aria-hidden />}
+                  {Number(i.points) >= 0 ? <CheckCircle2 className="size-4 flex-none text-success" aria-hidden /> : <MinusCircle className="size-4 flex-none text-danger" aria-hidden />}
                   <span className="min-w-0 flex-1 truncate text-body">{i.label}</span>
-                  <span className={clsx("font-semibold tabular-nums", i.points >= 0 ? "text-success-text" : "text-danger-text")}>{fmtPoints(i.points)}</span>
+                  <span className={clsx("font-semibold tabular-nums", Number(i.points) >= 0 ? "text-success-text" : "text-danger-text")}>{fmtPoints(Number(i.points))}</span>
                 </li>
               ))}
             </ul>
-          ) : <p className="mt-3 text-[13px] text-muted">Không có ghi nhận cộng/trừ được chia sẻ trong tuần này.</p>}
+          ) : <p className="mt-3 text-[13px] text-muted">Không có ghi nhận cộng/trừ được chia sẻ trong kỳ này.</p>}
           <div className="mt-2 flex items-center justify-between gap-2 text-[12.5px] text-muted">
             <span>Công bố {fmtDateTime(c.publishedAt)}</span>
-            <Link href={detailHref(c.periodId)} className="font-semibold text-primary-strong hover:underline">Chi tiết tuần {c.weekIndex}</Link>
+            <Link href={detailHref(c.periodId)} className="font-semibold text-primary-strong hover:underline">Chi tiết {c.periodLabel}</Link>
           </div>
           {c.adjusted && <p className="mt-2 flex items-start gap-1.5 text-[12.5px] text-purple-text"><AlertTriangle className="mt-0.5 size-3.5 flex-none" aria-hidden />{c.adjustmentNote}</p>}
         </div>
@@ -256,26 +258,27 @@ function TodayCard({ d, href }: { d: Overview; href: string }) {
       <TintHeader tone="purple" icon={<NavIcon name="calendar" className="size-5 !text-purple" />} title="Lịch học hôm nay" href={href} />
       <div className="flex items-center justify-between gap-2 px-5 pt-3">
         <p className="text-sm font-bold text-ink">{fmtDateLong(d.today)}</p>
-        {d.todayLessons.length > 0 && <Badge tone="info" dot={false}>{d.todayLessons.length} tiết học</Badge>}
+        {d.todayLessons.length > 0 && <Badge tone="info" dot={false}>{d.todayLessons.length} tiết được công bố</Badge>}
       </div>
+      {d.todayHolidayNames.length>0&&<p className="mx-5 mt-2 rounded-lg bg-purple-soft px-3 py-2 text-[13px] text-purple-text">{d.todayHolidayNames.join(" · ")}</p>}
       {d.todayLessons.length ? (
         <div className="table-wrap px-3 pb-3 pt-2">
           <table className="table text-[13px]">
             <thead><tr><th className="center">Tiết</th><th>Thời gian</th><th>Môn học</th><th>Phòng</th><th>Giáo viên</th></tr></thead>
             <tbody>
-              {d.todayLessons.map((l) => (
-                <tr key={l.period} className={l.cancelled ? "opacity-70" : undefined}>
-                  <td className="center">{l.period}</td>
+              {d.todayLessons.map((l,index) => (
+                <tr key={l.startsAt+l.subject+index} className={l.cancelled ? "opacity-70" : undefined}>
+                  <td className="center">{l.period??"—"}</td>
                   <td className="whitespace-nowrap tabular-nums">{l.start} - {l.end}</td>
                   <td className="font-medium text-ink">{l.subject}{l.cancelled && <Badge tone="danger" className="ml-1.5">Nghỉ</Badge>}{!l.cancelled && l.changed && <Badge tone="warning" className="ml-1.5" title={l.changed}>Thay đổi</Badge>}</td>
-                  <td>{l.room}</td>
+                  <td>{l.room??"—"}</td>
                   <td className="whitespace-nowrap">{l.teacher}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      ) : <EmptyState compact title="Hôm nay con không có tiết học" />}
+      ) : <EmptyState compact title="Chưa có tiết học nào được công bố hôm nay" />}
     </Card>
   );
 }

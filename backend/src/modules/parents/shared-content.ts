@@ -3,12 +3,13 @@ import {validateSchema} from '../../common/contract';
 import {Problem} from '../../common/problem';
 import type {ParentPrincipal} from './parent.service';
 
-export async function parentSharedContent(tx:Transaction,p:ParentPrincipal,section:'activities'|'announcements',id?:string){
+export async function parentSharedContent(tx:Transaction,p:ParentPrincipal,section:'activities'|'announcements',id?:string,previewLimit?:3){
+ if(previewLimit!==undefined&&(previewLimit!==3||id))throw new Problem(500,'PARENT_PURPOSE_QUERY_INVALID');
  const rows=(await tx.query<Row>(`SELECT i.payload,app.parent_publication_time(i.school_id,i.student_id,i.year_id,i.section,i.publication_id) AS published_at,
    app.parent_content_meta(i.school_id,i.student_id,i.year_id,i.section,i.publication_id) AS metadata
    FROM app.parent_publication_items i WHERE i.school_id=$1 AND i.student_id=$2 AND i.year_id=$3 AND i.section=$4
    AND app.parent_content_meta(i.school_id,i.student_id,i.year_id,i.section,i.publication_id) IS NOT NULL
-   ${id?"AND i.payload->>'id'=$5":''} ORDER BY i.created_at DESC,i.id LIMIT 1001`,[p.schoolId,p.studentId,p.yearId,section,...(id?[id]:[])])).rows;
+   ${id?"AND i.payload->>'id'=$5":''} ORDER BY published_at DESC,i.created_at DESC,i.id LIMIT ${previewLimit??1001}`,[p.schoolId,p.studentId,p.yearId,section,...(id?[id]:[])])).rows;
  if(rows.length>1000)throw new Problem(422,'PARENT_CONTENT_TOO_LARGE');
  const items=rows.map(row=>{
    const item:Row={...row.payload as Row,publishedAt:iso(row.published_at as Date)};

@@ -1,0 +1,43 @@
+import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
+import {connectedParentRepo as repo} from '@/lib/repositories/connected/parent';
+import {nativeParentOverview} from '@/lib/repositories/connected/parent-overview';
+import {nativeParentContext} from '@/lib/repositories/connected/parent-context';
+import {beginParentExchange,clearParentSession,readParentView} from '@/lib/api/parent-session';
+import {authenticationChanged,authorizationChanged,captureStaffAccess} from '@/lib/api/client';
+import type {ApiSchemas} from '@/lib/api/generated';
+import type {Ctx} from '@/lib/repositories/core';
+import {overviewContext,overviewValue,overviewOnly,overviewViewId as viewId,overviewSlug as slug,overviewSchoolId as schoolId,overviewAccessId as accessId,overviewAt as at} from '../fixtures/parent-overview';
+const other='71000000-0000-4000-8000-000000000099',response=(data:unknown)=>new Response(JSON.stringify({data,requestId:'overview-unit'}),{headers:{'Content-Type':'application/json'}}),display=(context=overviewContext())=>nativeParentContext(context,slug).display,adopt=(id=viewId)=>beginParentExchange().adopt(slug,id,'overview-unit-csrf');
+beforeEach(()=>{clearParentSession();authenticationChanged();});afterEach(()=>{clearParentSession();vi.unstubAllGlobals();});
+describe('Native section-gated parent overview',()=>{
+ it('retains all actual DAILY facts and a marked denominator, exact official decimal, own previews and real cancelled lessons',()=>{
+  const d=nativeParentOverview(overviewValue(),display());expect(d.attendanceWeek).toMatchObject({present:6,late:2,unmarked:2,published:12,marked:10});expect(d.conduct).toMatchObject({total:'100.00',grade:null,periodLabel:'Tuần nguồn 5'});expect(d.todayLessons).toMatchObject([{period:null,room:undefined,cancelled:true,start:'07:30',teacher:'Tên giáo viên lúc công bố'}]);expect(d.teacher?.contactHours).toBeUndefined();expect(d.activities[0].status).toBe('EXCUSED');expect(d.announcements[0].summary).toBeNull();expect(JSON.stringify(d)).not.toMatch(/studentId|enrollmentId|staffSnapshot|csrfToken|viewId/);
+ });
+ it('overview-only contains no borrowed sections and allowed empty publications remain explicitly empty',()=>{
+  const d=nativeParentOverview(overviewOnly(),display(overviewContext(['overview'])));expect(d.modules).toEqual([]);expect(d.teacher).toBeNull();expect(d.conduct).toBeNull();expect(d.activities).toEqual([]);const value=overviewValue();value.attendanceWeek!.records=[];value.attendanceWeek!.totals={present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0};value.conduct=null;value.timetable!.days.forEach(day=>{day.lessons=[];});value.activities!.items=[];value.announcements!.items=[];expect(nativeParentOverview(value,display()).attendanceWeek?.marked).toBe(0);
+ });
+ it('rejects forbidden panels, absent authorized directories, private fields and mismatched current scope',()=>{
+  const value=overviewValue();for(const bad of [{...value,students:[other]},{...value,today:'2026-09-30'},{...value,year:{...value.year,endsOn:'2027-07-01'}},{...value,teachers:null},{...value,activities:null},{...value,asOf:'invalid'}])expect(()=>nativeParentOverview(bad as ApiSchemas['ParentPublishedOverview'],display())).toThrow();expect(()=>nativeParentOverview(value,display(overviewContext(['overview'])))).toThrow();expect(()=>nativeParentOverview(value,display(overviewContext(['conduct'])))).toThrow();
+ });
+ it('rejects contradictory weekly totals, granularity, dates and private record fields instead of recomputing a partial source',()=>{
+  const value=overviewValue(),week=value.attendanceWeek!;for(const attendanceWeek of [{...week,totals:{...week.totals,marked:12}},{...week,granularity:'LESSON'},{...week,records:week.records.slice(0,10)},{...week,records:week.records.map((row,n)=>n?row:{...row,internalNote:'private'})},{...week,records:week.records.map((row,n)=>n?row:{...row,date:'2026-09-01'})},{...week,records:Array.from({length:1001},()=>week.records[0])}])expect(()=>nativeParentOverview({...value,attendanceWeek} as ApiSchemas['ParentPublishedOverview'],display())).toThrow();
+ });
+ it('rejects oversized previews or completed/cancelled/past duty rows and keeps actual published holiday labels',()=>{
+  const value=overviewValue();for(const bad of [{...value,activities:{items:Array.from({length:4},()=>value.activities!.items[0])}},{...value,announcements:{items:Array.from({length:4},()=>value.announcements!.items[0])}},{...value,duties:{...value.duties,items:Array.from({length:3},()=>value.duties!.items[0])}},{...value,duties:{...value.duties,items:[{...value.duties!.items[0],status:'DONE'}]}},{...value,duties:{...value.duties,items:[{...value.duties!.items[0],date:'2026-09-30'}]}}])expect(()=>nativeParentOverview(bad as ApiSchemas['ParentPublishedOverview'],display())).toThrow();value.timetable!.days[6].holidayNames=['Ngày nghỉ được công bố'];expect(nativeParentOverview(value,display()).todayHolidayNames).toEqual(['Ngày nghỉ được công bố']);
+ });
+ it('outside the granted year returns no current attendance or timetable and cannot borrow a current year',()=>{
+  const ctx=overviewContext();ctx.today='2027-07-01';const value=overviewValue();value.today=ctx.today;value.teachers!.today=ctx.today;value.duties!.today=ctx.today;value.duties!.items=[];value.attendanceWeek=null;value.timetable=null;expect(nativeParentOverview(value,display(ctx)).attendanceWeek).toBeNull();value.attendanceWeek=overviewValue().attendanceWeek;expect(()=>nativeParentOverview(value,display(ctx))).toThrow();
+ });
+ it('uses exactly context then one composite purpose read with the current view; no per-panel or obsolete overview fallback',async()=>{
+  adopt();const fetcher=vi.fn(async(url:string)=>response(url.endsWith('/context')?overviewContext():overviewValue()));vi.stubGlobal('fetch',fetcher);expect((await repo.overview({viewId},slug)).conduct?.total).toBe('100.00');const calls=fetcher.mock.calls as unknown as Array<[string,RequestInit]>;expect(calls.map(([url])=>url)).toEqual([`/api/v1/parent/${slug}/context`,`/api/v1/parent/${slug}/overview/published`]);for(const [,options]of calls)expect((options.headers as Record<string,string>)['X-Parent-View']).toBe(viewId);
+ });
+ it('server failures stay errors and only current terminal denial clears the current view',async()=>{
+  adopt();for(const [code,status]of [['DATABASE_UNAVAILABLE',503],['PARENT_SECTION_DENIED',403]] as const){vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/context')?response(overviewContext()):new Response(JSON.stringify({code}),{status})));await expect(repo.overview({viewId},slug)).rejects.toBeDefined();expect(readParentView(slug)).toBe(viewId);}vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/context')?response(overviewContext()):new Response(JSON.stringify({code:'PARENT_ACCESS_INVALID'}),{status:401})));await expect(repo.overview({viewId},slug)).rejects.toBeDefined();expect(readParentView(slug)).toBeNull();
+ });
+ it('changing child during context or content rejects an older receipt or denial without clearing the new owner',async()=>{
+  for(const phase of ['context','content'])for(const status of [200,401]){adopt();let resolve:(response:Response)=>void=()=>{},started=()=>{};const ready=new Promise<void>(r=>{started=r;});vi.stubGlobal('fetch',vi.fn(async(url:string)=>phase==='context'||!url.endsWith('/context')?new Promise<Response>(r=>{resolve=r;started();}):response(overviewContext())));const pending=repo.overview({viewId},slug);await ready;adopt(other);resolve(status===200?response(phase==='context'?overviewContext():overviewValue()):new Response(JSON.stringify({code:'PARENT_ACCESS_INVALID'}),{status}));await expect(pending).rejects.toMatchObject({code:'CONFLICT'});expect(readParentView(slug)).toBe(other);}
+ });
+ it('preview uses the same purpose with independent current staff ownership and never adopts a parent cookie/view',async()=>{
+  adopt();const ctx:Ctx={actor:{kind:'staff',userId:other},today:'2026-10-04',now:at,staffOwner:captureStaffAccess()},key={preview:{ctx,schoolId,accessId}},fetcher=vi.fn(async(url:string)=>response(url.endsWith('/preview')?{context:overviewContext()}:overviewValue()));vi.stubGlobal('fetch',fetcher);expect((await repo.overview(key,slug)).activities[0].status).toBe('EXCUSED');expect(fetcher.mock.calls.map(([url])=>url)).toEqual([`/api/v1/schools/${schoolId}/parent-access/${accessId}/preview`,`/api/v1/schools/${schoolId}/parent-access/${accessId}/preview/overview/published`]);expect(readParentView(slug)).toBe(viewId);authorizationChanged();await expect(repo.overview(key,slug)).rejects.toMatchObject({code:'FORBIDDEN'});expect(fetcher).toHaveBeenCalledTimes(2);
+ });
+});

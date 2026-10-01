@@ -1,0 +1,89 @@
+ Container edumanage_backend_test-runner-run-235a96390c0b Creating
+ Container edumanage_backend_test-runner-run-235a96390c0b Created
+✔ B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal (2006.471579ms)
+✔ B6 parent timetable week keeps pinned published period/status/work labels, own holiday calendar and independent preview through replacement and withdrawal (2977.264407ms)
+✔ B6 parent timetable week SQL denies foreign/current-section contexts and raw sources, clips the year and follows transfer or link revocation (901.874474ms)
+✔ B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal (1091.914121ms)
+✔ B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights (2384.183621ms)
+✔ B6 parent conduct display pins published own decimals and metadata and exposes only the same child revision history through adjustment and withdrawal (929.540717ms)
+✔ B6 parent conduct metadata and history deny wrong school child year section session, raw sources and revoked relationships (579.377144ms)
+✖ B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections (905.700554ms)
+✖ B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights (264.712725ms)
+✖ B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants (486.620699ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 7
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13382.954121
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3189:1
+✖ B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections (905.700554ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(activity?.id)
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3196:238)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3218:1
+✖ B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights (264.712725ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:csrf_invalid","title":"CSRF_INVALID","status":403,"code":"CSRF_INVALID","requestId":"1a90bc7c-ad03-459d-9922-b2a5c0918985"}
+
+  403 !== 200
+
+      at mark (file:///srv/api/tests/integration/foundation.test.mjs:3221:583)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3222:128)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 403,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration/foundation.test.mjs:3236:1
+✖ B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants (486.620699ms)
+  error: new row for relation "parent_access_links" violates check constraint "parent_access_links_check"
+      at /srv/api/node_modules/pg/lib/client.js:694:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Database.transaction (/srv/api/dist/database/database.js:47:27)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3242:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    length: 212,
+    severity: 'ERROR',
+    code: '23514',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'app',
+    table: 'parent_access_links',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'parent_access_links_check',
+    file: 'execMain.c',
+    line: '2074',
+    routine: 'ExecConstraints'
+  }
+
+exitCode=1

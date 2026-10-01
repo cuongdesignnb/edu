@@ -4011,6 +4011,29 @@
       "evidence": [
         "qa/backend/b6-parent-conduct-integration-selected.log: 6/6 actual PostgreSQL checks; 44 migrations/replay, own decimal publications, pinned metadata, adjustment history, withdrawal, wrong school/child/year/section/session and raw-source denial; independent scoped preview. Full corrected regression run remains separate evidence."
       ]
+    },
+    {
+      "operationId": "getParentPublishedOverview",
+      "screenIds": [
+        "PA02"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview"
+      ]
+    },
+    {
+      "operationId": "previewParentPublishedOverview",
+      "screenIds": [
+        "SC25",
+        "PA02"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview"
+      ]
     }
   ],
   "screens": [
@@ -4793,7 +4816,8 @@
         "previewParentPublishedAnnouncementDirectory",
         "previewParentPublishedAnnouncement",
         "previewParentPublishedConductDirectory",
-        "previewParentPublishedConduct"
+        "previewParentPublishedConduct",
+        "previewParentPublishedOverview"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5515,11 +5539,15 @@
       "screenId": "PA02",
       "scope": "core",
       "operationIds": [
-        "getParentOverview"
+        "getParentOverview",
+        "getParentPublishedOverview",
+        "previewParentPublishedOverview"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-overview — 344/344 frontend, 80/80 controlled Edge INTERCEPTED_API_NOT_POSTGRES_E2E, final types/lint/build, 3 inspected desktop/mobile/overview-only screenshots and 10/10 actual PostgreSQL selected integrations; whole-goal acceptance pending"
+      ],
       "apiStatus": "TESTED"
     },
     {

@@ -1,0 +1,12 @@
+warning: in the working copy of '.gitignore', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/scripts/generate-contract.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/access.service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/conduct-display.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/parent.service.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/src/modules/parents/shared-content.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/contract/schemas.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'backend/tests/integration/foundation.test.mjs', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'docs/backend-adrs.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/features/parent/views/overview.tsx', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/lib/repositories/connected/parent.ts', CRLF will be replaced by LF the next time Git touches it
+exitCode=0

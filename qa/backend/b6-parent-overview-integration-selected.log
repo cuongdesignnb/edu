@@ -1,0 +1,21 @@
+ Container edumanage_backend_test-runner-run-c65e2761c37f Creating
+ Container edumanage_backend_test-runner-run-c65e2761c37f Created
+✔ B6 parent duty schedule includes all published batch rows and current source statuses, denies other scopes and follows withdrawal (1842.978712ms)
+✔ B6 parent timetable week keeps pinned published period/status/work labels, own holiday calendar and independent preview through replacement and withdrawal (3057.369816ms)
+✔ B6 parent timetable week SQL denies foreign/current-section contexts and raw sources, clips the year and follows transfer or link revocation (894.521255ms)
+✔ B6 parent published activity directory and detail pin the own-child state and metadata until replacement or withdrawal (1005.599114ms)
+✔ B6 parent published announcements pin rich content and scope kinds while attachments retain current independent rights (2138.669321ms)
+✔ B6 parent conduct display pins published own decimals and metadata and exposes only the same child revision history through adjustment and withdrawal (904.472126ms)
+✔ B6 parent conduct metadata and history deny wrong school child year section session, raw sources and revoked relationships (555.557839ms)
+✔ B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections (2522.98765ms)
+✔ B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights (1794.903546ms)
+✔ B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants (422.807327ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15961.067864
+exitCode=0

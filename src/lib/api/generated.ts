@@ -395,6 +395,9 @@ export interface ApiSchemas {
   "ParentTeacherDirectoryResponse": { "data": ApiSchemas["ParentTeacherDirectory"]; "requestId": string; };
   "ParentDutySchedule": { "today": string; "year": { "startsOn": string; "endsOn": string; }; "items": Array<ApiSchemas["ParentDuty"]>; };
   "ParentDutyScheduleResponse": { "data": ApiSchemas["ParentDutySchedule"]; "requestId": string; };
+  "ParentOverviewAttendanceWeek": { "granularity": "DAILY"; "weekStart": string; "startsOn": string; "endsOn": string; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; "records": Array<ApiSchemas["ParentAttendance"]>; };
+  "ParentPublishedOverview": { "today": string; "year": { "startsOn": string; "endsOn": string; }; "asOf": string; "teachers": ({ "today": string; "classLabel": (string) | null; "contactHours": (string) | null; "teachers": Array<ApiSchemas["ParentTeacherDirectoryEntry"]>; }) | null; "attendanceWeek": ({ "granularity": "DAILY"; "weekStart": string; "startsOn": string; "endsOn": string; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; "records": Array<ApiSchemas["ParentAttendance"]>; }) | null; "conduct": ({ "periodId": string; "periodLabel": string; "revision": number; "basePoints": string; "bonusPoints": string; "penaltyPoints": string; "finalPoints": string; "classification": (string) | null; "lines": Array<ApiSchemas["ParentPublishedPointLine"]>; "publishedAt": string; "adjusted": boolean; "weekNumber": (number) | null; "startsOn": (string) | null; "endsOn": (string) | null; "classLabel": (string) | null; "ruleSetName": (string) | null; "ruleSetRevision": (number) | null; "minimumPoints": (string) | null; "maximumPoints": (string) | null; "timezone": string; "history": Array<ApiSchemas["ParentConductRevision"]>; }) | null; "timetable": ({ "weekStart": string; "today": string; "timezone": string; "year": { "startsOn": string; "endsOn": string; }; "weekNumber": (number) | null; "days": Array<ApiSchemas["ParentTimetableWeekDay"]>; }) | null; "duties": ({ "today": string; "year": { "startsOn": string; "endsOn": string; }; "items": Array<ApiSchemas["ParentDuty"]>; }) | null; "activities": ({ "items": Array<ApiSchemas["ParentSharedActivity"]>; }) | null; "announcements": ({ "items": Array<ApiSchemas["ParentSharedAnnouncement"]>; }) | null; };
+  "ParentPublishedOverviewResponse": { "data": ApiSchemas["ParentPublishedOverview"]; "requestId": string; };
   "StudentYear": { "id": string; "version": number; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; "startsOn": string; "endsOn": string; };
   "StudentDirectoryClass": { "id": string; "version": number; "yearId": string; "name": string; "status": "DRAFT" | "ACTIVE" | "ARCHIVED"; };
   "StudentDirectoryRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "dateOfBirth": (string) | null; "gender": ("Nam" | "Nữ" | null) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "enrollmentId": string; "enrollmentVersion": number; "classId": string; "className": string; "yearId": string; "yearName": string; "enrollmentInEffect": boolean; "guardianCount": (number) | null; "verifiedGuardians": (number) | null; "activeLinks": (number) | null; };
@@ -3643,6 +3646,26 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentDutySchedule",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentPublishedOverview": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/overview/published",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentPublishedOverview",
+    "list": false,
+    "permission": "parent.overview",
+    "readOnly": true
+  },
+  "previewParentPublishedOverview": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/overview/published",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentPublishedOverview",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

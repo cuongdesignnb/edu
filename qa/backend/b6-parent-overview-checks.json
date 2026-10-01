@@ -1,0 +1,283 @@
+{
+  "phase": "B6 PA02 native bounded parent overview; partial goal checkpoint",
+  "previousCommit": "0f0c73b95637bd88731ad75ab47759b8a3530eff",
+  "backend": {
+    "contractOperations": 339,
+    "schemas": 457,
+    "operationStatus": {
+      "TESTED": 327,
+      "IMPLEMENTED": 12
+    },
+    "migrations": 45,
+    "runnerImage": "sha256:4ccae50959980670dbe13b848efc385b724f128dd940e26d9fd5c7086f1b62e9",
+    "postgresFull": {
+      "tests": 180,
+      "pass": 180,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 602222.644422,
+      "log": "b6-parent-overview-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 15961.067864,
+      "log": "b6-parent-overview-integration-selected.log"
+    },
+    "postgresSearchSelected": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 12063.532492,
+      "log": "b6-parent-overview-integration-selected-search.log"
+    },
+    "unitContract": {
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 511.064927,
+      "log": "b6-parent-overview-backend-unit-contract-search.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-overview-backend-types-search.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-overview-backend-lint-search.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-overview-integration-syntax-search.log"
+    },
+    "contractSemanticDiff": {
+      "changedExistingSchemas": [],
+      "changedExistingOperations": [],
+      "newSchemas": 3,
+      "newOperations": 2,
+      "log": "b6-parent-overview-contract-diff.log"
+    },
+    "platformSearchDiagnostic": {
+      "kind": "INDIVIDUAL_SYNTHETIC_READS_NOT_RELEASE_WORKLOAD",
+      "before": [
+        {
+          "kind": "platform-search-read-only-diagnostic",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "schools": 2648,
+          "total": 3,
+          "pageMs": [
+            8502.389662,
+            8194.980737,
+            7578.441536999999
+          ],
+          "minimalSearchedCount": false
+        },
+        {
+          "kind": "platform-search-read-only-diagnostic",
+          "restoredJit": "on",
+          "statementTimeout": "5s"
+        }
+      ],
+      "after": [
+        {
+          "kind": "platform-search-read-only-diagnostic",
+          "originalJit": "on",
+          "statementTimeout": "5s",
+          "schools": 2653,
+          "total": 3,
+          "pageMs": [
+            301.294675,
+            269.308806,
+            241.29957699999989
+          ],
+          "minimalSearchedCount": true
+        },
+        {
+          "kind": "platform-search-read-only-diagnostic",
+          "restoredJit": "on",
+          "statementTimeout": "5s"
+        }
+      ],
+      "beforeLog": "b6-parent-overview-platform-search-before.log",
+      "afterLog": "b6-parent-overview-platform-search-after.log"
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 344,
+      "fail": 0,
+      "skipped": 0,
+      "files": 40,
+      "durationSeconds": 10.26,
+      "apiCases": 303,
+      "historicalSyntheticRegressions": 41,
+      "newOverviewCases": 10,
+      "log": "b6-parent-overview-frontend-full.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-overview-frontend-types-final-visual.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-overview-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-overview-build.log"
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 80,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 85834.383,
+    "newCases": 3,
+    "log": "b6-parent-overview-browser-final.log",
+    "results": "b6-parent-overview-browser-results-final.json",
+    "run": {
+      "prefix": "b6-parent-overview",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T11:07:08.552Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 31976,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T11:08:35.572Z",
+      "exitCode": 0
+    },
+    "inspectedScreenshots": [
+      "b6-parent-overview-parent-overview-desktop.png",
+      "b6-parent-overview-parent-overview-mobile.png",
+      "b6-parent-overview-parent-overview-only-mobile.png"
+    ]
+  },
+  "initialFailures": [
+    {
+      "kind": "backend type inference",
+      "exitCode": 2,
+      "log": "b6-parent-overview-backend-types.log",
+      "reason": "The mapped publication object inferred only publishedAt; explicit Row annotation preserves validated source fields before counting."
+    },
+    {
+      "kind": "SDK command path",
+      "exitCode": 1,
+      "log": "b6-parent-overview-sdk-generation-initial.log",
+      "reason": "A nonexistent helper path was attempted, then the existing backend/scripts/generate-frontend-client.mjs was run successfully."
+    },
+    {
+      "kind": "integration fixtures",
+      "result": {
+        "tests": 10,
+        "pass": 7,
+        "fail": 3,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 13382.954121,
+        "log": "b6-parent-overview-integration-selected-initial.log"
+      },
+      "reason": "Required activity description was omitted, authenticated PATCH used bootstrap CSRF, and one link expiry was before creation. The source-complete fixture, actual staff-session CSRF and elapsed expiry were corrected; application guards were retained."
+    }
+  ],
+  "postgresInitialFailure": {
+    "result": {
+      "tests": 179,
+      "pass": 178,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 657395.784274,
+      "log": "b6-parent-overview-integration-full-initial.log"
+    },
+    "runnerImage": "sha256:eecb5bdd4a0d7af8f7c7c6806586f12924f3f8309985fc115d51cdfbd15b8f96",
+    "reason": "The unchanged nullable platform school keyset test returnedHTTP500 around5.2s as text search invoked full operational aggregates across2648 retained test schools. Independent before reads completed in7.6–8.5s per page. Migration045 supplies only the same effective administrator work labels under the existing operator guard; searched counts and predicates omit unrelated display aggregates, while selected DTO metadata and aggregate sort remain actual."
+  },
+  "visualCorrection": {
+    "priorBrowserStats": {
+      "startTime": "2026-10-01T11:02:43.714Z",
+      "duration": 84898.575,
+      "expected": 80,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "priorResults": "b6-parent-overview-before-visual-browser-results-final.json",
+    "priorRun": "b6-parent-overview-before-visual-browser-run.json",
+    "reason": "Inspection after the first passing controlled-browser suite found100.00 clipped in its fixed score circle and a cramped donut label. Score font now fits the actual string, the circle has an accessible exact official-total label, and the donut caption fits. Controlled context publication time was also made consistent with its actual synthetic panels. Final frontend/build/browser were rerun."
+  },
+  "sourceInventory": {
+    "nativeCandidates": 127,
+    "activatedCandidates": 127,
+    "matchedLegacyMethods": 114,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 117,
+    "log": "b6-parent-overview-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 60,
+    "NOT_STARTED": 55,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA02"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T18:07:05.2167820+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T18:09:15.0148471+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T18:27:13.2899885+07:00",
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "implementedBehavior": [
+    "One parent-role repeatable-read read-only composite checks exact overview and every independently allowed section; unshared panels are explicitly null.",
+    "Actual local Monday week clipped to granted year retains all own DAILY records up to today; LESSON/draft/future facts do not contribute. Historical UNMARKED facts are not a marked denominator.",
+    "Latest conduct uses actual publication time, official decimals and real period labels. Only3 activities/announcements and2 upcoming ASSIGNED duties are selected by SQL, with existing independent document rights.",
+    "Teachers, holidays and scheduled/cancelled lesson work labels use current allowed teachers and pinned published timetable. Missing publication does not claim no class or0score.",
+    "Exact parent/staff owners span context and content; older receipts/errors cannot expose content or clear a newer child; preview never adopts parent cookies."
+  ],
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  }
+}

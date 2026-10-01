@@ -1,0 +1,5 @@
+ Container edumanage_backend_test-runner-run-695257c36944 Creating
+ Container edumanage_backend_test-runner-run-695257c36944 Created
+{"kind":"platform-search-read-only-diagnostic","originalJit":"on","statementTimeout":"5s","schools":2648,"total":3,"pageMs":[8502.389662,8194.980737,7578.441536999999],"minimalSearchedCount":false}
+{"kind":"platform-search-read-only-diagnostic","restoredJit":"on","statementTimeout":"5s"}
+exitCode=0

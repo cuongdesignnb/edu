@@ -1,0 +1,18 @@
+ Container edumanage_backend_test-runner-run-b272d9a5d6ac Creating
+ Container edumanage_backend_test-runner-run-b272d9a5d6ac Created
+✔ B5 signed native keysets cross a nullable sort boundary without dropping or repeating persisted schools (1521.398384ms)
+{"checkpoint":"platform-school-page-real-cohort","schools":2651,"firstRows":1,"firstMs":7.7405369999996765}
+✔ B6 platform school pagination counts its real base cohort without computing every school aggregate and preserves filters search metadata and current denial (131.821663ms)
+✔ B6 parent published overview bounds each own shared panel, chooses actual publication time and follows withdrawal without borrowing sections (4477.37538ms)
+✔ B6 parent overview counts every real DAILY slot beyond a mixed ten-row page, excludes LESSON future and draft facts and rechecks current section rights (3913.200398ms)
+✔ B6 parent overview snapshot denies foreign school child year missing session and independent preview authority without raw-source grants (578.728059ms)
+✔ B6 platform administrator search labels preserve current aggregate semantics and restore tenant context while denying other roles (583.642189ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12063.532492
+exitCode=0
