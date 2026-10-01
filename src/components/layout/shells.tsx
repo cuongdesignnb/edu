@@ -138,7 +138,7 @@ function PrivateYearScope({children}: {children: ReactNode}) { return children; 
 
 export function SchoolShell({ schoolId, children }: { schoolId: string; children: ReactNode }) {
   const pathname = usePathname();
-  const independent = /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support|students|guardians)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
+  const independent = /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support|students|guardians|parent-access)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
   return (
     <RequireStaffSession>
       <SchoolContextProvider schoolId={schoolId} loading={<Frame nav={[]} homeHref={`/school/${schoolId}`} roleLabel="" search={null} schoolId={schoolId}><PageSkeleton /></Frame>}>

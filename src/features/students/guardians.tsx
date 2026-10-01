@@ -21,7 +21,7 @@ import { EmptyFiltered, EmptyState, ErrorState, Skeleton } from "@/components/ui
 import { DataTable, FilterBar, Pagination, useListQuery, type Column } from "@/components/data/table";
 import { SchoolSourceState } from "@/features/school-org/common";
 import { ACCESS_STATUS } from "./shared";
-import { GuardianDialog, IssueAccessDialog, RevokeAccessDialog, VerifyDialog, type GuardianEditTarget } from "./dialogs";
+import { GuardianDialog, IssueAccessDialog, RevokeAccessDialog, VerifyDialog, type GuardianEditTarget, type ParentLinkRevokeTarget } from "./dialogs";
 
 type Row = Awaited<ReturnType<typeof studentsRepo.guardians>>["items"][number];
 
@@ -84,7 +84,7 @@ export function GuardianDetail({ schoolId, guardianId }: { schoolId: string; gua
   const [edit, setEdit] = useState<null | { studentId: string; studentName: string; relationshipId: string; relation: GuardianEditTarget }>(null);
   const [verify, setVerify] = useState<Parameters<typeof VerifyDialog>[0]["target"]>(null);
   const [issue, setIssue] = useState<{ studentId: string; relationshipId: string } | null>(null);
-  const [revoke, setRevoke] = useState<{ accessId: string; label: string } | null>(null);
+  const [revoke, setRevoke] = useState<ParentLinkRevokeTarget | null>(null);
   return (
     <SchoolSourceState query={q}>
       {(d) => (
@@ -133,7 +133,7 @@ export function GuardianDetail({ schoolId, guardianId }: { schoolId: string; gua
                               <StatusBadge status={l.status} map={ACCESS_STATUS} />
                               <span className="min-w-0 flex-1">Năm {l.yearLabel} · cấp {fmtDate(l.issuedAt)} · hạn {fmtDate(l.expiresAt)} · {l.modules.length} mục</span>
                               <Link href={`${base}/parent-access/${l.id}`} className="card-link">Chi tiết</Link>
-                              {r.canRevokeLinks && l.status === "active" && <Button size="sm" variant="danger-soft" icon={<Ban className="size-4" />} onClick={() => setRevoke({ accessId: l.id, label: `Link cấp cho ${r.relation.toLowerCase()} em ${r.student.name}` })}>Thu hồi</Button>}
+                              {r.canRevokeLinks && l.status === "active" && <Button size="sm" variant="danger-soft" icon={<Ban className="size-4" />} onClick={() => setRevoke({ accessId: l.id, source: {version: l.version, studentId: l.studentId, yearId: l.yearId, relationshipId: l.relationshipId}, label: `Link cấp cho ${r.relation.toLowerCase()} em ${r.student.name}` })}>Thu hồi</Button>}
                             </li>
                           ))}
                         </ul>

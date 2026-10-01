@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-access-adapter.test.ts (8 tests) 35ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  13:06:58
+   Duration  585ms (transform 166ms, setup 54ms, collect 179ms, tests 35ms, environment 0ms, prepare 132ms)

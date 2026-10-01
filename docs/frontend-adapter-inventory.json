@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 105,
-  "activatedCandidateCount": 105,
-  "activatedLegacyMethodCount": 95,
+  "candidateCount": 109,
+  "activatedCandidateCount": 109,
+  "activatedLegacyMethodCount": 98,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -3700,7 +3700,17 @@
         "q: ListQuery"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "accessList",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",
@@ -3713,7 +3723,17 @@
         "accessId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "access",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",
@@ -3750,7 +3770,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "studentsRepo",
+        "method": "revokeAccess",
+        "file": "src/lib/repositories/connected/students.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "studentsRepo",
@@ -4113,6 +4143,16 @@
       "repository": "studentsExtraRepo",
       "method": "guardianForm",
       "file": "src/lib/repositories/connected/students-extra.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
+    {
+      "repository": "studentsRepo",
+      "method": "accessEvents",
+      "file": "src/lib/repositories/connected/students.ts",
       "status": "IMPLEMENTED",
       "activated": true,
       "evidence": [

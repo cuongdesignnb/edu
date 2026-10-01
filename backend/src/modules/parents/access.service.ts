@@ -10,13 +10,14 @@ import { reason,version } from '../conduct/conduct-data';
 import { ParentService } from './parent.service';
 import { schoolSettings } from '../settings/school-settings';
 import { parentIssueContext,parentIssueStudents,parentIssueSource,reviewParentIssue } from './access-issue-source';
+import { parentAccessDirectory,parentAccessDirectorySummary,parentAccessDetails } from './access-directory';
 import type { RequestContext,Handler,Result } from '../../api.router';
-const r:Resource={table:'app.parent_access_links',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',studentId:'student_id',yearId:'year_id',relationshipId:'relationship_id',allowedSections:'allowed_sections',allowDownload:'allow_download',expiresAt:'expires_at',revokedAt:'revoked_at'},writeFields:[],search:[],filters:{studentId:'student_id',yearId:'year_id'}};
+const r:Resource={table:'app.parent_access_links',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',studentId:'student_id',yearId:'year_id',relationshipId:'relationship_id',allowedSections:'allowed_sections',allowDownload:'allow_download',expiresAt:'expires_at',revokedAt:'revoked_at',revokeReason:'revoke_reason'},writeFields:[],search:[],filters:{studentId:'student_id',yearId:'year_id'}};
 const events:Resource={table:'app.parent_access_events',fields:{id:'id',accessLinkId:'access_link_id',eventKind:'event_kind',occurredAt:'created_at',deviceSummary:'device_summary',section:'section'},writeFields:[],search:[],filters:{}};
 @Injectable()
 export class ParentAccessService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly parent:ParentService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listParentAccess','issueParentAccess','getParentAccess','revokeParentAccess','reissueParentAccess','listParentAccessEvents','previewParent','getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listParentAccess','issueParentAccess','getParentAccess','revokeParentAccess','reissueParentAccess','listParentAccessEvents','previewParent','getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess','listParentAccessDirectory','getParentAccessDirectorySummary','getParentAccessDetails','listParentAccessHistory'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async get(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.parent_access_links WHERE school_id=$1 AND id=$2${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.accessId]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async scope(tx:Transaction,c:RequestContext,studentId:string,yearId:string,action:string){
     const schoolId=c.params.schoolId!,scope=await this.policy.collection(tx,c.principal!,action,schoolId);
@@ -37,7 +38,7 @@ export class ParentAccessService {
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
     const authorize=async(tx:Transaction)=>{
-      if(op==='listParentAccess'||['getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource'].includes(op))return this.policy.collection(tx,c.principal!,c.operation.permission,schoolId);
+      if(op==='listParentAccess'||['getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','listParentAccessDirectory','getParentAccessDirectorySummary'].includes(op))return this.policy.collection(tx,c.principal!,c.operation.permission,schoolId);
       const target=op==='issueParentAccess'||op==='issueReviewedParentAccess'?{student_id:c.body.studentId,year_id:c.body.yearId}:await this.get(tx,c);
       return this.scope(tx,c,String(target.student_id),String(target.year_id),c.operation.permission);
     };
@@ -46,6 +47,9 @@ export class ParentAccessService {
     }
     const work=async(tx:Transaction):Promise<Result>=>{
       const scope=await authorize(tx);
+      if(op==='listParentAccessDirectory')return parentAccessDirectory(tx,c,scope);
+      if(op==='getParentAccessDirectorySummary')return {data:await parentAccessDirectorySummary(tx,c,scope)};
+      if(op==='getParentAccessDetails')return {data:await parentAccessDetails(tx,c,scope)};
       if(op==='getParentAccessIssueContext')return {data:await parentIssueContext(tx,c,scope)};
       if(op==='listParentAccessIssueStudents')return parentIssueStudents(tx,c,scope);
       if(op==='getStudentParentAccessIssueSource')return {data:await parentIssueSource(tx,c,scope)};
@@ -66,8 +70,9 @@ export class ParentAccessService {
       if(op==='issueParentAccess')return {data:await this.issue(tx,c,c.body),status:201};
       const row=await this.get(tx,c,c.operation.method!=='GET');
       if(op==='getParentAccess')return {data:await this.display(tx,row)};
-      if(op==='listParentAccessEvents'){
-        const result=await listResource(tx,events,schoolId,c.query,{sql:'t.access_link_id=$1',values:[row.id]},c.principal!.userId);result.data=result.data.map(row=>Object.fromEntries(Object.entries(row).filter(([,v])=>v!==null)));return result;
+      if(op==='listParentAccessEvents'||op==='listParentAccessHistory'){
+        const result=await listResource(tx,events,schoolId,op==='listParentAccessHistory'?{...c.query,sort:c.query.sort??'occurredAt',dir:c.query.dir??'desc'}:c.query,{sql:'t.access_link_id=$1',values:[row.id]},c.principal!.userId);
+        if(op==='listParentAccessEvents')result.data=result.data.map(row=>Object.fromEntries(Object.entries(row).filter(([,v])=>v!==null)));return result;
       }
       version(row,c.body.expectedVersion);if(op==='revokeParentAccess'&&row.revoked_at)throw new Problem(409,'LINK_ALREADY_REVOKED');
       await this.revoke(tx,c,row);

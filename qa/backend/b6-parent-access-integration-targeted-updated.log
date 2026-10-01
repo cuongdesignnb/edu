@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-postgres-1 Running
+ Container edumanage_backend_test-postgres-1 Waiting
+ Container edumanage_backend_test-postgres-1 Healthy
+ Container edumanage_backend_test-runner-run-67db3f716aad Creating
+ Container edumanage_backend_test-runner-run-67db3f716aad Created
+✔ B6 parent metadata directory keeps manage scope, current capabilities, real counts and no borrowed contact/catalog data (1394.365131ms)
+✔ B6 parent metadata masks independently authorized contact, paginates anonymous history and tracks only actual replacement facts (1417.23039ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3635.292734

@@ -9,6 +9,7 @@ import {RepoError} from '../errors';
 import {guardianDirectoryRow,guardianProfile,guardianContact,guardianLink} from './guardian-mapping';
 import {guardianSaveBody,type GuardianSaveInput} from './guardian-form';
 import {parentIssueBody,parentIssueReceipt,type ParentIssueInput} from './parent-access-issue';
+import {assertParentMetadata,staffParentLink,staffParentDetails,parentRevokeBody,parentRevokeReceipt,type ParentRevokeSource} from './parent-access';
 
 export interface StudentCreateInput {
   code?:string;fullName:string;dob:string;gender:Gender;classId:ID;startDate:string;
@@ -54,6 +55,20 @@ function profileView(view:ApiSchemas['StudentDetails'],schoolId:ID){
 }
 
 export const connectedStudentsRepo=withStaffAccess({
+  async accessList(_ctx:Ctx,schoolId:ID,q:ListQuery){const states:Record<string,string>={active:'ACTIVE',expired:'EXPIRED',revoked:'REVOKED'},sorts:Record<string,string>={issuedAt:'createdAt',student:'studentName',studentName:'studentName',guardian:'guardianName',opens:'opens'};
+    if(q.filters?.status&&!states[q.filters.status]||q.sort&&!sorts[q.sort])throw new RepoError('VALIDATION','Bộ lọc hoặc cách sắp xếp link không hợp lệ.');
+    const summary=(await http('getParentAccessDirectorySummary',{params:{schoolId}})).data;
+    if(!summary.kpi||Object.values(summary.kpi).some(value=>!Number.isInteger(value)||value<0)||['active','expired','revoked','total'].some(key=>!Object.hasOwn(summary.kpi,key))||summary.kpi.total!==summary.kpi.active+summary.kpi.expired+summary.kpi.revoked||typeof summary.canIssue!=='boolean')throw new RepoError('READ_ERROR','API chưa xác nhận đầy đủ số liệu hoặc quyền cấp link.');
+    const result=await apiPage('listParentAccessDirectory',{params:{schoolId},query:{q:q.q,status:q.filters?.status?states[q.filters.status]:undefined,classId:q.filters?.classId,yearId:q.filters?.yearId,studentId:q.filters?.studentId,sort:q.sort?sorts[q.sort]:'createdAt',dir:q.dir??'desc'}},q,row=>staffParentLink(row,schoolId));
+    return {...result,today:requiredValue(summary.today,'today'),kpi:requiredValue(summary.kpi,'kpi'),classes:requiredValue(summary.classes,'classes').map(c=>({...c,id:requiredId(c.id),version:displayedVersion(c.version),yearId:requiredId(c.yearId)})),canIssue:requiredValue(summary.canIssue,'canIssue')};
+  },
+  async access(_ctx:Ctx,schoolId:ID,accessId:ID){return staffParentDetails((await http('getParentAccessDetails',{params:{schoolId,accessId}})).data,schoolId,accessId);},
+  async accessEvents(_ctx:Ctx,schoolId:ID,accessId:ID,q:ListQuery){return apiPage('listParentAccessHistory',{params:{schoolId,accessId},query:{sort:'occurredAt',dir:'desc'}},q,row=>{
+    assertParentMetadata(row);if(row.accessLinkId!==accessId)throw new RepoError('READ_ERROR','Nhật ký không thuộc link đã chọn.');return {id:requiredId(row.id),accessId:requiredId(row.accessLinkId),eventKind:requiredValue(row.eventKind,'eventKind'),at:requiredValue(row.occurredAt,'occurredAt'),device:requiredValue(row.deviceSummary,'deviceSummary'),module:requiredValue(row.section,'section')};
+  });},
+  async revokeAccess(_ctx:Ctx,schoolId:ID,accessId:ID,reason:string,source:ParentRevokeSource){const body=parentRevokeBody(reason,source),acknowledge=(value:ApiSchemas['ParentAccess'])=>parentRevokeReceipt(value,accessId,source,body.reason);
+    const result=await formResult(http('revokeParentAccess',{params:{schoolId,accessId},body,validateData:value=>{acknowledge(value);return true;}}),{reason:'reason'});return acknowledge(result.data);
+  },
   async issueAccess(_ctx:Ctx,schoolId:ID,input:ParentIssueInput){const body=parentIssueBody(schoolId,input),acknowledge=(value:ApiSchemas['ParentAccessIssued'])=>parentIssueReceipt(value,body,input.source);
     const result=await formResult(http('issueReviewedParentAccess',{params:{schoolId},body,validateData:value=>{acknowledge(value);return true;}}),{allowedSections:'modules',expiresOn:'expiresOn'});return acknowledge(result.data);
   },

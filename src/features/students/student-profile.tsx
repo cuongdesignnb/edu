@@ -18,7 +18,7 @@ import { ActionMenu } from "@/components/ui/menu";
 import { EmptyState } from "@/components/ui/states";
 import { ACCESS_STATUS, ENROLLMENT_STATUS, CopyButton, ALL_MODULES, MODULE_HINT } from "./shared";
 import { SchoolSourceState } from "@/features/school-org/common";
-import { GuardianDialog, IssueAccessDialog, RevokeAccessDialog, TransferDialog, VerifyDialog, type GuardianEditTarget } from "./dialogs";
+import { GuardianDialog, IssueAccessDialog, RevokeAccessDialog, TransferDialog, VerifyDialog, type GuardianEditTarget, type ParentLinkRevokeTarget } from "./dialogs";
 
 const MODULE_ICON: Record<ParentModule, { icon: React.ReactNode; tone: string }> = {
   attendance: { icon: <CalendarCheck />, tone: "tone-blue" }, conduct: { icon: <Trophy />, tone: "tone-amber" }, timetable: { icon: <CalendarDays />, tone: "tone-blue" },
@@ -48,7 +48,7 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
   const [verify, setVerify] = useState<Parameters<typeof VerifyDialog>[0]["target"]>(null);
   const [transfer, setTransfer] = useState(false);
   const [issue, setIssue] = useState<{ relationshipId?: string; replace?: { accessId: string; version: number; relationshipId: string; modules: ParentModule[]; allowDownload?: boolean; label: string } | null } | null>(null);
-  const [revoke, setRevoke] = useState<{ accessId: string; label: string } | null>(null);
+  const [revoke, setRevoke] = useState<ParentLinkRevokeTarget | null>(null);
   const [selId, setSelId] = useState<string | undefined>();
 
   const links = d.links;
@@ -201,7 +201,7 @@ function ProfileBody({ d, schoolId }: { d: Profile; schoolId: string }) {
                 {link.status === "revoked" && link.revokeReason && <Callout tone="danger" icon={<Ban />}>Đã thu hồi: {link.revokeReason}</Callout>}
                 <div className="flex flex-wrap gap-2">
                   {d.perms.issueLinks && studying && <Button variant="primary" size="sm" icon={<RefreshCw className="size-4" />} onClick={() => setIssue({})}>Cấp link mới</Button>}
-                  {d.perms.revokeLinks && link.status === "active" && <Button variant="danger-soft" size="sm" icon={<Ban className="size-4" />} onClick={() => setRevoke({ accessId: link.id, label: linkLabel(link) })}>Thu hồi</Button>}
+                  {d.perms.revokeLinks && link.status === "active" && <Button variant="danger-soft" size="sm" icon={<Ban className="size-4" />} onClick={() => setRevoke({ accessId: link.id, source: {version: link.version, studentId: link.studentId, yearId: link.yearId, relationshipId: link.relationshipId}, label: linkLabel(link) })}>Thu hồi</Button>}
 
                   <ButtonLink size="sm" href={`${base}/parent-access/${link.id}`} icon={<BarChart3 className="size-4" />}>Xem nhật ký truy cập</ButtonLink>
                 </div>

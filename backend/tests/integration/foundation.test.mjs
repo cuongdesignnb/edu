@@ -97,7 +97,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,306);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,310);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -2852,4 +2852,56 @@ test('B6 reviewed parent issuance rejects stale sources, rotates atomically, con
   await db.transaction(tx=>tx.query('UPDATE app.guardian_relationships SET can_receive_info=false WHERE school_id=$1 AND id=$2',[f.schoolId,f.relation.id]),{schoolId:f.schoolId});
   const stale=await post(body);assert.equal(stale.statusCode,409);source=await f.source();assert.equal(source.relationships[0].canIssue,false);assert.deepEqual(source.relationships[0].activeLinkIds,[]);assert.equal((await post(reviewedParentBody(source,f.relation.id))).statusCode,422);
   await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,f.issueGrant.id]),{schoolId:f.schoolId});assert.equal((await post(body,key)).statusCode,403);
+});
+
+async function parentLinkForUi(f,extra={}){
+  const response=await f.post('parent-access',{studentId:f.studentId,yearId:f.yearId,relationshipId:f.relation.id,allowedSections:['overview','documents'],allowDownload:false,expiresAt:new Date(Date.now()+86400000).toISOString(),...extra});
+  assert.equal(response.statusCode,201,response.body);return response.json().data;
+}
+test('B6 parent metadata directory keeps manage scope, current capabilities, real counts and no borrowed contact/catalog data',async()=>{
+  const f=await parentIssueUiFixture(),manage=await f.role([{action:'parent_access.manage',scopes:['CLASS']}]),readGrant=await f.grant(f.target,manage.id,{scopeType:'CLASS',classId:f.classId});
+  const active=await parentLinkForUi(f),expired=await parentLinkForUi(f),revoked=await parentLinkForUi(f);
+  const deniedStudent=await db.transaction(async tx=>{
+    const cl=(await tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'META-OUT','Lớp metadata ngoài giả',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId])).rows[0];
+    const student=(await tx.query("INSERT INTO app.students(school_id,student_code,full_name) VALUES($1,'META-OUT','Học sinh metadata ngoài giả') RETURNING id",[f.schoolId])).rows[0];
+    await tx.query('INSERT INTO app.enrollments(school_id,student_id,class_id,year_id,starts_on) VALUES($1,$2,$3,$4,$5)',[f.schoolId,student.id,cl.id,f.yearId,f.today]);
+    await tx.query("UPDATE app.parent_access_links SET created_at=now()-interval '2 days',expires_at=now()-interval '1 day' WHERE school_id=$1 AND id=$2",[f.schoolId,expired.access.id]);
+    await tx.query("INSERT INTO app.parent_access_events(school_id,access_link_id,event_kind,request_id,device_summary,ip_daily_hash,section) SELECT $1,$2,kind,gen_random_uuid()::text,'Trình duyệt giả','private-ip-hash','overview' FROM unnest(ARRAY['EXCHANGED','READ','BLOCKED'])kind",[f.schoolId,active.access.id]);
+    return {id:student.id,classId:cl.id};
+  },{schoolId:f.schoolId});
+  const rel=await parentRelationship(null,f.post,deniedStudent.id),outside=await parentLinkForUi(f,{studentId:deniedStudent.id,relationshipId:rel.id});
+  assert.equal((await f.post(`parent-access/${revoked.access.id}/revoke`,{expectedVersion:revoked.access.version,reason:'Thu hồi link metadata giả'})).statusCode,200);
+  await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,f.issueGrant.id]),{schoolId:f.schoolId});
+  jar.delete('edu_staff');await login('teacher-a@example.invalid');
+  let summary=await request('GET',`${f.base}/parent-access-directory-summary`);assert.equal(summary.statusCode,200,summary.body);assert.deepEqual(summary.json().data.kpi,{total:3,active:1,expired:1,revoked:1});assert.equal(summary.json().data.canIssue,false);assert.deepEqual(summary.json().data.classes.map(r=>r.id),[f.classId]);
+  const ids=[],firstUrl=`${f.base}/parent-access-directory?limit=1`;let url=firstUrl,firstCursor;
+  for(let n=0;n<3;n++){const page=await request('GET',url);assert.equal(page.statusCode,200,page.body);assert.equal(page.json().page.total,3);ids.push(...page.json().data.map(r=>r.id));for(const row of page.json().data){assert.equal(row.canIssue,false);assert.equal(row.canRevoke,false);assert.equal(row.canPreview,false);}if(n===0)firstCursor=page.json().page.nextCursor;url=`${firstUrl}&cursor=${encodeURIComponent(page.json().page.nextCursor)}`;}
+  assert.deepEqual(new Set(ids),new Set([active.access.id,expired.access.id,revoked.access.id]));assert.equal((await request('GET',`${firstUrl}&status=ACTIVE&cursor=${encodeURIComponent(firstCursor)}`)).statusCode,422);
+  for(const [state,id]of [['ACTIVE',active.access.id],['EXPIRED',expired.access.id],['REVOKED',revoked.access.id]]){const page=await request('GET',`${f.base}/parent-access-directory?status=${state}`);assert.equal(page.statusCode,200,page.body);assert.deepEqual(page.json().data.map(r=>r.id),[id]);}
+  let detail=await request('GET',`${f.base}/parent-access/${active.access.id}/details`);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.access.opens,2);assert.equal(detail.json().data.canViewContact,false);assert.equal(detail.json().data.phoneMasked,null);assert.equal(detail.json().data.siblings.total,2);assert.equal(detail.json().data.replacedById,null);
+  for(const secret of ['0901234567','private-student-note','private-ip-hash','tokenHash','token_hash','#token='])assert.equal(detail.body.includes(secret),false,secret);
+  for(const path of ['classes','academic-years','student-directory-summary','guardian-directory-summary','settings','parent-access/issue-context'])assert.equal((await request('GET',`${f.base}/${path}`)).statusCode,403,path);
+  assert.equal((await request('GET',`${f.base}/parent-access/${outside.access.id}/details`)).statusCode,404);assert.equal((await request('GET',`${f.base}/parent-access-directory?classId=${deniedStudent.classId}`)).json().page.total,0);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/parent-access-directory`)).statusCode,404);
+  await db.transaction(tx=>tx.query('UPDATE app.guardian_relationships SET can_receive_info=false WHERE school_id=$1 AND id=$2',[f.schoolId,f.relation.id]),{schoolId:f.schoolId});
+  summary=await request('GET',`${f.base}/parent-access-directory-summary`);assert.deepEqual(summary.json().data.kpi,{total:3,active:0,expired:0,revoked:3});detail=await request('GET',`${f.base}/parent-access/${active.access.id}/details`);assert.equal(detail.json().data.access.status,'REVOKED');
+  for(const sql of ["UPDATE app.role_grants SET valid_from=now()+interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_from=now()-interval '2 days',valid_until=now()-interval '1 day' WHERE school_id=$1 AND id=$2","UPDATE app.role_grants SET valid_until=NULL,revoked_at=now() WHERE school_id=$1 AND id=$2"]){await db.transaction(tx=>tx.query(sql,[f.schoolId,readGrant.id]),{schoolId:f.schoolId});assert.equal((await request('GET',`${f.base}/parent-access-directory`)).statusCode,403);}
+});
+
+test('B6 parent metadata masks independently authorized contact, paginates anonymous history and tracks only actual replacement facts',async()=>{
+  const f=await parentIssueUiFixture(),manage=await f.role([{action:'parent_access.manage',scopes:['CLASS']}]),family=await f.role([{action:'guardian.read',scopes:['CLASS']}]);
+  await f.grant(f.target,manage.id,{scopeType:'CLASS',classId:f.classId});const contactGrant=await f.grant(f.target,family.id,{scopeType:'CLASS',classId:f.classId,validFrom:new Date(Date.now()+60000).toISOString()}),original=await parentLinkForUi(f);
+  await db.transaction(tx=>tx.query("INSERT INTO app.parent_access_events(school_id,access_link_id,event_kind,request_id,device_summary,ip_daily_hash,section,created_at) SELECT $1,$2,'READ',gen_random_uuid()::text,NULL,'private-ip-hash',NULL,now()-n*interval '1 millisecond' FROM generate_series(1,160)n",[f.schoolId,original.access.id]),{schoolId:f.schoolId});
+  jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));const detailUrl=`${f.base}/parent-access/${original.access.id}/details`;
+  let detail=await request('GET',detailUrl);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.access.canIssue,true);assert.equal(detail.json().data.access.canRevoke,false);assert.equal(detail.json().data.canViewContact,false);assert.equal(detail.json().data.phoneMasked,null);
+  await db.transaction(tx=>tx.query("UPDATE app.role_grants SET valid_from=now()-interval '1 minute' WHERE school_id=$1 AND id=$2",[f.schoolId,contactGrant.id]),{schoolId:f.schoolId});detail=await request('GET',detailUrl);assert.equal(detail.json().data.canViewContact,true);assert.equal(detail.json().data.phoneMasked,'0901 *** 567');assert.equal(detail.body.includes('0901234567'),false);
+  let cursor,seen=new Set(),lastAt=Infinity;const history=`${f.base}/parent-access/${original.access.id}/history`;
+  do{const response=await request('GET',`${history}?limit=17${cursor?'&cursor='+encodeURIComponent(cursor):''}`);assert.equal(response.statusCode,200,response.body);assert.equal(response.json().page.total,160);for(const event of response.json().data){assert.equal(event.accessLinkId,original.access.id);assert.equal(event.deviceSummary,null);assert.equal(event.section,null);assert.ok(Date.parse(event.occurredAt)<=lastAt);lastAt=Date.parse(event.occurredAt);assert.equal(seen.has(event.id),false);seen.add(event.id);}assert.equal(response.body.includes('private-ip-hash'),false);cursor=response.json().page.nextCursor;}while(cursor);assert.equal(seen.size,160);assert.equal(detail.json().data.access.opens,160);
+  const source=await f.source(),body=reviewedParentBody(source,f.relation.id);const replaced=await f.post('parent-access/reviewed-issue',{...body,replace:{accessId:original.access.id,expectedVersion:original.access.version},reason:'Cấp lại từ nguồn đã xem giả'});assert.equal(replaced.statusCode,200,replaced.body);const newId=replaced.json().data.access.id;
+  detail=await request('GET',detailUrl);assert.equal(detail.json().data.replacedById,newId);assert.ok(detail.json().data.revokedByName);assert.equal(detail.json().data.access.revokeReason,'Cấp lại từ nguồn đã xem giả');assert.equal(detail.json().data.access.canRevoke,false);
+  await parentLinkForUi(f);detail=await request('GET',detailUrl);assert.equal(detail.json().data.replacedById,newId);
+  for(let n=0;n<20;n++)await parentLinkForUi(f);detail=await request('GET',detailUrl);assert.equal(detail.json().data.siblings.items.length,20);assert.equal(detail.json().data.siblings.hasMore,true);assert.equal(detail.json().data.siblings.total,22);
+  const first=await request('GET',`${history}?limit=17`),otherHistory=`${f.base}/parent-access/${newId}/history?limit=17&cursor=${encodeURIComponent(first.json().page.nextCursor)}`;assert.equal((await request('GET',otherHistory)).statusCode,422);
+  await db.transaction(tx=>tx.query("UPDATE app.enrollments SET starts_on=$3::date-1,ends_on=$3::date,status='ENDED' WHERE school_id=$1 AND id=$2",[f.schoolId,f.enrollmentId,f.today]),{schoolId:f.schoolId});assert.equal((await request('GET',detailUrl)).statusCode,404);assert.equal((await request('GET',history)).statusCode,404);
+  jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const schoolRead=await f.role([{action:'parent_access.manage',scopes:['SCHOOL']}]);await f.grant(f.target,schoolRead.id);jar.delete('edu_staff');await login('teacher-a@example.invalid');
+  detail=await request('GET',detailUrl);assert.equal(detail.statusCode,200,detail.body);assert.equal(detail.json().data.access.enrollmentInEffect,false);assert.equal(detail.json().data.access.canIssue,false);assert.equal(detail.json().data.canViewContact,false);assert.equal(detail.json().data.phoneMasked,null);
 });

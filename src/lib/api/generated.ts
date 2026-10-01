@@ -76,7 +76,7 @@ export interface ApiSchemas {
   "StudentDetail": { "student": ApiSchemas["Student"]; "enrollments": Array<ApiSchemas["Enrollment"]>; "relationships"?: Array<ApiSchemas["Relationship"]>; "guardians"?: Array<ApiSchemas["Guardian"]>; "internalNote"?: (string) | null; };
   "Transfer": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "fromEnrollmentId": (string) | null; "toClassId"?: string; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; };
   "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; };
-  "ParentAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "yearId": (string) | null; "relationshipId": (string) | null; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt"?: (string) | null; "issuedToGuardianName"?: string; };
+  "ParentAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "yearId": (string) | null; "relationshipId": (string) | null; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt"?: (string) | null; "issuedToGuardianName"?: string; "revokeReason"?: (string) | null; };
   "ParentAccessCreate": { "studentId": string; "yearId": string; "relationshipId": string; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; };
   "ParentAccessIssued": { "access": ApiSchemas["ParentAccess"]; "link": string; "displayOnce": boolean; };
   "AccessEvent": { "id": (string) | null; "accessLinkId": (string) | null; "eventKind": string; "occurredAt": string; "deviceSummary"?: string; "section"?: string; };
@@ -385,6 +385,14 @@ export interface ApiSchemas {
   "ParentIssueContextResponse": { "data": ApiSchemas["ParentIssueContext"]; "requestId": string; };
   "ParentIssueSourceResponse": { "data": ApiSchemas["ParentIssueSource"]; "requestId": string; };
   "ParentIssueStudentChoicePage": { "data": Array<ApiSchemas["ParentIssueStudentChoice"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "ParentStaffAccessRow": { "id": string; "version": number; "createdAt": string; "updatedAt": string; "studentId": string; "studentVersion": number; "studentName": string; "studentCode": string; "studentStatus": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "yearId": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "classId": string; "classVersion": number; "className": string; "enrollmentInEffect": boolean; "relationshipId": string; "relationshipVersion": number; "relationshipLabel": string; "relationshipStatus": "UNVERIFIED" | "VERIFIED" | "REVOKED"; "canReceiveInfo": boolean; "relationshipRevokedAt": (string) | null; "guardianId": string; "guardianVersion": number; "guardianName": string; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt": (string) | null; "revokeReason": (string) | null; "issuedBy": string; "issuedByName": (string) | null; "status": "ACTIVE" | "EXPIRED" | "REVOKED"; "opens": number; "lastOpenedAt": (string) | null; "canIssue": boolean; "canRevoke": boolean; "canPreview": boolean; };
+  "ParentStaffAccessRowPage": { "data": Array<ApiSchemas["ParentStaffAccessRow"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "ParentStaffAccessSummary": { "today": string; "kpi": { "total": number; "active": number; "expired": number; "revoked": number; }; "canIssue": boolean; "classes": Array<{ "id": string; "version": number; "name": string; "yearId": string; "yearName": string; }>; };
+  "ParentStaffAccessDetails": { "access": ApiSchemas["ParentStaffAccessRow"]; "today": string; "canViewContact": boolean; "phoneMasked": (string) | null; "revokedByName": (string) | null; "replacedById": (string) | null; "siblings": { "items": Array<{ "id": string; "status": "ACTIVE" | "EXPIRED" | "REVOKED"; "guardianName": string; "relationshipLabel": string; }>; "hasMore": boolean; "total": number; }; };
+  "ParentStaffAccessSummaryResponse": { "data": ApiSchemas["ParentStaffAccessSummary"]; "requestId": string; };
+  "ParentStaffAccessDetailsResponse": { "data": ApiSchemas["ParentStaffAccessDetails"]; "requestId": string; };
+  "ParentStaffAccessEvent": { "id": string; "accessLinkId": string; "eventKind": string; "occurredAt": string; "deviceSummary": (string) | null; "section": (string) | null; };
+  "ParentStaffAccessEventPage": { "data": Array<ApiSchemas["ParentStaffAccessEvent"]>; "page": ApiSchemas["PageInfo"]; "requestId": string; };
   "StudentHistory": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; };
   "StudentSelectedEnrollment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "classId": (string) | null; "yearId": (string) | null; "startsOn": string; "endsOn": (string) | null; "status": "ACTIVE" | "ENDED" | "CANCELLED"; "className": string; "yearName": string; "yearStatus": "DRAFT" | "ACTIVE" | "ARCHIVED"; "referenceDate": string; "homeroomName": (string) | null; "inEffect": boolean; };
   "StudentProfileCore": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentCode": string; "fullName": string; "preferredName": (string) | null; "dateOfBirth": (string) | null; "status": "ACTIVE" | "LEFT" | "GRADUATED" | "ARCHIVED"; "gender": ("Nam" | "Nữ" | null) | null; };
@@ -3417,6 +3425,46 @@ export const apiOperations = {
     "list": false,
     "permission": "parent_access.issue",
     "readOnly": false
+  },
+  "listParentAccessDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentStaffAccessRow",
+    "list": true,
+    "permission": "parent_access.manage",
+    "readOnly": true
+  },
+  "getParentAccessDirectorySummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access-directory-summary",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentStaffAccessSummary",
+    "list": false,
+    "permission": "parent_access.manage",
+    "readOnly": true
+  },
+  "getParentAccessDetails": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/details",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentStaffAccessDetails",
+    "list": false,
+    "permission": "parent_access.manage",
+    "readOnly": true
+  },
+  "listParentAccessHistory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/history",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentStaffAccessEvent",
+    "list": true,
+    "permission": "parent_access.manage",
+    "readOnly": true
   },
   "getStudentDetails": {
     "method": "GET",

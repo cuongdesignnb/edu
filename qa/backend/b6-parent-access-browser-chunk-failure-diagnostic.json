@@ -1,0 +1,13 @@
+{
+  "kind": "BROWSER_TRACE_DIAGNOSTIC_NOT_TEST_PASS",
+  "trace": "qa\\backend\\b6-parent-access-browser-artifacts-images-initial\\school-contract-Native-sch-8b51a-ate-form-on-forbidden-reads\\trace.zip",
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_NO_BUFFER_SPACE"
+  ],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:18763/_next/static/chunks/0rd5hehc9r5m1.js",
+      "status": -1
+    }
+  ]
+}

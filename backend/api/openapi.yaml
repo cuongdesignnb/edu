@@ -31526,6 +31526,433 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access-directory:
+    get:
+      operationId: listParentAccessDirectory
+      tags:
+        - ParentAccess
+      summary: listParentAccessDirectory
+      description: Scoped parent-link staff metadata and SQL counts/keysets, with
+        independent issue/revoke/preview/contact capabilities. Stored
+        token/hash/URL and pupil/family private fields are excluded.
+      x-permission: parent_access.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC23
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: studentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - EXPIRED
+              - REVOKED
+        - name: q
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - studentName
+              - guardianName
+              - opens
+        - name: dir
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 4000
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentStaffAccessRowPage"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access-directory-summary:
+    get:
+      operationId: getParentAccessDirectorySummary
+      tags:
+        - ParentAccess
+      summary: getParentAccessDirectorySummary
+      description: Scoped parent-link staff metadata and SQL counts/keysets, with
+        independent issue/revoke/preview/contact capabilities. Stored
+        token/hash/URL and pupil/family private fields are excluded.
+      x-permission: parent_access.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC23
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentStaffAccessSummaryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/details:
+    get:
+      operationId: getParentAccessDetails
+      tags:
+        - ParentAccess
+      summary: getParentAccessDetails
+      description: Scoped parent-link staff metadata and SQL counts/keysets, with
+        independent issue/revoke/preview/contact capabilities. Stored
+        token/hash/URL and pupil/family private fields are excluded.
+      x-permission: parent_access.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentStaffAccessDetailsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/parent-access/{accessId}/history:
+    get:
+      operationId: listParentAccessHistory
+      tags:
+        - ParentAccess
+      summary: listParentAccessHistory
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent_access.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accessId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum:
+              - occurredAt
+              - id
+        - name: dir
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            maxLength: 4000
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParentStaffAccessEventPage"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/students/{studentId}/details:
     get:
       operationId: getStudentDetails
@@ -35156,6 +35583,9 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        revokeReason:
+          type: string
+          nullable: true
       required:
         - id
         - version
@@ -43666,6 +44096,389 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ParentIssueStudentChoice"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
+        - requestId
+      additionalProperties: false
+    ParentStaffAccessRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        studentId:
+          type: string
+          format: uuid
+        studentVersion:
+          type: integer
+          minimum: 1
+        studentName:
+          type: string
+        studentCode:
+          type: string
+        studentStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - LEFT
+            - GRADUATED
+            - ARCHIVED
+        yearId:
+          type: string
+          format: uuid
+        yearName:
+          type: string
+        yearStatus:
+          type: string
+          enum:
+            - DRAFT
+            - ACTIVE
+            - ARCHIVED
+        classId:
+          type: string
+          format: uuid
+        classVersion:
+          type: integer
+          minimum: 1
+        className:
+          type: string
+        enrollmentInEffect:
+          type: boolean
+        relationshipId:
+          type: string
+          format: uuid
+        relationshipVersion:
+          type: integer
+          minimum: 1
+        relationshipLabel:
+          type: string
+        relationshipStatus:
+          type: string
+          enum:
+            - UNVERIFIED
+            - VERIFIED
+            - REVOKED
+        canReceiveInfo:
+          type: boolean
+        relationshipRevokedAt:
+          type: string
+          format: date-time
+          nullable: true
+        guardianId:
+          type: string
+          format: uuid
+        guardianVersion:
+          type: integer
+          minimum: 1
+        guardianName:
+          type: string
+        allowedSections:
+          type: array
+          items:
+            type: string
+            enum:
+              - overview
+              - teachers
+              - attendance
+              - conduct
+              - timetable
+              - duties
+              - activities
+              - announcements
+              - documents
+          uniqueItems: true
+        allowDownload:
+          type: boolean
+        expiresAt:
+          type: string
+          format: date-time
+        revokedAt:
+          type: string
+          format: date-time
+          nullable: true
+        revokeReason:
+          type: string
+          nullable: true
+        issuedBy:
+          type: string
+          format: uuid
+        issuedByName:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - REVOKED
+        opens:
+          type: integer
+          minimum: 0
+        lastOpenedAt:
+          type: string
+          format: date-time
+          nullable: true
+        canIssue:
+          type: boolean
+        canRevoke:
+          type: boolean
+        canPreview:
+          type: boolean
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - studentId
+        - studentVersion
+        - studentName
+        - studentCode
+        - studentStatus
+        - yearId
+        - yearName
+        - yearStatus
+        - classId
+        - classVersion
+        - className
+        - enrollmentInEffect
+        - relationshipId
+        - relationshipVersion
+        - relationshipLabel
+        - relationshipStatus
+        - canReceiveInfo
+        - relationshipRevokedAt
+        - guardianId
+        - guardianVersion
+        - guardianName
+        - allowedSections
+        - allowDownload
+        - expiresAt
+        - revokedAt
+        - revokeReason
+        - issuedBy
+        - issuedByName
+        - status
+        - opens
+        - lastOpenedAt
+        - canIssue
+        - canRevoke
+        - canPreview
+      additionalProperties: false
+    ParentStaffAccessRowPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParentStaffAccessRow"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
+        - requestId
+      additionalProperties: false
+    ParentStaffAccessSummary:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        kpi:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            active:
+              type: integer
+              minimum: 0
+            expired:
+              type: integer
+              minimum: 0
+            revoked:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - active
+            - expired
+            - revoked
+          additionalProperties: false
+        canIssue:
+          type: boolean
+        classes:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              version:
+                type: integer
+                minimum: 1
+              name:
+                type: string
+              yearId:
+                type: string
+                format: uuid
+              yearName:
+                type: string
+            required:
+              - id
+              - version
+              - name
+              - yearId
+              - yearName
+            additionalProperties: false
+      required:
+        - today
+        - kpi
+        - canIssue
+        - classes
+      additionalProperties: false
+    ParentStaffAccessDetails:
+      type: object
+      properties:
+        access:
+          $ref: "#/components/schemas/ParentStaffAccessRow"
+        today:
+          type: string
+          format: date
+        canViewContact:
+          type: boolean
+        phoneMasked:
+          type: string
+          nullable: true
+        revokedByName:
+          type: string
+          nullable: true
+        replacedById:
+          type: string
+          format: uuid
+          nullable: true
+        siblings:
+          type: object
+          properties:
+            items:
+              type: array
+              maxItems: 20
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum:
+                      - ACTIVE
+                      - EXPIRED
+                      - REVOKED
+                  guardianName:
+                    type: string
+                  relationshipLabel:
+                    type: string
+                required:
+                  - id
+                  - status
+                  - guardianName
+                  - relationshipLabel
+                additionalProperties: false
+            hasMore:
+              type: boolean
+            total:
+              type: integer
+              minimum: 0
+          required:
+            - items
+            - hasMore
+            - total
+          additionalProperties: false
+      required:
+        - access
+        - today
+        - canViewContact
+        - phoneMasked
+        - revokedByName
+        - replacedById
+        - siblings
+      additionalProperties: false
+    ParentStaffAccessSummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentStaffAccessSummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentStaffAccessDetailsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ParentStaffAccessDetails"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ParentStaffAccessEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        accessLinkId:
+          type: string
+          format: uuid
+        eventKind:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        deviceSummary:
+          type: string
+          nullable: true
+        section:
+          type: string
+          nullable: true
+      required:
+        - id
+        - accessLinkId
+        - eventKind
+        - occurredAt
+        - deviceSummary
+        - section
+      additionalProperties: false
+    ParentStaffAccessEventPage:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParentStaffAccessEvent"
         page:
           $ref: "#/components/schemas/PageInfo"
         requestId:

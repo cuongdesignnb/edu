@@ -310,6 +310,10 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | listParentAccessIssueStudents | O14 | TESTED | qa/backend/b6-parent-issue-integration-full-reviewed.log |
 | getStudentParentAccessIssueSource | O14 | TESTED | qa/backend/b6-parent-issue-integration-full-reviewed.log |
 | issueReviewedParentAccess | O14 | TESTED | qa/backend/b6-parent-issue-integration-full-reviewed.log |
+| listParentAccessDirectory | SC23 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
+| getParentAccessDirectorySummary | SC23 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
+| getParentAccessDetails | SC24 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
+| listParentAccessHistory | SC24 | TESTED | qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31 |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -356,8 +360,8 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | SC20 | core | IMPLEMENTED | NOT_STARTED |  |  |
 | SC21 | core | TESTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run. |
 | SC22 | core | IMPLEMENTED | IMPLEMENTED |  | Native student/guardian sources activated; current type/build/unit and controlled browser evidence in qa/backend/b6-native-students-*; transfer, import, parent-link commands and PostgreSQL browser E2E remain pending.; Native API student/guardian integration with explicit pending transfer/import/link/export commands; PostgreSQL UI acceptance has not run.; qa/backend/b6-parent-issue-checks.json |
-| SC23 | core | TESTED | NOT_STARTED |  |  |
-| SC24 | core | TESTED | NOT_STARTED |  |  |
+| SC23 | core | TESTED | IMPLEMENTED |  | Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E; qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E |
+| SC24 | core | TESTED | IMPLEMENTED |  | Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E; qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E |
 | SC25 | core | TESTED | NOT_STARTED |  |  |
 | SC26 | core | TESTED | NOT_STARTED |  |  |
 | SC27 | core | TESTED | NOT_STARTED |  |  |

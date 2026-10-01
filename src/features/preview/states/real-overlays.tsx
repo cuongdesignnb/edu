@@ -15,7 +15,7 @@ import { SchoolStatusDialog } from "@/features/platform/school-status-dialog";
 import { ClassDrawer } from "@/features/school-org/class-drawer";
 import { InviteModal } from "@/features/school-org/invite-modal";
 import { AssignDrawer } from "@/features/school-org/assign-drawer";
-import { GuardianDialog, TransferDialog, IssueAccessDialog, RevokeAccessDialog } from "@/features/students/dialogs";
+import { GuardianDialog, TransferDialog, IssueAccessDialog } from "@/features/students/dialogs";
 import { QrImage, LinkBox, accessUrl } from "@/features/students/shared";
 import { FileViewerDialog } from "@/features/activities/evidence-dialogs";
 import { ExportFormatDialog, exportReportFile, type ExportFormat } from "@/features/reports/viewer";
@@ -93,11 +93,7 @@ function O13({ open, close }: { open: boolean; close: () => void }) {
 }
 
 function O14({ open, close }: { open: boolean; close: () => void }) {
-  const list = useRepo(["preview-o14"], (ctx) => studentsRepo.accessList(ctx, A, { q: "", page: 1, pageSize: 100, filters: { status: "active" } }), { enabled: open });
-  if (!open) return null;
-  const row = list.data?.items.find((r) => r.id !== "pa-minhanh-me" && r.id !== "pa-minhanh-bo");
-  if (!row) return <Modal open onOpenChange={close} title="Đang tải link…">{list.error ? <p className="text-sm text-danger-text">{list.error.message}</p> : list.isLoading ? <Loading /> : <p className="text-sm">Không còn link đang hoạt động để thử.</p>}</Modal>;
-  return <RevokeAccessDialog schoolId={A} onClose={close} target={{ accessId: row.id, label: `${row.relation} ${row.guardianName} — học sinh ${row.studentName} (${row.yearLabel})` }} />;
+  return <Modal open={open} onOpenChange={close} title="Thu hồi link tra cứu"><p className="text-sm">Mở chi tiết link thực tế để xem phiên bản hiện tại và nhập lý do thu hồi.</p></Modal>;
 }
 
 function O28({ open, close }: { open: boolean; close: () => void }) {
@@ -198,7 +194,7 @@ export const REAL_OVERLAYS: Record<string, Real> = {
   O11: { screen: "SC20", need: { kind: "staff", userId: "u-hanh" }, hint: "TransferDialog thật cho Minh Anh — bấm Hủy nếu không muốn đổi dữ liệu.", render: (open, close) => <StudentDialogs which="O11" open={open} close={close} /> },
   O12: { screen: "SC23", need: { kind: "staff", userId: "u-hanh" }, hint: "IssueAccessDialog thật — cấp link riêng, sau đó hiện kết quả O13.", render: (open, close) => <IssueAccessDialog open={open} onOpenChange={(o) => !o && close()} schoolId={A} studentId={MINH_ANH} /> },
   O13: { screen: "SC24", need: { kind: "any-staff" }, hint: "QrImage + LinkBox thật của nhóm học sinh.", render: (open, close) => <O13 open={open} close={close} /> },
-  O14: { screen: "SC24", need: { kind: "staff", userId: "u-hanh" }, hint: "RevokeAccessDialog thật — chọn một link đang hoạt động khác link của bố/mẹ Minh Anh.", render: (open, close) => <O14 open={open} close={close} /> },
+  O14: { screen: "SC24", need: { kind: "staff", userId: "u-hanh" }, hint: "Thu hồi yêu cầu link thực tế và phiên bản đã xem; preview không thực hiện lệnh.", render: (open, close) => <O14 open={open} close={close} /> },
   O19: { screen: "CL07", need: { kind: "staff", userId: "u-lan" }, hint: "ExplainDrawer thật — giải trình điểm tuần 4 của Minh Anh từ snapshot đã công bố.", render: (open, close) => <O19 open={open} close={close} /> },
   O25: { screen: "SC32", need: { kind: "staff", userId: "u-hanh" }, hint: "LessonChangeDrawer thật — đổi tiết 10A1 tiết 2 ngày 06/10/2026, kiểm tra trùng giáo viên/phòng.", render: (open, close) => <LessonChangeDrawer schoolId={A} today="2026-10-05" target={open ? { classId: CLS, className: "10A1", date: "2026-10-06", period: 2 } : null} onClose={close} /> },
   O28: { screen: "CL24", need: { kind: "staff", userId: "u-lan" }, hint: "FileViewerDialog thật với tệp đầu tiên của lớp 10A1.", render: (open, close) => <O28 open={open} close={close} /> },

@@ -1,0 +1,1 @@
+src/features/students/dialogs.tsx(82,38): error TS2339: Property 'accessId' does not exist on type '{ relationshipId: string; version: number; to: "revoked" | "verified"; guardianName: string; relation: string; studentName: string; activeLinks: number | null; }'.

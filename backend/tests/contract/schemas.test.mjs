@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,306);assert.equal(new Set(operations.map(op=>op.id)).size,306);
+  assert.equal(operations.length,310);assert.equal(new Set(operations.map(op=>op.id)).size,310);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -23,6 +23,15 @@ test('reviewed parent issuance requires every reviewed source version and reject
   for(const bad of [{...body,token:'secret'},{...body,actorId:id},{...body,phone:'0901234567'},{...body,reviewedSource:{...reviewedSource,expectedVersion:1}},{...body,replace:{accessId:id}},{...body,allowedSections:['overview','overview']}])assert.throws(()=>validateSchema('ParentAccessReviewedCreate',bad),error=>error.status===422);
   for(const name of ['getParentAccessIssueContext','listParentAccessIssueStudents','getStudentParentAccessIssueSource','issueReviewedParentAccess'])assert.equal(operations.find(op=>op.id===name).permission,'parent_access.issue');
   validateSchema('Error',{type:'urn:test',title:'LINK_ALREADY_ISSUED',status:409,code:'LINK_ALREADY_ISSUED',requestId:'r',resultId:id},true);
+});
+test('parent staff metadata excludes bearer/private fields and history represents missing device/section explicitly',()=>{
+  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',stamp='2026-10-01T00:00:00Z',row={id,version:1,createdAt:stamp,updatedAt:stamp,studentId:id,studentVersion:1,studentName:'Học sinh',studentCode:'HS001',studentStatus:'ACTIVE',yearId:id,yearName:'Năm học',yearStatus:'ACTIVE',classId:id,classVersion:1,className:'Lớp',enrollmentInEffect:true,
+    relationshipId:id,relationshipVersion:1,relationshipLabel:'Mẹ',relationshipStatus:'VERIFIED',canReceiveInfo:true,relationshipRevokedAt:null,guardianId:id,guardianVersion:1,guardianName:'Người nhận',allowedSections:['overview'],allowDownload:false,expiresAt:stamp,revokedAt:null,revokeReason:null,issuedBy:id,issuedByName:null,status:'ACTIVE',opens:0,lastOpenedAt:null,canIssue:false,canRevoke:false,canPreview:false};
+  validateSchema('ParentStaffAccessRow',row,true);
+  for(const key of ['token','tokenHash','link','phone','email','internalNote','dateOfBirth'])assert.throws(()=>validateSchema('ParentStaffAccessRow',{...row,[key]:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  validateSchema('ParentStaffAccessEvent',{id,accessLinkId:id,eventKind:'READ',occurredAt:stamp,deviceSummary:null,section:null},true);
+  assert.throws(()=>validateSchema('ParentStaffAccessEvent',{id,accessLinkId:id,eventKind:'READ',occurredAt:stamp,deviceSummary:null,section:null,ipDailyHash:'private'},true),error=>error.code==='RESPONSE_CONTRACT_ERROR');
+  for(const operation of ['listParentAccessDirectory','getParentAccessDirectorySummary','getParentAccessDetails','listParentAccessHistory'])assert.equal(operations.find(op=>op.id===operation).permission,'parent_access.manage');
 });
 test('school invite retains zero or multiple roles and the 1–30 day form without widening platform admin invitations',()=>{
   const value={email:'test@example.invalid',workDisplayName:'Nhân sự giả',roleIds:[],expiresInDays:30};validateSchema('SchoolStaffInvite',value);

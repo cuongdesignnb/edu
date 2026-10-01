@@ -16,6 +16,7 @@ import { Skeleton, ErrorState, QueryState } from "@/components/ui/states";
 import { SchoolSourceState } from "@/features/school-org/common";
 import { ConflictDialog } from "@/components/ui/guards";
 import { RELATIONS, fieldErrorsOf } from "./shared";
+import type {ParentRevokeSource} from '@/lib/repositories/connected/parent-access';
 
 /** First close attempt with unsaved input shows a warning; the second closes (O32 inside dialogs). */
 function useDirtyClose(dirty: boolean, open: boolean) {
@@ -154,14 +155,18 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
 export {IssueAccessDialog} from "./issue-access-dialog";
 
 /* ------------------------------ O14 — revoke a link ------------------------------ */
-export function RevokeAccessDialog({ target, onClose, schoolId }: { target: { accessId: string; label: string } | null; onClose: () => void; schoolId: string }) {
-  const cmd = useCommand((ctx, id: string, reason: string) => studentsRepo.revokeAccess(ctx, schoolId, id, reason), { success: "Đã thu hồi link", onSuccess: onClose });
+export type ParentLinkRevokeTarget={accessId:string;label:string;source:ParentRevokeSource};
+export function RevokeAccessDialog({ target, onClose, schoolId }: { target: ParentLinkRevokeTarget | null; onClose: () => void; schoolId: string }) {
+  const cmd = useCommand((ctx, id: string, reason: string,source:ParentRevokeSource) => studentsRepo.revokeAccess(ctx, schoolId, id, reason,source), { success: "Đã thu hồi link", onSuccess: onClose });
   const fe = fieldErrorsOf(cmd.error);
+  if(cmd.error&&['FORBIDDEN','NO_SESSION','NOT_FOUND','SUSPENDED'].includes(cmd.error.code))return <Modal open={!!target} onOpenChange={o=>{if(!o){cmd.reset();onClose();}}} title="Thu hồi link tra cứu"><ErrorState error={cmd.error} compact/></Modal>;
   return (
-    <ConfirmDialog open={!!target} onOpenChange={(o) => { if (!o) { cmd.reset(); onClose(); } }} busy={cmd.pending} title="Thu hồi link tra cứu" object={target?.label}
+    <ConfirmDialog key={target?.accessId??'closed'} open={!!target} onOpenChange={(o) => { if (!o) { cmd.reset(); onClose(); } }} busy={cmd.pending} title="Thu hồi link tra cứu" object={target?.label}
       consequence={<>Mọi lần mở mới bằng link này bị chặn ngay. Link của người giám hộ khác <b>không</b> thay đổi. Nhật ký cũ được giữ.</>}
       confirmLabel="Thu hồi link" variant="danger" reasonRequired reasonLabel="Lý do thu hồi" error={fe.reason}
-      onConfirm={(reason) => target ? cmd.run(target.accessId, reason) : undefined} />
+      onConfirm={(reason) => target ? cmd.run(target.accessId, reason,target.source) : undefined}>
+      {cmd.error&&<Callout tone="warning">{cmd.error.message}{cmd.error.code==='CONFLICT'&&<p className="mt-2">Đóng hộp thoại và tải lại màn hình để xem phiên bản hiện tại trước khi thu hồi.</p>}</Callout>}
+    </ConfirmDialog>
   );
 }
 

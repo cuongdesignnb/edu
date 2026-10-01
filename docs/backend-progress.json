@@ -3632,6 +3632,50 @@
       "evidence": [
         "qa/backend/b6-parent-issue-integration-full-reviewed.log"
       ]
+    },
+    {
+      "operationId": "listParentAccessDirectory",
+      "screenIds": [
+        "SC23"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31"
+      ]
+    },
+    {
+      "operationId": "getParentAccessDirectorySummary",
+      "screenIds": [
+        "SC23"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31"
+      ]
+    },
+    {
+      "operationId": "getParentAccessDetails",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31"
+      ]
+    },
+    {
+      "operationId": "listParentAccessHistory",
+      "screenIds": [
+        "SC24"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-access-integration-full.log:160/160 PostgreSQL exit0; new directory/detail/history scope and privacy cases2/2; backend unit/contracts31/31"
+      ]
     }
   ],
   "screens": [
@@ -4361,11 +4405,16 @@
         "getParentAccessIssueContext",
         "listParentAccessIssueStudents",
         "getStudentParentAccessIssueSource",
-        "issueReviewedParentAccess"
+        "issueReviewedParentAccess",
+        "listParentAccessDirectory",
+        "getParentAccessDirectorySummary"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E",
+        "qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E"
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -4379,11 +4428,16 @@
         "getParentAccessIssueContext",
         "listParentAccessIssueStudents",
         "getStudentParentAccessIssueSource",
-        "issueReviewedParentAccess"
+        "issueReviewedParentAccess",
+        "getParentAccessDetails",
+        "listParentAccessHistory"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Native SC23/SC24 metadata, bounded history and frozen revocation source; full PostgreSQL160 and frontend260 units; controlled browser checkpoint still under repair, not PostgreSQL E2E",
+        "qa/backend/b6-parent-access-checks.json: PostgreSQL160/160; frontend260 units; controlled Edge47/47 after shell correction, current scope/capabilities/frozen revoke/rotation and denied form removal; separate from real PostgreSQL browser E2E"
+      ],
       "apiStatus": "TESTED"
     },
     {

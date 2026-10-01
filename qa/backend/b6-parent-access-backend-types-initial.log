@@ -1,0 +1,1 @@
+src/modules/parents/access-directory.ts(54,114): error TS2559: Type '{ canIssue: boolean; canRevoke: boolean; canPreview: boolean; }' has no properties in common with type '{ classId?: unknown; enrollmentInEffect?: unknown; }'.

@@ -1,0 +1,225 @@
+{
+  "phase": "B6 native staff parent-link directory/details/history/revoke; partial goal checkpoint",
+  "previousCommit": "4777183480b0564b6e712884aa3d4e723dd1dd29",
+  "contract": {
+    "operations": 310,
+    "schemas": 423,
+    "newOperations": [
+      "listParentAccessDirectory",
+      "getParentAccessDirectorySummary",
+      "getParentAccessDetails",
+      "listParentAccessHistory"
+    ],
+    "operationStatus": {
+      "TESTED": 298,
+      "IMPLEMENTED": 12
+    }
+  },
+  "postgresFull": {
+    "tests": 160,
+    "pass": 160,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 422119.669904,
+    "log": "b6-parent-access-integration-full.log",
+    "runnerImage": "sha256:a281174acf148ae52d7e7ebe8b6721ddb5fc956a7c634f141eb5023e8e750716",
+    "migrations": 36
+  },
+  "postgresTargetedInitial": {
+    "tests": 2,
+    "pass": 0,
+    "fail": 2,
+    "skipped": 0,
+    "durationMs": 2662.184124,
+    "log": "b6-parent-access-integration-targeted-initial.log",
+    "runnerImage": "sha256:a4f690f5b3f746708a5cb361624c98abc21dc4119bda1ed7ac6300d06dbef3b4",
+    "failure": "replacement audit joined a uuid target_id against text; corrected uuid join before the selected2 and full160 passing runs"
+  },
+  "postgresTargetedFinal": {
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 3635.292734,
+    "log": "b6-parent-access-integration-targeted-updated.log",
+    "runnerImage": "sha256:a281174acf148ae52d7e7ebe8b6721ddb5fc956a7c634f141eb5023e8e750716"
+  },
+  "backendUnitsContracts": {
+    "tests": 31,
+    "pass": 31,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 511.2184,
+    "log": "b6-parent-access-backend-unit-contract.log"
+  },
+  "backendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-access-backend-types-reviewed.log",
+    "initialFailureLog": "b6-parent-access-backend-types-initial.log",
+    "initialFailure": "weak optional-field type in row capabilities; corrected Record<string,unknown> before runtime test image"
+  },
+  "backendLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "b6-parent-access-backend-lint.log"
+  },
+  "frontendUnits": {
+    "passed": 260,
+    "failed": 0,
+    "files": 29,
+    "durationSeconds": 12.05,
+    "apiCases": 219,
+    "historicalSyntheticRegressions": 41,
+    "log": "b6-parent-access-frontend-unit-shell-reviewed.log",
+    "earlierFullLog": "b6-parent-access-frontend-unit-full.log"
+  },
+  "frontendTargeted": {
+    "passed": 8,
+    "failed": 0,
+    "durationSeconds": 0.585,
+    "log": "b6-parent-access-frontend-unit-targeted-initial.log"
+  },
+  "frontendTypes": {
+    "exitCode": 0,
+    "log": "b6-parent-access-frontend-types-reviewed-final.log",
+    "initialFailureLog": "b6-parent-access-frontend-types-initial.log",
+    "initialFailure": "unversioned preview revoke target, missing DataTable rowKey and unsupported PageHeader back prop; preview now read-only, native table/actions corrected",
+    "subsequentFailureLog": "b6-parent-access-frontend-types-pre-browser-initial.log",
+    "subsequentFailure": "dialog-key edit also affected guardian verification target; restored that unrelated dialog before reviewed typecheck"
+  },
+  "frontendBuild": {
+    "exitCode": 0,
+    "log": "b6-parent-access-frontend-build-shell-reviewed.log"
+  },
+  "frontendChangedLint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "b6-parent-access-frontend-lint-reviewed.log",
+    "finalBrowserTestLintLog": "b6-parent-access-browser-test-lint-reviewed.log"
+  },
+  "browser": {
+    "startTime": "2026-10-01T06:21:48.142Z",
+    "duration": 58076.954,
+    "expected": 47,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "results": "b6-parent-access-browser-results-final.json",
+    "run": "b6-parent-access-browser-run.json",
+    "log": "b6-parent-access-browser-final.log",
+    "ownedNextPid": 45344,
+    "ownedNextClosed": true,
+    "portFreeBefore": true,
+    "portFreeAfter": true,
+    "exitCode": 0,
+    "screenshotsViewed": [
+      "parent-directory",
+      "parent-directory-mobile",
+      "parent-details-history",
+      "parent-details-history-mobile"
+    ]
+  },
+  "browserInitial": {
+    "startTime": "2026-10-01T06:10:12.882Z",
+    "duration": 355190.301,
+    "expected": 39,
+    "skipped": 0,
+    "unexpected": 8,
+    "flaky": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "results": "b6-parent-access-initial-browser-results-final.json",
+    "run": "b6-parent-access-initial-browser-run.json",
+    "log": "b6-parent-access-initial-browser-final.log",
+    "ownedNextPid": 36076,
+    "ownedNextClosed": true,
+    "portFreeBefore": true,
+    "portFreeAfter": true,
+    "exitCode": 1,
+    "failure": "school shell incorrectly required a readable year catalog on parent-access purpose pages; corrected shell and rebuilt"
+  },
+  "browserShellReviewed": {
+    "startTime": "2026-10-01T06:17:26.664Z",
+    "duration": 59880.746,
+    "expected": 47,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "results": "b6-parent-access-shell-reviewed-browser-results-final.json",
+    "run": "b6-parent-access-shell-reviewed-browser-run.json",
+    "log": "b6-parent-access-shell-reviewed-browser-final.log",
+    "ownedNextPid": 8668,
+    "ownedNextClosed": true,
+    "portFreeBefore": true,
+    "portFreeAfter": true,
+    "exitCode": 0
+  },
+  "browserImagesInitial": {
+    "startTime": "2026-10-01T06:19:11.615Z",
+    "duration": 68666.044,
+    "expected": 46,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0,
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "results": "b6-parent-access-images-initial-browser-results-final.json",
+    "run": "b6-parent-access-images-initial-browser-run.json",
+    "log": "b6-parent-access-images-initial-browser-final.log",
+    "ownedNextPid": 17892,
+    "ownedNextClosed": true,
+    "portFreeBefore": true,
+    "portFreeAfter": true,
+    "exitCode": 1,
+    "failure": "Edge ERR_NO_BUFFER_SPACE prevented a JavaScript chunk from loading in the pre-existing school profile test; all8 parent metadata browser cases passed; trace diagnostic preserved",
+    "diagnostic": "b6-parent-access-browser-chunk-failure-diagnostic.json"
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T13:10:03.5096245+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfter": {
+    "checkedAt": "2026-10-01T13:23:02.1354557+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "inventory": {
+    "methodCount": 231,
+    "candidateCount": 109,
+    "activatedCandidateCount": 109,
+    "activatedLegacyMethodCount": 98
+  },
+  "unmatchedLegacyMethods": 133,
+  "core": {
+    "count": 118,
+    "status": {
+      "IMPLEMENTED": 46,
+      "STATIC_UNVERIFIED": 3,
+      "NOT_STARTED": 69,
+      "TESTED": 0
+    }
+  },
+  "notCompleted": [
+    "Native parent/preview and remaining frontend facades",
+    "Real PostgreSQL browser E2E and all core screen acceptance",
+    "Root deploy/scripts merge and final Docker http://127.0.0.1:18763 serving",
+    "Restart persistence, physical backup/restore and failure drills",
+    "Release workload p50/p95/error/CPU/RSS/DB pool measurements"
+  ],
+  "safety": {
+    "volumesDeleted": false,
+    "otherProjectsChanged": false,
+    "productionDeployed": false,
+    "finalLocalUrlServing": false
+  },
+  "commands": {
+    "postgresFull": "docker --context desktop-linux compose --project-directory D:\\Edu\\backend -f D:\\Edu\\backend\\tests\\compose.yml run --rm runner node --test --test-reporter=spec tests/integration/foundation.test.mjs",
+    "frontendUnits": "node node_modules/vitest/vitest.mjs run",
+    "browser": "node scripts/run-native-ui-contract.mjs b6-parent-access"
+  }
+}
