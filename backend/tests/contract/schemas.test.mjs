@@ -6,8 +6,14 @@ test('staff preview context has a minimal context schema and independent school 
  const value={viewId:'da72b470-4b45-4f5f-b89d-179c0cdf454a',school:{name:'Trường kiểm thử',slug:'preview-test',publicContactPhone:null,shortName:null,motto:null,publicContactEmail:null,publicAddress:null},student:{displayName:'Con riêng',classLabel:'6A',schoolYearLabel:'2026–2027'},allowedSections:['teachers'],allowDownload:false,csrfToken:'synthetic-preview-csrf',expiresAt:'2026-10-01T01:01:00Z',today:'2026-10-01',year:{label:'2026–2027',startsOn:'2026-09-01',endsOn:'2027-06-01'},relationshipLabel:'Mẹ',linkExpiresAt:'2026-11-01T00:00:00Z',lastPublishedAt:null};validateSchema('ParentContext',value,true);
  for(const bad of [{context:value},{...value,attendance:[]},{...value,token:'secret'},{...value,student:{...value.student,id:value.viewId}}])assert.throws(()=>validateSchema('ParentContext',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
 });
+test('class workspace header has exact year routing and explicitly permits absent independent period metadata',()=>{
+ const op=operations.find(o=>o.id==='getClassWorkspaceHeader');assert.equal(op.auth,'staff');assert.equal(op.permission,'class.read');assert.equal(op.method,'GET');assert.equal(op.readOnly,true);assert.deepEqual(op.parameters.filter(p=>p.in==='path').map(p=>p.name),['schoolId','yearId','classId']);
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',value={school:{id,name:'Trường thử',shortName:'TT',slug:'header-test'},class:{id,version:1,yearId:id,gradeLevelId:id,name:'6A',capacity:40,status:'DRAFT',roomId:null,motto:null,createdAt:'2026-10-01T00:00:00Z'},year:{id,version:1,code:'Y26',name:'2026–2027',startsOn:'2026-09-01',endsOn:'2027-06-01',status:'ACTIVE'},grade:'Khối 6',today:'2026-10-01',referenceDate:'2026-10-01',homeroom:null,studentCount:null,maleCount:null,femaleCount:null,myDuties:[],viaSchoolRole:false,workspaceKind:'CLASS',actions:['class.read'],tabs:[{key:'overview',label:'Tổng quan',path:''}],summary:{weekIndex:null,weekStatus:null,pending:null,links:null,lastPublishedAt:null},readOnly:false};validateSchema('ClassWorkspaceHeader',value,true);
+ for(const bad of [{...value,studentId:id},{...value,tokenHash:'secret'},{...value,summary:{...value.summary,periodId:id}},{...value,homeroom:{name:'Tên công tác',contactVisible:true,workEmail:null,workPhone:null,userId:id}}])assert.throws(()=>validateSchema('ClassWorkspaceHeader',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+});
+
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,341);assert.equal(new Set(operations.map(op=>op.id )).size,341);
+  assert.equal(operations.length,342);assert.equal(new Set(operations.map(op=>op.id )).size,342);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

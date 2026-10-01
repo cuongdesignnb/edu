@@ -1,0 +1,44 @@
+ Container edumanage_backend_test-runner-run-3f963b3c40d8 Creating
+ Container edumanage_backend_test-runner-run-3f963b3c40d8 Created
+✔ B6 class workspace header isolates school year class subject fields and actual publication link counters (3296.597702ms)
+✔ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (1034.734839ms)
+✖ B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments (805.823905ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6069.441668
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1607:1
+✖ B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments (805.823905ms)
+  error: new row for relation "teaching_assignments" violates check constraint "teaching_assignments_check1"
+      at /srv/api/node_modules/pg/lib/client.js:694:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async db.transaction.schoolId (file:///srv/api/tests/integration/foundation.test.mjs:1613:143)
+      at async Database.transaction (/srv/api/dist/database/database.js:47:27)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1613:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    length: 218,
+    severity: 'ERROR',
+    code: '23514',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'app',
+    table: 'teaching_assignments',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'teaching_assignments_check1',
+    file: 'execMain.c',
+    line: '2074',
+    routine: 'ExecConstraints'
+  }

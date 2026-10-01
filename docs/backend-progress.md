@@ -345,6 +345,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentPublishedOverview | SC25, PA02 | TESTED | qa/backend/b6-parent-overview-integration-selected.log — 10/10 real PostgreSQL; explicit section absence, own bounded panels, actual publication order, current denial/withdrawal/revocation and independent preview |
 | getParentAccessPreviewContext | SC25 | TESTED | qa/backend/b6-parent-preview-integration-selected.log |
 | listTeacherClassDirectory | TE02 | TESTED | qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate. |
+| getClassWorkspaceHeader | CL01 | TESTED | qa/backend/b6-class-header-postgres-selected-visual-corrected.log: real PostgreSQL 3/3 on current image; exact school/year/class/current assignment/grant rights, independent minimal fields, real publish/withdraw and parent-link counters, foreign/future/expired/revoked/ended denial. Header only; CL01 overview and full current-tree regression remain separate. |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|

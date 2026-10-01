@@ -1,0 +1,47 @@
+ Container edumanage_backend_test-runner-run-b526040ed33f Creating
+ Container edumanage_backend_test-runner-run-b526040ed33f Created
+✖ B6 class workspace header isolates school year class subject fields and actual publication link counters (1928.493698ms)
+✖ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (747.409897ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3547.119291
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1571:1
+✖ B6 class workspace header isolates school year class subject fields and actual publication link counters (1928.493698ms)
+  Error: RESPONSE_CONTRACT_ERROR
+      at validateSchema (/srv/api/dist/common/contract.js:30:15)
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1577:65)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    status: 500,
+    code: 'RESPONSE_CONTRACT_ERROR',
+    fieldErrors: undefined,
+    currentVersion: undefined,
+    resultId: undefined
+  }
+
+test at tests/integration/foundation.test.mjs:1594:1
+✖ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (747.409897ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:response_contract_error","title":"RESPONSE_CONTRACT_ERROR","status":500,"code":"RESPONSE_CONTRACT_ERROR","requestId":"5704b123-c4fd-456e-8d52-8b888fe30ede"}
+
+  500 !== 200
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1601:137)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 500,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

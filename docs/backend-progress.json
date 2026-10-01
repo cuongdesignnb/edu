@@ -4056,6 +4056,17 @@
       "evidence": [
         "qa/backend/b6-teacher-classes-postgres-selected.log: real PostgreSQL 2/2, own/current class cards and ended self history, exact school and per-action class/subject/date guards, signed pagination and current revocation/member checks; full regression remains separate."
       ]
+    },
+    {
+      "operationId": "getClassWorkspaceHeader",
+      "screenIds": [
+        "CL01"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-class-header-postgres-selected-visual-corrected.log: real PostgreSQL 3/3 on current image; exact school/year/class/current assignment/grant rights, independent minimal fields, real publish/withdraw and parent-link counters, foreign/future/expired/revoked/ended denial. Header only; CL01 overview and full current-tree regression remain separate."
+      ]
     }
   ],
   "screens": [
@@ -5180,7 +5191,8 @@
       "screenId": "CL01",
       "scope": "core",
       "operationIds": [
-        "getClassOverview"
+        "getClassOverview",
+        "getClassWorkspaceHeader"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",

@@ -1,0 +1,164 @@
+{
+  "checkpoint": "B6 native classroom header only; CL01 and whole goal incomplete",
+  "baselineCommit": "630d04581f2c2c6b8e0bd2221a1a02ea43112d50",
+  "contract": {
+    "baselineCommit": "630d04581f2c2c6b8e0bd2221a1a02ea43112d50",
+    "existingOperationsChanged": [],
+    "existingSchemasChanged": [],
+    "newOperations": [
+      "getClassWorkspaceHeader"
+    ],
+    "newSchemas": [
+      "ClassWorkspaceHeader",
+      "ClassWorkspaceHeaderResponse"
+    ],
+    "operationCount": 342,
+    "schemaCount": 461
+  },
+  "postgres": {
+    "currentSelected": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 6065.954917
+    },
+    "currentImage": "sha256:5e64faa709fc1b7199f8cd6cae5e86b2b2d625f92455bf1c382ca6a3ceede946",
+    "migrationsCurrentlyApplied": 46,
+    "fullBeforeFinalCorrections": {
+      "tests": 188,
+      "pass": 188,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 844103.972332,
+      "image": "sha256:dd783ea7c705cb14cc94a974fa67dc63f676a3b83d1f764423494daa2a0fa8c3",
+      "status": "PASS_FOR_PREDECESSOR_SOURCE_ONLY"
+    },
+    "fullCurrentSource": "NOT_RERUN_AFTER_FINAL_PUBLICATION_AND_SUBJECT_TAB_CORRECTIONS"
+  },
+  "backendUnitContractsCurrent": {
+    "tests": 48,
+    "pass": 48,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 534.057103
+  },
+  "frontend": {
+    "tests": 367,
+    "files": 43,
+    "durationSeconds": 10.3,
+    "apiRegressions": 326,
+    "historicalSyntheticRegressions": 41,
+    "sourceTiming": "After publication/receipt changes; two later low-impact captions (backlog scope and derived unknown-gender count) verified by final production build/browser. Full units not rerun after those captions."
+  },
+  "controlledBrowser": {
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "passed": 93,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMs": 97384.299,
+    "ownedNextPid": 60052,
+    "ownedNextClosed": true,
+    "ownedNextExit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "inspectedScreenshots": [
+      {
+        "file": "b6-class-header-class-header-class-desktop.png",
+        "finding": "Custom CLASS reader uses its class shell without teacher.self; missing roster/period/contact rights remain explicit, link count has no borrowed denominator. Final 1448px page fits horizontally. CL01 content remains unavailable.",
+        "sha256": "b446023b5b1cd78e38c3e3d55a5dc5c30b85780b001538367d3737865446d52c"
+      },
+      {
+        "file": "b6-class-header-class-header-class-mobile.png",
+        "finding": "390px cards and missing-period badge fit without horizontal overflow; explicit CL01 unavailable state remains.",
+        "sha256": "e0b2f51da957d348393e7ba921b220e9d4de174261680b0bb1e3badda798ab92"
+      },
+      {
+        "file": "b6-class-header-class-header-school-desktop.png",
+        "finding": "SCHOOL class/year reader uses the existing school shell without teacher.self or unrelated school directory dependencies; independent denied fields remain explicit.",
+        "sha256": "fe5fca0a4a3b9b4bdbefcd18e18ff9a1a09104ddf04e40fc12a32ff52060bca0"
+      },
+      {
+        "file": "b6-class-header-class-header-teacher-desktop.png",
+        "finding": "Existing teacher shell, work-only authorized contacts, pupil counters, native tabs and actual PUBLISHED badge remain readable; no false unpublished label. CL01 content remains unavailable.",
+        "sha256": "06f5055fd9be7a16c292f994c2f0bbd124e0d31553b78b3f201328ea1c48e0f2"
+      }
+    ]
+  },
+  "checks": {
+    "backendTypes": 0,
+    "backendLintWarnings": 0,
+    "frontendTypes": 0,
+    "finalChangedFrontendLintWarnings": 0,
+    "finalNextProductionBuild": 0,
+    "contractValidator": 0,
+    "sdk": 0,
+    "facadeInventory": 0,
+    "contractSemanticDiff": 0,
+    "fullRootLint": "NOT_RERUN"
+  },
+  "progress": {
+    "operations": {
+      "TESTED": 330,
+      "IMPLEMENTED": 12
+    },
+    "coreScreens": {
+      "IMPLEMENTED": 62,
+      "STATIC_UNVERIFIED": 3,
+      "NOT_STARTED": 53
+    },
+    "nativeFacades": 130,
+    "activatedLegacyMethods": 117,
+    "legacyTotal": 231,
+    "legacyRemaining": 114,
+    "newSourceScreens": [],
+    "CL01": "NOT_STARTED_HEADER_ONLY"
+  },
+  "failedOrEarlierRuns": [
+    {
+      "evidence": "b6-class-header-frontend-types-initial.log",
+      "reason": "Nullable class size required two activity consumers to use explicit unknown-size wording; no zero fallback."
+    },
+    {
+      "evidence": "b6-class-header-postgres-selected-initial.log",
+      "reason": "Header createdAt was a Date instead of an ISO string; response contract failure; corrected serializer."
+    },
+    {
+      "evidence": "b6-class-header-postgres-selected-date.log",
+      "reason": "Fixture tried to update immutable conduct provenance and nullable enum omitted explicit null. Fixture now creates actual own-teacher conduct through API; immutability guard unchanged."
+    },
+    {
+      "evidence": "b6-class-header-postgres-selected-final.log",
+      "reason": "Ended-assignment synthetic fixture violated starts/ends CHECK. Corrected historical bounds; constraint unchanged."
+    },
+    {
+      "evidence": "b6-class-header-before-visual-browser-results-final.json",
+      "reason": "93 functional passes preceded visual rejection for desktop badge overflow and an incorrect LOCKED/unpublished label despite actual publication. Preserved as predecessor evidence; final geometry/publication assertions added."
+    },
+    {
+      "evidence": "b6-class-header-initial-browser-results-final.json",
+      "reason": "Earlier 93 controlled passes; superseded, not final visual acceptance."
+    }
+  ],
+  "portAfter": {
+    "checkedAt": "2026-10-01T20:25:23.7868151+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "releaseStatus": "NOT_SERVING_FINAL_RELEASE",
+  "production": "NOT_AUTHORIZED",
+  "remaining": [
+    "CL01 bounded native overview and remaining specialist/staff workflows and 114 legacy facades",
+    "Real PostgreSQL browser E2E for two schools/class/subject/time/current revoke/publish/withdraw",
+    "Root deploy/scripts merge and final Docker loopback release18763",
+    "Restart data/files/worker persistence",
+    "Physical isolated backup/restore and failure drills",
+    "Required release workload and latency/error/CPU/RSS/pool measurements"
+  ]
+}

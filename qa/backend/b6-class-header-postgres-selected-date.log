@@ -1,0 +1,60 @@
+ Container edumanage_backend_test-runner-run-2139259685d1 Creating
+ Container edumanage_backend_test-runner-run-2139259685d1 Created
+✖ B6 class workspace header isolates school year class subject fields and actual publication link counters (2334.361536ms)
+✖ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (737.1615ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3937.009793
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:1571:1
+✖ B6 class workspace header isolates school year class subject fields and actual publication link counters (2334.361536ms)
+  error: Conduct identity immutable
+      at /srv/api/node_modules/pg/lib/client.js:694:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Database.transaction (/srv/api/dist/database/database.js:47:27)
+      at async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1586:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    length: 150,
+    severity: 'ERROR',
+    code: '23514',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: 'PL/pgSQL function app.guard_conduct_record() line 8 at RAISE',
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'pl_exec.c',
+    line: '3897',
+    routine: 'exec_stmt_raise'
+  }
+
+test at tests/integration/foundation.test.mjs:1594:1
+✖ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (737.1615ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:response_contract_error","title":"RESPONSE_CONTRACT_ERROR","status":500,"code":"RESPONSE_CONTRACT_ERROR","requestId":"e6f14eee-cb50-4da5-8ad5-57dc88b51cf1"}
+
+  500 !== 200
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1601:137)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 500,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -43,9 +43,9 @@ export function activityState(a: ActivityLike): { label: string; tone: Tone } {
   return { label: "Đang diễn ra", tone: "success" };
 }
 
-export function scopeLabel(a: { assignedGroupId?: string; groupName?: string; assignedStudentIds: string[] }, classSize: number) {
+export function scopeLabel(a: { assignedGroupId?: string; groupName?: string; assignedStudentIds: string[] }, classSize: number | null) {
   if (a.assignedGroupId) return a.groupName ?? "Một tổ";
-  if (a.assignedStudentIds.length >= classSize && classSize > 0) return "Cả lớp";
+  if (classSize !== null && a.assignedStudentIds.length >= classSize && classSize > 0) return "Cả lớp";
   return `${a.assignedStudentIds.length} học sinh`;
 }
 

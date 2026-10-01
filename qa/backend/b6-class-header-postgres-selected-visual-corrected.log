@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-runner-run-f892cfd90b89 Creating
+ Container edumanage_backend_test-runner-run-f892cfd90b89 Created
+✔ B6 class workspace header isolates school year class subject fields and actual publication link counters (3564.644182ms)
+✔ B6 class workspace header keeps custom CLASS and school-only authority independent of teacher self and hidden panels (877.851885ms)
+✔ B6 class workspace header does not invent a period and rechecks future expiry revoked and ended assignments (721.686946ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6065.954917
+EXIT_CODE=0

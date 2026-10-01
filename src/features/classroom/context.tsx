@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
@@ -9,10 +9,10 @@ import {
   Archive, Link2, Megaphone as Speaker, ClipboardList,
 } from "lucide-react";
 import type { ActionKey } from "@/lib/model/types";
-import { classroomRepo, sessionRepo } from "@/lib/repositories";
+import { classroomRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtPercent } from "@/lib/formatters";
-import { SchoolShell, TeacherShell, RequireStaffSession } from "@/components/layout/shells";
+import { SchoolShell, TeacherShell, ScopedClassShell, RequireStaffSession } from "@/components/layout/shells";
 import { Breadcrumbs } from "@/components/layout/page";
 import { Badge, PUBLICATION_STATUS } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -38,13 +38,17 @@ function ClassroomInner({ schoolId, yearId, classId, children }: { schoolId: str
     return { schoolId, yearId, classId, base: `/classroom/${schoolId}/${yearId}/${classId}`, header: header.data, can: (a) => set.has(a), readOnly: header.data.readOnly };
   }, [header.data, schoolId, yearId, classId]);
   if (header.isLoading) return <PageSkeleton />;
-  if (header.error || !value) return <div className="page"><div className="card"><ErrorState error={header.error} onRetry={() => header.refetch()} /></div></div>;
-  return (
+  if (!value || header.error && header.error.code !== 'READ_ERROR' && header.error.code !== 'NETWORK') return <div className="page"><div className="card"><ErrorState error={header.error} onRetry={() => header.refetch()} /></div></div>;
+  const content = (
     <Ctx.Provider value={value}>
+      {header.error && <div className="px-[var(--page-pad)] pt-4"><ErrorState compact error={header.error} onRetry={() => header.refetch()} /></div>}
       {value.readOnly && <div className="px-[var(--page-pad)] pt-4"><Callout tone="neutral" icon={<Archive />} title="Năm học đã lưu trữ — chỉ xem">Dữ liệu năm cũ được giữ nguyên để tra cứu; các thao tác ghi đã tắt (ST24).</Callout></div>}
       {children}
     </Ctx.Provider>
   );
+  if(value.header.workspaceKind==='TEACHER')return <TeacherShell schoolId={schoolId}>{content}</TeacherShell>;
+  if(value.header.workspaceKind==='SCHOOL')return <SchoolShell schoolId={schoolId} classWorkspace>{content}</SchoolShell>;
+  return <ScopedClassShell schoolId={schoolId} base={value.base} className={value.header.class.name}>{content}</ScopedClassShell>;
 }
 
 /**
@@ -52,21 +56,7 @@ function ClassroomInner({ schoolId, yearId, classId, children }: { schoolId: str
  * actor's real relation to this class (assignment → TeacherShell; school role → SchoolShell).
  */
 export function ClassroomLayout({ schoolId, yearId, classId, children }: { schoolId: string; yearId: string; classId: string; children: ReactNode }) {
-  return <RequireStaffSession><ShellChooser schoolId={schoolId} yearId={yearId} classId={classId}>{children}</ShellChooser></RequireStaffSession>;
-}
-
-function ShellChooser({ schoolId, yearId, classId, children }: { schoolId: string; yearId: string; classId: string; children: ReactNode }) {
-  const me = useRepo(["me"], (c) => sessionRepo.me(c));
-  const cls = useRepo(["teacher-classes", schoolId], (c) => classroomRepo.teacherClasses(c, schoolId), { retry: false });
-  // Latch the first decision so a background refetch never unmounts the chosen shell.
-  const [ready, setReady] = useState(false);
-  useEffect(() => { if (!me.isLoading && !cls.isLoading) setReady(true); }, [me.isLoading, cls.isLoading]);
-  if (!ready) return <PageSkeleton />;
-  const ws = me.data?.workspaces.find((w) => w.school.id === schoolId);
-  const teaches = !!cls.data?.some((c) => c.id === classId && c.live);
-  const inner = <ClassroomInner schoolId={schoolId} yearId={yearId} classId={classId}>{children}</ClassroomInner>;
-  if (teaches || !ws?.schoolWorkspace) return <TeacherShell schoolId={schoolId}>{inner}</TeacherShell>;
-  return <SchoolShell schoolId={schoolId}>{inner}</SchoolShell>;
+  return <RequireStaffSession><ClassroomInner schoolId={schoolId} yearId={yearId} classId={classId}>{children}</ClassroomInner></RequireStaffSession>;
 }
 
 /* ------------------------------ Tabs ------------------------------ */
@@ -124,12 +114,12 @@ export function ClassTabs() {
 export function ClassHeader({ variant = "compact", title, subtitle, actions, crumbs }: { variant?: "full" | "compact"; title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; crumbs?: { label: string; href?: string }[] }) {
   const { header: h, base, schoolId } = useClassroom();
   const breadcrumb = [
-    { label: h.school.shortName, href: h.viaSchoolRole ? `/school/${schoolId}` : `/teacher/${schoolId}` },
-    { label: h.viaSchoolRole ? "Danh sách lớp" : "Lớp học của tôi", href: h.viaSchoolRole ? `/school/${schoolId}/classes` : `/teacher/${schoolId}/classes` },
+    { label: h.school.shortName, href: h.workspaceKind === 'SCHOOL' ? `/school/${schoolId}` : h.workspaceKind === 'TEACHER' ? `/teacher/${schoolId}` : '/choose-school' },
+    ...(h.workspaceKind === 'CLASS' ? [] : [{ label: h.workspaceKind === 'SCHOOL' ? "Danh sách lớp" : "Lớp học của tôi", href: h.workspaceKind === 'SCHOOL' ? `/school/${schoolId}/classes` : `/teacher/${schoolId}/classes` }]),
     { label: `Lớp ${h.class.name}`, href: base },
     ...(crumbs ?? []),
   ];
-  const statusMap = PUBLICATION_STATUS[h.summary.weekStatus] ?? PUBLICATION_STATUS.open;
+  const statusMap = h.summary.weekStatus ? PUBLICATION_STATUS[h.summary.weekStatus] : null;
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-start gap-4">
@@ -158,27 +148,28 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
             <div className="min-w-0 text-[13px]">
               <p className="text-body">Giáo viên chủ nhiệm</p>
               <p className="truncate text-[15px] font-bold text-ink">{h.homeroom?.name ?? "Chưa phân công"}</p>
-              {h.homeroom && <><p className="hidden items-center gap-1.5 text-muted sm:flex"><Phone className="size-3.5" aria-hidden />{h.homeroom.phone}</p><p className="hidden items-center gap-1.5 truncate text-muted sm:flex"><Mail className="size-3.5 flex-none" aria-hidden />{h.homeroom.email}</p></>}
+              {h.homeroom?.phone && <p className="hidden items-center gap-1.5 text-muted sm:flex"><Phone className="size-3.5" aria-hidden />{h.homeroom.phone}</p>}
+              {h.homeroom?.email && <p className="hidden items-center gap-1.5 truncate text-muted sm:flex"><Mail className="size-3.5 flex-none" aria-hidden />{h.homeroom.email}</p>}
             </div>
           </div>
           <div className="card card-pad flex items-center gap-4">
             <IconTile tone="blue"><Users className="size-7" /></IconTile>
-            <div><p className="text-[13.5px] text-body">Sĩ số lớp</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.size}</p><p className="text-[12px] text-muted">{h.male} nam · {h.female} nữ</p></div>
+            <div><p className="text-[13.5px] text-body">Sĩ số lớp</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.size ?? '—'}</p><p className="text-[12px] text-muted">{h.size === null ? 'Không có quyền xem' : h.male === null || h.female === null ? 'Không có quyền xem giới tính' : `${h.male} nam · ${h.female} nữ${h.size > h.male + h.female ? ` · ${h.size - h.male - h.female} chưa có dữ liệu` : ''}`}</p></div>
           </div>
           {h.summary.links ? (
             <div className="card card-pad flex items-center gap-4">
               <IconTile tone="green"><Link2 className="size-7" /></IconTile>
               <div className="min-w-0 flex-1">
                 <p className="text-[13.5px] text-body">Học sinh có link tra cứu</p>
-                <p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.links.studentsWithLink}<span className="text-lg text-muted"> / {h.size}</span></p>
-                <ProgressBar value={h.summary.links.studentsWithLink} total={h.size} ariaLabel="Tỉ lệ học sinh có link tra cứu" color="var(--color-success)" />
-                <p className="mt-1 text-[12px] text-muted">{h.summary.links.opened} em có link đã được mở ({fmtPercent(h.summary.links.opened, h.size)})</p>
+                <p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.links.studentsWithLink}{h.size !== null && <span className="text-lg text-muted"> / {h.size}</span>}</p>
+                {h.size !== null && <ProgressBar value={h.summary.links.studentsWithLink} total={h.size} ariaLabel="Tỉ lệ học sinh có link tra cứu" color="var(--color-success)" />}
+                <p className="mt-1 text-[12px] text-muted">{h.summary.links.opened} em có link đã được mở{h.size !== null && ` (${fmtPercent(h.summary.links.opened, h.size)})`}</p>
               </div>
             </div>
           ) : (
             <div className="card card-pad flex items-center gap-4">
               <IconTile tone="amber"><ClipboardList className="size-7" /></IconTile>
-              <div><p className="text-[13.5px] text-body">Ghi nhận chờ rà soát</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.pending}</p><p className="text-[12px] text-muted">Tuần {h.summary.weekIndex ?? "—"}</p></div>
+              <div><p className="text-[13.5px] text-body">Ghi nhận chờ rà soát</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.pending ?? '—'}</p><p className="text-[12px] text-muted">{h.summary.pending === null ? 'Không có quyền xem' : 'Trong phạm vi được cấp'}</p></div>
             </div>
           )}
           <div className="card card-pad col-span-2 flex items-center gap-4 sm:col-span-1">
@@ -192,7 +183,7 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
             ) : (
               <div className="min-w-0">
                 <p className="text-[13.5px] text-body">Thi đua tuần {h.summary.weekIndex ?? "—"}</p>
-                <p className="mt-1"><Badge tone={statusMap.tone}>{statusMap.label}</Badge></p>
+                <p className="mt-1"><Badge tone={statusMap?.tone ?? 'neutral'} className="max-w-full !whitespace-normal">{h.summary.weekStatus === 'locked' ? 'Đã chốt' : statusMap?.label ?? 'Chưa có kỳ hoặc không có quyền xem'}</Badge></p>
                 <p className="mt-1.5 text-[12px] text-muted">Công bố gần nhất: {h.summary.lastPublishedAt ? fmtDate(h.summary.lastPublishedAt) : "—"}</p>
               </div>
             )}

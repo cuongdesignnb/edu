@@ -19670,6 +19670,366 @@
         "requestId"
       ],
       "additionalProperties": false
+    },
+    "ClassWorkspaceHeader": {
+      "type": "object",
+      "properties": {
+        "school": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": {
+              "type": "string"
+            },
+            "shortName": {
+              "type": "string"
+            },
+            "slug": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "shortName",
+            "slug"
+          ],
+          "additionalProperties": false
+        },
+        "class": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "yearId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "gradeLevelId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": {
+              "type": "string"
+            },
+            "capacity": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "ACTIVE",
+                "ARCHIVED"
+              ]
+            },
+            "roomId": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "motto": {
+              "type": "string",
+              "nullable": true
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "yearId",
+            "gradeLevelId",
+            "name",
+            "capacity",
+            "status",
+            "roomId",
+            "motto",
+            "createdAt"
+          ],
+          "additionalProperties": false
+        },
+        "year": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "startsOn": {
+              "type": "string",
+              "format": "date"
+            },
+            "endsOn": {
+              "type": "string",
+              "format": "date"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "ACTIVE",
+                "ARCHIVED"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "code",
+            "name",
+            "startsOn",
+            "endsOn",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "grade": {
+          "type": "string"
+        },
+        "today": {
+          "type": "string",
+          "format": "date"
+        },
+        "referenceDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "homeroom": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "contactVisible": {
+              "type": "boolean"
+            },
+            "workEmail": {
+              "type": "string",
+              "nullable": true
+            },
+            "workPhone": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "required": [
+            "name",
+            "contactVisible",
+            "workEmail",
+            "workPhone"
+          ],
+          "additionalProperties": false,
+          "nullable": true
+        },
+        "studentCount": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "maleCount": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "femaleCount": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        },
+        "myDuties": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "viaSchoolRole": {
+          "type": "boolean"
+        },
+        "workspaceKind": {
+          "type": "string",
+          "enum": [
+            "TEACHER",
+            "SCHOOL",
+            "CLASS"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "tabs": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "enum": [
+                  "overview",
+                  "students",
+                  "attendance",
+                  "conduct",
+                  "timetable",
+                  "groups",
+                  "activities",
+                  "announcements",
+                  "files",
+                  "reports"
+                ]
+              },
+              "label": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "/students",
+                  "/attendance",
+                  "/conduct",
+                  "/timetable",
+                  "/groups",
+                  "/activities",
+                  "/announcements",
+                  "/files",
+                  "/reports"
+                ]
+              }
+            },
+            "required": [
+              "key",
+              "label",
+              "path"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "weekIndex": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "weekStatus": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "IN_REVIEW",
+                "LOCKED",
+                "PUBLISHED",
+                null
+              ],
+              "nullable": true
+            },
+            "pending": {
+              "type": "integer",
+              "minimum": 0,
+              "nullable": true
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "studentsWithLink": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "opened": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "studentsWithLink",
+                "opened"
+              ],
+              "additionalProperties": false,
+              "nullable": true
+            },
+            "lastPublishedAt": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            }
+          },
+          "required": [
+            "weekIndex",
+            "weekStatus",
+            "pending",
+            "links",
+            "lastPublishedAt"
+          ],
+          "additionalProperties": false
+        },
+        "readOnly": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "school",
+        "class",
+        "year",
+        "grade",
+        "today",
+        "referenceDate",
+        "homeroom",
+        "studentCount",
+        "maleCount",
+        "femaleCount",
+        "myDuties",
+        "viaSchoolRole",
+        "workspaceKind",
+        "actions",
+        "tabs",
+        "summary",
+        "readOnly"
+      ],
+      "additionalProperties": false
+    },
+    "ClassWorkspaceHeaderResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/ClassWorkspaceHeader"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
+      ],
+      "additionalProperties": false
     }
   },
   "operations": [
@@ -75024,6 +75384,156 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TeacherClassCardPage"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getClassWorkspaceHeader",
+      "method": "GET",
+      "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-header",
+      "title": "getClassWorkspaceHeader",
+      "tag": "Classroom",
+      "permission": "class.read",
+      "scope": "school",
+      "request": null,
+      "response": "ClassWorkspaceHeader",
+      "list": false,
+      "auth": "staff",
+      "async_job": false,
+      "frontend_ids": [
+        "CL01"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": true,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "yearId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "classId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Thành công",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassWorkspaceHeaderResponse"
               }
             }
           }

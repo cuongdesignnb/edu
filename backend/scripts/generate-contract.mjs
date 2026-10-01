@@ -630,6 +630,19 @@ spec.components.schemas.TeacherClassCardPage=object({data:{type:'array',maxItems
 extendOperation('listMyClasses','listTeacherClassDirectory','/schools/{schoolId}/me/class-directory','teacher.self','TeacherClassCard',true,['TE02'],[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'includeEnded',in:'query',schema:{type:'boolean'}},{name:'sort',in:'query',schema:{type:'string',enum:['name','id']}},{name:'dir',in:'query',schema:{type:'string',enum:['asc','desc']}},{name:'limit',in:'query',schema:{type:'integer',minimum:1,maximum:100}},{name:'cursor',in:'query',schema:{type:'string',maxLength:4000}}]);
 const teacherDirectoryOp=operations.find(op=>op.id==='listTeacherClassDirectory');
 spec.paths['/schools/{schoolId}/me/class-directory'].get.description=teacherDirectoryOp.description='Own current class cards and optional ended self assignment history. Current class metadata, roster counts, capabilities and next own dated lesson require fresh independent authority; ended cards have no current panels. SQL keysets bind the actor and grants.';
+// Exact class workspace context; every aggregate/contact panel has independent
+// fresh native authority. Missing periods are explicit, never invented OPEN.
+spec.components.schemas.ClassWorkspaceHeader=object({
+ school:object({id:uuid,name:label,shortName:label,slug:label}),
+ class:object({id:uuid,version:{type:'integer',minimum:1},yearId:uuid,gradeLevelId:uuid,name:label,capacity:count,status:{type:'string',enum:['DRAFT','ACTIVE','ARCHIVED']},roomId:{...uuid,nullable:true},motto:nullableLabel,createdAt:{type:'string',format:'date-time'}}),
+ year:object({id:uuid,version:{type:'integer',minimum:1},code:label,name:label,startsOn:studentDate,endsOn:studentDate,status:{type:'string',enum:['DRAFT','ACTIVE','ARCHIVED']}}),grade:label,today:studentDate,referenceDate:studentDate,
+ homeroom:{...object({name:label,contactVisible:{type:'boolean'},workEmail:nullableLabel,workPhone:nullableLabel}),nullable:true},
+ studentCount:{...count,nullable:true},maleCount:{...count,nullable:true},femaleCount:{...count,nullable:true},myDuties:{type:'array',uniqueItems:true,items:label},viaSchoolRole:{type:'boolean'},workspaceKind:{type:'string',enum:['TEACHER','SCHOOL','CLASS']},actions:{type:'array',uniqueItems:true,items:label},
+ tabs:{type:'array',maxItems:10,items:object({key:{type:'string',enum:['overview','students','attendance','conduct','timetable','groups','activities','announcements','files','reports']},label:label,path:{type:'string',enum:['','/students','/attendance','/conduct','/timetable','/groups','/activities','/announcements','/files','/reports']}})},
+ summary:object({weekIndex:{type:'integer',minimum:1,nullable:true},weekStatus:{type:'string',enum:['OPEN','IN_REVIEW','LOCKED','PUBLISHED',null],nullable:true},pending:{...count,nullable:true},links:{...object({studentsWithLink:count,opened:count}),nullable:true},lastPublishedAt:{type:'string',format:'date-time',nullable:true}}),readOnly:{type:'boolean'},
+});
+spec.components.schemas.ClassWorkspaceHeaderResponse=object({data:{$ref:'#/components/schemas/ClassWorkspaceHeader'},requestId:label});
+extendOperation('getClassOverview','getClassWorkspaceHeader','/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/workspace-header','class.read','ClassWorkspaceHeader',false,['CL01'],['schoolId','yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})));
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;

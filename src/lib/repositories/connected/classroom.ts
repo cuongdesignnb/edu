@@ -5,6 +5,8 @@ import {UI_ACTIONS} from '../../api/permissions';
 import type {Ctx} from '../core';
 import {RepoError} from '../errors';
 import {withStaffAccess} from './common';
+import {http} from '../../api/client';
+import {nativeClassHeader} from './classroom-header';
 
 const invalid=()=>new RepoError('READ_ERROR','API chưa xác nhận đầy đủ lớp và phân công của bạn.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -39,6 +41,7 @@ async function cards(schoolId:string,includeEnded=false){
   return rows.map(row=>nativeTeacherClass(row,schoolId)).sort((a,b)=>Number(b.live)-Number(a.live)||Number(b.duties.some(d=>d.live&&d.kind==='homeroom'))-Number(a.duties.some(d=>d.live&&d.kind==='homeroom'))||a.name.localeCompare(b.name,'vi')||a.id.localeCompare(b.id));
 }
 export const connectedClassroomRepo=withStaffAccess({
+  async header(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return nativeClassHeader((await http('getClassWorkspaceHeader',{params:{schoolId,yearId,classId}})).data,schoolId,yearId,classId);},
   async teacherClasses(_ctx:Ctx,schoolId:string,includeEnded=false){return cards(schoolId,includeEnded);},
 });
 export const connectedTeacherExtraRepo=withStaffAccess({

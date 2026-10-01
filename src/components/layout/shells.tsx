@@ -137,9 +137,9 @@ function WorkspaceSwitch({ schoolId, target }: { schoolId: string; target: "teac
 
 function PrivateYearScope({children}: {children: ReactNode}) { return children; }
 
-export function SchoolShell({ schoolId, children }: { schoolId: string; children: ReactNode }) {
+export function SchoolShell({ schoolId, children, classWorkspace = false }: { schoolId: string; children: ReactNode; classWorkspace?: boolean }) {
   const pathname = usePathname();
-  const independent = /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support|students|guardians|parent-access)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
+  const independent = classWorkspace || /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support|students|guardians|parent-access)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
   return (
     <RequireStaffSession>
       <SchoolContextProvider schoolId={schoolId} loading={<Frame nav={[]} homeHref={`/school/${schoolId}`} roleLabel="" search={null} schoolId={schoolId}><PageSkeleton /></Frame>}>
@@ -182,6 +182,10 @@ export function SchoolYearBar() {
 }
 
 /* ------------------------------ Teacher ------------------------------ */
+/** A current delegated class reader need not have a teacher-directory grant. */
+export function ScopedClassShell({schoolId,base,className,children}:{schoolId:string;base:string;className:string;children:ReactNode}) {
+  return <Frame nav={[{label:`Lớp ${className}`,href:base,icon:'layers',exact:true},{label:'Chọn không gian',href:'/choose-school',icon:'school'}]} homeHref={base} schoolId={schoolId} roleLabel="Quyền được cấp trong lớp" search={null}>{children}</Frame>;
+}
 export function TeacherShell({ schoolId, children }: { schoolId: string; children: ReactNode }) {
   return (
     <RequireStaffSession>
@@ -196,7 +200,8 @@ function TeacherFrame({ schoolId, children }: { schoolId: string; children: Reac
   const ws = me.data?.workspaces.find((w) => w.school.id === schoolId);
   const nav = teacherNav(schoolId, (classes.data ?? []).map((c) => ({ id: c.id, yearId: c.yearId, name: c.name, role: c.duties.some((d) => d.kind === "homeroom") ? "Chủ nhiệm" : c.duties.map((d) => d.label).join(", ") })));
   const role = ws ? [ws.duties.slice(0, 2).join(" · ")].join("") || "Giáo viên" : "Giáo viên";
-  const content = classes.error ? <div className="page"><Card className="card-pad"><ErrorState error={classes.error} onRetry={() => classes.refetch()} /></Card></div> : children;
+  const transientDirectoryError = classes.error && classes.data && ['READ_ERROR','NETWORK'].includes(classes.error.code);
+  const content = transientDirectoryError ? <><div className="px-6 pt-4"><ErrorState compact error={classes.error} onRetry={() => classes.refetch()} /></div>{children}</> : classes.error ? <div className="page"><Card className="card-pad"><ErrorState error={classes.error} onRetry={() => classes.refetch()} /></Card></div> : children;
   return (
     <Frame nav={nav} homeHref={`/teacher/${schoolId}`} schoolId={schoolId} roleLabel={role} promo={{ ...PROMO, text: "EduManage đồng hành cùng thầy cô trên hành trình truyền cảm hứng và phát triển thế hệ tương lai." }}
       search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />}>

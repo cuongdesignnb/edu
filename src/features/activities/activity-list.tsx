@@ -59,7 +59,7 @@ export function ActivitiesDashboard() {
   );
 }
 
-function Body({ d, status, setStatus, q, setQ, base, classSize, readOnly }: { d: ListData; status: string; setStatus: (v: string) => void; q: string; setQ: (v: string) => void; base: string; classSize: number; readOnly: boolean }) {
+function Body({ d, status, setStatus, q, setQ, base, classSize, readOnly }: { d: ListData; status: string; setStatus: (v: string) => void; q: string; setQ: (v: string) => void; base: string; classSize: number | null; readOnly: boolean }) {
   const [intent, setIntent] = useState<StatusIntent | null>(null);
   const [recordFor, setRecordFor] = useState<string | null>(null);
   const page = useClientList(d.items, { search: (a) => a.title, pageSize: 3 });
