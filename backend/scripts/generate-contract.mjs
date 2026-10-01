@@ -367,6 +367,24 @@ extendOperation('previewParent','previewParentAttendanceMonth','/schools/{school
 spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/attendance-month'].get.description='Internal staff preview of the same published child/year attendance month; requires independent current preview authority and never changes parent cookies.';
 
 
+// PA13 minimal complete directory and independently authorized private binary reads.
+spec.components.schemas.ParentDocumentEntry=object({...structuredClone(spec.components.schemas.ParentDocument.properties),id:{type:'string',format:'uuid'},viewAllowed:{type:'boolean'}});
+spec.components.schemas.ParentDocumentReport=object({periodId:uuid,title:{type:'string',minLength:1,maxLength:300},publishedAt:timestamp,total:structuredClone(spec.components.schemas.ParentConduct.properties.finalPoints),grade:{type:'string',nullable:true},revision:{type:'integer',minimum:1}});
+spec.components.schemas.ParentDocumentDirectory=object({files:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentDocumentEntry'}},reports:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentDocumentReport'}}});
+for(const name of ['ParentDocumentEntry','ParentDocumentDirectory'])spec.components.schemas[name+'Response']=object({data:{$ref:'#/components/schemas/'+name},requestId:label});
+for(const [id,suffix,response,binary] of [['getParentDocumentDirectory','document-directory','ParentDocumentDirectory',false],['getParentDocument','documents/{documentId}','ParentDocumentEntry',false],['viewParentDocument','documents/{documentId}/view','BinaryFile',true]]){
+ const params=[{name:'schoolSlug',in:'path',required:true,schema:{type:'string',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}},...(suffix.includes('{documentId}')?[{name:'documentId',in:'path',required:true,schema:uuid}]:[])];
+ extendOperation(binary?'downloadParentDocument':'getParentContext',id,'/parent/{schoolSlug}/'+suffix,'parent.documents',response,false,['PA13','PA09','PA11'],params);
+ operations.find(value=>value.id===id).scope='parent';
+ spec.paths['/parent/{schoolSlug}/'+suffix].get.description='Own-child/year current published document metadata or safe private view, independently of download permission. No storage URL or raw file ID.';
+}
+for(const [id,suffix,response,binary] of [['previewParentDocumentDirectory','document-directory','ParentDocumentDirectory',false],['previewParentDocument','documents/{documentId}','ParentDocumentEntry',false],['previewParentDocumentView','documents/{documentId}/view','BinaryFile',true],['previewParentDocumentDownload','documents/{documentId}/download','BinaryFile',true]]){
+ const params=[{name:'schoolId',in:'path',required:true,schema:uuid},{name:'accessId',in:'path',required:true,schema:uuid},...(suffix.includes('{documentId}')?[{name:'documentId',in:'path',required:true,schema:uuid}]:[])];
+ extendOperation('previewParent',id,'/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix,'parent_access.preview',response,false,['SC25','PA13'],params);
+ if(binary)spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix].get.responses['200']=structuredClone(spec.paths['/parent/{schoolSlug}/documents/{documentId}/download'].get.responses['200']);
+ spec.paths['/schools/{schoolId}/parent-access/{accessId}/preview/'+suffix].get.description='Independent current staff preview authority, same published document and view/download rights without changing parent cookies.';
+}
+
 // Native PA06 reads published lesson metadata and calendar within its independent section.
 spec.components.schemas.ParentTimetableWeekLesson=object({date:studentDate,startsAt:timestamp,endsAt:timestamp,startsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},endsAtLocal:{type:'string',pattern:'^([01]\\d|2[0-3]):[0-5]\\d$'},periodNumber:{type:'integer',minimum:1,nullable:true},subjectName:label,teacherName:label,roomName:nullableLabel,status:{type:'string',enum:['SCHEDULED','CANCELLED']},changeNote:nullableLabel});
 spec.components.schemas.ParentTimetableWeekDay=object({date:studentDate,holidayNames:{type:'array',items:label},lessons:{type:'array',maxItems:1000,items:{$ref:'#/components/schemas/ParentTimetableWeekLesson'}}});

@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 117,
-  "activatedCandidateCount": 117,
-  "activatedLegacyMethodCount": 105,
+  "candidateCount": 120,
+  "activatedCandidateCount": 120,
+  "activatedLegacyMethodCount": 107,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1429,7 +1429,17 @@
         "slug: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "documents",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",
@@ -1442,7 +1452,17 @@
         "fileId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "parentRepo",
+        "method": "file",
+        "file": "src/lib/repositories/connected/parent.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "parentRepo",
@@ -4119,6 +4139,16 @@
     }
   ],
   "extensions": [
+    {
+      "repository": "parentRepo",
+      "method": "downloadFile",
+      "file": "src/lib/repositories/connected/parent.ts",
+      "status": "IMPLEMENTED",
+      "activated": true,
+      "evidence": [
+        "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+      ]
+    },
     {
       "repository": "parentRepo",
       "method": "publicSchool",

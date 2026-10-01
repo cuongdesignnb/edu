@@ -1,0 +1,7 @@
+src/modules/parents/documents.ts(22,27): error TS2339: Property 'periodId' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/documents.ts(22,67): error TS2339: Property 'periodLabel' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/documents.ts(22,123): error TS2339: Property 'finalPoints' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/documents.ts(22,147): error TS2339: Property 'classification' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/documents.ts(22,177): error TS2339: Property 'revision' does not exist on type '{ publishedAt: string; }'.
+src/modules/parents/parent.service.ts(137,85): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+exitCode=2

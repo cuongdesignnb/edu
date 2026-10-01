@@ -1,0 +1,33 @@
+ Container edumanage_backend_test-runner-run-8ca2fd6a23c6 Creating
+ Container edumanage_backend_test-runner-run-8ca2fd6a23c6 Created
+✖ B6 parent documents complete directory and metadata use actual published reports, independent view/download rights and matching scoped previews (2713.652602ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3515.368557
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3055:1
+✖ B6 parent documents complete directory and metadata use actual published reports, independent view/download rights and matching scoped previews (2713.652602ms)
+  AssertionError [ERR_ASSERTION]: a refused download must not be recorded as completed
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3067:755)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exitCode=1

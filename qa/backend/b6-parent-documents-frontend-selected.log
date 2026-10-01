@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-parent-documents-adapter.test.ts (8 tests) 24ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  16:20:03
+   Duration  879ms (transform 174ms, setup 152ms, collect 209ms, tests 24ms, environment 0ms, prepare 254ms)
+
+exitCode=0

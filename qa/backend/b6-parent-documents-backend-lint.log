@@ -1,0 +1,8 @@
+
+D:\Edu\backend\src\modules\parents\documents.ts
+  34:21  error  '_key' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  34:35  error  '_name' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+
+exitCode=1

@@ -1,0 +1,279 @@
+{
+  "phase": "B6 native PA13 current published documents, guarded private view/download and honest access events; partial goal checkpoint",
+  "previousCommit": "27374cac1b3448ec6f5c1c66f43b252e38feffdb",
+  "backend": {
+    "contractOperations": 325,
+    "schemas": 439,
+    "operationStatus": {
+      "IMPLEMENTED": 12,
+      "TESTED": 313
+    },
+    "migrations": 42,
+    "runnerImage": "sha256:ef94cc762a2d8351810a2232d20124957f1031e6152ab6ed242f73a1ba363071",
+    "postgresFull": {
+      "tests": 171,
+      "pass": 171,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 525415.74186,
+      "log": "b6-parent-documents-integration-full.log"
+    },
+    "postgresSelected": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 3756.408423,
+      "log": "b6-parent-documents-integration-selected-audit-fixed.log"
+    },
+    "unitContract": {
+      "tests": 43,
+      "pass": 43,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 479.019,
+      "log": "b6-parent-documents-backend-unit-contract-audit.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-documents-backend-types-audit.log"
+    },
+    "lint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-documents-backend-lint-audit.log"
+    },
+    "integrationSyntax": {
+      "exitCode": 0,
+      "log": "b6-parent-documents-integration-syntax-final.log"
+    },
+    "beforeAuditReview": {
+      "postgresFull": {
+        "tests": 171,
+        "pass": 171,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 534035.690293,
+        "log": "b6-parent-documents-integration-full-before-audit-review.log"
+      },
+      "postgresSelected": {
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 4766.381496,
+        "log": "b6-parent-documents-integration-selected.log"
+      },
+      "runnerImage": "sha256:fdfc2e86a93ef4f593291344c85b29ff010e030b12ffd65526d035378c498542",
+      "reason": "This successful run preceded the additional refused-download history assertion. It does not certify the final audit behavior."
+    }
+  },
+  "frontend": {
+    "units": {
+      "pass": 316,
+      "fail": 0,
+      "skipped": 0,
+      "files": 37,
+      "durationSeconds": 11.32,
+      "apiCases": 275,
+      "historicalSyntheticRegressions": 41,
+      "log": "b6-parent-documents-frontend-unit-full.log"
+    },
+    "selected": {
+      "pass": 8,
+      "fail": 0,
+      "durationSeconds": 0.64,
+      "log": "b6-parent-documents-frontend-selected-mime.log"
+    },
+    "types": {
+      "exitCode": 0,
+      "log": "b6-parent-documents-frontend-types-mime.log"
+    },
+    "changedLint": {
+      "exitCode": 0,
+      "warnings": 0,
+      "log": "b6-parent-documents-frontend-lint-final.log"
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "log": "b6-parent-documents-frontend-build-mime.log"
+    },
+    "mimeNormalization": {
+      "unitLog": "b6-parent-documents-frontend-selected-mime.log",
+      "lintLog": "b6-parent-documents-frontend-lint-mime.log",
+      "browserLintLog": "b6-parent-documents-browser-lint-mime.log",
+      "behavior": "Compare the principal binary MIME type, accepting legitimate parameters while still validating exact byte size and fresh permissions."
+    },
+    "fullRootLint": "NOT_RERUN"
+  },
+  "browser": {
+    "kind": "INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "pass": 70,
+    "fail": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 69587.644,
+    "newCases": 3,
+    "log": "b6-parent-documents-browser-final.log",
+    "results": "b6-parent-documents-browser-results-final.json",
+    "runner": {
+      "prefix": "b6-parent-documents",
+      "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+      "startedAt": "2026-10-01T09:41:43.003Z",
+      "host": "127.0.0.1",
+      "port": 18763,
+      "portFreeBefore": true,
+      "ownedNextPid": 38832,
+      "playwrightExitCode": 0,
+      "ownedNextTerminationRequested": true,
+      "ownedNextClosed": true,
+      "ownedNextExit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "portFreeAfter": true,
+      "finishedAt": "2026-10-01T09:42:53.649Z",
+      "exitCode": 0
+    },
+    "screenshotsViewed": [
+      "b6-parent-documents-parent-documents-desktop.png",
+      "b6-parent-documents-parent-documents-mobile.png",
+      "b6-parent-documents-parent-document-view.png"
+    ]
+  },
+  "failedRunsThisCheckpoint": [
+    {
+      "kind": "INITIAL_BACKEND_TYPES",
+      "exitCode": 2,
+      "reason": "Missing canonical return and an overly narrow inferred report row type.",
+      "log": "b6-parent-documents-backend-types.log"
+    },
+    {
+      "kind": "INITIAL_FRONTEND_TYPES",
+      "exitCode": 2,
+      "reason": "Nullable source state and canonical document IDs needed explicit current non-null projection validation.",
+      "log": "b6-parent-documents-frontend-types.log"
+    },
+    {
+      "kind": "INITIAL_BACKEND_LINT",
+      "exitCode": 1,
+      "reason": "Two unused destructured private metadata variables.",
+      "log": "b6-parent-documents-backend-lint.log"
+    },
+    {
+      "kind": "EXPECTED_AUDIT_REGRESSION_REPRODUCTION",
+      "result": {
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "durationMs": 3515.368557,
+        "log": "b6-parent-documents-audit-regression-initial.log"
+      },
+      "runnerImage": "sha256:a16cc66e03fa7f02ce69d189de7196f13f8cdbbbc9aedbdaddc73368da258751",
+      "reason": "A denied download incorrectly increased completed-download history from0 to1. The final stream transaction now rolls back the event when the current guard refuses."
+    },
+    {
+      "kind": "INITIAL_BROWSER",
+      "pass": 69,
+      "fail": 1,
+      "skipped": 0,
+      "flaky": 0,
+      "durationMs": 72706.474,
+      "log": "b6-parent-documents-initial-browser-final.log",
+      "results": "b6-parent-documents-initial-browser-results-final.json",
+      "runner": {
+        "prefix": "b6-parent-documents",
+        "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+        "startedAt": "2026-10-01T09:24:07.463Z",
+        "host": "127.0.0.1",
+        "port": 18763,
+        "portFreeBefore": true,
+        "ownedNextPid": 45480,
+        "playwrightExitCode": 1,
+        "ownedNextTerminationRequested": true,
+        "ownedNextClosed": true,
+        "ownedNextExit": {
+          "code": null,
+          "signal": "SIGTERM"
+        },
+        "portFreeAfter": true,
+        "finishedAt": "2026-10-01T09:25:21.210Z",
+        "exitCode": 1
+      },
+      "reason": "The close-button selector matched both the corner and footer close buttons. It now selects the footer button explicitly; all70 cases were rerun."
+    }
+  ],
+  "earlierSuccessfulBrowser": {
+    "stats": {
+      "startTime": "2026-10-01T09:26:02.552Z",
+      "duration": 71929.281,
+      "expected": 70,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "results": "b6-parent-documents-before-mime-browser-results-final.json",
+    "reason": "Repeated after normalizing a legitimate binary MIME parameter and adding that header to the download unit/browser fixture."
+  },
+  "sourceInventory": {
+    "nativeCandidates": 120,
+    "activatedCandidates": 120,
+    "matchedLegacyMethods": 107,
+    "legacyMethods": 231,
+    "pendingLegacyMethods": 124,
+    "log": "b6-parent-documents-facade-inventory.log"
+  },
+  "coreSourceScreens": {
+    "total": 118,
+    "IMPLEMENTED": 53,
+    "NOT_STARTED": 62,
+    "STATIC_UNVERIFIED": 3,
+    "TESTED": 0,
+    "updatedEvidence": [
+      "PA13"
+    ]
+  },
+  "portBefore": {
+    "checkedAt": "2026-10-01T16:41:39.2145424+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAfterBrowser": {
+    "checkedAt": "2026-10-01T16:43:25.0819705+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "portAtCheckpoint": {
+    "checkedAt": "2026-10-01T16:43:25.0819705+07:00",
+    "port": 18763,
+    "listenerCount": 0,
+    "listeners": []
+  },
+  "release": {
+    "localUrl": "http://127.0.0.1:18763",
+    "servingFinalRelease": false,
+    "realPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployMerge": "NOT_DONE",
+    "restartPersistence": "NOT_RUN",
+    "physicalBackupRestore": "NOT_RUN",
+    "releaseWorkloadPerformance": "NOT_RUN",
+    "production": "NOT_AUTHORIZED",
+    "goal": "ACTIVE"
+  },
+  "implementedBehavior": [
+    "Complete bounded own-child/year current-published file directory and independent conduct reports in one read-only snapshot.",
+    "Migration042 exposes minimal effective metadata; private storage is resolved only by a separately guarded server function that edu_parent cannot execute.",
+    "File handles open before a final current authorization statement; view/download are independent and refusal closes the handle and rolls back the staged completion event.",
+    "Parent/staff previews never exchange authority or cookies; delayed older results cannot adopt or clear a newer view.",
+    "Actual preview bytes remain only in a bounded short-lived memory registry; ownership changes purge them, failed refetch removes preview/object URL and every download requests fresh API bytes."
+  ]
+}

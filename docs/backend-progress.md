@@ -322,6 +322,13 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | previewParentDutySchedule | SC25, PA07 | TESTED | qa/backend/b6-parent-duties-checks.json |
 | getParentTimetableWeek | PA06 | TESTED | qa/backend/b6-parent-week-checks.json |
 | previewParentTimetableWeek | SC25, PA06 | TESTED | qa/backend/b6-parent-week-checks.json |
+| getParentDocumentDirectory | PA13, PA09, PA11 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| getParentDocument | PA13, PA09, PA11 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| viewParentDocument | PA13, PA09, PA11 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| previewParentDocumentDirectory | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| previewParentDocument | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| previewParentDocumentView | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
+| previewParentDocumentDownload | SC25, PA13 | TESTED | qa/backend/b6-parent-documents-integration-selected-audit-fixed.log |
 
 | screenId | Scope | API status | UI status | Static mapping | UI evidence |
 |---|---|---|---|---|---|
@@ -433,7 +440,7 @@ Baseline `14dfad5`. UI status is separate from API evidence.
 | PA10 | core | TESTED | NOT_STARTED |  |  |
 | PA11 | core | TESTED | NOT_STARTED |  |  |
 | PA12 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-teachers-checks.json |
-| PA13 | core | TESTED | NOT_STARTED |  |  |
+| PA13 | core | TESTED | IMPLEMENTED |  | qa/backend/b6-parent-documents-checks.json |
 | PA14 | core | TESTED | IMPLEMENTED |  | Native exchange/context/private-view ownership and public unavailable contact; content sections and PostgreSQL browser acceptance remain pending. |
 | SY01 | core | TESTED | NOT_STARTED |  |  |
 | SY02 | core | TESTED | NOT_STARTED |  |  |

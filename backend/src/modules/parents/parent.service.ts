@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import crypto from 'node:crypto';
-import fs from 'node:fs/promises';
-import { createReadStream } from 'node:fs';
 import type { FastifyRequest } from 'fastify';
 import { Database,one,iso,type Transaction,type Row } from '../../database/database';
 import { listResource,type Resource } from '../../database/resources';
@@ -12,7 +10,7 @@ import { validateSchema } from '../../common/contract';
 import { IdentityService } from '../identity/identity.service';
 import {attendanceMonthBounds,parentAttendanceMonth} from './attendance-month';
 import {timetableWeekBounds,assertTimetableWeekSize} from './timetable-week';
-import { objectPath } from '../files/storage';
+import {parentDocument,parentDocuments,parentDocumentStream} from './documents';
 import type { RequestContext,Handler,Result } from '../../api.router';
 
 export interface ParentPrincipal {sessionId:string;schoolId:string;accessId:string;studentId:string;yearId:string;tokenHash:string;csrfHash:string;absoluteExpiresAt:string;link:Row}
@@ -21,12 +19,12 @@ const projection:Resource={table:`(SELECT p.school_id,p.student_id,p.year_id,p.s
   CASE WHEN jsonb_typeof(p.payload->'items')='array' THEN md5(p.id::text||':'||j.ordinal::text)::uuid ELSE p.id END AS id,j.item AS payload
   FROM app.parent_publication_items p CROSS JOIN LATERAL jsonb_array_elements(CASE WHEN jsonb_typeof(p.payload->'items')='array' THEN p.payload->'items' ELSE jsonb_build_array(p.payload) END) WITH ORDINALITY j(item,ordinal))`,fields:{id:'id',createdAt:'created_at',publishedAt:'published_at',publicationId:'publication_id',payload:'payload'},writeFields:[],search:[],filters:{}};
 const schemas:Record<string,string>={attendance:'ParentAttendance',conduct:'ParentConduct',timetable:'ParentLesson',duties:'ParentDuty',activities:'ParentActivity',announcements:'ParentAnnouncement'};
-const documentResource:Resource={table:`(SELECT d.*,meta.info->>'contentType' AS content_type,(meta.info->>'byteSize')::bigint AS byte_size FROM app.parent_document_items d
-  CROSS JOIN LATERAL(SELECT app.parent_document_metadata(d.school_id,d.id) AS info) meta WHERE meta.info IS NOT NULL)`,fields:{id:'id',title:'title',fileId:'file_id',contentType:'content_type',byteSize:'byte_size',downloadAllowed:'download_allowed',publishedAt:'published_at'},writeFields:[],search:['title'],filters:{}};
+const documentResource:Resource={table:`(SELECT d.*,meta.info->>'contentType' AS content_type,(meta.info->>'byteSize')::bigint AS byte_size,(meta.info->>'downloadAllowed')::boolean AS effective_download_allowed FROM app.parent_document_items d
+  CROSS JOIN LATERAL(SELECT app.parent_document_access(d.school_id,d.id) AS info) meta WHERE meta.info IS NOT NULL)`,fields:{id:'id',title:'title',fileId:'file_id',contentType:'content_type',byteSize:'byte_size',downloadAllowed:'effective_download_allowed',publishedAt:'published_at'},writeFields:[],search:['title'],filters:{}};
 @Injectable()
 export class ParentService {
   constructor(private readonly db:Database,private readonly identity:IdentityService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','getParentAttendanceMonth','listParentConduct','getParentConduct','getParentTimetable','getParentTimetableWeek','getParentDuties','getParentDutySchedule','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','getParentTeacherDirectory','listParentDocuments','downloadParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['exchangeParentLink','getParentContext','endParentSession','getParentOverview','getParentAttendance','getParentAttendanceMonth','listParentConduct','getParentConduct','getParentTimetable','getParentTimetableWeek','getParentDuties','getParentDutySchedule','listParentActivities','getParentActivity','listParentAnnouncements','getParentAnnouncement','getParentTeachers','getParentTeacherDirectory','listParentDocuments','downloadParentDocument','getParentDocumentDirectory','getParentDocument','viewParentDocument'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   async school(slug:string){const school=(await this.db.app.query<Row>('SELECT id,name,slug,status,timezone,public_contact_phone FROM platform.schools WHERE slug=$1',[slug])).rows[0];if(!school||school.status!=='ACTIVE')throw new Problem(401,'PARENT_ACCESS_INVALID');return school;}
   async link(tx:Transaction,schoolId:string,id:string){
     const link=await one<Row>(tx,`SELECT l.*,s.full_name,y.name AS year_label,y.status AS year_status,sc.name AS school_name,sc.slug,sc.public_contact_phone,sc.public_contact_email,sc.public_address,sc.short_name AS school_short_name,sc.motto,sc.timezone,g.relationship_label,y.starts_on AS year_starts_on,y.ends_on AS year_ends_on,to_char((now() AT TIME ZONE sc.timezone)::date,'YYYY-MM-DD') AS today,
@@ -136,17 +134,16 @@ export class ParentService {
     if(data.teachers.length>100)throw new Problem(422,'PARENT_TEACHERS_TOO_LARGE');
     return {data:data.teachers.map(row=>({displayName:row.displayName,assignmentLabel:row.kind==='HOMEROOM'?'Giáo viên chủ nhiệm':'Giáo viên bộ môn',...(row.subjectName?{subjectName:row.subjectName}:{}),...(row.workEmail?{workEmail:row.workEmail}:{}),...(row.workPhone?{workPhone:row.workPhone}:{})})),page:{limit:100,hasMore:false,nextCursor:null}};
   }
-  private async documents(p:ParentPrincipal,query:Record<string,string>,id?:string,download=false):Promise<Result>{
+  private async documents(p:ParentPrincipal,query:Record<string,string>,id?:string):Promise<Result>{
     this.allow(p,'documents');
     if(query.sort&&!['id','publishedAt','title'].includes(query.sort))validation('sort','Sắp xếp tài liệu không hợp lệ');
     const result=await this.db.transaction(tx=>listResource(tx,documentResource,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:`t.student_id=$1 AND t.year_id=$2${id?' AND t.id=$3':''}`,values:id?[p.studentId,p.yearId,id]:[p.studentId,p.yearId]},p.sessionId),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true});
     if(id&&!result.data.length)throw new Problem(404,'RESOURCE_NOT_FOUND');
-    const data=result.data.map(row=>({id:row.id,title:row.title,contentType:row.contentType,byteSize:Number(row.byteSize),downloadAllowed:!!(row.downloadAllowed&&p.link.allow_download),publishedAt:row.publishedAt}));
-    if(download){if(!data[0]!.downloadAllowed)throw new Problem(403,'DOWNLOAD_DENIED');
-      const file=await this.db.transaction(tx=>one<Row>(tx,"SELECT * FROM app.files WHERE school_id=$1 AND id=$2 AND status='READY' AND (expires_at IS NULL OR expires_at>now())",[p.schoolId,result.data[0]!.fileId]),{schoolId:p.schoolId});if(!file)throw new Problem(404,'RESOURCE_NOT_FOUND');
-      const filename=objectPath(p.schoolId,String(file.object_key));await fs.access(filename);return {data:null,binary:{stream:createReadStream(filename),contentType:String(file.content_type),filename:String(file.original_name),byteSize:Number(file.byte_size)}};
-    }return {data,page:result.page};
+    const data=result.data.map(row=>({id:row.id,title:row.title,contentType:row.contentType,byteSize:Number(row.byteSize),downloadAllowed:!!row.downloadAllowed,publishedAt:row.publishedAt}));
+    return {data,page:result.page};
   }
+  private async documentDirectory(p:ParentPrincipal){this.allow(p,'documents');return {data:await this.db.transaction(tx=>parentDocuments(tx,p),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true,readOnly:true})};}
+  private async document(p:ParentPrincipal,id:string){this.allow(p,'documents');return {data:await this.db.transaction(tx=>parentDocument(tx,p,id),{schoolId:p.schoolId,parentSessionId:p.sessionId,parent:true,readOnly:true})};}
   async overview(p:ParentPrincipal){
     const sections=p.link.allowed_sections as string[],read=async(section:string)=>sections.includes(section)?(await this.published(p,section,{limit:'10'})).data as Record<string,unknown>[]:[];
     const attendance=await read('attendance'),conduct=await read('conduct'),announcements=await read('announcements'),lessons=await read('timetable'),teachers=sections.includes('teachers')?(await this.teachers(p)).data:[];
@@ -154,8 +151,8 @@ export class ParentService {
     return {context:await this.context(p),attendance,...(conduct.length?{latestConduct:conduct[0]}:{}),teachers,todayLessons:lessons.filter(item=>item.date===today),announcements,asOf:new Date().toISOString()};
   }
   async preview(c:RequestContext,schoolId:string,accessId:string){
-    const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW',c.operation.id==='previewParentAttendanceMonth'?'attendance':c.operation.id==='previewParentTeacherDirectory'?'teachers':c.operation.id==='previewParentDutySchedule'?'duties':c.operation.id==='previewParentTimetableWeek'?'timetable':undefined);return principal;},{schoolId});
-    try{return c.operation.id==='previewParentAttendanceMonth'?await this.attendanceMonth(p,c.query.month):c.operation.id==='previewParentTeacherDirectory'?await this.teacherDirectory(p):c.operation.id==='previewParentDutySchedule'?await this.dutySchedule(p):c.operation.id==='previewParentTimetableWeek'?await this.timetableWeek(p,c.query.week):{data:await this.overview(p)};}finally{await this.db.app.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1',[p.sessionId]);}
+    const tokenHash=hashToken(randomToken()),p=await this.db.transaction(async tx=>{const link=await this.link(tx,schoolId,accessId),session=await one<Row>(tx,`INSERT INTO identity.parent_sessions(school_id,access_link_id,token_hash,csrf_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,least($5,now()+interval '1 minute'),least($5,now()+interval '1 minute')) RETURNING *`,[schoolId,accessId,tokenHash,hashToken(csrfFor(accessId,tokenHash)),link.expires_at]);const principal=this.principal(session!,link);await this.event(tx,c,principal,'STAFF_PREVIEW',c.operation.id==='previewParentAttendanceMonth'?'attendance':c.operation.id==='previewParentTeacherDirectory'?'teachers':c.operation.id==='previewParentDutySchedule'?'duties':c.operation.id==='previewParentTimetableWeek'?'timetable':c.operation.id.startsWith('previewParentDocument')?'documents':undefined);return principal;},{schoolId});
+    try{return c.operation.id==='previewParentAttendanceMonth'?await this.attendanceMonth(p,c.query.month):c.operation.id==='previewParentTeacherDirectory'?await this.teacherDirectory(p):c.operation.id==='previewParentDutySchedule'?await this.dutySchedule(p):c.operation.id==='previewParentTimetableWeek'?await this.timetableWeek(p,c.query.week):c.operation.id==='previewParentDocumentDirectory'?await this.documentDirectory(p):c.operation.id==='previewParentDocument'?await this.document(p,c.params.documentId!):c.operation.id==='previewParentDocumentView'||c.operation.id==='previewParentDocumentDownload'?await parentDocumentStream(this.db,p,c.params.documentId!,c.operation.id==='previewParentDocumentDownload'):{data:await this.overview(p)};}finally{await this.db.app.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE id=$1',[p.sessionId]);}
   }
   private async handle(c:RequestContext):Promise<Result>{
     c.reply.header('X-Robots-Tag','noindex, nofollow');if(c.operation.id==='exchangeParentLink')return this.exchange(c);
@@ -169,7 +166,12 @@ export class ParentService {
     else if(c.operation.id==='getParentTimetableWeek')result=await this.timetableWeek(p,c.query.week);
     else if(section==='overview')result={data:await this.overview(p)};
     else if(section==='teachers')result=await this.teachers(p);
-    else if(section==='documents')result=await this.documents(p,c.query,c.params.documentId,c.operation.id==='downloadParentDocument');
+    else if(c.operation.id==='getParentDocumentDirectory')result=await this.documentDirectory(p);
+    else if(c.operation.id==='getParentDocument')result=await this.document(p,c.params.documentId!);
+    else if(c.operation.id==='downloadParentDocument'||c.operation.id==='viewParentDocument'){
+      return parentDocumentStream(this.db,p,c.params.documentId!,c.operation.id==='downloadParentDocument',tx=>this.event(tx,c,p,c.operation.id==='downloadParentDocument'?'DOWNLOADED':'READ','documents'));
+    }
+    else if(section==='documents')result=await this.documents(p,c.query);
     else result=await this.published(p,section,c.query,c.params.periodId?{key:'periodId',id:c.params.periodId}:c.params.activityId?{key:'id',id:c.params.activityId}:c.params.announcementId?{key:'id',id:c.params.announcementId}:undefined);
     await this.db.transaction(tx=>this.event(tx,c,p,result.binary?'DOWNLOADED':'READ',section),{schoolId:p.schoolId});return result;
   }

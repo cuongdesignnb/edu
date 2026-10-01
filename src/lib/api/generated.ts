@@ -366,6 +366,11 @@ export interface ApiSchemas {
   "StudentInitialGuardian": { "fullName": string; "phone"?: (string) | null; "email"?: (string) | null; "relationshipLabel": string; };
   "ParentAttendanceMonth": { "granularity": "DAILY"; "month": string; "yearStart": string; "yearEnd": string; "today": string; "days": Array<{ "date": string; "weekday": number; "holidayNames": Array<string>; "sessions": Array<ApiSchemas["ParentAttendance"]>; "status": "unmarked" | "present" | "late" | "excused" | "unexcused" | "mixed" | "future" | "holiday" | "not_published"; }>; "totals": { "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; "published": number; "marked": number; }; };
   "ParentAttendanceMonthResponse": { "data": ApiSchemas["ParentAttendanceMonth"]; "requestId": string; };
+  "ParentDocumentEntry": { "id": string; "title": string; "contentType": string; "byteSize": number; "downloadAllowed": boolean; "publishedAt": string; "viewAllowed": boolean; };
+  "ParentDocumentReport": { "periodId": string; "title": string; "publishedAt": string; "total": string; "grade": (string) | null; "revision": number; };
+  "ParentDocumentDirectory": { "files": Array<ApiSchemas["ParentDocumentEntry"]>; "reports": Array<ApiSchemas["ParentDocumentReport"]>; };
+  "ParentDocumentEntryResponse": { "data": ApiSchemas["ParentDocumentEntry"]; "requestId": string; };
+  "ParentDocumentDirectoryResponse": { "data": ApiSchemas["ParentDocumentDirectory"]; "requestId": string; };
   "ParentTimetableWeekLesson": { "date": string; "startsAt": string; "endsAt": string; "startsAtLocal": string; "endsAtLocal": string; "periodNumber": (number) | null; "subjectName": string; "teacherName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeNote": (string) | null; };
   "ParentTimetableWeekDay": { "date": string; "holidayNames": Array<string>; "lessons": Array<ApiSchemas["ParentTimetableWeekLesson"]>; };
   "ParentTimetableWeek": { "weekStart": string; "today": string; "timezone": string; "year": { "startsOn": string; "endsOn": string; }; "weekNumber": (number) | null; "days": Array<ApiSchemas["ParentTimetableWeekDay"]>; };
@@ -3373,6 +3378,76 @@ export const apiOperations = {
     "auth": "staff",
     "request": null,
     "response": "ParentAttendanceMonth",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "getParentDocumentDirectory": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/document-directory",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentDocumentDirectory",
+    "list": false,
+    "permission": "parent.documents",
+    "readOnly": true
+  },
+  "getParentDocument": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/documents/{documentId}",
+    "auth": "parent",
+    "request": null,
+    "response": "ParentDocumentEntry",
+    "list": false,
+    "permission": "parent.documents",
+    "readOnly": true
+  },
+  "viewParentDocument": {
+    "method": "GET",
+    "path": "/api/v1/parent/{schoolSlug}/documents/{documentId}/view",
+    "auth": "parent",
+    "request": null,
+    "response": "BinaryFile",
+    "list": false,
+    "permission": "parent.documents",
+    "readOnly": true
+  },
+  "previewParentDocumentDirectory": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/document-directory",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentDocumentDirectory",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "previewParentDocument": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/documents/{documentId}",
+    "auth": "staff",
+    "request": null,
+    "response": "ParentDocumentEntry",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "previewParentDocumentView": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/documents/{documentId}/view",
+    "auth": "staff",
+    "request": null,
+    "response": "BinaryFile",
+    "list": false,
+    "permission": "parent_access.preview",
+    "readOnly": true
+  },
+  "previewParentDocumentDownload": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/parent-access/{accessId}/preview/documents/{documentId}/download",
+    "auth": "staff",
+    "request": null,
+    "response": "BinaryFile",
     "list": false,
     "permission": "parent_access.preview",
     "readOnly": true

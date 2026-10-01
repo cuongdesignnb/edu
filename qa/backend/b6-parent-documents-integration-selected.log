@@ -1,0 +1,15 @@
+ Container edumanage_backend_test-runner-run-4fce346a6edb Creating
+ Container edumanage_backend_test-runner-run-4fce346a6edb Created
+✔ B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers (458.320397ms)
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (75.604194ms)
+✔ B6 parent documents complete directory and metadata use actual published reports, independent view/download rights and matching scoped previews (2165.816102ms)
+✔ B6 parent file guards deny raw storage, foreign contexts, expiry and revocation committed between file open and final stream check (1260.272913ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4766.381496
+exitCode=0

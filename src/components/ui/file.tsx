@@ -41,19 +41,19 @@ export function FileDropzone({ accept, maxBytes, multiple, onFiles, label = "Ké
   );
 }
 
-type PreviewSource = Pick<FileAsset, "name" | "mime" | "size" | "source">;
+type PreviewSource = Pick<FileAsset, "name" | "mime" | "size"> & Partial<Pick<FileAsset,"source">>;
 
 /** Resolve an object URL for a stored blob; revoked on unmount (no leaks). */
 export function useFileUrl(file?: PreviewSource | null) {
-  const [url, setUrl] = useState<string | null>(null);
+  const [resolved, setResolved] = useState<{file:PreviewSource;url:string}|null>(null);
   const [missing, setMissing] = useState(false);
   useEffect(() => {
     let revoke: string | null = null;
     let alive = true;
-    setUrl(null);
+    setResolved(null);
     setMissing(false);
-    if (!file) { setUrl(null); return; }
-    if (file.source.kind === "synthetic") {
+    if (!file) return;
+    if (!file.source || file.source.kind === "synthetic") {
       setMissing(true);
       return;
     }
@@ -61,15 +61,15 @@ export function useFileUrl(file?: PreviewSource | null) {
       if (!alive) return;
       if (!b) { setMissing(true); return; }
       revoke = URL.createObjectURL(b);
-      setUrl(revoke);
+      setResolved({file,url:revoke});
     }).catch(() => { if (alive) setMissing(true); });
     return () => { alive = false; if (revoke) URL.revokeObjectURL(revoke); };
   }, [file]);
-  return { url, missing };
+  return { url:resolved&&resolved.file===file?resolved.url:null, missing };
 }
 
 export async function downloadFileAsset(file: PreviewSource) {
-  if (file.source.kind === "blob") {
+  if (file.source?.kind === "blob") {
     const b = await getBlob(file.source.blobKey);
     if (b) downloadBlob(b, file.name);
     return !!b;
@@ -78,21 +78,21 @@ export async function downloadFileAsset(file: PreviewSource) {
 }
 
 /** C035 — image / PDF (browser viewer) / synthetic document / unsupported / revoked fallback. */
-export function FilePreview({ file, revoked, className }: { file?: PreviewSource | null; revoked?: boolean; className?: string }) {
+export function FilePreview({ file, revoked, className,allowLocalDownload=true }: { file?: PreviewSource | null; revoked?: boolean; className?: string;allowLocalDownload?:boolean }) {
   const { url, missing } = useFileUrl(revoked ? null : file);
   const [downloadError,setDownloadError]=useState<string|null>(null);
   if (revoked) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-danger-bg p-8 text-center text-danger-text", className)}><Ban className="size-7" aria-hidden /><p className="font-semibold">Tệp đã bị thu hồi</p><p className="text-sm">Không thể xem hoặc tải lần mới.</p></div>;
   if (!file) return null;
   if (missing) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-warning-bg p-8 text-center text-warning-text", className)}><FileWarning className="size-7" aria-hidden /><p className="font-semibold">Chưa tải được nội dung tệp</p><p className="text-sm">Tệp chưa được nối với API hoặc không còn trong phạm vi được xem.</p></div>;
   if (file.mime.startsWith("image/") && url) return <img src={url} alt={`Xem trước: ${file.name}`} className={clsx("max-h-[60vh] w-full rounded-xl border border-line bg-[#f7fbff] object-contain", className)} />;
-  if (file.mime === "application/pdf" && file.source.kind === "blob" && url) return <iframe title={`Xem trước ${file.name}`} src={url} className={clsx("h-[60vh] w-full rounded-xl border border-line", className)} />;
+  if (file.mime === "application/pdf" && file.source?.kind === "blob" && url) return <iframe title={`Xem trước ${file.name}`} src={url} className={clsx("h-[60vh] w-full rounded-xl border border-line", className)} />;
   return (
     <div className={clsx("flex flex-col items-center justify-center gap-3 rounded-xl bg-[#f7fbff] p-8 text-center", className)}>
       <FileText className="size-8 text-primary" aria-hidden />
       <p className="font-semibold text-ink">Không xem trước được định dạng này</p>
       <p className="text-sm text-muted">{file.name} · {fmtBytes(file.size)}</p>
       {downloadError&&<p role="alert" className="text-sm text-danger-text">{downloadError}</p>}
-      <Button size="sm" icon={<Download className="size-4" />} onClick={async() => {setDownloadError(null);try{await downloadFileAsset(file);}catch(error){setDownloadError(errorMessage(error));}}}>Tải xuống</Button>
+      {allowLocalDownload&&<Button size="sm" icon={<Download className="size-4" />} onClick={async() => {setDownloadError(null);try{await downloadFileAsset(file);}catch(error){setDownloadError(errorMessage(error));}}}>Tải xuống</Button>}
     </div>
   );
 }

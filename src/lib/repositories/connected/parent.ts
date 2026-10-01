@@ -1,5 +1,6 @@
 import type {Ctx} from '../core';
-import {http,captureStaffAccess} from '../../api/client';
+import {http,download,captureStaffAccess} from '../../api/client';
+import {keepOwnedBlob} from '../../api/owned-blobs';
 import {beginParentExchange,captureParentSession} from '../../api/parent-session';
 import {dateDays} from '../../api/dates';
 import {RepoError,isRepoError} from '../errors';
@@ -8,6 +9,7 @@ import {nativeParentTeachers} from './parent-teachers';
 import {nativeParentDuties} from './parent-duties';
 import {nativeParentTimetable} from './parent-timetable';
 import {nativeParentContext} from './parent-context';
+import {nativeParentDocuments,nativeParentDocument} from './parent-documents';
 
 /** Public reads use only a non-bearer view ID. A raw fragment is accepted only by open. */
 export type ParentKey={viewId:string}|{preview:{ctx:Ctx;schoolId:string;accessId:string}};
@@ -31,7 +33,34 @@ async function previewContext(key:Extract<ParentKey,{preview:unknown}>,slug:stri
     ctx.staffOwner?.assertCurrent();owner.assertCurrent();return nativeParentContext(result.data.context,slug,true).display;
   }catch(error){ctx.staffOwner?.assertCurrent();owner.assertCurrent();throw error;}
 }
+async function documentFile(key:ParentKey,slug:string,id:string,forDownload:boolean){
+ const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
+ const assertCurrent=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};
+ assertCurrent();
+ try{
+   const context=await connectedParentRepo.context(key,slug);assertCurrent();
+   const metadata='preview' in key?await http('previewParentDocument',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,documentId:id}}):await http('getParentDocument',{params:{schoolSlug:slug,documentId:id},parentViewId:parent!.viewId,signal:parent!.signal});
+   assertCurrent();const file=nativeParentDocument(metadata.data,context,id);
+   if(!(forDownload?file.downloadAllowed:file.viewAllowed))throw new RepoError('FORBIDDEN',forDownload?'Nhà trường chưa cho phép tải tệp này.':'Định dạng tệp này không được xem trước.',{details:{problemCode:forDownload?'DOWNLOAD_DENIED':'FILE_PREVIEW_DENIED'}});
+   const bytes='preview' in key?await download(forDownload?'previewParentDocumentDownload':'previewParentDocumentView',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId,documentId:id}}):await download(forDownload?'downloadParentDocument':'viewParentDocument',{params:{schoolSlug:slug,documentId:id},parentViewId:parent!.viewId,signal:parent!.signal});
+   assertCurrent();if(bytes.blob.type.split(';',1)[0].trim().toLowerCase()!==file.mime.toLowerCase()||bytes.blob.size!==file.size)throw new RepoError('READ_ERROR','Nội dung tệp chưa khớp với metadata được API xác nhận.');
+   return {...bytes,file,owner:{kind:'preview' in key?'staff' as const:'parent' as const,assertCurrent}};
+ }catch(error){assertCurrent();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
+}
 export const connectedParentRepo={
+  async documents(key:ParentKey,slug:string){
+    const parent='preview' in key?null:captureParentSession(slug,key.viewId),staff='preview' in key?captureStaffAccess():null;
+    const current=()=>{parent?.assertCurrent();staff?.assertCurrent();if('preview' in key)key.preview.ctx.staffOwner?.assertCurrent();};current();
+    try{const context=await connectedParentRepo.context(key,slug);current();
+      const result='preview' in key?await http('previewParentDocumentDirectory',{params:{schoolId:key.preview.schoolId,accessId:key.preview.accessId}}):await http('getParentDocumentDirectory',{params:{schoolSlug:slug},parentViewId:parent!.viewId,signal:parent!.signal});
+      current();return nativeParentDocuments(result.data,context);
+    }catch(error){current();const reason=terminal(error);if(reason&&parent)parent.fail(reason);throw error;}
+  },
+  async file(key:ParentKey,slug:string,id:string){
+    const result=await documentFile(key,slug,id,false);result.owner.assertCurrent();
+    return {...result.file,source:{kind:'blob' as const,blobKey:keepOwnedBlob(result.blob,result.owner)}};
+  },
+  async downloadFile(key:ParentKey,slug:string,id:string){const result=await documentFile(key,slug,id,true);result.owner.assertCurrent();return {blob:result.blob,filename:result.filename,assertCurrent:result.owner.assertCurrent};},
   async publicSchool(slug:string){
     const {data}=await http('getPublicSchool',{params:{schoolSlug:slug}});
     if(!data||data.slug!==slug||typeof data.name!=='string'||!data.name||['token','tokenHash','student','students','guardians','contacts'].some(key=>Object.hasOwn(data,key)))throw new RepoError('READ_ERROR','API chưa xác nhận thông tin công khai của trường.');

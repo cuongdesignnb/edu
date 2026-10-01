@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,318);assert.equal(new Set(operations.map(op=>op.id)).size,318);
+  assert.equal(operations.length,325);assert.equal(new Set(operations.map(op=>op.id )).size,325);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -187,4 +187,11 @@ test('parent weekly timetable requires explicit published status, timezone and n
  const lesson={date:'2026-10-05',startsAt:'2026-10-05T01:00:00Z',endsAt:'2026-10-05T01:45:00Z',startsAtLocal:'08:00',endsAtLocal:'08:45',periodNumber:null,subjectName:'Toán',teacherName:'Giáo viên',roomName:null,status:'SCHEDULED',changeNote:null},day={date:'2026-10-05',holidayNames:[],lessons:[lesson]},value={weekStart:'2026-10-05',today:'2026-10-05',timezone:'Asia/Ho_Chi_Minh',year:{startsOn:'2026-09-01',endsOn:'2027-06-01'},weekNumber:null,days:[day]};validateSchema('ParentTimetableWeek',value,true);
  for(const bad of [{...value,studentId:'private'},{...value,days:[{...day,lessons:[{...lesson,memberId:'private'}]}]},{...value,days:[{...day,lessons:[{...lesson,periodNumber:0}]}]},{...value,days:[{...day,lessons:[{...lesson,status:'DRAFT'}]}]},{...value,days:[{...day,lessons:[{...lesson,startsAtLocal:'25:00'}]}]}])assert.throws(()=>validateSchema('ParentTimetableWeek',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  assert.equal(operations.find(op=>op.id==='getParentTimetableWeek').permission,'parent.timetable');assert.equal(operations.find(op=>op.id==='previewParentTimetableWeek').permission,'parent_access.preview');
+});
+
+
+test('parent document directory requires real independent capabilities and minimal report fields without storage keys',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',file={id,title:'Tài liệu',contentType:'image/png',byteSize:3,downloadAllowed:false,viewAllowed:true,publishedAt:'2026-10-01T01:00:00Z'},report={periodId:id,title:'Kết quả thi đua Tuần 5',publishedAt:file.publishedAt,total:'80.10',grade:null,revision:1},data={files:[file],reports:[report]};validateSchema('ParentDocumentDirectory',data,true);
+ for(const bad of [{...data,files:[{...file,fileId:id}]},{...data,files:[{...file,objectKey:'private'}]},{...data,files:[{...file,id:null}]},{...data,reports:[{...report,internalNote:'private'}]},{...data,files:Array.from({length:1001},()=>file)}])assert.throws(()=>validateSchema('ParentDocumentDirectory',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
+ for(const op of ['getParentDocumentDirectory','getParentDocument','viewParentDocument'])assert.equal(operations.find(o=>o.id===op).permission,'parent.documents');for(const op of ['previewParentDocumentDirectory','previewParentDocument','previewParentDocumentView','previewParentDocumentDownload'])assert.equal(operations.find(o=>o.id===op).permission,'parent_access.preview');
 });

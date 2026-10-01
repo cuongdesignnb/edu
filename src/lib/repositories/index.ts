@@ -41,6 +41,6 @@ export type {SearchHit} from './search';
 export {RepoError,isRepoError,errorMessage,type RepoErrorCode} from './errors';
 export type {Ctx,ListQuery,Page} from './core';
 export {makeConnectedCtx as makeCtx} from '../api/context';
-export {unavailableBlob as getBlob} from './connected/statics';
+export {getOwnedBlob as getBlob} from '../api/owned-blobs';
 export type {ServiceState} from './platform-extra';
 export type {ImportKind,ImportKindInfo} from './students-extra';

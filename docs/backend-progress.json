@@ -3774,6 +3774,93 @@
       "evidence": [
         "qa/backend/b6-parent-week-checks.json"
       ]
+    },
+    {
+      "operationId": "getParentDocumentDirectory",
+      "screenIds": [
+        "PA13",
+        "PA09",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "getParentDocument",
+      "screenIds": [
+        "PA13",
+        "PA09",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "viewParentDocument",
+      "screenIds": [
+        "PA13",
+        "PA09",
+        "PA11"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentDocumentDirectory",
+      "screenIds": [
+        "SC25",
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentDocument",
+      "screenIds": [
+        "SC25",
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentDocumentView",
+      "screenIds": [
+        "SC25",
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
+    },
+    {
+      "operationId": "previewParentDocumentDownload",
+      "screenIds": [
+        "SC25",
+        "PA13"
+      ],
+      "milestone": null,
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-integration-selected-audit-fixed.log"
+      ]
     }
   ],
   "screens": [
@@ -4546,7 +4633,11 @@
         "previewParentAttendanceMonth",
         "previewParentTeacherDirectory",
         "previewParentDutySchedule",
-        "previewParentTimetableWeek"
+        "previewParentTimetableWeek",
+        "previewParentDocumentDirectory",
+        "previewParentDocument",
+        "previewParentDocumentView",
+        "previewParentDocumentDownload"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5358,7 +5449,10 @@
       "screenId": "PA09",
       "scope": "core",
       "operationIds": [
-        "getParentActivity"
+        "getParentActivity",
+        "getParentDocumentDirectory",
+        "getParentDocument",
+        "viewParentDocument"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5380,7 +5474,10 @@
       "screenId": "PA11",
       "scope": "core",
       "operationIds": [
-        "getParentAnnouncement"
+        "getParentAnnouncement",
+        "getParentDocumentDirectory",
+        "getParentDocument",
+        "viewParentDocument"
       ],
       "staticReason": "",
       "status": "NOT_STARTED",
@@ -5407,11 +5504,20 @@
       "scope": "core",
       "operationIds": [
         "listParentDocuments",
-        "downloadParentDocument"
+        "downloadParentDocument",
+        "getParentDocumentDirectory",
+        "getParentDocument",
+        "viewParentDocument",
+        "previewParentDocumentDirectory",
+        "previewParentDocument",
+        "previewParentDocumentView",
+        "previewParentDocumentDownload"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-parent-documents-checks.json"
+      ],
       "apiStatus": "TESTED"
     },
     {
