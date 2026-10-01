@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:32652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\native-ui-contract\teacher-announcements-contract.spec.ts:16:5 › TE05 opens published content and shows read confirmation only after one exact publication acknowledgement (1.2s)
+  ok 2 tests\native-ui-contract\teacher-announcements-contract.spec.ts:17:5 › TE05 mobile bulk read sends one atomic command for displayed sources and fits the existing layout (582ms)
+  ok 3 tests\native-ui-contract\teacher-announcements-contract.spec.ts:18:5 › TE05 source conflict preserves unread state and gives a visible retry without a false success badge (642ms)
+  ok 4 tests\native-ui-contract\teacher-announcements-contract.spec.ts:19:5 › TE05 an API outage exposes retry and never becomes an empty success list (541ms)
+
+  4 passed (4.0s)

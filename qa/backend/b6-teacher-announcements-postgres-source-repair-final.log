@@ -1,0 +1,73 @@
+ Container edumanage_backend_test-runner-run-f9a583de1002 Creating 
+ Container edumanage_backend_test-runner-run-f9a583de1002 Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 563.891905
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 133.407761
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 1469.897771
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 507.143568
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+ok 5 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 551.639361
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+ok 6 - B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+  ---
+  duration_ms: 447.060247
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+ok 7 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 616.926421
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+ok 8 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 405.617049
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+ok 9 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 435.884776
+  type: 'test'
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+ok 10 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 560.874007
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6446.709748
+EXIT_CODE=0

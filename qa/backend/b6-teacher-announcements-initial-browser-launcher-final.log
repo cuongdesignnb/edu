@@ -1,0 +1,2 @@
+{"prefix":"b6-teacher-announcements","kind":"BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E","startedAt":"2026-10-01T21:41:19.859Z","host":"127.0.0.1","port":18763,"selectedFiles":["tests/native-ui-contract/teacher-announcements-contract.spec.ts"],"portFreeBefore":true,"ownedNextPid":26132,"playwrightExitCode":1,"ownedNextTerminationRequested":true,"ownedNextClosed":true,"ownedNextExit":{"code":null,"signal":"SIGTERM"},"portFreeAfter":true,"finishedAt":"2026-10-01T21:43:16.646Z","exitCode":1}
+EXIT_CODE=1

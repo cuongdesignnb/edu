@@ -34,4 +34,19 @@ export function extendAnnouncementContract(spec,extend,{object,uuid,label,count,
   // Native commands acknowledge with HTTP200; inherited create-duty HTTP201 must not bypass response validation.
   if(method==='post'){op.responses['200']=op.responses['201'];delete op.responses['201'];}
  }
+ const teacherSource=object({...source.properties,publicationId:uuid}),teacherItem=object({id:uuid,rootId:uuid,origin:{type:'string',enum:['school','class']},className:nullable(label),title:label,summary:label,body:array(block,500),scopeLabel:label,audienceLabel:label,publishedAt:timestamp,createdByName:nullable(label),attachments:array(object({id:uuid,name:label}),100),source:teacherSource,read:bool,readAt:nullable(timestamp)});
+ schemas.TeacherAnnouncementSource=teacherSource;
+ schemas.TeacherAnnouncementItem=teacherItem;
+ schemas.TeacherAnnouncementFeed=object({schoolId:uuid,memberId:uuid,items:array(ref('TeacherAnnouncementItem'),100)});
+ schemas.TeacherAnnouncementFeedResponse=object({data:ref('TeacherAnnouncementFeed'),page:structuredClone(schemas.AnnouncementDirectoryResponse.properties.page),requestId:label});
+ schemas.TeacherAnnouncementReadInput=object({sources:{...array(ref('TeacherAnnouncementSource'),200),minItems:1,uniqueItems:true}});
+ schemas.TeacherAnnouncementReadReceipt=object({schoolId:uuid,memberId:uuid,items:array(object({source:ref('TeacherAnnouncementSource'),receiptId:uuid,readAt:timestamp}),200)});
+ schemas.TeacherAnnouncementReadReceiptResponse=object({data:ref('TeacherAnnouncementReadReceipt'),requestId:label});
+ extend('getClassOverview','getTeacherAnnouncementFeed',school+'/teacher/announcement-feed','teacher.self','TeacherAnnouncementFeed',false,['TE05'],[...schoolPath,{name:'limit',in:'query',schema:{type:'integer',minimum:1,maximum:100}},{name:'cursor',in:'query',schema:label}]);
+ extend('createDuty','markTeacherAnnouncementsRead',school+'/teacher/announcement-read','teacher.self','TeacherAnnouncementReadReceipt',false,['TE05'],schoolPath,'TeacherAnnouncementReadInput');
+ for(const paths of Object.values(spec.paths))for(const [method,op]of Object.entries(paths))if(['getTeacherAnnouncementFeed','markTeacherAnnouncementsRead'].includes(op?.operationId)){
+  op.tags=['Announcements'];op['x-scope']='school';op.description='Teacher feed of current immutable publications under fresh announcement.read and teacher.self grants. Own publication read receipts; atomic displayed-source acknowledgement and replay authorization.';
+  const registered=operations.find(o=>o.id===op.operationId);registered.tag='Announcements';registered.description=op.description;
+  if(method==='post'){op.responses['200']=op.responses['201'];delete op.responses['201'];}
+ }
 }

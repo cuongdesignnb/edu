@@ -1,0 +1,61 @@
+ Container edumanage_backend_test-runner-run-26f595c62c53 Creating 
+ Container edumanage_backend_test-runner-run-26f595c62c53 Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 475.839932
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 80.094921
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 1170.156693
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 1421.212685
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff publications but cannot read family targets private attachments or another class
+not ok 5 - B6 teacher announcement subject scope sees staff publications but cannot read family targets private attachments or another class
+  ---
+  duration_ms: 670.029116
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1291:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:validation_error","title":"VALIDATION_ERROR","status":422,"code":"VALIDATION_ERROR","requestId":"db4636af-7769-40ef-b9f6-84b451f18b8e","fieldErrors":[{"path":"audience","code":"INVALID","message":"Thông báo lớp gửi gia đình học sinh"}]}
+    
+    422 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 422
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1293:248)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4647.324773
+
+EXIT_CODE=1

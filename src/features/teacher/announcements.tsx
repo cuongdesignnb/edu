@@ -6,7 +6,7 @@ import { announcementsRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, matches } from "@/lib/formatters";
 import { PageHeader } from "@/components/layout/page";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/dialog";
@@ -35,8 +35,8 @@ function List({ schoolId, items }: { schoolId: string; items: Item[] }) {
   const [origin, setOrigin] = useState("");
   const [page, setPage] = useState(1);
   const [openId, setOpenId] = useState<string | null>(null);
-  const mark = useCommand((ctx, id: string) => announcementsRepo.markTeacherRead(ctx, schoolId, id), { silentError: true });
-  const markAll = useCommand(async (ctx, ids: string[]) => { for (const id of ids) await announcementsRepo.markTeacherRead(ctx, schoolId, id); return ids.length; }, { success: (n) => `Đã đánh dấu ${n} thông báo là đã đọc` });
+  const mark = useCommand((ctx, source: Item['source']) => announcementsRepo.markTeacherRead(ctx, schoolId, source));
+  const markAll = useCommand((ctx, sources: Item['source'][]) => announcementsRepo.markAllTeacherRead(ctx, schoolId, sources), { success: (r) => `Đã đánh dấu ${r.items.length} thông báo là đã đọc` });
   const rows = useMemo(() => items.filter((a) => (!state || (state === "unread" ? !a.read : a.read)) && (!origin || a.origin === origin) && matches(text, a.title, a.summary)), [items, state, origin, text]);
   const pageCount = Math.max(1, Math.ceil(rows.length / PAGE));
   const cur = Math.min(page, pageCount);
@@ -44,11 +44,12 @@ function List({ schoolId, items }: { schoolId: string; items: Item[] }) {
   const open = items.find((a) => a.id === openId) ?? null;
   const active = !!text || !!state || !!origin;
   const reset = () => { setText(""); setState(""); setOrigin(""); setPage(1); };
-  const show = (a: Item) => { setOpenId(a.id); if (!a.read) void mark.run(a.id); };
+  const show = (a: Item) => { setOpenId(a.id); if (!a.read) void mark.run(a.source); };
   return (
     <Card>
       <CardHeader title={`Thông báo (${unread.length} chưa đọc)`} icon={<Megaphone className="size-5 text-primary" />}
-        action={unread.length > 0 && <Button size="sm" variant="secondary" icon={<CheckCheck className="size-4" />} loading={markAll.pending} onClick={() => markAll.run(unread.map((a) => a.id))}>Đánh dấu tất cả đã đọc</Button>} />
+        action={unread.length > 0 && <Button size="sm" variant="secondary" icon={<CheckCheck className="size-4" />} loading={markAll.pending} disabled={mark.pending} onClick={() => markAll.run(unread.slice(0, 200).map((a) => a.source))}>Đánh dấu {unread.length > 200 ? '200 thông báo' : 'tất cả'} đã đọc</Button>} />
+      {markAll.error && <Callout tone="warning" className="mx-5 mb-3" title="Chưa xác nhận đánh dấu đã đọc">{markAll.error.message}</Callout>}
       <FilterBar q={text} onQ={(v) => { setText(v); setPage(1); }} placeholder="Tìm tiêu đề, nội dung…" active={active} onReset={reset}>
         <InlineSelect label="Trạng thái đọc" value={state} onChange={(v) => { setState(v); setPage(1); }} allLabel="Đã đọc và chưa đọc" options={[{ value: "unread", label: "Chưa đọc" }, { value: "read", label: "Đã đọc" }]} />
         <InlineSelect label="Nguồn" value={origin} onChange={(v) => { setOrigin(v); setPage(1); }} allLabel="Mọi nguồn" options={[{ value: "school", label: "Nhà trường" }, { value: "class", label: "Lớp tôi phụ trách" }]} />
@@ -82,7 +83,9 @@ function List({ schoolId, items }: { schoolId: string; items: Item[] }) {
         footer={<Button variant="secondary" onClick={() => setOpenId(null)}>Đóng</Button>}>
         {open && (
           <div className="space-y-3 text-sm">
-            <div className="flex flex-wrap gap-1.5"><Badge tone="neutral" dot={false}>{open.scopeLabel}</Badge><Badge tone="neutral" dot={false}>{open.audienceLabel}</Badge><Badge tone="success">Đã đọc</Badge></div>
+            <div className="flex flex-wrap gap-1.5"><Badge tone="neutral" dot={false}>{open.scopeLabel}</Badge><Badge tone="neutral" dot={false}>{open.audienceLabel}</Badge><Badge tone={open.read ? 'success' : 'info'}>{open.read ? 'Đã đọc' : 'Chưa đọc'}</Badge></div>
+            {!open.read && <Button size="sm" variant="secondary" loading={mark.pending} onClick={() => mark.run(open.source)}>Đánh dấu đã đọc</Button>}
+            {mark.error && <Callout tone="warning" title="Chưa xác nhận đã đọc">{mark.error.message}</Callout>}
             <p className="font-medium text-ink">{open.summary}</p>
             <div className="space-y-2 text-body">
               {open.body.map((b, i) => b.type === "h" ? <h3 key={i} className="pt-1 text-[15px] font-bold text-ink">{b.text}</h3> : b.type === "li" ? <p key={i} className="pl-4 before:mr-2 before:content-['•']">{b.text}</p> : <p key={i}>{b.text}</p>)}
@@ -93,7 +96,7 @@ function List({ schoolId, items }: { schoolId: string; items: Item[] }) {
                 <ul className="space-y-1">{open.attachments.map((f) => f && <li key={f.id} className="flex items-center gap-2 text-body"><Paperclip className="size-4 text-muted" aria-hidden />{f.name}</li>)}</ul>
               </div>
             )}
-            <p className="text-[12.5px] text-muted">Người đăng: {open.createdByName}</p>
+            {open.createdByName && <p className="text-[12.5px] text-muted">Người đăng: {open.createdByName}</p>}
           </div>
         )}
       </Drawer>

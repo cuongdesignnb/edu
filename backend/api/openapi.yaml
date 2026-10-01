@@ -38045,6 +38045,192 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/teacher/announcement-feed:
+    get:
+      operationId: getTeacherAnnouncementFeed
+      tags:
+        - Announcements
+      summary: getTeacherAnnouncementFeed
+      description: Teacher feed of current immutable publications under fresh
+        announcement.read and teacher.self grants. Own publication read
+        receipts; atomic displayed-source acknowledgement and replay
+        authorization.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherAnnouncementFeedResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/teacher/announcement-read:
+    post:
+      operationId: markTeacherAnnouncementsRead
+      tags:
+        - Announcements
+      summary: markTeacherAnnouncementsRead
+      description: Teacher feed of current immutable publications under fresh
+        announcement.read and teacher.self grants. Own publication read
+        receipts; atomic displayed-source acknowledgement and replay
+        authorization.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE05
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeacherAnnouncementReadInput"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherAnnouncementReadReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -56761,6 +56947,253 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/AnnouncementWorkspaceReceipt"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TeacherAnnouncementSource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        rootId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        dataVersion:
+          type: integer
+          minimum: 1
+        publicationId:
+          type: string
+          format: uuid
+      required:
+        - id
+        - rootId
+        - yearId
+        - classId
+        - version
+        - dataVersion
+        - publicationId
+      additionalProperties: false
+    TeacherAnnouncementItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        rootId:
+          type: string
+          format: uuid
+        origin:
+          type: string
+          enum:
+            - school
+            - class
+        className:
+          type: string
+          nullable: true
+        title:
+          type: string
+        summary:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - p
+                  - h
+                  - li
+              text:
+                type: string
+                minLength: 1
+                maxLength: 50000
+            required:
+              - type
+              - text
+            additionalProperties: false
+          maxItems: 500
+        scopeLabel:
+          type: string
+        audienceLabel:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+        createdByName:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+          maxItems: 100
+        source:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            rootId:
+              type: string
+              format: uuid
+            yearId:
+              type: string
+              format: uuid
+            classId:
+              type: string
+              format: uuid
+              nullable: true
+            version:
+              type: integer
+              minimum: 1
+            dataVersion:
+              type: integer
+              minimum: 1
+            publicationId:
+              type: string
+              format: uuid
+          required:
+            - id
+            - rootId
+            - yearId
+            - classId
+            - version
+            - dataVersion
+            - publicationId
+          additionalProperties: false
+        read:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - rootId
+        - origin
+        - className
+        - title
+        - summary
+        - body
+        - scopeLabel
+        - audienceLabel
+        - publishedAt
+        - createdByName
+        - attachments
+        - source
+        - read
+        - readAt
+      additionalProperties: false
+    TeacherAnnouncementFeed:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        memberId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherAnnouncementItem"
+          maxItems: 100
+      required:
+        - schoolId
+        - memberId
+        - items
+      additionalProperties: false
+    TeacherAnnouncementFeedResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherAnnouncementFeed"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+        requestId:
+          type: string
+      required:
+        - data
+        - page
+        - requestId
+      additionalProperties: false
+    TeacherAnnouncementReadInput:
+      type: object
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherAnnouncementSource"
+          maxItems: 200
+          minItems: 1
+          uniqueItems: true
+      required:
+        - sources
+      additionalProperties: false
+    TeacherAnnouncementReadReceipt:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        memberId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                $ref: "#/components/schemas/TeacherAnnouncementSource"
+              receiptId:
+                type: string
+                format: uuid
+              readAt:
+                type: string
+                format: date-time
+            required:
+              - source
+              - receiptId
+              - readAt
+            additionalProperties: false
+          maxItems: 200
+      required:
+        - schoolId
+        - memberId
+        - items
+      additionalProperties: false
+    TeacherAnnouncementReadReceiptResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherAnnouncementReadReceipt"
         requestId:
           type: string
       required:

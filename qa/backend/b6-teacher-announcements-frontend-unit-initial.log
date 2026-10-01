@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-teacher-announcements.test.ts (4 tests) 21ms
+ ✓ tests/unit/api-announcement-workspace.test.ts (6 tests) 34ms
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  04:38:43
+   Duration  489ms (transform 143ms, setup 74ms, collect 262ms, tests 55ms, environment 0ms, prepare 212ms)
+
+EXIT_CODE=0

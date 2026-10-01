@@ -511,6 +511,13 @@ export interface ApiSchemas {
   "AnnouncementComposeWorkspaceResponse": { "data": ApiSchemas["AnnouncementComposeWorkspace"]; "requestId": string; };
   "AnnouncementAudienceEstimateResponse": { "data": ApiSchemas["AnnouncementAudienceEstimate"]; "requestId": string; };
   "AnnouncementWorkspaceReceiptResponse": { "data": ApiSchemas["AnnouncementWorkspaceReceipt"]; "requestId": string; };
+  "TeacherAnnouncementSource": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": string; };
+  "TeacherAnnouncementItem": { "id": string; "rootId": string; "origin": "school" | "class"; "className": (string) | null; "title": string; "summary": string; "body": Array<{ "type": "p" | "h" | "li"; "text": string; }>; "scopeLabel": string; "audienceLabel": string; "publishedAt": string; "createdByName": (string) | null; "attachments": Array<{ "id": string; "name": string; }>; "source": { "id": string; "rootId": string; "yearId": string; "classId": (string) | null; "version": number; "dataVersion": number; "publicationId": string; }; "read": boolean; "readAt": (string) | null; };
+  "TeacherAnnouncementFeed": { "schoolId": string; "memberId": string; "items": Array<ApiSchemas["TeacherAnnouncementItem"]>; };
+  "TeacherAnnouncementFeedResponse": { "data": ApiSchemas["TeacherAnnouncementFeed"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "TeacherAnnouncementReadInput": { "sources": Array<ApiSchemas["TeacherAnnouncementSource"]>; };
+  "TeacherAnnouncementReadReceipt": { "schoolId": string; "memberId": string; "items": Array<{ "source": ApiSchemas["TeacherAnnouncementSource"]; "receiptId": string; "readAt": string; }>; };
+  "TeacherAnnouncementReadReceiptResponse": { "data": ApiSchemas["TeacherAnnouncementReadReceipt"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4182,6 +4189,26 @@ export const apiOperations = {
     "response": "AnnouncementWorkspaceReceipt",
     "list": false,
     "permission": "announcement.manage",
+    "readOnly": false
+  },
+  "getTeacherAnnouncementFeed": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/teacher/announcement-feed",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherAnnouncementFeed",
+    "list": false,
+    "permission": "teacher.self",
+    "readOnly": true
+  },
+  "markTeacherAnnouncementsRead": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/teacher/announcement-read",
+    "auth": "staff",
+    "request": "TeacherAnnouncementReadInput",
+    "response": "TeacherAnnouncementReadReceipt",
+    "list": false,
+    "permission": "teacher.self",
     "readOnly": false
   }
 } as const;

@@ -1,0 +1,217 @@
+ Container edumanage_backend_test-runner-run-fa65ba959315 Creating 
+ Container edumanage_backend_test-runner-run-fa65ba959315 Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 449.583097
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 83.767242
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+not ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 461.826992
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1272:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"8663f2ea-c9c8-4df9-a86b-9c353ed92e76"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    Object.feed (file:///srv/api/tests/integration/foundation.test.mjs:1267:109)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1273:79)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+not ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 375.880027
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1283:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"a6ea888c-a28a-4fe5-93d8-35a3a90c0fd4"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    Object.feed (file:///srv/api/tests/integration/foundation.test.mjs:1267:109)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1284:239)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+not ok 5 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 459.858341
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1291:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"ab9abc6d-5310-425c-a3cc-b448ecf40671"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1294:726)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+not ok 6 - B6 teacher announcement student targets require enrollment valid today and never inherit former class access
+  ---
+  duration_ms: 408.819761
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1297:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"e2311d7d-50d3-4290-a28e-1c18774c94b3"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    Object.feed (file:///srv/api/tests/integration/foundation.test.mjs:1267:109)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1299:42)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+not ok 7 - B6 announcement workspace atomic save publish immutable edit withdraw and retained real history preserve exact source
+  ---
+  duration_ms: 237.439208
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1303:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"62c83c41-43df-46ca-9136-e2db14b9f82c"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    read (file:///srv/api/tests/integration/foundation.test.mjs:1260:139)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1304:233)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+not ok 8 - B6 announcement workspace schedule is a real outbox source and failed atomic publication leaves no draft or notification
+  ---
+  duration_ms: 259.246209
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1311:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"21f37c0e-eda1-4d96-abbf-c3abd180e6b9"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    read (file:///srv/api/tests/integration/foundation.test.mjs:1260:139)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1313:189)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+not ok 9 - B6 announcement workspace independent class read manage publish current grant expiry and replay never borrow school or other class rights
+  ---
+  duration_ms: 251.14809
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1316:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"8b229a8c-7b94-48e2-b4c2-33f5c3a4bdec"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    read (file:///srv/api/tests/integration/foundation.test.mjs:1260:139)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1317:338)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+not ok 10 - B6 announcement workspace school directory estimate public scope and mixed native targets keep independent current parent links
+  ---
+  duration_ms: 459.476972
+  type: 'test'
+  location: '/srv/api/tests/integration/foundation.test.mjs:1322:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"type":"urn:edumanage:problem:internal_error","title":"INTERNAL_ERROR","status":500,"code":"INTERNAL_ERROR","requestId":"d53dafaf-330b-4983-bda0-c8d21d5969a8"}
+    
+    500 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 500
+  operator: 'strictEqual'
+  stack: |-
+    Object.read (file:///srv/api/tests/integration/foundation.test.mjs:1260:139)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:1328:15)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 2
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4244.350731
+
+EXIT_CODE=1

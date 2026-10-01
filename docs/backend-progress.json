@@ -4366,6 +4366,28 @@
       "evidence": [
         "qa/backend/b6-announcements-postgres-http-final.log: 5/5; native HTTP200 response schemas enforced; scopes/source/replay/schedule/publication/withdrawal"
       ]
+    },
+    {
+      "operationId": "getTeacherAnnouncementFeed",
+      "screenIds": [
+        "TE05"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-teacher-announcements-postgres-source-repair-final.log: actual PostgreSQL10/10, migration048/checksum replay, own immutable publication receipts, atomic batch, current teacher/subject/class/date grants and replay revocation; browser4/4 intercepted API, not PostgreSQL E2E."
+      ]
+    },
+    {
+      "operationId": "markTeacherAnnouncementsRead",
+      "screenIds": [
+        "TE05"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "qa/backend/b6-teacher-announcements-postgres-source-repair-final.log: actual PostgreSQL10/10, migration048/checksum replay, own immutable publication receipts, atomic batch, current teacher/subject/class/date grants and replay revocation; browser4/4 intercepted API, not PostgreSQL E2E."
+      ]
     }
   ],
   "screens": [
@@ -5490,11 +5512,15 @@
       "operationIds": [
         "listMyNotifications",
         "readMyNotification",
-        "listTeacherAnnouncements"
+        "listTeacherAnnouncements",
+        "getTeacherAnnouncementFeed",
+        "markTeacherAnnouncementsRead"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "qa/backend/b6-teacher-announcements-postgres-source-repair-final.log: actual PostgreSQL10/10, migration048/checksum replay, own immutable publication receipts, atomic batch, current teacher/subject/class/date grants and replay revocation; browser4/4 intercepted API, not PostgreSQL E2E. Full-screen PostgreSQL browser E2E remains NOT_RUN."
+      ],
       "apiStatus": "TESTED"
     },
     {

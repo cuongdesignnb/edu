@@ -1,0 +1,264 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\cuong\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "D:\\Edu\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.native.config.ts",
+      "tests/native-ui-contract/teacher-announcements-contract.spec.ts"
+    ],
+    "configFile": "D:\\Edu\\playwright.native.config.ts",
+    "rootDir": "D:/Edu/tests/native-ui-contract",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/Edu/qa/backend/b6-teacher-announcements-browser-artifacts-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/Edu/tests/native-ui-contract",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "qa/backend/b6-teacher-announcements-browser-results-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "teacher-announcements-contract.spec.ts",
+      "file": "teacher-announcements-contract.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "TE05 opens published content and shows read confirmation only after one exact publication acknowledgement",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1153,
+                  "error": {
+                    "message": "Error: locator.click: Error: strict mode violation: getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" aria-label=\"Đóng\" class=\"rounded-lg p-1.5 text-muted hover:bg-neutral-bg disabled:opacity-40\">…</button> aka getByLabel('Đóng')\n    2) <button type=\"button\" class=\"btn btn-secondary\">Đóng</button> aka getByText('Đóng')\n\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true })\u001b[22m\n",
+                    "stack": "Error: locator.click: Error: strict mode violation: getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" aria-label=\"Đóng\" class=\"rounded-lg p-1.5 text-muted hover:bg-neutral-bg disabled:opacity-40\">…</button> aka getByLabel('Đóng')\n    2) <button type=\"button\" class=\"btn btn-secondary\">Đóng</button> aka getByText('Đóng')\n\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true })\u001b[22m\n\n    at D:\\Edu\\tests\\native-ui-contract\\teacher-announcements-contract.spec.ts:16:798",
+                    "location": {
+                      "file": "D:\\Edu\\tests\\native-ui-contract\\teacher-announcements-contract.spec.ts",
+                      "column": 798,
+                      "line": 16
+                    },
+                    "snippet": "  14 |  s.unexpected.push(path);return r.fulfill({status:503,json:{code:'UNEXPECTED_TEACHER_ANNOUNCEMENT_REQUEST'}});\n  15 |  });}\n> 16 | test('TE05 opens published content and shows read confirmation only after one exact publication acknowledgement',async({page})=>{const s=state();await routes(page,s);await page.goto(web);await expect(page.getByText('Thông báo (2 chưa đọc)',{exact:true})).toBeVisible();await page.getByRole('button').filter({hasText:'Thông báo giáo viên API 4'}).click();const dialog=page.getByRole('dialog');await expect(dialog.getByText('Nội dung công bố tiếng Việt cho giáo viên')).toBeVisible();await expect(dialog.getByText('Đã đọc',{exact:true})).toBeVisible();expect(s.posts).toEqual([{sources:[source(4)]}]);await expect(dialog.getByText('Người đăng:')).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});await dialog.getByRole('button',{name:'Đóng',exact:true}).click();await page.reload();await expect(page.getByText('Thông báo (1 chưa đọc)',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^\n  17 | test('TE05 mobile bulk read sends one atomic command for displayed sources and fits the existing layout',async({page})=>{await page.setViewportSize({width:390,height:844});const s=state();await routes(page,s);await page.goto(web);await page.getByRole('button',{name:'Đánh dấu tất cả đã đọc',exact:true}).click();await expect(page.getByText('Thông báo (0 chưa đọc)',{exact:true})).toBeVisible();expect(s.posts).toEqual([{sources:[source(4),source(5)]}]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  18 | test('TE05 source conflict preserves unread state and gives a visible retry without a false success badge',async({page})=>{const s=state();s.mode='conflict';await routes(page,s);await page.goto(web);await page.getByRole('button').filter({hasText:'Thông báo giáo viên API 4'}).click();const dialog=page.getByRole('dialog');await expect(dialog.getByText('Chưa xác nhận đã đọc',{exact:true})).toBeVisible();await expect(dialog.getByText('Đã đọc',{exact:true})).toHaveCount(0);await expect(dialog.getByText('Chưa đọc',{exact:true})).toBeVisible();s.mode='ready';await dialog.getByRole('button',{name:'Đánh dấu đã đọc',exact:true}).click();await expect(dialog.getByText('Đã đọc',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});\n  19 | test('TE05 an API outage exposes retry and never becomes an empty success list',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(web);await expect(page.getByText('Không tải được dữ liệu',{exact:true})).toBeVisible();await expect(page.getByText('Chưa có thông báo',{exact:true})).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByText('Thông báo (2 chưa đọc)',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\Edu\\tests\\native-ui-contract\\teacher-announcements-contract.spec.ts",
+                        "column": 798,
+                        "line": 16
+                      },
+                      "message": "Error: locator.click: Error: strict mode violation: getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" aria-label=\"Đóng\" class=\"rounded-lg p-1.5 text-muted hover:bg-neutral-bg disabled:opacity-40\">…</button> aka getByLabel('Đóng')\n    2) <button type=\"button\" class=\"btn btn-secondary\">Đóng</button> aka getByText('Đóng')\n\nCall log:\n\u001b[2m  - waiting for getByRole('dialog').getByRole('button', { name: 'Đóng', exact: true })\u001b[22m\n\n\n  14 |  s.unexpected.push(path);return r.fulfill({status:503,json:{code:'UNEXPECTED_TEACHER_ANNOUNCEMENT_REQUEST'}});\n  15 |  });}\n> 16 | test('TE05 opens published content and shows read confirmation only after one exact publication acknowledgement',async({page})=>{const s=state();await routes(page,s);await page.goto(web);await expect(page.getByText('Thông báo (2 chưa đọc)',{exact:true})).toBeVisible();await page.getByRole('button').filter({hasText:'Thông báo giáo viên API 4'}).click();const dialog=page.getByRole('dialog');await expect(dialog.getByText('Nội dung công bố tiếng Việt cho giáo viên')).toBeVisible();await expect(dialog.getByText('Đã đọc',{exact:true})).toBeVisible();expect(s.posts).toEqual([{sources:[source(4)]}]);await expect(dialog.getByText('Người đăng:')).toHaveCount(0);await page.screenshot({path:`qa/backend/${prefix}-desktop.png`,fullPage:true});await dialog.getByRole('button',{name:'Đóng',exact:true}).click();await page.reload();await expect(page.getByText('Thông báo (1 chưa đọc)',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^\n  17 | test('TE05 mobile bulk read sends one atomic command for displayed sources and fits the existing layout',async({page})=>{await page.setViewportSize({width:390,height:844});const s=state();await routes(page,s);await page.goto(web);await page.getByRole('button',{name:'Đánh dấu tất cả đã đọc',exact:true}).click();await expect(page.getByText('Thông báo (0 chưa đọc)',{exact:true})).toBeVisible();expect(s.posts).toEqual([{sources:[source(4),source(5)]}]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:`qa/backend/${prefix}-mobile.png`,fullPage:true});expect(s.unexpected).toEqual([]);});\n  18 | test('TE05 source conflict preserves unread state and gives a visible retry without a false success badge',async({page})=>{const s=state();s.mode='conflict';await routes(page,s);await page.goto(web);await page.getByRole('button').filter({hasText:'Thông báo giáo viên API 4'}).click();const dialog=page.getByRole('dialog');await expect(dialog.getByText('Chưa xác nhận đã đọc',{exact:true})).toBeVisible();await expect(dialog.getByText('Đã đọc',{exact:true})).toHaveCount(0);await expect(dialog.getByText('Chưa đọc',{exact:true})).toBeVisible();s.mode='ready';await dialog.getByRole('button',{name:'Đánh dấu đã đọc',exact:true}).click();await expect(dialog.getByText('Đã đọc',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});\n  19 | test('TE05 an API outage exposes retry and never becomes an empty success list',async({page})=>{const s=state();s.mode='outage';await routes(page,s);await page.goto(web);await expect(page.getByText('Không tải được dữ liệu',{exact:true})).toBeVisible();await expect(page.getByText('Chưa có thông báo',{exact:true})).toHaveCount(0);s.mode='ready';await page.getByRole('button',{name:'Thử lại',exact:true}).click();await expect(page.getByText('Thông báo (2 chưa đọc)',{exact:true})).toBeVisible();expect(s.unexpected).toEqual([]);});\n    at D:\\Edu\\tests\\native-ui-contract\\teacher-announcements-contract.spec.ts:16:798"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T21:43:39.897Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\Edu\\qa\\backend\\b6-teacher-announcements-browser-artifacts-final\\teacher-announcements-cont-319df-publication-acknowledgement\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\Edu\\qa\\backend\\b6-teacher-announcements-browser-artifacts-final\\teacher-announcements-cont-319df-publication-acknowledgement\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\Edu\\qa\\backend\\b6-teacher-announcements-browser-artifacts-final\\teacher-announcements-cont-319df-publication-acknowledgement\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\Edu\\tests\\native-ui-contract\\teacher-announcements-contract.spec.ts",
+                    "column": 798,
+                    "line": 16
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "81a3b8a849e266824a8e-3edd8e36c293a135b5f5",
+          "file": "teacher-announcements-contract.spec.ts",
+          "line": 16,
+          "column": 5
+        },
+        {
+          "title": "TE05 mobile bulk read sends one atomic command for displayed sources and fits the existing layout",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 744,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T21:43:42.090Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "81a3b8a849e266824a8e-c5b735e15484b7d5e72a",
+          "file": "teacher-announcements-contract.spec.ts",
+          "line": 17,
+          "column": 5
+        },
+        {
+          "title": "TE05 source conflict preserves unread state and gives a visible retry without a false success badge",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 680,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T21:43:43.214Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "81a3b8a849e266824a8e-b8d476bd5b7e32c92d19",
+          "file": "teacher-announcements-contract.spec.ts",
+          "line": 18,
+          "column": 5
+        },
+        {
+          "title": "TE05 an API outage exposes retry and never becomes an empty success list",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 576,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-01T21:43:43.902Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "81a3b8a849e266824a8e-c68a09aed2c4a0ab9464",
+          "file": "teacher-announcements-contract.spec.ts",
+          "line": 19,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-01T21:43:39.459Z",
+    "duration": 5235.742,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

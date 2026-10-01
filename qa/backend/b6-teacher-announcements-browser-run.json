@@ -1,0 +1,22 @@
+{
+  "prefix": "b6-teacher-announcements",
+  "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+  "startedAt": "2026-10-01T21:44:20.371Z",
+  "host": "127.0.0.1",
+  "port": 18763,
+  "selectedFiles": [
+    "tests/native-ui-contract/teacher-announcements-contract.spec.ts"
+  ],
+  "portFreeBefore": true,
+  "ownedNextPid": 19084,
+  "playwrightExitCode": 0,
+  "ownedNextTerminationRequested": true,
+  "ownedNextClosed": true,
+  "ownedNextExit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "portFreeAfter": true,
+  "finishedAt": "2026-10-01T21:44:25.422Z",
+  "exitCode": 0
+}

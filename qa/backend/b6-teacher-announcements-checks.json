@@ -1,0 +1,108 @@
+{
+  "baselineCommit": "13594c7abd1d40e1ca7b361ce7ce86f0bcb2b278",
+  "contract": {
+    "operations": 369,
+    "schemas": 518,
+    "statuses": {
+      "TESTED": 357,
+      "IMPLEMENTED": 12
+    },
+    "oldContractSemanticsUnchanged": true,
+    "addedOperations": [
+      "getTeacherAnnouncementFeed",
+      "markTeacherAnnouncementsRead"
+    ],
+    "successfulHttpResponse": "Explicit HTTP200 schema validated in actual PostgreSQL HTTP tests"
+  },
+  "frontend": {
+    "nativeCandidates": 165,
+    "activatedCandidates": 165,
+    "legacyMethods": 231,
+    "activatedLegacyMethods": 146,
+    "pendingLegacyMethods": 85,
+    "coreScreenSourceStatuses": {
+      "IMPLEMENTED": 77,
+      "STATIC_UNVERIFIED": 3,
+      "NOT_STARTED": 38
+    },
+    "coreScreenCount": 118
+  },
+  "actualTests": {
+    "postgres": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 6446.709748,
+      "log": "b6-teacher-announcements-postgres-source-repair-final.log"
+    },
+    "backendUnitContract": {
+      "passed": 58,
+      "failed": 0,
+      "durationMs": 514.6067
+    },
+    "frontendUnit": {
+      "passed": 418,
+      "files": 52,
+      "durationSeconds": 9.99,
+      "apiTests": 377,
+      "historicalSyntheticTests": 41
+    },
+    "browser": {
+      "startTime": "2026-10-01T21:44:21.375Z",
+      "duration": 4009.3360000000002,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browserKind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "desktopMobileScreenshotsInspected": true
+  },
+  "migration": {
+    "count": 48,
+    "replayAndChecksumMismatch": "PASS actual BE01 in selected PostgreSQL run",
+    "fullCurrentPostgresRegression": "NOT_RUN"
+  },
+  "failuresPreserved": [
+    "Initial PostgreSQL4/5 used a class STAFF composer fixture contrary to the agreed families-only class UI; fixture corrected to school STAFF target.",
+    "Dated PostgreSQL2/10 exposed a missing SQL parenthesis introduced by the current enrollment guard; source corrected without relaxing authorization, final10/10.",
+    "Initial browser0/4 omitted required shared teacher class directory API fixture; intermediate3/4 ambiguous close selector; both preserved, final4/4."
+  ],
+  "ownership": {
+    "prefix": "b6-teacher-announcements",
+    "kind": "BROWSER_CONTRACT_INTERCEPTED_API_NOT_POSTGRES_E2E",
+    "startedAt": "2026-10-01T21:44:20.371Z",
+    "host": "127.0.0.1",
+    "port": 18763,
+    "selectedFiles": [
+      "tests/native-ui-contract/teacher-announcements-contract.spec.ts"
+    ],
+    "portFreeBefore": true,
+    "ownedNextPid": 19084,
+    "playwrightExitCode": 0,
+    "ownedNextTerminationRequested": true,
+    "ownedNextClosed": true,
+    "ownedNextExit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "portFreeAfter": true,
+    "finishedAt": "2026-10-01T21:44:25.422Z",
+    "exitCode": 0
+  },
+  "release": {
+    "url": "http://127.0.0.1:18763",
+    "serving": false,
+    "wholeScreenPostgresBrowserE2E": "NOT_RUN",
+    "rootDeployScriptsMerge": "PENDING",
+    "restartPersistence": "NOT_RUN",
+    "backupRestore": "NOT_RUN",
+    "releaseLoadPerformance": "NOT_RUN",
+    "productionDeployed": false,
+    "volumesDeleted": false,
+    "otherProjectsChanged": false,
+    "userZipChanged": false,
+    "otherNativePostResponseStatusAudit": "PENDING",
+    "fullGoalComplete": false
+  }
+}

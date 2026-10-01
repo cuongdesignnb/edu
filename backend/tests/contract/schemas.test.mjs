@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('teacher announcement reads require a displayed published source and actual HTTP200 receipts',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={id,rootId:id,yearId:id,classId:null,version:2,dataVersion:1,publicationId:id};validateSchema('TeacherAnnouncementReadInput',{sources:[source]});
+ for(const bad of [{sources:[]},{sources:[{...source,publicationId:null}]},{sources:[source,source]},{sources:[source],actorId:id},{sources:[{...source,version:0}]}])assert.throws(()=>validateSchema('TeacherAnnouncementReadInput',bad));
+ const op=operations.find(o=>o.id==='markTeacherAnnouncementsRead');assert.equal(op.permission,'teacher.self');assert.equal(op.auth,'staff');assert.equal(op.responses['201'],undefined);assert.equal(op.responses['200'].content['application/json'].schema.$ref,'#/components/schemas/TeacherAnnouncementReadReceiptResponse');
+ const item={id,rootId:id,origin:'school',className:null,title:'Thông báo',summary:'Tóm tắt',body:[{type:'p',text:'Nội dung'}],scopeLabel:'Toàn trường',audienceLabel:'Nhân sự',publishedAt:'2026-10-02T01:00:00Z',createdByName:null,attachments:[],source,read:false,readAt:null};validateSchema('TeacherAnnouncementItem',item,true);for(const field of ['internalNote','staffSnapshot','historyView','studentPhone','targets'])assert.throws(()=>validateSchema('TeacherAnnouncementItem',{...item,[field]:'private'},true));
+});
 test('native announcement acknowledgements have an actual HTTP200 response schema and independent manage/publication permissions',()=>{
  for(const id of ['estimateAnnouncementAudience','saveAnnouncementWorkspace','publishAnnouncementWorkspace','withdrawAnnouncementWorkspace','discardAnnouncementWorkspace']){const op=operations.find(o=>o.id===id);assert.equal(op.auth,'staff');assert.equal(op.method,'POST');assert.equal(op.scope,'school');assert.equal(op.responses['200'].content['application/json'].schema.$ref,`#/components/schemas/${op.response}Response`);assert.equal(op.responses['201'],undefined);assert.equal(op.permission,['publishAnnouncementWorkspace','withdrawAnnouncementWorkspace'].includes(id)?'announcement.publish':'announcement.manage');}
  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={id,rootId:id,yearId:id,classId:null,version:1,dataVersion:1,publicationId:null},v={source};validateSchema('AnnouncementWorkspaceAction',v);for(const bad of [{...v,role:'SCHOOL_ADMIN'},{source:{...source,version:0}},{source:{...source,actorId:id}}])assert.throws(()=>validateSchema('AnnouncementWorkspaceAction',bad));
@@ -54,7 +60,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,367);assert.equal(new Set(operations.map(op=>op.id )).size,367);
+  assert.equal(operations.length,369);assert.equal(new Set(operations.map(op=>op.id )).size,369);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });

@@ -1,0 +1,43 @@
+ Container edumanage_backend_test-runner-run-4cc13973db0e Creating 
+ Container edumanage_backend_test-runner-run-4cc13973db0e Created 
+TAP version 13
+# Subtest: B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+ok 1 - B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers
+  ---
+  duration_ms: 516.92526
+  type: 'test'
+  ...
+# Subtest: BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+ok 2 - BE01 migration replay is a no-op, mismatch fails and metadata remains intact
+  ---
+  duration_ms: 91.772931
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+ok 3 - B6 teacher announcement feed persists own publication reads across sessions and immutable edits while newer publications become unread
+  ---
+  duration_ms: 979.64606
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+ok 4 - B6 teacher announcement bulk read is atomic and rejects stale sources foreign schools future expired and revoked grants even on replay
+  ---
+  duration_ms: 511.209572
+  type: 'test'
+  ...
+# Subtest: B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+ok 5 - B6 teacher announcement subject scope sees staff targets but conceals family content and another class
+  ---
+  duration_ms: 494.940087
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3597.481466
+EXIT_CODE=0
