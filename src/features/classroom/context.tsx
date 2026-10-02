@@ -19,6 +19,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { Callout, IconTile } from "@/components/ui/card";
 import { ErrorState, PageSkeleton } from "@/components/ui/states";
 import { ProgressBar } from "@/components/ui/progress";
+import {useTour} from '@/components/onboarding/provider';
+import type {TourKey} from '@/components/onboarding/registry';
 
 type Header = Awaited<ReturnType<typeof classroomRepo.header>>;
 export interface ClassroomCtx { schoolId: string; yearId: string; classId: string; base: string; header: Header; can: (a: ActionKey) => boolean; readOnly: boolean }
@@ -78,7 +80,7 @@ export function ClassTabs() {
   const primary = tabs.slice(0, 4);
   const rest = tabs.slice(4);
   const item = (t: (typeof tabs)[number], extra?: string) => (
-    <Link key={t.key} href={`${base}${t.path}`} className={clsx("tab flex-none whitespace-nowrap !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
+    <Link data-tour={`class-${t.key}`} key={t.key} href={`${base}${t.path}`} className={clsx("tab flex-none whitespace-nowrap !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
       <span aria-hidden>{TAB_ICONS[t.key]}</span>{t.label}
     </Link>
   );
@@ -89,7 +91,7 @@ export function ClassTabs() {
       {rest.length > 0 && (
         <M.Root modal={false}>
           <M.Trigger asChild>
-            <button type="button" className={clsx("tab !px-3 lg:hidden", rest.some((t) => isActive(t.key, t.path)) && "bg-primary-light text-primary-strong")}><MoreHorizontal className="size-[18px]" aria-hidden />Thêm</button>
+            <button data-tour="class-more" type="button" className={clsx("tab !px-3 lg:hidden", rest.some((t) => isActive(t.key, t.path)) && "bg-primary-light text-primary-strong")}><MoreHorizontal className="size-[18px]" aria-hidden />Thêm</button>
           </M.Trigger>
           <M.Portal>
             <M.Content align="end" sideOffset={6} className="z-[70] min-w-[220px] rounded-xl border border-line bg-white p-1.5 shadow-[var(--shadow-pop)]">
@@ -112,7 +114,9 @@ export function ClassTabs() {
  * "compact" keeps school / year / class always visible on inner pages.
  */
 export function ClassHeader({ variant = "compact", title, subtitle, actions, crumbs }: { variant?: "full" | "compact"; title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; crumbs?: { label: string; href?: string }[] }) {
-  const { header: h, base, schoolId } = useClassroom();
+  const { header: h, base, schoolId,can,readOnly } = useClassroom();
+  const tour=useTour();
+  const classTour:TourKey=h.workspaceKind==='TEACHER'?(h.myDuties.some(d=>/chủ nhiệm/i.test(d))?'class-homeroom':'class-subject'):'class-staff';
   const breadcrumb = [
     { label: h.school.shortName, href: h.workspaceKind === 'SCHOOL' ? `/school/${schoolId}` : h.workspaceKind === 'TEACHER' ? `/teacher/${schoolId}` : '/choose-school' },
     ...(h.workspaceKind === 'CLASS' ? [] : [{ label: h.workspaceKind === 'SCHOOL' ? "Danh sách lớp" : "Lớp học của tôi", href: h.workspaceKind === 'SCHOOL' ? `/school/${schoolId}/classes` : `/teacher/${schoolId}/classes` }]),
@@ -123,7 +127,7 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-start gap-4">
-        <div className="min-w-0 flex-[1_1_320px]">
+        <div data-tour="class-context" className="min-w-0 flex-[1_1_320px]">
           <Breadcrumbs items={breadcrumb} className="mb-1.5" />
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="page-title">{title ?? `Lớp ${h.class.name}`}</h1>
@@ -139,7 +143,7 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
             <img src="/assets/illustrations/school-header.png" alt="" className="h-[88px] w-auto [mask-image:linear-gradient(to_right,transparent,black_18%)]" />
           </div>
         )}
-        {actions && <div className="flex flex-wrap items-center gap-2 lg:ml-auto">{actions}</div>}
+        <div className="flex flex-wrap items-center gap-2 lg:ml-auto">{tour&&<button data-tour="class-tour" type="button" className="btn btn-secondary btn-sm" disabled={tour.active} onClick={()=>tour.start(classTour)}>Hướng dẫn lớp này</button>}{actions}</div>
       </div>
       {variant === "full" && (
         <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4 max-sm:[&_.icon-tile]:hidden max-sm:[&_.card-pad]:!p-3.5">
@@ -172,7 +176,7 @@ export function ClassHeader({ variant = "compact", title, subtitle, actions, cru
               <div><p className="text-[13.5px] text-body">Ghi nhận chờ rà soát</p><p className="text-[22px] font-extrabold leading-tight sm:text-[28px] text-ink">{h.summary.pending ?? '—'}</p><p className="text-[12px] text-muted">{h.summary.pending === null ? 'Không có quyền xem' : 'Trong phạm vi được cấp'}</p></div>
             </div>
           )}
-          <div className="card card-pad col-span-2 flex items-center gap-4 sm:col-span-1">
+          <div data-tour={!readOnly&&(can('conduct.lock')||can('conduct.publish'))?'class-publication':undefined} className="card card-pad col-span-2 flex items-center gap-4 sm:col-span-1">
             <IconTile tone="pink">{h.readOnly ? <Archive className="size-7" /> : <Speaker className="size-7" />}</IconTile>
             {h.readOnly ? (
               <div className="min-w-0">

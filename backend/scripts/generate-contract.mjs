@@ -15,6 +15,7 @@ import {extendReportWorkspaceContract} from './report-workspace-contract.mjs';
 import {extendTransferWorkspaceContract} from './transfer-workspace-contract.mjs';
 import {extendImportWorkspaceContract} from './import-workspace-contract.mjs';
 import {applyPublicSystemContract} from './public-system-contract.mjs';
+import {applyOnboardingContract} from './onboarding-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -765,6 +766,7 @@ applyActivitiesWorkspaceContract(spec,extendOperation);
 extendScheduleWorkspaceContract(spec,extendOperation,{object,uuid,label,timestamp,operations});
 extendReportWorkspaceContract(spec,extendOperation,{object,uuid,label,count,timestamp});
 applyPublicSystemContract(spec,extendOperation);
+applyOnboardingContract(spec,extendOperation,operations);
 extendImportWorkspaceContract(spec,extendOperation,{object,uuid,label});
 extendTransferWorkspaceContract(spec,extendOperation,{object,uuid,label,timestamp});
 await SwaggerParser.validate(structuredClone(spec));

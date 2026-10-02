@@ -43262,6 +43262,187 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /me/onboarding:
+    get:
+      operationId: getMyOnboarding
+      tags:
+        - Auth
+      summary: getMyOnboarding
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: session
+      x-scope: staff
+      x-frontend-screen-ids: []
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingPreferencesResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
+  /me/onboarding/{tourKey}:
+    put:
+      operationId: putMyOnboarding
+      tags:
+        - Auth
+      summary: putMyOnboarding
+      description: Owner-only onboarding preference; current scope authority checked.
+        Atomic idempotent upsert preserves completed status. No business command
+        or parent write.
+      x-permission: session
+      x-scope: staff
+      x-frontend-screen-ids: []
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: tourKey
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - platform-overview
+              - school-overview
+              - teacher-overview
+              - class-homeroom
+              - class-subject
+              - class-staff
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingUpdate"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingProgressResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/import-workspace:
     get:
       operationId: getImportWorkspace
@@ -67021,6 +67202,90 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/PublicSchoolStatus"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    OnboardingProgress:
+      type: object
+      properties:
+        tourKey:
+          type: string
+          enum:
+            - platform-overview
+            - school-overview
+            - teacher-overview
+            - class-homeroom
+            - class-subject
+            - class-staff
+        tourVersion:
+          type: integer
+          enum:
+            - 1
+        status:
+          type: string
+          enum:
+            - skipped
+            - completed
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - tourKey
+        - tourVersion
+        - status
+        - updatedAt
+      additionalProperties: false
+    OnboardingPreferences:
+      type: object
+      properties:
+        progress:
+          type: array
+          maxItems: 6
+          items:
+            $ref: "#/components/schemas/OnboardingProgress"
+      required:
+        - progress
+      additionalProperties: false
+    OnboardingUpdate:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+          nullable: true
+        tourVersion:
+          type: integer
+          enum:
+            - 1
+        status:
+          type: string
+          enum:
+            - skipped
+            - completed
+      required:
+        - schoolId
+        - tourVersion
+        - status
+      additionalProperties: false
+    OnboardingProgressResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/OnboardingProgress"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    OnboardingPreferencesResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/OnboardingPreferences"
         requestId:
           type: string
       required:

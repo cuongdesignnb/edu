@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,6 +20,8 @@ import { DemoScenarioBanner, useLeaveGuard } from "@/components/ui/guards";
 import { EmptyState, ErrorState, PageSkeleton } from "@/components/ui/states";
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
+import {TourProvider,TourHelp} from '@/components/onboarding/provider';
+import type {TourKey} from '@/components/onboarding/registry';
 
 const PROMO = { image: "/assets/illustrations/school-sidebar.png", title: "Cùng nhau kiến tạo nền giáo dục tốt đẹp hơn", text: "EduManage đồng hành cùng nhà trường trên hành trình xây dựng môi trường học tập hiện đại, hiệu quả và nhân văn." };
 
@@ -51,23 +53,29 @@ export function CenterCard({ children }: { children: ReactNode }) {
 }
 
 /* ------------------------------ Frame ------------------------------ */
-function Frame({ nav, actions, homeHref, search, roleLabel, schoolId, children, promo = PROMO, sidebarFooter }: {
-  nav: Parameters<typeof Sidebar>[0]["entries"]; actions?: Set<ActionKey>; homeHref: string; search: ReactNode; roleLabel: string; schoolId?: string; children: ReactNode; promo?: typeof PROMO | null; sidebarFooter?: ReactNode;
+function Frame({ nav, actions, homeHref, search, roleLabel, schoolId, children, promo = PROMO, sidebarFooter, tourEnabled=true }: {
+  nav: Parameters<typeof Sidebar>[0]["entries"]; actions?: Set<ActionKey>; homeHref: string; search: ReactNode; roleLabel: string; schoolId?: string; children: ReactNode; promo?: typeof PROMO | null; sidebarFooter?: ReactNode; tourEnabled?:boolean;
 }) {
   const [mobile, setMobile] = useState(false);
+  const selectedSchool=useOptionalSchool();
+  const [tourNavigation,setTourNavigation]=useState(false),previousMobile=useRef(false);
+  const tourKey:TourKey|undefined=homeHref.startsWith('/platform')?'platform-overview':homeHref.startsWith('/school/')?'school-overview':homeHref.startsWith('/teacher/')?'teacher-overview':homeHref.startsWith('/classroom/')?'class-staff':undefined;
+  const prepareNavigation=()=>{previousMobile.current=mobile;if(window.innerWidth<1024){setTourNavigation(true);setMobile(true);}};
+  const restoreNavigation=()=>{setTourNavigation(false);setMobile(previousMobile.current);};
   const close = useCallback(() => setMobile(false), []);
-  return (
+  const content=(
     <div className="flex min-h-dvh bg-app">
       <a href="#main" className="sr-only-focusable fixed left-2 top-2 z-[90] rounded-lg bg-primary px-3 py-2 text-white">Bỏ qua điều hướng</a>
-      <Sidebar entries={nav} actions={actions} promo={promo} homeHref={homeHref} mobileOpen={mobile} onMobileClose={close} footer={sidebarFooter} />
+      <Sidebar entries={nav} actions={actions} promo={promo} homeHref={homeHref} mobileOpen={mobile} onMobileClose={close} footer={sidebarFooter} tourNavigation={tourNavigation} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DemoScenarioBanner />
-        <Topbar onMenu={() => setMobile(true)} homeHref={homeHref} search={search} right={<><NotificationBell schoolId={schoolId} /><span className="mx-1 hidden h-8 w-px bg-line sm:block" aria-hidden /><UserMenu roleLabel={roleLabel} /></>} />
+        <Topbar onMenu={() => setMobile(true)} homeHref={homeHref} search={search} right={<><TourHelp/><NotificationBell schoolId={schoolId} /><span className="mx-1 hidden h-8 w-px bg-line sm:block" aria-hidden /><UserMenu roleLabel={roleLabel} /></>} />
         <main id="main" className="flex min-w-0 flex-1 flex-col">{children}</main>
         <AppFooter />
       </div>
     </div>
   );
+  return tourKey?<TourProvider tourKey={tourKey} schoolId={schoolId} contextKey={`${homeHref}/${selectedSchool?.yearId??''}`} enabled={tourEnabled} prepareNavigation={prepareNavigation} restoreNavigation={restoreNavigation}>{content}</TourProvider>:content;
 }
 
 /* ------------------------------ Platform ------------------------------ */
@@ -146,7 +154,7 @@ export function SchoolShell({ schoolId, children, classWorkspace = false }: { sc
         {(ctx) => (
           <Frame nav={schoolNav(schoolId)} actions={ctx.actions} homeHref={`/school/${schoolId}`} schoolId={schoolId}
             roleLabel={ctx.roleNames.join(", ") || "Nhân sự nhà trường"} search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, giáo viên, lớp học…" />}
-            sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="teacher" />}>
+            sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="teacher" />} tourEnabled={!ctx.contextError}>
             {ctx.contextError && <div className="px-6 pt-4"><ErrorState error={ctx.contextError} onRetry={ctx.retryContext} compact /></div>}
             {ctx.yearId || independent ? <PrivateYearScope key={independent ? schoolId : `${schoolId}/${ctx.yearId}`}>{children}</PrivateYearScope> : <div className="page"><EmptyState title={ctx.years === null ? "Danh mục năm học không thuộc phạm vi của bạn" : "Chưa có năm học"} description={ctx.years === null ? "Mở chức năng thuộc quyền được cấp để xem dữ liệu phù hợp." : "Nhà trường cần tạo năm học trước khi tổ chức lớp và nhập dữ liệu học sinh."} action={ctx.can("year.manage") ? <ButtonLink href={`/school/${schoolId}/academic-years/new`} variant="primary">Tạo năm học</ButtonLink> : undefined} /></div>}
           </Frame>
@@ -160,7 +168,7 @@ export function SchoolShell({ schoolId, children, classWorkspace = false }: { sc
 export function SchoolYearBar() {
   const { school, years, yearId, setYearId } = useSchool();
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+    <div data-tour="school-context" className="flex flex-wrap items-center gap-x-5 gap-y-2">
       <div className="flex items-center gap-2.5">
         <span className="text-sm font-medium text-body">Nhà trường</span>
         <span className="flex h-11 items-center gap-2.5 rounded-xl border border-line bg-white px-3.5 text-[15px] font-semibold text-ink" title="Trường đang làm việc — đổi trường ở Chọn không gian">
@@ -204,7 +212,7 @@ function TeacherFrame({ schoolId, children }: { schoolId: string; children: Reac
   const content = transientDirectoryError ? <><div className="px-6 pt-4"><ErrorState compact error={classes.error} onRetry={() => classes.refetch()} /></div>{children}</> : classes.error ? <div className="page"><Card className="card-pad"><ErrorState error={classes.error} onRetry={() => classes.refetch()} /></Card></div> : children;
   return (
     <Frame nav={nav} homeHref={`/teacher/${schoolId}`} schoolId={schoolId} roleLabel={role} promo={{ ...PROMO, text: "EduManage đồng hành cùng thầy cô trên hành trình truyền cảm hứng và phát triển thế hệ tương lai." }}
-      search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />}>
+      search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />} tourEnabled={!!classes.data&&!classes.error&&!!ws?.teacherWorkspace}>
       {content}
     </Frame>
   );

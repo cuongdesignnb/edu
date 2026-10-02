@@ -640,6 +640,11 @@ export interface ApiSchemas {
   "PublicSchoolStatus": { "name": string; "slug": string; "status": "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "publicEmail": (string) | null; "publicPhone": (string) | null; };
   "PublicPlatformContactResponse": { "data": ApiSchemas["PublicPlatformContact"]; "requestId": string; };
   "PublicSchoolStatusResponse": { "data": ApiSchemas["PublicSchoolStatus"]; "requestId": string; };
+  "OnboardingProgress": { "tourKey": "platform-overview" | "school-overview" | "teacher-overview" | "class-homeroom" | "class-subject" | "class-staff"; "tourVersion": 1; "status": "skipped" | "completed"; "updatedAt": string; };
+  "OnboardingPreferences": { "progress": Array<ApiSchemas["OnboardingProgress"]>; };
+  "OnboardingUpdate": { "schoolId": (string) | null; "tourVersion": 1; "status": "skipped" | "completed"; };
+  "OnboardingProgressResponse": { "data": ApiSchemas["OnboardingProgress"]; "requestId": string; };
+  "OnboardingPreferencesResponse": { "data": ApiSchemas["OnboardingPreferences"]; "requestId": string; };
   "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
   "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
   "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
@@ -4847,6 +4852,26 @@ export const apiOperations = {
     "list": false,
     "permission": "public",
     "readOnly": true
+  },
+  "getMyOnboarding": {
+    "method": "GET",
+    "path": "/api/v1/me/onboarding",
+    "auth": "staff",
+    "request": null,
+    "response": "OnboardingPreferences",
+    "list": false,
+    "permission": "session",
+    "readOnly": true
+  },
+  "putMyOnboarding": {
+    "method": "PUT",
+    "path": "/api/v1/me/onboarding/{tourKey}",
+    "auth": "staff",
+    "request": "OnboardingUpdate",
+    "response": "OnboardingProgress",
+    "list": false,
+    "permission": "session",
+    "readOnly": false
   },
   "getImportWorkspace": {
     "method": "GET",

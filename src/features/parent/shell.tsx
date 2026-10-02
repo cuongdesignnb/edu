@@ -15,6 +15,7 @@ import { Brand } from "@/components/layout/brand";
 import { DemoScenarioBanner } from "@/components/ui/guards";
 import { DeniedState, EmptyState, ErrorState, PageSkeleton } from "@/components/ui/states";
 import { ButtonLink } from "@/components/ui/button";
+import {TourProvider,TourHelp} from '@/components/onboarding/provider';
 
 interface ParentCtx { key: ParentKey; slug: string; base: string; modules: ParentModule[]; preview: boolean; context: Awaited<ReturnType<typeof parentRepo.context>> }
 const Ctx = createContext<ParentCtx | null>(null);
@@ -54,6 +55,7 @@ export function useParentRead<T>(key: readonly unknown[], fn: (k: ParentKey, slu
 const MOBILE_PRIMARY = ["overview", "timetable", "attendance"];
 
 export function ParentShell({ slug, children, preview }: { slug: string; children: ReactNode; preview?: { key: ParentKey; base: string } }) {
+  const [tourNavigation,setTourNavigation]=useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const revision=useSyncExternalStore(onParentSessionChanged,parentSessionRevision,()=>-1);
@@ -77,13 +79,14 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
   const nav = PARENT_NAV.filter((n) => n.href==='overview'?value.context.overviewAllowed:!n.module || value.modules.includes(n.module));
   const home=nav[0]?.href??'overview';
   const active = (href: string) => (href === "overview" ? pathname === `${base}/overview` || pathname === base : pathname.startsWith(`${base}/${href}`));
-  return (
+  const content=(
     <Ctx.Provider value={value}>
       <div className={clsx("flex flex-col bg-app", preview ? "min-h-[600px]" : "min-h-dvh")}>
         {!preview && <DemoScenarioBanner compact />}
-        <header className="no-print relative overflow-hidden border-b border-line bg-gradient-to-r from-white via-[#f5f9ff] to-[#eaf3ff]">
+        <header data-tour="parent-context" className="no-print relative overflow-hidden border-b border-line bg-gradient-to-r from-white via-[#f5f9ff] to-[#eaf3ff]">
           <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-4 lg:h-[88px]">
             <Brand href={`${base}/${home}`} />
+            {!preview&&<TourHelp className="ml-auto"/>}
             <div className="ml-4 hidden items-center gap-3 md:flex">
               <span className="icon-tile icon-tile-sm tone-blue !rounded-full"><Lock className="size-5" /></span>
               <div><p className="text-[16px] font-bold text-ink">Cổng thông tin dành cho phụ huynh</p><p className="text-[12.5px] text-muted">Thông tin đã được nhà trường công bố, chỉ xem</p></div>
@@ -98,7 +101,7 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
               <ul className="space-y-1">
                 {nav.map((n) => (
                   <li key={n.href}>
-                    <Link href={`${base}/${n.href}`} aria-current={active(n.href) ? "page" : undefined}
+                    <Link data-tour={`parent-${n.href}`} href={`${base}/${n.href}`} aria-current={active(n.href) ? "page" : undefined}
                       className={clsx("flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-[15px] font-medium", active(n.href) ? "bg-[#dcebff] font-semibold text-primary-strong" : "text-body hover:bg-[#f2f7fe]")}>
                       <NavIcon name={n.icon} className={clsx("size-[20px]", active(n.href) ? "text-primary" : "text-[#46618a]")} />{n.label}
                     </Link>
@@ -120,22 +123,24 @@ export function ParentShell({ slug, children, preview }: { slug: string; childre
             ))}
           </div>
         </footer>
-        <ParentBottomBar nav={nav} base={base} active={active} />
+        <ParentBottomBar nav={nav} base={base} active={active} tourNavigation={tourNavigation}/>
       </div>
     </Ctx.Provider>
   );
+  return preview?content:<TourProvider tourKey="parent-overview" contextKey={`${slug}/${viewId}/${revision}`} parent prepareNavigation={()=>{if(window.innerWidth<1024)setTourNavigation(true);}} restoreNavigation={()=>setTourNavigation(false)}>{content}</TourProvider>;
 }
 
 /** Mobile: Tổng quan / Lịch / Chuyên cần / Thêm — never 8 buttons in one bar. */
-function ParentBottomBar({ nav, base, active }: { nav: typeof PARENT_NAV; base: string; active: (h: string) => boolean }) {
+function ParentBottomBar({ nav, base, active,tourNavigation=false }: { nav: typeof PARENT_NAV; base: string; active: (h: string) => boolean;tourNavigation?:boolean }) {
   const [open, setOpen] = useState(false);
+  useEffect(()=>{setOpen(tourNavigation);},[tourNavigation]);
   const primary = nav.filter((n) => MOBILE_PRIMARY.includes(n.href));
   const rest = nav.filter((n) => !MOBILE_PRIMARY.includes(n.href));
   return (
     <>
       <nav className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Điều hướng nhanh">
         {primary.map((n) => (
-          <Link key={n.href} href={`${base}/${n.href}`} aria-current={active(n.href) ? "page" : undefined} className={clsx("flex min-h-[60px] flex-col items-center justify-center gap-1 text-[12px] font-medium", active(n.href) ? "text-primary-strong" : "text-muted")}>
+          <Link data-tour={`parent-${n.href}`} key={n.href} href={`${base}/${n.href}`} aria-current={active(n.href) ? "page" : undefined} className={clsx("flex min-h-[60px] flex-col items-center justify-center gap-1 text-[12px] font-medium", active(n.href) ? "text-primary-strong" : "text-muted")}>
             <NavIcon name={n.icon} className="size-[22px]" />{n.href === "overview" ? "Tổng quan" : n.label}
           </Link>
         ))}
@@ -143,14 +148,14 @@ function ParentBottomBar({ nav, base, active }: { nav: typeof PARENT_NAV; base: 
           <MoreHorizontal className="size-[22px]" aria-hidden />Thêm
         </button>
       </nav>
-      <D.Root open={open} onOpenChange={setOpen}>
+      <D.Root modal={!tourNavigation} open={open} onOpenChange={o=>{if(!tourNavigation)setOpen(o);}}>
         <D.Portal>
           <D.Overlay className="fixed inset-0 z-50 bg-[#0b1b3a]/30 lg:hidden" />
-          <D.Content className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-[var(--shadow-pop)] lg:hidden" aria-describedby={undefined}>
+          <D.Content className={clsx("fixed inset-x-0 bottom-0 z-50 rounded-t-2xl bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))] shadow-[var(--shadow-pop)] lg:hidden",tourNavigation&&"!bottom-[60px]")} aria-describedby={undefined}>
             <div className="mb-3 flex items-center justify-between"><D.Title className="text-base font-bold text-ink">Mục khác</D.Title><D.Close className="rounded-lg p-2 text-muted" aria-label="Đóng"><X className="size-5" /></D.Close></div>
             <ul className="grid grid-cols-2 gap-2">
               {rest.map((n) => (
-                <li key={n.href}><Link href={`${base}/${n.href}`} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-2.5 rounded-xl border border-line px-3 text-[15px] font-medium text-ink"><NavIcon name={n.icon} className="size-5 text-primary" />{n.label}</Link></li>
+                <li key={n.href}><Link data-tour={`parent-${n.href}`} href={`${base}/${n.href}`} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-2.5 rounded-xl border border-line px-3 text-[15px] font-medium text-ink"><NavIcon name={n.icon} className="size-5 text-primary" />{n.label}</Link></li>
               ))}
             </ul>
           </D.Content>

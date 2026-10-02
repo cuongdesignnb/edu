@@ -8,6 +8,7 @@ import { Button } from "./button";
 import type { RepoError } from "@/lib/repositories";
 import { fmtDateTime } from "@/lib/formatters";
 import { IS_DEMO } from "@/lib/data-mode";
+import { markFormDirty } from './work-state';
 
 /* ------------------------------ C045 / O32 unsaved changes ------------------------------ */
 interface GuardApi { register: (id: string, dirty: boolean, save?: () => Promise<boolean>) => void; confirm: (proceed: () => void) => void }
@@ -20,6 +21,7 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isDirty = () => [...dirtyMap.current.values()].some((v) => v.dirty);
   const register = useCallback((id: string, dirty: boolean, save?: () => Promise<boolean>) => {
+    markFormDirty(id,dirty);
     if (!dirty) dirtyMap.current.delete(id); else dirtyMap.current.set(id, { dirty, save });
   }, []);
   const firstSaver = () => [...dirtyMap.current.values()].find((v) => v.dirty && v.save)?.save;
@@ -49,8 +51,8 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
         description="Rời trang bây giờ sẽ mất nội dung chưa lưu."
         footer={<>
           <Button variant="ghost" onClick={() => setPending(null)} disabled={saving}>Ở lại</Button>
-          <Button variant="danger-soft" disabled={saving} onClick={() => { const p = pending; dirtyMap.current.clear(); setPending(null); p?.proceed(); }}>Bỏ thay đổi</Button>
-          {pending?.save && <Button variant="primary" loading={saving} onClick={async () => { const p = pending; setSaving(true); const ok = await p.save!(); setSaving(false); if (ok) { dirtyMap.current.clear(); setPending(null); p.proceed(); } }}>Lưu rồi tiếp tục</Button>}
+          <Button variant="danger-soft" disabled={saving} onClick={() => { const p = pending; dirtyMap.current.forEach((_,id)=>markFormDirty(id,false)); dirtyMap.current.clear(); setPending(null); p?.proceed(); }}>Bỏ thay đổi</Button>
+          {pending?.save && <Button variant="primary" loading={saving} onClick={async () => { const p = pending; setSaving(true); const ok = await p.save!(); setSaving(false); if (ok) { dirtyMap.current.forEach((_,id)=>markFormDirty(id,false)); dirtyMap.current.clear(); setPending(null); p.proceed(); } }}>Lưu rồi tiếp tục</Button>}
         </>}>
         <p className="flex gap-2.5 text-sm text-body"><AlertTriangle className="mt-0.5 size-4 flex-none text-warning" aria-hidden />Dữ liệu chưa lưu chỉ còn trong biểu mẫu đang mở. Chọn “Ở lại” để tiếp tục chỉnh sửa.</p>
       </Modal>

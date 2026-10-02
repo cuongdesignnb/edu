@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateSchema,operations } from '../../dist/common/contract.js';
+test('TOUR personal progress validates owner-free bounded preferences and explicit PUT',()=>{
+ const body={schoolId:null,tourVersion:1,status:'skipped'};validateSchema('OnboardingUpdate',body);
+ for(const bad of [{...body,userId:'da72b470-4b45-4f5f-b89d-179c0cdf454a'},{...body,tourVersion:2},{...body,status:'pending'},{...body,schoolId:'name'}])assert.throws(()=>validateSchema('OnboardingUpdate',bad));
+ assert.equal(operations.find(o=>o.id==='putMyOnboarding').method,'PUT');assert.equal(operations.find(o=>o.id==='getMyOnboarding').auth,'staff');
+});
 test('public workspaces expose exact published projections and no staff or parent authentication',()=>{
  const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',school={name:'Trường công khai',shortName:null,slug:'public-school',address:null,publicPhone:null,publicEmail:null,website:null,motto:'',publicIntro:'',accentColor:'#2876bc',status:'active',level:null},news={id,title:'Tin hiện hành',summary:'Nội dung công khai',publishedAt:'2026-10-02T01:00:00Z'};validateSchema('PublicSchoolWorkspace',{school,news:[news]},true);validateSchema('PublicNewsWorkspace',{school:{name:school.name,slug:school.slug},news:{...news,body:[{type:'p',text:'Nội dung'}],source:{rootId:id,publicationId:id},attachments:[]}},true);
  for(const extra of ['studentCount','students','internalNote','schoolId','staffSnapshot'])assert.throws(()=>validateSchema('PublicSchoolCard',{...school,[extra]:'private'},true));

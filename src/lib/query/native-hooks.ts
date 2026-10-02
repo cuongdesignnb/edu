@@ -10,6 +10,7 @@ import type {Ctx} from '../repositories/core';
 import {RepoError,isRepoError,errorMessage} from '../repositories/errors';
 import {useToast} from '@/components/ui/toast';
 import {useNativeConnection} from './native-provider';
+import {commandStarted,commandFinished} from '@/components/ui/work-state';
 
 export function useNativeSession(){
   const session=useSyncExternalStore(onStaffSessionChange,readStaffSession,()=>null);
@@ -34,7 +35,7 @@ interface CommandOptions<R>{schoolId?:string;changesAuthentication?:boolean;succ
 export function useNativeCommand<A extends unknown[],R>(fn:(ctx:Ctx,...args:A)=>Promise<R>,options:CommandOptions<R>={}){
   const ctx=useNativeCtx(options.schoolId),toast=useToast(),[pending,setPending]=useState(false),[error,setError]=useState<RepoError|null>(null),inFlight=useRef(false);
   const run=useCallback(async(...args:A):Promise<R|undefined>=>{
-    if(inFlight.current)return undefined;inFlight.current=true;setPending(true);setError(null);
+    if(inFlight.current)return undefined;inFlight.current=true;commandStarted();setPending(true);setError(null);
     const call={ctx,fn,options};
     try{
       call.ctx.staffOwner!.assertCurrent();const result=await call.fn(call.ctx,...args);
@@ -48,7 +49,7 @@ export function useNativeCommand<A extends unknown[],R>(fn:(ctx:Ctx,...args:A)=>
       setError(failure);call.options.onError?.(failure);
       if(!call.options.silentError&&!['VALIDATION','DUPLICATE','CONFLICT'].includes(failure.code))toast.push({tone:'error',title:failure.code==='NETWORK'?'Chưa nhận được xác nhận lưu':'Không thực hiện được',detail:failure.message});
       return undefined;
-    }finally{inFlight.current=false;setPending(false);}
+    }finally{inFlight.current=false;commandFinished();setPending(false);}
   },[ctx,fn,options,toast]);
   return {run,pending,error,reset:()=>setError(null)};
 }

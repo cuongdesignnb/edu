@@ -106,7 +106,47 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,422);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,424);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+});
+
+test('TOUR staff preferences are shared across sessions, scoped, owner-only and monotonically completed',async()=>{
+ jar.clear();const csrf=await login('admin-a@example.invalid'),url='/api/v1/me/onboarding/school-overview',body={schoolId:schoolA,tourVersion:1,status:'completed'};
+ let r=await request('PUT',url,body,csrf);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.status,'completed');
+ const saved=r.json().data.updatedAt;
+ await Promise.all(Array.from({length:4},()=>request('PUT',url,{...body,status:'skipped'},csrf)));
+ r=await request('GET','/api/v1/me/onboarding?schoolId='+schoolA);assert.equal(r.statusCode,200,r.body);const p=r.json().data.progress.find(p=>p.tourKey==='school-overview');assert.equal(p.status,'completed');assert.equal(p.updatedAt,saved);
+ jar.clear();await login('admin-a@example.invalid');r=await request('GET','/api/v1/me/onboarding?schoolId='+schoolA);assert.equal(r.json().data.progress.find(p=>p.tourKey==='school-overview').status,'completed');
+ assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolB)).statusCode,404);
+ assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolA+'&userId='+seedId('user:admin-b'))).statusCode,422);
+ assert.equal((await request('PUT',url,{...body,userId:seedId('user:admin-b')},csrf)).statusCode,422);
+ jar.clear();const other=await login('admin-b@example.invalid');assert.equal((await request('PUT',url,body,other)).statusCode,404);
+ assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolA)).statusCode,404);
+ const rows=await db.transaction(tx=>tx.query('SELECT user_id FROM identity.onboarding_progress WHERE user_id=$1',[seedId('user:admin-a')]),{userId:seedId('user:admin-b')});assert.equal(rows.rowCount,0);
+});
+test('TOUR strict scope versions CSRF and anonymous writes are rejected; subject duty cannot borrow homeroom scope',async()=>{
+ jar.clear();assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolA)).statusCode,401);
+ const csrf=await login('teacher-b@example.invalid'),body={schoolId:schoolA,tourVersion:1,status:'skipped'};
+ assert.equal((await request('PUT','/api/v1/me/onboarding/class-subject',body)).statusCode,403);
+ for(const [key,payload]of [['parent-overview',body],['platform-overview',body],['class-subject',{...body,tourVersion:2}],['class-subject',{...body,status:'anything'}]])assert.equal((await request('PUT','/api/v1/me/onboarding/'+key,payload,csrf)).statusCode,422);
+ assert.equal((await request('PUT','/api/v1/me/onboarding/class-homeroom',body,csrf)).statusCode,403);
+ const subject=await request('PUT','/api/v1/me/onboarding/class-subject',body,csrf);assert.equal(subject.statusCode,200,subject.body);
+ const bad=await request('PUT','/api/v1/me/onboarding/platform-overview',{...body,schoolId:null},csrf);assert.equal(bad.statusCode,403);
+ const invalid=await request('GET','/api/v1/me/onboarding?schoolId=school-name');assert.equal(invalid.statusCode,422);
+});
+test('TOUR one staff identity has independent school scopes and platform does not need fake school IDs',async()=>{
+ jar.clear();const csrf=await login('multi@example.invalid'),body={tourVersion:1,status:'completed'};
+ const accepted=await request('PUT','/api/v1/me/onboarding/teacher-overview',{...body,schoolId:schoolB},csrf);assert.equal(accepted.statusCode,200,accepted.body);
+ // The seeded multi member has a duty in B and membership only in A. Progress
+ // does not invent a teacher workspace in A; reads remain separate by school.
+ assert.equal((await request('PUT','/api/v1/me/onboarding/teacher-overview',{...body,schoolId:schoolA},csrf)).statusCode,403);
+ await db.transaction(tx=>tx.query(`INSERT INTO identity.onboarding_progress(user_id,school_id,scope_key,tour_key,tour_version,status) VALUES($1,$2,$3,'teacher-overview',1,'skipped') ON CONFLICT(user_id,scope_key,tour_key,tour_version) DO UPDATE SET status='skipped'`,[seedId('user:multi'),schoolA,'SCHOOL:'+schoolA]),{schoolId:schoolA,userId:seedId('user:multi')});
+ assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolA)).json().data.progress.find(p=>p.tourKey==='teacher-overview').status,'skipped');
+ assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolB)).json().data.progress.find(p=>p.tourKey==='teacher-overview').status,'completed');
+ jar.clear();const operator=await login('operator@example.invalid');let r=await request('PUT','/api/v1/me/onboarding/platform-overview',{...body,schoolId:null},operator);assert.equal(r.statusCode,200,r.body);r=await request('GET','/api/v1/me/onboarding');assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.progress.find(p=>p.tourKey==='platform-overview').status,'completed');
+ const member=seedId('member:A:multi');
+ await db.transaction(tx=>tx.query("UPDATE app.memberships SET status='SUSPENDED' WHERE school_id=$1 AND id=$2",[schoolA,member]),{schoolId:schoolA});
+ try{jar.clear();const current=await login('multi@example.invalid');assert.equal((await request('PUT','/api/v1/me/onboarding/teacher-overview',{...body,schoolId:schoolA},current)).statusCode,404);assert.equal((await request('GET','/api/v1/me/onboarding?schoolId='+schoolB)).statusCode,200);}
+ finally{await db.transaction(tx=>tx.query("UPDATE app.memberships SET status='ACTIVE' WHERE school_id=$1 AND id=$2",[schoolA,member]),{schoolId:schoolA});}
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{

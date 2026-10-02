@@ -32,7 +32,7 @@ export function PageHeader({ title, subtitle, quote, illustration, actions, brea
       <div className={clsx("flex flex-wrap items-start gap-4", compact ? "min-h-0" : "lg:min-h-[96px]")}>
         <div className="min-w-0 flex-[1_1_320px]">
           {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="mb-1.5" />}
-          <div className="flex flex-wrap items-center gap-3"><h1 className="page-title">{title}</h1>{badge}</div>
+          <div className="flex flex-wrap items-center gap-3"><h1 data-tour="workspace-overview" className="page-title">{title}</h1>{badge}</div>
           {subtitle && <p className="page-subtitle mt-1">{subtitle}</p>}
         </div>
         {(quote || illustration) && (

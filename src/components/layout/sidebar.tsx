@@ -19,7 +19,7 @@ export function filterNav(entries: NavEntry[], actions?: Set<ActionKey>): NavEnt
   return entries.flatMap((e): NavEntry[] => {
     if (!isGroup(e)) return visible(e, actions) ? [e] : [];
     const children = e.children.filter((c) => visible(c, actions));
-    return children.length ? [{ ...e, children }] : [];
+    return children.length ? [{ ...e, children,tour:e.tour==='school-publication'&&!children.some(c=>c.need?.includes('publication.oversee'))?undefined:e.tour }] : [];
   });
 }
 
@@ -41,7 +41,7 @@ function NavList({ entries, collapsed, onNavigate }: { entries: NavEntry[]; coll
           const on = e.href === active;
           return (
             <li key={e.href}>
-              <Link href={e.href} onClick={onNavigate} aria-current={on ? "page" : undefined} title={collapsed ? e.label : undefined}
+              <Link data-tour={e.tour} href={e.href} onClick={onNavigate} aria-current={on ? "page" : undefined} title={collapsed ? e.label : undefined}
                 className={clsx("flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-[15px] font-medium transition-colors", on ? "bg-[#dcebff] font-semibold text-primary-strong" : "text-body hover:bg-white/70", collapsed && "justify-center px-0")}>
                 <NavIcon name={e.icon} className={clsx("size-[20px] flex-none", on ? "text-primary" : "text-[#46618a]")} />
                 {!collapsed && <span className="truncate">{e.label}</span>}
@@ -56,7 +56,7 @@ function NavList({ entries, collapsed, onNavigate }: { entries: NavEntry[]; coll
           const on = groupActive(e);
           return (
             <li key={e.label}>
-              <Link href={first} title={e.label} onClick={onNavigate} className={clsx("flex min-h-11 items-center justify-center rounded-xl", on ? "bg-[#dcebff] text-primary" : "text-[#46618a] hover:bg-white/70")}>
+              <Link data-tour={e.tour} href={first} title={e.label} onClick={onNavigate} className={clsx("flex min-h-11 items-center justify-center rounded-xl", on ? "bg-[#dcebff] text-primary" : "text-[#46618a] hover:bg-white/70")}>
                 <NavIcon name={e.icon} className="size-[20px]" /><span className="sr-only">{e.label}</span>
               </Link>
             </li>
@@ -64,7 +64,7 @@ function NavList({ entries, collapsed, onNavigate }: { entries: NavEntry[]; coll
         }
         return (
           <li key={e.label}>
-            <button type="button" onClick={() => setOpen((o) => ({ ...o, [e.label]: !isOpen }))} aria-expanded={isOpen}
+            <button data-tour={e.tour} type="button" onClick={() => setOpen((o) => ({ ...o, [e.label]: !isOpen }))} aria-expanded={isOpen}
               className={clsx("flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 text-left text-[15px] font-medium transition-colors hover:bg-white/70", groupActive(e) ? "text-primary-strong" : "text-body")}>
               <NavIcon name={e.icon} className={clsx("size-[20px] flex-none", groupActive(e) ? "text-primary" : "text-[#46618a]")} />
               <span className="flex-1 truncate">{e.label}</span>
@@ -100,10 +100,11 @@ export interface SidebarProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
   homeHref: string;
+  tourNavigation?:boolean;
 }
 
 /** C002 — expanded / collapsed (76px, remembered) / mobile drawer. Only in-scope menu items. */
-export function Sidebar({ entries, actions, promo, footer, mobileOpen, onMobileClose, homeHref }: SidebarProps) {
+export function Sidebar({ entries, actions, promo, footer, mobileOpen, onMobileClose, homeHref,tourNavigation=false }: SidebarProps) {
   const list = useMemo(() => filterNav(entries, actions), [entries, actions]);
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => { try { setCollapsed(localStorage.getItem("edu-sidebar-collapsed") === "1"); } catch { /* ignore */ } }, []);
@@ -137,7 +138,7 @@ export function Sidebar({ entries, actions, promo, footer, mobileOpen, onMobileC
           {collapsed ? <PanelLeftOpen className="size-4" /> : <><PanelLeftClose className="size-4" /> Thu gọn</>}
         </button>
       </aside>
-      <D.Root open={mobileOpen} onOpenChange={(o) => { if (!o) onMobileClose(); }}>
+      <D.Root modal={!tourNavigation} open={mobileOpen} onOpenChange={(o) => { if (!o&&!tourNavigation) onMobileClose(); }}>
         <D.Portal>
           <D.Overlay className="fixed inset-0 z-[55] bg-[#0b1b3a]/40 lg:hidden" />
           <D.Content className="fixed inset-y-0 left-0 z-[56] flex w-[min(88vw,320px)] flex-col bg-sidebar shadow-[var(--shadow-pop)] animate-[var(--animate-fade-in)] lg:hidden" aria-describedby={undefined}>

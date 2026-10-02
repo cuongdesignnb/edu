@@ -33,6 +33,7 @@ import { PlatformService } from './modules/platform/platform.service';
 import { SupportService } from './modules/support/support.service';
 import { ReportsService } from './modules/reports/reports.service';
 import {publicSystemHandlers} from './modules/platform/public-system';
+import {onboardingHandlers} from './modules/identity/onboarding';
 import { runtimeConfig } from './common/config';
 
 export async function createApplication() {
@@ -43,6 +44,7 @@ export async function createApplication() {
   await server.register(cookie);
   await server.register(multipart,{limits:{files:1,fields:2,parts:3,fileSize:25*1024*1024,fieldSize:256,fieldNameSize:32,headerPairs:100}});
   installRoutes(server,app.get(Database),app.get(IdentityService),app.get(Permissions));
+  registerHandlers(server,onboardingHandlers(app.get(Database),app.get(Permissions)),app.get(IdentityService));
   registerHandlers(server,publicSystemHandlers(app.get(Database)),app.get(IdentityService));
   registerHandlers(server,app.get(OrganizationService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(StudentsService).handlers(),app.get(IdentityService));
