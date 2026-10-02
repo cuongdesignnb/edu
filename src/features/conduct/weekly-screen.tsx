@@ -6,7 +6,7 @@ import { conductRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDateTime } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
-import { Card, CardHeader, InfoRow } from "@/components/ui/card";
+import { Card, CardHeader, InfoRow, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { ErrorState, QueryState, Skeleton } from "@/components/ui/states";
@@ -37,6 +37,7 @@ export function WeeklySummaryScreen() {
           </Card>
           <QueryState query={sum} skeleton="table">
             {(s) => {
+              if(!s.summaryAvailable)return <Card className="p-5"><Callout tone="neutral">Bạn được xem ghi nhận theo nhiệm vụ của mình. Bảng điểm cả lớp cần quyền chủ nhiệm hoặc quyền đọc cấp lớp.</Callout></Card>;
               const official = !!s.snapshot;
               const rows = official ? s.rows : s.preview;
               return (
@@ -48,7 +49,7 @@ export function WeeklySummaryScreen() {
                         subtitle={official ? <Badge tone={s.snapshot!.status === "published" ? "success" : "purple"}>Bản chính thức — phiên bản {s.snapshot!.versionNo}</Badge> : <Badge tone="warning" className="!whitespace-normal">Bản xem trước (gồm ghi nhận chờ rà soát) — chưa chính thức</Badge>}
                         action={<ExportButtons rows={rows} fileBase={`thi-dua-${header.class.name}-tuan-${s.week.index}${official ? `-ban-${s.snapshot!.versionNo}` : "-xem-truoc"}`}
                           title={`Thi đua lớp ${header.class.name} — ${weekLabel(s.week)}`} subtitle={official ? `Bản chính thức phiên bản ${s.snapshot!.versionNo} · ${s.ruleSet.name} (bản ${s.ruleSet.versionNo})` : "Bản xem trước — chưa chính thức, gồm ghi nhận chờ rà soát"} />} />
-                      <WeeklyConductTable rows={rows} bands={s.ruleSet.bands} caption={`Bảng thi đua tuần ${s.week.index}`} onExplain={setExplain} />
+                      <WeeklyConductTable rows={rows} bands={s.ruleSet.bands} caption={`Bảng thi đua tuần ${s.week.index}`} detailsAvailable={s.snapshot?.detailsAvailable ?? true} onExplain={setExplain} />
                     </Card>
                     <div className="space-y-5">
                       <Card>

@@ -20,8 +20,9 @@ import { ConductNav, GradeBadge, ModeToggle, PeriodBadge, Points, RECORD_STATUS,
 import { RecordDialog, type RecordView } from "./record-form";
 import { ExplainDrawer, WeeklyConductTable } from "./week-table";
 import { ActionsPanel, type WeekSummary } from "./publish";
-import type { GradeBand, SnapshotRow } from "@/lib/model/types";
+import type { SnapshotRow } from "@/lib/model/types";
 
+type GradeBand=import('@/lib/repositories/connected/conduct').RuleItem['bands'][number];
 type RecordsData = Awaited<ReturnType<typeof conductRepo.records>>;
 
 /** CL06 — record conduct (R08 right panel + bottom weekly table + “Thao tác”). */
@@ -65,7 +66,7 @@ function Body({ d, sum }: { d: RecordsData; sum: ReturnType<typeof useRepo<WeekS
   const open = d.period.status === "open";
   const s = sum.data;
   const official = !!s?.snapshot;
-  const rows = s ? (official ? s.rows : s.preview) : [];
+  const rows = s?.summaryAvailable ? (official ? s.rows : s.preview) : [];
   const statusById = useMemo(() => new Map(d.records.map((r) => [r.id, r.status])), [d.records]);
   const versionById = useMemo(() => new Map(d.records.map((r) => [r.id, r.ruleSetVersion])), [d.records]);
   if (!d.ruleSet) return <Card><EmptyState title="Chưa có nội quy ban hành cho tuần này" description="Nhà trường cần ban hành bộ nội quy thi đua trước khi ghi nhận." /></Card>;
@@ -83,14 +84,14 @@ function Body({ d, sum }: { d: RecordsData; sum: ReturnType<typeof useRepo<WeekS
             subtitle={official ? <Badge tone="success">Bản chính thức — phiên bản {s!.snapshot!.versionNo}</Badge> : <Badge tone="warning" className="!whitespace-normal">Bản xem trước (gồm ghi nhận chờ rà soát) — chưa chính thức</Badge>}
             action={<CardLink href={`${base}/conduct/weekly?week=${d.week.id}`}>Xem chi tiết</CardLink>} />
           {sum.isLoading ? <div className="p-5"><Skeleton className="h-40" /></div> : sum.error ? <ErrorState compact error={sum.error} onRetry={() => sum.refetch()} /> : s && (
-            <WeeklyConductTable rows={rows} bands={s.ruleSet.bands} compact pageSize={5} caption="Tổng kết thi đua tuần" onExplain={setExplain} onSelect={(r) => setParam("hs", r.studentId)} selectedId={sid} />
+            !s.summaryAvailable?<p className="p-5 text-muted">Bảng điểm cả lớp cần quyền đọc cấp lớp; bạn chỉ được xem các ghi nhận theo nhiệm vụ.</p>:<WeeklyConductTable rows={rows} bands={s.ruleSet.bands} compact pageSize={5} caption="Tổng kết thi đua tuần" detailsAvailable={s.snapshot?.detailsAvailable ?? true} onExplain={setExplain} onSelect={(r) => setParam("hs", r.studentId)} selectedId={sid} />
           )}
         </Card>
         {s ? <ActionsPanel s={s} /> : <Card className="p-5"><Skeleton className="h-48" /></Card>}
       </div>
       {s && <ExplainDrawer row={explain} onClose={() => setExplain(null)} ruleSet={s.ruleSet} official={official} weekText={weekLabel(d.week)}
         statusOf={(id) => statusById.get(id) ?? (official ? "approved" : "pending_review")} versionOf={(id) => versionById.get(id) ?? undefined} />}
-      {form && <RecordDialog key={form.key} open onOpenChange={(o) => { if (!o) setForm(null); }} ruleSet={d.ruleSet} roster={roster} week={d.week} studentId={sid} ruleId={form.ruleId} editing={form.editing}
+      {form && <RecordDialog key={form.key} open onOpenChange={(o) => { if (!o) setForm(null); }} ruleSet={d.ruleSet} roster={d.roster} source={d.source} today={d.today} lessons={d.lessons} records={d.records} week={d.week} studentId={sid} ruleId={form.ruleId} editing={form.editing}
         onSaved={(id) => setParam("hs", id)}
         onShowExisting={(r) => { const n = new URLSearchParams(sp.toString()); n.set("hs", r.studentId); n.set("tab", "history"); router.replace(`${pathname}?${n.toString()}`, { scroll: false }); }} />}
     </>

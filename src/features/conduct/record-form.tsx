@@ -1,10 +1,10 @@
 "use client";
 import { useMemo, useState } from "react";
 import { Info, Link2, ShieldAlert, Copy } from "lucide-react";
-import type { ConductRule, RuleSet } from "@/lib/model/types";
+import type {RuleItem,RuleEditorRule} from '@/lib/repositories/connected/conduct';
+import type {ConductSource} from '@/lib/repositories/connected/conduct-workspace';
 import { conductRepo, type Ctx, type RepoError } from "@/lib/repositories";
 import { useCommand } from "@/lib/query/hooks";
-import { demoToday } from "@/lib/calendar";
 import { fmtDate, fmtDateTime, fmtPoints } from "@/lib/formatters";
 import { useClassroom } from "@/features/classroom/context";
 import { Modal } from "@/components/ui/dialog";
@@ -12,17 +12,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Callout } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
-import { DateField, ErrorSummary, SelectField, TextArea } from "@/components/ui/form";
+import { DateField, ErrorSummary, SelectField, TextArea, TextField } from "@/components/ui/form";
 import { ConflictDialog, useUnsavedChanges } from "@/components/ui/guards";
 import { Points, RECORD_STATUS, RuleIcon } from "./shared";
 
 export type RecordView = Awaited<ReturnType<typeof conductRepo.records>>["records"][number];
-type Roster = { id: string; fullName: string; code: string }[];
+type Roster = { id: string; enrollmentId: string; fullName: string; code: string; startsOn:string; endsOn:string|null }[];
 
 export interface RecordFormProps {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  ruleSet: RuleSet;
+  ruleSet: RuleItem;
+  source:ConductSource;
+  today:string;
+  lessons:{id:string;date:string;subject:string;canRecord:boolean}[];
+  records:RecordView[];
   roster: Roster;
   week: { startDate: string; endDate: string; index: number };
   studentId?: string;
@@ -35,7 +39,7 @@ export interface RecordFormProps {
 
 const LABELS = { studentId: "Học sinh", date: "Ngày", ruleId: "Quy định", reason: "Nội dung sự việc", distinctNote: "Giải thích sự việc khác" };
 
-function ruleOptions(rules: ConductRule[]) {
+function ruleOptions(rules: RuleEditorRule[]) {
   return rules.map((r) => ({ value: r.id, label: `${r.category} — ${r.label} (${fmtPoints(r.points)})${r.attendanceLink ? " · liên kết điểm danh" : ""}` }));
 }
 
@@ -45,15 +49,16 @@ export function RecordDialog(props: RecordFormProps) {
   return <RecordDialogInner {...props} />;
 }
 
-function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, ruleId, editing, onShowExisting, onSaved }: RecordFormProps) {
+function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, ruleId, editing, onShowExisting, onSaved,source,today,lessons,records }: RecordFormProps) {
   const { schoolId, yearId, classId } = useClassroom();
-  const today = demoToday();
   const maxDate = week.endDate < today ? week.endDate : today;
   const initial = useMemo(() => ({
     studentId: editing?.studentId ?? studentId ?? "",
     date: editing?.date ?? (today >= week.startDate && today <= week.endDate ? today : maxDate),
     ruleId: editing?.ruleId ?? ruleId ?? "",
     reason: editing?.reason ?? "",
+    lessonId:editing?.lessonId??'',
+    manualDelta:editing?.points?.toString()??'',
   }), []); // eslint-disable-line react-hooks/exhaustive-deps
   const [requestId] = useState(() => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `req-${Date.now()}`));
   const [form, setForm] = useState(initial);
@@ -71,7 +76,7 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
     else if (e.code === "DUPLICATE") {
       const d = e.details as { existing: RecordView; hard: boolean } | undefined;
       if (d?.existing) setDup({ existing: d.existing, hard: !!d.hard, message: e.message });
-      else setErrors({ form: e.message });
+      else {const existing=records.find(r=>r.studentId===form.studentId&&r.date===form.date&&r.ruleId===form.ruleId&&['pending_review','approved'].includes(r.status));if(existing)setDup({existing,hard:false,message:e.message});else setErrors({ form: e.message });}
     } else if (e.code === "CONFLICT") setConflict(e);
     else setErrors({ form: e.message });
   };
@@ -85,7 +90,7 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
     },
   );
   const update = useCommand(
-    (ctx: Ctx, patch: { ruleId: string; reason: string; version: number }) => conductRepo.updateRecord(ctx, schoolId, yearId, classId, editing!.id, patch),
+    (ctx: Ctx, patch: Parameters<typeof conductRepo.updateRecord>[5]) => conductRepo.updateRecord(ctx, schoolId, yearId, classId, editing!.id, patch),
     { success: "Đã cập nhật ghi nhận (vẫn chờ rà soát)", onError: handleError, onSuccess: () => { onSaved?.(editing!.studentId); onOpenChange(false); } },
   );
 
@@ -96,14 +101,17 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
     else if (form.date < week.startDate || form.date > maxDate) e.date = `Ngày trong tuần ${week.index}, không sau hôm nay`;
     if (!form.ruleId) e.ruleId = "Chọn quy định";
     if (form.reason.trim().length < 3) e.reason = "Ghi nội dung sự việc (tối thiểu 3 ký tự)";
+    if(rule?.valueMode==='MANUAL'&&(!form.manualDelta.trim()||!Number.isFinite(Number(form.manualDelta))))e.manualDelta='Nhập điểm trong giới hạn nội quy';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const submit = async (extra?: { confirmDistinct: boolean; distinctNote: string }) => {
     if (!validate()) return;
-    if (editing) await update.run({ ruleId: form.ruleId, reason: form.reason, version: editing.version });
-    else await create.run({ studentId: form.studentId, date: form.date, ruleId: form.ruleId, reason: form.reason, requestId, ...extra });
+    const enrollment=roster.find(r=>r.id===form.studentId&&r.startsOn<=form.date&&(!r.endsOn||r.endsOn>form.date));if(!enrollment){setErrors({studentId:'Học sinh không thuộc lớp tại ngày đã chọn'});return;}
+    const manualDelta=rule?.valueMode==='MANUAL'?Number(form.manualDelta):undefined;
+    if (editing) await update.run({source, ruleId: form.ruleId, reason: form.reason, version: editing.version,manualDelta });
+    else await create.run({source,enrollmentId:enrollment.enrollmentId,studentId: form.studentId, date: form.date, ruleId: form.ruleId, reason: form.reason, requestId,lessonId:form.lessonId||undefined,manualDelta, ...extra });
   };
 
   const busy = create.pending || update.pending;
@@ -144,13 +152,15 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
               <div className="flex min-h-10 items-center gap-2 rounded-[10px] border border-line bg-[#f7fbff] px-3">
                 {rule ? <><RuleIcon icon={rule.icon} size={24} /><Points value={rule.points} /><span className="text-[12.5px] text-muted">bản {ruleSet.versionNo}</span></> : <span className="text-sm text-faint">Chọn quy định</span>}
               </div>
-              <p className="helper">Điểm lấy từ bộ nội quy, không nhập tay.</p>
+              <p className="helper">{rule?.valueMode==='MANUAL'?'Điểm trong giới hạn nội quy đã ban hành.':'Điểm lấy từ bộ nội quy, không nhập tay.'}</p>
             </div>
           </div>
           <div data-field="ruleId">
             <SelectField label="Quy định" required value={form.ruleId} onChange={(e) => set("ruleId", e.target.value)} error={errors.ruleId}
-              options={ruleOptions(ruleSet.rules)} placeholder="Chọn quy định" disabled={!!editing?.fromAttendance} />
-          </div>
+              options={ruleOptions(ruleSet.rules.filter(r=>!r.attendanceLink||editing?.ruleId===r.id))} placeholder="Chọn quy định" disabled={!!editing} />
+          <p className="helper">{editing ? "Giữ quy định của ghi nhận đã lưu; có thể cập nhật nội dung và điểm thủ công theo nội quy." : ""}</p></div>
+          {!editing && lessons.some(l=>l.date===form.date&&l.canRecord) && <SelectField label="Tiết học (khi ghi theo môn)" value={form.lessonId} onChange={e=>set('lessonId',e.target.value)} options={lessons.filter(l=>l.date===form.date&&l.canRecord).map(l=>({value:l.id,label:l.subject}))} placeholder="Ghi theo quyền chủ nhiệm / cả lớp" />}
+          {rule?.valueMode==='MANUAL' && <TextField label="Điểm theo giới hạn nội quy" type="number" step="0.01" min={rule.minimumDelta??undefined} max={rule.maximumDelta??undefined} value={form.manualDelta} onChange={e=>set('manualDelta',e.target.value)} error={errors.manualDelta} required />}
           {rule?.attendanceLink && (
             <Callout tone="info" icon={<Link2 />}>
               Quy định này gắn với điểm danh. Nếu điểm danh đã ghi “{rule.attendanceLink === "late" ? "Đi muộn" : "Nghỉ không phép"}” cho em trong ngày này, hệ thống đã tự tạo ghi nhận và sẽ không trừ điểm lần hai.

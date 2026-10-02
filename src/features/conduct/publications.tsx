@@ -98,13 +98,14 @@ export function PublicationDetailScreen({ snapshotId }: { snapshotId: string }) 
                   {d.canRequestAdjustment && <Button size="sm" variant="primary" icon={<FilePen className="size-4" />} onClick={() => setAdj(true)}>Đề nghị điều chỉnh</Button>}
                 </div>
               </Card>
+              {!s.detailsAvailable && <Callout tone="warning" title="Bản lịch sử chỉ lưu tổng điểm">Chi tiết sự kiện chưa được lưu trong bản này. Tổng điểm giữ nguyên theo bản đã chốt; giải trình chi tiết không khả dụng.</Callout>}
               {s.status === "superseded" && <Callout className="no-print" tone="neutral" icon={<FileClock />} title="Bản này đã được thay bằng phiên bản mới">Giữ nguyên để tra cứu lịch sử. Phụ huynh hiện xem phiên bản mới nhất đã công bố.</Callout>}
               {s.status === "locked" && <Callout className="no-print" tone="info" title="Đã chốt, chưa công bố">{s.supersedesId ? "Đây là bản điều chỉnh đã duyệt. Phụ huynh vẫn thấy bản đang công bố trước đó cho đến khi bản này được công bố lại." : "Nhân sự đủ quyền đã thấy; phụ huynh chưa thấy."}</Callout>}
               {d.pendingAdjustments > 0 && s.status === "published" && <Callout className="no-print" tone="warning" title={`Có ${d.pendingAdjustments} đề nghị điều chỉnh đang xử lý`} action={<ButtonLink size="sm" variant="secondary" href={`${base}/adjustments`}>Xem điều chỉnh</ButtonLink>}>Phụ huynh vẫn xem bản này cho tới khi bản điều chỉnh được công bố.</Callout>}
               <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
                 <Card className="min-w-0">
                   <CardHeader title={`Bảng kết quả — ${s.rows.length} học sinh`} icon={<Trophy className="size-5 text-primary" />} subtitle="Bản chính thức, không đổi. Không tính lại theo nội quy hiện tại." />
-                  <div className="no-print"><WeeklyConductTable rows={s.rows} bands={d.ruleSet.bands} caption="Bảng kết quả đã chốt" onExplain={setExplain} /></div>
+                  <div className="no-print"><WeeklyConductTable rows={s.rows} bands={d.ruleSet.bands} caption="Bảng kết quả đã chốt" detailsAvailable={s.detailsAvailable} onExplain={setExplain} /></div>
                   <div className="print-only"><PrintTable rows={s.rows} /></div>
                 </Card>
                 <div className="space-y-5 no-print">

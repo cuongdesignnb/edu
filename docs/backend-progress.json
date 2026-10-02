@@ -4515,6 +4515,175 @@
         "qa/backend/b6-conduct-rules-postgres-verified.log: real PostgreSQL11/11 affected checks; seven native rule endpoints; displayed versions, scope, publication detail privacy, deadline and draft tombstones",
         "qa/backend/b6-conduct-rules-postgres-acceptance.log: actual final PostgreSQL12/12; two-class application, class-scoped metadata, bounded manual zero, issue-only rights, immutable public detail and deadlines. Full pre-final snapshot228/228; final full229 NOT_RUN."
       ]
+    },
+    {
+      "operationId": "getConductWorkspaceWeeks",
+      "screenIds": [
+        "CL06",
+        "CL07",
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "getConductWorkspaceRecords",
+      "screenIds": [
+        "CL07",
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "getConductWorkspaceSummary",
+      "screenIds": [
+        "CL06",
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "createConductWorkspaceRecord",
+      "screenIds": [
+        "CL07"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "updateConductWorkspaceRecord",
+      "screenIds": [
+        "CL07"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "reviewConductWorkspaceRecords",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "lockConductWorkspaceWeek",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "publishConductWorkspaceWeek",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "reopenConductWorkspaceWeek",
+      "screenIds": [
+        "CL08"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "getConductWorkspaceSnapshots",
+      "screenIds": [
+        "CL09"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "getConductWorkspaceSnapshot",
+      "screenIds": [
+        "CL09"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "getConductAdjustmentWorkspace",
+      "screenIds": [
+        "CL10"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "requestConductWorkspaceAdjustment",
+      "screenIds": [
+        "CL10"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "decideConductWorkspaceAdjustment",
+      "screenIds": [
+        "CL10"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
+    },
+    {
+      "operationId": "publishConductWorkspaceAdjustment",
+      "screenIds": [
+        "CL10"
+      ],
+      "milestone": "B6",
+      "status": "TESTED",
+      "evidence": [
+        "Fast-track native conduct: qa/backend/fast-track-postgres-scoped-final.log 10/10, manual/rule-change targeted follow-up; real HTTP/PostgreSQL Edge walkthrough qa/backend/fast-track-browser-final.log 1/1. ADD after lock remains server-rejected; no full-platform acceptance."
+      ]
     }
   ],
   "screens": [
@@ -5775,11 +5944,15 @@
         "listConductRecords",
         "createConductRecord",
         "updateConductRecord",
-        "getClassAttendanceHistory"
+        "getClassAttendanceHistory",
+        "getConductWorkspaceWeeks",
+        "getConductWorkspaceSummary"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5788,11 +5961,17 @@
       "operationIds": [
         "listConductPeriods",
         "createConductPeriod",
-        "getConductSummary"
+        "getConductSummary",
+        "getConductWorkspaceWeeks",
+        "getConductWorkspaceRecords",
+        "createConductWorkspaceRecord",
+        "updateConductWorkspaceRecord"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5804,22 +5983,35 @@
         "reviewConductPeriod",
         "lockConductPeriod",
         "publishConductPeriod",
-        "lockAndPublishConduct"
+        "lockAndPublishConduct",
+        "getConductWorkspaceWeeks",
+        "getConductWorkspaceRecords",
+        "getConductWorkspaceSummary",
+        "reviewConductWorkspaceRecords",
+        "lockConductWorkspaceWeek",
+        "publishConductWorkspaceWeek",
+        "reopenConductWorkspaceWeek"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {
       "screenId": "CL09",
       "scope": "core",
       "operationIds": [
-        "listClassPublications"
+        "listClassPublications",
+        "getConductWorkspaceSnapshots",
+        "getConductWorkspaceSnapshot"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5827,11 +6019,17 @@
       "scope": "core",
       "operationIds": [
         "getClassPublication",
-        "withdrawPublication"
+        "withdrawPublication",
+        "getConductAdjustmentWorkspace",
+        "requestConductWorkspaceAdjustment",
+        "decideConductWorkspaceAdjustment",
+        "publishConductWorkspaceAdjustment"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {
@@ -5845,8 +6043,10 @@
         "applyAdjustment"
       ],
       "staticReason": "",
-      "status": "NOT_STARTED",
-      "evidence": [],
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "Fast-track native conduct and adjustment adapters active. Real PostgreSQL browser walkthrough passed core record/review/lock/publish/parent/removal/republish; this does not certify every control. New event after lock and changing a saved rule remain deferred. See docs/FAST-TRACK-RESULT.md."
+      ],
       "apiStatus": "TESTED"
     },
     {

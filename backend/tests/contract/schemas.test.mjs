@@ -73,7 +73,7 @@ test('native duty commands retain exact displayed source and publication version
 });
 
 test('all operation IDs are unique, including the explicit frontend workflow extensions',()=>{
-  assert.equal(operations.length,379);assert.equal(new Set(operations.map(op=>op.id )).size,379);
+  assert.equal(operations.length,394);assert.equal(new Set(operations.map(op=>op.id )).size,379);
   assert.equal(operations.find(op=>op.id==='getRolloverPreview').permission,'year.manage');
   for(const op of operations){const ref=op.requestBody?.content?.['application/json']?.schema?.$ref;if(ref)assert.equal(op.request,ref.split('/').at(-1),op.id);}
 });
@@ -287,4 +287,12 @@ test('parent published overview requires explicit section absence, DAILY week fa
  const week={granularity:'DAILY',weekStart:'2026-09-28',startsOn:'2026-09-28',endsOn:'2026-10-05',totals:{present:0,late:0,excused:0,unexcused:0,unmarked:0,published:0,marked:0},records:[]};validateSchema('ParentPublishedOverview',{...value,attendanceWeek:week,teachers:{today:value.today,classLabel:null,contactHours:null,teachers:[]},duties:{today:value.today,year:value.year,items:[]},activities:{items:[]},announcements:{items:[]}},true);
  for(const bad of [{...value,teachers:undefined},{...value,students:[]},{...value,attendanceWeek:{...week,granularity:'LESSON'}},{...value,attendanceWeek:{...week,records:Array.from({length:1001},()=>({date:value.today,slotLabel:'Buổi sáng',status:'PRESENT',publishedAt:value.asOf}))}},{...value,duties:{today:value.today,year:value.year,items:Array.from({length:3},()=>({date:value.today,task:'Nhiệm vụ',status:'ASSIGNED',publishedAt:value.asOf}))}}])assert.throws(()=>validateSchema('ParentPublishedOverview',bad,true),e=>e.code==='RESPONSE_CONTRACT_ERROR');
  assert.equal(operations.find(o=>o.id==='getParentPublishedOverview').permission,'parent.overview');assert.equal(operations.find(o=>o.id==='previewParentPublishedOverview').permission,'parent_access.preview');
+});
+
+test('FAST native conduct commands require displayed source and declare their real creation and acknowledgement statuses',()=>{
+ const id='da72b470-4b45-4f5f-b89d-179c0cdf454a',source={weekId:id,periodId:null,version:0,dataVersion:0,classVersion:1,schoolVersion:1,sourceHash:'a'.repeat(64),publicationId:null};
+ validateSchema('ConductWorkspaceSource',source);for(const v of [{...source,actorId:id},{...source,sourceHash:'wrong'},{...source,dataVersion:-1}])assert.throws(()=>validateSchema('ConductWorkspaceSource',v));
+ const body={source,studentId:id,enrollmentId:id,date:'2026-10-02',ruleId:id,reason:'Lý do thực tế',requestId:id,lessonId:null,manualDelta:null,confirmDistinct:false,distinctNote:null};validateSchema('ConductWorkspaceCreate',body);for(const v of [{...body,actorId:id},{...body,source:undefined},{...body,manualDelta:100000000}])assert.throws(()=>validateSchema('ConductWorkspaceCreate',v));
+ for(const id of ['createConductWorkspaceRecord','requestConductWorkspaceAdjustment']){const op=operations.find(o=>o.id===id);assert.ok(op.responses['201']);assert.equal(op.responses['200'],undefined);}
+ for(const id of ['reviewConductWorkspaceRecords','lockConductWorkspaceWeek','publishConductWorkspaceWeek','reopenConductWorkspaceWeek','decideConductWorkspaceAdjustment','publishConductWorkspaceAdjustment']){const op=operations.find(o=>o.id===id);assert.ok(op.responses['200']);assert.equal(op.responses['201'],undefined);}
 });

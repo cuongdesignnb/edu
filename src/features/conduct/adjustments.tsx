@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, FilePen, Info, Search, Send, CheckCircle2, XCircle } from "lucide-react";
 import type { AdjustmentRequest } from "@/lib/model/types";
-import { conductRepo, type Ctx } from "@/lib/repositories";
+import { conductRepo, RepoError, type Ctx } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, fmtPoints, matches } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
@@ -49,11 +49,11 @@ function AdjList({ d }: { d: AdjData }) {
   const [decide, setDecide] = useState<{ a: AdjItem; approve: boolean } | null>(null);
   const [pub, setPub] = useState<AdjItem | null>(null);
   const [decideErr, setDecideErr] = useState<string>();
-  const decideCmd = useCommand((ctx: Ctx, id: string, approve: boolean, note: string) => conductRepo.decideAdjustment(ctx, schoolId, yearId, classId, id, approve, note), {
-    success: (a) => a.status === "approved" ? "Đã duyệt — bản mới đã tạo, chờ công bố lại" : "Đã từ chối đề nghị", silentError: true,
+  const decideCmd = useCommand((ctx: Ctx, id: string, approve: boolean, note: string) => {const displayed=d.items.find(a=>a.id===id);if(!displayed)throw new RepoError('CONFLICT','Hãy tải lại đề nghị điều chỉnh.');return conductRepo.decideAdjustment(ctx, schoolId, yearId, classId, id, approve, note,displayed);}, {
+    success: (a) => a.status === "approved" ? "Đã duyệt đề nghị — chờ công bố lại" : "Đã từ chối đề nghị", silentError: true,
     onError: (e) => setDecideErr(e.code === "FORBIDDEN" ? `Không thể duyệt: ${e.message}` : e.fieldErrors?.note ?? e.message), onSuccess: () => setDecide(null),
   });
-  const pubCmd = useCommand((ctx: Ctx, id: string) => conductRepo.publishAdjustment(ctx, schoolId, yearId, classId, id), { success: (s) => `Đã công bố lại — bản ${s.versionNo}`, onSuccess: () => setPub(null) });
+  const pubCmd = useCommand((ctx: Ctx, id: string) => {const displayed=d.items.find(a=>a.id===id);if(!displayed)throw new RepoError('CONFLICT','Hãy tải lại đề nghị điều chỉnh.');return conductRepo.publishAdjustment(ctx, schoolId, yearId, classId, id,displayed);}, { success: (s) => `Đã công bố lại — bản ${s.versionNo}`, onSuccess: () => setPub(null) });
   const counts = d.items.reduce<Record<string, number>>((m, a) => { m[a.status] = (m[a.status] ?? 0) + 1; return m; }, {});
   const filtered = d.items.filter((a) => (!status || a.status === status) && matches(search, a.studentName, a.reason, a.requestedByName, a.recordLabel));
   const pageSize = 8;
@@ -74,7 +74,7 @@ function AdjList({ d }: { d: AdjData }) {
               <div className="min-w-0 flex-[1_1_320px] text-[13.5px]">
                 <p className="flex flex-wrap items-center gap-2"><b className="text-ink">{a.studentName}</b><Badge tone={ADJ_STATUS[a.status]?.tone}>{ADJ_STATUS[a.status]?.label}</Badge>
                   <Link className="text-[12.5px] font-semibold text-primary-strong hover:underline" href={`${base}/publications/${a.snapshotId}`}>Tuần {a.weekIndex} · bản {a.snapshotVersion}</Link></p>
-                <p className="mt-0.5 text-body">{ADJ_KIND[a.kind]}{a.recordLabel ? `: ${a.recordLabel.replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2/$1")}` : ""}{a.kind === "change_points" && a.newPoints !== undefined ? ` → ${fmtPoints(a.newPoints)}` : ""}</p>
+                <p className="mt-0.5 text-body">{(a.kind==='batch'?'Điều chỉnh nhiều ghi nhận':ADJ_KIND[a.kind])}{a.recordLabel ? `: ${a.recordLabel.replace(/(\d{4})-(\d{2})-(\d{2})/, "$3/$2/$1")}` : ""}{a.kind === "change_points" && a.newPoints !== undefined ? ` → ${fmtPoints(a.newPoints)}` : ""}</p>
                 <p className="mt-0.5 text-body">Lý do: “{a.reason}”</p>
                 <p className="mt-0.5 text-[12.5px] text-muted">Đề nghị bởi {a.requestedByName} lúc {fmtDateTime(a.requestedAt)}{a.decidedAt ? ` · ${a.status === "rejected" ? "Từ chối" : "Duyệt"} bởi ${a.decidedByName} lúc ${fmtDateTime(a.decidedAt)}` : ""}</p>
                 {a.decisionNote && <p className="text-[12.5px] text-muted">Ghi chú xử lý: {a.decisionNote}</p>}
@@ -100,7 +100,7 @@ function AdjList({ d }: { d: AdjData }) {
       <ConfirmDialog open={!!decide} onOpenChange={(o) => { if (!o) setDecide(null); }} title={decide?.approve ? "Duyệt điều chỉnh" : "Từ chối điều chỉnh"} variant={decide?.approve ? "primary" : "danger"}
         confirmLabel={decide?.approve ? "Duyệt và tạo bản mới" : "Từ chối"} busy={decideCmd.pending} error={decideErr}
         object={decide ? `${decide.a.studentName} — tuần ${decide.a.weekIndex}: ${decide.a.beforeTotal} → ${decide.a.afterTotal}` : undefined}
-        consequence={decide?.approve ? "Hệ thống tạo phiên bản mới (đã chốt, chưa công bố). Phụ huynh vẫn xem bản đang công bố cho tới khi “Công bố lại”." : "Đề nghị kết thúc; bản đang công bố giữ nguyên."}
+        consequence={decide?.approve ? "Đề nghị chuyển sang đã duyệt và chờ công bố lại. Phụ huynh vẫn xem bản đang công bố cho tới khi “Công bố lại”." : "Đề nghị kết thúc; bản đang công bố giữ nguyên."}
         reasonLabel={decide?.approve ? "Ghi chú (không bắt buộc)" : "Lý do từ chối"} reasonRequired={!decide?.approve}
         onConfirm={(note) => decide ? decideCmd.run(decide.a.id, decide.approve, note) : undefined} />
       <ConfirmDialog open={!!pub} onOpenChange={(o) => { if (!o) setPub(null); }} title="Công bố lại sau điều chỉnh" confirmLabel="Công bố lại" busy={pubCmd.pending} error={pubCmd.error?.message}
@@ -151,7 +151,8 @@ export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boo
     if (f.reason.trim().length < 10) e.reason = "Nêu rõ lý do (tối thiểu 10 ký tự)";
     setErrors(e);
     if (Object.keys(e).length) return;
-    cmd.run({ snapshotId: f.snapshotId, studentId: f.studentId, kind: f.kind, recordId: f.kind === "add_record" ? undefined : f.recordId, newPoints: f.kind === "change_points" ? f.newPoints : undefined, ruleId: f.kind === "add_record" ? f.ruleId : undefined, reason: f.reason });
+    if(!snapQ.data?.source){setErrors({form:'Tải bản đã công bố trước khi gửi đề nghị.'});return;}
+    cmd.run({source:snapQ.data.source, snapshotId: f.snapshotId, studentId: f.studentId, kind: f.kind, recordId: f.kind === "add_record" ? undefined : f.recordId, newPoints: f.kind === "change_points" ? f.newPoints : undefined, ruleId: f.kind === "add_record" ? f.ruleId : undefined, reason: f.reason });
   };
   return (
     <Modal open={open} onOpenChange={onOpenChange} busy={cmd.pending} size="lg" title="Đề nghị điều chỉnh sau chốt"

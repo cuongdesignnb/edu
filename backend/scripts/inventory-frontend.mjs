@@ -16,7 +16,7 @@ for(const name of (await fs.readdir(directory)).filter(n=>n.endsWith('.ts')).sor
 }
 const candidates=[],aliases={connectedSessionRepo:'sessionRepo',connectedAuthRepo:'authDemoRepo',connectedSchoolRepo:'schoolRepo',connectedPlatformRepo:'platformRepo',connectedPlatformExtraRepo:'platformExtraRepo',connectedSupportRepo:'supportRepo',connectedStaffRepo:'staffRepo',connectedStudentsRepo:'studentsRepo',connectedStudentsExtraRepo:'studentsExtraRepo',connectedParentRepo:'parentRepo',connectedParentExtraRepo:'parentExtraRepo'};
 Object.assign(aliases,{connectedClassroomRepo:'classroomRepo',connectedTeacherExtraRepo:'teacherExtraRepo',connectedAttendanceRepo:'attendanceRepo',connectedAnnouncementsRepo:'announcementsRepo',connectedPublicAnnouncementsRepo:'announcementsRepo',connectedSchoolOpsRepo:'schoolOpsRepo'});
-Object.assign(aliases,{connectedConductRepo:'conductRepo',connectedConductStatics:'conductRepo'});
+Object.assign(aliases,{connectedConductRepo:'conductRepo',connectedConductStatics:'conductRepo',connectedConductWorkspaceRepo:'conductRepo',connectedConductAdjustmentsRepo:'conductRepo'});
 const facadeSource=await fs.readFile(path.join(directory,'index.ts'),'utf8'),facade=ts.createSourceFile('index.ts',facadeSource,ts.ScriptTarget.Latest,true),activated=new Set();
 const inspectFacade=node=>{
   if(ts.isVariableDeclaration(node)&&node.initializer&&ts.isCallExpression(node.initializer)&&node.initializer.expression.getText(facade)==='apiRepository'){

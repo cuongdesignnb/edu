@@ -55,7 +55,7 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
   let code:RepoErrorCode=status===401?(auth==='parent'?'REVOKED':'NO_SESSION'):status===403?'FORBIDDEN':status===404?'NOT_FOUND':status===409?'CONFLICT':status===410?'EXPIRED':status===422||status===400?'VALIDATION':read?'READ_ERROR':'NETWORK';
   if(p.code==='SCHOOL_SUSPENDED')code='SUSPENDED';
   if(p.code==='PERIOD_LOCKED'||p.code==='RULE_SET_IMMUTABLE')code='LOCKED';
-  if(p.code==='DUPLICATE_SOURCE')code='DUPLICATE';
+  if(p.code==='DUPLICATE_SOURCE'||p.code==='POSSIBLE_DUPLICATE')code='DUPLICATE';
   if(p.code==='INVALID_CREDENTIALS')code='VALIDATION';
   const messages:Partial<Record<RepoErrorCode,string>>={NO_SESSION:'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',REVOKED:'Link tra cứu không còn hiệu lực hoặc đã bị thu hồi.',NETWORK:'Không nhận được xác nhận lưu từ máy chủ. Nội dung của bạn vẫn còn; hãy thử lại.',READ_ERROR:'Không tải được dữ liệu từ máy chủ. Vui lòng thử lại.'};
   const problemMessages:Record<string,string>={

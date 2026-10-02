@@ -8,6 +8,7 @@ import { ConductService } from './conduct.service';
 import { conductPeriod,conductSummary,reason,version } from './conduct-data';
 import { score } from './scoring';
 import { loadRules } from './rules.service';
+import {adjustmentWorkspaceOperations,authorizeAdjustmentWorkspace,adjustmentWorkspace} from './adjustments-workspace';
 import type { RequestContext,Handler,Result } from '../../api.router';
 
 const r:Resource={table:'app.adjustment_requests',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',periodId:'period_id',baselinePublicationId:'baseline_publication_id',reason:'reason',status:'status',proposedChanges:'proposed_changes',preview:'preview',decisionReason:'decision_reason',resultPublicationId:'result_publication_id'},writeFields:[],search:[],filters:{status:'status',periodId:'period_id'}};
@@ -16,7 +17,7 @@ function adjustmentDto(row:Row){return Object.fromEntries(Object.entries(dto(r,r
 @Injectable()
 export class AdjustmentsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly conduct:ConductService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listAdjustments','createAdjustment','approveAdjustment','rejectAdjustment','applyAdjustment'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listAdjustments','createAdjustment','approveAdjustment','rejectAdjustment','applyAdjustment',...adjustmentWorkspaceOperations].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async get(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT a.* FROM app.adjustment_requests a JOIN app.conduct_periods p ON p.school_id=a.school_id AND p.id=a.period_id WHERE a.school_id=$1 AND p.class_id=$2 AND a.id=$3${lock?' FOR UPDATE OF a':''}`,[c.params.schoolId,c.params.classId,c.params.adjustmentId]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async baseline(tx:Transaction,c:RequestContext,proposal:Row){
     const p=await conductPeriod(tx,c.params.schoolId!,c.params.classId!,String(proposal.period_id),true);
@@ -43,10 +44,9 @@ export class AdjustmentsService {
       return {...student,...score(set,after.filter(row=>enrollmentIds.includes(row.enrollment_id)&&row.status==='APPROVED').map(row=>String(row.delta_snapshot)),config.thresholds)};
     });return {before:records.summary,after:{...records.summary,students}};
   }
-  private async handle(c:RequestContext):Promise<Result>{
+  async work(tx:Transaction,c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,classId=c.params.classId!,op=c.operation.id;
-    const authorize=async(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId});
-    const work=async(tx:Transaction):Promise<Result>=>{
+
       if(op==='listAdjustments'){
         const result=await listResource(tx,r,schoolId,c.query,{sql:'EXISTS(SELECT 1 FROM app.conduct_periods p WHERE p.school_id=t.school_id AND p.id=t.period_id AND p.class_id=$1)',values:[classId]},c.principal!.userId);
         result.data=result.data.map(row=>Object.fromEntries(Object.entries(row).filter(([,v])=>v!==null)));return result;
@@ -83,7 +83,16 @@ export class AdjustmentsService {
       const next=await conductPeriod(tx,schoolId,classId,String(p.id)),publication=await this.conduct.publish(tx,c,next,true);
       await tx.query("UPDATE app.adjustment_requests SET status='APPLIED',applied_at=now(),result_publication_id=$3 WHERE school_id=$1 AND id=$2",[schoolId,adjustment.id,publication.id]);
       await audit(tx,c,'adjustment',String(adjustment.id),{status:'APPLIED',publicationId:publication.id,sourceVersion:next.data_version});return {data:publication};
-    };
+  }
+  private async handle(c:RequestContext):Promise<Result>{
+    const schoolId=c.params.schoolId!,classId=c.params.classId!;
+    if(adjustmentWorkspaceOperations.includes(c.operation.id)){
+      const authorize=(tx:Transaction)=>authorizeAdjustmentWorkspace(tx,this.policy,c),work=(tx:Transaction)=>adjustmentWorkspace(tx,this.policy,c,this);
+      return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
+    }
+    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId});
+    const work=(tx:Transaction)=>this.work(tx,c);
+
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});return this.commands.execute(c,authorize,work);
   }
 }

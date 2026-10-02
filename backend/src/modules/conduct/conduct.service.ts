@@ -8,11 +8,12 @@ import { ruleDelta } from './scoring';
 import { conductDto,conductPeriod,conductSummary,periodResource,recordResource,periodWritable,version,reason,publicConductItems } from './conduct-data';
 import { PublicationsService,type PublicationSource } from '../publications/publications.service';
 import type { RequestContext,Handler,Result } from '../../api.router';
+import {conductWorkspaceOperations,authorizeConductWorkspace,conductWorkspace} from './conduct-workspace';
 
 @Injectable()
 export class ConductService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listConductPeriods','createConductPeriod','getConductSummary','listConductRecords','createConductRecord','updateConductRecord','approveConductRecord','excludeConductRecord','reviewConductPeriod','lockConductPeriod','publishConductPeriod','lockAndPublishConduct'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listConductPeriods','createConductPeriod','getConductSummary','listConductRecords','createConductRecord','updateConductRecord','approveConductRecord','excludeConductRecord','reviewConductPeriod','lockConductPeriod','publishConductPeriod','lockAndPublishConduct',...conductWorkspaceOperations].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async record(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.conduct_records WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.classId,c.params.recordId]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async day(tx:Transaction,schoolId:string,timestamp:string){return (await one<{day:string}>(tx,"SELECT ($2::timestamptz AT TIME ZONE timezone)::date AS day FROM platform.schools WHERE id=$1",[schoolId,timestamp]))!.day;}
   private async scope(tx:Transaction,c:RequestContext,action:string,date?:string,subjectId?:string,authorId?:string){
@@ -77,7 +78,7 @@ export class ConductService {
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21) RETURNING *`,
     [schoolId,classId,p.id,p.rule_set_id,rule.id,body.enrollmentId,delta,rule.label,body.publicReason,body.internalNote??null,body.occurredAt,body.sourceKind,key,options.authorId??c.principal!.userId,sourceId??null,scoped.lesson?.subject_id??null,scoped.lesson?.id??null,options.approved?'APPROVED':'DRAFT',options.approved?c.principal!.userId:null,options.approved?new Date():null,options.supersedesId??null]);return saved!;
   }
-  private async validateCurrentSource(tx:Transaction,row:Row){
+  async validateCurrentSource(tx:Transaction,row:Row){
     const schoolId=String(row.school_id),classId=String(row.class_id),date=await this.day(tx,schoolId,iso(row.occurred_at as Date));
     let valid=true;
     if(row.lesson_id){const lesson=await one<Row>(tx,`SELECT l.*,(l.starts_at AT TIME ZONE s.timezone)::date AS day FROM app.lesson_occurrences l JOIN platform.schools s ON s.id=l.school_id WHERE l.school_id=$1 AND l.class_id=$2 AND l.id=$3`,[schoolId,classId,row.lesson_id]);valid=!!lesson&&lesson.status==='SCHEDULED'&&lesson.day===date&&lesson.subject_id===row.subject_id;}
@@ -129,6 +130,10 @@ export class ConductService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,classId=c.params.classId!,op=c.operation.id;
+    if(conductWorkspaceOperations.includes(op)){
+      const authorize=(tx:Transaction)=>authorizeConductWorkspace(tx,this.policy,c),work=(tx:Transaction)=>conductWorkspace(tx,this.policy,c,this,this.publications);
+      return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
+    }
     const authorize=async(tx:Transaction)=>{
       if(['listConductPeriods','listConductRecords','createConductPeriod'].includes(op))return this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,allowSubject:true});
       if(op==='createConductRecord')return this.createScope(tx,c,c.body);

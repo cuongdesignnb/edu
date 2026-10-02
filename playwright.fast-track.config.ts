@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'tests/fast-track',timeout:180000,expect:{timeout:15000},workers:1,fullyParallel:false,outputDir:'qa/backend/fast-track-browser-artifacts',reporter:[['list'],['json',{outputFile:'qa/backend/fast-track-browser-results.json'}]],use:{baseURL:'http://127.0.0.1:18763',channel:'msedge',viewport:{width:1448,height:1086},locale:'vi-VN',timezoneId:'Asia/Ho_Chi_Minh',reducedMotion:'reduce',actionTimeout:15000,trace:'off',screenshot:'off'}});

@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { FileSpreadsheet, FileText, ListTree, Search } from "lucide-react";
-import type { GradeBand, SnapshotRow } from "@/lib/model/types";
+import type { SnapshotRow } from "@/lib/model/types";
 import { fmtDate, fmtPoints, nameCompare } from "@/lib/formatters";
 import { downloadCSV, downloadXLSX, slugFile, type ExportColumn } from "@/lib/export";
 import { DataTable, Pagination, useClientList, type Column } from "@/components/data/table";
@@ -12,6 +12,7 @@ import { EmptyFiltered, EmptyState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
 import { GradeBadge, Points, RECORD_STATUS, limitsNote } from "./shared";
 
+type GradeBand=import('@/lib/repositories/connected/conduct').RuleItem['bands'][number];
 export interface ExplainRuleSet { name: string; versionNo: number; baseScore: number; cap?: number; floor?: number; bands: GradeBand[] }
 
 /** O19 — explanation of one student's score: base + every counted item = total (with cap/floor note). */
@@ -66,8 +67,8 @@ export function ExplainDrawer({ row, ruleSet, statusOf, versionOf, official, onC
 type SortKey = "name" | "code" | "plus" | "minus" | "total";
 
 /** C062 — weekly conduct table (preview or official snapshot) with search, sort, paging and explanation. */
-export function WeeklyConductTable({ rows, bands, compact, pageSize = 10, onExplain, onSelect, selectedId, caption }: {
-  rows: SnapshotRow[]; bands: GradeBand[]; compact?: boolean; pageSize?: number; onExplain: (r: SnapshotRow) => void; onSelect?: (r: SnapshotRow) => void; selectedId?: string; caption: string;
+export function WeeklyConductTable({ rows, bands, compact, pageSize = 10, onExplain, onSelect, selectedId, caption, detailsAvailable = true }: {
+  rows: SnapshotRow[]; bands: GradeBand[]; compact?: boolean; pageSize?: number; onExplain: (r: SnapshotRow) => void; onSelect?: (r: SnapshotRow) => void; selectedId?: string; caption: string; detailsAvailable?: boolean;
 }) {
   const [sort, setSort] = useState<SortKey>("name");
   const [dir, setDir] = useState<"asc" | "desc">("asc");
@@ -91,8 +92,8 @@ export function WeeklyConductTable({ rows, bands, compact, pageSize = 10, onExpl
     { key: "minus", header: "Tổng trừ", sortable: true, align: "right", cell: (r) => <Points value={r.minus} /> },
     { key: "total", header: "Điểm thi đua", sortable: true, align: "right", cell: (r) => <span className="font-bold text-ink tabular-nums">{r.total}</span> },
     { key: "grade", header: "Xếp loại", align: "center", cell: (r) => <GradeBadge label={r.grade} bands={bands} /> },
-    ...(compact ? [] : [{ key: "n", header: "Số ghi nhận", align: "right" as const, cell: (r: SnapshotRow) => r.items.length, hideBelow: "lg" as const }]),
-    { key: "x", header: <span className="sr-only">Giải trình</span>, align: "right", cell: (r) => <Button size="sm" variant="ghost" icon={<ListTree className="size-4" />} onClick={() => onExplain(r)} aria-label={`Xem giải trình điểm của ${r.studentName}`}>{compact ? "" : "Xem giải trình"}</Button> },
+    ...(compact ? [] : [{ key: "n", header: "Số ghi nhận", align: "right" as const, cell: (r: SnapshotRow) => detailsAvailable ? r.items.length : "—", hideBelow: "lg" as const }]),
+    { key: "x", header: <span className="sr-only">Giải trình</span>, align: "right", cell: (r) => <Button size="sm" variant="ghost" icon={<ListTree className="size-4" />} disabled={!detailsAvailable} onClick={() => onExplain(r)} aria-label={`Xem giải trình điểm của ${r.studentName}`}>{compact ? "" : "Xem giải trình"}</Button> },
   ];
   return (
     <div>

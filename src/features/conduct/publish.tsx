@@ -20,10 +20,10 @@ const CONFIRM: Record<PublishMode, string> = { lock: "Chốt tuần", lockPublis
 /** O20 — lock / lock+publish / publish. Success only after the mutation committed; blocking issues stop lock. */
 export function PublishDialog({ mode, onClose, s }: { mode: PublishMode | null; onClose: () => void; s: WeekSummary }) {
   const { schoolId, yearId, classId, header } = useClassroom();
-  const lock = useCommand((ctx: Ctx, also: boolean) => conductRepo.lock(ctx, schoolId, yearId, classId, s.week.id, also), {
+  const lock = useCommand((ctx: Ctx, also: boolean) => conductRepo.lock(ctx, schoolId, yearId, classId, s.week.id, also,s.source), {
     success: (r) => (r.status === "published" ? `Đã chốt và công bố tuần ${s.week.index}` : `Đã chốt tuần ${s.week.index} — phụ huynh chưa thấy`), onSuccess: onClose,
   });
-  const publish = useCommand((ctx: Ctx) => conductRepo.publish(ctx, schoolId, yearId, classId, s.week.id), { success: `Đã công bố tuần ${s.week.index} cho phụ huynh`, onSuccess: onClose });
+  const publish = useCommand((ctx: Ctx) => conductRepo.publish(ctx, schoolId, yearId, classId, s.week.id,s.source), { success: `Đã công bố tuần ${s.week.index} cho phụ huynh`, onSuccess: onClose });
   const busy = lock.pending || publish.pending;
   const blocking = mode === "publish" ? [] : s.checks.blocking;
   const n = (s.snapshot?.rows ?? s.rows).length;
@@ -77,7 +77,7 @@ export function PublishDialog({ mode, onClose, s }: { mode: PublishMode | null; 
 export function ReopenButton({ s }: { s: WeekSummary }) {
   const { schoolId, yearId, classId, header } = useClassroom();
   const [open, setOpen] = useState(false);
-  const cmd = useCommand((ctx: Ctx, reason: string) => conductRepo.reopen(ctx, schoolId, yearId, classId, s.week.id, reason), { success: `Đã mở lại tuần ${s.week.index}`, onSuccess: () => setOpen(false) });
+  const cmd = useCommand((ctx: Ctx, reason: string) => conductRepo.reopen(ctx, schoolId, yearId, classId, s.week.id, reason,s.source), { success: `Đã mở lại tuần ${s.week.index}`, onSuccess: () => setOpen(false) });
   if (!(s.perms.lock && s.period.status === "locked")) return null;
   return (
     <>

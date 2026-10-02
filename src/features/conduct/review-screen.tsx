@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, ClipboardCheck, Copy, Search, ShieldCheck, Trophy, XCircle, Link2 } from "lucide-react";
 import type { SnapshotRow } from "@/lib/model/types";
-import { conductRepo, type Ctx } from "@/lib/repositories";
+import { conductRepo, RepoError, type Ctx } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtDateTime, matches } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
@@ -35,7 +35,7 @@ export function ReviewScreen() {
             {week && <PeriodBadge status={week.status} />}
           </Card>
           <QueryState query={sum} skeleton="detail">
-            {(s) => <ReviewBody s={s} records={rec.data?.records ?? []} loadingRecords={rec.isLoading} />}
+            {(s) => !s.summaryAvailable?<Card className="p-5"><Callout tone="neutral">Bạn không có quyền rà soát bảng điểm cả lớp.</Callout></Card>:rec.error?<Card><ErrorState error={rec.error} onRetry={()=>rec.refetch()} /></Card>:<ReviewBody s={s} records={rec.data?.records ?? []} loadingRecords={rec.isLoading} />}
           </QueryState>
         </>
       )}
@@ -83,13 +83,13 @@ function ReviewBody({ s, records, loadingRecords }: { s: WeekSummary; records: R
         </Card>
       </div>
       {open && (loadingRecords ? <Card className="p-5"><Skeleton className="h-40" /></Card> : <>
-        <DuplicatePairs records={records} canReview={s.perms.review} />
-        <PendingTable records={records} canReview={s.perms.review} />
+        <DuplicatePairs records={records} canReview={s.perms.review} source={s.source} />
+        <PendingTable records={records} canReview={s.perms.review} source={s.source} />
       </>)}
       <Card>
         <CardHeader title={official ? `Bảng đã chốt — phiên bản ${s.snapshot!.versionNo}` : "Xem trước bảng sẽ chốt / công bố"} icon={<Trophy className="size-5 text-primary" />}
           subtitle={official ? "Bản chính thức, không đổi." : "Chỉ tính ghi nhận đã duyệt. Ghi nhận còn chờ rà soát chưa được tính — xử lý hết trước khi chốt."} />
-        <WeeklyConductTable rows={rows} bands={s.ruleSet.bands} caption="Bảng sẽ công bố" onExplain={setExplain} />
+        <WeeklyConductTable rows={rows} bands={s.ruleSet.bands} caption="Bảng sẽ công bố" detailsAvailable={s.snapshot?.detailsAvailable ?? true} onExplain={setExplain} />
       </Card>
       <ExplainDrawer row={explain} onClose={() => setExplain(null)} ruleSet={s.ruleSet} official weekText={weekLabel(s.week)} statusOf={(id) => statusById.get(id) ?? "approved"} />
       <PublishDialog mode={mode} onClose={() => setMode(null)} s={s} />
@@ -97,15 +97,15 @@ function ReviewBody({ s, records, loadingRecords }: { s: WeekSummary; records: R
   );
 }
 
-function useReview(onDone?: () => void) {
+function useReview(source:WeekSummary['source'],records:RecordView[],onDone?: () => void) {
   const { schoolId, yearId, classId } = useClassroom();
-  return useCommand((ctx: Ctx, input: { recordIds: string[]; decision: "approve" | "reject" | "void"; note?: string }) => conductRepo.review(ctx, schoolId, yearId, classId, input), {
+  return useCommand((ctx: Ctx, input: { recordIds: string[]; decision: "approve" | "reject" | "void"; note?: string }) => {const selected=input.recordIds.map(id=>records.find(r=>r.id===id));if(selected.some(r=>!r))throw new RepoError('CONFLICT','Hãy tải lại các ghi nhận trước khi rà soát.');return conductRepo.review(ctx, schoolId, yearId, classId,{source,records:selected.map(r=>({id:r!.id,version:r!.version})),decision:input.decision,note:input.note});}, {
     success: (n) => `Đã xử lý ${n} ghi nhận`, onSuccess: onDone,
   });
 }
 
 /* ------------------------------ duplicates side by side ------------------------------ */
-function DuplicatePairs({ records, canReview }: { records: RecordView[]; canReview: boolean }) {
+function DuplicatePairs({ records, canReview,source }: { records: RecordView[]; canReview: boolean;source:WeekSummary['source'] }) {
   const pairs = useMemo(() => {
     const byId = new Map(records.map((r) => [r.id, r]));
     const seen = new Set<string>();
@@ -120,7 +120,7 @@ function DuplicatePairs({ records, canReview }: { records: RecordView[]; canRevi
     return out;
   }, [records]);
   const [target, setTarget] = useState<RecordView | null>(null);
-  const cmd = useReview(() => setTarget(null));
+  const cmd = useReview(source,records,() => setTarget(null));
   if (!pairs.length) return null;
   return (
     <Card>
@@ -135,7 +135,7 @@ function DuplicatePairs({ records, canReview }: { records: RecordView[]; canRevi
                 <p className="mt-0.5 flex flex-wrap items-center gap-1.5">{r.ruleLabel}<Points value={r.points} /><Badge tone={RECORD_STATUS[r.status]?.tone}>{RECORD_STATUS[r.status]?.label}</Badge></p>
                 <p className="mt-0.5 text-muted">Ngày {fmtDate(r.date)} · {r.createdByName} lúc {fmtDateTime(r.createdAt)}</p>
                 <p className="mt-0.5 text-body">“{r.reason}”</p>
-                <p className="mt-0.5 text-[12px] text-muted">Nguồn: {r.fromAttendance ? "điểm danh" : r.sourceEventKey?.startsWith("evt:") ? "sự kiện lớp" : "ghi trực tiếp"}</p>
+                <p className="mt-0.5 text-[12px] text-muted">Nguồn: {r.fromAttendance ? "điểm danh" : "ghi trực tiếp"}</p>
                 {canReview && <Button className="mt-2" size="sm" variant="danger-soft" onClick={() => setTarget(r)} data-testid="void-btn">Loại bản trùng này</Button>}
               </div>
             ))}
@@ -152,13 +152,13 @@ function DuplicatePairs({ records, canReview }: { records: RecordView[]; canRevi
 }
 
 /* ------------------------------ pending records ------------------------------ */
-function PendingTable({ records, canReview }: { records: RecordView[]; canReview: boolean }) {
+function PendingTable({ records, canReview,source }: { records: RecordView[]; canReview: boolean;source:WeekSummary['source'] }) {
   const pending = records.filter((r) => r.status === "pending_review");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [reject, setReject] = useState<string[] | null>(null);
-  const cmd = useReview(() => { setSel(new Set()); setReject(null); });
+  const cmd = useReview(source,records,() => { setSel(new Set()); setReject(null); });
   const filtered = pending.filter((r) => matches(q, r.studentName, r.studentCode, r.ruleLabel, r.reason, r.createdByName));
   const pageSize = 10;
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));

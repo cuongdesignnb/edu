@@ -39250,6 +39250,1576 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks:
+    get:
+      operationId: getConductWorkspaceWeeks
+      tags:
+        - Conduct
+      summary: getConductWorkspaceWeeks
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL06
+        - CL07
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceWeeksResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records:
+    get:
+      operationId: getConductWorkspaceRecords
+      tags:
+        - Conduct
+      summary: getConductWorkspaceRecords
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL07
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: studentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceRecordsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/summary:
+    get:
+      operationId: getConductWorkspaceSummary
+      tags:
+        - Conduct
+      summary: getConductWorkspaceSummary
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL06
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceSummaryResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records/create:
+    post:
+      operationId: createConductWorkspaceRecord
+      tags:
+        - Conduct
+      summary: createConductWorkspaceRecord
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.record
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL07
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceCreate"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records/{recordId}/save:
+    post:
+      operationId: updateConductWorkspaceRecord
+      tags:
+        - Conduct
+      summary: updateConductWorkspaceRecord
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.record
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL07
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceUpdate"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/review:
+    post:
+      operationId: reviewConductWorkspaceRecords
+      tags:
+        - Conduct
+      summary: reviewConductWorkspaceRecords
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.review
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceReview"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/lock:
+    post:
+      operationId: lockConductWorkspaceWeek
+      tags:
+        - Conduct
+      summary: lockConductWorkspaceWeek
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.lock
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceLock"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/publish:
+    post:
+      operationId: publishConductWorkspaceWeek
+      tags:
+        - Conduct
+      summary: publishConductWorkspaceWeek
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.publish
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/reopen:
+    post:
+      operationId: reopenConductWorkspaceWeek
+      tags:
+        - Conduct
+      summary: reopenConductWorkspaceWeek
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.lock
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceReopen"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/snapshots:
+    get:
+      operationId: getConductWorkspaceSnapshots
+      tags:
+        - Conduct
+      summary: getConductWorkspaceSnapshots
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: publication.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL09
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceSnapshotsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/snapshots/{snapshotId}:
+    get:
+      operationId: getConductWorkspaceSnapshot
+      tags:
+        - Conduct
+      summary: getConductWorkspaceSnapshot
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: publication.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL09
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: snapshotId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceSnapshotDetailResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments:
+    get:
+      operationId: getConductAdjustmentWorkspace
+      tags:
+        - Conduct
+      summary: getConductAdjustmentWorkspace
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductAdjustmentWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/request:
+    post:
+      operationId: requestConductWorkspaceAdjustment
+      tags:
+        - Conduct
+      summary: requestConductWorkspaceAdjustment
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.adjust.request
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductAdjustmentRequest"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductAdjustmentItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/{adjustmentId}/decide:
+    post:
+      operationId: decideConductWorkspaceAdjustment
+      tags:
+        - Conduct
+      summary: decideConductWorkspaceAdjustment
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.adjust.approve
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: adjustmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductAdjustmentDecision"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductAdjustmentItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/{adjustmentId}/publish:
+    post:
+      operationId: publishConductWorkspaceAdjustment
+      tags:
+        - Conduct
+      summary: publishConductWorkspaceAdjustment
+      description: Native scoped conduct workflow using displayed source versions and
+        immutable PostgreSQL publication explanations.
+      x-permission: conduct.adjust.approve+conduct.publish
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: adjustmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductAdjustmentPublish"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -58828,6 +60398,1356 @@ components:
       required:
         - data
         - page
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceSource:
+      type: object
+      properties:
+        weekId:
+          type: string
+          format: uuid
+        periodId:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 0
+        dataVersion:
+          type: integer
+          minimum: 0
+        classVersion:
+          type: integer
+          minimum: 1
+        schoolVersion:
+          type: integer
+          minimum: 1
+        sourceHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - weekId
+        - periodId
+        - version
+        - dataVersion
+        - classVersion
+        - schoolVersion
+        - sourceHash
+        - publicationId
+      additionalProperties: false
+    ConductWorkspaceWeek:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        index:
+          type: integer
+          minimum: 1
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        closeDeadline:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          enum:
+            - open
+            - locked
+            - published
+        isCurrent:
+          type: boolean
+      required:
+        - id
+        - index
+        - startDate
+        - endDate
+        - closeDeadline
+        - status
+        - isCurrent
+      additionalProperties: false
+    ConductWorkspaceWeeks:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceWeek"
+          maxItems: 500
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - weeks
+      additionalProperties: false
+    ConductWorkspaceRecord:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        weekId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        ruleSetId:
+          type: string
+          format: uuid
+        ruleId:
+          type: string
+          format: uuid
+        points:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        reason:
+          type: string
+          maxLength: 4000
+        createdBy:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        createdByName:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - pending_review
+            - approved
+            - rejected
+            - void
+        reviewNote:
+          type: string
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        studentName:
+          type: string
+        studentCode:
+          type: string
+        ruleLabel:
+          type: string
+        category:
+          type: string
+        fromAttendance:
+          type: boolean
+        linkedAttendanceRecordId:
+          type: string
+          format: uuid
+          nullable: true
+        duplicateOf:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 10000
+        ruleSetVersion:
+          type: integer
+          minimum: 1
+        lessonId:
+          type: string
+          format: uuid
+          nullable: true
+        canEdit:
+          type: boolean
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - id
+        - studentId
+        - enrollmentId
+        - weekId
+        - date
+        - ruleSetId
+        - ruleId
+        - points
+        - reason
+        - createdBy
+        - createdAt
+        - createdByName
+        - status
+        - reviewNote
+        - version
+        - studentName
+        - studentCode
+        - ruleLabel
+        - category
+        - fromAttendance
+        - linkedAttendanceRecordId
+        - duplicateOf
+        - ruleSetVersion
+        - lessonId
+        - canEdit
+      additionalProperties: false
+    ConductWorkspaceRoster:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        code:
+          type: string
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+      required:
+        - id
+        - enrollmentId
+        - fullName
+        - code
+        - startsOn
+        - endsOn
+      additionalProperties: false
+    ConductWorkspaceLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        subjectId:
+          type: string
+          format: uuid
+        subject:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        canRecord:
+          type: boolean
+      required:
+        - id
+        - date
+        - subjectId
+        - subject
+        - start
+        - end
+        - canRecord
+      additionalProperties: false
+    ConductWorkspaceRecords:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceRecord"
+          maxItems: 10000
+        roster:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceRoster"
+          maxItems: 5000
+        ruleSet:
+          oneOf:
+            - $ref: "#/components/schemas/RuleWorkspaceItem"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        week:
+          $ref: "#/components/schemas/ConductWorkspaceWeek"
+        period:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - open
+                - locked
+                - published
+            lockedAt:
+              type: string
+              format: date-time
+              nullable: true
+            lockedByName:
+              type: string
+              nullable: true
+          required:
+            - status
+            - lockedAt
+            - lockedByName
+          additionalProperties: false
+        canRecord:
+          type: boolean
+        isReviewer:
+          type: boolean
+        lessons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceLesson"
+          maxItems: 500
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - source
+        - records
+        - roster
+        - ruleSet
+        - week
+        - period
+        - canRecord
+        - isReviewer
+        - lessons
+      additionalProperties: false
+    ConductWorkspaceRow:
+      type: object
+      properties:
+        studentId:
+          type: string
+          format: uuid
+        studentName:
+          type: string
+        studentCode:
+          type: string
+          nullable: true
+        base:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        plus:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        minus:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        total:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        grade:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              recordId:
+                type: string
+                format: uuid
+              date:
+                type: string
+                format: date
+              label:
+                type: string
+              points:
+                type: number
+                minimum: -99999999.99
+                maximum: 99999999.99
+              shareWithParent:
+                type: boolean
+            required:
+              - recordId
+              - date
+              - label
+              - points
+              - shareWithParent
+            additionalProperties: false
+          maxItems: 10000
+      required:
+        - studentId
+        - studentName
+        - studentCode
+        - base
+        - plus
+        - minus
+        - total
+        - grade
+        - items
+      additionalProperties: false
+    ConductWorkspaceSnapshot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        weekId:
+          type: string
+          format: uuid
+        weekIndex:
+          type: integer
+          minimum: 1
+        rowCount:
+          type: integer
+          minimum: 0
+        avg:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+        lockedByName:
+          type: string
+          nullable: true
+        publishedByName:
+          type: string
+          nullable: true
+        kind:
+          type: string
+          enum:
+            - conduct_week
+        versionNo:
+          type: integer
+          minimum: 1
+        ruleSetId:
+          type: string
+          format: uuid
+        ruleSetVersionNo:
+          type: integer
+          minimum: 1
+        ruleSetName:
+          type: string
+        lockedAt:
+          type: string
+          format: date-time
+        lockedBy:
+          type: string
+          format: uuid
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        publishedBy:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum:
+            - locked
+            - published
+            - superseded
+            - withdrawn
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceRow"
+          maxItems: 5000
+        detailsAvailable:
+          type: boolean
+        sourceVersion:
+          type: integer
+          minimum: 1
+        publicationVersion:
+          type: integer
+          minimum: 1
+        supersedesId:
+          type: string
+          format: uuid
+          nullable: true
+        adjustmentNote:
+          type: string
+          nullable: true
+      required:
+        - id
+        - schoolId
+        - yearId
+        - classId
+        - weekId
+        - weekIndex
+        - rowCount
+        - avg
+        - lockedByName
+        - publishedByName
+        - kind
+        - versionNo
+        - ruleSetId
+        - ruleSetVersionNo
+        - ruleSetName
+        - lockedAt
+        - lockedBy
+        - publishedAt
+        - publishedBy
+        - status
+        - rows
+        - detailsAvailable
+        - sourceVersion
+        - publicationVersion
+        - supersedesId
+        - adjustmentNote
+      additionalProperties: false
+    ConductWorkspaceSummary:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        week:
+          $ref: "#/components/schemas/ConductWorkspaceWeek"
+        period:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - open
+                - locked
+                - published
+            lockedAt:
+              type: string
+              format: date-time
+              nullable: true
+            lockedByName:
+              type: string
+              nullable: true
+          required:
+            - status
+            - lockedAt
+            - lockedByName
+          additionalProperties: false
+        ruleSet:
+          $ref: "#/components/schemas/RuleWorkspaceItem"
+        snapshot:
+          oneOf:
+            - $ref: "#/components/schemas/ConductWorkspaceSnapshot"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceRow"
+          maxItems: 5000
+        preview:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceRow"
+          maxItems: 5000
+        summaryAvailable:
+          type: boolean
+        checks:
+          type: object
+          properties:
+            pending:
+              type: integer
+              minimum: 0
+            duplicates:
+              type: integer
+              minimum: 0
+            blocking:
+              type: array
+              items:
+                type: string
+              maxItems: 10000
+            warnings:
+              type: array
+              items:
+                type: string
+              maxItems: 100
+          required:
+            - pending
+            - duplicates
+            - blocking
+            - warnings
+          additionalProperties: false
+        perms:
+          type: object
+          properties:
+            lock:
+              type: boolean
+            publish:
+              type: boolean
+            review:
+              type: boolean
+          required:
+            - lock
+            - publish
+            - review
+          additionalProperties: false
+        policy:
+          type: object
+          nullable: true
+          enum:
+            - null
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - source
+        - week
+        - period
+        - ruleSet
+        - snapshot
+        - rows
+        - preview
+        - summaryAvailable
+        - checks
+        - perms
+        - policy
+      additionalProperties: false
+    ConductWorkspaceCreate:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        studentId:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        ruleId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 4000
+        requestId:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+          nullable: true
+        manualDelta:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        confirmDistinct:
+          type: boolean
+        distinctNote:
+          type: string
+          nullable: true
+      required:
+        - source
+        - studentId
+        - enrollmentId
+        - date
+        - ruleId
+        - reason
+        - requestId
+        - lessonId
+        - manualDelta
+        - confirmDistinct
+        - distinctNote
+      additionalProperties: false
+    ConductWorkspaceUpdate:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        ruleId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 4000
+        version:
+          type: integer
+          minimum: 1
+        manualDelta:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+      required:
+        - source
+        - ruleId
+        - reason
+        - version
+        - manualDelta
+      additionalProperties: false
+    ConductWorkspaceReview:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        records:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              version:
+                type: integer
+                minimum: 1
+            required:
+              - id
+              - version
+            additionalProperties: false
+          maxItems: 100
+          minItems: 1
+        decision:
+          type: string
+          enum:
+            - approve
+            - reject
+            - void
+        note:
+          type: string
+          nullable: true
+      required:
+        - source
+        - records
+        - decision
+        - note
+      additionalProperties: false
+    ConductWorkspaceLock:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        alsoPublish:
+          type: boolean
+      required:
+        - source
+        - alsoPublish
+      additionalProperties: false
+    ConductWorkspaceAction:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+      required:
+        - source
+      additionalProperties: false
+    ConductWorkspaceReopen:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 2000
+      required:
+        - source
+        - reason
+      additionalProperties: false
+    ConductWorkspaceReceipt:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        changed:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum:
+            - open
+            - locked
+            - published
+        record:
+          oneOf:
+            - $ref: "#/components/schemas/ConductWorkspaceRecord"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        snapshot:
+          oneOf:
+            - $ref: "#/components/schemas/ConductWorkspaceSnapshot"
+            - type: object
+              nullable: true
+              enum:
+                - null
+      required:
+        - source
+        - changed
+        - status
+        - record
+        - snapshot
+      additionalProperties: false
+    ConductWorkspaceSnapshots:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceSnapshot"
+          maxItems: 100
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - items
+      additionalProperties: false
+    ConductWorkspaceSnapshotDetail:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        snapshot:
+          $ref: "#/components/schemas/ConductWorkspaceSnapshot"
+        ruleSet:
+          oneOf:
+            - $ref: "#/components/schemas/RuleWorkspaceItem"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        week:
+          $ref: "#/components/schemas/ConductWorkspaceWeek"
+        versions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              versionNo:
+                type: integer
+                minimum: 1
+              status:
+                type: string
+                enum:
+                  - locked
+                  - published
+                  - superseded
+                  - withdrawn
+              publishedAt:
+                type: string
+                format: date-time
+                nullable: true
+              adjustmentNote:
+                type: string
+                nullable: true
+            required:
+              - id
+              - versionNo
+              - status
+              - publishedAt
+              - adjustmentNote
+            additionalProperties: false
+          maxItems: 500
+        diff:
+          type: array
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              studentName:
+                type: string
+              before:
+                type: number
+                minimum: -99999999.99
+                maximum: 99999999.99
+                nullable: true
+              after:
+                type: number
+                minimum: -99999999.99
+                maximum: 99999999.99
+            required:
+              - studentId
+              - studentName
+              - before
+              - after
+            additionalProperties: false
+          maxItems: 5000
+        lockedByName:
+          type: string
+          nullable: true
+        publishedByName:
+          type: string
+          nullable: true
+        className:
+          type: string
+        canRequestAdjustment:
+          type: boolean
+        pendingAdjustments:
+          type: integer
+          minimum: 0
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - source
+        - snapshot
+        - ruleSet
+        - week
+        - versions
+        - diff
+        - lockedByName
+        - publishedByName
+        - className
+        - canRequestAdjustment
+        - pendingAdjustments
+      additionalProperties: false
+    ConductAdjustmentItem:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        snapshotId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+          nullable: true
+        recordId:
+          type: string
+          format: uuid
+          nullable: true
+        kind:
+          type: string
+          enum:
+            - remove_record
+            - change_points
+            - batch
+        newPoints:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        ruleId:
+          type: string
+          format: uuid
+          nullable: true
+        beforeTotal:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        afterTotal:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        reason:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - published
+        requestedBy:
+          type: string
+          format: uuid
+        requestedAt:
+          type: string
+          format: date-time
+        requestedByName:
+          type: string
+          nullable: true
+        decidedBy:
+          type: string
+          format: uuid
+          nullable: true
+        decidedAt:
+          type: string
+          format: date-time
+          nullable: true
+        decidedByName:
+          type: string
+          nullable: true
+        decisionNote:
+          type: string
+          nullable: true
+        resultSnapshotId:
+          type: string
+          format: uuid
+          nullable: true
+        resultSnapshotStatus:
+          type: string
+          nullable: true
+          enum:
+            - locked
+            - published
+            - superseded
+            - withdrawn
+            - null
+        studentName:
+          type: string
+        weekIndex:
+          type: integer
+          minimum: 1
+        weekId:
+          type: string
+          format: uuid
+        snapshotVersion:
+          type: integer
+          minimum: 1
+        recordLabel:
+          type: string
+          nullable: true
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - id
+        - version
+        - source
+        - snapshotId
+        - studentId
+        - recordId
+        - kind
+        - newPoints
+        - ruleId
+        - beforeTotal
+        - afterTotal
+        - reason
+        - status
+        - requestedBy
+        - requestedAt
+        - requestedByName
+        - decidedBy
+        - decidedAt
+        - decidedByName
+        - decisionNote
+        - resultSnapshotId
+        - resultSnapshotStatus
+        - studentName
+        - weekIndex
+        - weekId
+        - snapshotVersion
+        - recordLabel
+      additionalProperties: false
+    ConductAdjustmentWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductAdjustmentItem"
+          maxItems: 500
+        canRequest:
+          type: boolean
+        canApprove:
+          type: boolean
+        canPublish:
+          type: boolean
+        me:
+          type: string
+          format: uuid
+        snapshots:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConductWorkspaceSnapshot"
+          maxItems: 500
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/RuleWorkspaceRule"
+          maxItems: 200
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - items
+        - canRequest
+        - canApprove
+        - canPublish
+        - me
+        - snapshots
+        - rules
+      additionalProperties: false
+    ConductAdjustmentRequest:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        snapshotId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - remove_record
+            - change_points
+            - add_record
+        recordId:
+          type: string
+          format: uuid
+          nullable: true
+        newPoints:
+          type: number
+          minimum: -99999999.99
+          maximum: 99999999.99
+          nullable: true
+        ruleId:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 2000
+      required:
+        - source
+        - snapshotId
+        - studentId
+        - kind
+        - recordId
+        - newPoints
+        - ruleId
+        - reason
+      additionalProperties: false
+    ConductAdjustmentDecision:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        version:
+          type: integer
+          minimum: 1
+        approve:
+          type: boolean
+        note:
+          type: string
+          nullable: true
+      required:
+        - source
+        - version
+        - approve
+        - note
+      additionalProperties: false
+    ConductAdjustmentPublish:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ConductWorkspaceSource"
+        version:
+          type: integer
+          minimum: 1
+      required:
+        - source
+        - version
+      additionalProperties: false
+    ConductAdjustmentItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductAdjustmentItem"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductAdjustmentWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductAdjustmentWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceWeeksResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceWeeks"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceRecordsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceRecords"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceSummaryResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceSummary"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceReceiptResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceReceipt"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ConductWorkspaceSnapshotsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceSnapshots"
+        requestId:
+          type: string
+        page:
+          $ref: "#/components/schemas/PageInfo"
+      required:
+        - data
+        - requestId
+        - page
+      additionalProperties: false
+    ConductWorkspaceSnapshotDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ConductWorkspaceSnapshotDetail"
+        requestId:
+          type: string
+      required:
+        - data
         - requestId
       additionalProperties: false
   securitySchemes:

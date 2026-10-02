@@ -1,0 +1,9 @@
+**/node_modules
+**/.next
+.git
+.secrets
+.env*
+backend/.runtime
+qa
+docs
+*.log

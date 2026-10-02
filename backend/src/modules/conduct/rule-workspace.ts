@@ -32,7 +32,7 @@ async function applicationHash(tx:Transaction,ctx:Context){
  const periods=await one<Row>(tx,`SELECT md5(coalesce(string_agg(id::text||':'||version::text,',' ORDER BY id),'')) AS hash FROM app.conduct_periods WHERE school_id=$1`,[ctx.schoolId]);
  return crypto.createHash('sha256').update(canonical({rows,calendars,schedule,periods})).digest('hex');
 }
-async function view(tx:Transaction,ctx:Context,row:Row,hash:string){
+export async function ruleWorkspaceView(tx:Transaction,ctx:Context,row:Row,hash:string){
  const items=await loadRules(tx,ctx.schoolId,String(row.id)),range=await one<Row>(tx,`SELECT min(starts_on) AS starts_on,max(ends_on)-1 AS ends_on,bool_or(ends_on IS NULL) AS open FROM app.class_rule_periods WHERE school_id=$1 AND rule_set_id=$2 AND ($3::uuid[] IS NULL OR class_id=ANY($3))`,[ctx.schoolId,row.id,ctx.classIds]);
  const effective=row.effective_from??range?.starts_on??null;
  const next=effective?await one<Row>(tx,`SELECT min(effective_from)-1 AS last_day FROM app.rule_sets WHERE school_id=$1 AND discarded_at IS NULL AND status='ISSUED' AND effective_from>$2`,[ctx.schoolId,effective]):null;
@@ -45,6 +45,7 @@ async function view(tx:Transaction,ctx:Context,row:Row,hash:string){
   rules:bounded(items.rules,200).map(r=>({id:r.id,code:r.code,label:r.label,points:Number(r.default_delta),category:r.group_name,icon:r.icon,shareWithParent:r.share_with_parent,attendanceLink:r.attendance_status==='LATE'?'late':r.attendance_status==='UNEXCUSED'?'unexcused':null,valueMode:r.value_mode,minimumDelta:r.minimum_delta===null?null:Number(r.minimum_delta),maximumDelta:r.maximum_delta===null?null:Number(r.maximum_delta),reasonRequired:r.reason_required,maxOccurrencesPerDay:r.max_occurrences_per_day})),
   bands:bounded(items.thresholds,50).map(t=>({min:Number(t.minimum_score),label:t.label,tone:t.tone})),entryDeadlineDays:row.entry_deadline_days,createdBy:row.created_by,createdByName:author?.name??null,publishedAt:row.issued_at?iso(row.issued_at as Date):null,version:row.version,source:{id:row.id,version:row.version,applicationHash:hash},isCurrent:status==='published'&&!!effective&&String(effective)<=ctx.today&&(!end||String(end)>=ctx.today),usedBySnapshots:counts!.n,canManage:ctx.can('rules.manage')&&status==='draft',canIssue:ctx.can('rules.issue')&&ctx.can('rules.apply')&&status==='draft'};
 }
+const view=ruleWorkspaceView;
 export async function ruleWorkspace(tx:Transaction,p:Permissions,c:RequestContext):Promise<Result>{
  const ctx=await context(tx,p,c),op=c.operation.id,hash=await applicationHash(tx,ctx),s=ctx.schoolId;
  const permitted=async(id:string)=>{const row=await current(tx,s,id,c.operation.method!=='GET');if(ctx.ids!==null&&(!ctx.ids.includes(id)||row.status==='DRAFT'))throw new Problem(404,'RESOURCE_NOT_FOUND');return row;};

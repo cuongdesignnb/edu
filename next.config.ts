@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   poweredByHeader: false,
   devIndicators: false,
   // do not let `next dev` write AGENTS.md / CLAUDE.md into the project

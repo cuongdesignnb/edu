@@ -2,9 +2,9 @@
   "baseline": "14dfad5",
   "mode": "CONNECTED_PARTIAL",
   "methodCount": 231,
-  "candidateCount": 175,
-  "activatedCandidateCount": 175,
-  "activatedLegacyMethodCount": 155,
+  "candidateCount": 190,
+  "activatedCandidateCount": 190,
+  "activatedLegacyMethodCount": 170,
   "methods": [
     {
       "repository": "activitiesExtraRepo",
@@ -1260,7 +1260,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "weekOptions",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1276,7 +1286,17 @@
         "opts: { studentId?: ID } = {}"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "records",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1291,7 +1311,17 @@
         "input: { studentId: ID; date: string; ruleId: ID; reason: string; requestId: string; confirmDistinct?: boolean; distinctNote?: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "createRecord",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1307,7 +1337,17 @@
         "patch: { ruleId: ID; reason: string; version: number }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "updateRecord",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1322,7 +1362,17 @@
         "input: { recordIds: ID[]; decision: \"approve\" | \"reject\" | \"void\"; note?: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "review",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1337,7 +1387,17 @@
         "weekId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "weekSummary",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1353,7 +1413,17 @@
         "alsoPublish: boolean"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "lock",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1369,7 +1439,17 @@
         "reason: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "reopen",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1384,7 +1464,17 @@
         "weekId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "publish",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1398,7 +1488,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "snapshots",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1413,7 +1513,17 @@
         "snapshotId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "snapshot",
+        "file": "src/lib/repositories/connected/conduct-workspace.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1427,7 +1537,17 @@
         "classId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "adjustments",
+        "file": "src/lib/repositories/connected/conduct-adjustments.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1442,7 +1562,17 @@
         "input: { snapshotId: ID; studentId: ID; kind: AdjustmentRequest[\"kind\"]; recordId?: ID; newPoints?: number; ruleId?: ID; reason: string }"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "requestAdjustment",
+        "file": "src/lib/repositories/connected/conduct-adjustments.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1459,7 +1589,17 @@
         "note: string"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "decideAdjustment",
+        "file": "src/lib/repositories/connected/conduct-adjustments.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",
@@ -1474,7 +1614,17 @@
         "adjustmentId: ID"
       ],
       "returnType": "inferred",
-      "status": "NOT_STARTED"
+      "status": "IMPLEMENTED",
+      "connectedCandidate": {
+        "repository": "conductRepo",
+        "method": "publishAdjustment",
+        "file": "src/lib/repositories/connected/conduct-adjustments.ts",
+        "status": "IMPLEMENTED",
+        "activated": true,
+        "evidence": [
+          "Native source implementation; activation is derived from the root facade. Browser acceptance requires separate evidence."
+        ]
+      }
     },
     {
       "repository": "conductRepo",

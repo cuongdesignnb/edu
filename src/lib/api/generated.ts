@@ -539,6 +539,38 @@ export interface ApiSchemas {
   "RuleWorkspaceItemResponse": { "data": ApiSchemas["RuleWorkspaceItem"]; "requestId": string; };
   "RuleWorkspaceDiscardResponse": { "data": ApiSchemas["RuleWorkspaceDiscard"]; "requestId": string; };
   "RuleWorkspaceDirectoryResponse": { "data": ApiSchemas["RuleWorkspaceDirectory"]; "page": ApiSchemas["PageInfo"]; "requestId": string; };
+  "ConductWorkspaceSource": { "weekId": string; "periodId": (string) | null; "version": number; "dataVersion": number; "classVersion": number; "schoolVersion": number; "sourceHash": string; "publicationId": (string) | null; };
+  "ConductWorkspaceWeek": { "id": string; "index": number; "startDate": string; "endDate": string; "closeDeadline": (string) | null; "status": "open" | "locked" | "published"; "isCurrent": boolean; };
+  "ConductWorkspaceWeeks": { "schoolId": string; "yearId": string; "classId": string; "today": string; "weeks": Array<ApiSchemas["ConductWorkspaceWeek"]>; };
+  "ConductWorkspaceRecord": { "schoolId": string; "yearId": string; "classId": string; "id": string; "studentId": string; "enrollmentId": string; "weekId": string; "date": string; "ruleSetId": string; "ruleId": string; "points": number; "reason": string; "createdBy": string; "createdAt": string; "createdByName": (string) | null; "status": "pending_review" | "approved" | "rejected" | "void"; "reviewNote": (string) | null; "version": number; "studentName": string; "studentCode": string; "ruleLabel": string; "category": string; "fromAttendance": boolean; "linkedAttendanceRecordId": (string) | null; "duplicateOf": Array<string>; "ruleSetVersion": number; "lessonId": (string) | null; "canEdit": boolean; };
+  "ConductWorkspaceRoster": { "id": string; "enrollmentId": string; "fullName": string; "code": string; "startsOn": string; "endsOn": (string) | null; };
+  "ConductWorkspaceLesson": { "id": string; "date": string; "subjectId": string; "subject": string; "start": string; "end": string; "canRecord": boolean; };
+  "ConductWorkspaceRecords": { "schoolId": string; "yearId": string; "classId": string; "today": string; "source": ApiSchemas["ConductWorkspaceSource"]; "records": Array<ApiSchemas["ConductWorkspaceRecord"]>; "roster": Array<ApiSchemas["ConductWorkspaceRoster"]>; "ruleSet": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "week": ApiSchemas["ConductWorkspaceWeek"]; "period": { "status": "open" | "locked" | "published"; "lockedAt": (string) | null; "lockedByName": (string) | null; }; "canRecord": boolean; "isReviewer": boolean; "lessons": Array<ApiSchemas["ConductWorkspaceLesson"]>; };
+  "ConductWorkspaceRow": { "studentId": string; "studentName": string; "studentCode": (string) | null; "base": number; "plus": number; "minus": number; "total": number; "grade": (string) | null; "items": Array<{ "recordId": string; "date": string; "label": string; "points": number; "shareWithParent": boolean; }>; };
+  "ConductWorkspaceSnapshot": { "id": string; "schoolId": string; "yearId": string; "classId": string; "weekId": string; "weekIndex": number; "rowCount": number; "avg": number; "lockedByName": (string) | null; "publishedByName": (string) | null; "kind": "conduct_week"; "versionNo": number; "ruleSetId": string; "ruleSetVersionNo": number; "ruleSetName": string; "lockedAt": string; "lockedBy": string; "publishedAt": (string) | null; "publishedBy": (string) | null; "status": "locked" | "published" | "superseded" | "withdrawn"; "rows": Array<ApiSchemas["ConductWorkspaceRow"]>; "detailsAvailable": boolean; "sourceVersion": number; "publicationVersion": number; "supersedesId": (string) | null; "adjustmentNote": (string) | null; };
+  "ConductWorkspaceSummary": { "schoolId": string; "yearId": string; "classId": string; "today": string; "source": ApiSchemas["ConductWorkspaceSource"]; "week": ApiSchemas["ConductWorkspaceWeek"]; "period": { "status": "open" | "locked" | "published"; "lockedAt": (string) | null; "lockedByName": (string) | null; }; "ruleSet": ApiSchemas["RuleWorkspaceItem"]; "snapshot": (ApiSchemas["ConductWorkspaceSnapshot"] | (null) | null); "rows": Array<ApiSchemas["ConductWorkspaceRow"]>; "preview": Array<ApiSchemas["ConductWorkspaceRow"]>; "summaryAvailable": boolean; "checks": { "pending": number; "duplicates": number; "blocking": Array<string>; "warnings": Array<string>; }; "perms": { "lock": boolean; "publish": boolean; "review": boolean; }; "policy": (null) | null; };
+  "ConductWorkspaceCreate": { "source": ApiSchemas["ConductWorkspaceSource"]; "studentId": string; "enrollmentId": string; "date": string; "ruleId": string; "reason": string; "requestId": string; "lessonId": (string) | null; "manualDelta": (number) | null; "confirmDistinct": boolean; "distinctNote": (string) | null; };
+  "ConductWorkspaceUpdate": { "source": ApiSchemas["ConductWorkspaceSource"]; "ruleId": string; "reason": string; "version": number; "manualDelta": (number) | null; };
+  "ConductWorkspaceReview": { "source": ApiSchemas["ConductWorkspaceSource"]; "records": Array<{ "id": string; "version": number; }>; "decision": "approve" | "reject" | "void"; "note": (string) | null; };
+  "ConductWorkspaceLock": { "source": ApiSchemas["ConductWorkspaceSource"]; "alsoPublish": boolean; };
+  "ConductWorkspaceAction": { "source": ApiSchemas["ConductWorkspaceSource"]; };
+  "ConductWorkspaceReopen": { "source": ApiSchemas["ConductWorkspaceSource"]; "reason": string; };
+  "ConductWorkspaceReceipt": { "source": ApiSchemas["ConductWorkspaceSource"]; "changed": number; "status": "open" | "locked" | "published"; "record": (ApiSchemas["ConductWorkspaceRecord"] | (null) | null); "snapshot": (ApiSchemas["ConductWorkspaceSnapshot"] | (null) | null); };
+  "ConductWorkspaceSnapshots": { "schoolId": string; "yearId": string; "classId": string; "items": Array<ApiSchemas["ConductWorkspaceSnapshot"]>; };
+  "ConductWorkspaceSnapshotDetail": { "schoolId": string; "yearId": string; "classId": string; "source": ApiSchemas["ConductWorkspaceSource"]; "snapshot": ApiSchemas["ConductWorkspaceSnapshot"]; "ruleSet": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "week": ApiSchemas["ConductWorkspaceWeek"]; "versions": Array<{ "id": string; "versionNo": number; "status": "locked" | "published" | "superseded" | "withdrawn"; "publishedAt": (string) | null; "adjustmentNote": (string) | null; }>; "diff": Array<{ "studentId": string; "studentName": string; "before": (number) | null; "after": number; }>; "lockedByName": (string) | null; "publishedByName": (string) | null; "className": string; "canRequestAdjustment": boolean; "pendingAdjustments": number; };
+  "ConductAdjustmentItem": { "schoolId": string; "yearId": string; "classId": string; "id": string; "version": number; "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": (string) | null; "recordId": (string) | null; "kind": "remove_record" | "change_points" | "batch"; "newPoints": (number) | null; "ruleId": (string) | null; "beforeTotal": (number) | null; "afterTotal": (number) | null; "reason": string; "status": "pending" | "approved" | "rejected" | "published"; "requestedBy": string; "requestedAt": string; "requestedByName": (string) | null; "decidedBy": (string) | null; "decidedAt": (string) | null; "decidedByName": (string) | null; "decisionNote": (string) | null; "resultSnapshotId": (string) | null; "resultSnapshotStatus": ("locked" | "published" | "superseded" | "withdrawn" | null) | null; "studentName": string; "weekIndex": number; "weekId": string; "snapshotVersion": number; "recordLabel": (string) | null; };
+  "ConductAdjustmentWorkspace": { "schoolId": string; "yearId": string; "classId": string; "items": Array<ApiSchemas["ConductAdjustmentItem"]>; "canRequest": boolean; "canApprove": boolean; "canPublish": boolean; "me": string; "snapshots": Array<ApiSchemas["ConductWorkspaceSnapshot"]>; "rules": Array<ApiSchemas["RuleWorkspaceRule"]>; };
+  "ConductAdjustmentRequest": { "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": string; "kind": "remove_record" | "change_points" | "add_record"; "recordId": (string) | null; "newPoints": (number) | null; "ruleId": (string) | null; "reason": string; };
+  "ConductAdjustmentDecision": { "source": ApiSchemas["ConductWorkspaceSource"]; "version": number; "approve": boolean; "note": (string) | null; };
+  "ConductAdjustmentPublish": { "source": ApiSchemas["ConductWorkspaceSource"]; "version": number; };
+  "ConductAdjustmentItemResponse": { "data": ApiSchemas["ConductAdjustmentItem"]; "requestId": string; };
+  "ConductAdjustmentWorkspaceResponse": { "data": ApiSchemas["ConductAdjustmentWorkspace"]; "requestId": string; };
+  "ConductWorkspaceWeeksResponse": { "data": ApiSchemas["ConductWorkspaceWeeks"]; "requestId": string; };
+  "ConductWorkspaceRecordsResponse": { "data": ApiSchemas["ConductWorkspaceRecords"]; "requestId": string; };
+  "ConductWorkspaceSummaryResponse": { "data": ApiSchemas["ConductWorkspaceSummary"]; "requestId": string; };
+  "ConductWorkspaceReceiptResponse": { "data": ApiSchemas["ConductWorkspaceReceipt"]; "requestId": string; };
+  "ConductWorkspaceSnapshotsResponse": { "data": ApiSchemas["ConductWorkspaceSnapshots"]; "requestId": string; "page": ApiSchemas["PageInfo"]; };
+  "ConductWorkspaceSnapshotDetailResponse": { "data": ApiSchemas["ConductWorkspaceSnapshotDetail"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4330,6 +4362,156 @@ export const apiOperations = {
     "response": "RuleWorkspaceDiscard",
     "list": false,
     "permission": "rules.manage",
+    "readOnly": false
+  },
+  "getConductWorkspaceWeeks": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductWorkspaceWeeks",
+    "list": false,
+    "permission": "conduct.read",
+    "readOnly": true
+  },
+  "getConductWorkspaceRecords": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductWorkspaceRecords",
+    "list": false,
+    "permission": "conduct.read",
+    "readOnly": true
+  },
+  "getConductWorkspaceSummary": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/summary",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductWorkspaceSummary",
+    "list": false,
+    "permission": "conduct.read",
+    "readOnly": true
+  },
+  "createConductWorkspaceRecord": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records/create",
+    "auth": "staff",
+    "request": "ConductWorkspaceCreate",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.record",
+    "readOnly": false
+  },
+  "updateConductWorkspaceRecord": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/records/{recordId}/save",
+    "auth": "staff",
+    "request": "ConductWorkspaceUpdate",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.record",
+    "readOnly": false
+  },
+  "reviewConductWorkspaceRecords": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/review",
+    "auth": "staff",
+    "request": "ConductWorkspaceReview",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.review",
+    "readOnly": false
+  },
+  "lockConductWorkspaceWeek": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/lock",
+    "auth": "staff",
+    "request": "ConductWorkspaceLock",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.lock",
+    "readOnly": false
+  },
+  "publishConductWorkspaceWeek": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/publish",
+    "auth": "staff",
+    "request": "ConductWorkspaceAction",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.publish",
+    "readOnly": false
+  },
+  "reopenConductWorkspaceWeek": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/reopen",
+    "auth": "staff",
+    "request": "ConductWorkspaceReopen",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.lock",
+    "readOnly": false
+  },
+  "getConductWorkspaceSnapshots": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/snapshots",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductWorkspaceSnapshots",
+    "list": false,
+    "permission": "publication.read",
+    "readOnly": true
+  },
+  "getConductWorkspaceSnapshot": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/snapshots/{snapshotId}",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductWorkspaceSnapshotDetail",
+    "list": false,
+    "permission": "publication.read",
+    "readOnly": true
+  },
+  "getConductAdjustmentWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments",
+    "auth": "staff",
+    "request": null,
+    "response": "ConductAdjustmentWorkspace",
+    "list": false,
+    "permission": "conduct.read",
+    "readOnly": true
+  },
+  "requestConductWorkspaceAdjustment": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/request",
+    "auth": "staff",
+    "request": "ConductAdjustmentRequest",
+    "response": "ConductAdjustmentItem",
+    "list": false,
+    "permission": "conduct.adjust.request",
+    "readOnly": false
+  },
+  "decideConductWorkspaceAdjustment": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/{adjustmentId}/decide",
+    "auth": "staff",
+    "request": "ConductAdjustmentDecision",
+    "response": "ConductAdjustmentItem",
+    "list": false,
+    "permission": "conduct.adjust.approve",
+    "readOnly": false
+  },
+  "publishConductWorkspaceAdjustment": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/adjustments/{adjustmentId}/publish",
+    "auth": "staff",
+    "request": "ConductAdjustmentPublish",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.adjust.approve+conduct.publish",
     "readOnly": false
   }
 } as const;

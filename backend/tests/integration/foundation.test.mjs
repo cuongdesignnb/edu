@@ -103,7 +103,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,379);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,394);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -3858,4 +3858,102 @@ test('B6 native rule workspace preserves canonical bounded manual rules with a z
  const invalid=await f.post(`rule-workspace/${item.id}/save`,{...f.body,source:item.source,rules:[{...manual,minimumDelta:null}]});assert.equal(invalid.statusCode,422,invalid.body);assert.equal((await f.get(item.id)).ruleSet.version,item.version);
  const issuer=await f.role(['rules.read','rules.issue','rules.apply'].map(action=>({action,scopes:['SCHOOL']})));await f.grant(f.other,issuer.id);jar.delete('edu_staff');f.setCsrf(await login('teacher-b@example.invalid'));const issuedView=await f.get(item.id);assert.equal(issuedView.canManage,false);assert.equal(issuedView.ruleSet.canIssue,true);assert.equal((await f.post(`rule-workspace/${item.id}/save`,{...f.body,source:item.source,rules:[manual]})).statusCode,403);
  const issued=await f.post(`rule-workspace/${item.id}/issue`,{source:issuedView.ruleSet.source});assert.equal(issued.statusCode,200,issued.body);assert.equal(issued.json().data.rules[0].maximumDelta,2);
+});
+
+// Fast-track: each fixture is a new retained synthetic school in the isolated test DB.
+async function fastConductFixture(options={}){
+ const f=await ruleUiFixture(),save=await f.post(`rule-workspace/${f.draft.id}/save`,options.manual?{...f.body,rules:[{...f.rule,valueMode:'MANUAL',points:0,minimumDelta:-2,maximumDelta:2}]}:f.body);assert.equal(save.statusCode,200,save.body);const issued=await f.post(`rule-workspace/${f.draft.id}/issue`,{source:save.json().data.source});assert.equal(issued.statusCode,200,issued.body);
+ const student=await f.post('students',{studentCode:'FAST-A',fullName:'Học sinh luồng local giả',initialClassId:f.classId,startsOn:f.today});assert.equal(student.statusCode,201,student.body);
+ const other=await f.post('students',{studentCode:'FAST-B',fullName:'Học sinh khác giữ riêng',initialClassId:f.classId,startsOn:f.today});assert.equal(other.statusCode,201,other.body);
+ const root=`years/${f.year}/classes/${f.classId}/conduct-workspace`,path=`${root}/weeks/${f.weeks[0].id}`;
+ const get=async(suffix)=>{const r=await request('GET',`/api/v1/schools/${f.schoolId}/${path}/${suffix}`);assert.equal(r.statusCode,200,r.body);return r.json().data;};
+ const records=await get('records'),entry=records.roster.find(e=>e.id===student.json().data.id);
+ const body={source:records.source,studentId:entry.id,enrollmentId:entry.enrollmentId,date:f.today,ruleId:f.rule.id,reason:'Sự việc dùng cho kiểm thử local',requestId:crypto.randomUUID(),lessonId:null,manualDelta:options.manual?-1.1:null,confirmDistinct:false,distinctNote:null};
+ return {...f,root,path,read:get,entry,body,other:other.json().data.id};
+}
+test('FAST T1 T4 T5 native conduct persists review lock publish with immutable private explanations and source races',async()=>{
+ const f=await fastConductFixture(),key=crypto.randomUUID(),created=await f.post(`${f.path}/records/create`,f.body,key);assert.equal(created.statusCode,201,created.body);let rec=created.json().data.record;assert.equal(rec.points,-1.1);assert.equal(rec.status,'pending_review');
+ const replay=await f.post(`${f.path}/records/create`,f.body,key);assert.equal(replay.statusCode,201,replay.body);assert.equal(replay.json().data.record.id,rec.id);
+ let before=await f.read('summary');assert.equal(before.rows.find(r=>r.studentId===f.entry.id).total,100);assert.equal(before.preview.find(r=>r.studentId===f.entry.id).total,98.9);assert.equal(before.checks.pending,1);
+ const dup=await f.post(`${f.path}/records/create`,{...f.body,source:before.source,requestId:crypto.randomUUID()});assert.equal(dup.statusCode,409,dup.body);assert.equal(dup.json().code,'POSSIBLE_DUPLICATE');
+ const edit=await f.post(`${f.path}/records/${rec.id}/save`,{source:before.source,ruleId:rec.ruleId,reason:'Lý do cập nhật có kiểm phiên bản',version:rec.version,manualDelta:null});assert.equal(edit.statusCode,200,edit.body);rec=edit.json().data.record;
+ assert.equal((await f.post(`${f.path}/review`,{source:before.source,records:[{id:rec.id,version:rec.version}],decision:'approve',note:null})).statusCode,409);
+ let source=(await f.read('records')).source;const review=await f.post(`${f.path}/review`,{source,records:[{id:rec.id,version:rec.version}],decision:'approve',note:null});assert.equal(review.statusCode,200,review.body);
+ const approved=await f.read('summary');assert.equal(approved.rows.find(r=>r.studentId===f.entry.id).total,98.9);assert.equal(approved.checks.pending,0);
+ assert.equal((await f.post(`${f.path}/lock`,{source:before.source,alsoPublish:false})).statusCode,409);
+ const locked=await f.post(`${f.path}/lock`,{source:approved.source,alsoPublish:false});assert.equal(locked.statusCode,200,locked.body);const snapshot=locked.json().data.snapshot;assert.equal(snapshot.status,'locked');assert.equal(snapshot.detailsAvailable,true);assert.equal(snapshot.rows.find(r=>r.studentId===f.entry.id).items[0].shareWithParent,false);
+ assert.equal((await f.post(`${f.path}/records/${rec.id}/save`,{source:locked.json().data.source,ruleId:rec.ruleId,reason:'Không được đổi bản chốt',version:rec.version+1,manualDelta:null})).statusCode,409);
+ const pub=await f.post(`${f.path}/publish`,{source:locked.json().data.source});assert.equal(pub.statusCode,200,pub.body);assert.equal(pub.json().data.snapshot.id,snapshot.id);assert.equal(pub.json().data.snapshot.status,'published');
+ const stored=(await db.transaction(tx=>tx.query('SELECT payload FROM app.parent_publication_items WHERE school_id=$1 AND publication_id=$2 AND student_id=$3',[f.schoolId,snapshot.id,f.entry.id]),{schoolId:f.schoolId})).rows[0].payload;assert.equal(stored.finalPoints,'98.90');assert.deepEqual(stored.lines,[]);assert.equal(JSON.stringify(stored).includes('internalNote'),false);
+ assert.equal((await f.post(`${f.path}/reopen`,{source:pub.json().data.source,reason:'Bản đã công bố phải giữ nguyên'})).statusCode,409);
+ await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.publication_revisions SET conduct_workspace_snapshot='{}' WHERE school_id=$1 AND id=$2",[f.schoolId,snapshot.id]),{schoolId:f.schoolId}),e=>e.code==='23514');
+ const detail=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${snapshot.id}`);assert.equal(detail.statusCode,200,detail.body);assert.deepEqual(detail.json().data.snapshot.rows,snapshot.rows);
+ const foreign=await request('GET',`/api/v1/schools/${schoolB}/${f.root}/snapshots/${snapshot.id}`);assert.equal(foreign.statusCode,404,foreign.body);
+});
+test('FAST T5 T6 native reopen preserves withdrawn history and independent lock publication rights',async()=>{
+ const f=await fastConductFixture(),summary=await f.read('summary'),locked=await f.post(`${f.path}/lock`,{source:summary.source,alsoPublish:false});assert.equal(locked.statusCode,200,locked.body);
+ const reopened=await f.post(`${f.path}/reopen`,{source:locked.json().data.source,reason:'Cần rà soát thêm trước khi công bố'});assert.equal(reopened.statusCode,200,reopened.body);assert.equal(reopened.json().data.status,'open');assert.equal(reopened.json().data.snapshot,null);
+ const history=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().data.items.find(s=>s.id===locked.json().data.snapshot.id).status,'withdrawn');
+ const teacherRole=await f.role([{action:'class.read',scopes:['CLASS']},{action:'conduct.read',scopes:['CLASS']},{action:'conduct.lock',scopes:['CLASS']}]),grant=await f.grant(f.target,teacherRole.id,{scopeType:'CLASS',classId:f.classId});jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));
+ const own=await f.read('summary');assert.equal(own.perms.lock,true);assert.equal(own.perms.publish,false);assert.equal((await f.post(`${f.path}/lock`,{source:own.source,alsoPublish:true})).statusCode,404);
+ const relock=await f.post(`${f.path}/lock`,{source:own.source,alsoPublish:false});assert.equal(relock.statusCode,200,relock.body);assert.equal(relock.json().data.snapshot.versionNo,2);
+ const cookie=jar.get('edu_staff');jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));const revoked=await f.post(`grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Thu hồi quyền trong phiên kiểm thử'});assert.equal(revoked.statusCode,200,revoked.body);jar.set('edu_staff',cookie);
+ assert.equal((await request('GET',`/api/v1/schools/${f.schoolId}/${f.path}/summary`)).statusCode,404);
+});
+
+async function fastPublished(f){
+ const create=await f.post(`${f.path}/records/create`,{...f.body,source:(await f.read('records')).source});assert.equal(create.statusCode,201,create.body);const record=create.json().data.record;
+ const approve=await f.post(`${f.path}/review`,{source:(await f.read('records')).source,records:[{id:record.id,version:record.version}],decision:'approve',note:null});assert.equal(approve.statusCode,200,approve.body);
+ const lock=await f.post(`${f.path}/lock`,{source:(await f.read('summary')).source,alsoPublish:true});assert.equal(lock.statusCode,200,lock.body);return {record,pub:lock.json().data.snapshot,source:lock.json().data.source};
+}
+test('FAST T3 T6 private parent retains baseline until native adjustment publish then revocation invalidates current session',async()=>{
+ const f=await fastConductFixture(),published=await fastPublished(f),slug=(await db.transaction(tx=>tx.query('SELECT slug FROM platform.schools WHERE id=$1',[f.schoolId]),{schoolId:f.schoolId})).rows[0].slug;
+ const relation=await parentRelationship(null,f.post,f.entry.id),issued=await f.post('parent-access',{studentId:f.entry.id,yearId:f.year,relationshipId:relation.id,allowedSections:['conduct'],allowDownload:false,expiresAt:new Date(Date.now()+86400000).toISOString()});assert.equal(issued.statusCode,201,issued.body);
+ const ctx=await parentExchange(issued.json().data.link,slug),parent=()=>request('GET',`/api/v1/parent/${slug}/conduct/${published.source.periodId}`,undefined,undefined,{'x-parent-view':ctx.viewId});
+ let view=await parent();assert.equal(view.statusCode,200,view.body);assert.equal(view.json().data.finalPoints,'98.90');assert.deepEqual(view.json().data.lines,[]);assert.equal(JSON.stringify(view.json().data).includes(f.other),false);assert.equal(JSON.stringify(view.json().data).includes(f.rule.label),false);
+ const unknown=await request('GET',`/api/v1/parent/${slug}/conduct/${published.source.periodId}?studentId=${f.other}`,undefined,undefined,{'x-parent-view':ctx.viewId});assert.equal(unknown.statusCode,200,unknown.body);assert.deepEqual(unknown.json().data,view.json().data);assert.equal(JSON.stringify(unknown.json().data).includes(f.other),false);
+ const proposal=await f.post(`${f.root}/adjustments/request`,{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:published.record.id,kind:'remove_record',newPoints:null,ruleId:null,reason:'Điều chỉnh bỏ ghi nhận sai, giữ lịch sử'});assert.equal(proposal.statusCode,201,proposal.body);let a=proposal.json().data;assert.equal(a.beforeTotal,98.9);assert.equal(a.afterTotal,100);assert.equal((await parent()).json().data.finalPoints,'98.90');
+ const approved=await f.post(`${f.root}/adjustments/${a.id}/decide`,{source:a.source,version:a.version,approve:true,note:null});assert.equal(approved.statusCode,200,approved.body);a=approved.json().data;assert.equal(a.status,'approved');assert.equal((await parent()).json().data.finalPoints,'98.90');
+ const replayKey=crypto.randomUUID(),republished=await f.post(`${f.root}/adjustments/${a.id}/publish`,{source:a.source,version:a.version},replayKey);assert.equal(republished.statusCode,200,republished.body);const next=republished.json().data.snapshot;assert.notEqual(next.id,published.pub.id);assert.equal(next.versionNo,2);assert.equal(next.status,'published');assert.equal((await parent()).json().data.finalPoints,'100.00');
+ assert.equal((await f.post(`${f.root}/adjustments/${a.id}/publish`,{source:a.source,version:a.version},replayKey)).statusCode,200);
+ const history=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${published.pub.id}`);assert.equal(history.statusCode,200,history.body);assert.equal(history.json().data.snapshot.status,'superseded');assert.deepEqual(history.json().data.snapshot.rows,published.pub.rows);
+ const revoked=await f.post(`parent-access/${issued.json().data.access.id}/revoke`,{expectedVersion:issued.json().data.access.version,reason:'Thu hồi link sau kiểm tra local'});assert.equal(revoked.statusCode,200,revoked.body);assert.equal((await parent()).statusCode,401);
+});
+test('FAST T2 dated SUBJECT record visibility does not borrow review or foreign class authority and cached retry reauthorizes',async()=>{
+ const f=await fastConductFixture(),adminCreated=await f.post(`${f.path}/records/create`,f.body);assert.equal(adminCreated.statusCode,201,adminCreated.body);
+ const subject=(await f.post('dictionaries/subjects',{code:'FASTSUB',name:'Môn kiểm thử quyền thực'})).json().data;assert.ok(subject.id);
+ const role=await f.role(['class.read','conduct.read','conduct.record'].map(action=>({action,scopes:['SUBJECT']}))),grant=await f.grant(f.target,role.id,{scopeType:'SUBJECT',classId:f.classId,subjectId:subject.id});
+ const homeroomRole=await f.role(['class.read','conduct.read','conduct.review','conduct.lock'].map(action=>({action,scopes:['CLASS']})));await f.grant(f.target,homeroomRole.id,{scopeType:'CLASS',classId:f.siblingId});
+ const assignment=await f.post('assignments',{classId:f.classId,memberId:f.target,subjectId:subject.id,kind:'SUBJECT',startsOn:f.today,endsOn:f.endsOn,reason:'Phân công môn kiểm thử local'});assert.equal(assignment.statusCode,201,assignment.body);
+ const lesson=await db.transaction(async tx=>{const t=(await tx.query('INSERT INTO app.timetable_versions(school_id,class_id,year_id,revision,starts_on,ends_on,created_by) VALUES($1,$2,$3,1,$4,$4::date+1,$5) RETURNING id',[f.schoolId,f.classId,f.year,f.today,seedId('user:admin-a')])).rows[0];return (await tx.query('INSERT INTO app.lesson_occurrences(school_id,class_id,timetable_id,subject_id,member_id,starts_at,ends_at) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id',[f.schoolId,f.classId,t.id,subject.id,f.target,`${f.today}T00:00:00+07:00`,`${f.today}T01:00:00+07:00`])).rows[0];},{schoolId:f.schoolId});
+ jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));let records=await f.read('records');assert.equal(records.records.length,0);assert.equal(records.isReviewer,false);assert.equal((await f.read('summary')).summaryAvailable,false);
+ const ownBody={...f.body,source:records.source,studentId:f.other,enrollmentId:records.roster.find(s=>s.id===f.other).enrollmentId,lessonId:lesson.id,requestId:crypto.randomUUID()},key=crypto.randomUUID(),own=await f.post(`${f.path}/records/create`,ownBody,key);assert.equal(own.statusCode,201,own.body);records=await f.read('records');assert.deepEqual(records.records.map(r=>r.id),[own.json().data.record.id]);
+ assert.equal((await f.post(`${f.path}/review`,{source:records.source,records:[{id:own.json().data.record.id,version:1}],decision:'approve',note:null})).statusCode,404);
+ const foreignClass=await request('GET',`/api/v1/schools/${f.schoolId}/years/${f.year}/classes/${f.siblingId}/conduct-workspace/weeks/${f.weeks[0].id}/records`);assert.equal(foreignClass.statusCode,200,foreignClass.body);assert.equal(foreignClass.json().data.isReviewer,true);
+ const cookie=jar.get('edu_staff');jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));assert.equal((await f.post(`grants/${grant.id}/revoke`,{expectedVersion:grant.version,reason:'Thu hồi grant môn đang có phiên'})).statusCode,200);jar.set('edu_staff',cookie);
+ const revokedReplay=await f.post(`${f.path}/records/create`,ownBody,key);assert.ok([403,404].includes(revokedReplay.statusCode),revokedReplay.body);assert.equal(revokedReplay.json().data,undefined);const retained=(await db.transaction(tx=>tx.query('SELECT count(*)::int AS n FROM app.conduct_records WHERE school_id=$1 AND id=$2',[f.schoolId,own.json().data.record.id]),{schoolId:f.schoolId})).rows[0];assert.equal(retained.n,1);
+});
+
+test('FAST T4 T8 bounded manual edits duplicate distinction and atomic review reject void preserve scoring',async()=>{
+ const f=await fastConductFixture({manual:true}),denied=await f.post(`${f.path}/records/create`,{...f.body,manualDelta:3});assert.equal(denied.statusCode,422,denied.body);assert.deepEqual((await f.read('records')).source,f.body.source);
+ const one=await f.post(`${f.path}/records/create`,f.body);assert.equal(one.statusCode,201,one.body);let first=one.json().data.record;
+ const edit=await f.post(`${f.path}/records/${first.id}/save`,{source:one.json().data.source,ruleId:first.ruleId,reason:'Sửa điểm thủ công hợp lệ trong giới hạn',version:first.version,manualDelta:-1.2});assert.equal(edit.statusCode,200,edit.body);first=edit.json().data.record;assert.equal(first.points,-1.2);
+ const distinct=await f.post(`${f.path}/records/create`,{...f.body,source:edit.json().data.source,requestId:crypto.randomUUID(),manualDelta:1,confirmDistinct:true,distinctNote:'Hai sự việc độc lập cùng ngày'});assert.equal(distinct.statusCode,201,distinct.body);const second=distinct.json().data.record;assert.deepEqual(second.duplicateOf,[]);
+ const source=(await f.read('records')).source,bad=await f.post(`${f.path}/review`,{source,records:[{id:first.id,version:first.version},{id:second.id,version:99}],decision:'approve',note:null});assert.equal(bad.statusCode,409,bad.body);assert.equal((await f.read('records')).records.find(r=>r.id===first.id).status,'pending_review');
+ let result=await f.post(`${f.path}/review`,{source,records:[{id:second.id,version:second.version}],decision:'reject',note:'Từ chối sự việc không chính xác'});assert.equal(result.statusCode,200,result.body);assert.equal((await f.read('records')).records.find(r=>r.id===second.id).status,'rejected');
+ result=await f.post(`${f.path}/review`,{source:result.json().data.source,records:[{id:first.id,version:first.version}],decision:'approve',note:null});assert.equal(result.statusCode,200,result.body);let summary=await f.read('summary');assert.equal(summary.rows.find(r=>r.studentId===f.entry.id).total,98.8);
+ first=(await f.read('records')).records.find(r=>r.id===first.id);result=await f.post(`${f.path}/review`,{source:summary.source,records:[{id:first.id,version:first.version}],decision:'void',note:'Loại ghi nhận đã duyệt trước khi chốt'});assert.equal(result.statusCode,200,result.body);assert.equal((await f.read('records')).records.find(r=>r.id===first.id).status,'void');assert.equal((await f.read('summary')).rows.find(r=>r.studentId===f.entry.id).total,100);
+});
+
+test('FAST T6 manual adjustment replaces bounded points atomically while old publication stays frozen',async()=>{
+ const f=await fastConductFixture({manual:true}),published=await fastPublished(f);
+ const bad=await f.post(`${f.root}/adjustments/request`,{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:published.record.id,kind:'change_points',newPoints:3,ruleId:null,reason:'Điều chỉnh phải giữ giới hạn nội quy'});assert.equal(bad.statusCode,422,bad.body);
+ const created=await f.post(`${f.root}/adjustments/request`,{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:published.record.id,kind:'change_points',newPoints:-0.25,ruleId:null,reason:'Điều chỉnh điểm thủ công có lý do hợp lệ'});assert.equal(created.statusCode,201,created.body);let a=created.json().data;assert.equal(a.afterTotal,99.75);
+ const approved=await f.post(`${f.root}/adjustments/${a.id}/decide`,{source:a.source,version:a.version,approve:true,note:null});assert.equal(approved.statusCode,200,approved.body);a=approved.json().data;
+ const replacement=await f.post(`${f.root}/adjustments/${a.id}/publish`,{source:a.source,version:a.version});assert.equal(replacement.statusCode,200,replacement.body);assert.equal(replacement.json().data.snapshot.rows.find(r=>r.studentId===f.entry.id).total,99.75);
+ const old=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${published.pub.id}`);assert.equal(old.statusCode,200,old.body);assert.deepEqual(old.json().data.snapshot.rows,published.pub.rows);const records=await f.read('records');assert.equal(records.records.filter(r=>r.status==='approved').length,1);assert.equal(records.records.find(r=>r.status==='approved').points,-0.25);
+ const original=(await f.get(f.draft.id)).ruleSet,copied=await f.post(`rule-workspace/${f.draft.id}/copy`,{source:original.source});assert.equal(copied.statusCode,201,copied.body);let draft=copied.json().data;
+ const saved=await f.post(`rule-workspace/${draft.id}/save`,{source:draft.source,name:draft.name,baseScore:draft.baseScore,cap:draft.cap,floor:draft.floor,bands:draft.bands,entryDeadlineDays:draft.entryDeadlineDays,effectiveFrom:f.weeks[1].starts_on,rules:draft.rules.map(r=>({...r,valueMode:'FIXED',points:2,minimumDelta:null,maximumDelta:null}))});assert.equal(saved.statusCode,200,saved.body);draft=saved.json().data;
+ const issued=await f.post(`rule-workspace/${draft.id}/issue`,{source:draft.source});assert.equal(issued.statusCode,200,issued.body);
+ const frozen=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${replacement.json().data.snapshot.id}`);assert.equal(frozen.statusCode,200,frozen.body);assert.deepEqual(frozen.json().data.snapshot.rows,replacement.json().data.snapshot.rows);assert.equal(frozen.json().data.snapshot.ruleSetId,f.draft.id);
 });

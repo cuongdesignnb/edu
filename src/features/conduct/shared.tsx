@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 import {
   CalendarCheck, Trophy, ChevronLeft, ChevronRight, Clock, UserX, Shirt, FileX, TriangleAlert, MessageSquare, Users, Flag, Star, Sparkles, CircleDot,
 } from "lucide-react";
-import type { GradeBand, RuleSet } from "@/lib/model/types";
+import type { RuleSet } from "@/lib/model/types";
 import { conductRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtPoints, type Tone } from "@/lib/formatters";
@@ -60,6 +60,7 @@ export function weekLabel(w: { index: number; startDate: string; endDate: string
   return `Tuần ${w.index} (${dm(w.startDate)} – ${dm(w.endDate)})`;
 }
 
+type GradeBand=import('@/lib/repositories/connected/conduct').RuleItem['bands'][number];
 export function gradeTone(label: string, bands?: GradeBand[]): Tone {
   return (bands?.find((b) => b.label === label)?.tone ?? "info") as Tone;
 }

@@ -6,6 +6,7 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import {extendAnnouncementContract} from './announcement-contract.mjs';
 import {extendPublicAnnouncementContract} from './public-announcement-contract.mjs';
 import {extendConductRuleContract} from './conduct-rule-contract.mjs';
+import {extendConductWorkspaceContract} from './conduct-workspace-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -749,6 +750,7 @@ for(const paths of Object.values(spec.paths))for(const op of Object.values(paths
 }
 extendPublicAnnouncementContract(spec,extendOperation,{object,uuid,label,count,timestamp,operations});
 extendConductRuleContract(spec,extendOperation,{object,uuid,label,count,timestamp,operations});
+extendConductWorkspaceContract(spec,extendOperation,{object,uuid,label,count,timestamp,operations});
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;
