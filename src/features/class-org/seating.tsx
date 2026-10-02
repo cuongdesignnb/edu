@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type DragEvent } from "react";
 import { clsx } from "clsx";
 import { Undo2, Redo2, Save, Eraser, LayoutGrid, History, ListOrdered, Maximize2, Minimize2, Info } from "lucide-react";
 import type { RepoError } from "@/lib/repositories";
@@ -15,23 +15,10 @@ import { DateField, NumberField, TextField } from "@/components/ui/form";
 import { ConflictDialog, useUnsavedChanges } from "@/components/ui/guards";
 import { QueryState } from "@/components/ui/states";
 import { ClassroomFrame, SeatMapView, seatKey, shortName } from "./seat-view";
+import { initialSeatingLayout, resizeSeating, moveStudent, sameSeating, type SeatingLayout as Layout } from "./seating-layout";
 
 type Data = Awaited<ReturnType<typeof classroomRepo.seating>>;
-interface Layout { rows: number; cols: number; seats: Record<string, string | null> }
-
-function toLayout(p: Data["plan"], rows = 6, cols = 6): Layout {
-  const seats: Record<string, string | null> = {};
-  const r = p ? p.rows ?? 0 : rows, c = p ? p.cols ?? 0 : cols;
-  for (let i = 1; i <= r; i++) for (let j = 1; j <= c; j++) seats[seatKey(i, j)] = null;
-  p?.seats.forEach((s) => { if (s.seat in seats) seats[s.seat] = s.studentId; });
-  return { rows: r, cols: c, seats };
-}
-function resize(l: Layout, rows: number, cols: number): Layout {
-  const seats: Record<string, string | null> = {};
-  for (let i = 1; i <= rows; i++) for (let j = 1; j <= cols; j++) seats[seatKey(i, j)] = l.seats[seatKey(i, j)] ?? null;
-  return { rows, cols, seats };
-}
-const same = (a: Layout, b: Layout) => a.rows === b.rows && a.cols === b.cols && Object.keys(a.seats).every((k) => a.seats[k] === b.seats[k]);
+const studentDragType = "application/x-edumanage-student";
 const seatLabel = (k: string) => { const m = k.match(/^r(\d+)c(\d+)$/); return m ? `Hàng ${m[1]}, ghế ${m[2]}` : k; };
 
 /** CL14 — seating editor (C066 / O24): select-then-place (no drag required), undo/redo, effective date, versions. */
@@ -52,11 +39,12 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
   const { schoolId, yearId, classId, readOnly } = useClassroom();
   const ctx = useCtx();
   const editable = d.canEdit && !readOnly;
-  const base = useMemo(() => toLayout(d.plan), [d.plan]);
+  const base = useMemo(() => initialSeatingLayout(d.plan), [d.plan]);
   const [stack, setStack] = useState<Layout[]>([base]);
   const [idx, setIdx] = useState(0);
   const layout = stack[idx];
   const [sel, setSel] = useState<{ kind: "student"; id: string } | { kind: "seat"; key: string } | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
   const [date, setDate] = useState<string | undefined>(d.date < d.today ? d.today : d.date);
   const [note, setNote] = useState("");
   const [fit, setFit] = useState(false);
@@ -66,18 +54,14 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
   const names = useMemo(() => new Map(d.students.map((s) => [s.id, s.fullName])), [d.students]);
   const seatOf = useMemo(() => { const m = new Map<string, string>(); Object.entries(layout.seats).forEach(([k, v]) => { if (v) m.set(v, k); }); return m; }, [layout]);
   const unseated = d.students.filter((s) => !seatOf.has(s.id));
-  const dirty = !same(layout, base) || note.trim().length > 0 || date !== (d.date < d.today ? d.today : d.date);
+  const dirty = !sameSeating(layout, base) || note.trim().length > 0 || date !== (d.date < d.today ? d.today : d.date);
   const latestVersion = d.latestRevision;
 
   const push = (next: Layout) => { const s = stack.slice(0, idx + 1); s.push(next); setStack(s); setIdx(s.length - 1); setErr(undefined); };
   const place = (studentId: string, key: string) => {
-    const seats = { ...layout.seats };
-    const from = seatOf.get(studentId);
-    const occupant = seats[key];
-    if (from === key) return;
-    seats[key] = studentId;
-    if (from) seats[from] = occupant ?? null; // swap
-    push({ ...layout, seats });
+    if (!d.students.some(student => student.id === studentId)) return;
+    const next = moveStudent(layout, studentId, key);
+    if (next !== layout) push(next);
   };
   const clickSeat = (key: string) => {
     if (!editable) return;
@@ -93,8 +77,13 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
     void occupant;
   };
   const clear = (key: string) => { if (!layout.seats[key]) return; push({ ...layout, seats: { ...layout.seats, [key]: null } }); setSel(null); };
-  const autoFill = () => { const seats = { ...layout.seats }; const free = Object.keys(seats).filter((k) => !seats[k]); unseated.forEach((s, i) => { if (free[i]) seats[free[i]] = s.id; }); push({ ...layout, seats }); };
-  const setSize = (rows: number, cols: number) => push(resize(layout, rows, cols));
+  const autoFill = () => { const seats = { ...layout.seats }; const free = Object.keys(seats).filter((k) => !seats[k]); if (!free.length) {setErr("Không còn ghế trống. Hãy tăng số hàng hoặc ghế mỗi hàng.");return;}unseated.forEach((s, i) => { if (free[i]) seats[free[i]] = s.id; }); push({ ...layout, seats }); };
+  const setSize = (rows: number, cols: number) => {
+    if (!Number.isInteger(rows) || !Number.isInteger(cols) || rows < 1 || cols < 1 || rows > 10 || cols > 10) return;
+    const lost = lostOnShrink(rows, cols);
+    push(resizeSeating(layout, rows, cols));setSel(null);
+    if (lost) setErr(`${lost} học sinh được chuyển về danh sách chưa có chỗ. Có thể Hoàn tác để khôi phục.`);
+  };
   const lostOnShrink = (rows: number, cols: number) => Object.entries(layout.seats).filter(([k, v]) => { const m = k.match(/^r(\d+)c(\d+)$/)!; return v && (Number(m[1]) > rows || Number(m[2]) > cols); }).length;
 
   const save = useCommand((c) => classroomRepo.saveSeating(c, schoolId, classId, { yearId, rows: layout.rows, cols: layout.cols, seats: Object.entries(layout.seats).map(([seat, studentId]) => ({ seat, studentId })), effectiveDate: date!, basedOnVersion: latestVersion, note: note.trim() || undefined }), {
@@ -102,25 +91,46 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
     onError: (e) => { if (e.code === "CONFLICT") setConflict(e); else if (e.code === "VALIDATION") setErr(e.fieldErrors ? Object.values(e.fieldErrors).join("; ") : e.message); },
   });
   const doSave = async () => { if (!date) { setErr("Chọn ngày áp dụng"); return false; } return !!(await save.run()); };
+  const discard = () => { setStack([base]);setIdx(0);setSel(null);setDropTarget(null);setDate(d.date < d.today ? d.today : d.date);setNote("");setErr(undefined); };
+  const startDrag = (event: DragEvent<HTMLElement>, studentId: string) => {
+    if (!editable || save.pending) { event.preventDefault();return; }
+    event.dataTransfer.setData(studentDragType, studentId);event.dataTransfer.effectAllowed="move";setSel({kind:"student",id:studentId});
+  };
+  const dragOver = (event: DragEvent<HTMLElement>, key: string) => {
+    if (!editable || save.pending || !event.dataTransfer.types.includes(studentDragType)) return;
+    event.preventDefault();event.dataTransfer.dropEffect="move";setDropTarget(key);
+  };
+  const dropStudent = (event: DragEvent<HTMLElement>, key: string) => {
+    event.preventDefault();if (editable && !save.pending) place(event.dataTransfer.getData(studentDragType), key);setSel(null);setDropTarget(null);
+  };
   useUnsavedChanges(dirty && editable, doSave);
   const selectedName = sel?.kind === "student" ? names.get(sel.id) : sel?.kind === "seat" ? (layout.seats[sel.key] ? names.get(layout.seats[sel.key]!) : `${seatLabel(sel.key)} (trống)`) : undefined;
   const cell = fit ? "h-12 text-[11px]" : "h-14 min-w-[92px] text-[12.5px]";
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+    <fieldset disabled={save.pending} className="grid min-w-0 gap-5 border-0 p-0 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0 space-y-5">
         {!editable && <Callout tone="neutral" icon={<Info />}>Bạn đang xem sơ đồ ở chế độ chỉ đọc{readOnly ? " (năm học đã lưu trữ)" : " — chỉ giáo viên có quyền “Quản lý sơ đồ lớp” được thay đổi"}.</Callout>}
         <Card>
           <CardHeader title={editable ? "Chỉnh sơ đồ" : "Sơ đồ hiện hành"} icon={<LayoutGrid className="size-5 text-primary" />}
             subtitle={d.plan ? `Phiên bản ${d.plan.version} · áp dụng từ ${fmtDate(d.plan.effectiveDate)}` : "Chưa có sơ đồ — tạo phiên bản đầu tiên"}
             action={editable && <>
-              <Button size="sm" variant="secondary" icon={<Undo2 className="size-4" />} disabled={idx === 0} onClick={() => { setIdx(idx - 1); setSel(null); }}>Hoàn tác</Button>
-              <Button size="sm" variant="secondary" icon={<Redo2 className="size-4" />} disabled={idx >= stack.length - 1} onClick={() => { setIdx(idx + 1); setSel(null); }}>Làm lại</Button>
+              <Button size="sm" variant="primary" icon={<Save className="size-4" />} disabled={!dirty || !date} loading={save.pending} onClick={() => void doSave()}>Lưu thay đổi</Button>
+              <Button size="sm" variant="secondary" icon={<Undo2 className="size-4" />} disabled={idx === 0} onClick={() => { setIdx(idx - 1); setSel(null);setErr(undefined); }}>Hoàn tác</Button>
+              <Button size="sm" variant="secondary" icon={<Redo2 className="size-4" />} disabled={idx >= stack.length - 1} onClick={() => { setIdx(idx + 1); setSel(null);setErr(undefined); }}>Làm lại</Button>
               <Button size="sm" variant="ghost" onClick={() => setFit((f) => !f)} icon={fit ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />} className="lg:hidden">{fit ? "Cỡ thường" : "Vừa màn hình"}</Button>
               <Button size="sm" variant="ghost" icon={<ListOrdered className="size-4" />} aria-pressed={listMode} onClick={() => setListMode((m) => !m)}>{listMode ? "Xem dạng lưới" : "Xếp dạng danh sách"}</Button>
             </>} />
           <div className="px-4 pb-4">
-            {editable && <p className="mb-2 min-h-5 text-[13px] text-body" aria-live="polite">{selectedName ? <>Đang chọn: <b className="text-primary-strong">{selectedName}</b> — bấm một ghế để {sel?.kind === "student" ? "xếp vào" : "đổi chỗ"}, hoặc bấm lại để bỏ chọn.</> : "Chọn học sinh (trong danh sách chưa có chỗ hoặc trên ghế), rồi chọn ghế đích để xếp / đổi chỗ."}</p>}
+            {editable && <div className="mb-3 rounded-xl border border-line bg-neutral-bg p-3">
+              <p className="mb-2 text-sm font-semibold text-ink">Điều chỉnh sơ đồ · {layout.rows} hàng × {layout.cols} ghế</p>
+              <div className="grid grid-cols-2 gap-3">
+                <NumberField label="Số hàng" value={layout.rows} min={1} max={10} allowNegative={false} onChange={v => { if (v && v !== layout.rows) setSize(v, layout.cols); }} />
+                <NumberField label="Ghế mỗi hàng" value={layout.cols} min={1} max={10} allowNegative={false} onChange={v => { if (v && v !== layout.cols) setSize(layout.rows, v); }} />
+              </div>
+              <p className="mt-2 text-xs text-muted">Kéo học sinh đến ghế đích trên máy tính, hoặc chọn học sinh rồi bấm ghế. Chọn hai ghế có người để đổi chỗ.</p>
+            </div>}
+            {editable && <p className="mb-2 min-h-5 text-[13px] text-body" aria-live="polite">{selectedName ? <>Đang chọn: <b className="text-primary-strong">{selectedName}</b> — bấm một ghế để {sel?.kind === "student" ? "xếp vào" : "đổi chỗ"}, hoặc bấm lại để bỏ chọn.</> : `${d.students.length - unseated.length}/${d.students.length} học sinh đã có chỗ. Thay đổi chỉ áp dụng khi bạn bấm Lưu.`}</p>}
             {!editable ? (
               <ClassroomFrame><SeatMapView rows={layout.rows} cols={layout.cols} seats={Object.entries(layout.seats).map(([seat, studentId]) => ({ seat, studentId }))} names={names} /></ClassroomFrame>
             ) : listMode ? (
@@ -145,10 +155,12 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
                       const nm = sid ? names.get(sid) : undefined;
                       const on = sel?.kind === "seat" && sel.key === k;
                       return (
-                        <button key={k} type="button" onClick={() => clickSeat(k)} aria-pressed={on} aria-label={`${seatLabel(k)}: ${nm ?? "trống"}`}
+                        <button key={k} type="button" data-seat={k} onClick={() => clickSeat(k)} aria-pressed={on} aria-label={`${seatLabel(k)}: ${nm ?? "trống"}`} title={nm ? `${nm} — kéo để đổi chỗ` : seatLabel(k)}
+                          draggable={!!sid && !save.pending} onDragStart={event => { if (sid) startDrag(event, sid); }} onDragEnd={() => {setSel(null);setDropTarget(null);}}
+                          onDragOver={event => dragOver(event, k)} onDragLeave={() => setDropTarget(null)} onDrop={event => dropStudent(event, k)}
                           className={clsx("flex items-center justify-center rounded-lg border px-1 text-center shadow-sm transition-colors focus-visible:outline-2", cell,
                             on ? "border-primary bg-primary text-white" : nm ? "border-[#e6dccb] bg-white text-ink hover:border-primary" : "border-dashed border-[#cdb68f] bg-[#f8efe0] text-[#7a6446] hover:border-primary",
-                            sel && !on && "ring-1 ring-primary/30")}>
+                            sel && !on && "ring-1 ring-primary/30", dropTarget === k && "!border-primary !bg-primary-light !text-primary-strong ring-2 ring-primary")}>
                           <span className="line-clamp-2">{nm ? (fit ? nm.split(" ").pop() : shortName(nm)) : "Trống"}</span>
                         </button>
                       );
@@ -170,7 +182,7 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
               {unseated.length === 0 ? <p className="text-sm text-success-text">Tất cả học sinh đã có chỗ.</p> : (
                 <ul className="flex flex-wrap gap-1.5">
                   {unseated.map((s) => (
-                    <li key={s.id}><button type="button" aria-pressed={sel?.kind === "student" && sel.id === s.id} onClick={() => setSel((x) => (x?.kind === "student" && x.id === s.id ? null : { kind: "student", id: s.id }))}
+                    <li key={s.id}><button type="button" aria-label={`${s.fullName} (${s.code})`} title={s.code} draggable={!save.pending} onDragStart={event => startDrag(event, s.id)} onDragEnd={() => {setSel(null);setDropTarget(null);}} aria-pressed={sel?.kind === "student" && sel.id === s.id} onClick={() => setSel((x) => (x?.kind === "student" && x.id === s.id ? null : { kind: "student", id: s.id }))}
                       className={clsx("chip", sel?.kind === "student" && sel.id === s.id && "chip-active")}>{s.fullName}</button></li>
                   ))}
                 </ul>
@@ -182,15 +194,11 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
           <Card>
             <CardHeader title="Lưu phiên bản mới" icon={<Save className="size-5 text-primary" />} />
             <div className="space-y-3 px-5 pb-5">
-              <div className="grid grid-cols-2 gap-3">
-                <NumberField label="Số hàng" value={layout.rows} min={1} max={10} allowNegative={false} onChange={(v) => v && v !== layout.rows && setSize(v, layout.cols)} helper={lostOnShrink(layout.rows - 1, layout.cols) ? "Giảm hàng sẽ đưa học sinh về danh sách chưa có chỗ" : undefined} />
-                <NumberField label="Ghế mỗi hàng" value={layout.cols} min={1} max={10} allowNegative={false} onChange={(v) => v && v !== layout.cols && setSize(layout.rows, v)} />
-              </div>
               <DateField label="Ngày áp dụng" required value={date} onChange={setDate} min={ctx.today} error={!date ? "Chọn ngày áp dụng" : undefined} />
               <TextField label="Ghi chú phiên bản" value={note} onChange={(e) => setNote(e.target.value)} maxLength={120} placeholder="Ví dụ: đổi chỗ đầu tháng 10" />
               {err && <p className="error-text" role="alert">{err}</p>}
               <Button block variant="primary" icon={<Save className="size-4" />} loading={save.pending} disabled={!dirty || !date} onClick={() => void doSave()}>Lưu phiên bản {latestVersion + 1}</Button>
-              <Button block variant="ghost" disabled={!dirty || save.pending} onClick={() => { setStack([base]); setIdx(0); setSel(null); }}>Hủy thay đổi</Button>
+              <Button block variant="ghost" disabled={!dirty || save.pending} onClick={discard}>Hủy thay đổi</Button>
               <p className="text-[12px] text-muted">Mỗi học sinh chỉ ở một ghế trong một phiên bản. Phiên bản cũ được giữ trong lịch sử.</p>
             </div>
           </Card>
@@ -210,6 +218,6 @@ function Editor({ d, onReload }: { d: Data; onReload: () => void }) {
         </Card>
       </div>
       <ConflictDialog error={conflict} onClose={() => setConflict(null)} onReload={() => { setConflict(null); onReload(); }} mine={<p>Sơ đồ bạn đang chỉnh ({layout.rows} × {layout.cols}, {d.students.length - unseated.length} học sinh đã có chỗ) chưa được lưu.</p>} />
-    </div>
+    </fieldset>
   );
 }
