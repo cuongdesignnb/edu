@@ -11,6 +11,7 @@ import {classWorkspaceOverview} from './class-workspace-overview';
 import {classOrganizationWorkspace} from './class-organization-workspace';
 import {classRosterWorkspace,classTransferOptions} from './class-roster-workspace';
 import {classStudentAttendance} from './class-student-attendance';
+import {teacherWorkspace} from './teacher-workspace';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const group:Resource={table:'app.class_groups',fields:{...meta,classId:'class_id',name:'name',sortOrder:'sort_order'},writeFields:['name','sortOrder'],search:['name'],filters:{}};
@@ -23,7 +24,7 @@ type Seat={key:string;row:number;column:number;enrollmentId:string|null};
 export class ClassroomService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
   handlers():Record<string,Handler>{
-    return {getClassStudentAttendance:(c:RequestContext)=>classStudentAttendance(this.db,this.policy,c),getClassRosterWorkspace:(c:RequestContext)=>classRosterWorkspace(this.db,this.policy,c),getClassTransferOptions:(c:RequestContext)=>classTransferOptions(this.db,this.policy,c),...Object.fromEntries(['listGroups','createGroup','updateGroup','assignGroup','listPositions','createPosition','updatePosition',
+    return {...Object.fromEntries(['getTeacherWorkspaceHome','getTeacherWorkspaceTasks','getTeacherWorkspaceSchedule'].map(id=>[id,(c:RequestContext)=>teacherWorkspace(this.db,this.policy,c)])),getClassStudentAttendance:(c:RequestContext)=>classStudentAttendance(this.db,this.policy,c),getClassRosterWorkspace:(c:RequestContext)=>classRosterWorkspace(this.db,this.policy,c),getClassTransferOptions:(c:RequestContext)=>classTransferOptions(this.db,this.policy,c),...Object.fromEntries(['listGroups','createGroup','updateGroup','assignGroup','listPositions','createPosition','updatePosition',
       'listPositionAssignments','assignPosition','endPositionAssignment','listSeatingPlans','createSeatingPlan','getSeatingPlan','updateSeatingPlan','activateSeatingPlan','saveClassSeatingRevision'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),listTeacherClassDirectory:(c:RequestContext)=>teacherClassDirectory(this.db,this.policy,c),getClassWorkspaceHeader:(c:RequestContext)=>classWorkspaceHeader(this.db,this.policy,c),getClassWorkspaceOverview:(c:RequestContext)=>classWorkspaceOverview(this.db,this.policy,c),getClassGroupWorkspace:(c:RequestContext)=>classOrganizationWorkspace(this.db,this.policy,c,'GROUPS'),getClassSeatingWorkspace:(c:RequestContext)=>classOrganizationWorkspace(this.db,this.policy,c,'SEATING')};
   }
   private async context(tx:Transaction,c:RequestContext){

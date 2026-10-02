@@ -1,6 +1,6 @@
 "use client";
 import { BookOpen, CalendarClock, Calculator, GitCompare, Link2 } from "lucide-react";
-import type { ConductRule, RuleSet } from "@/lib/model/types";
+import type { RuleItem } from "@/lib/repositories/connected/conduct";
 import { conductRepo } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { fmtDate, fmtPoints } from "@/lib/formatters";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState, QueryState } from "@/components/ui/states";
 import { ConductNav, Points, RuleIcon, limitsNote } from "./shared";
 
-function RulesTable({ rules }: { rules: ConductRule[] }) {
+function RulesTable({ rules }: { rules: RuleItem['rules'] }) {
   const cats = [...new Set(rules.map((r) => r.category))];
   return (
     <div className="table-wrap">
@@ -35,7 +35,7 @@ function RulesTable({ rules }: { rules: ConductRule[] }) {
   );
 }
 
-function diffRules(a: RuleSet, b: RuleSet) {
+function diffRules(a: RuleItem, b: RuleItem) {
   const out: string[] = [];
   if (a.baseScore !== b.baseScore) out.push(`Điểm gốc: ${a.baseScore} → ${b.baseScore}`);
   if (a.cap !== b.cap || a.floor !== b.floor) out.push(`Giới hạn: ${limitsNote(a)} → ${limitsNote(b)}`);
@@ -64,7 +64,7 @@ export function RulesScreen() {
           if (!cur) return <Card><EmptyState title="Chưa có nội quy đang hiệu lực" description="Nhà trường cần ban hành bộ nội quy thi đua (mục Nội quy và phiên bản của trường)." /></Card>;
           const neg = cur.rules.find((r) => r.attendanceLink === "late") ?? cur.rules.find((r) => r.points < 0);
           const pos = cur.rules.find((r) => r.points > 0 && r.points < 5) ?? cur.rules.find((r) => r.points > 0);
-          const example = [neg, pos].filter(Boolean) as ConductRule[];
+          const example = [neg, pos].filter((v): v is RuleItem['rules'][number] => !!v);
           const sim = conductRepo.simulate(cur, example.map((r) => r.points));
           const changes = d.next ? diffRules(cur, d.next) : [];
           return (

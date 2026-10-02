@@ -35,6 +35,7 @@ import {DashboardsService} from '../../dist/modules/dashboards/dashboards.servic
 import {schoolClassOverview} from '../../dist/modules/dashboards/school-class-overview.js';
 import {listResource} from '../../dist/database/resources.js';
 import {schoolListResource} from '../../dist/modules/platform/platform-data.js';
+import {installActivityWorkspaceTests} from './activity-workspace-cases.mjs';
 
 let app,server,db,policy;
 const password=crypto.randomBytes(24).toString('base64url');
@@ -43,6 +44,7 @@ const pool=new Pool({...databaseConfig('app'),max:1});
 const schoolA=seedId('school:A'),schoolB=seedId('school:B'),classA=seedId('class:A:10A1'),classB=seedId('class:A:10A2');
 const origin=process.env.APP_URL;
 const jar=new Map();
+const fixturePasswordByEmail=new Map();
 // UUID text occasionally contains an all-digit segment resembling protected PII.
 // Preserve unique test labels without weakening the support privacy validator.
 const testTextNonce=()=>crypto.randomUUID().replace(/[0-9]/g,n=>'ghijklmnop'[Number(n)]);
@@ -53,10 +55,11 @@ async function request(method,url,body,csrf,extra={}){
   for(const cookie of response.cookies)jar.set(cookie.name,cookie.value);
   return response;
 }
-async function login(email,currentPassword=password){
+async function login(email,currentPassword=fixturePasswordByEmail.get(email)??password){
   const csrf=(await request('GET','/api/v1/auth/csrf')).json().data.csrfToken;
   const result=await request('POST','/api/v1/auth/login',{email,password:currentPassword},csrf);
   assert.equal(result.statusCode,200,'valid fixture login must succeed');
+  fixturePasswordByEmail.set(email,currentPassword);
   return result.json().data.csrfToken;
 }
 async function unusedYearRange(schoolId,past=false){
@@ -103,7 +106,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,394);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,422);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('BE01 migration replay is a no-op, mismatch fails and metadata remains intact',async()=>{
@@ -3871,6 +3874,30 @@ async function fastConductFixture(options={}){
  const body={source:records.source,studentId:entry.id,enrollmentId:entry.enrollmentId,date:f.today,ruleId:f.rule.id,reason:'Sự việc dùng cho kiểm thử local',requestId:crypto.randomUUID(),lessonId:null,manualDelta:options.manual?-1.1:null,confirmDistinct:false,distinctNote:null};
  return {...f,root,path,read:get,entry,body,other:other.json().data.id};
 }
+
+test('RUN publication policy and class rules persist with school scope stale version and immutable history',async()=>{
+ const f=await fastConductFixture(),root=`/api/v1/schools/${f.schoolId}`;
+ let response=await request('GET',root+'/publication-policy');assert.equal(response.statusCode,200,response.body);const original=response.json().data.policy;assert.equal(response.json().data.canEdit,true);
+ const rules=await request('GET',`${root}/years/${f.year}/classes/${f.classId}/rule-workspace`);assert.equal(rules.statusCode,200,rules.body);assert.equal(rules.json().data.current.id,f.draft.id);assert.equal(rules.json().data.next,null);
+ const saved=await f.post('publication-policy/save',{...Object.fromEntries(Object.entries(original).filter(([key])=>key!=='schoolId')),lockBy:'school_leader',publishBy:'school_leader',requireLeaderApproval:true});assert.equal(saved.statusCode,200,saved.body);assert.equal(saved.json().data.version,original.version+1);
+ const stale=await f.post('publication-policy/save',Object.fromEntries(Object.entries(original).filter(([key])=>key!=='schoolId')));assert.equal(stale.statusCode,409,stale.body);
+ response=await request('GET',root+'/publication-policy');assert.equal(response.json().data.policy.lockBy,'school_leader');
+ const center=await request('GET',root+'/publication-center');assert.equal(center.statusCode,200,center.body);assert.ok(center.json().data.rows.some(r=>r.classId===f.classId));
+ jar.delete('edu_staff');await login('admin-b@example.invalid');assert.ok([403,404].includes((await request('GET',root+'/publication-center')).statusCode));assert.ok([403,404].includes((await request('GET',`${root}/years/${f.year}/classes/${f.classId}/rule-workspace`)).statusCode));
+ jar.delete('edu_staff');await login('teacher-a@example.invalid');assert.ok([403,404].includes((await request('GET',`/api/v1/schools/${schoolA}/publication-center`)).statusCode));
+});
+
+test('RUN add_record adjustment preserves baseline until approval and republish without duplicate or altered history',async()=>{
+ const f=await fastConductFixture(),published=await fastPublished(f),path=`${f.root}/adjustments`;
+ const invalid=await f.post(path+'/request',{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:null,kind:'add_record',newPoints:5,ruleId:f.rule.id,date:'1900-01-01',reason:'Bổ sung ngày không thuộc bản công bố'});assert.equal(invalid.statusCode,422,invalid.body);
+ const create=await f.post(path+'/request',{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:null,kind:'add_record',newPoints:null,ruleId:f.rule.id,date:f.today,reason:'Sự việc bổ sung đã xảy ra cần duyệt trước công bố'});assert.equal(create.statusCode,201,create.body);let a=create.json().data;assert.equal(a.kind,'add_record');assert.equal(a.beforeTotal,98.9);assert.equal(a.afterTotal,97.8);
+ const baseline=(await f.read('summary')).snapshot;assert.deepEqual(baseline.rows,published.pub.rows);
+ const decide=await f.post(`${path}/${a.id}/decide`,{source:a.source,version:a.version,approve:true,note:null});assert.equal(decide.statusCode,200,decide.body);a=decide.json().data;assert.deepEqual((await f.read('summary')).snapshot.rows,published.pub.rows);
+ const publish=await f.post(`${path}/${a.id}/publish`,{source:a.source,version:a.version});assert.equal(publish.statusCode,200,publish.body);assert.equal(publish.json().data.snapshot.rows.find(r=>r.studentId===f.entry.id).total,97.8);
+ const records=await f.read('records');assert.equal(records.records.filter(r=>r.status==='approved').length,2);
+ const replay=await f.post(`${path}/${a.id}/publish`,{source:a.source,version:a.version});assert.equal(replay.statusCode,409,replay.body);assert.equal((await f.read('records')).records.filter(r=>r.status==='approved').length,2);
+ const old=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${published.pub.id}`);assert.equal(old.statusCode,200,old.body);assert.deepEqual(old.json().data.snapshot.rows,published.pub.rows);
+});
 test('FAST T1 T4 T5 native conduct persists review lock publish with immutable private explanations and source races',async()=>{
  const f=await fastConductFixture(),key=crypto.randomUUID(),created=await f.post(`${f.path}/records/create`,f.body,key);assert.equal(created.statusCode,201,created.body);let rec=created.json().data.record;assert.equal(rec.points,-1.1);assert.equal(rec.status,'pending_review');
  const replay=await f.post(`${f.path}/records/create`,f.body,key);assert.equal(replay.statusCode,201,replay.body);assert.equal(replay.json().data.record.id,rec.id);
@@ -3956,4 +3983,204 @@ test('FAST T6 manual adjustment replaces bounded points atomically while old pub
  const saved=await f.post(`rule-workspace/${draft.id}/save`,{source:draft.source,name:draft.name,baseScore:draft.baseScore,cap:draft.cap,floor:draft.floor,bands:draft.bands,entryDeadlineDays:draft.entryDeadlineDays,effectiveFrom:f.weeks[1].starts_on,rules:draft.rules.map(r=>({...r,valueMode:'FIXED',points:2,minimumDelta:null,maximumDelta:null}))});assert.equal(saved.statusCode,200,saved.body);draft=saved.json().data;
  const issued=await f.post(`rule-workspace/${draft.id}/issue`,{source:draft.source});assert.equal(issued.statusCode,200,issued.body);
  const frozen=await request('GET',`/api/v1/schools/${f.schoolId}/${f.root}/snapshots/${replacement.json().data.snapshot.id}`);assert.equal(frozen.statusCode,200,frozen.body);assert.deepEqual(frozen.json().data.snapshot.rows,replacement.json().data.snapshot.rows);assert.equal(frozen.json().data.snapshot.ruleSetId,f.draft.id);
+});
+
+// Append to foundation.test.mjs; uses that suite's isolated PostgreSQL fixtures.
+test('RUN teacher real home tasks schedule retain assignment scope counts and live revocation',async()=>{
+ const f=await attendanceUiFixture(),root=`/api/v1/schools/${f.schoolId}`,today=f.today;
+ const homeAssignment=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'HOMEROOM',startsOn:nextDate(today,-7),endsOn:f.endsOn,reason:'Giao chủ nhiệm để kiểm thử workspace thật'});assert.equal(homeAssignment.statusCode,201,homeAssignment.body);
+ const subject=(await f.post('dictionaries/subjects',{code:'RUN-TEACHER',name:'Môn workspace thật'})).json().data;assert.ok(subject.id);
+ const sibling=(await db.transaction(tx=>tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'RUN-TEACHER-SUBJECT','Lớp bộ môn riêng',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId]),{schoolId:f.schoolId})).rows[0].id;
+ const subjectAssignment=await f.post('assignments',{classId:sibling,memberId:f.target,subjectId:subject.id,kind:'SUBJECT',startsOn:nextDate(today,-7),endsOn:f.endsOn,reason:'Chỉ giao bộ môn lớp khác'});assert.equal(subjectAssignment.statusCode,201,subjectAssignment.body);
+ const other=(await f.post('students',{studentCode:'RUN-TEACHER-SUBJECT',fullName:'Bạn lớp bộ môn giả',initialClassId:sibling,startsOn:nextDate(today,-7)})).json().data;assert.ok(other.id);
+ const next=nextDate(today,1),entry={weekday:new Date(next+'T00:00:00Z').getUTCDay()||7,periodNumber:12,subjectId:subject.id,memberId:f.target,startsAtLocal:'08:05',endsAtLocal:'08:50'};
+ const timetable=await f.post(`classes/${sibling}/timetables`,{startsOn:next,endsOn:nextDate(next,1),entries:[entry]});assert.equal(timetable.statusCode,201,timetable.body);
+ const pub=await f.post(`classes/${sibling}/timetables/${timetable.json().data.id}/publish`,{expectedSourceVersion:timetable.json().data.dataVersion,expectedPublicationId:null});assert.equal(pub.statusCode,200,pub.body);
+ const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');await login('teacher-a@example.invalid');const teacherCookie=jar.get('edu_staff');
+ const read=async(path,schema)=>{const r=await request('GET',root+'/me/teacher-workspace'+path);assert.equal(r.statusCode,200,r.body);validateSchema(schema,r.json().data,true);for(const hidden of ['internalNote','private-student-note','tokenHash','password','guardianId','studentId'])assert.equal(r.body.includes(hidden),false,hidden);return r.json().data;};
+ let home=await read('','TeacherWorkspaceHome');assert.deepEqual(home.classes.map(c=>c.id).sort(),[f.classId,sibling].sort());assert.deepEqual(home.classes.find(c=>c.id===f.classId).attendance,{status:'none',total:2,present:0,late:0,excused:0,unexcused:0,unmarked:2});assert.equal(home.classes.find(c=>c.id===sibling).attendance,null);assert.equal(home.classes.find(c=>c.id===sibling).pendingConduct,null);
+ const before=await read('/tasks','TeacherWorkspaceTasks');if(new Date(today+'T00:00:00Z').getUTCDay()!==0)assert.ok(before.tasks.some(t=>t.classId===f.classId&&t.id==='attendance:'+f.classId));assert.equal(before.tasks.some(t=>t.classId===sibling&&t.id==='attendance:'+sibling),false);
+ const week=new Date(Date.parse(next+'T00:00:00Z')-(new Date(next+'T00:00:00Z').getUTCDay()||7)*86400000+86400000).toISOString().slice(0,10),schedule=await read('/schedule?weekStart='+week,'TeacherWorkspaceSchedule'),rows=schedule.days.flatMap(d=>d.lessons);assert.equal(schedule.days.length,7);assert.equal(rows.length,1);assert.deepEqual([rows[0].classId,rows[0].subjectName,rows[0].periodNumber,rows[0].startsAtLocal,rows[0].endsAtLocal,rows[0].canAttend],[sibling,'Môn workspace thật',12,'08:05','08:50',false]);assert.equal(rows[0].date,next);
+ assert.equal((await request('GET',root+'/me/teacher-workspace/schedule?weekStart='+today+'&memberId='+f.other)).statusCode,422);assert.equal((await request('GET',`/api/v1/schools/${schoolB}/me/teacher-workspace`)).statusCode,404);
+ jar.set('edu_staff',adminCookie);const sheet=await f.read('morning',f.date),saved=await f.save(sheet,sheet.rows.map((r,i)=>({studentId:r.studentId,status:i===0?'LATE':'PRESENT',note:''})));assert.equal(saved.statusCode,200,saved.body);
+ jar.set('edu_staff',teacherCookie);home=await read('','TeacherWorkspaceHome');if(f.date===today){const a=home.classes.find(c=>c.id===f.classId).attendance;assert.equal(a.total,2);assert.equal(a.present,1);assert.equal(a.late,1);assert.equal(a.unmarked,0);assert.equal((await read('/tasks','TeacherWorkspaceTasks')).tasks.some(t=>t.id==='attendance:'+f.classId),false);}
+ jar.set('edu_staff',adminCookie);const revoke=await f.post(`assignments/${subjectAssignment.json().data.id}/revoke`,{expectedVersion:subjectAssignment.json().data.version,reason:'Thu hồi bộ môn khi phiên giáo viên đang mở'});assert.equal(revoke.statusCode,200,revoke.body);
+ jar.set('edu_staff',teacherCookie);assert.deepEqual((await read('','TeacherWorkspaceHome')).classes.map(c=>c.id),[f.classId]);assert.deepEqual((await read('/schedule?weekStart='+week,'TeacherWorkspaceSchedule')).days.flatMap(d=>d.lessons),[]);
+ jar.set('edu_staff',adminCookie);const member=await f.member(f.target),ended=await f.post(`members/${f.target}/end`,{expectedVersion:member.version,reason:'Kết thúc membership kiểm thử workspace'});assert.equal(ended.statusCode,200,ended.body);
+ jar.set('edu_staff',teacherCookie);for(const suffix of ['', '/tasks','/schedule?weekStart='+week])assert.equal((await request('GET',root+'/me/teacher-workspace'+suffix)).statusCode,404);
+});
+
+// Append to foundation.test.mjs; all data belongs to fresh isolated synthetic schools.
+async function runScheduleFixture(){
+ const f=await classRosterFixture(),day=nextDate(f.today,1),week=nextDate(day,-((new Date(day+'T00:00:00Z').getUTCDay()+6)%7)),root=`/api/v1/schools/${f.schoolId}`;
+ const subject=(await f.post('dictionaries/subjects',{code:'RUN-SCHEDULE',name:'Môn lịch thật'})).json().data;
+ const assignment=await f.post('assignments',{classId:f.classId,memberId:f.target,kind:'SUBJECT',subjectId:subject.id,startsOn:nextDate(f.today,-7),endsOn:f.endsOn,reason:'Phân công lịch thật phục vụ kiểm thử'});assert.equal(assignment.statusCode,201,assignment.body);
+ const rooms=[];for(let i=0;i<2;i++){const r=await f.post('dictionaries/rooms',{code:'RUN-ROOM-'+i,name:'Phòng lịch thật '+i,capacity:10});assert.equal(r.statusCode,201,r.body);rooms.push(r.json().data);}
+ const entry={weekday:new Date(day+'T00:00:00Z').getUTCDay()||7,periodNumber:9,subjectId:subject.id,memberId:f.target,roomId:rooms[0].id,startsAtLocal:'09:05',endsAtLocal:'09:50'};
+ const made=await f.post(`classes/${f.classId}/timetables`,{startsOn:day,endsOn:nextDate(day,1),entries:[entry]});assert.equal(made.statusCode,201,made.body);
+ const draft=made.json().data,published=await f.post(`classes/${f.classId}/timetables/${draft.id}/publish`,{expectedSourceVersion:draft.dataVersion,expectedPublicationId:null});assert.equal(published.statusCode,200,published.body);
+ const read=async(classId=f.classId)=>{const r=await request('GET',root+`/schedule-workspace?classId=${classId}&weekStart=${week}`);assert.equal(r.statusCode,200,r.body);validateSchema('ScheduleWorkspace',r.json().data,true);return r.json().data;};
+ const input=(view,overrides={})=>({classId:f.classId,date:day,period:9,kind:'room',subjectId:null,teacherMembershipId:null,roomId:rooms[1].id,reason:'Đổi phòng theo lịch thật',publish:false,source:view.lessons[0].source,expectedPublicationId:view.publicationId,...overrides});
+ return {...f,root,day,week,subject,rooms,entry,draft,pub:published.json().data,read,input};
+}
+test('RUN schedule durable draft publish discard guards stale edits idempotency and parent published-only projection',async()=>{
+ const f=await runScheduleFixture(),pupil=await nativePupil(f,{fullName:'Con lịch riêng giả'}),relationship=await parentRelationship(null,f.post,pupil.id),issued=await f.post('parent-access',{studentId:pupil.id,yearId:f.yearId,relationshipId:relationship.id,allowedSections:['timetable'],allowDownload:false,expiresAt:new Date(Date.now()+10*86400000).toISOString()});assert.equal(issued.statusCode,201,issued.body);
+ const slug=(await db.app.query('SELECT slug FROM platform.schools WHERE id=$1',[f.schoolId])).rows[0].slug,context=await parentExchange(issued.json().data.link,slug),parent=()=>request('GET',`/api/v1/parent/${slug}/timetable-week?week=${f.week}`,undefined,undefined,{'x-parent-view':context.viewId});
+ // Pupil added after the first publication: regenerate a snapshot via a genuine new timetable publication.
+ const next=await f.post(`classes/${f.classId}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[f.entry]});assert.equal(next.statusCode,201,next.body);assert.equal((await f.post(`classes/${f.classId}/timetables/${next.json().data.id}/publish`,{expectedSourceVersion:next.json().data.dataVersion,expectedPublicationId:f.pub.id})).statusCode,200);
+ let view=await f.read();assert.equal(view.lessons.length,1);assert.equal(view.lessons[0].period,9);assert.equal(view.lessons[0].start,'09:05');let before=(await parent()).json().data;assert.equal(before.days.flatMap(d=>d.lessons)[0].roomName,f.rooms[0].name);
+ const body=f.input(view),key=crypto.randomUUID(),saved=await f.post('schedule-workspace/changes',body,key);assert.equal(saved.statusCode,200,saved.body);const change=saved.json().data.change;assert.equal(change.status,'draft');assert.equal((await f.post('schedule-workspace/changes',body,key)).json().data.change.id,change.id);assert.equal((await f.post('schedule-workspace/changes',body)).statusCode,409);assert.deepEqual((await parent()).json().data,before);
+ const action={classId:f.classId,source:change.source,expectedVersion:change.version,expectedPublicationId:change.publicationId};assert.equal((await f.post(`schedule-workspace/changes/${change.id}/publish`,{...action,expectedPublicationId:null})).statusCode,409);
+ const pub=await f.post(`schedule-workspace/changes/${change.id}/publish`,action);assert.equal(pub.statusCode,200,pub.body);assert.equal(pub.json().data.status,'published');view=await f.read();assert.equal(view.lessons.length,1);assert.equal(view.lessons[0].room,f.rooms[1].name);const after=(await parent()).json().data;assert.equal(after.days.flatMap(d=>d.lessons)[0].roomName,f.rooms[1].name);assert.equal(after.days.flatMap(d=>d.lessons)[0].changeNote,'Đổi phòng theo lịch thật');assert.equal(after.days.flatMap(d=>d.lessons)[0].periodNumber,9);
+ for(const privateField of ['studentId','memberId','teacherMembershipId','lessonId','draftId'])assert.equal(JSON.stringify(after).includes(privateField),false);
+ const cancel=await f.post('schedule-workspace/changes',f.input(view,{kind:'cancel',roomId:null,reason:'Bản nháp nghỉ tiết chưa công bố'}));assert.equal(cancel.statusCode,200,cancel.body);const draftChange=cancel.json().data.change;assert.deepEqual((await parent()).json().data,after);const discarded=await f.post(`schedule-workspace/changes/${draftChange.id}/discard`,{classId:f.classId,source:draftChange.source,expectedVersion:draftChange.version,expectedPublicationId:draftChange.publicationId});assert.equal(discarded.statusCode,200,discarded.body);assert.equal((await f.read()).changes.some(ch=>ch.id===draftChange.id),false);assert.deepEqual((await parent()).json().data,after);
+ const td=await f.post(`classes/${f.classId}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[]});assert.equal(td.statusCode,201,td.body);const discardTimetable=await f.post(`classes/${f.classId}/timetables/${td.json().data.id}/discard`,{expectedVersion:td.json().data.version});assert.equal(discardTimetable.statusCode,200,discardTimetable.body);assert.equal((await request('GET',f.root+`/classes/${f.classId}/timetables/${td.json().data.id}`)).json().data.status,'ARCHIVED');assert.deepEqual((await parent()).json().data,after);
+ const stored=(await db.transaction(tx=>tx.query('SELECT status,count(*)::int AS n FROM app.lesson_changes WHERE school_id=$1 GROUP BY status',[f.schoolId]),{schoolId:f.schoolId})).rows;assert.deepEqual(stored.sort((a,b)=>a.status.localeCompare(b.status)),[{status:'DISCARDED',n:1},{status:'PUBLISHED',n:1}]);
+});
+test('RUN schedule cannot save an obsolete lesson draft after replacing its published timetable source',async()=>{
+ const f=await runScheduleFixture(),before=await f.read(),saved=await f.post('schedule-workspace/changes',f.input(before));assert.equal(saved.statusCode,200,saved.body);const change=saved.json().data.change;
+ const readStored=async()=>(await db.transaction(tx=>tx.query('SELECT lesson_id,lesson_version,version,reason,status FROM app.lesson_changes WHERE school_id=$1 AND id=$2',[f.schoolId,change.id]),{schoolId:f.schoolId})).rows[0],stored=await readStored();
+ const made=await f.post(`classes/${f.classId}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[{...f.entry,startsAtLocal:'10:00',endsAtLocal:'10:45'}]});assert.equal(made.statusCode,201,made.body);const draft=made.json().data,pub=await f.post(`classes/${f.classId}/timetables/${draft.id}/publish`,{expectedSourceVersion:draft.dataVersion,expectedPublicationId:before.publicationId});assert.equal(pub.statusCode,200,pub.body);
+ const current=await f.read();assert.notEqual(current.lessons[0].id,before.lessons[0].id);const stale=await f.post('schedule-workspace/changes',f.input(current,{reason:'Không được giả thành công khi nguồn nháp đã thay đổi'}));assert.equal(stale.statusCode,409,stale.body);assert.equal(stale.json().code,'STALE_SOURCE');assert.deepEqual(await readStored(),stored);
+ const discard=await f.post(`schedule-workspace/changes/${change.id}/discard`,{classId:f.classId,source:change.source,expectedVersion:change.version,expectedPublicationId:current.publicationId});assert.equal(discard.statusCode,200,discard.body);const fresh=await f.post('schedule-workspace/changes',f.input(await f.read()));assert.equal(fresh.statusCode,200,fresh.body);assert.notEqual(fresh.json().data.change.id,change.id);assert.equal(fresh.json().data.change.source.lessonId,current.lessons[0].id);
+});
+
+test('RUN schedule rejects actual teacher room overlap missing assignments and referenced lesson history',async()=>{
+ const f=await runScheduleFixture(),sibling=(await db.transaction(tx=>tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'RUN-SCHEDULE-B','Lớp trùng phòng giả',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId]),{schoolId:f.schoolId})).rows[0].id;
+ const siblingAssignment=await f.post('assignments',{classId:sibling,memberId:f.other,kind:'SUBJECT',subjectId:f.subject.id,startsOn:nextDate(f.today,-7),endsOn:f.endsOn,reason:'Phân công cho lớp kiểm tra trùng lịch'});assert.equal(siblingAssignment.statusCode,201,siblingAssignment.body);
+ const second=await f.post(`classes/${sibling}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[{...f.entry,memberId:f.other,roomId:f.rooms[1].id,startsAtLocal:'09:20',endsAtLocal:'09:40'}]});assert.equal(second.statusCode,201,second.body);assert.equal((await f.post(`classes/${sibling}/timetables/${second.json().data.id}/publish`,{expectedSourceVersion:second.json().data.dataVersion,expectedPublicationId:null})).statusCode,200);
+ let view=await f.read();const checked=await f.post('schedule-workspace/check',{classId:f.classId,date:f.day,period:9,subjectId:null,teacherMembershipId:null,roomId:f.rooms[1].id});assert.equal(checked.statusCode,200,checked.body);assert.ok(checked.json().data.conflicts.some(c=>c.kind==='room'));
+ const blocked=await f.post('schedule-workspace/changes',f.input(view,{publish:true}));assert.equal(blocked.statusCode,422,blocked.body);assert.equal((await f.read()).changes.length,0);
+ const teacher=await f.post('schedule-workspace/check',{classId:f.classId,date:f.day,period:9,subjectId:null,teacherMembershipId:f.other,roomId:null});assert.equal(teacher.statusCode,200,teacher.body);assert.ok(teacher.json().data.conflicts.some(c=>c.kind==='teacher'));assert.ok(teacher.json().data.conflicts.some(c=>c.kind==='assignment'));
+ await db.transaction(tx=>tx.query("INSERT INTO app.attendance_sessions(school_id,class_id,year_id,session_date,granularity,slot_key,lesson_id,created_by) VALUES($1,$2,$3,$4,'LESSON',$5::uuid::text,$5,$6)",[f.schoolId,f.classId,f.yearId,f.day,view.lessons[0].id,seedId('user:admin-a')]),{schoolId:f.schoolId});
+ const history=await f.post('schedule-workspace/changes',f.input(view,{kind:'cancel',roomId:null,publish:true,reason:'Không được xóa lịch đã có nguồn'}));assert.equal(history.statusCode,422,history.body);view=await f.read();assert.equal(view.lessons[0].cancelled,false);assert.equal(view.changes.length,0);
+});
+test('RUN schedule server isolates homeroom and subject classes cross-school reads and replay after grant revocation',async()=>{
+ const f=await runScheduleFixture(),home=await f.post('assignments',{classId:f.classId,memberId:f.other,kind:'HOMEROOM',startsOn:nextDate(f.today,-7),endsOn:f.endsOn,reason:'GVCN chỉ quản lý lớp được giao'});assert.equal(home.statusCode,201,home.body);
+ const sibling=(await db.transaction(tx=>tx.query("INSERT INTO app.classes(school_id,year_id,grade_level_id,code,name,capacity,status) SELECT school_id,year_id,grade_level_id,'RUN-SCOPE-B','Lớp chỉ dạy bộ môn',10,'ACTIVE' FROM app.classes WHERE school_id=$1 AND id=$2 RETURNING id",[f.schoolId,f.classId]),{schoolId:f.schoolId})).rows[0].id;
+ const subject=await f.post('assignments',{classId:sibling,memberId:f.other,kind:'SUBJECT',subjectId:f.subject.id,startsOn:nextDate(f.today,-7),endsOn:f.endsOn,reason:'Chỉ dạy bộ môn ở lớp thứ hai'});assert.equal(subject.statusCode,201,subject.body);
+ const td=await f.post(`classes/${sibling}/timetables`,{startsOn:f.day,endsOn:nextDate(f.day,1),entries:[{...f.entry,memberId:f.other,roomId:null,startsAtLocal:'10:05',endsAtLocal:'10:50'}]});assert.equal(td.statusCode,201,td.body);assert.equal((await f.post(`classes/${sibling}/timetables/${td.json().data.id}/publish`,{expectedSourceVersion:td.json().data.dataVersion,expectedPublicationId:null})).statusCode,200);
+ const managerRole=await f.role([{action:'schedule.manage',scopes:['CLASS']}]),managerGrant=await f.grant(f.other,managerRole.id,{scopeType:'CLASS',classId:f.classId});
+ const adminCookie=jar.get('edu_staff');jar.delete('edu_staff');const teacherCsrf=await login('teacher-b@example.invalid');f.setCsrf(teacherCsrf);const teacherCookie=jar.get('edu_staff'),view=await f.read();assert.equal(view.canEdit,true);assert.equal(view.canPublish,false);assert.equal((await f.read(sibling)).canEdit,false);
+ const key=crypto.randomUUID(),body=f.input(view,{kind:'cancel',roomId:null}),saved=await f.post('schedule-workspace/changes',body,key);assert.equal(saved.statusCode,200,saved.body);const other=(await f.read(sibling)).lessons[0];assert.ok([403,404].includes((await f.post('schedule-workspace/changes',{...body,classId:sibling,source:other.source})).statusCode));assert.equal((await request('GET',`/api/v1/schools/${schoolB}/schedule-workspace?classId=${f.classId}&weekStart=${f.week}`)).statusCode,404);
+ jar.set('edu_staff',adminCookie);f.setCsrf((await request('GET','/api/v1/me/context')).json().data.csrfToken);assert.equal((await f.post(`grants/${managerGrant.id}/revoke`,{expectedVersion:managerGrant.version,reason:'Thu hồi quyền sửa lịch trong khi phiên vẫn mở'})).statusCode,200);jar.set('edu_staff',teacherCookie);f.setCsrf(teacherCsrf);const replay=await f.post('schedule-workspace/changes',body,key);assert.ok([403,404].includes(replay.statusCode),replay.body);assert.equal(replay.json().data,undefined);assert.equal((await f.read()).canEdit,false);assert.equal((await f.read()).changes.length,0);
+});
+
+installActivityWorkspaceTests({test,assert,request,login,activityFixture,activityParent,parentGet,seedId,schoolA,schoolB,WorkerRunner,drainSchool,server:()=>server,cookies,origin,crypto,sharp});
+
+
+test('RUN leader approval is a distinct retained step and class publish cannot bypass current snapshot approval',async()=>{
+ const f=await fastConductFixture(),policyResult=await request('GET',`/api/v1/schools/${f.schoolId}/publication-policy`),policy=policyResult.json().data.policy;
+ const updated=await f.post('publication-policy/save',{...Object.fromEntries(Object.entries(policy).filter(([k])=>k!=='schoolId')),requireLeaderApproval:true,publishBy:'homeroom'});assert.equal(updated.statusCode,200,updated.body);
+ const role=await f.role(['class.read','conduct.read','conduct.review','conduct.lock','conduct.publish'].map(action=>({action,scopes:['CLASS']})));await f.grant(f.target,role.id,{scopeType:'CLASS',classId:f.classId});
+ jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));let summary=await f.read('summary');assert.equal(summary.perms.publish,true);assert.equal(summary.approval.required,true);
+ const skipped=await f.post(`${f.path}/lock`,{source:summary.source,alsoPublish:true});assert.equal(skipped.statusCode,409,skipped.body);assert.equal(skipped.json().code,'LEADER_APPROVAL_REQUIRED');assert.equal((await f.read('summary')).period.status,'open');
+ const locked=await f.post(`${f.path}/lock`,{source:summary.source,alsoPublish:false});assert.equal(locked.statusCode,200,locked.body);summary=await f.read('summary');assert.equal(summary.approval.canApprove,false);assert.equal(summary.approval.approvedAt,null);
+ assert.equal((await f.post(`${f.path}/approve`,{source:summary.source})).statusCode,404);assert.equal((await f.post(`${f.path}/publish`,{source:summary.source})).statusCode,409);
+ jar.delete('edu_staff');f.setCsrf(await login('admin-a@example.invalid'));summary=await f.read('summary');assert.equal(summary.approval.canApprove,true);
+ const key=crypto.randomUUID(),approved=await f.post(`${f.path}/approve`,{source:summary.source},key);assert.equal(approved.statusCode,200,approved.body);assert.equal(approved.json().data.snapshot.status,'locked');assert.equal((await f.post(`${f.path}/approve`,{source:summary.source},key)).statusCode,200);summary=await f.read('summary');assert.ok(summary.approval.approvedAt);assert.equal(summary.approval.canApprove,false);
+ const approval=await db.transaction(tx=>tx.query('SELECT id FROM app.conduct_publication_approvals WHERE school_id=$1 AND publication_id=$2',[f.schoolId,locked.json().data.snapshot.id]),{schoolId:f.schoolId});assert.equal(approval.rowCount,1);
+ await assert.rejects(db.transaction(tx=>tx.query('UPDATE app.conduct_publication_approvals SET source_version=999 WHERE school_id=$1 AND id=$2',[f.schoolId,approval.rows[0].id]),{schoolId:f.schoolId}),e=>e.code==='42501'||e.code==='23514');
+ jar.delete('edu_staff');f.setCsrf(await login('teacher-a@example.invalid'));const published=await f.post(`${f.path}/publish`,{source:summary.source});assert.equal(published.statusCode,200,published.body);assert.equal(published.json().data.snapshot.id,locked.json().data.snapshot.id);
+});
+
+test('RUN approved ADD SQL guard denies absent adjustment context and changed manual proposal delta',async()=>{
+ const f=await fastConductFixture({manual:true}),published=await fastPublished(f),path=`${f.root}/adjustments`;
+ const result=await f.post(path+'/request',{source:published.source,snapshotId:published.pub.id,studentId:f.entry.id,recordId:null,kind:'add_record',newPoints:-1.5,ruleId:f.rule.id,date:f.today,reason:'Bổ sung điểm thủ công đúng đề nghị đã duyệt'});assert.equal(result.statusCode,201,result.body);let a=result.json().data;
+ const decided=await f.post(`${path}/${a.id}/decide`,{source:a.source,version:a.version,approve:true,note:null});assert.equal(decided.statusCode,200,decided.body);a=decided.json().data;
+ const proposal=await db.transaction(async tx=>{const q=(await tx.query('SELECT proposed_changes FROM app.adjustment_requests WHERE school_id=$1 AND id=$2',[f.schoolId,a.id])).rows[0];return q.proposed_changes[0].replacement;},{schoolId:f.schoolId});
+ const inject=async(adjustment,delta)=>db.transaction(async tx=>{if(adjustment)await tx.query("SELECT set_config('app.adjustment_id',$1,true)",[a.id]);return tx.query(`INSERT INTO app.conduct_records(school_id,class_id,period_id,rule_set_id,rule_id,enrollment_id,occurred_at,source_kind,source_key,rule_label_snapshot,delta_snapshot,public_reason,status,recorded_by,approved_by,approved_at)
+ SELECT $1,$2,$3,r.rule_set_id,r.id,$4,$5,'MANUAL',$6,r.label,$7,$8,'APPROVED',$9,$9,now() FROM app.conduct_rules r WHERE r.school_id=$1 AND r.id=$10`,[f.schoolId,f.classId,proposal.periodId,proposal.enrollmentId,proposal.occurredAt,'manual:'+proposal.clientEventId,delta,proposal.publicReason,seedId('user:admin-a'),proposal.ruleId]);},{schoolId:f.schoolId,userId:seedId('user:admin-a')});
+ await assert.rejects(inject(false,'-1.5'),e=>e.code==='23514');await assert.rejects(inject(true,'-1.6'),e=>e.code==='23514');assert.equal((await f.read('records')).records.filter(r=>r.status==='approved').length,1);
+ const applied=await f.post(`${path}/${a.id}/publish`,{source:a.source,version:a.version});assert.equal(applied.statusCode,200,applied.body);assert.equal(applied.json().data.snapshot.rows.find(r=>r.studentId===f.entry.id).total,97.4);
+});
+
+
+test('RUN native import catalog and job metadata stay real and private under current school authority',async()=>{
+ const csrf=await login('admin-a@example.invalid'),worker=new WorkerRunner();
+ try{
+  const catalog=await request('GET',`/api/v1/schools/${schoolA}/import-workspace`);assert.equal(catalog.statusCode,200,catalog.body);assert.equal(catalog.json().data.kinds.length,4);assert.ok(catalog.json().data.kinds.every(k=>k.enabled));assert.ok(catalog.json().data.years.some(y=>y.id===seedId('year:A')));
+  const first=catalog.json().data.kinds.find(k=>k.kind==='teachers');assert.ok(first.columns.find(c=>c.key==='staffCode').required);assert.ok(first.columns.some(c=>c.key==='roleCode'));
+  let job=await importCsv(csrf,worker,`code,name,gradeCode,capacity\nCATALOG-${crypto.randomUUID()},Lớp mẫu kết nối,10,30\n`,'CLASSES');
+  let response=await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`);assert.equal(response.statusCode,200,response.body);assert.ok(response.json().data.fileName);const author=(await db.transaction(tx=>tx.query('SELECT work_display_name FROM app.memberships WHERE school_id=$1 AND user_id=$2',[schoolA,seedId('user:admin-a')]),{schoolId:schoolA})).rows[0];assert.equal(response.json().data.createdByName,author.work_display_name);assert.equal(response.json().data.className,null);
+  response=await request('GET',`/api/v1/schools/${schoolA}/imports?limit=100`);assert.equal(response.statusCode,200,response.body);assert.ok(response.json().data.find(j=>j.id===job.id).fileName);
+  await login('admin-b@example.invalid');assert.equal((await request('GET',`/api/v1/schools/${schoolA}/import-workspace`)).statusCode,404);assert.equal((await request('GET',`/api/v1/schools/${schoolA}/imports/${job.id}`)).statusCode,404);
+ }finally{await worker.close();}
+});
+
+test('RUN transfer sources and decisions preserve shown versions while withdrawal revokes open parent session atomically',async()=>{
+ const f=await classRosterFixture(),p=await nativePupil(f,{startsOn:nextDate(f.today,-2)}),studentId=p.id,root=`/api/v1/schools/${f.schoolId}`;
+ const response=await request('GET',root+'/transfer-sources?studentId='+studentId);assert.equal(response.statusCode,200,response.body);const source=response.json().data.students[0];assert.equal(source.enrollmentId,p.initialEnrollment.id);assert.equal(response.body.includes('guardianPhone'),false);
+ const relation=await parentRelationship(undefined,f.post,studentId),slug=(await db.transaction(tx=>tx.query('SELECT slug FROM platform.schools WHERE id=$1',[f.schoolId]),{schoolId:f.schoolId})).rows[0].slug;
+ const issued=await f.post('parent-access',{studentId,yearId:f.yearId,relationshipId:relation.id,allowedSections:['overview'],allowDownload:false,expiresAt:nextDate(f.today,5)+'T00:00:00Z'});assert.equal(issued.statusCode,201,issued.body);const parentContext=await parentExchange(issued.json().data.link,slug);
+ assert.equal((await request('GET',`/api/v1/parent/${slug}/context`,undefined,undefined,{'x-parent-view':parentContext.viewId})).statusCode,200);
+ const body={studentId,fromEnrollmentId:source.enrollmentId,expectedEnrollmentVersion:source.enrollmentVersion,effectiveOn:f.today,reason:'Ngừng theo học trong kiểm thử tổng hợp',applyNow:true},key=crypto.randomUUID();
+ const leave=await f.post('transfers',body,key);assert.equal(leave.statusCode,201,leave.body);assert.equal(leave.json().data.status,'APPLIED');assert.equal((await f.post('transfers',body,key)).json().data.id,leave.json().data.id);
+ const list=await request('GET',root+'/transfers?q='+p.studentCode);assert.equal(list.statusCode,200,list.body);const row=list.json().data.find(r=>r.id===leave.json().data.id);assert.equal(row.studentName,p.fullName);assert.equal(row.fromClassId,f.classId);assert.ok(row.decidedAt);assert.equal(row.toName,null);
+ const stored=await db.transaction(tx=>tx.query('SELECT status FROM app.students WHERE school_id=$1 AND id=$2',[f.schoolId,studentId]),{schoolId:f.schoolId});assert.equal(stored.rows[0].status,'LEFT');
+ assert.equal((await request('GET',`/api/v1/parent/${slug}/context`,undefined,undefined,{'x-parent-view':parentContext.viewId})).statusCode,401);
+ const histories=await db.transaction(tx=>tx.query('SELECT starts_on,ends_on FROM app.enrollments WHERE school_id=$1 AND student_id=$2',[f.schoolId,studentId]),{schoolId:f.schoolId});assert.equal(histories.rowCount,1);assert.equal(histories.rows[0].ends_on,f.today);
+});
+
+
+test('RUN report catalogs and search use actual rows and separate homeroom subject school and revoked authority',async()=>{
+ const f=await reportFixture(),root=f.base,yearId=seedId('year:A');
+ let r=await request('GET',root+'/report-catalog?yearId='+yearId);assert.equal(r.statusCode,200,r.body);validateSchema('ReportCatalog',r.json().data,true);assert.equal(r.json().data.yearId,yearId);assert.equal(r.json().data.reports.length,5);assert.ok(r.json().data.weeks.length>0);
+ r=await request('GET',`${root}/academic-years/${yearId}/classes/${f.classId}/report-catalog`);assert.equal(r.statusCode,200,r.body);assert.deepEqual(r.json().data.students.map(s=>s.id).sort(),f.enrollments.map(e=>e.studentId).sort());
+ const token='Tìm kiếm '+crypto.randomUUID();await db.transaction(tx=>tx.query('UPDATE app.students SET full_name=$3 WHERE school_id=$1 AND id=$2',[schoolA,f.enrollments[0].studentId,token]),{schoolId:schoolA});
+ r=await request('GET',`/api/v1/me/search?schoolId=${schoolA}&q=${encodeURIComponent(token)}`);assert.equal(r.statusCode,200,r.body);validateSchema('SearchWorkspace',r.json().data,true);assert.deepEqual(r.json().data.items.filter(x=>x.kind==='student').map(x=>x.id),[f.enrollments[0].studentId]);for(const key of ['phone','dateOfBirth','internalNote','password'])assert.equal(r.body.includes(key),false);
+ assert.equal((await request('GET',`/api/v1/me/search?schoolId=${schoolA}&q=x`)).statusCode,422);assert.equal((await request('GET',root+'/report-catalog?arbitrary=1')).statusCode,422);
+ jar.delete('edu_staff');await login('teacher-a@example.invalid');
+ r=await request('GET',root+'/me/report-catalog');assert.equal(r.statusCode,200,r.body);const subjects=r.json().data.classes.find(x=>x.classId===classB);assert.ok(subjects);assert.equal(subjects.role,'Bộ môn');assert.deepEqual(subjects.reports.map(x=>x.type),['attendance','activities']);assert.equal(subjects.canExport,false);
+ r=await request('GET',`${root}/academic-years/${yearId}/classes/${classB}/report-catalog`);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.students.length,0);assert.equal(r.json().data.hiddenCount,2);
+ assert.equal((await request('GET',root+'/report-catalog')).statusCode,403);assert.equal((await request('GET',`${root}/academic-years/${yearId}/classes/${f.classId}/report-catalog`)).statusCode,404);
+ r=await request('GET',`/api/v1/me/search?schoolId=${schoolA}&q=${encodeURIComponent(token)}`);assert.equal(r.statusCode,200,r.body);assert.deepEqual(r.json().data.items,[]);
+ const assignments=(await db.transaction(tx=>tx.query('SELECT id FROM app.teaching_assignments WHERE school_id=$1 AND member_id=$2 AND class_id=$3 AND revoked_at IS NULL',[schoolA,seedId('member:A:teacher-a'),classB]),{schoolId:schoolA})).rows;assert.ok(assignments.length);
+ try{await db.transaction(tx=>tx.query('UPDATE app.teaching_assignments SET revoked_at=now() WHERE school_id=$1 AND id=ANY($2::uuid[])',[schoolA,assignments.map(x=>x.id)]),{schoolId:schoolA});assert.equal((await request('GET',`${root}/academic-years/${yearId}/classes/${classB}/report-catalog`)).statusCode,404);assert.equal((await request('GET',root+'/me/report-catalog')).json().data.classes.some(x=>x.classId===classB),false);}finally{await db.transaction(tx=>tx.query('UPDATE app.teaching_assignments SET revoked_at=NULL WHERE school_id=$1 AND id=ANY($2::uuid[])',[schoolA,assignments.map(x=>x.id)]),{schoolId:schoolA});}
+ jar.delete('edu_staff');await login('admin-b@example.invalid');assert.ok([403,404].includes((await request('GET',root+'/report-catalog')).statusCode));assert.ok([403,404].includes((await request('GET',`/api/v1/me/search?schoolId=${schoolA}&q=abc`)).statusCode));
+});
+
+test('RUN selected student export pins exact source metadata bytes and denies foreign rows stale cancellation and revoked downloads',async()=>{
+ const f=await reportFixture(),worker=new WorkerRunner(),selected=f.enrollments[0].studentId,other=f.enrollments[1].studentId;
+ try{
+  const name=(await db.transaction(tx=>tx.query('SELECT full_name FROM app.students WHERE school_id=$1 AND id=$2',[schoolA,selected]),{schoolId:schoolA})).rows[0].full_name;
+  const body={reportType:'student-directory',format:'CSV',yearId:seedId('year:A'),studentIds:[selected],from:'2026-09-01',to:'2027-06-01',scope:'SCHOOL',dataSource:'LIVE_INTERNAL'},key=crypto.randomUUID();
+  let r=await request('POST',f.base+'/exports',body,f.csrf,{'idempotency-key':key});assert.equal(r.statusCode,202,r.body);const job=r.json().data;assert.equal(job.rowCount,1);assert.deepEqual(job.filters.studentIds,[selected]);assert.ok(job.fileName.endsWith('.csv'));assert.ok(job.title);assert.equal((await request('POST',f.base+'/exports',body,f.csrf,{'idempotency-key':key})).json().data.id,job.id);
+  r=await request('POST',f.base+'/exports',{...body,studentIds:[selected,seedId('student:B:1')]},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(r.statusCode,404,r.body);
+  await db.transaction(tx=>tx.query('UPDATE app.students SET full_name=$3 WHERE school_id=$1 AND id=$2',[schoolA,selected,'Đổi sau khi tạo bản xuất']),{schoolId:schoolA});await drainSchool(worker);
+  r=await request('GET',f.base+`/exports/${job.id}`);assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.status,'COMPLETED');assert.equal(r.json().data.rowCount,1);
+  const download=await request('GET',f.base+`/exports/${job.id}/download`);assert.equal(download.statusCode,200,download.body);const rows=(await import('csv-parse/sync')).parse(download.body,{bom:true,columns:true});assert.equal(rows.length,1);assert.ok(Object.values(rows[0]).includes(name));assert.equal(download.body.includes('Đổi sau khi tạo bản xuất'),false);assert.equal(download.body.includes(other),false);
+  r=await request('POST',f.base+'/exports',body,f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(r.statusCode,202,r.body);const cancel=r.json().data;
+  r=await request('POST',f.base+`/exports/${cancel.id}/cancel`,{expectedVersion:cancel.version+1,reason:'Hủy theo phiên bản chưa từng hiển thị'},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(r.statusCode,409,r.body);assert.equal((await request('GET',f.base+`/exports/${cancel.id}`)).json().data.status,'QUEUED');
+  r=await request('POST',f.base+`/exports/${cancel.id}/cancel`,{expectedVersion:cancel.version,reason:'Hủy bản xuất kiểm thử đúng phiên bản'},f.csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(r.statusCode,200,r.body);assert.equal(r.json().data.status,'CANCELLED');
+  const grant=seedId('grant:A:admin-a:admin');try{await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});assert.ok([403,404,409].includes((await request('GET',f.base+`/exports/${job.id}/download`)).statusCode));}finally{await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=NULL WHERE school_id=$1 AND id=$2',[schoolA,grant]),{schoolId:schoolA});}
+ }finally{await worker.close();}
+});
+
+test('RUN public contact and school status expose only configured public fields without staff login',async()=>{
+ const f=await staffUiFixture(),school=(await db.app.query('SELECT name,slug,status,public_contact_email,public_contact_phone FROM platform.schools WHERE id=$1',[f.schoolId])).rows[0];
+ const anonymous=url=>server.inject({method:'GET',url,headers:{origin}});
+ let r=await anonymous('/api/v1/public/platform-contact');assert.equal(r.statusCode,200,r.body);validateSchema('PublicPlatformContact',r.json().data,true);assert.deepEqual(Object.keys(r.json().data).sort(),['brandName','footerNote','supportEmail','supportPhone']);
+ r=await anonymous(`/api/v1/public/schools/${school.slug}/status`);assert.equal(r.statusCode,200,r.body);validateSchema('PublicSchoolStatus',r.json().data,true);assert.equal(r.json().data.name,school.name);assert.equal(r.json().data.status,school.status);assert.deepEqual(Object.keys(r.json().data).sort(),['name','publicEmail','publicPhone','slug','status']);for(const key of ['statusReason','settings','schoolId','internalNote','password'])assert.equal(r.body.includes(key),false);
+ assert.equal((await anonymous('/api/v1/public/schools/missing-synthetic-school/status')).statusCode,404);assert.equal((await anonymous('/api/v1/public/platform-contact?schoolId='+f.schoolId)).statusCode,422);
+});
+
+test('RUN saved attendance auto publication is atomic and reauthorizes publish grant even on idempotent replay',async()=>{
+ const f=await attendanceUiFixture(),root=`/api/v1/schools/${f.schoolId}`;
+ const p=(await request('GET',root+'/publication-policy')).json().data.policy;let r=await f.post('publication-policy/save',{...Object.fromEntries(Object.entries(p).filter(([k])=>k!=='schoolId')),attendanceAutoPublish:true});assert.equal(r.statusCode,200,r.body);
+ const recordRole=await f.role(['class.read','student.read','attendance.read','attendance.record','attendance.reopen'].map(action=>({action,scopes:['CLASS']}))),publishRole=await f.role([{action:'attendance.publish',scopes:['CLASS']}]);await f.grant(f.target,recordRole.id,{scopeType:'CLASS',classId:f.classId});const publishGrant=await f.grant(f.target,publishRole.id,{scopeType:'CLASS',classId:f.classId});
+ jar.delete('edu_staff');const csrf=await login('teacher-a@example.invalid');f.setCsrf(csrf);let view=await f.read();const key=crypto.randomUUID(),body={date:view.date,slot:view.slot,source:view.source,linkConduct:false,entries:view.rows.map(x=>({studentId:x.studentId,recordVersion:x.recordVersion,status:'PRESENT',note:''}))};
+ r=await f.write('save',body,key);assert.equal(r.statusCode,200,r.body);view=await f.read();assert.equal(view.sessionStatus,'published');assert.ok(view.source.publicationId);assert.equal(view.counts.PRESENT,view.rows.length);
+ const pub=view.source.publicationId;assert.equal((await f.write('save',body,key)).statusCode,200);assert.equal((await f.read()).source.publicationId,pub);
+ await db.transaction(tx=>tx.query('UPDATE app.role_grants SET revoked_at=now() WHERE school_id=$1 AND id=$2',[f.schoolId,publishGrant.id]),{schoolId:f.schoolId});r=await f.write('save',body,key);assert.equal(r.statusCode,404,r.body);assert.equal((await f.read()).source.publicationId,pub);
+});
+
+test('RUN saved week close day is reflected consistently in class and school workspace without rewriting explicit deadline',async()=>{
+ const f=await fastConductFixture(),root=`/api/v1/schools/${f.schoolId}`;await db.transaction(tx=>tx.query('UPDATE app.school_weeks SET input_deadline=NULL WHERE school_id=$1 AND id=$2',[f.schoolId,f.weeks[0].id]),{schoolId:f.schoolId});
+ let policy=(await request('GET',root+'/publication-policy')).json().data.policy;
+ const save=async day=>{const r=await f.post('publication-policy/save',{...Object.fromEntries(Object.entries(policy).filter(([k])=>k!=='schoolId')),weekCloseDay:day});assert.equal(r.statusCode,200,r.body);policy=r.json().data;};
+ const deadline=async()=>{const r=await request('GET',`${root}/${f.root}/weeks`);assert.equal(r.statusCode,200,r.body);return r.json().data.weeks.find(w=>w.id===f.weeks[0].id).closeDeadline;};
+ await save('sunday');const sunday=await deadline();await save('monday');const monday=await deadline();assert.equal(monday,nextDate(sunday,1));
+ const center=await request('GET',root+'/publication-center');assert.equal(center.statusCode,200,center.body);assert.equal(center.json().data.week.closeDeadline,monday);
+ await db.transaction(tx=>tx.query('UPDATE app.school_weeks SET input_deadline=$3 WHERE school_id=$1 AND id=$2',[f.schoolId,f.weeks[0].id,monday+'T10:00:00Z']),{schoolId:f.schoolId});await save('sunday');assert.equal(await deadline(),monday);
 });

@@ -12,11 +12,13 @@ import { FilesService } from '../files/files.service';
 import { objectPath,digestFile } from '../files/storage';
 import { readXlsx } from '../files/xlsx';
 import { readImportContext } from './import-context';
+import {importWorkspace} from './import-workspace';
 import type { RequestContext,Result,Handler } from '../../api.router';
 const importResource:Resource={table:'app.import_jobs',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',
   kind:'kind',fileId:'file_id',status:'status',previewHash:'preview_hash',summary:'summary',yearId:'year_id',classId:'class_id',columns:'source_columns'},
   writeFields:[],search:[],filters:{kind:'kind',status:'status'}};
 const rowResource:Resource={table:'app.import_rows',fields:{id:'id',rowNumber:'row_number',status:'status',errors:'errors',values:'source_data',plan:'normalized_data'},writeFields:[],search:[],filters:{status:'status'}};
+const importReadResource:Resource={...importResource,table:'(SELECT j.*,f.original_name AS file_name,cl.name AS class_name,m.work_display_name AS requester_name FROM app.import_jobs j JOIN app.files f ON f.school_id=j.school_id AND f.id=j.file_id LEFT JOIN app.classes cl ON cl.school_id=j.school_id AND cl.id=j.class_id LEFT JOIN app.memberships m ON m.school_id=j.school_id AND m.user_id=j.requested_by)',fields:{...importResource.fields,fileName:'file_name',className:'class_name',createdByName:'requester_name'}};
 const fieldSets:Record<string,readonly string[]>={
   STUDENTS:['studentCode','fullName','dateOfBirth','gender','preferredName','classCode','startsOn','guardianName','guardianPhone','guardianEmail','relationshipLabel'],
   CLASSES:['code','name','gradeCode','capacity'],
@@ -32,7 +34,7 @@ export function csvCell(value:unknown){let text=String(value??'');if(/^[\s\u0000
 @Injectable()
 export class ImportsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly files:FilesService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listImports','createImport','getImport','validateImport','listImportRows','commitImport','cancelImport','downloadImportErrors']
+  handlers():Record<string,Handler>{return Object.fromEntries(['getImportWorkspace','listImports','createImport','getImport','validateImport','listImportRows','commitImport','cancelImport','downloadImportErrors']
     .map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   async authorize(tx:Transaction,schoolId:string,userId:string,kind:string,classId?:string){
     const user=await one(tx,"SELECT id FROM identity.users WHERE id=$1 AND status='ACTIVE'",[userId]);if(!user)throw new Problem(403,'REQUESTER_REVOKED');
@@ -45,6 +47,7 @@ export class ImportsService {
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
+    if(op==='getImportWorkspace')return this.db.transaction(async tx=>({data:await importWorkspace(tx,this.policy,c)}),{schoolId});
     const authorize=async(tx:Transaction)=>{
       if(c.principal!.support&&['listImports','getImport'].includes(op))return this.policy.require(tx,c.principal!,'import.read',{schoolId});
       if(op==='listImports')return this.authorize(tx,schoolId,c.principal!.userId,'');
@@ -53,7 +56,7 @@ export class ImportsService {
     };
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='listImports'){
-        const result=await listResource(tx,importResource,schoolId,c.query,undefined,c.principal!.userId);
+        const result=await listResource(tx,importReadResource,schoolId,c.query,undefined,c.principal!.userId);
         result.data=result.data.map(row=>({...row,summary:Object.keys(row.summary as object).length?row.summary:emptySummary()}));
         for(const row of result.data)if(row.previewHash===null)delete row.previewHash;return result;
       }
@@ -67,7 +70,7 @@ export class ImportsService {
           VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`,[schoolId,c.body.kind,file.id,c.principal!.userId,year.id,c.body.classId??null,emptySummary()]);
         await this.enqueue(tx,schoolId,'PARSE_IMPORT',row!,{});await audit(tx,c,'import',String(row!.id),{status:'UPLOADED'});return {data:importDto(row!),status:201};
       }
-      if(op==='getImport')return {data:importDto(await this.job(tx,schoolId,c.params.importId!))};
+      if(op==='getImport'){const row=await getResource(tx,importReadResource,schoolId,c.params.importId!);return {data:{...importDto(row),fileName:row.file_name,className:row.class_name??null,createdByName:row.requester_name??null}};}
       if(op==='listImportRows'){
         await this.job(tx,schoolId,c.params.importId!);
         const result=await listResource(tx,rowResource,schoolId,{...c.query,sort:'rowNumber'},

@@ -125,7 +125,7 @@ function Body({ d, status, setStatus, activityId, setActivityId, q, setQ }: { d:
       <FileViewerDialog open={!!view} onOpenChange={(o) => { if (!o) setView(null); }} file={view?.file}
         meta={view ? [{ label: "Học sinh", value: view.studentName }, { label: "Hoạt động", value: view.activityTitle }, { label: "Giáo viên ghi nhận", value: view.uploadedByName }, { label: "Trạng thái", value: <EvidenceStatusBadge status={view.status} /> }] : undefined}
         actions={view && canManage && view.status === "pending" ? <Button variant="success" icon={<CheckCircle2 className="size-4" />} onClick={() => { setReview({ ids: [view.id], decision: "approved", subject: `${view.studentName} — ${view.activityTitle}` }); setView(null); }}>Duyệt</Button> : undefined} />
-      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} onDone={() => setSelected(new Set())} />
+      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} evidenceVersions={Object.fromEntries(d.items.map(e=>[e.id,e.version]))} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} onDone={() => setSelected(new Set())} />
       <RecordEvidenceDialog open={record} onOpenChange={setRecord} activities={d.activities.filter((a) => a.assigned.length)} students={d.students} activityId={activityId || undefined} />
     </>
   );

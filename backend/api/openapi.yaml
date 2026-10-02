@@ -40820,6 +40820,2622 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/approve:
+    post:
+      operationId: approveConductWorkspaceWeek
+      tags:
+        - Schedule
+      summary: approveConductWorkspaceWeek
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: conduct.review
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL08
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConductWorkspaceAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConductWorkspaceReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/publication-policy:
+    get:
+      operationId: getPublicationPolicyWorkspace
+      tags:
+        - Classroom
+      summary: getPublicationPolicyWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: school.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC31
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicationPolicyDetailResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/publication-policy/save:
+    post:
+      operationId: savePublicationPolicyWorkspace
+      tags:
+        - Schedule
+      summary: savePublicationPolicyWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: school.settings
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC31
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicationPolicySave"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicationPolicyWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/years/{yearId}/classes/{classId}/rule-workspace:
+    get:
+      operationId: getClassRuleWorkspace
+      tags:
+        - Classroom
+      summary: getClassRuleWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: class.read+rules.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL12
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassRuleWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/publication-center:
+    get:
+      operationId: getPublicationCenterWorkspace
+      tags:
+        - Classroom
+      summary: getPublicationCenterWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: conduct.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC36
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicationCenterWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/me/teacher-workspace:
+    get:
+      operationId: getTeacherWorkspaceHome
+      tags:
+        - Teacher
+      summary: getTeacherWorkspaceHome
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE01
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherWorkspaceHomeResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/me/teacher-workspace/tasks:
+    get:
+      operationId: getTeacherWorkspaceTasks
+      tags:
+        - Teacher
+      summary: getTeacherWorkspaceTasks
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE04
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherWorkspaceTasksResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/me/teacher-workspace/schedule:
+    get:
+      operationId: getTeacherWorkspaceSchedule
+      tags:
+        - Teacher
+      summary: getTeacherWorkspaceSchedule
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE03
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekStart
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherWorkspaceScheduleResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities-workspace:
+    get:
+      operationId: getClassActivitiesWorkspace
+      tags:
+        - Activities
+      summary: getClassActivitiesWorkspace
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: activity.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassActivitiesWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities-workspace/save:
+    post:
+      operationId: saveActivityWorkspace
+      tags:
+        - Activities
+      summary: saveActivityWorkspace
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: activity.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityWorkspaceCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/evidence/batch-review:
+    post:
+      operationId: reviewEvidenceBatch
+      tags:
+        - Files
+      summary: reviewEvidenceBatch
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: evidence.review
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvidenceBatchCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityBatchReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities/participant-statuses:
+    post:
+      operationId: setActivityParticipantStatuses
+      tags:
+        - Activities
+      summary: setActivityParticipantStatuses
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: activity.review
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParticipantBatchCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityBatchReceiptResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/files-workspace:
+    get:
+      operationId: getClassFilesWorkspace
+      tags:
+        - Files
+      summary: getClassFilesWorkspace
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: file.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassFilesWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/files/{fileId}/update:
+    post:
+      operationId: updateClassFile
+      tags:
+        - Files
+      summary: updateClassFile
+      description: Current school/year/class authority; real activity, evidence and
+        private file storage with versioned commands and exact parent
+        recipients.
+      x-permission: file.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - CL17
+        - CL18
+        - CL19
+        - CL20
+        - CL24
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassFileUpdate"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassFileWorkspaceItemResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-workspace:
+    get:
+      operationId: getScheduleWorkspace
+      tags:
+        - Schedule
+      summary: getScheduleWorkspace
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: weekStart
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: classId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-workspace/check:
+    post:
+      operationId: checkScheduleLessonChange
+      tags:
+        - Schedule
+      summary: checkScheduleLessonChange
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleChangeCheck"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleChangeCheckResultResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-workspace/changes:
+    post:
+      operationId: saveScheduleLessonChange
+      tags:
+        - Schedule
+      summary: saveScheduleLessonChange
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleChangeSave"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleChangeSaveResultResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-workspace/changes/{changeId}/publish:
+    post:
+      operationId: publishScheduleLessonChange
+      tags:
+        - Schedule
+      summary: publishScheduleLessonChange
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.manage+schedule.publish
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleChangeAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleLessonChangeResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-workspace/changes/{changeId}/discard:
+    post:
+      operationId: discardScheduleLessonChange
+      tags:
+        - Schedule
+      summary: discardScheduleLessonChange
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleChangeAction"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleDiscardResultResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/classes/{classId}/timetables/{timetableId}/discard:
+    post:
+      operationId: discardTimetable
+      tags:
+        - Schedule
+      summary: discardTimetable
+      description: Scoped native weekly timetable and durable lesson change drafts;
+        source versions, current permissions and conflicts checked atomically
+        before publication.
+      x-permission: schedule.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC32
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: timetableId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VersionCommand"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleDiscardResultResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/report-catalog:
+    get:
+      operationId: getSchoolReportCatalog
+      tags:
+        - Reports
+      summary: getSchoolReportCatalog
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: report.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC37
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportCatalogResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/academic-years/{yearId}/classes/{classId}/report-catalog:
+    get:
+      operationId: getClassReportCatalog
+      tags:
+        - Reports
+      summary: getClassReportCatalog
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: report.read
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL25
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: yearId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportCatalogResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/me/report-catalog:
+    get:
+      operationId: getTeacherReportCatalog
+      tags:
+        - Teacher
+      summary: getTeacherReportCatalog
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: teacher.self
+      x-scope: school
+      x-frontend-screen-ids:
+        - TE06
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherReportCatalogResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /me/search:
+    get:
+      operationId: searchWorkspace
+      tags:
+        - Auth
+      summary: searchWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: authenticated
+      x-scope: staff
+      x-frontend-screen-ids:
+        - C008
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 200
+        - name: schoolId
+          in: query
+          schema:
+            type: string
+            format: uuid
+  /public/platform-contact:
+    get:
+      operationId: getPublicPlatformContact
+      tags:
+        - Public
+      summary: getPublicPlatformContact
+      description: Fresh minimal public contact and school access status. Draft
+        schools, private IDs, staff fields and operational reasons are excluded.
+      x-permission: public
+      x-scope: none
+      x-frontend-screen-ids:
+        - SY03
+        - SY04
+        - AU10
+      x-implementation-status: not_started
+      security: []
+      parameters: []
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicPlatformContactResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /public/schools/{schoolSlug}/status:
+    get:
+      operationId: getPublicSchoolStatus
+      tags:
+        - Public
+      summary: getPublicSchoolStatus
+      description: Fresh minimal public contact and school access status. Draft
+        schools, private IDs, staff fields and operational reasons are excluded.
+      x-permission: public
+      x-scope: none
+      x-frontend-screen-ids:
+        - SY06
+      x-implementation-status: not_started
+      security: []
+      parameters:
+        - name: schoolSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 40
+            pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicSchoolStatusResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/import-workspace:
+    get:
+      operationId: getImportWorkspace
+      tags:
+        - Classroom
+      summary: getImportWorkspace
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: import.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC26
+        - SC27
+        - SC28
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportWorkspaceResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/transfer-sources:
+    get:
+      operationId: getTransferSources
+      tags:
+        - Classroom
+      summary: getTransferSources
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: student.transfer.request
+      x-scope: class
+      x-frontend-screen-ids:
+        - SC20
+        - O11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: studentId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferSourcesResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -43755,6 +46371,31 @@ components:
             - REJECTED
             - APPLIED
             - CANCELLED
+        studentName:
+          type: string
+        studentCode:
+          type: string
+        fromClassId:
+          type: string
+          format: uuid
+        fromName:
+          type: string
+        toName:
+          type: string
+          nullable: true
+        requestedByName:
+          type: string
+          nullable: true
+        requestedAt:
+          type: string
+          format: date-time
+        decidedByName:
+          type: string
+          nullable: true
+        decidedAt:
+          type: string
+          format: date-time
+          nullable: true
       required:
         - id
         - version
@@ -43787,6 +46428,8 @@ components:
         expectedEnrollmentVersion:
           type: integer
           minimum: 1
+        applyNow:
+          type: boolean
       required:
         - studentId
         - fromEnrollmentId
@@ -45810,22 +48453,35 @@ components:
         proposedChanges:
           type: array
           items:
-            type: object
-            properties:
-              recordId:
-                type: string
-                format: uuid
-              action:
-                type: string
-                enum:
-                  - EXCLUDE
-                  - REPLACE
-              replacement:
-                $ref: "#/components/schemas/ConductRecordCreate"
-            required:
-              - recordId
-              - action
-            additionalProperties: false
+            oneOf:
+              - type: object
+                properties:
+                  recordId:
+                    type: string
+                    format: uuid
+                  action:
+                    type: string
+                    enum:
+                      - EXCLUDE
+                      - REPLACE
+                  replacement:
+                    $ref: "#/components/schemas/ConductRecordCreate"
+                required:
+                  - recordId
+                  - action
+                additionalProperties: false
+              - type: object
+                properties:
+                  action:
+                    type: string
+                    enum:
+                      - ADD
+                  replacement:
+                    $ref: "#/components/schemas/ConductRecordCreate"
+                required:
+                  - action
+                  - replacement
+                additionalProperties: false
           minItems: 1
           maxItems: 100
       required:
@@ -46988,6 +49644,14 @@ components:
           type: array
           items:
             type: string
+        fileName:
+          type: string
+        className:
+          type: string
+          nullable: true
+        createdByName:
+          type: string
+          nullable: true
       required:
         - id
         - version
@@ -47123,6 +49787,7 @@ components:
             - class-progress
             - parent-access
             - student
+            - student-directory
         format:
           type: string
           enum:
@@ -47160,6 +49825,16 @@ components:
         lastErrorCode:
           type: string
           maxLength: 80
+        title:
+          type: string
+        rowCount:
+          type: integer
+          minimum: 0
+        filters:
+          type: object
+          additionalProperties: true
+        fileName:
+          type: string
       required:
         - id
         - version
@@ -47181,6 +49856,7 @@ components:
             - class-progress
             - parent-access
             - student
+            - student-directory
         format:
           type: string
           enum:
@@ -47221,6 +49897,14 @@ components:
           enum:
             - SCHOOL
             - CLASS
+        studentIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 5000
+          uniqueItems: true
       required:
         - reportType
         - format
@@ -61050,10 +63734,23 @@ components:
             - review
           additionalProperties: false
         policy:
+          $ref: "#/components/schemas/PublicationPolicyWorkspace"
+        approval:
           type: object
-          nullable: true
-          enum:
-            - null
+          properties:
+            required:
+              type: boolean
+            approvedAt:
+              type: string
+              format: date-time
+              nullable: true
+            canApprove:
+              type: boolean
+          required:
+            - required
+            - approvedAt
+            - canApprove
+          additionalProperties: false
       required:
         - schoolId
         - yearId
@@ -61070,6 +63767,7 @@ components:
         - checks
         - perms
         - policy
+        - approval
       additionalProperties: false
     ConductWorkspaceCreate:
       type: object
@@ -61426,6 +64124,7 @@ components:
             - remove_record
             - change_points
             - batch
+            - add_record
         newPoints:
           type: number
           minimum: -99999999.99
@@ -61618,6 +64317,10 @@ components:
           type: string
           minLength: 10
           maxLength: 2000
+        date:
+          type: string
+          format: date
+          nullable: true
       required:
         - source
         - snapshotId
@@ -61744,6 +64447,2805 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/ConductWorkspaceSnapshotDetail"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicationPolicyWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        lockBy:
+          type: string
+          enum:
+            - homeroom
+            - school_leader
+        publishBy:
+          type: string
+          enum:
+            - homeroom
+            - school_leader
+        requireLeaderApproval:
+          type: boolean
+        weekCloseDay:
+          type: string
+          enum:
+            - sunday
+            - monday
+        defaultParentModules:
+          type: array
+          items:
+            type: string
+            enum:
+              - teachers
+              - attendance
+              - conduct
+              - timetable
+              - duties
+              - activities
+              - announcements
+              - documents
+          maxItems: 9
+          minItems: 1
+          uniqueItems: true
+        attendanceAutoPublish:
+          type: boolean
+        version:
+          type: integer
+          minimum: 1
+      required:
+        - schoolId
+        - lockBy
+        - publishBy
+        - requireLeaderApproval
+        - weekCloseDay
+        - defaultParentModules
+        - attendanceAutoPublish
+        - version
+      additionalProperties: false
+    PublicationPolicySave:
+      type: object
+      properties:
+        lockBy:
+          type: string
+          enum:
+            - homeroom
+            - school_leader
+        publishBy:
+          type: string
+          enum:
+            - homeroom
+            - school_leader
+        requireLeaderApproval:
+          type: boolean
+        weekCloseDay:
+          type: string
+          enum:
+            - sunday
+            - monday
+        defaultParentModules:
+          type: array
+          items:
+            type: string
+            enum:
+              - teachers
+              - attendance
+              - conduct
+              - timetable
+              - duties
+              - activities
+              - announcements
+              - documents
+          maxItems: 9
+          minItems: 1
+          uniqueItems: true
+        attendanceAutoPublish:
+          type: boolean
+        version:
+          type: integer
+          minimum: 1
+      required:
+        - lockBy
+        - publishBy
+        - requireLeaderApproval
+        - weekCloseDay
+        - defaultParentModules
+        - attendanceAutoPublish
+        - version
+      additionalProperties: false
+    PublicationPolicyDetail:
+      type: object
+      properties:
+        policy:
+          $ref: "#/components/schemas/PublicationPolicyWorkspace"
+        canEdit:
+          type: boolean
+      required:
+        - policy
+        - canEdit
+      additionalProperties: false
+    ClassRuleWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        current:
+          oneOf:
+            - $ref: "#/components/schemas/RuleWorkspaceItem"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        next:
+          oneOf:
+            - $ref: "#/components/schemas/RuleWorkspaceItem"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        policy:
+          $ref: "#/components/schemas/PublicationPolicyWorkspace"
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - current
+        - next
+        - policy
+      additionalProperties: false
+    PublicationCenterWeek:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        index:
+          type: integer
+          minimum: 0
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        closeDeadline:
+          type: string
+          format: date
+      required:
+        - id
+        - index
+        - startDate
+        - endDate
+        - closeDeadline
+      additionalProperties: false
+    PublicationCenterRow:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        homeroom:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - open
+            - locked
+            - published
+        pending:
+          type: integer
+          minimum: 0
+        blocking:
+          type: array
+          items:
+            type: string
+          maxItems: 10000
+        warnings:
+          type: array
+          items:
+            type: string
+          maxItems: 10000
+        overdue:
+          type: boolean
+        snapshotVersion:
+          type: integer
+          minimum: 0
+          nullable: true
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        attendanceSaved:
+          type: integer
+          minimum: 0
+        attendancePublished:
+          type: integer
+          minimum: 0
+        adjustments:
+          type: integer
+          minimum: 0
+      required:
+        - classId
+        - yearId
+        - className
+        - homeroom
+        - status
+        - pending
+        - blocking
+        - warnings
+        - overdue
+        - snapshotVersion
+        - publishedAt
+        - attendanceSaved
+        - attendancePublished
+        - adjustments
+      additionalProperties: false
+    PublicationCenterAdjustment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        studentName:
+          type: string
+          nullable: true
+        requestedByName:
+          type: string
+          nullable: true
+        reason:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+        beforeTotal:
+          type: number
+          nullable: true
+        afterTotal:
+          type: number
+          nullable: true
+      required:
+        - id
+        - yearId
+        - classId
+        - className
+        - studentName
+        - requestedByName
+        - reason
+        - status
+        - beforeTotal
+        - afterTotal
+      additionalProperties: false
+    PublicationCenterAnnouncement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          type: string
+          enum:
+            - draft
+            - scheduled
+        origin:
+          type: string
+          enum:
+            - school
+            - class
+        className:
+          type: string
+          nullable: true
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        yearId:
+          type: string
+          format: uuid
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - title
+        - status
+        - origin
+        - className
+        - classId
+        - yearId
+        - scheduledAt
+      additionalProperties: false
+    PublicationCenterWorkspace:
+      type: object
+      properties:
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicationCenterWeek"
+          maxItems: 110
+        week:
+          oneOf:
+            - $ref: "#/components/schemas/PublicationCenterWeek"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicationCenterRow"
+          maxItems: 5000
+        adjustments:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicationCenterAdjustment"
+          maxItems: 5000
+        announcements:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicationCenterAnnouncement"
+          maxItems: 5000
+      required:
+        - weeks
+        - week
+        - rows
+        - adjustments
+        - announcements
+      additionalProperties: false
+    PublicationPolicyDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicationPolicyDetail"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicationPolicyWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicationPolicyWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassRuleWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassRuleWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicationCenterWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicationCenterWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TeacherWorkspaceLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        date:
+          type: string
+          format: date
+        periodNumber:
+          type: integer
+          minimum: 1
+          nullable: true
+        startsAtLocal:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        endsAtLocal:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        subjectName:
+          type: string
+        roomName:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - SCHEDULED
+            - CANCELLED
+        changeReason:
+          type: string
+          nullable: true
+        canAttend:
+          type: boolean
+      required:
+        - id
+        - classId
+        - yearId
+        - className
+        - date
+        - periodNumber
+        - startsAtLocal
+        - endsAtLocal
+        - subjectName
+        - roomName
+        - status
+        - changeReason
+        - canAttend
+      additionalProperties: false
+    TeacherWorkspaceTask:
+      type: object
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+          enum:
+            - attendance
+            - conduct
+            - evidence
+            - announcement
+            - groups
+        title:
+          type: string
+        detail:
+          type: string
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        targetType:
+          type: string
+          enum:
+            - attendance
+            - lesson
+            - conduct-period
+            - activity
+            - announcement
+            - adjustment
+            - groups
+        targetId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        tone:
+          type: string
+          enum:
+            - danger
+            - warning
+            - info
+            - neutral
+        dueAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - kind
+        - title
+        - detail
+        - classId
+        - yearId
+        - className
+        - targetType
+        - targetId
+        - status
+        - tone
+        - dueAt
+      additionalProperties: false
+    TeacherWorkspaceTasks:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        asOf:
+          type: string
+          format: date-time
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherWorkspaceTask"
+          maxItems: 2000
+      required:
+        - schoolId
+        - today
+        - asOf
+        - tasks
+      additionalProperties: false
+    TeacherWorkspaceSchedule:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        asOf:
+          type: string
+          format: date-time
+        weekStart:
+          type: string
+          format: date
+        days:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              holiday:
+                type: string
+                nullable: true
+              lessons:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeacherWorkspaceLesson"
+                maxItems: 500
+            required:
+              - date
+              - holiday
+              - lessons
+            additionalProperties: false
+          maxItems: 7
+      required:
+        - schoolId
+        - today
+        - asOf
+        - weekStart
+        - days
+      additionalProperties: false
+    TeacherWorkspaceHomeClass:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        motto:
+          type: string
+          maxLength: 300
+          nullable: true
+        isHomeroom:
+          type: boolean
+        subjects:
+          type: array
+          items:
+            type: string
+          maxItems: 100
+        size:
+          type: integer
+          minimum: 0
+          nullable: true
+        room:
+          type: string
+          nullable: true
+        nextLesson:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            classId:
+              type: string
+              format: uuid
+            yearId:
+              type: string
+              format: uuid
+            className:
+              type: string
+            date:
+              type: string
+              format: date
+            periodNumber:
+              type: integer
+              minimum: 1
+              nullable: true
+            startsAtLocal:
+              type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            endsAtLocal:
+              type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            subjectName:
+              type: string
+            roomName:
+              type: string
+              nullable: true
+            status:
+              type: string
+              enum:
+                - SCHEDULED
+                - CANCELLED
+            changeReason:
+              type: string
+              nullable: true
+            canAttend:
+              type: boolean
+          required:
+            - id
+            - classId
+            - yearId
+            - className
+            - date
+            - periodNumber
+            - startsAtLocal
+            - endsAtLocal
+            - subjectName
+            - roomName
+            - status
+            - changeReason
+            - canAttend
+          additionalProperties: false
+          nullable: true
+        attendance:
+          type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - none
+                - saved
+                - locked
+                - published
+            total:
+              type: integer
+              minimum: 0
+            present:
+              type: integer
+              minimum: 0
+            late:
+              type: integer
+              minimum: 0
+            excused:
+              type: integer
+              minimum: 0
+            unexcused:
+              type: integer
+              minimum: 0
+            unmarked:
+              type: integer
+              minimum: 0
+          required:
+            - status
+            - total
+            - present
+            - late
+            - excused
+            - unexcused
+            - unmarked
+          additionalProperties: false
+          nullable: true
+        pendingConduct:
+          type: integer
+          minimum: 0
+          nullable: true
+      required:
+        - id
+        - yearId
+        - name
+        - motto
+        - isHomeroom
+        - subjects
+        - size
+        - room
+        - nextLesson
+        - attendance
+        - pendingConduct
+      additionalProperties: false
+    TeacherWorkspaceHome:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        asOf:
+          type: string
+          format: date-time
+        membershipId:
+          type: string
+          format: uuid
+        classes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherWorkspaceHomeClass"
+          maxItems: 500
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherWorkspaceTask"
+          maxItems: 2000
+        unread:
+          type: integer
+          minimum: 0
+        feed:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              action:
+                type: string
+              entityLabel:
+                type: string
+              at:
+                type: string
+                format: date-time
+            required:
+              - id
+              - action
+              - entityLabel
+              - at
+            additionalProperties: false
+          maxItems: 6
+      required:
+        - schoolId
+        - today
+        - asOf
+        - membershipId
+        - classes
+        - tasks
+        - unread
+        - feed
+      additionalProperties: false
+    TeacherWorkspaceHomeResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherWorkspaceHome"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TeacherWorkspaceTasksResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherWorkspaceTasks"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TeacherWorkspaceScheduleResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherWorkspaceSchedule"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ActivityWorkspaceSource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        dataVersion:
+          type: integer
+          minimum: 1
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - id
+        - version
+        - dataVersion
+        - publicationId
+      additionalProperties: false
+    ActivityWorkspaceItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        dataVersion:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        dueAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+        evidenceRequired:
+          type: boolean
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - ASSIGNED
+            - CLOSED
+        illustration:
+          type: string
+          enum:
+            - trophy
+            - stem
+            - clean
+            - book
+            - heart
+        createdBy:
+          type: string
+          format: uuid
+        createdByName:
+          type: string
+          nullable: true
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+        publishedSourceVersion:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+        - id
+        - version
+        - dataVersion
+        - createdAt
+        - updatedAt
+        - classId
+        - yearId
+        - title
+        - description
+        - dueAt
+        - dueDate
+        - evidenceRequired
+        - status
+        - illustration
+        - createdBy
+        - createdByName
+        - publicationId
+        - publishedSourceVersion
+      additionalProperties: false
+    ActivityWorkspaceStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        code:
+          type: string
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+        groupName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - enrollmentId
+        - fullName
+        - code
+        - groupId
+        - groupName
+      additionalProperties: false
+    ActivityWorkspaceParticipant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        activityId:
+          type: string
+          format: uuid
+        enrollmentId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        code:
+          type: string
+        status:
+          type: string
+          enum:
+            - ASSIGNED
+            - SUBMITTED
+            - APPROVED
+            - NEEDS_REVISION
+            - EXCUSED
+        reviewNote:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+        stillEnrolled:
+          type: boolean
+        groupName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - version
+        - activityId
+        - enrollmentId
+        - studentId
+        - fullName
+        - code
+        - status
+        - reviewNote
+        - updatedAt
+        - stillEnrolled
+        - groupName
+      additionalProperties: false
+    ActivityWorkspaceEvidence:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        participantId:
+          type: string
+          format: uuid
+        activityId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        fileId:
+          type: string
+          format: uuid
+        submittedBy:
+          type: string
+          format: uuid
+        uploadedByName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - SUBMITTED
+            - APPROVED
+            - NEEDS_REVISION
+            - REJECTED
+        caption:
+          type: string
+          nullable: true
+        reviewReason:
+          type: string
+          nullable: true
+        shareWithGuardian:
+          type: boolean
+        file:
+          $ref: "#/components/schemas/File"
+      required:
+        - id
+        - version
+        - participantId
+        - activityId
+        - studentId
+        - fileId
+        - submittedBy
+        - uploadedByName
+        - createdAt
+        - status
+        - caption
+        - reviewReason
+        - shareWithGuardian
+        - file
+      additionalProperties: false
+    ActivityWorkspaceHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        action:
+          type: string
+        actorId:
+          type: string
+          format: uuid
+        actorName:
+          type: string
+          nullable: true
+        entityType:
+          type: string
+        entityId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          nullable: true
+        activityId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - id
+        - at
+        - action
+        - actorId
+        - actorName
+        - entityType
+        - entityId
+        - reason
+        - activityId
+      additionalProperties: false
+    ClassActivitiesWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        timezone:
+          type: string
+        readOnly:
+          type: boolean
+        canManage:
+          type: boolean
+        canEvidence:
+          type: boolean
+        canReview:
+          type: boolean
+        canPublish:
+          type: boolean
+        canReadEvidence:
+          type: boolean
+        students:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityWorkspaceStudent"
+          maxItems: 5000
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              size:
+                type: integer
+                minimum: 0
+            required:
+              - id
+              - name
+              - size
+            additionalProperties: false
+          maxItems: 100
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityWorkspaceItem"
+          maxItems: 1000
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityWorkspaceParticipant"
+          maxItems: 10000
+        evidence:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityWorkspaceEvidence"
+          maxItems: 10000
+          nullable: true
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityWorkspaceHistory"
+          maxItems: 2000
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - today
+        - timezone
+        - readOnly
+        - canManage
+        - canEvidence
+        - canReview
+        - canPublish
+        - canReadEvidence
+        - students
+        - groups
+        - activities
+        - participants
+        - evidence
+        - history
+      additionalProperties: false
+    ActivityWorkspaceCommand:
+      type: object
+      properties:
+        source:
+          oneOf:
+            - $ref: "#/components/schemas/ActivityWorkspaceSource"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        action:
+          type: string
+          enum:
+            - draft
+            - save
+            - assign
+            - close
+            - reopen
+            - publish
+        input:
+          $ref: "#/components/schemas/ActivityCreate"
+      required:
+        - source
+        - action
+      additionalProperties: false
+    EvidenceBatchCommand:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              expectedVersion:
+                type: integer
+                minimum: 1
+            required:
+              - id
+              - expectedVersion
+            additionalProperties: false
+          maxItems: 200
+          minItems: 1
+        decision:
+          type: string
+          enum:
+            - APPROVED
+            - NEEDS_REVISION
+            - REJECTED
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 4000
+        shareWithGuardian:
+          type: boolean
+      required:
+        - items
+        - decision
+        - reason
+        - shareWithGuardian
+      additionalProperties: false
+    ParticipantBatchCommand:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              expectedVersion:
+                type: integer
+                minimum: 1
+            required:
+              - id
+              - expectedVersion
+            additionalProperties: false
+          maxItems: 200
+          minItems: 1
+        status:
+          type: string
+          enum:
+            - ASSIGNED
+            - SUBMITTED
+            - APPROVED
+            - NEEDS_REVISION
+            - EXCUSED
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 4000
+      required:
+        - activityId
+        - items
+        - status
+        - reason
+      additionalProperties: false
+    ActivityBatchReceipt:
+      type: object
+      properties:
+        count:
+          type: integer
+          minimum: 0
+      required:
+        - count
+      additionalProperties: false
+    ClassFileWorkspaceItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        originalName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        contentType:
+          type: string
+        byteSize:
+          type: integer
+          minimum: 0
+        sha256:
+          type: string
+        status:
+          type: string
+          enum:
+            - UPLOADING
+            - QUARANTINED
+            - READY
+            - REJECTED
+            - ARCHIVED
+        uploadedBy:
+          type: string
+          format: uuid
+          nullable: true
+        scanStatus:
+          type: string
+          enum:
+            - NOT_SCANNED
+            - SCANNED
+            - GENERATED
+        rejectionCode:
+          type: string
+          nullable: true
+        share:
+          type: string
+          enum:
+            - internal
+            - class_parents
+            - student_parent
+        studentId:
+          type: string
+          format: uuid
+          nullable: true
+        studentName:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - version
+        - createdAt
+        - updatedAt
+        - originalName
+        - contentType
+        - byteSize
+        - sha256
+        - status
+        - uploadedBy
+        - share
+        - studentId
+        - studentName
+        - ownerName
+      additionalProperties: false
+    ClassFilesWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        readOnly:
+          type: boolean
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClassFileWorkspaceItem"
+          maxItems: 1000
+        students:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+            required:
+              - id
+              - fullName
+            additionalProperties: false
+          maxItems: 5000
+      required:
+        - schoolId
+        - yearId
+        - classId
+        - readOnly
+        - files
+        - students
+      additionalProperties: false
+    ClassFileUpdate:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        share:
+          type: string
+          enum:
+            - internal
+            - class_parents
+            - student_parent
+        studentId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - active
+            - archived
+      required:
+        - expectedVersion
+      additionalProperties: false
+    ActivityWorkspaceItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ActivityWorkspaceItem"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassActivitiesWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassActivitiesWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassFilesWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassFilesWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassFileWorkspaceItemResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassFileWorkspaceItem"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ActivityBatchReceiptResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ActivityBatchReceipt"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleLessonSource:
+      type: object
+      properties:
+        lessonId:
+          type: string
+          format: uuid
+        lessonVersion:
+          type: integer
+          minimum: 1
+        draftId:
+          type: string
+          format: uuid
+          nullable: true
+        draftVersion:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+        - lessonId
+        - lessonVersion
+        - draftId
+        - draftVersion
+      additionalProperties: false
+    ScheduleLessonChange:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        schoolId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        period:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          enum:
+            - swap
+            - substitute
+            - room
+            - cancel
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        teacherMembershipId:
+          type: string
+          format: uuid
+          nullable: true
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+        status:
+          type: string
+          enum:
+            - draft
+            - published
+        version:
+          type: integer
+          minimum: 1
+        createdBy:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        createdByName:
+          type: string
+        className:
+          type: string
+        subject:
+          type: string
+          nullable: true
+        teacher:
+          type: string
+          nullable: true
+        room:
+          type: string
+          nullable: true
+        canEdit:
+          type: boolean
+        canPublish:
+          type: boolean
+        isPast:
+          type: boolean
+        source:
+          type: object
+          properties:
+            lessonId:
+              type: string
+              format: uuid
+            lessonVersion:
+              type: integer
+              minimum: 1
+            draftId:
+              type: string
+              format: uuid
+              nullable: true
+            draftVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+          required:
+            - lessonId
+            - lessonVersion
+            - draftId
+            - draftVersion
+          additionalProperties: false
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - id
+        - schoolId
+        - classId
+        - yearId
+        - date
+        - period
+        - kind
+        - subjectId
+        - teacherMembershipId
+        - roomId
+        - reason
+        - status
+        - version
+        - createdBy
+        - createdAt
+        - createdByName
+        - className
+        - subject
+        - teacher
+        - room
+        - canEdit
+        - canPublish
+        - isPast
+        - source
+        - publicationId
+      additionalProperties: false
+    ScheduleWorkspaceLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        classId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+        className:
+          type: string
+        date:
+          type: string
+          format: date
+        period:
+          type: integer
+          minimum: 1
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        subjectId:
+          type: string
+          format: uuid
+        subject:
+          type: string
+        color:
+          type: string
+        teacherMembershipId:
+          type: string
+          format: uuid
+        teacher:
+          type: string
+        teacherStatus:
+          type: string
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        room:
+          type: string
+        cancelled:
+          type: boolean
+        changed:
+          oneOf:
+            - $ref: "#/components/schemas/ScheduleLessonChange"
+            - type: object
+              nullable: true
+              enum:
+                - null
+        source:
+          type: object
+          properties:
+            lessonId:
+              type: string
+              format: uuid
+            lessonVersion:
+              type: integer
+              minimum: 1
+            draftId:
+              type: string
+              format: uuid
+              nullable: true
+            draftVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+          required:
+            - lessonId
+            - lessonVersion
+            - draftId
+            - draftVersion
+          additionalProperties: false
+        canEdit:
+          type: boolean
+      required:
+        - id
+        - version
+        - classId
+        - yearId
+        - className
+        - date
+        - period
+        - start
+        - end
+        - startsAt
+        - endsAt
+        - subjectId
+        - subject
+        - color
+        - teacherMembershipId
+        - teacher
+        - teacherStatus
+        - roomId
+        - room
+        - cancelled
+        - changed
+        - source
+        - canEdit
+      additionalProperties: false
+    ScheduleWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        yearId:
+          type: string
+          format: uuid
+          nullable: true
+        today:
+          type: string
+          format: date
+        timezone:
+          type: string
+        weekStart:
+          type: string
+          format: date
+        canManage:
+          type: boolean
+        canEdit:
+          type: boolean
+        canPublish:
+          type: boolean
+        publicationId:
+          type: string
+          format: uuid
+          nullable: true
+        lessons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleWorkspaceLesson"
+          maxItems: 5000
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleLessonChange"
+          maxItems: 2000
+        holidays:
+          type: array
+          items:
+            type: object
+            properties:
+              classId:
+                type: string
+                format: uuid
+                nullable: true
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+              name:
+                type: string
+            required:
+              - classId
+              - startsOn
+              - endsOn
+              - name
+            additionalProperties: false
+          maxItems: 200
+        options:
+          type: object
+          properties:
+            classes:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  yearId:
+                    type: string
+                    format: uuid
+                  startsOn:
+                    type: string
+                    format: date
+                  endsOn:
+                    type: string
+                    format: date
+                  canEdit:
+                    type: boolean
+                  canPublish:
+                    type: boolean
+                required:
+                  - id
+                  - name
+                  - yearId
+                  - startsOn
+                  - endsOn
+                  - canEdit
+                  - canPublish
+                additionalProperties: false
+              maxItems: 1000
+            subjects:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  color:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - color
+                additionalProperties: false
+              maxItems: 1000
+            teachers:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                required:
+                  - id
+                  - name
+                additionalProperties: false
+              maxItems: 1000
+            rooms:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  capacity:
+                    type: integer
+                    minimum: 0
+                required:
+                  - id
+                  - name
+                  - capacity
+                additionalProperties: false
+              maxItems: 1000
+          required:
+            - classes
+            - subjects
+            - teachers
+            - rooms
+          additionalProperties: false
+      required:
+        - schoolId
+        - classId
+        - yearId
+        - today
+        - timezone
+        - weekStart
+        - canManage
+        - canEdit
+        - canPublish
+        - publicationId
+        - lessons
+        - changes
+        - holidays
+        - options
+      additionalProperties: false
+    ScheduleChangeCheck:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        period:
+          type: integer
+          minimum: 1
+        teacherMembershipId:
+          type: string
+          format: uuid
+          nullable: true
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - classId
+        - date
+        - period
+        - teacherMembershipId
+        - roomId
+        - subjectId
+      additionalProperties: false
+    ScheduleChangeSave:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        period:
+          type: integer
+          minimum: 1
+        teacherMembershipId:
+          type: string
+          format: uuid
+          nullable: true
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+        subjectId:
+          type: string
+          format: uuid
+          nullable: true
+        kind:
+          type: string
+          enum:
+            - swap
+            - substitute
+            - room
+            - cancel
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
+        publish:
+          type: boolean
+        source:
+          type: object
+          properties:
+            lessonId:
+              type: string
+              format: uuid
+            lessonVersion:
+              type: integer
+              minimum: 1
+            draftId:
+              type: string
+              format: uuid
+              nullable: true
+            draftVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+          required:
+            - lessonId
+            - lessonVersion
+            - draftId
+            - draftVersion
+          additionalProperties: false
+        expectedPublicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - classId
+        - date
+        - period
+        - teacherMembershipId
+        - roomId
+        - subjectId
+        - kind
+        - reason
+        - publish
+        - source
+        - expectedPublicationId
+      additionalProperties: false
+    ScheduleChangeAction:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        source:
+          type: object
+          properties:
+            lessonId:
+              type: string
+              format: uuid
+            lessonVersion:
+              type: integer
+              minimum: 1
+            draftId:
+              type: string
+              format: uuid
+              nullable: true
+            draftVersion:
+              type: integer
+              minimum: 1
+              nullable: true
+          required:
+            - lessonId
+            - lessonVersion
+            - draftId
+            - draftVersion
+          additionalProperties: false
+        expectedVersion:
+          type: integer
+          minimum: 1
+        expectedPublicationId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - classId
+        - source
+        - expectedVersion
+        - expectedPublicationId
+      additionalProperties: false
+    ScheduleChangeConflict:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - teacher
+            - room
+            - inactive
+            - assignment
+            - history
+        message:
+          type: string
+      required:
+        - kind
+        - message
+      additionalProperties: false
+    ScheduleChangeCheckResult:
+      type: object
+      properties:
+        conflicts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleChangeConflict"
+          maxItems: 100
+      required:
+        - conflicts
+      additionalProperties: false
+    ScheduleChangeSaveResult:
+      type: object
+      properties:
+        change:
+          $ref: "#/components/schemas/ScheduleLessonChange"
+        conflicts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleChangeConflict"
+          maxItems: 100
+      required:
+        - change
+        - conflicts
+      additionalProperties: false
+    ScheduleDiscardResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        discarded:
+          type: boolean
+      required:
+        - id
+        - discarded
+      additionalProperties: false
+    ScheduleWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleChangeCheckResultResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleChangeCheckResult"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleChangeSaveResultResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleChangeSaveResult"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleLessonChangeResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleLessonChange"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleDiscardResultResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleDiscardResult"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ReportCatalogItem:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - attendance
+            - conduct
+            - activities
+            - student
+            - class-progress
+            - links
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - type
+        - title
+        - description
+      additionalProperties: false
+    ReportCatalogWeek:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        index:
+          type: integer
+          minimum: 1
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+      required:
+        - id
+        - index
+        - startDate
+        - endDate
+      additionalProperties: false
+    ReportCatalog:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        yearId:
+          type: string
+          format: uuid
+          nullable: true
+        yearStart:
+          type: string
+          format: date
+          nullable: true
+        yearEnd:
+          type: string
+          format: date
+          nullable: true
+        classId:
+          type: string
+          format: uuid
+          nullable: true
+        today:
+          type: string
+          format: date
+        reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportCatalogItem"
+          maxItems: 6
+        canExport:
+          type: boolean
+        hiddenCount:
+          type: integer
+          minimum: 0
+        role:
+          type: string
+        students:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+              code:
+                type: string
+            required:
+              - id
+              - fullName
+              - code
+            additionalProperties: false
+          maxItems: 5000
+        weeks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportCatalogWeek"
+          maxItems: 110
+        grades:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+          maxItems: 200
+      required:
+        - schoolId
+        - yearId
+        - yearStart
+        - yearEnd
+        - classId
+        - today
+        - reports
+        - canExport
+        - hiddenCount
+        - role
+        - students
+        - weeks
+        - grades
+      additionalProperties: false
+    ReportCatalogResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ReportCatalog"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TeacherReportCatalog:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        classes:
+          type: array
+          items:
+            type: object
+            properties:
+              classId:
+                type: string
+                format: uuid
+              yearId:
+                type: string
+                format: uuid
+              className:
+                type: string
+              role:
+                type: string
+              canExport:
+                type: boolean
+              reports:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportCatalogItem"
+                maxItems: 4
+            required:
+              - classId
+              - yearId
+              - className
+              - role
+              - canExport
+              - reports
+            additionalProperties: false
+          maxItems: 500
+      required:
+        - schoolId
+        - classes
+      additionalProperties: false
+    TeacherReportCatalogResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherReportCatalog"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    SearchWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+                enum:
+                  - school
+                  - class
+                  - student
+                  - teacher
+              id:
+                type: string
+                format: uuid
+              schoolId:
+                type: string
+                format: uuid
+              yearId:
+                type: string
+                format: uuid
+                nullable: true
+              classId:
+                type: string
+                format: uuid
+                nullable: true
+              title:
+                type: string
+              sub:
+                type: string
+                maxLength: 1000
+              schoolWorkspace:
+                type: boolean
+            required:
+              - kind
+              - id
+              - schoolId
+              - yearId
+              - classId
+              - title
+              - sub
+              - schoolWorkspace
+            additionalProperties: false
+          maxItems: 30
+      required:
+        - schoolId
+        - items
+      additionalProperties: false
+    SearchWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/SearchWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicPlatformContact:
+      type: object
+      properties:
+        brandName:
+          type: string
+          minLength: 1
+          maxLength: 160
+        supportEmail:
+          type: string
+          maxLength: 320
+          nullable: true
+        supportPhone:
+          type: string
+          maxLength: 120
+          nullable: true
+        footerNote:
+          type: string
+          maxLength: 1000
+      required:
+        - brandName
+        - supportEmail
+        - supportPhone
+        - footerNote
+      additionalProperties: false
+    PublicSchoolStatus:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 300
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 40
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - ARCHIVED
+        publicEmail:
+          type: string
+          maxLength: 320
+          nullable: true
+        publicPhone:
+          type: string
+          maxLength: 120
+          nullable: true
+      required:
+        - name
+        - slug
+        - status
+        - publicEmail
+        - publicPhone
+      additionalProperties: false
+    PublicPlatformContactResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicPlatformContact"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicSchoolStatusResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicSchoolStatus"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ImportWorkspaceKind:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - students
+            - teachers
+            - classes
+            - timetable
+        apiKind:
+          type: string
+          enum:
+            - STUDENTS
+            - STAFF
+            - CLASSES
+            - TIMETABLE
+        title:
+          type: string
+        description:
+          type: string
+        enabled:
+          type: boolean
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              label:
+                type: string
+              required:
+                type: boolean
+            required:
+              - key
+              - label
+              - required
+            additionalProperties: false
+          maxItems: 50
+        sampleRows:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          maxItems: 10
+      required:
+        - kind
+        - apiKind
+        - title
+        - description
+        - enabled
+        - columns
+        - sampleRows
+      additionalProperties: false
+    ImportWorkspace:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        timezone:
+          type: string
+        kinds:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImportWorkspaceKind"
+          maxItems: 4
+        years:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+              status:
+                type: string
+                enum:
+                  - DRAFT
+                  - ACTIVE
+            required:
+              - id
+              - name
+              - startsOn
+              - endsOn
+              - status
+            additionalProperties: false
+          maxItems: 100
+        classes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              yearId:
+                type: string
+                format: uuid
+              name:
+                type: string
+              code:
+                type: string
+              status:
+                type: string
+                enum:
+                  - DRAFT
+                  - ACTIVE
+            required:
+              - id
+              - yearId
+              - name
+              - code
+              - status
+            additionalProperties: false
+          maxItems: 5000
+      required:
+        - schoolId
+        - today
+        - timezone
+        - kinds
+        - years
+        - classes
+      additionalProperties: false
+    ImportWorkspaceResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ImportWorkspace"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    TransferSources:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          format: uuid
+        today:
+          type: string
+          format: date
+        canDecide:
+          type: boolean
+        students:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+              code:
+                type: string
+              classId:
+                type: string
+                format: uuid
+              className:
+                type: string
+              yearId:
+                type: string
+                format: uuid
+              enrollmentId:
+                type: string
+                format: uuid
+              enrollmentVersion:
+                type: integer
+                minimum: 1
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+                nullable: true
+              pendingTransfer:
+                type: boolean
+            required:
+              - id
+              - fullName
+              - code
+              - classId
+              - className
+              - yearId
+              - enrollmentId
+              - enrollmentVersion
+              - startsOn
+              - endsOn
+              - pendingTransfer
+            additionalProperties: false
+      required:
+        - schoolId
+        - today
+        - canDecide
+        - students
+      additionalProperties: false
+    TransferSourcesResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TransferSources"
         requestId:
           type: string
       required:

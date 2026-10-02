@@ -22,10 +22,12 @@ export function PublicationCenter({ schoolId }: { schoolId: string }) {
   return (
     <QueryState query={q} skeleton="table">
       {(d) => {
+        if (!d.week) return <Card><EmptyState title="Chưa có tuần đang áp dụng" description="Nhà trường cần khởi tạo năm học và lịch tuần trước khi theo dõi công bố." /></Card>;
         const count = (s: string) => d.rows.filter((r) => r.status === s).length;
         const issues = d.rows.filter((r) => r.blocking.length || r.overdue).length;
         const rows = d.rows.filter((r) => !filter || (filter === "issues" ? r.blocking.length > 0 || r.overdue : r.status === filter));
-        const reviewHref = (r: Row) => `/classroom/${schoolId}/${r.yearId}/${r.classId}/conduct/review?week=${d.week.id}`;
+        const week = d.week;
+        const reviewHref = (r: Row) => `/classroom/${schoolId}/${r.yearId}/${r.classId}/conduct/review?week=${week.id}`;
         return (
           <div className="space-y-5">
             <Card className="flex flex-wrap items-center gap-3 p-4">
@@ -76,14 +78,14 @@ export function PublicationCenter({ schoolId }: { schoolId: string }) {
                 <CardHeader title="Điều chỉnh sau chốt" icon={<FileDiff className="size-5" />} subtitle="Chờ duyệt hoặc đã duyệt chưa công bố" />
                 {d.adjustments.length ? <ul className="divide-y divide-line px-5 pb-3">{d.adjustments.map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-3 py-3">
-                    <div className="min-w-[200px] flex-1"><p className="text-sm font-semibold text-ink">{a.studentName} · lớp {a.className}</p><p className="text-[12.5px] text-muted">Tổng {a.beforeTotal} → {a.afterTotal} · {a.reason} · {a.requestedByName}</p></div>
+                    <div className="min-w-[200px] flex-1"><p className="text-sm font-semibold text-ink">{a.studentName ?? "Điều chỉnh thi đua"} · lớp {a.className}</p><p className="text-[12.5px] text-muted">Tổng {a.beforeTotal ?? "—"} → {a.afterTotal ?? "—"} · {a.reason} · {a.requestedByName}</p></div>
                     <StatusBadge status={a.status} map={PUBLICATION_STATUS} />
                     <Link href={`/classroom/${schoolId}/${a.yearId}/${a.classId}/adjustments`} className="card-link">Xem<ArrowRight className="size-3.5" aria-hidden /></Link>
                   </li>
                 ))}</ul> : <EmptyState compact title="Không có điều chỉnh đang chờ" />}
               </Card>
               <Card>
-                <CardHeader title="Thông báo chờ công bố" icon={<Megaphone className="size-5" />} subtitle="Bản nháp và thông báo đã đặt lịch (mô phỏng)" />
+                <CardHeader title="Thông báo chờ công bố" icon={<Megaphone className="size-5" />} subtitle="Bản nháp và thông báo đã đặt lịch" />
                 {d.announcements.length ? <ul className="divide-y divide-line px-5 pb-3">{d.announcements.map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-3 py-3">
                     <div className="min-w-[200px] flex-1"><p className="text-sm font-semibold text-ink">{a.title}</p><p className="text-[12.5px] text-muted">{a.origin === "school" ? "Nhà trường" : `Lớp ${a.className}`}{a.scheduledAt ? ` · hẹn ${fmtDateTime(a.scheduledAt)}` : ""}</p></div>
@@ -93,7 +95,7 @@ export function PublicationCenter({ schoolId }: { schoolId: string }) {
                 ))}</ul> : <EmptyState compact title="Không có thông báo chờ công bố" />}
               </Card>
             </div>
-            <p className="flex items-center gap-1.5 text-[12px] text-muted"><Clock className="size-3.5" aria-hidden />Số liệu đọc tại thời điểm mở trang theo đồng hồ demo.</p>
+            <p className="flex items-center gap-1.5 text-[12px] text-muted"><Clock className="size-3.5" aria-hidden />Số liệu PostgreSQL tại thời điểm tải trang.</p>
           </div>
         );
       }}

@@ -94,7 +94,7 @@ export function FilePreview({ file, revoked, className,allowLocalDownload=true }
   if (!file) return null;
   if (missing) return <div className={clsx("flex flex-col items-center justify-center gap-2 rounded-xl bg-warning-bg p-8 text-center text-warning-text", className)}><FileWarning className="size-7" aria-hidden /><p className="font-semibold">Chưa tải được nội dung tệp</p><p className="text-sm">Tệp chưa được nối với API hoặc không còn trong phạm vi được xem.</p></div>;
   if (file.mime.startsWith("image/") && url) return <img src={url} alt={`Xem trước: ${file.name}`} className={clsx("max-h-[60vh] w-full rounded-xl border border-line bg-[#f7fbff] object-contain", className)} />;
-  if (file.mime === "application/pdf" && file.source?.kind === "blob" && url) return <iframe title={`Xem trước ${file.name}`} src={url} className={clsx("h-[60vh] w-full rounded-xl border border-line", className)} />;
+  if (file.mime === "application/pdf" && url) return <iframe title={`Xem trước ${file.name}`} src={url} className={clsx("h-[60vh] w-full rounded-xl border border-line", className)} />;
   return (
     <div className={clsx("flex flex-col items-center justify-center gap-3 rounded-xl bg-[#f7fbff] p-8 text-center", className)}>
       <FileText className="size-8 text-primary" aria-hidden />

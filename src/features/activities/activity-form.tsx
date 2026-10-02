@@ -96,7 +96,7 @@ function ActivityForm({ options: o, detail: d }: { options: Options; detail: Det
     if (!validate()) return false;
     const r = await cmd.run({
       id: d?.activity.id, title: f.title, description: f.description, illustration: f.illustration, dueDate: f.dueDate!, assignedStudentIds: assigned,
-      assignedGroupId: f.mode === "group" ? f.groupId : undefined, evidenceRequired: f.evidenceRequired, publish, version: d?.activity.version,
+      assignedGroupId: f.mode === "group" ? f.groupId : undefined, evidenceRequired: f.evidenceRequired, publish, version: d?.activity.version,dataVersion:d?.activity.dataVersion,publicationId:d?.activity.publicationId,
     });
     if (r) { setSaved(true); router.push(`${base}/activities/${r.id}`); return true; }
     return false;
@@ -151,7 +151,7 @@ function ActivityForm({ options: o, detail: d }: { options: Options; detail: Det
         <Callout tone="info" icon={<Info />} title="Lưu nháp và Giao hoạt động khác nhau">
           <ul className="list-disc space-y-1 pl-4">
             <li><b>Lưu nháp</b>: chỉ giáo viên của lớp thấy, gia đình chưa thấy.</li>
-            <li><b>Giao hoạt động</b>: hiển thị cho gia đình của đúng các học sinh được giao qua link tra cứu.</li>
+            <li><b>Giao hoạt động</b>: bắt đầu theo dõi học sinh được giao. <b>Công bố</b> tại chi tiết hoạt động để gia đình thấy bản đã công bố qua link tra cứu.</li>
             <li>Tiến độ tính trên số học sinh được giao, không tính cả lớp nếu chỉ giao một phần.</li>
           </ul>
         </Callout>

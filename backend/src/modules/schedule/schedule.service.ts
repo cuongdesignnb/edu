@@ -9,11 +9,13 @@ import { timetableResource,dutyResource,lessonResource,lessonReadResource,timeta
 import type { Handler,RequestContext,Result } from '../../api.router';
 import {classDutyWorkspace} from './class-duty-workspace';
 import {classDutyCommand} from './class-duty-commands';
+import {scheduleWorkspace} from './schedule-workspace';
+import {scheduleLessonCheck,scheduleLessonCommand} from './lesson-change-commands';
 
 @Injectable()
 export class ScheduleService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
-  handlers():Record<string,Handler>{return {...Object.fromEntries(['listSchoolLessons','listMySchedule','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),getClassDutyWorkspace:c=>classDutyWorkspace(this.db,this.policy,c),saveClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c),removeClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c,true)};}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['listSchoolLessons','listMySchedule','listClassTimetables','createTimetable','getTimetable','updateTimetable','validateTimetable','publishTimetable','discardTimetable','listDuties','createDuty','updateDuty','publishDuty'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),getClassDutyWorkspace:c=>classDutyWorkspace(this.db,this.policy,c),saveClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c),removeClassDutyTask:c=>classDutyCommand(this.policy,this.commands,this.publications,c,true),getScheduleWorkspace:c=>scheduleWorkspace(this.db,this.policy,c),checkScheduleLessonChange:c=>scheduleLessonCheck(this.db,this.policy,c),...Object.fromEntries(['saveScheduleLessonChange','publishScheduleLessonChange','discardScheduleLessonChange'].map(id=>[id,(c:RequestContext)=>scheduleLessonCommand(this.policy,this.commands,this.publications,c)]))};}
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,allowed=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,allowSubject:c.operation.permission==='schedule.read',date:c.body.startsOn as string|undefined});
     const cls=await getResource(tx,resource('class'),schoolId,classId,c.operation.method!=='GET'),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
@@ -63,6 +65,10 @@ export class ScheduleService {
         row=await this.row(tx,r,c,String(row.id));await audit(tx,c,isDuty?'duty':'timetable',String(row.id));return {data:isDuty?await dutyDto(tx,row):await timetableDto(tx,row),status:create?201:200};
       }
       const row=await this.row(tx,r,c,(c.params.timetableId??c.params.dutyId)!,true);
+      if(op==='discardTimetable'){
+        this.version(row,c.body.expectedVersion);if(!['DRAFT','READY'].includes(String(row.status)))throw new Problem(409,'SCHEDULE_IMMUTABLE');
+        await tx.query("UPDATE app.timetable_versions SET status='ARCHIVED' WHERE school_id=$1 AND id=$2",[ctx.schoolId,row.id]);await audit(tx,c,'timetable',String(row.id),{discarded:true});return {data:{id:row.id,discarded:true}};
+      }
       if(op==='validateTimetable'){
         this.version(row,c.body.expectedVersion);if(['PUBLISHED','ARCHIVED'].includes(String(row.status)))throw new Problem(409,'SCHEDULE_IMMUTABLE');
         const checked=await conflicts(tx,row,await occurrences(tx,row));

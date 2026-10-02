@@ -7,3 +7,7 @@ backend/.runtime
 qa
 docs
 *.log
+backups
+backend/dist
+test-results
+playwright-report

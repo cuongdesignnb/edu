@@ -59,7 +59,6 @@ export function SchoolSuspended() {
         {s && (
           <div className="rounded-xl border border-line p-4 text-sm">
             <div className="flex flex-wrap items-center gap-2"><p className="min-w-0 flex-1 font-semibold text-ink">{s.name}</p><StatusBadge status={s.status} map={schoolStatus} /></div>
-            {s.statusReason && <p className="mt-1.5 text-body">Lý do vận hành: {s.statusReason}</p>}
             <p className="mt-2 font-semibold text-ink">Đầu mối công khai của trường</p>
             <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-body"><span className="flex items-center gap-1.5"><Mail className="size-4 text-primary" aria-hidden />{s.publicEmail}</span><span className="flex items-center gap-1.5"><Phone className="size-4 text-primary" aria-hidden />{s.publicPhone}</span></p>
           </div>

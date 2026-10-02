@@ -97,14 +97,22 @@ export async function attendanceWorkspace(db:Database,policy:Permissions,c:Reque
 
 export async function attendanceWorkspaceCommand(db:Database,policy:Permissions,commands:Commands,apply:(tx:Transaction,c:RequestContext)=>Promise<Result>,c:RequestContext){
  const authorized=async(tx:Transaction)=>{const ctx=await context(tx,policy,c,String(c.body.date)),picked=await selected(tx,ctx,String(c.body.slot));if(!can(ctx,c.operation.id==='publishClassAttendanceSheet'?'attendance.publish':'attendance.record',picked.lesson))notFound();
-  if(c.operation.id==='saveClassAttendanceSheet'&&picked.session?.status==='LOCKED'&&(!can(ctx,'attendance.reopen',picked.lesson)||sessionState(picked.session,picked.pub)==='published'&&!can(ctx,'attendance.publish',picked.lesson)))notFound();return ctx;};
+  if(c.operation.id==='saveClassAttendanceSheet'){
+   const settings=(await one<Row>(tx,'SELECT settings FROM platform.schools WHERE id=$1',[ctx.schoolId]))!.settings as Row;
+   if(settings.attendanceAutoPublish===true&&!can(ctx,'attendance.publish',picked.lesson))notFound();
+   if(picked.session?.status==='LOCKED'&&(!can(ctx,'attendance.reopen',picked.lesson)||sessionState(picked.session,picked.pub)==='published'&&!can(ctx,'attendance.publish',picked.lesson)))notFound();
+  }return ctx;};
  return commands.execute(c,authorized,async tx=>{
   const ctx=await authorized(tx),slot=String(c.body.slot),picked=await selected(tx,ctx,slot),rows=await roster(tx,ctx,picked.session?.id),expected=c.body.source;
   if(canonical(expected)!==canonical(source(ctx,rows,picked.session,picked.pub)))throw new Problem(409,'ATTENDANCE_SOURCE_CHANGED');
   const snapshot=await sheet(tx,ctx,slot),publish=c.operation.id==='publishClassAttendanceSheet';
   if(publish?!snapshot.canPublish:!snapshot.canRecord)throw new Problem(409,'ATTENDANCE_READ_ONLY');
   const invoke=(id:string,body:Record<string,unknown>,sessionId?:unknown)=>apply(tx,{...c,operation:{...c.operation,id,permission:id==='reopenAttendance'?'attendance.reopen':id==='publishAttendance'?'attendance.publish':'attendance.record'},params:{...c.params,...(sessionId?{sessionId:String(sessionId)}:{})},body});
-  let session=picked.session,changed=0;const republish=sessionState(session,picked.pub)==='published';
+  let session=picked.session,changed=0;
+  const preferences=(await one<Row>(tx,'SELECT settings FROM platform.schools WHERE id=$1',[ctx.schoolId]))!.settings as Row;
+  const autoPublish=preferences.attendanceAutoPublish===true;
+  if(!publish&&autoPublish&&!can(ctx,'attendance.publish',picked.lesson))notFound();
+  const republish=sessionState(session,picked.pub)==='published'||autoPublish;
   if(!publish){
    const entries=c.body.entries as {studentId:string;recordVersion:number|null;status:string;note:string}[];
    if(new Set(entries.map(e=>e.studentId)).size!==entries.length)validation('entries','Học sinh bị trùng');

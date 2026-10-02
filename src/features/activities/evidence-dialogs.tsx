@@ -8,7 +8,7 @@ import { fmtBytes, fmtDateTime } from "@/lib/formatters";
 import { useClassroom } from "@/features/classroom/context";
 import { Modal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge, DemoTag } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Callout, InfoRow } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { ErrorSummary, SelectField, TextArea, Toggle } from "@/components/ui/form";
@@ -16,6 +16,7 @@ import { FileDropzone, FilePreview, downloadFileAsset } from "@/components/ui/fi
 import { useUnsavedChanges } from "@/components/ui/guards";
 import { useToast } from "@/components/ui/toast";
 import { EVIDENCE_STATUS, SHARE_LABEL } from "./shared";
+import {errorMessage} from '@/lib/repositories/errors';
 
 export function DiscardBar({ onDiscard, onKeep, text = "Đóng hộp thoại sẽ bỏ tệp và ghi chú vừa chọn." }: { onDiscard: () => void; onKeep: () => void; text?: string }) {
   return (
@@ -90,7 +91,7 @@ export function RecordEvidenceDialog({ open, onOpenChange, activities, students,
             <FileDropzone accept={UPLOAD_LIMITS.types} maxBytes={UPLOAD_LIMITS.maxBytes} onFiles={(f) => { setFile(f[0] ?? null); setErrors((e) => ({ ...e, file: "" })); }}
               label="Kéo thả ảnh hoặc PDF vào đây" hint={`Ảnh PNG/JPEG/WebP hoặc PDF, tối đa ${fmtBytes(UPLOAD_LIMITS.maxBytes)}.`} error={errors.file || undefined} />
           )}
-          <p className="mt-1.5 flex items-center gap-2 text-[12.5px] text-muted"><DemoTag />Tệp lưu trên trình duyệt này, không tải lên máy chủ.</p>
+          <p className="mt-1.5 text-[12.5px] text-muted">Tệp được tải lên kho riêng của trường và kiểm tra trước khi ghi nhận.</p>
         </div>
         <TextArea label="Ghi chú của giáo viên" value={note} onChange={(e) => setNote(e.target.value)} rows={3} maxChars={500} error={errors.note} helper="Ví dụ: nguồn nhận minh chứng, nội dung cần lưu ý." />
         <p className="text-[12.5px] text-muted">Minh chứng mới ở trạng thái “Chờ duyệt”. Hoàn thành hoạt động không tự cộng điểm thi đua.</p>
@@ -102,14 +103,15 @@ export function RecordEvidenceDialog({ open, onOpenChange, activities, students,
 /* ------------------------------ Duyệt / từ chối / yêu cầu bổ sung ------------------------------ */
 export type ReviewDecision = "approved" | "rejected" | "supplement";
 
-export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, decision, subject, onDone }: {
-  open: boolean; onOpenChange: (o: boolean) => void; evidenceIds: string[]; decision: ReviewDecision; subject: string; onDone?: () => void;
+export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, evidenceVersions, decision, subject, onDone }: {
+  open: boolean; onOpenChange: (o: boolean) => void; evidenceIds: string[]; evidenceVersions:Record<string,number>; decision: ReviewDecision; subject: string; onDone?: () => void;
 }) {
   const { schoolId, yearId, classId } = useClassroom();
   const [note, setNote] = useState("");
   const [share, setShare] = useState(false);
   const [error, setError] = useState<string>();
-  useEffect(() => { if (open) { setNote(""); setShare(false); setError(undefined); } }, [open]);
+  const [versions,setVersions]=useState(evidenceVersions);
+  useEffect(() => { if (open) { setNote(""); setShare(false); setError(undefined); setVersions({...evidenceVersions}); } }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   const cmd = useCommand((ctx, input: Parameters<typeof activitiesRepo.reviewEvidence>[4]) => activitiesRepo.reviewEvidence(ctx, schoolId, yearId, classId, input), {
     success: (n) => (decision === "approved" ? `Đã duyệt ${n} minh chứng` : decision === "rejected" ? `Đã từ chối ${n} minh chứng` : `Đã yêu cầu bổ sung ${n} minh chứng`),
     onError: (e) => { if (e.code === "VALIDATION") setError(e.fieldErrors?.note ?? e.message); },
@@ -117,7 +119,7 @@ export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, decision
   const title = decision === "approved" ? "Duyệt minh chứng" : decision === "rejected" ? "Từ chối minh chứng" : "Yêu cầu bổ sung minh chứng";
   const submit = async () => {
     if (decision !== "approved" && note.trim().length < 5) { setError("Ghi lý do (tối thiểu 5 ký tự)"); return; }
-    const r = await cmd.run({ evidenceIds, decision, note: note.trim() || undefined, shareWithParent: decision === "approved" && share });
+    const r = await cmd.run({ evidenceIds,versions, decision, note: note.trim() || undefined, shareWithParent: decision === "approved" && share });
     if (r !== undefined) { onOpenChange(false); onDone?.(); }
   };
   return (
@@ -130,7 +132,7 @@ export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, decision
         {decision === "approved" ? (
           <>
             <Toggle checked={share} onChange={setShare} label={evidenceIds.length > 1 ? "Chia sẻ với phụ huynh của từng em" : "Chia sẻ với phụ huynh của em này"}
-              description="Chỉ phụ huynh của đúng học sinh trong minh chứng thấy tệp qua link tra cứu. Không có thư viện ảnh chung của lớp." />
+              description="Chỉ phụ huynh đúng học sinh thấy tệp sau khi công bố lại hoạt động. Không có thư viện ảnh chung của lớp." />
             <TextArea label="Nhận xét (không bắt buộc)" value={note} onChange={(e) => setNote(e.target.value)} rows={2} maxChars={300} />
             <p className="text-[12.5px] text-muted">Duyệt minh chứng cập nhật tình trạng hoạt động thành “Đã duyệt”, không tự cộng điểm thi đua.</p>
           </>
@@ -138,6 +140,7 @@ export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, decision
           <TextArea label={decision === "rejected" ? "Lý do từ chối" : "Nội dung cần bổ sung"} required value={note} onChange={(e) => { setNote(e.target.value); setError(undefined); }} rows={3} maxChars={300} error={error} />
         )}
         {decision === "approved" && error && <p className="error-text" role="alert">{error}</p>}
+        {cmd.error?.code!=='VALIDATION'&&cmd.error&&<p className="error-text" role="alert">{cmd.error.message}</p>}
       </div>
     </Modal>
   );
@@ -150,7 +153,7 @@ export function FileViewerDialog({ open, onOpenChange, file, meta, actions }: {
 }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const revoked = file?.status === "revoked";
+  const revoked = !!file&&file.status!=='active';
   return (
     <Modal open={open} onOpenChange={onOpenChange} size="lg" title={file?.name ?? "Xem tệp"} description="Xem trước tệp của lớp — chỉ nhân sự có quyền của lớp mới mở được."
       footer={<>
@@ -158,9 +161,7 @@ export function FileViewerDialog({ open, onOpenChange, file, meta, actions }: {
         <Button variant="ghost" onClick={() => onOpenChange(false)}>Đóng</Button>
         {file && !revoked && <Button variant="primary" icon={<Download className="size-4" />} loading={busy} onClick={async () => {
           setBusy(true);
-          const ok = await downloadFileAsset(file);
-          setBusy(false);
-          if (!ok) toast.push({ tone: "error", title: "Không tải được tệp", detail: "Nội dung tệp không còn trên trình duyệt này (tệp chỉ lưu cục bộ, mô phỏng)." });
+          try{await downloadFileAsset(file);}catch(error){toast.push({tone:'error',title:'Không tải được tệp',detail:errorMessage(error)});}finally{setBusy(false);}
         }}>Tải xuống</Button>}
       </>}>
       {file ? (
@@ -171,7 +172,7 @@ export function FileViewerDialog({ open, onOpenChange, file, meta, actions }: {
             <InfoRow label="Dung lượng">{fmtBytes(file.size)}</InfoRow>
             <InfoRow label="Tải lên lúc">{fmtDateTime(file.createdAt)}</InfoRow>
             <InfoRow label="Chia sẻ">{SHARE_LABEL[file.share] ?? file.share}</InfoRow>
-            <InfoRow label="Lưu trữ">{file.source.kind === "blob" ? "Trên trình duyệt này (mô phỏng)" : "Tệp minh họa của bản demo"}</InfoRow>
+            <InfoRow label="Lưu trữ">{file.source.kind === 'staff_api'?'Kho tệp riêng của trường':file.source.kind === "blob" ? "Trên trình duyệt này (mô phỏng)" : "Tệp minh họa của bản demo"}</InfoRow>
             {meta?.map((m) => <InfoRow key={m.label} label={m.label}>{m.value}</InfoRow>)}
           </dl>
         </div>

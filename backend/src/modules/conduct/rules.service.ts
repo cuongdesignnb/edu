@@ -8,6 +8,7 @@ import { points,ruleDelta,score } from './scoring';
 import Decimal from 'decimal.js';
 import type { RequestContext,Result,Handler } from '../../api.router';
 import {ruleWorkspace,ruleWorkspaceOperations} from './rule-workspace';
+import {schoolConductOperations,schoolConductAuthorize,schoolConductWorkspace} from './school-workspace';
 const r:Resource={table:'app.rule_sets',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',name:'name',revision:'revision',basePoints:'base_points',minimumPoints:'minimum_points',maximumPoints:'maximum_points',status:'status'},writeFields:['name','basePoints','minimumPoints','maximumPoints'],search:['name'],filters:{status:'status'}};
 export async function loadRules(tx:Transaction,schoolId:string,id:string){return {
   rules:(await tx.query<Row>('SELECT * FROM app.conduct_rules WHERE school_id=$1 AND rule_set_id=$2 ORDER BY code,id',[schoolId,id])).rows,
@@ -18,7 +19,7 @@ function ruleDto(rule:Row){return {id:rule.id,code:rule.code,label:rule.label,gr
 @Injectable()
 export class RulesService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listRuleSets','createRuleSet','getRuleSet','updateRuleSet','issueRuleSet','simulateRules','getClassRules','applyClassRules',...ruleWorkspaceOperations].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listRuleSets','createRuleSet','getRuleSet','updateRuleSet','issueRuleSet','simulateRules','getClassRules','applyClassRules',...ruleWorkspaceOperations,...schoolConductOperations.filter(id=>id!=='getPublicationCenterWorkspace')].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async activeRuleSet(tx:Transaction,schoolId:string,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.rule_sets WHERE school_id=$1 AND id=$2 AND discarded_at IS NULL${lock?' FOR UPDATE':''}`,[schoolId,id]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async detail(tx:Transaction,schoolId:string,id:string){const row=await this.activeRuleSet(tx,schoolId,id),items=await loadRules(tx,schoolId,id);
     return {...dto(r,row),rules:items.rules.map(ruleDto),thresholds:items.thresholds.map(t=>({label:t.label,minimumScore:t.minimum_score}))};}
@@ -33,6 +34,11 @@ export class RulesService {
     if(row.minimum_points!==null&&row.maximum_points!==null&&row.minimum_points!==undefined&&row.maximum_points!==undefined&&new Decimal(String(row.minimum_points)).gt(String(row.maximum_points)))validation('maximumPoints','Giới hạn lớn nhất thấp hơn nhỏ nhất');}
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
+    if(schoolConductOperations.includes(op)){
+      const authorize=(tx:Transaction)=>schoolConductAuthorize(tx,this.policy,c);
+      const work=(tx:Transaction)=>schoolConductWorkspace(tx,this.policy,c);
+      return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
+    }
     if(ruleWorkspaceOperations.includes(op)){
       const authorize=(tx:Transaction)=>c.operation.method==='GET'?this.policy.collection(tx,c.principal!,'rules.read',schoolId,true):this.policy.require(tx,c.principal!,c.operation.permission,{schoolId});
       const work=(tx:Transaction)=>ruleWorkspace(tx,this.policy,c);

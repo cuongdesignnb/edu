@@ -2,10 +2,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CalendarCheck, Trophy, Sparkles, LayoutList, Link2, ArrowRight, Download, Filter, Info, BookX } from "lucide-react";
-import { reportsRepo, schoolRepo } from "@/lib/repositories";
-import { useCommand, useRepo } from "@/lib/query/hooks";
+import { reportsRepo } from "@/lib/repositories";
+import { useCtx, useRepo } from "@/lib/query/hooks";
 import { mondayOf } from "@/lib/calendar";
-import { slugFile } from "@/lib/export";
 import { fmtDate, matches } from "@/lib/formatters";
 import { Card, CardHeader, Callout, IconTile, type PastelTone } from "@/components/ui/card";
 import { ButtonLink, Button } from "@/components/ui/button";
@@ -70,27 +69,25 @@ export function ReportCatalog({ schoolId }: { schoolId: string }) {
 /** SC38 — one school report with scoped filters → ReportViewer; exports are recorded for SC39. */
 export function SchoolReportView({ schoolId, type, today, initial = {} }: { schoolId: string; type: string; today: string; initial?: Record<string, string | undefined> }) {
   const cat = useRepo(["school-report-catalog", schoolId], (c) => reportsRepo.schoolCatalog(c, schoolId));
-  const dict = useRepo(["dictionaries", schoolId], (c) => schoolRepo.dictionaries(c, schoolId));
+  const ctx = useCtx();
   const [range, setRange] = useState<"week" | "custom">(initial.from ? "custom" : "week");
   const [weekId, setWeekId] = useState(initial.weekId ?? "");
   const [from, setFrom] = useState(initial.from ?? mondayOf(today));
   const [to, setTo] = useState(initial.to ?? today);
   const [gradeId, setGradeId] = useState(initial.gradeId ?? "");
-  const weeks = cat.data?.weeks ?? [];
+  const weeks = useMemo(() => cat.data?.weeks ?? [], [cat.data?.weeks]);
   const effWeek = weekId || (type === "conduct" ? weeks[1]?.id ?? weeks[0]?.id : weeks[0]?.id) || "";
   const params = useMemo(() => {
-    const p: Record<string, string | undefined> = { gradeId: gradeId || undefined };
+    const p: Record<string, string | undefined> = { yearId: cat.data?.yearId ?? undefined, gradeId: gradeId || undefined };
     if (type === "conduct") p.weekId = effWeek || undefined;
     if (type === "attendance") {
       const w = weeks.find((x) => x.id === effWeek);
       if (range === "week" && w) { p.from = w.startDate; p.to = w.endDate < today ? w.endDate : today; } else { p.from = from; p.to = to; }
     }
     return p;
-  }, [type, gradeId, effWeek, range, from, to, weeks, today]);
+  }, [type, gradeId, effWeek, range, from, to, weeks, today, cat.data?.yearId]);
   const q = useRepo(["school-report", schoolId, type, params], (c) => reportsRepo.school(c, schoolId, type, params), { enabled: !!cat.data });
-  const record = useCommand((ctx, format: "csv" | "xlsx" | "print", rowCount: number, title: string, fileName: string) =>
-    reportsRepo.recordExport(ctx, schoolId, { title, reportType: type, format, params: Object.fromEntries(Object.entries(params).filter(([, v]) => !!v)) as Record<string, string>, fileName, rowCount }), { silentError: true });
-  const grades = (dict.data?.grades ?? []).filter((g) => g.status === "active");
+  const grades = cat.data?.grades ?? [];
   const gradeName = grades.find((g) => g.id === gradeId)?.name;
   const fileBase = q.data ? `${q.data.title} ${q.data.periodLabel}${gradeName ? ` ${gradeName}` : ""}` : type;
   if (cat.error) return <div className="card"><ErrorState error={cat.error} onRetry={() => cat.refetch()} /></div>;
@@ -112,16 +109,12 @@ export function SchoolReportView({ schoolId, type, today, initial = {} }: { scho
           {type !== "class-progress" && (
             <SelectField label="Khối" value={gradeId} onChange={(e) => setGradeId(e.target.value)} placeholder="Tất cả khối" options={grades.map((g) => ({ value: g.id, label: g.name }))} />
           )}
-          {type === "class-progress" && <p className="self-end text-sm text-muted">Báo cáo theo ngày hiện tại của đồng hồ demo ({fmtDate(today)}); gồm cả lớp nháp.</p>}
+          {type === "class-progress" && <p className="self-end text-sm text-muted">Báo cáo theo ngày hiện tại ({fmtDate(today)}); gồm cả lớp nháp.</p>}
         </div>
       </Card>
       {q.isLoading || cat.isLoading ? <div className="space-y-3"><div className="grid grid-cols-2 gap-3 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-[14px]" />)}</div><Skeleton className="h-72 rounded-[14px]" /></div>
         : q.error ? <div className="card"><ErrorState error={q.error} onRetry={() => q.refetch()} /></div>
-        : q.data && <ReportViewer data={q.data} fileBase={fileBase} canExport={!!cat.data?.canExport} onExported={(format, rowCount) => {
-          if (!cat.data?.canExport) return;
-          const ext = format === "print" ? "pdf" : format;
-          void record.run(format, rowCount, `${q.data!.title} — ${q.data!.periodLabel}${gradeName ? ` — ${gradeName}` : ""}`, `${slugFile(fileBase)}.${ext}`);
-        }} />}
+        : q.data && <ReportViewer data={q.data} fileBase={fileBase} canExport={!!cat.data?.canExport} onExport={(format) => reportsRepo.exportReport(ctx, schoolId, q.data!, format)} />}
     </div>
   );
 }

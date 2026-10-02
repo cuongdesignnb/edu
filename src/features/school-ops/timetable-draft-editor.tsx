@@ -1,0 +1,56 @@
+"use client";
+import {useEffect,useRef,useState} from 'react';
+import {CalendarDays,Plus,Save,Send,Trash2,CheckCircle2} from 'lucide-react';
+import {classroomRepo} from '@/lib/repositories';
+import type {ApiSchemas} from '@/lib/api/generated';
+import {useCommand,useRepo} from '@/lib/query/hooks';
+import {addDays} from '@/lib/calendar';
+import {fmtDate,weekdayLabel} from '@/lib/formatters';
+import {PERIODS} from '@/lib/domain/timetable';
+import {Button} from '@/components/ui/button';
+import {Card,Callout} from '@/components/ui/card';
+import {Drawer,ConfirmDialog} from '@/components/ui/dialog';
+import {DateField,ErrorSummary,SelectField,TextField} from '@/components/ui/form';
+import {QueryState} from '@/components/ui/states';
+
+type Draft=ApiSchemas['Timetable'];
+type Entry=ApiSchemas['TimetableEntry'] & {key:string};
+export function TimetableDraftEditor({schoolId,classId,weekStart}:{schoolId:string;classId?:string;weekStart:string}){
+ const [open,setOpen]=useState(false);
+ return <Card className="flex flex-wrap items-center justify-between gap-3 p-4"><div><p className="text-sm font-semibold text-ink">Quản lý bản thời khóa biểu</p><p className="text-[12.5px] text-muted">Lưu nháp, kiểm tra trùng giờ rồi công bố. Chọn một lớp để lập lịch.</p></div><Button icon={<CalendarDays className="size-4"/>} disabled={!classId} onClick={()=>setOpen(true)}>Soạn thời khóa biểu</Button>{open&&classId&&<DraftPanel key={`${schoolId}-${classId}`} schoolId={schoolId} classId={classId} weekStart={weekStart} onClose={()=>setOpen(false)}/>}</Card>;
+}
+function DraftPanel({schoolId,classId,weekStart,onClose}:{schoolId:string;classId:string;weekStart:string;onClose:()=>void}){
+ const q=useRepo(['timetable-drafts',schoolId,classId,weekStart],c=>classroomRepo.timetableDrafts(c,schoolId,classId,weekStart));
+ const [source,setSource]=useState<Draft|null>(null),[startsOn,setStartsOn]=useState(''),[endsOn,setEndsOn]=useState(''),[entries,setEntries]=useState<Entry[]>([]),[dirty,setDirty]=useState(false),[askClose,setAskClose]=useState(false),[confirm,setConfirm]=useState<'publish'|'discard'|null>(null),[errors,setErrors]=useState<Record<string,string>>({}),[validation,setValidation]=useState<ApiSchemas['ScheduleConflicts']|null>(null);
+ const loaded=useRef(false);
+ const adopt=(row:Draft|null)=>{setSource(row&&['DRAFT','READY'].includes(row.status)?row:null);setStartsOn(row?.startsOn??q.data?.today??weekStart);setEndsOn(row?addDays(row.endsOn,-1):q.data?addDays(q.data.endsOn,-1):weekStart);setEntries((row?.entries??[]).map(e=>({...e,key:crypto.randomUUID()})));setDirty(false);setErrors({});setValidation(null);};
+ useEffect(()=>{if(!q.data||loaded.current)return;loaded.current=true;const row=q.data.schedules.find(s=>s.status==='DRAFT'||s.status==='READY')??null;setSource(row);setStartsOn(row?.startsOn??(q.data.today>q.data.startsOn?q.data.today:q.data.startsOn));setEndsOn(row?addDays(row.endsOn,-1):addDays(q.data.endsOn,-1));setEntries((row?.entries??[]).map(e=>({...e,key:crypto.randomUUID()})));},[q.data]);
+ const save=useCommand((c)=>classroomRepo.saveTimetableDraft(c,schoolId,classId,{id:source?.id??undefined,version:source?.version,startsOn,endsOn:addDays(endsOn,1),entries:entries.map(({key:_,...entry})=>entry)}),{success:'Đã lưu bản nháp thời khóa biểu',onSuccess:row=>{setSource(row);setDirty(false);setErrors({});setValidation(null);},onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const check=useCommand(c=>classroomRepo.validateTimetableDraft(c,schoolId,classId,source!),{onSuccess:r=>{setSource(r.source);setValidation(r.validation);setErrors({});},onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const publish=useCommand(c=>classroomRepo.publishTimetableDraft(c,schoolId,classId,source!,q.data!.publicationId),{success:'Đã công bố thời khóa biểu',onSuccess:()=>{setConfirm(null);onClose();},onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const discard=useCommand(c=>classroomRepo.discardTimetableDraft(c,schoolId,classId,source!),{success:'Đã hủy bản nháp thời khóa biểu',onSuccess:()=>{setConfirm(null);adopt(null);},onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const busy=save.pending||check.pending||publish.pending||discard.pending;
+ const alter=(key:string,patch:Partial<Entry>)=>{setEntries(rows=>rows.map(e=>e.key===key?{...e,...patch}:e));setDirty(true);setValidation(null);};
+ const saveDraft=()=>{const e:Record<string,string>={};if(!startsOn||!endsOn||startsOn>endsOn)e.dates='Chọn khoảng ngày hợp lệ';if(entries.some(x=>!x.subjectId||!x.memberId||x.endsAtLocal<=x.startsAtLocal))e.entries='Mỗi tiết cần môn, giáo viên và giờ kết thúc sau giờ bắt đầu';if(new Set(entries.map(x=>`${x.weekday}-${x.periodNumber}`)).size!==entries.length)e.entries='Không lặp một tiết trong cùng ngày';setErrors(e);if(!Object.keys(e).length)void save.run();};
+ return <><Drawer open onOpenChange={v=>{if(!v)onClose();}} beforeClose={()=>{if(dirty){setAskClose(true);return false;}return true;}} busy={busy} width={800} title="Soạn thời khóa biểu" description="Bản nháp chỉ nhân sự có quyền quản lý thấy; lịch lớp/phụ huynh cập nhật khi công bố."
+  footer={<><Button variant="ghost" disabled={busy} onClick={()=>dirty?setAskClose(true):onClose()}>Đóng</Button><Button icon={<Save className="size-4"/>} loading={save.pending} disabled={!q.data||busy} onClick={saveDraft}>Lưu nháp</Button><Button icon={<CheckCircle2 className="size-4"/>} loading={check.pending} disabled={!source||dirty||busy} onClick={()=>void check.run()}>Kiểm tra trùng giờ</Button>{q.data?.canPublish&&<Button variant="primary" icon={<Send className="size-4"/>} disabled={!source||dirty||busy||!validation?.valid} onClick={()=>setConfirm('publish')}>Công bố</Button>}</>}>
+  <ErrorSummary errors={errors} labels={{form:'Lỗi',dates:'Ngày áp dụng',entries:'Tiết học'}}/>
+  <QueryState query={q} skeleton="table">{d=><div className="space-y-4">
+   <SelectField label="Bản lịch đã lưu" value={source?.id??''} options={[{value:'',label:'Tạo bản nháp mới'},...d.schedules.filter(s=>s.status==='DRAFT'||s.status==='READY').map(s=>({value:s.id!,label:`Nháp #${s.revision} · ${fmtDate(s.startsOn)}–${fmtDate(addDays(s.endsOn,-1))}`}))]} onChange={e=>adopt(d.schedules.find(s=>s.id===e.target.value)??null)}/>
+   <div className="flex flex-wrap gap-2">{d.schedules.filter(s=>s.status==='PUBLISHED').slice(0,3).map(s=><Button key={s.id} size="sm" disabled={busy} onClick={()=>{adopt(s);setDirty(true);}}>Chép lịch #{s.revision} thành nháp</Button>)}{source&&<Button size="sm" variant="ghost" icon={<Trash2 className="size-4"/>} disabled={busy} onClick={()=>setConfirm('discard')}>Hủy bản nháp</Button>}</div>
+   <div className="grid gap-3 sm:grid-cols-2"><DateField label="Áp dụng từ ngày" required min={d.startsOn} max={addDays(d.endsOn,-1)} value={startsOn} onChange={v=>{setStartsOn(v??'');setDirty(true);setValidation(null);}}/><DateField label="Áp dụng đến hết ngày" required min={startsOn||d.startsOn} max={addDays(d.endsOn,-1)} value={endsOn} onChange={v=>{setEndsOn(v??'');setDirty(true);setValidation(null);}}/></div>
+   {entries.length===0&&<Callout tone="neutral">Chưa có tiết học. Bản lịch trống khi công bố sẽ bỏ các tiết tương lai trong khoảng áp dụng, giữ lịch sử đã có dữ liệu.</Callout>}
+   <ol className="space-y-3">{entries.map((e,i)=><li key={e.key} className="rounded-xl border border-line p-3"><div className="mb-3 flex items-center justify-between"><b className="text-sm text-ink">Tiết học {i+1}</b><Button size="sm" variant="ghost" icon={<Trash2 className="size-4"/>} aria-label={`Bỏ tiết học ${i+1}`} disabled={busy} onClick={()=>{setEntries(rows=>rows.filter(x=>x.key!==e.key));setDirty(true);setValidation(null);}}/></div><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <SelectField label="Ngày trong tuần" value={String(e.weekday)} options={Array.from({length:7},(_,i)=>({value:String(i+1),label:weekdayLabel(i+1)}))} onChange={v=>alter(e.key,{weekday:Number(v.target.value)})}/>
+    <TextField label="Tiết" type="number" min={1} max={20} value={e.periodNumber} onChange={v=>alter(e.key,{periodNumber:Number(v.target.value)})}/>
+    <SelectField label="Môn học" value={e.subjectId??''} placeholder="Chọn môn" options={d.options.subjects.map(s=>({value:s.id,label:s.name}))} onChange={v=>alter(e.key,{subjectId:v.target.value||null})}/>
+    <SelectField label="Giáo viên" value={e.memberId??''} placeholder="Chọn giáo viên" options={d.options.teachers.map(t=>({value:t.id,label:t.name}))} onChange={v=>alter(e.key,{memberId:v.target.value||null})}/>
+    <SelectField label="Phòng" value={e.roomId??''} placeholder="Chưa có phòng" options={d.options.rooms.map(r=>({value:r.id,label:r.name}))} onChange={v=>alter(e.key,{roomId:v.target.value||null})}/>
+    <div className="grid grid-cols-2 gap-2"><TextField label="Bắt đầu" type="time" value={e.startsAtLocal} onChange={v=>alter(e.key,{startsAtLocal:v.target.value})}/><TextField label="Kết thúc" type="time" value={e.endsAtLocal} onChange={v=>alter(e.key,{endsAtLocal:v.target.value})}/></div>
+   </div></li>)}</ol>
+   <Button icon={<Plus className="size-4"/>} disabled={busy||entries.length>=200} onClick={()=>{const p=PERIODS[0];setEntries(rows=>[...rows,{key:crypto.randomUUID(),weekday:1,periodNumber:1,subjectId:null,memberId:null,roomId:null,startsAtLocal:p.start,endsAtLocal:p.end}]);setDirty(true);setValidation(null);}}>Thêm tiết học</Button>
+   {validation&&<Callout tone={validation.valid?'success':'danger'} title={validation.valid?'Lịch hợp lệ để công bố':'Lịch còn xung đột'}>{validation.conflicts.length>0&&<ul className="list-disc pl-5">{validation.conflicts.map((c,i)=><li key={i}>{fmtDate(c.startsAt.slice(0,10))}: {c.message}</li>)}</ul>}</Callout>}
+  </div>}</QueryState>
+ </Drawer><ConfirmDialog open={askClose} onOpenChange={setAskClose} title="Bỏ thay đổi chưa lưu?" confirmLabel="Bỏ thay đổi" variant="danger" consequence="Nội dung chưa lưu trong biểu mẫu sẽ mất; bản lịch trong cơ sở dữ liệu giữ nguyên." onConfirm={()=>{setAskClose(false);onClose();}}/>
+ <ConfirmDialog open={!!confirm} onOpenChange={v=>{if(!v)setConfirm(null);}} title={confirm==='publish'?'Công bố thời khóa biểu':'Hủy bản nháp thời khóa biểu'} confirmLabel={confirm==='publish'?'Công bố':'Hủy bản nháp'} variant={confirm==='discard'?'danger':'primary'} busy={busy} error={errors.form} object={source?`Bản #${source.revision} · ${fmtDate(source.startsOn)}–${fmtDate(addDays(source.endsOn,-1))}`:undefined} consequence={confirm==='publish'?'Máy chủ kiểm tra lại giáo viên, phòng và dữ liệu nguồn. Lịch tương lai được thay trong khoảng áp dụng; phụ huynh thấy bản công bố mới.':'Bản nháp được lưu trạng thái đã hủy; lịch đã công bố giữ nguyên.'} onConfirm={()=>confirm==='publish'?publish.run():discard.run()}/></>;
+}

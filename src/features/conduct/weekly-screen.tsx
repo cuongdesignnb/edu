@@ -9,19 +9,18 @@ import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { Card, CardHeader, InfoRow, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { ErrorState, QueryState, Skeleton } from "@/components/ui/states";
+import { EmptyState, ErrorState, QueryState, Skeleton } from "@/components/ui/states";
 import { ConductNav, ModeToggle, PeriodBadge, PeriodStateBanner, WeekSelect, useWeeks, weekLabel, limitsNote } from "./shared";
 import { ExplainDrawer, ExportButtons, WeeklyConductTable } from "./week-table";
 import { ActionsPanel } from "./publish";
 
 /** CL07 — weekly summary: official snapshot when it exists, otherwise a clearly-labelled preview. */
 export function WeeklySummaryScreen() {
-  const { schoolId, yearId, classId, header, can } = useClassroom();
+  const { schoolId, yearId, classId, header } = useClassroom();
   const { query, weeks, week, setWeek } = useWeeks();
   const wid = week?.id;
-  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
-  const canSeeRecords = can("conduct.record") || can("conduct.review");
-  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && canSeeRecords });
+  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
+  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
   const [explain, setExplain] = useState<SnapshotRow | null>(null);
   const statusById = useMemo(() => new Map((rec.data?.records ?? []).map((r) => [r.id, r.status])), [rec.data]);
   const versionById = useMemo(() => new Map((rec.data?.records ?? []).map((r) => [r.id, r.ruleSetVersion])), [rec.data]);
@@ -35,7 +34,8 @@ export function WeeklySummaryScreen() {
             {week ? <WeekSelect weeks={weeks} week={week} onChange={setWeek} className="flex-[1_1_320px]" /> : <Skeleton className="h-10 w-80" />}
             {week && <PeriodBadge status={week.status} />}
           </Card>
-          <QueryState query={sum} skeleton="table">
+          <QueryState query={rec} skeleton="table">
+            {(d) => !d.ruleSet ? <Card><EmptyState title="Chưa có nội quy ban hành cho tuần này" description="Nhà trường cần ban hành bộ nội quy thi đua trước khi tổng hợp." /></Card> : <QueryState query={sum} skeleton="table">
             {(s) => {
               if(!s.summaryAvailable)return <Card className="p-5"><Callout tone="neutral">Bạn được xem ghi nhận theo nhiệm vụ của mình. Bảng điểm cả lớp cần quyền chủ nhiệm hoặc quyền đọc cấp lớp.</Callout></Card>;
               const official = !!s.snapshot;
@@ -76,6 +76,7 @@ export function WeeklySummaryScreen() {
                 </>
               );
             }}
+            </QueryState>}
           </QueryState>
         </>
       )}

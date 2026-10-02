@@ -91,7 +91,7 @@ export function VerifyDialog({target,onClose,schoolId}:{target:{relationshipId:s
 /* ------------------------------ O11 — transfer / leave ------------------------------ */
 export function TransferDialog({ open, onOpenChange, schoolId, student, canDecide }: { open: boolean; onOpenChange: (o: boolean) => void; schoolId: string; student?: { id: string; fullName: string; className: string; classId?: string } | null; canDecide: boolean }) {
   const classesQ = useRepo(["class-options", schoolId], (ctx) => schoolRepo.classOptions(ctx, schoolId), { enabled: open });
-  const studentsQ = useRepo(["students-options", schoolId], (ctx) => studentsExtraRepo.studentOptions(ctx, schoolId), { enabled: open && !student });
+  const studentsQ = useRepo(["students-options", schoolId], (ctx) => studentsExtraRepo.studentOptions(ctx, schoolId,student?.id), { enabled: open });
   const blank = { studentId: student?.id ?? "", kind: "transfer" as "transfer" | "leave", toClassId: "", effectiveDate: undefined as string | undefined, reason: "", applyNow: false };
   const [f, setF] = useState(blank);
   useEffect(() => { if (open) setF({ ...blank }); }, [open, student?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -101,17 +101,17 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
     { success: (t) => t.status === "approved" ? (t.kind === "leave" ? "Đã ghi nhận ngừng theo học" : "Đã chuyển lớp") : "Đã gửi đề nghị chuyển lớp", onSuccess: () => onOpenChange(false) });
   const fe = { ...fieldErrorsOf(cmd.error) };
   const [local, setLocal] = useState<Record<string, string>>({});
-  const picked = student ?? studentsQ.data?.find((s) => s.id === f.studentId);
+  const picked = studentsQ.data?.find((s) => s.id === f.studentId);
   const currentClassId = student?.classId ?? (picked && "classId" in picked ? picked.classId : undefined);
   const submit = () => {
     const e: Record<string, string> = {};
-    if (!f.studentId) e.studentId = "Chọn học sinh";
+    if (!f.studentId || !picked) e.studentId = "Chọn học sinh";
     if (!f.effectiveDate) e.effectiveDate = "Chọn ngày hiệu lực";
     if (f.kind === "transfer" && !f.toClassId) e.toClassId = "Chọn lớp đích";
     if (f.reason.trim().length < 5) e.reason = "Nêu lý do (tối thiểu 5 ký tự)";
     setLocal(e);
     if (Object.keys(e).length) return;
-    cmd.run({ studentId: f.studentId, kind: f.kind, toClassId: f.kind === "transfer" ? f.toClassId : undefined, effectiveDate: f.effectiveDate!, reason: f.reason, applyNow: canDecide && f.applyNow });
+    cmd.run({ studentId: f.studentId, kind: f.kind, toClassId: f.kind === "transfer" ? f.toClassId : undefined, effectiveDate: f.effectiveDate!, reason: f.reason, applyNow: canDecide && f.applyNow,source:{id:picked!.id,enrollmentId:picked!.enrollmentId,enrollmentVersion:picked!.enrollmentVersion} });
   };
   const errs = { ...local, ...fe };
   const toName = classesQ.data?.find((c) => c.id === f.toClassId)?.name;
@@ -126,7 +126,7 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
           <div data-field="studentId">
             {studentsQ.isLoading ? <Skeleton className="h-11" /> : (
               <Combobox label="Học sinh" required value={f.studentId} onChange={(v) => setF({ ...f, studentId: String(v), toClassId: "" })} error={errs.studentId}
-                options={(studentsQ.data ?? []).map((s) => ({ value: s.id, label: `${s.fullName} (${s.code})`, hint: `Lớp ${s.className} · sinh ${fmtDate(s.dob)}${s.pendingTransfer ? " · đang có yêu cầu chờ" : ""}`, disabled: s.pendingTransfer }))} placeholder="Tìm theo tên hoặc mã…" />
+                options={(studentsQ.data ?? []).map((s) => ({ value: s.id, label: `${s.fullName} (${s.code})`, hint: `Lớp ${s.className}${s.pendingTransfer ? " · đang có yêu cầu chờ" : ""}`, disabled: s.pendingTransfer }))} placeholder="Tìm theo tên hoặc mã…" />
             )}
           </div>
         )}
@@ -138,7 +138,7 @@ export function TransferDialog({ open, onOpenChange, schoolId, student, canDecid
               options={(classesQ.data ?? []).filter((c) => c.id !== currentClassId && c.status !== "archived").map((c) => ({ value: c.id, label: `${c.name}${c.status === "draft" ? " (nháp)" : ""}` }))} />
           </div>
         )}
-        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={f.effectiveDate} onChange={(v) => setF({ ...f, effectiveDate: v })} error={errs.effectiveDate} helper="dd/MM/yyyy — không áp dụng lùi quá 7 ngày" /></div>
+        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={f.effectiveDate} onChange={(v) => setF({ ...f, effectiveDate: v })} error={errs.effectiveDate} helper="Ngày hiệu lực thuộc quá trình theo học; áp dụng lùi ngày cần quyền cấp trường" /></div>
         <div data-field="reason"><TextArea label="Lý do" required rows={3} value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} error={errs.reason} maxChars={300} /></div>
         {canDecide && <Checkbox label="Áp dụng ngay (bạn có quyền duyệt)" description="Nếu không chọn, yêu cầu sẽ ở trạng thái Chờ duyệt." checked={f.applyNow} onChange={(v) => setF({ ...f, applyNow: v })} />}
         <Callout tone="neutral" icon={<Info />} title="Điều gì thay đổi">

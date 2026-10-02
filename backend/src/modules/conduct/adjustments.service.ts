@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Database,one,type Transaction,type Row } from '../../database/database';
 import { dto,listResource,getResource,resource,type Resource } from '../../database/resources';
-import { Permissions } from '../../common/permissions';
+import { Permissions,grantAllows } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
 import { Problem,validation } from '../../common/problem';
 import { ConductService } from './conduct.service';
@@ -12,7 +12,7 @@ import {adjustmentWorkspaceOperations,authorizeAdjustmentWorkspace,adjustmentWor
 import type { RequestContext,Handler,Result } from '../../api.router';
 
 const r:Resource={table:'app.adjustment_requests',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',periodId:'period_id',baselinePublicationId:'baseline_publication_id',reason:'reason',status:'status',proposedChanges:'proposed_changes',preview:'preview',decisionReason:'decision_reason',resultPublicationId:'result_publication_id'},writeFields:[],search:[],filters:{status:'status',periodId:'period_id'}};
-interface Change {recordId:string;action:'EXCLUDE'|'REPLACE';replacement?:Record<string,unknown>}
+interface Change {recordId?:string;action:'EXCLUDE'|'REPLACE'|'ADD';replacement?:Record<string,unknown>}
 function adjustmentDto(row:Row){return Object.fromEntries(Object.entries(dto(r,row)).filter(([,v])=>v!==null));}
 @Injectable()
 export class AdjustmentsService {
@@ -26,9 +26,15 @@ export class AdjustmentsService {
   }
   private async changes(tx:Transaction,c:RequestContext,p:Row,value:unknown,authority:string){
     const changes=value as Change[];
-    if(!Array.isArray(changes)||changes.length<1||changes.length>100||new Set(changes.map(x=>x.recordId)).size!==changes.length)validation('proposedChanges','Chọn 1–100 sự kiện khác nhau');
+    if(!Array.isArray(changes)||changes.length<1||changes.length>100||new Set(changes.map(x=>x.action==='ADD'?x.replacement?.clientEventId:x.recordId)).size!==changes.length)validation('proposedChanges','Chọn 1–100 sự kiện khác nhau');
     const records=await conductSummary(tx,p),after=records.records.map(row=>({...row}));
     for(const change of changes){
+      if(change.action==='ADD'){
+        if(change.recordId||!change.replacement||change.replacement.periodId!==p.id)validation('proposedChanges','Sự kiện bổ sung phải thuộc kỳ và không thay ghi nhận cũ');
+        const checked=await this.conduct.prepareRecord(tx,c,change.replacement,{locked:true,authority});
+        after.push({id:change.replacement.clientEventId,enrollment_id:change.replacement.enrollmentId,status:'APPROVED',delta_snapshot:checked.delta,rule_id:checked.rule.id,rule_label_snapshot:checked.rule.label,public_reason:change.replacement.publicReason});
+        continue;
+      }
       const old=after.find(row=>row.id===change.recordId);if(!old||old.status!=='APPROVED')validation('proposedChanges','Chỉ điều chỉnh sự kiện đã duyệt trong kỳ này');
       old.status='EXCLUDED';
       if(change.action==='EXCLUDE'){if(change.replacement)validation('proposedChanges','Loại sự kiện không kèm bản thay thế');}
@@ -77,6 +83,7 @@ export class AdjustmentsService {
       if(Object.hasOwn(c.body,'expectedPublicationId')&&c.body.expectedPublicationId!==pub.id)throw new Problem(409,'PUBLICATION_CONFLICT');
       await tx.query("SELECT set_config('app.adjustment_id',$1,true)",[adjustment.id]);
       for(const change of adjustment.proposed_changes as Change[]){
+        if(change.action==='ADD'){await this.conduct.insertRecord(tx,c,change.replacement!,{approved:true,authorId:String(adjustment.requested_by)});continue;}
         await tx.query("UPDATE app.conduct_records SET status='EXCLUDED',exclusion_reason=$3 WHERE school_id=$1 AND id=$2",[schoolId,change.recordId,adjustment.reason]);
         if(change.action==='REPLACE')await this.conduct.insertRecord(tx,c,change.replacement!,{approved:true,supersedesId:change.recordId,authorId:String(adjustment.requested_by)});
       }
@@ -90,7 +97,10 @@ export class AdjustmentsService {
       const authorize=(tx:Transaction)=>authorizeAdjustmentWorkspace(tx,this.policy,c),work=(tx:Transaction)=>adjustmentWorkspace(tx,this.policy,c,this);
       return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);
     }
-    const authorize=(tx:Transaction)=>this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId});
+    const authorize=async(tx:Transaction)=>{const access=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId}),settings=(await one<Row>(tx,'SELECT settings FROM platform.schools WHERE id=$1',[schoolId]))!.settings as Row;
+      if(c.operation.id==='applyAdjustment'&&settings.conductPublishBy==='school_leader'&&!access.grants.some(g=>g.scope_type==='SCHOOL'&&grantAllows(g,'conduct.publish',{schoolId,classId},access.today)))throw new Problem(404,'RESOURCE_NOT_FOUND');
+      if(c.operation.id==='approveAdjustment'&&settings.conductRequireLeaderApproval===true&&!(await one<{ok:boolean}>(tx,"SELECT app.school_conduct_approver($1,$2,'conduct.adjust.approve') AS ok",[schoolId,c.principal!.userId]))!.ok)throw new Problem(404,'RESOURCE_NOT_FOUND');
+      return access;};
     const work=(tx:Transaction)=>this.work(tx,c);
 
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId});return this.commands.execute(c,authorize,work);

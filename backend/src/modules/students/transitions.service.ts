@@ -10,10 +10,12 @@ import { placeEnrollment,checkCapacity } from './enrollment';
 import { rolloverPreview } from './rollover-preview';
 import {handoverPreview,handoverSource,handoverReviewHash,assertHandoverSource,completeChecklist} from './handover-preview';
 import {notifyMany} from '../notifications/notify';
+import {transferSources} from './transfer-workspace';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const transfer:Resource={table:'app.transfer_requests',fields:{...meta,studentId:'student_id',fromEnrollmentId:'from_enrollment_id',toClassId:'to_class_id',effectiveOn:'effective_on',reason:'reason',status:'status'},writeFields:[],search:[],filters:{studentId:'student_id',status:'status'}};
+const transferRead:Resource={...transfer,table:'(SELECT tr.*,s.full_name AS student_name,s.student_code,en.class_id AS from_class_id,cl.name AS from_name,target.name AS to_name,req.work_display_name AS requester_name,decider.work_display_name AS decider_name FROM app.transfer_requests tr JOIN app.students s ON s.school_id=tr.school_id AND s.id=tr.student_id JOIN app.enrollments en ON en.school_id=tr.school_id AND en.id=tr.from_enrollment_id JOIN app.classes cl ON cl.school_id=en.school_id AND cl.id=en.class_id LEFT JOIN app.classes target ON target.school_id=tr.school_id AND target.id=tr.to_class_id LEFT JOIN app.memberships req ON req.school_id=tr.school_id AND req.user_id=tr.requested_by LEFT JOIN app.memberships decider ON decider.school_id=tr.school_id AND decider.user_id=tr.decided_by)',fields:{...transfer.fields,studentName:'student_name',studentCode:'student_code',fromClassId:'from_class_id',fromName:'from_name',toName:'to_name',requestedByName:'requester_name',requestedAt:'created_at',decidedByName:'decider_name',decidedAt:'updated_at'},search:['student_name','student_code']};
 const handover:Resource={table:'app.handover_requests',fields:{...meta,classId:'class_id',fromAssignmentId:'from_assignment_id',toMemberId:'to_member_id',effectiveOn:'effective_on',reason:'reason',status:'status',sourceState:'source_state',checklist:'checklist',appliedAssignmentId:'applied_assignment_id',appliedAt:'applied_at',clientRequestId:'client_request_id'},writeFields:[],search:[],filters:{classId:'class_id',status:'status'}};
 const rollover:Resource={table:'app.rollover_batches',fields:{...meta,sourceYearId:'source_year_id',targetYearId:'target_year_id',plan:'plan',planHash:'plan_hash',status:'status'},writeFields:[],search:[],filters:{}};
 interface RolloverItem {studentId:string;fromClassId:string;toClassId?:string;decision:'PROMOTED'|'REPEATED'|'LEFT'|'GRADUATED'}
@@ -21,17 +23,19 @@ interface RolloverItem {studentId:string;fromClassId:string;toClassId?:string;de
 export class TransitionsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly staff:StaffService){}
   handlers():Record<string,Handler>{
-    return Object.fromEntries(['getHandoverPreview','getHandover','getHandoverByRequest','reviewHandover','listTransfers','createTransfer','approveTransfer','rejectTransfer','listHandovers','createHandover','approveHandover',
+    return Object.fromEntries(['getTransferSources','getHandoverPreview','getHandover','getHandoverByRequest','reviewHandover','listTransfers','createTransfer','approveTransfer','rejectTransfer','listHandovers','createHandover','approveHandover',
       'getRolloverPreview','createRollover','getRollover','validateRollover','commitRollover'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));
   }
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,op=c.operation.id;
+    if(op==='getTransferSources')return this.db.transaction(async tx=>({data:await transferSources(tx,this.policy,c)}),{schoolId});
     const authorize=async(tx:Transaction)=>{
       if(op==='createTransfer'){
         const from=await getResource(tx,resource('enrollment'),schoolId,String(c.body.fromEnrollmentId));
         if(from.student_id!==c.body.studentId)notFound();
         const access=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId:String(from.class_id),date:String(c.body.effectiveOn)});
+        if(c.body.applyNow===true)await this.policy.require(tx,c.principal!,'student.transfer',{schoolId});
         if(String(c.body.effectiveOn)<access.today)await this.policy.require(tx,c.principal!,'student.transfer',{schoolId});
         return access;
       }
@@ -39,7 +43,7 @@ export class TransitionsService {
     };
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='getRolloverPreview')return {data:await rolloverPreview(tx,schoolId,c.params.yearId!)};
-      if(op==='listTransfers')return listResource(tx,transfer,schoolId,c.query,undefined,c.principal!.userId);
+      if(op==='listTransfers'){const result=await listResource(tx,transferRead,schoolId,c.query,undefined,c.principal!.userId);result.data=result.data.map(row=>({...row,decidedAt:['REJECTED','APPLIED','APPROVED'].includes(String(row.status))?row.updatedAt:null}));return result;}
       if(op==='getHandoverPreview'){
         const preview=await handoverPreview(tx,c);
         if(c.query.toMemberId){
@@ -68,10 +72,11 @@ export class TransitionsService {
         if(String(c.body.reason).trim().length<3)validation('reason','Cần lý do chuyển lớp');
         const from=await getResource(tx,resource('enrollment'),schoolId,String(c.body.fromEnrollmentId),true);
         if(c.body.expectedEnrollmentVersion!==undefined)this.version(from,c.body.expectedEnrollmentVersion);
+        if(await one(tx,"SELECT id FROM app.transfer_requests WHERE school_id=$1 AND student_id=$2 AND status='SUBMITTED'",[schoolId,c.body.studentId]))throw new Problem(409,'TRANSFER_ALREADY_PENDING');
         await this.validateTransfer(tx,schoolId,from,c.body.studentId,c.body.toClassId,String(c.body.effectiveOn));
         const row=await one<Row>(tx,`INSERT INTO app.transfer_requests(school_id,student_id,from_enrollment_id,to_class_id,effective_on,reason,status,requested_by)
           VALUES($1,$2,$3,$4,$5,$6,'SUBMITTED',$7) RETURNING *`,[schoolId,c.body.studentId,from.id,c.body.toClassId??null,c.body.effectiveOn,c.body.reason,c.principal!.userId]);
-        await audit(tx,c,'transfer',String(row!.id));return {data:dto(transfer,row!),status:201};
+        await audit(tx,c,'transfer',String(row!.id));const saved=c.body.applyNow===true?await this.applyTransfer(tx,c,row!):row!;return {data:dto(transfer,saved),status:201};
       }
       if(op==='approveTransfer'||op==='rejectTransfer'){
         const row=await getResource(tx,transfer,schoolId,c.params.transferId!,true);this.version(row,c.body.expectedVersion);
@@ -80,17 +85,7 @@ export class TransitionsService {
           const saved=await one<Row>(tx,"UPDATE app.transfer_requests SET status='REJECTED',decided_by=$3 WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,c.principal!.userId]);
           await audit(tx,c,'transfer',String(row.id),{status:'REJECTED'});return {data:dto(transfer,saved!)};
         }
-        // Stable lock order: school -> student -> class IDs -> enrollment.
-        await getResource(tx,resource('student'),schoolId,String(row.student_id),true);
-        const from=await getResource(tx,resource('enrollment'),schoolId,String(row.from_enrollment_id));
-        const classIds=[...new Set([String(from.class_id),...(row.to_class_id?[String(row.to_class_id)]:[])])].sort();
-        for(const id of classIds)await getResource(tx,resource('class'),schoolId,id,true);
-        const locked=await getResource(tx,resource('enrollment'),schoolId,String(row.from_enrollment_id),true);
-        await this.validateTransfer(tx,schoolId,locked,row.student_id,row.to_class_id,String(row.effective_on));
-        await tx.query("UPDATE app.enrollments SET ends_on=$3,status='ENDED' WHERE school_id=$1 AND id=$2",[schoolId,locked.id,row.effective_on]);
-        if(row.to_class_id)await placeEnrollment(tx,schoolId,String(row.student_id),String(row.to_class_id),String(row.effective_on),String(locked.ends_on));
-        const saved=await one<Row>(tx,"UPDATE app.transfer_requests SET status='APPLIED',decided_by=$3,applied_at=now() WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,c.principal!.userId]);
-        await audit(tx,c,'transfer',String(row.id),{status:'APPLIED',fromClassId:locked.class_id,toClassId:row.to_class_id});return {data:dto(transfer,saved!)};
+        return {data:dto(transfer,await this.applyTransfer(tx,c,row))};
       }
       if(op==='createHandover'){
         if(String(c.body.reason).trim().length<3)validation('reason','Cần lý do bàn giao');
@@ -159,6 +154,25 @@ export class TransitionsService {
     };
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,readOnly:true});
     return this.commands.execute(c,authorize,work);
+  }
+  private async applyTransfer(tx:Transaction,c:RequestContext,row:Row){
+    const schoolId=c.params.schoolId!;
+    // Stable lock order: school -> student -> class IDs -> enrollment.
+    await getResource(tx,resource('student'),schoolId,String(row.student_id),true);
+    const from=await getResource(tx,resource('enrollment'),schoolId,String(row.from_enrollment_id));
+    const classIds=[...new Set([String(from.class_id),...(row.to_class_id?[String(row.to_class_id)]:[])])].sort();
+    for(const id of classIds)await getResource(tx,resource('class'),schoolId,id,true);
+    const locked=await getResource(tx,resource('enrollment'),schoolId,String(row.from_enrollment_id),true);
+    await this.validateTransfer(tx,schoolId,locked,row.student_id,row.to_class_id,String(row.effective_on));
+    await tx.query("UPDATE app.enrollments SET ends_on=$3,status='ENDED' WHERE school_id=$1 AND id=$2",[schoolId,locked.id,row.effective_on]);
+    if(row.to_class_id)await placeEnrollment(tx,schoolId,String(row.student_id),String(row.to_class_id),String(row.effective_on),String(locked.ends_on));
+    else{
+      await tx.query("UPDATE app.students SET status='LEFT' WHERE school_id=$1 AND id=$2",[schoolId,row.student_id]);
+      await tx.query("UPDATE app.parent_access_links SET revoked_at=now(),revoke_reason='STUDENT_LEFT' WHERE school_id=$1 AND student_id=$2 AND revoked_at IS NULL",[schoolId,row.student_id]);
+      await tx.query('UPDATE identity.parent_sessions SET revoked_at=now() WHERE school_id=$1 AND access_link_id IN (SELECT id FROM app.parent_access_links WHERE school_id=$1 AND student_id=$2) AND revoked_at IS NULL',[schoolId,row.student_id]);
+    }
+    const saved=(await one<Row>(tx,"UPDATE app.transfer_requests SET status='APPLIED',decided_by=$3,applied_at=now() WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,c.principal!.userId]))!;
+    await audit(tx,c,'transfer',String(row.id),{status:'APPLIED',fromClassId:locked.class_id,toClassId:row.to_class_id});return saved;
   }
   private async validateTransfer(tx:Transaction,schoolId:string,from:Row,studentId:unknown,toClassId:unknown,date:string){
     if(from.student_id!==studentId)notFound();

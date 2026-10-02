@@ -9,16 +9,23 @@ import { conductDto,conductPeriod,conductSummary,periodResource,recordResource,p
 import { PublicationsService,type PublicationSource } from '../publications/publications.service';
 import type { RequestContext,Handler,Result } from '../../api.router';
 import {conductWorkspaceOperations,authorizeConductWorkspace,conductWorkspace} from './conduct-workspace';
+import {schoolConductWorkspace} from './school-workspace';
+import {publicationPolicy} from './school-policy';
 
 @Injectable()
 export class ConductService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listConductPeriods','createConductPeriod','getConductSummary','listConductRecords','createConductRecord','updateConductRecord','approveConductRecord','excludeConductRecord','reviewConductPeriod','lockConductPeriod','publishConductPeriod','lockAndPublishConduct',...conductWorkspaceOperations].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['listConductPeriods','createConductPeriod','getConductSummary','listConductRecords','createConductRecord','updateConductRecord','approveConductRecord','excludeConductRecord','reviewConductPeriod','lockConductPeriod','publishConductPeriod','lockAndPublishConduct',...conductWorkspaceOperations,'getPublicationCenterWorkspace'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async record(tx:Transaction,c:RequestContext,lock=false){const row=await one<Row>(tx,`SELECT * FROM app.conduct_records WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.classId,c.params.recordId]);if(!row)throw new Problem(404,'RESOURCE_NOT_FOUND');return row;}
   private async day(tx:Transaction,schoolId:string,timestamp:string){return (await one<{day:string}>(tx,"SELECT ($2::timestamptz AT TIME ZONE timezone)::date AS day FROM platform.schools WHERE id=$1",[schoolId,timestamp]))!.day;}
   private async scope(tx:Transaction,c:RequestContext,action:string,date?:string,subjectId?:string,authorId?:string){
     const schoolId=c.params.schoolId!,classId=c.params.classId!;
     const allowed=await this.policy.require(tx,c.principal!,action,{schoolId,classId,date,subjectId,allowSubject:!!subjectId});
+    if(action.split('+').some(a=>['conduct.lock','conduct.publish'].includes(a))){
+      const school=(await one<Row>(tx,'SELECT settings,version FROM platform.schools WHERE id=$1',[schoolId]))!,settings=publicationPolicy(schoolId,school);
+      for(const a of action.split('+')){const leader=a==='conduct.lock'?settings.lockBy==='school_leader':a==='conduct.publish'&&settings.publishBy==='school_leader';
+       if(leader&&!allowed.grants.some(g=>g.scope_type==='SCHOOL'&&grantAllows(g,a,{schoolId,classId,date},allowed.today)))throw new Problem(404,'RESOURCE_NOT_FOUND');}
+    }
     const broad=action.split('+').every(a=>allowed.grants.some(g=>grantAllows(g,a,{schoolId,classId,date},allowed.today)));
     if(!broad&&authorId!==c.principal!.userId)throw new Problem(404,'RESOURCE_NOT_FOUND');return broad;
   }
@@ -124,12 +131,18 @@ export class ConductService {
   async publish(tx:Transaction,c:RequestContext,p:Row,adjusted=false){
     const source:PublicationSource={kind:'CONDUCT',id:String(p.id),schoolId:String(p.school_id),classId:String(p.class_id),yearId:String(p.year_id),version:Number(p.data_version)};
     const ready=await one<Row>(tx,"SELECT * FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2 AND source_version=$3 AND status='READY' ORDER BY revision DESC LIMIT 1 FOR UPDATE",[p.school_id,p.id,p.data_version]);
+    const settings=publicationPolicy(String(p.school_id),(await one<Row>(tx,'SELECT settings,version FROM platform.schools WHERE id=$1',[p.school_id]))!);
+    if(settings.requireLeaderApproval){
+     const approved=adjusted?await one(tx,"SELECT id FROM app.adjustment_requests WHERE school_id=$1 AND id=$2 AND period_id=$3 AND status='APPROVED' AND app.school_conduct_approver(school_id,decided_by,'conduct.adjust.approve')",[p.school_id,c.params.adjustmentId,p.id]):ready?await one(tx,'SELECT id FROM app.conduct_publication_approvals WHERE school_id=$1 AND publication_id=$2 AND source_version=$3',[p.school_id,ready.id,p.data_version]):undefined;
+     if(!approved)throw new Problem(409,'LEADER_APPROVAL_REQUIRED');
+    }
     if(ready&&!adjusted)return this.publications.publishReady(tx,c,source,ready);
     const revision=(await one<{next:number}>(tx,'SELECT coalesce(max(revision),0)+1 AS next FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2',[p.school_id,p.id]))!.next;
     const data=await publicConductItems(tx,p,revision,adjusted);return this.publications.create(tx,c,source,data.snapshot,data.items,true);
   }
   private async handle(c:RequestContext):Promise<Result>{
     const schoolId=c.params.schoolId!,classId=c.params.classId!,op=c.operation.id;
+    if(op==='getPublicationCenterWorkspace')return this.db.transaction(tx=>schoolConductWorkspace(tx,this.policy,c,this),{schoolId});
     if(conductWorkspaceOperations.includes(op)){
       const authorize=(tx:Transaction)=>authorizeConductWorkspace(tx,this.policy,c),work=(tx:Transaction)=>conductWorkspace(tx,this.policy,c,this,this.publications);
       return c.operation.method==='GET'?this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId}):this.commands.execute(c,authorize,work);

@@ -6,7 +6,7 @@ import { studentsRepo } from "@/lib/repositories";
 import { studentsExtraRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDate, studentStatus } from "@/lib/formatters";
-import { downloadCSV, downloadXLSX, type ExportColumn } from "@/lib/export";
+import { downloadBlob } from "@/lib/export";
 import { useSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -21,11 +21,6 @@ import { TransferDialog } from "./dialogs";
 
 type Row = Awaited<ReturnType<typeof studentsRepo.list>>["items"][number];
 
-const EXPORT_COLS: ExportColumn[] = [
-  { key: "code", label: "Mã HS" }, { key: "fullName", label: "Họ và tên" }, { key: "dob", label: "Ngày sinh" }, { key: "gender", label: "Giới tính" },
-  { key: "className", label: "Lớp" }, { key: "status", label: "Trạng thái" }, { key: "guardians", label: "Số người giám hộ" }, { key: "verified", label: "Đã xác minh" },
-];
-
 /** SC16 — school-wide student list: real search/filter/sort/paging; same names distinguished by code/class/dob. */
 export function StudentList({ schoolId }: { schoolId: string }) {
   const { can, school, yearId } = useSchool();
@@ -37,15 +32,14 @@ export function StudentList({ schoolId }: { schoolId: string }) {
   const selectionScope = JSON.stringify(requested.filters) + (list.query.q ?? "");
   useEffect(() => { setSelected(new Set()); }, [selectionScope]);
   const [transfer, setTransfer] = useState<Row | null>(null);
-  const exp = useCommand((ctx, ids: string[]) => studentsExtraRepo.exportStudents(ctx, schoolId, ids));
+  const exp = useCommand((ctx, ids: string[], format: "csv" | "xlsx") => studentsExtraRepo.exportStudents(ctx, schoolId, ids, requested.filters.yearId ?? "", format));
   const base = `/school/${schoolId}`;
 
   const doExport = async (fmt: "csv" | "xlsx") => {
-    const rows = await exp.run([...selected]);
-    if (!rows) return;
-    const name = `hoc-sinh-${school.slug}-${rows.length}`;
-    if (fmt === "csv") downloadCSV(EXPORT_COLS, rows, name);
-    else await downloadXLSX(EXPORT_COLS, rows, name, { title: `Danh sách học sinh — ${school.name}`, subtitle: `${rows.length} học sinh được chọn` });
+    const file = await exp.run([...selected], fmt);
+    if (!file) return;
+    file.assertCurrent();
+    downloadBlob(file.blob, file.filename);
   };
 
   const columns: Column<Row>[] = [

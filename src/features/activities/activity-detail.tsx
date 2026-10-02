@@ -41,7 +41,7 @@ export function ActivityDetailPage({ activityId }: { activityId: string }) {
 }
 
 function DetailBody({ d }: { d: Detail }) {
-  const { base, header, readOnly } = useClassroom();
+  const { base, header, readOnly,schoolId,yearId,classId } = useClassroom();
   const a = d.activity;
   const today = useCtx().today;
   const st = activityState({ status: a.status, dueSoon: a.status === "active" && a.dueDate >= today && daysBetween(today, a.dueDate) <= 7, overdue: a.status === "active" && a.dueDate < today });
@@ -49,6 +49,7 @@ function DetailBody({ d }: { d: Detail }) {
   const [record, setRecord] = useState<{ studentId?: string } | null>(null);
   const canManage = d.canManage && !readOnly;
   const canEvidence = d.canEvidence && !readOnly && a.status === "active";
+  const publish=useCommand((ctx)=>activitiesRepo.publish(ctx,schoolId,yearId,classId,a),{success:'Đã công bố hoạt động cho đúng gia đình được giao'});
   const p = d.progress;
   const evidence: Ev[] = useMemo(() => d.students.flatMap((s) => s.evidence.map((e) => ({ ...e, studentName: s.fullName }))).sort((x, y) => y.uploadedAt.localeCompare(x.uploadedAt)), [d.students]);
   const pendingCount = evidence.filter((e) => e.status === "pending").length;
@@ -67,9 +68,11 @@ function DetailBody({ d }: { d: Detail }) {
             <div className="mt-3 flex flex-wrap gap-2">
               {canManage && a.status !== "closed" && <ButtonLink href={`${base}/activities/${a.id}/edit`} size="sm" icon={<Edit3 className="size-4" />}>Sửa</ButtonLink>}
               {canEvidence && <Button size="sm" variant="primary" icon={<Upload className="size-4" />} onClick={() => setRecord({})}>Ghi nhận minh chứng</Button>}
-              {canManage && a.status === "draft" && <Button size="sm" variant="primary" icon={<Send className="size-4" />} onClick={() => setIntent({ id: a.id, title: a.title, to: "active", fromDraft: true, dueDate: a.dueDate, assigned: p.total })}>Giao hoạt động</Button>}
-              {canManage && a.status === "active" && <Button size="sm" variant="danger-soft" icon={<Lock className="size-4" />} onClick={() => setIntent({ id: a.id, title: a.title, to: "closed", dueDate: a.dueDate })}>Kết thúc</Button>}
-              {canManage && a.status === "closed" && <Button size="sm" icon={<PlayCircle className="size-4" />} onClick={() => setIntent({ id: a.id, title: a.title, to: "active", dueDate: a.dueDate })}>Mở lại</Button>}
+              {canManage && a.status === "draft" && <Button size="sm" variant="primary" icon={<Send className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "active", fromDraft: true, dueDate: a.dueDate, assigned: p.total })}>Giao hoạt động</Button>}
+              {canManage && a.status === "active" && <Button size="sm" variant="danger-soft" icon={<Lock className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "closed", dueDate: a.dueDate })}>Kết thúc</Button>}
+              {canManage && a.status === "closed" && <Button size="sm" icon={<PlayCircle className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "active", dueDate: a.dueDate })}>Mở lại</Button>}
+              {d.canPublish&&a.status!=='draft'&&<Button size="sm" variant="primary" icon={<Send className="size-4" />} loading={publish.pending} onClick={()=>publish.run()}>{a.publishedToParents?'Công bố lại':'Công bố'}</Button>}
+              {publish.error&&<p role="alert" className="w-full text-sm text-danger-text">{publish.error.message}</p>}
             </div>
           </div>
         </Card>
@@ -86,7 +89,7 @@ function DetailBody({ d }: { d: Detail }) {
         </Card>
       </div>
 
-      <Tabs tabs={[{ value: "info", label: "Thông tin" }, { value: "progress", label: "Tiến độ", count: p.total }, { value: "evidence", label: "Minh chứng", count: evidence.length }, { value: "history", label: "Lịch sử" }]}>
+      <Tabs tabs={[{ value: "info", label: "Thông tin" }, { value: "progress", label: "Tiến độ", count: p.total }, ...(d.canReadEvidence?[{ value: "evidence", label: "Minh chứng", count: evidence.length }]:[]), { value: "history", label: "Lịch sử" }]}>
         <TabPanel value="info">
           <div className="grid gap-5 lg:grid-cols-2">
             <Card className="p-5">
@@ -95,7 +98,7 @@ function DetailBody({ d }: { d: Detail }) {
                 <InfoRow label="Hạn hoàn thành">{fmtDate(a.dueDate)}</InfoRow>
                 <InfoRow label="Giao cho">{scopeLabel({ ...a, groupName: d.groupName }, header.size)} ({p.total} học sinh)</InfoRow>
                 <InfoRow label="Minh chứng">{a.evidenceRequired ? "Bắt buộc — giáo viên ghi nhận" : "Không bắt buộc"}</InfoRow>
-                <InfoRow label="Hiển thị cho gia đình">{a.publishedToParents ? "Gia đình của học sinh được giao" : "Chưa (bản nháp)"}</InfoRow>
+                <InfoRow label="Hiển thị cho gia đình">{a.publishedToParents ? "Gia đình thấy bản đã công bố; công bố lại để cập nhật thay đổi" : "Chưa công bố"}</InfoRow>
                 <InfoRow label="Người tạo">{d.createdByName}</InfoRow>
                 <InfoRow label="Tạo lúc">{fmtDateTime(a.createdAt)}</InfoRow>
                 <InfoRow label="Phiên bản">{a.version}</InfoRow>
@@ -147,7 +150,7 @@ function ProgressTable({ d, canEvidence, onRecord, activeRecord }: { d: Detail; 
     { key: "group", header: "Tổ", cell: (s) => s.groupName ?? "—", hideBelow: "md" },
     { key: "status", header: "Tình trạng", sortable: true, cell: (s) => <Badge tone={submissionStatus[s.status].tone}>{submissionStatus[s.status].label}</Badge> },
     { key: "note", header: "Ghi chú", cell: (s) => <span className="text-[13px]">{s.note ?? "—"}</span>, hideBelow: "lg" },
-    { key: "ev", header: "Minh chứng", align: "center", cell: (s) => s.evidence.length || "—" },
+    { key: "ev", header: "Minh chứng", align: "center", cell: (s) => d.canReadEvidence?s.evidence.length || "—":"Không có quyền" },
     { key: "upd", header: "Cập nhật", cell: (s) => <span className="text-[12.5px] tabular-nums">{s.updatedAt ? fmtDateTime(s.updatedAt) : "—"}</span>, hideBelow: "md" },
     ...(activeRecord ? [{ key: "act", header: "", cell: (s: Row) => s.stillEnrolled ? <Button size="sm" variant="ghost" icon={<Upload className="size-4" />} onClick={() => onRecord(s.id)}>Ghi nhận</Button> : null }] : []),
   ];
@@ -166,12 +169,13 @@ function ProgressTable({ d, canEvidence, onRecord, activeRecord }: { d: Detail; 
       <DataTable rows={rows} columns={cols} rowKey={(r) => r.id} selectable={canEvidence} selected={selected} onSelectedChange={setSelected} sort={sort} dir="asc" onSort={(k) => setSort(k as "name" | "status")}
         caption="Tình trạng hoạt động theo học sinh" minWidth={640} empty={active ? <EmptyFiltered what="học sinh" onReset={() => { setQ(""); setStatus(""); setGroup(""); }} /> : <EmptyState compact title="Chưa giao học sinh nào" />} />
       <Pagination page={cur} pageCount={pageCount} total={filtered.length} pageSize={pageSize} onPage={setPage} what="học sinh" />
-      <BulkStatusDialog open={bulk} onOpenChange={setBulk} ids={[...selected]} activityId={d.activity.id} onDone={() => setSelected(new Set())} key={bulk ? "o" : "c"} schoolId={schoolId} yearId={yearId} classId={classId} />
+      <BulkStatusDialog open={bulk} onOpenChange={setBulk} ids={[...selected]} versions={Object.fromEntries(d.students.map(s=>[s.id,{id:s.participantId,version:s.version}]))} activityId={d.activity.id} onDone={() => setSelected(new Set())} key={bulk ? "o" : "c"} schoolId={schoolId} yearId={yearId} classId={classId} />
     </Card>
   );
 }
 
-function BulkStatusDialog({ open, onOpenChange, ids, activityId, onDone, schoolId, yearId, classId }: { open: boolean; onOpenChange: (o: boolean) => void; ids: string[]; activityId: string; onDone: () => void; schoolId: string; yearId: string; classId: string }) {
+function BulkStatusDialog({ open, onOpenChange, ids, versions:initialVersions, activityId, onDone, schoolId, yearId, classId }: { open: boolean; onOpenChange: (o: boolean) => void; ids: string[]; versions:Record<string,{id:string;version:number}>; activityId: string; onDone: () => void; schoolId: string; yearId: string; classId: string }) {
+  const [versions]=useState(initialVersions);
   const [status, setStatus] = useState<SubmissionStatus | "">("");
   const [note, setNote] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -185,7 +189,7 @@ function BulkStatusDialog({ open, onOpenChange, ids, activityId, onDone, schoolI
     if (status === "needs_supplement" && note.trim().length < 5) e.note = "Ghi rõ nội dung cần bổ sung (tối thiểu 5 ký tự)";
     setErrors(e);
     if (Object.keys(e).length || !status) return;
-    const r = await cmd.run({ activityId, studentIds: ids, status, note: note.trim() || undefined });
+    const r = await cmd.run({ activityId, studentIds: ids, versions, status, note: note.trim() || undefined });
     if (r !== undefined) { onOpenChange(false); onDone(); }
   };
   return (
@@ -196,6 +200,7 @@ function BulkStatusDialog({ open, onOpenChange, ids, activityId, onDone, schoolI
         <TextArea label={status === "needs_supplement" ? "Nội dung cần bổ sung" : "Ghi chú"} required={status === "needs_supplement"} value={note} onChange={(e) => setNote(e.target.value)} rows={3} maxChars={300} error={errors.note} />
         <p className="text-[12.5px] text-muted">Đổi tình trạng không tạo minh chứng và không cộng điểm thi đua.</p>
         {errors.form && <p className="error-text" role="alert">{errors.form}</p>}
+        {cmd.error?.code!=='VALIDATION'&&cmd.error&&<p className="error-text" role="alert">{cmd.error.message}</p>}
       </div>
     </Modal>
   );
@@ -234,7 +239,7 @@ function EvidenceGrid({ items, canReview, pendingCount, activityTitle }: { items
       )}
       <FileViewerDialog open={!!view} onOpenChange={(o) => { if (!o) setView(null); }} file={view?.file}
         meta={view ? [{ label: "Học sinh", value: view.studentName }, { label: "Hoạt động", value: activityTitle }, { label: "Giáo viên ghi nhận", value: view.uploadedByName }, { label: "Trạng thái", value: <EvidenceStatusBadge status={view.status} /> }] : undefined} />
-      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} />
+      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} evidenceVersions={Object.fromEntries(items.map(e=>[e.id,e.version]))} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} />
     </Card>
   );
 }

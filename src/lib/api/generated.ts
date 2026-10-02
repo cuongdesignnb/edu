@@ -74,8 +74,8 @@ export interface ApiSchemas {
   "RelationshipPatch": { "expectedVersion": number; "relationshipLabel"?: string; "isPrimary"?: boolean; };
   "VerifyRelationship": { "expectedVersion": number; "canReceiveInfo": boolean; "verificationNote": string; };
   "StudentDetail": { "student": ApiSchemas["Student"]; "enrollments": Array<ApiSchemas["Enrollment"]>; "relationships"?: Array<ApiSchemas["Relationship"]>; "guardians"?: Array<ApiSchemas["Guardian"]>; "internalNote"?: (string) | null; };
-  "Transfer": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "fromEnrollmentId": (string) | null; "toClassId"?: string; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; };
-  "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; "expectedEnrollmentVersion"?: number; };
+  "Transfer": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "fromEnrollmentId": (string) | null; "toClassId"?: string; "effectiveOn": string; "reason": string; "status": "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; "studentName"?: string; "studentCode"?: string; "fromClassId"?: string; "fromName"?: string; "toName"?: (string) | null; "requestedByName"?: (string) | null; "requestedAt"?: string; "decidedByName"?: (string) | null; "decidedAt"?: (string) | null; };
+  "TransferCreate": { "studentId": string; "fromEnrollmentId": string; "toClassId"?: string; "effectiveOn": string; "reason": string; "expectedEnrollmentVersion"?: number; "applyNow"?: boolean; };
   "ParentAccess": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "studentId": (string) | null; "yearId": (string) | null; "relationshipId": (string) | null; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; "revokedAt"?: (string) | null; "issuedToGuardianName"?: string; "revokeReason"?: (string) | null; };
   "ParentAccessCreate": { "studentId": string; "yearId": string; "relationshipId": string; "allowedSections": Array<"overview" | "teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "allowDownload": boolean; "expiresAt": string; };
   "ParentAccessIssued": { "access": ApiSchemas["ParentAccess"]; "link": string; "displayOnce": boolean; };
@@ -129,7 +129,7 @@ export interface ApiSchemas {
   "Publication": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "CONDUCT" | "ATTENDANCE" | "TIMETABLE" | "DUTY" | "ACTIVITY" | "ANNOUNCEMENT"; "sourceId": (string) | null; "classId"?: (string) | null; "yearId": (string) | null; "revision": number; "sourceVersion": number; "status": "READY" | "PUBLISHED" | "SUPERSEDED" | "WITHDRAWN"; "publishedAt"?: (string) | null; "contentHash": string; };
   "PublicationDetail": { "publication": ApiSchemas["Publication"]; "conduct"?: ApiSchemas["ConductSummary"]; "attendance"?: ApiSchemas["AttendanceSession"]; "timetable"?: ApiSchemas["Timetable"]; "activity"?: ApiSchemas["Activity"]; "announcement"?: ApiSchemas["Announcement"]; "duty"?: ApiSchemas["DutySchedule"]; "lessons"?: Array<ApiSchemas["Lesson"]>; "conductDisplay"?: ApiSchemas["ConductPublicationDisplay"]; };
   "Adjustment": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "periodId": (string) | null; "baselinePublicationId": (string) | null; "reason": string; "status": "SUBMITTED" | "APPROVED" | "REJECTED" | "APPLIED" | "CANCELLED"; "proposedChanges": Array<{ "recordId": (string) | null; "action": "EXCLUDE" | "REPLACE"; "replacement"?: ApiSchemas["ConductRecordCreate"]; }>; "preview"?: { "before": ApiSchemas["ConductSummary"]; "after": ApiSchemas["ConductSummary"]; }; "decisionReason"?: string; "resultPublicationId"?: string; };
-  "AdjustmentCreate": { "periodId": string; "baselinePublicationId": string; "reason": string; "proposedChanges": Array<{ "recordId": string; "action": "EXCLUDE" | "REPLACE"; "replacement"?: ApiSchemas["ConductRecordCreate"]; }>; };
+  "AdjustmentCreate": { "periodId": string; "baselinePublicationId": string; "reason": string; "proposedChanges": Array<({ "recordId": string; "action": "EXCLUDE" | "REPLACE"; "replacement"?: ApiSchemas["ConductRecordCreate"]; } | { "action": "ADD"; "replacement": ApiSchemas["ConductRecordCreate"]; })>; };
   "TimetableEntry": { "id"?: (string) | null; "weekday": number; "periodNumber": number; "subjectId": (string) | null; "memberId": (string) | null; "roomId"?: (string) | null; "startsAtLocal": string; "endsAtLocal": string; };
   "Timetable": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "classId": (string) | null; "yearId": (string) | null; "revision": number; "startsOn": string; "endsOn": string; "status": "DRAFT" | "READY" | "PUBLISHED" | "ARCHIVED"; "entries": Array<ApiSchemas["TimetableEntry"]>; "dataVersion"?: number; "publishedAt"?: (string) | null; };
   "TimetableCreate": { "startsOn": string; "endsOn": string; "entries": Array<ApiSchemas["TimetableEntry"]>; };
@@ -155,12 +155,12 @@ export interface ApiSchemas {
   "AnnouncementCreate": { "yearId": string; "classId"?: string; "title": string; "sanitizedHtml": string; "targets": Array<ApiSchemas["Audience"]>; "fileIds"?: Array<string>; "summary"?: string; "audience"?: "FAMILIES" | "STAFF" | "ALL"; "internalNote"?: string; };
   "AnnouncementPatch": { "expectedVersion": number; "title"?: string; "sanitizedHtml"?: string; "targets"?: Array<ApiSchemas["Audience"]>; "fileIds"?: Array<string>; "summary"?: string; "audience"?: "FAMILIES" | "STAFF" | "ALL"; "internalNote"?: string; "discard"?: boolean; };
   "SchedulePublish": { "expectedVersion": number; "scheduledAt": string; };
-  "ImportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "status": "UPLOADED" | "VALIDATING" | "READY" | "APPLYING" | "COMPLETED" | "FAILED" | "CANCELLED"; "previewHash"?: string; "summary"?: { "added": number; "updated": number; "skipped": number; "invalid": number; "processed": number; }; "yearId"?: string; "classId"?: string; "columns"?: Array<string>; };
+  "ImportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "status": "UPLOADED" | "VALIDATING" | "READY" | "APPLYING" | "COMPLETED" | "FAILED" | "CANCELLED"; "previewHash"?: string; "summary"?: { "added": number; "updated": number; "skipped": number; "invalid": number; "processed": number; }; "yearId"?: string; "classId"?: string; "columns"?: Array<string>; "fileName"?: string; "className"?: (string) | null; "createdByName"?: (string) | null; };
   "ImportCreate": { "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "yearId": (string) | null; "classId"?: (string) | null; };
   "ImportMapping": { "expectedVersion": number; "mapping": Array<{ "sourceColumn": string; "targetField": string; }>; "mode": "ADD_ONLY" | "UPSERT_VERIFIED_CODE"; };
   "ImportRow": { "rowNumber": number; "status": string; "errors": Array<{ "field": string; "code": string; "message": string; }>; "values": { [key: string]: unknown; }; "decision"?: "ADD" | "UPDATE" | "SKIP"; "matchedId"?: string; };
-  "ExportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student"; "format": "CSV" | "XLSX" | "PDF"; "status": "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"; "fileId"?: (string) | null; "expiresAt"?: string; "classId"?: string; "requestedBy"?: string; "asOf"?: string; "contentHash"?: string; "lastErrorCode"?: string; };
-  "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; };
+  "ExportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory"; "format": "CSV" | "XLSX" | "PDF"; "status": "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"; "fileId"?: (string) | null; "expiresAt"?: string; "classId"?: string; "requestedBy"?: string; "asOf"?: string; "contentHash"?: string; "lastErrorCode"?: string; "title"?: string; "rowCount"?: number; "filters"?: { [key: string]: unknown; }; "fileName"?: string; };
+  "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; "studentIds"?: Array<string>; };
   "Report": { "reportType": string; "metrics": Array<ApiSchemas["Metric"]>; "asOf": string; "rows": Array<{ "studentId"?: (string) | null; "classId"?: (string) | null; "label": string; "values": { [key: string]: unknown; }; }>; "dataSource": "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "title"?: string; "schoolName"?: string; "yearName"?: string; "scopeLabel"?: string; "from"?: string; "to"?: string; "columns"?: Array<{ "key": string; "label": string; }>; "publicationIds"?: Array<string>; "notes"?: Array<string>; };
   "Notification": { "yearId"?: string; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "title": string; "kind": string; "schoolId": (string) | null; "targetType": string; "targetId": (string) | null; "readAt"?: (string) | null; "body"?: string; "schoolName"?: string; "classId"?: string; "accessible"?: boolean; };
   "AuditEvent": { "id": (string) | null; "actorLabel": string; "action": string; "targetType": string; "targetId"?: (string) | null; "createdAt": string; "reason"?: string; "changes": Array<{ "field": string; "before": (string) | null; "after": (string) | null; }>; "actorId"?: (string) | null; };
@@ -548,7 +548,7 @@ export interface ApiSchemas {
   "ConductWorkspaceRecords": { "schoolId": string; "yearId": string; "classId": string; "today": string; "source": ApiSchemas["ConductWorkspaceSource"]; "records": Array<ApiSchemas["ConductWorkspaceRecord"]>; "roster": Array<ApiSchemas["ConductWorkspaceRoster"]>; "ruleSet": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "week": ApiSchemas["ConductWorkspaceWeek"]; "period": { "status": "open" | "locked" | "published"; "lockedAt": (string) | null; "lockedByName": (string) | null; }; "canRecord": boolean; "isReviewer": boolean; "lessons": Array<ApiSchemas["ConductWorkspaceLesson"]>; };
   "ConductWorkspaceRow": { "studentId": string; "studentName": string; "studentCode": (string) | null; "base": number; "plus": number; "minus": number; "total": number; "grade": (string) | null; "items": Array<{ "recordId": string; "date": string; "label": string; "points": number; "shareWithParent": boolean; }>; };
   "ConductWorkspaceSnapshot": { "id": string; "schoolId": string; "yearId": string; "classId": string; "weekId": string; "weekIndex": number; "rowCount": number; "avg": number; "lockedByName": (string) | null; "publishedByName": (string) | null; "kind": "conduct_week"; "versionNo": number; "ruleSetId": string; "ruleSetVersionNo": number; "ruleSetName": string; "lockedAt": string; "lockedBy": string; "publishedAt": (string) | null; "publishedBy": (string) | null; "status": "locked" | "published" | "superseded" | "withdrawn"; "rows": Array<ApiSchemas["ConductWorkspaceRow"]>; "detailsAvailable": boolean; "sourceVersion": number; "publicationVersion": number; "supersedesId": (string) | null; "adjustmentNote": (string) | null; };
-  "ConductWorkspaceSummary": { "schoolId": string; "yearId": string; "classId": string; "today": string; "source": ApiSchemas["ConductWorkspaceSource"]; "week": ApiSchemas["ConductWorkspaceWeek"]; "period": { "status": "open" | "locked" | "published"; "lockedAt": (string) | null; "lockedByName": (string) | null; }; "ruleSet": ApiSchemas["RuleWorkspaceItem"]; "snapshot": (ApiSchemas["ConductWorkspaceSnapshot"] | (null) | null); "rows": Array<ApiSchemas["ConductWorkspaceRow"]>; "preview": Array<ApiSchemas["ConductWorkspaceRow"]>; "summaryAvailable": boolean; "checks": { "pending": number; "duplicates": number; "blocking": Array<string>; "warnings": Array<string>; }; "perms": { "lock": boolean; "publish": boolean; "review": boolean; }; "policy": (null) | null; };
+  "ConductWorkspaceSummary": { "schoolId": string; "yearId": string; "classId": string; "today": string; "source": ApiSchemas["ConductWorkspaceSource"]; "week": ApiSchemas["ConductWorkspaceWeek"]; "period": { "status": "open" | "locked" | "published"; "lockedAt": (string) | null; "lockedByName": (string) | null; }; "ruleSet": ApiSchemas["RuleWorkspaceItem"]; "snapshot": (ApiSchemas["ConductWorkspaceSnapshot"] | (null) | null); "rows": Array<ApiSchemas["ConductWorkspaceRow"]>; "preview": Array<ApiSchemas["ConductWorkspaceRow"]>; "summaryAvailable": boolean; "checks": { "pending": number; "duplicates": number; "blocking": Array<string>; "warnings": Array<string>; }; "perms": { "lock": boolean; "publish": boolean; "review": boolean; }; "policy": ApiSchemas["PublicationPolicyWorkspace"]; "approval": { "required": boolean; "approvedAt": (string) | null; "canApprove": boolean; }; };
   "ConductWorkspaceCreate": { "source": ApiSchemas["ConductWorkspaceSource"]; "studentId": string; "enrollmentId": string; "date": string; "ruleId": string; "reason": string; "requestId": string; "lessonId": (string) | null; "manualDelta": (number) | null; "confirmDistinct": boolean; "distinctNote": (string) | null; };
   "ConductWorkspaceUpdate": { "source": ApiSchemas["ConductWorkspaceSource"]; "ruleId": string; "reason": string; "version": number; "manualDelta": (number) | null; };
   "ConductWorkspaceReview": { "source": ApiSchemas["ConductWorkspaceSource"]; "records": Array<{ "id": string; "version": number; }>; "decision": "approve" | "reject" | "void"; "note": (string) | null; };
@@ -558,9 +558,9 @@ export interface ApiSchemas {
   "ConductWorkspaceReceipt": { "source": ApiSchemas["ConductWorkspaceSource"]; "changed": number; "status": "open" | "locked" | "published"; "record": (ApiSchemas["ConductWorkspaceRecord"] | (null) | null); "snapshot": (ApiSchemas["ConductWorkspaceSnapshot"] | (null) | null); };
   "ConductWorkspaceSnapshots": { "schoolId": string; "yearId": string; "classId": string; "items": Array<ApiSchemas["ConductWorkspaceSnapshot"]>; };
   "ConductWorkspaceSnapshotDetail": { "schoolId": string; "yearId": string; "classId": string; "source": ApiSchemas["ConductWorkspaceSource"]; "snapshot": ApiSchemas["ConductWorkspaceSnapshot"]; "ruleSet": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "week": ApiSchemas["ConductWorkspaceWeek"]; "versions": Array<{ "id": string; "versionNo": number; "status": "locked" | "published" | "superseded" | "withdrawn"; "publishedAt": (string) | null; "adjustmentNote": (string) | null; }>; "diff": Array<{ "studentId": string; "studentName": string; "before": (number) | null; "after": number; }>; "lockedByName": (string) | null; "publishedByName": (string) | null; "className": string; "canRequestAdjustment": boolean; "pendingAdjustments": number; };
-  "ConductAdjustmentItem": { "schoolId": string; "yearId": string; "classId": string; "id": string; "version": number; "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": (string) | null; "recordId": (string) | null; "kind": "remove_record" | "change_points" | "batch"; "newPoints": (number) | null; "ruleId": (string) | null; "beforeTotal": (number) | null; "afterTotal": (number) | null; "reason": string; "status": "pending" | "approved" | "rejected" | "published"; "requestedBy": string; "requestedAt": string; "requestedByName": (string) | null; "decidedBy": (string) | null; "decidedAt": (string) | null; "decidedByName": (string) | null; "decisionNote": (string) | null; "resultSnapshotId": (string) | null; "resultSnapshotStatus": ("locked" | "published" | "superseded" | "withdrawn" | null) | null; "studentName": string; "weekIndex": number; "weekId": string; "snapshotVersion": number; "recordLabel": (string) | null; };
+  "ConductAdjustmentItem": { "schoolId": string; "yearId": string; "classId": string; "id": string; "version": number; "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": (string) | null; "recordId": (string) | null; "kind": "remove_record" | "change_points" | "batch" | "add_record"; "newPoints": (number) | null; "ruleId": (string) | null; "beforeTotal": (number) | null; "afterTotal": (number) | null; "reason": string; "status": "pending" | "approved" | "rejected" | "published"; "requestedBy": string; "requestedAt": string; "requestedByName": (string) | null; "decidedBy": (string) | null; "decidedAt": (string) | null; "decidedByName": (string) | null; "decisionNote": (string) | null; "resultSnapshotId": (string) | null; "resultSnapshotStatus": ("locked" | "published" | "superseded" | "withdrawn" | null) | null; "studentName": string; "weekIndex": number; "weekId": string; "snapshotVersion": number; "recordLabel": (string) | null; };
   "ConductAdjustmentWorkspace": { "schoolId": string; "yearId": string; "classId": string; "items": Array<ApiSchemas["ConductAdjustmentItem"]>; "canRequest": boolean; "canApprove": boolean; "canPublish": boolean; "me": string; "snapshots": Array<ApiSchemas["ConductWorkspaceSnapshot"]>; "rules": Array<ApiSchemas["RuleWorkspaceRule"]>; };
-  "ConductAdjustmentRequest": { "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": string; "kind": "remove_record" | "change_points" | "add_record"; "recordId": (string) | null; "newPoints": (number) | null; "ruleId": (string) | null; "reason": string; };
+  "ConductAdjustmentRequest": { "source": ApiSchemas["ConductWorkspaceSource"]; "snapshotId": string; "studentId": string; "kind": "remove_record" | "change_points" | "add_record"; "recordId": (string) | null; "newPoints": (number) | null; "ruleId": (string) | null; "reason": string; "date"?: (string) | null; };
   "ConductAdjustmentDecision": { "source": ApiSchemas["ConductWorkspaceSource"]; "version": number; "approve": boolean; "note": (string) | null; };
   "ConductAdjustmentPublish": { "source": ApiSchemas["ConductWorkspaceSource"]; "version": number; };
   "ConductAdjustmentItemResponse": { "data": ApiSchemas["ConductAdjustmentItem"]; "requestId": string; };
@@ -571,6 +571,80 @@ export interface ApiSchemas {
   "ConductWorkspaceReceiptResponse": { "data": ApiSchemas["ConductWorkspaceReceipt"]; "requestId": string; };
   "ConductWorkspaceSnapshotsResponse": { "data": ApiSchemas["ConductWorkspaceSnapshots"]; "requestId": string; "page": ApiSchemas["PageInfo"]; };
   "ConductWorkspaceSnapshotDetailResponse": { "data": ApiSchemas["ConductWorkspaceSnapshotDetail"]; "requestId": string; };
+  "PublicationPolicyWorkspace": { "schoolId": string; "lockBy": "homeroom" | "school_leader"; "publishBy": "homeroom" | "school_leader"; "requireLeaderApproval": boolean; "weekCloseDay": "sunday" | "monday"; "defaultParentModules": Array<"teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "attendanceAutoPublish": boolean; "version": number; };
+  "PublicationPolicySave": { "lockBy": "homeroom" | "school_leader"; "publishBy": "homeroom" | "school_leader"; "requireLeaderApproval": boolean; "weekCloseDay": "sunday" | "monday"; "defaultParentModules": Array<"teachers" | "attendance" | "conduct" | "timetable" | "duties" | "activities" | "announcements" | "documents">; "attendanceAutoPublish": boolean; "version": number; };
+  "PublicationPolicyDetail": { "policy": ApiSchemas["PublicationPolicyWorkspace"]; "canEdit": boolean; };
+  "ClassRuleWorkspace": { "schoolId": string; "yearId": string; "classId": string; "current": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "next": (ApiSchemas["RuleWorkspaceItem"] | (null) | null); "policy": ApiSchemas["PublicationPolicyWorkspace"]; };
+  "PublicationCenterWeek": { "id": string; "index": number; "startDate": string; "endDate": string; "closeDeadline": string; };
+  "PublicationCenterRow": { "classId": string; "yearId": string; "className": string; "homeroom": (string) | null; "status": "open" | "locked" | "published"; "pending": number; "blocking": Array<string>; "warnings": Array<string>; "overdue": boolean; "snapshotVersion": (number) | null; "publishedAt": (string) | null; "attendanceSaved": number; "attendancePublished": number; "adjustments": number; };
+  "PublicationCenterAdjustment": { "id": string; "yearId": string; "classId": string; "className": string; "studentName": (string) | null; "requestedByName": (string) | null; "reason": string; "status": "pending" | "approved"; "beforeTotal": (number) | null; "afterTotal": (number) | null; };
+  "PublicationCenterAnnouncement": { "id": string; "title": string; "status": "draft" | "scheduled"; "origin": "school" | "class"; "className": (string) | null; "classId": (string) | null; "yearId": string; "scheduledAt": (string) | null; };
+  "PublicationCenterWorkspace": { "weeks": Array<ApiSchemas["PublicationCenterWeek"]>; "week": (ApiSchemas["PublicationCenterWeek"] | (null) | null); "rows": Array<ApiSchemas["PublicationCenterRow"]>; "adjustments": Array<ApiSchemas["PublicationCenterAdjustment"]>; "announcements": Array<ApiSchemas["PublicationCenterAnnouncement"]>; };
+  "PublicationPolicyDetailResponse": { "data": ApiSchemas["PublicationPolicyDetail"]; "requestId": string; };
+  "PublicationPolicyWorkspaceResponse": { "data": ApiSchemas["PublicationPolicyWorkspace"]; "requestId": string; };
+  "ClassRuleWorkspaceResponse": { "data": ApiSchemas["ClassRuleWorkspace"]; "requestId": string; };
+  "PublicationCenterWorkspaceResponse": { "data": ApiSchemas["PublicationCenterWorkspace"]; "requestId": string; };
+  "TeacherWorkspaceLesson": { "id": string; "classId": string; "yearId": string; "className": string; "date": string; "periodNumber": (number) | null; "startsAtLocal": string; "endsAtLocal": string; "subjectName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeReason": (string) | null; "canAttend": boolean; };
+  "TeacherWorkspaceTask": { "id": string; "kind": "attendance" | "conduct" | "evidence" | "announcement" | "groups"; "title": string; "detail": string; "classId": string; "yearId": string; "className": string; "targetType": "attendance" | "lesson" | "conduct-period" | "activity" | "announcement" | "adjustment" | "groups"; "targetId": string; "status": string; "tone": "danger" | "warning" | "info" | "neutral"; "dueAt": (string) | null; };
+  "TeacherWorkspaceTasks": { "schoolId": string; "today": string; "asOf": string; "tasks": Array<ApiSchemas["TeacherWorkspaceTask"]>; };
+  "TeacherWorkspaceSchedule": { "schoolId": string; "today": string; "asOf": string; "weekStart": string; "days": Array<{ "date": string; "holiday": (string) | null; "lessons": Array<ApiSchemas["TeacherWorkspaceLesson"]>; }>; };
+  "TeacherWorkspaceHomeClass": { "id": string; "yearId": string; "name": string; "motto": (string) | null; "isHomeroom": boolean; "subjects": Array<string>; "size": (number) | null; "room": (string) | null; "nextLesson": ({ "id": string; "classId": string; "yearId": string; "className": string; "date": string; "periodNumber": (number) | null; "startsAtLocal": string; "endsAtLocal": string; "subjectName": string; "roomName": (string) | null; "status": "SCHEDULED" | "CANCELLED"; "changeReason": (string) | null; "canAttend": boolean; }) | null; "attendance": ({ "status": "none" | "saved" | "locked" | "published"; "total": number; "present": number; "late": number; "excused": number; "unexcused": number; "unmarked": number; }) | null; "pendingConduct": (number) | null; };
+  "TeacherWorkspaceHome": { "schoolId": string; "today": string; "asOf": string; "membershipId": string; "classes": Array<ApiSchemas["TeacherWorkspaceHomeClass"]>; "tasks": Array<ApiSchemas["TeacherWorkspaceTask"]>; "unread": number; "feed": Array<{ "id": string; "action": string; "entityLabel": string; "at": string; }>; };
+  "TeacherWorkspaceHomeResponse": { "data": ApiSchemas["TeacherWorkspaceHome"]; "requestId": string; };
+  "TeacherWorkspaceTasksResponse": { "data": ApiSchemas["TeacherWorkspaceTasks"]; "requestId": string; };
+  "TeacherWorkspaceScheduleResponse": { "data": ApiSchemas["TeacherWorkspaceSchedule"]; "requestId": string; };
+  "ActivityWorkspaceSource": { "id": string; "version": number; "dataVersion": number; "publicationId": (string) | null; };
+  "ActivityWorkspaceItem": { "id": string; "version": number; "dataVersion": number; "createdAt": string; "updatedAt": string; "classId": string; "yearId": string; "title": string; "description": string; "dueAt": string; "dueDate": string; "evidenceRequired": boolean; "status": "DRAFT" | "ASSIGNED" | "CLOSED"; "illustration": "trophy" | "stem" | "clean" | "book" | "heart"; "createdBy": string; "createdByName": (string) | null; "publicationId": (string) | null; "publishedSourceVersion": (number) | null; };
+  "ActivityWorkspaceStudent": { "id": string; "enrollmentId": string; "fullName": string; "code": string; "groupId": (string) | null; "groupName": (string) | null; };
+  "ActivityWorkspaceParticipant": { "id": string; "version": number; "activityId": string; "enrollmentId": string; "studentId": string; "fullName": string; "code": string; "status": "ASSIGNED" | "SUBMITTED" | "APPROVED" | "NEEDS_REVISION" | "EXCUSED"; "reviewNote": (string) | null; "updatedAt": string; "stillEnrolled": boolean; "groupName": (string) | null; };
+  "ActivityWorkspaceEvidence": { "id": string; "version": number; "participantId": string; "activityId": string; "studentId": string; "fileId": string; "submittedBy": string; "uploadedByName": (string) | null; "createdAt": string; "status": "SUBMITTED" | "APPROVED" | "NEEDS_REVISION" | "REJECTED"; "caption": (string) | null; "reviewReason": (string) | null; "shareWithGuardian": boolean; "file": ApiSchemas["File"]; };
+  "ActivityWorkspaceHistory": { "id": string; "at": string; "action": string; "actorId": string; "actorName": (string) | null; "entityType": string; "entityId": string; "reason": (string) | null; "activityId": (string) | null; };
+  "ClassActivitiesWorkspace": { "schoolId": string; "yearId": string; "classId": string; "today": string; "timezone": string; "readOnly": boolean; "canManage": boolean; "canEvidence": boolean; "canReview": boolean; "canPublish": boolean; "canReadEvidence": boolean; "students": Array<ApiSchemas["ActivityWorkspaceStudent"]>; "groups": Array<{ "id": string; "name": string; "size": number; }>; "activities": Array<ApiSchemas["ActivityWorkspaceItem"]>; "participants": Array<ApiSchemas["ActivityWorkspaceParticipant"]>; "evidence": (Array<ApiSchemas["ActivityWorkspaceEvidence"]>) | null; "history": Array<ApiSchemas["ActivityWorkspaceHistory"]>; };
+  "ActivityWorkspaceCommand": { "source": (ApiSchemas["ActivityWorkspaceSource"] | (null) | null); "action": "draft" | "save" | "assign" | "close" | "reopen" | "publish"; "input"?: ApiSchemas["ActivityCreate"]; };
+  "EvidenceBatchCommand": { "items": Array<{ "id": string; "expectedVersion": number; }>; "decision": "APPROVED" | "NEEDS_REVISION" | "REJECTED"; "reason": string; "shareWithGuardian": boolean; };
+  "ParticipantBatchCommand": { "activityId": string; "items": Array<{ "id": string; "expectedVersion": number; }>; "status": "ASSIGNED" | "SUBMITTED" | "APPROVED" | "NEEDS_REVISION" | "EXCUSED"; "reason": string; };
+  "ActivityBatchReceipt": { "count": number; };
+  "ClassFileWorkspaceItem": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "originalName": string; "contentType": string; "byteSize": number; "sha256": string; "status": "UPLOADING" | "QUARANTINED" | "READY" | "REJECTED" | "ARCHIVED"; "uploadedBy": (string) | null; "scanStatus"?: "NOT_SCANNED" | "SCANNED" | "GENERATED"; "rejectionCode"?: (string) | null; "share": "internal" | "class_parents" | "student_parent"; "studentId": (string) | null; "studentName": (string) | null; "ownerName": (string) | null; };
+  "ClassFilesWorkspace": { "schoolId": string; "yearId": string; "classId": string; "readOnly": boolean; "files": Array<ApiSchemas["ClassFileWorkspaceItem"]>; "students": Array<{ "id": string; "fullName": string; }>; };
+  "ClassFileUpdate": { "expectedVersion": number; "share"?: "internal" | "class_parents" | "student_parent"; "studentId"?: string; "status"?: "active" | "archived"; };
+  "ActivityWorkspaceItemResponse": { "data": ApiSchemas["ActivityWorkspaceItem"]; "requestId": string; };
+  "ClassActivitiesWorkspaceResponse": { "data": ApiSchemas["ClassActivitiesWorkspace"]; "requestId": string; };
+  "ClassFilesWorkspaceResponse": { "data": ApiSchemas["ClassFilesWorkspace"]; "requestId": string; };
+  "ClassFileWorkspaceItemResponse": { "data": ApiSchemas["ClassFileWorkspaceItem"]; "requestId": string; };
+  "ActivityBatchReceiptResponse": { "data": ApiSchemas["ActivityBatchReceipt"]; "requestId": string; };
+  "ScheduleLessonSource": { "lessonId": string; "lessonVersion": number; "draftId": (string) | null; "draftVersion": (number) | null; };
+  "ScheduleLessonChange": { "id": string; "schoolId": string; "classId": string; "yearId": string; "date": string; "period": number; "kind": "swap" | "substitute" | "room" | "cancel"; "subjectId": (string) | null; "teacherMembershipId": (string) | null; "roomId": (string) | null; "reason": string; "status": "draft" | "published"; "version": number; "createdBy": string; "createdAt": string; "createdByName": string; "className": string; "subject": (string) | null; "teacher": (string) | null; "room": (string) | null; "canEdit": boolean; "canPublish": boolean; "isPast": boolean; "source": { "lessonId": string; "lessonVersion": number; "draftId": (string) | null; "draftVersion": (number) | null; }; "publicationId": (string) | null; };
+  "ScheduleWorkspaceLesson": { "id": string; "version": number; "classId": string; "yearId": string; "className": string; "date": string; "period": number; "start": string; "end": string; "startsAt": string; "endsAt": string; "subjectId": string; "subject": string; "color": string; "teacherMembershipId": string; "teacher": string; "teacherStatus": string; "roomId": (string) | null; "room": string; "cancelled": boolean; "changed": (ApiSchemas["ScheduleLessonChange"] | (null) | null); "source": { "lessonId": string; "lessonVersion": number; "draftId": (string) | null; "draftVersion": (number) | null; }; "canEdit": boolean; };
+  "ScheduleWorkspace": { "schoolId": string; "classId": (string) | null; "yearId": (string) | null; "today": string; "timezone": string; "weekStart": string; "canManage": boolean; "canEdit": boolean; "canPublish": boolean; "publicationId": (string) | null; "lessons": Array<ApiSchemas["ScheduleWorkspaceLesson"]>; "changes": Array<ApiSchemas["ScheduleLessonChange"]>; "holidays": Array<{ "classId": (string) | null; "startsOn": string; "endsOn": string; "name": string; }>; "options": { "classes": Array<{ "id": string; "name": string; "yearId": string; "startsOn": string; "endsOn": string; "canEdit": boolean; "canPublish": boolean; }>; "subjects": Array<{ "id": string; "name": string; "color": string; }>; "teachers": Array<{ "id": string; "name": string; }>; "rooms": Array<{ "id": string; "name": string; "capacity": number; }>; }; };
+  "ScheduleChangeCheck": { "classId": string; "date": string; "period": number; "teacherMembershipId": (string) | null; "roomId": (string) | null; "subjectId": (string) | null; };
+  "ScheduleChangeSave": { "classId": string; "date": string; "period": number; "teacherMembershipId": (string) | null; "roomId": (string) | null; "subjectId": (string) | null; "kind": "swap" | "substitute" | "room" | "cancel"; "reason": string; "publish": boolean; "source": { "lessonId": string; "lessonVersion": number; "draftId": (string) | null; "draftVersion": (number) | null; }; "expectedPublicationId": (string) | null; };
+  "ScheduleChangeAction": { "classId": string; "source": { "lessonId": string; "lessonVersion": number; "draftId": (string) | null; "draftVersion": (number) | null; }; "expectedVersion": number; "expectedPublicationId": (string) | null; };
+  "ScheduleChangeConflict": { "kind": "teacher" | "room" | "inactive" | "assignment" | "history"; "message": string; };
+  "ScheduleChangeCheckResult": { "conflicts": Array<ApiSchemas["ScheduleChangeConflict"]>; };
+  "ScheduleChangeSaveResult": { "change": ApiSchemas["ScheduleLessonChange"]; "conflicts": Array<ApiSchemas["ScheduleChangeConflict"]>; };
+  "ScheduleDiscardResult": { "id": string; "discarded": boolean; };
+  "ScheduleWorkspaceResponse": { "data": ApiSchemas["ScheduleWorkspace"]; "requestId": string; };
+  "ScheduleChangeCheckResultResponse": { "data": ApiSchemas["ScheduleChangeCheckResult"]; "requestId": string; };
+  "ScheduleChangeSaveResultResponse": { "data": ApiSchemas["ScheduleChangeSaveResult"]; "requestId": string; };
+  "ScheduleLessonChangeResponse": { "data": ApiSchemas["ScheduleLessonChange"]; "requestId": string; };
+  "ScheduleDiscardResultResponse": { "data": ApiSchemas["ScheduleDiscardResult"]; "requestId": string; };
+  "ReportCatalogItem": { "type": "attendance" | "conduct" | "activities" | "student" | "class-progress" | "links"; "title": string; "description": string; };
+  "ReportCatalogWeek": { "id": string; "index": number; "startDate": string; "endDate": string; };
+  "ReportCatalog": { "schoolId": string; "yearId": (string) | null; "yearStart": (string) | null; "yearEnd": (string) | null; "classId": (string) | null; "today": string; "reports": Array<ApiSchemas["ReportCatalogItem"]>; "canExport": boolean; "hiddenCount": number; "role": string; "students": Array<{ "id": string; "fullName": string; "code": string; }>; "weeks": Array<ApiSchemas["ReportCatalogWeek"]>; "grades": Array<{ "id": string; "name": string; }>; };
+  "ReportCatalogResponse": { "data": ApiSchemas["ReportCatalog"]; "requestId": string; };
+  "TeacherReportCatalog": { "schoolId": string; "classes": Array<{ "classId": string; "yearId": string; "className": string; "role": string; "canExport": boolean; "reports": Array<ApiSchemas["ReportCatalogItem"]>; }>; };
+  "TeacherReportCatalogResponse": { "data": ApiSchemas["TeacherReportCatalog"]; "requestId": string; };
+  "SearchWorkspace": { "schoolId": (string) | null; "items": Array<{ "kind": "school" | "class" | "student" | "teacher"; "id": string; "schoolId": string; "yearId": (string) | null; "classId": (string) | null; "title": string; "sub": string; "schoolWorkspace": boolean; }>; };
+  "SearchWorkspaceResponse": { "data": ApiSchemas["SearchWorkspace"]; "requestId": string; };
+  "PublicPlatformContact": { "brandName": string; "supportEmail": (string) | null; "supportPhone": (string) | null; "footerNote": string; };
+  "PublicSchoolStatus": { "name": string; "slug": string; "status": "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "publicEmail": (string) | null; "publicPhone": (string) | null; };
+  "PublicPlatformContactResponse": { "data": ApiSchemas["PublicPlatformContact"]; "requestId": string; };
+  "PublicSchoolStatusResponse": { "data": ApiSchemas["PublicSchoolStatus"]; "requestId": string; };
+  "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
+  "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
+  "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
+  "TransferSources": { "schoolId": string; "today": string; "canDecide": boolean; "students": Array<{ "id": string; "fullName": string; "code": string; "classId": string; "className": string; "yearId": string; "enrollmentId": string; "enrollmentVersion": number; "startsOn": string; "endsOn": (string) | null; "pendingTransfer": boolean; }>; };
+  "TransferSourcesResponse": { "data": ApiSchemas["TransferSources"]; "requestId": string; };
 }
 
 export const apiOperations = {
@@ -4513,6 +4587,286 @@ export const apiOperations = {
     "list": false,
     "permission": "conduct.adjust.approve+conduct.publish",
     "readOnly": false
+  },
+  "approveConductWorkspaceWeek": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/approve",
+    "auth": "staff",
+    "request": "ConductWorkspaceAction",
+    "response": "ConductWorkspaceReceipt",
+    "list": false,
+    "permission": "conduct.review",
+    "readOnly": false
+  },
+  "getPublicationPolicyWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/publication-policy",
+    "auth": "staff",
+    "request": null,
+    "response": "PublicationPolicyDetail",
+    "list": false,
+    "permission": "school.read",
+    "readOnly": true
+  },
+  "savePublicationPolicyWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/publication-policy/save",
+    "auth": "staff",
+    "request": "PublicationPolicySave",
+    "response": "PublicationPolicyWorkspace",
+    "list": false,
+    "permission": "school.settings",
+    "readOnly": false
+  },
+  "getClassRuleWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/years/{yearId}/classes/{classId}/rule-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassRuleWorkspace",
+    "list": false,
+    "permission": "class.read+rules.read",
+    "readOnly": true
+  },
+  "getPublicationCenterWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/publication-center",
+    "auth": "staff",
+    "request": null,
+    "response": "PublicationCenterWorkspace",
+    "list": false,
+    "permission": "conduct.read",
+    "readOnly": true
+  },
+  "getTeacherWorkspaceHome": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/teacher-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherWorkspaceHome",
+    "list": false,
+    "permission": "teacher.self",
+    "readOnly": true
+  },
+  "getTeacherWorkspaceTasks": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/teacher-workspace/tasks",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherWorkspaceTasks",
+    "list": false,
+    "permission": "teacher.self",
+    "readOnly": true
+  },
+  "getTeacherWorkspaceSchedule": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/teacher-workspace/schedule",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherWorkspaceSchedule",
+    "list": false,
+    "permission": "teacher.self",
+    "readOnly": true
+  },
+  "getClassActivitiesWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassActivitiesWorkspace",
+    "list": false,
+    "permission": "activity.read",
+    "readOnly": true
+  },
+  "saveActivityWorkspace": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities-workspace/save",
+    "auth": "staff",
+    "request": "ActivityWorkspaceCommand",
+    "response": "ActivityWorkspaceItem",
+    "list": false,
+    "permission": "activity.manage",
+    "readOnly": false
+  },
+  "reviewEvidenceBatch": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/evidence/batch-review",
+    "auth": "staff",
+    "request": "EvidenceBatchCommand",
+    "response": "ActivityBatchReceipt",
+    "list": false,
+    "permission": "evidence.review",
+    "readOnly": false
+  },
+  "setActivityParticipantStatuses": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/activities/participant-statuses",
+    "auth": "staff",
+    "request": "ParticipantBatchCommand",
+    "response": "ActivityBatchReceipt",
+    "list": false,
+    "permission": "activity.review",
+    "readOnly": false
+  },
+  "getClassFilesWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/files-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassFilesWorkspace",
+    "list": false,
+    "permission": "file.manage",
+    "readOnly": true
+  },
+  "updateClassFile": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/files/{fileId}/update",
+    "auth": "staff",
+    "request": "ClassFileUpdate",
+    "response": "ClassFileWorkspaceItem",
+    "list": false,
+    "permission": "file.manage",
+    "readOnly": false
+  },
+  "getScheduleWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/schedule-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ScheduleWorkspace",
+    "list": false,
+    "permission": "schedule.read",
+    "readOnly": true
+  },
+  "checkScheduleLessonChange": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/schedule-workspace/check",
+    "auth": "staff",
+    "request": "ScheduleChangeCheck",
+    "response": "ScheduleChangeCheckResult",
+    "list": false,
+    "permission": "schedule.manage",
+    "readOnly": false
+  },
+  "saveScheduleLessonChange": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/schedule-workspace/changes",
+    "auth": "staff",
+    "request": "ScheduleChangeSave",
+    "response": "ScheduleChangeSaveResult",
+    "list": false,
+    "permission": "schedule.manage",
+    "readOnly": false
+  },
+  "publishScheduleLessonChange": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/schedule-workspace/changes/{changeId}/publish",
+    "auth": "staff",
+    "request": "ScheduleChangeAction",
+    "response": "ScheduleLessonChange",
+    "list": false,
+    "permission": "schedule.manage+schedule.publish",
+    "readOnly": false
+  },
+  "discardScheduleLessonChange": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/schedule-workspace/changes/{changeId}/discard",
+    "auth": "staff",
+    "request": "ScheduleChangeAction",
+    "response": "ScheduleDiscardResult",
+    "list": false,
+    "permission": "schedule.manage",
+    "readOnly": false
+  },
+  "discardTimetable": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/timetables/{timetableId}/discard",
+    "auth": "staff",
+    "request": "VersionCommand",
+    "response": "ScheduleDiscardResult",
+    "list": false,
+    "permission": "schedule.manage",
+    "readOnly": false
+  },
+  "getSchoolReportCatalog": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/report-catalog",
+    "auth": "staff",
+    "request": null,
+    "response": "ReportCatalog",
+    "list": false,
+    "permission": "report.read",
+    "readOnly": true
+  },
+  "getClassReportCatalog": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/academic-years/{yearId}/classes/{classId}/report-catalog",
+    "auth": "staff",
+    "request": null,
+    "response": "ReportCatalog",
+    "list": false,
+    "permission": "report.read",
+    "readOnly": true
+  },
+  "getTeacherReportCatalog": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/me/report-catalog",
+    "auth": "staff",
+    "request": null,
+    "response": "TeacherReportCatalog",
+    "list": false,
+    "permission": "teacher.self",
+    "readOnly": true
+  },
+  "searchWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/me/search",
+    "auth": "staff",
+    "request": null,
+    "response": "SearchWorkspace",
+    "list": false,
+    "permission": "authenticated",
+    "readOnly": true
+  },
+  "getPublicPlatformContact": {
+    "method": "GET",
+    "path": "/api/v1/public/platform-contact",
+    "auth": "none",
+    "request": null,
+    "response": "PublicPlatformContact",
+    "list": false,
+    "permission": "public",
+    "readOnly": true
+  },
+  "getPublicSchoolStatus": {
+    "method": "GET",
+    "path": "/api/v1/public/schools/{schoolSlug}/status",
+    "auth": "none",
+    "request": null,
+    "response": "PublicSchoolStatus",
+    "list": false,
+    "permission": "public",
+    "readOnly": true
+  },
+  "getImportWorkspace": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/import-workspace",
+    "auth": "staff",
+    "request": null,
+    "response": "ImportWorkspace",
+    "list": false,
+    "permission": "import.manage",
+    "readOnly": true
+  },
+  "getTransferSources": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/transfer-sources",
+    "auth": "staff",
+    "request": null,
+    "response": "TransferSources",
+    "list": false,
+    "permission": "student.transfer.request",
+    "readOnly": true
   }
 } as const;
 export type OperationId = keyof typeof apiOperations;

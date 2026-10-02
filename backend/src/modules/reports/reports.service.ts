@@ -9,10 +9,12 @@ import {Problem,notFound,validation,mapError} from '../../common/problem';
 import {stagingPath,removeStaging,storageAvailable,digestFile,atomicStore,objectPath} from '../files/storage';
 import {reportContext,buildReport,type ReportInput} from './report-data';
 import {renderReport,type ReportData} from './report-render';
+import {reportCatalog} from './report-catalog';
+import {searchWorkspace} from './search-workspace';
 import type {Handler,RequestContext,Result} from '../../api.router';
 const exportsResource:Resource={table:'app.export_jobs',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',reportType:'report_type',format:'format',status:'status',fileId:'file_id',expiresAt:'expires_at',classId:'class_id',requestedBy:'requested_by',asOf:'as_of',contentHash:'content_hash',lastErrorCode:'last_error_code'},writeFields:[],search:['report_type'],filters:{status:'status',classId:'class_id'}};
-const exportView:Resource={...exportsResource,table:"(SELECT e.*,e.report_snapshot->>'asOf' AS as_of,CASE WHEN e.expires_at<=now() AND e.status<>'CANCELLED' THEN 'EXPIRED' ELSE e.status END AS visible_status FROM app.export_jobs e)",fields:{...exportsResource.fields,status:'visible_status'},filters:{...exportsResource.filters,status:'visible_status'}};
-function exportDto(r:Row){const value=dto(exportView,{...r,as_of:(r.report_snapshot as Row)?.asOf??r.as_of,visible_status:r.expires_at&&new Date(r.expires_at as Date).getTime()<=Date.now()&&r.status!=='CANCELLED'?'EXPIRED':r.visible_status??r.status});if(!value.lastErrorCode)delete value.lastErrorCode;return value;}
+const exportView:Resource={...exportsResource,table:"(SELECT e.*,e.report_snapshot->>'asOf' AS as_of,e.report_snapshot->>'title' AS title,jsonb_array_length(e.report_snapshot->'rows') AS row_count,'EduManage-'||e.report_type||'-'||e.planned_file_id::text||'.'||lower(e.format) AS file_name,CASE WHEN e.expires_at<=now() AND e.status<>'CANCELLED' THEN 'EXPIRED' ELSE e.status END AS visible_status FROM app.export_jobs e)",fields:{...exportsResource.fields,status:'visible_status',title:'title',rowCount:'row_count',filters:'filters',fileName:'file_name'},filters:{...exportsResource.filters,status:'visible_status'}};
+function exportDto(r:Row){const snapshot=r.report_snapshot as ReportData|undefined,value=dto(exportView,{...r,as_of:snapshot?.asOf??r.as_of,title:snapshot?.title??r.title,row_count:snapshot?.rows.length??r.row_count,file_name:r.file_name??`EduManage-${r.report_type}-${r.planned_file_id}.${String(r.format).toLowerCase()}`,visible_status:r.expires_at&&new Date(r.expires_at as Date).getTime()<=Date.now()&&r.status!=='CANCELLED'?'EXPIRED':r.visible_status??r.status});if(!value.lastErrorCode)delete value.lastErrorCode;return value;}
 export async function authorizeExport(tx:Transaction,policy:Permissions,schoolId:string,job:Row,userId:string){
   if(job.requested_by!==userId)notFound();
   const identity=await one(tx,"SELECT id FROM identity.users WHERE id=$1 AND status='ACTIVE'",[userId]);if(!identity)throw new Problem(403,'REQUESTER_REVOKED');
@@ -22,10 +24,10 @@ export async function authorizeExport(tx:Transaction,policy:Permissions,schoolId
 @Injectable()
 export class ReportsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getSchoolReport','getClassReport','listExports','createExport','getExport','downloadExport','cancelExport'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['getSchoolReportCatalog','getClassReportCatalog','getTeacherReportCatalog'].map(id=>[id,(c:RequestContext)=>reportCatalog(this.db,this.policy,c)])),searchWorkspace:(c:RequestContext)=>searchWorkspace(this.db,this.policy,c),...Object.fromEntries(['getSchoolReport','getClassReport','listExports','createExport','getExport','downloadExport','cancelExport'].map(id=>[id,(c:RequestContext)=>this.handle(c)]))};}
   private async get(tx:Transaction,schoolId:string,id:string,lock=false){const job=await one<Row>(tx,`SELECT * FROM app.export_jobs WHERE school_id=$1 AND id=$2${lock?' FOR UPDATE':''}`,[schoolId,id]);if(!job)notFound();return job;}
   private input(c:RequestContext):ReportInput{
-    const source=c.operation.id==='createExport'?c.body:c.query,allowed=new Set(['yearId','classId','studentId','gradeId','weekId','from','to','dataSource',...(c.operation.id==='createExport'?['reportType','format','scope']:[])]);
+    const source=c.operation.id==='createExport'?c.body:c.query,allowed=new Set(['yearId','classId','studentId','gradeId','weekId','from','to','dataSource',...(c.operation.id==='createExport'?['reportType','format','scope','studentIds']:[])]);
     for(const key of Object.keys(source))if(!allowed.has(key))validation(key,'Bộ lọc không được hỗ trợ');
     if(c.params.classId&&source.classId&&c.params.classId!==source.classId)notFound();
     return {...source,reportType:String(c.params.reportType??c.body.reportType),...(c.operation.id==='getSchoolReport'?{scope:'SCHOOL'}:c.operation.id==='getClassReport'?{scope:'CLASS'}:{}),...(c.params.classId?{classId:c.params.classId}:{})} as ReportInput;

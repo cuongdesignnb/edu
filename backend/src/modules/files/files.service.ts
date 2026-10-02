@@ -14,7 +14,10 @@ import { runtimeConfig } from '../../common/config';
 import { Problem,notFound,validation,mapError } from '../../common/problem';
 import { objectPath,stagingPath,streamUpload,atomicStore,removeStaging,digestFile,safeName } from './storage';
 import { inspectXlsx } from './xlsx';
+import {inspectOfficeDocument} from './office';
 import type { RequestContext,Handler,Result } from '../../api.router';
+import {classFilesWorkspace,updateClassFile} from './class-files-workspace';
+import {activityWorkspaceAccess} from '../activities/activity-workspace';
 
 export const fileResource:Resource={table:'app.files',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',
   originalName:'original_name',contentType:'content_type',byteSize:'byte_size',sha256:'sha256',status:'status',uploadedBy:'uploaded_by',scanStatus:'scan_status',rejectionCode:'rejection_code'},writeFields:[],search:['original_name'],filters:{status:'status'}};
@@ -22,8 +25,8 @@ export function fileDto(row:Row){const value=dto(fileResource,row);value.byteSiz
 @Injectable()
 export class FilesService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['uploadFile','listClassFiles','getFile','downloadFile','archiveFile','createFileLink']
-    .map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['uploadFile','listClassFiles','getFile','downloadFile','archiveFile','createFileLink']
+    .map(id=>[id,(c:RequestContext)=>this.handle(c)])),getClassFilesWorkspace:c=>this.db.transaction(async tx=>({data:await classFilesWorkspace(tx,this.policy,c)}),{schoolId:c.params.schoolId,userId:c.principal!.userId,readOnly:true}),updateClassFile:c=>this.commands.execute(c,tx=>activityWorkspaceAccess(tx,this.policy,c,'file.manage'),async tx=>({data:await updateClassFile(tx,this.policy,c)}))};}
   private async handle(c:RequestContext):Promise<Result>{
     if(c.operation.id==='uploadFile')return this.upload(c);
     const schoolId=c.params.schoolId!,op=c.operation.id;
@@ -175,7 +178,19 @@ export class FilesService {
           contentType='text/csv';
         }
         await fs.copyFile(source,output);
-      }else if(prefix.subarray(0,5).toString()==='%PDF-'&&file.purpose==='CLASS_DOCUMENT'){
+      }else if(file.purpose==='CLASS_DOCUMENT'&&prefix.subarray(0,2).toString()==='PK'){
+        const extension=String(file.original_name).toLowerCase().split('.').at(-1);
+        if(extension!=='docx'&&extension!=='xlsx')throw new Problem(422,'FILE_TYPE_REJECTED');
+        await inspectOfficeDocument(source,extension);await fs.copyFile(source,output);
+        contentType=extension==='docx'?'application/vnd.openxmlformats-officedocument.wordprocessingml.document':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      }else if(file.purpose==='CLASS_DOCUMENT'&&String(file.original_name).toLowerCase().endsWith('.csv')){
+        const text=new TextDecoder('utf-8',{fatal:true}).decode(await fs.readFile(source));
+        if(text.includes('\0')||/^\s*</.test(text))throw new Problem(422,'FILE_TYPE_REJECTED');
+        const rows=parse(text,{bom:true,skip_empty_lines:true,max_record_size:128*1024,relax_column_count:false}) as string[][];
+        if(!rows.length||rows.length>5001||rows.some(row=>row.length>50))throw new Problem(422,'FILE_LIMIT_EXCEEDED');
+        if(rows.some(row=>row.some(cell=>/^[=+@]|^-(?!\d+(?:\.\d+)?$)/.test(cell.trimStart()))))throw new Problem(422,'CSV_ACTIVE_CONTENT_REJECTED');
+        await fs.copyFile(source,output);contentType='text/csv';
+      }else if(prefix.subarray(0,5).toString()==='%PDF-'&&['CLASS_DOCUMENT','EVIDENCE'].includes(String(file.purpose))){
         // Local PDF validation is deliberately limited; it is not virus scanning.
         const bytes=await fs.readFile(source);
         if(!bytes.subarray(-2048).toString('latin1').includes('%%EOF')||/\/(JavaScript|JS|OpenAction|AA|EmbeddedFile|Launch)\b/.test(bytes.toString('latin1')))

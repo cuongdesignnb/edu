@@ -20,7 +20,8 @@ dc stop -t 60 gateway web api worker
 # Các CLI/ad-hoc writer khác phải được operator dừng theo runbook trước khi gọi.
 dc exec -T postgres sh -ec 'export PGPASSWORD="$(cat /run/secrets/db_admin_password)"; exec pg_dump -h 127.0.0.1 -U postgres -d "$POSTGRES_DB" -Fc' > "$out/database.dump.tmp"
 # API image có quyền read upload; không gọi entrypoint app và không restart app.
-dc run --rm --no-deps --entrypoint tar api -C /data/uploads -czf - . > "$out/uploads.tar.gz.tmp"
+# Git Bash must preserve the container path while still converting host paths.
+MSYS2_ARG_CONV_EXCL=/data/uploads dc run --rm --no-deps --entrypoint tar api -C /data/uploads -czf - . > "$out/uploads.tar.gz.tmp"
 [[ -s "$out/database.dump.tmp" && -s "$out/uploads.tar.gz.tmp" ]] || { echo 'Backup không đầy đủ'; exit 1; }
 mv "$out/database.dump.tmp" "$out/database.dump"
 mv "$out/uploads.tar.gz.tmp" "$out/uploads.tar.gz"

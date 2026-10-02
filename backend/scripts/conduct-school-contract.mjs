@@ -1,0 +1,30 @@
+export function extendConductSchoolContract(spec,extend,{object,uuid,label,count,timestamp}){
+ const s=spec.components.schemas,ref=n=>({$ref:'#/components/schemas/'+n}),bool={type:'boolean'},date={type:'string',format:'date'},nullable=v=>({...v,nullable:true}),array=(items,max=5000)=>({type:'array',items,maxItems:max}),who={type:'string',enum:['homeroom','school_leader']};
+ s.PublicationPolicyWorkspace=object({schoolId:uuid,lockBy:who,publishBy:who,requireLeaderApproval:bool,weekCloseDay:{type:'string',enum:['sunday','monday']},defaultParentModules:{...array({type:'string',enum:['overview','teachers','attendance','conduct','timetable','duties','activities','announcements','documents']},9),minItems:1,uniqueItems:true},attendanceAutoPublish:bool,version:{type:'integer',minimum:1}});
+ s.PublicationPolicyWorkspace.properties.defaultParentModules.items.enum=s.PublicationPolicyWorkspace.properties.defaultParentModules.items.enum.filter(v=>v!=='overview');
+ s.PublicationPolicySave=object(Object.fromEntries(Object.entries(s.PublicationPolicyWorkspace.properties).filter(([key])=>key!=='schoolId')));
+ s.PublicationPolicyDetail=object({policy:ref('PublicationPolicyWorkspace'),canEdit:bool});
+ const ruleNull={oneOf:[ref('RuleWorkspaceItem'),{type:'object',nullable:true,enum:[null]}]};
+ s.ClassRuleWorkspace=object({schoolId:uuid,yearId:uuid,classId:uuid,current:ruleNull,next:ruleNull,policy:ref('PublicationPolicyWorkspace')});
+ s.PublicationCenterWeek=object({id:uuid,index:count,startDate:date,endDate:date,closeDeadline:date});
+ s.PublicationCenterRow=object({classId:uuid,yearId:uuid,className:label,homeroom:nullable(label),status:{type:'string',enum:['open','locked','published']},pending:count,blocking:array(label,10000),warnings:array(label,10000),overdue:bool,snapshotVersion:nullable(count),publishedAt:nullable(timestamp),attendanceSaved:count,attendancePublished:count,adjustments:count});
+ s.PublicationCenterAdjustment=object({id:uuid,yearId:uuid,classId:uuid,className:label,studentName:nullable(label),requestedByName:nullable(label),reason:label,status:{type:'string',enum:['pending','approved']},beforeTotal:nullable({type:'number'}),afterTotal:nullable({type:'number'})});
+ s.PublicationCenterAnnouncement=object({id:uuid,title:label,status:{type:'string',enum:['draft','scheduled']},origin:{type:'string',enum:['school','class']},className:nullable(label),classId:nullable(uuid),yearId:uuid,scheduledAt:nullable(timestamp)});
+ s.PublicationCenterWorkspace=object({weeks:array(ref('PublicationCenterWeek'),110),week:{oneOf:[ref('PublicationCenterWeek'),{type:'object',nullable:true,enum:[null]}]},rows:array(ref('PublicationCenterRow')),adjustments:array(ref('PublicationCenterAdjustment')),announcements:array(ref('PublicationCenterAnnouncement'))});
+ for(const name of ['PublicationPolicyDetail','PublicationPolicyWorkspace','ClassRuleWorkspace','PublicationCenterWorkspace'])s[name+'Response']=object({data:ref(name),requestId:label});
+ const school=[{name:'schoolId',in:'path',required:true,schema:uuid}],root='/schools/{schoolId}';
+ const oldChange=structuredClone(s.AdjustmentCreate.properties.proposedChanges.items);
+ s.AdjustmentCreate.properties.proposedChanges.items={oneOf:[oldChange,object({action:{type:'string',enum:['ADD']},replacement:ref('ConductRecordCreate')})]};
+ s.ConductWorkspaceSummary.properties.policy=ref('PublicationPolicyWorkspace');
+ s.ConductWorkspaceSummary.properties.approval=object({required:bool,approvedAt:nullable(timestamp),canApprove:bool});s.ConductWorkspaceSummary.required.push('approval');
+ const approvalPath='/schools/{schoolId}/years/{yearId}/classes/{classId}/conduct-workspace/weeks/{weekId}/approve';
+ extend('createDuty','approveConductWorkspaceWeek',approvalPath,'conduct.review','ConductWorkspaceReceipt',false,['CL08'],['schoolId','yearId','classId','weekId'].map(name=>({name,in:'path',required:true,schema:uuid})),'ConductWorkspaceAction');
+ const approvalOp=spec.paths[approvalPath].post;approvalOp.responses['200']=approvalOp.responses['201'];delete approvalOp.responses['201'];
+ s.ConductAdjustmentRequest.properties.date=nullable(date);
+ s.ConductAdjustmentItem.properties.kind.enum.push('add_record');
+ extend('getClassOverview','getPublicationPolicyWorkspace',root+'/publication-policy','school.read','PublicationPolicyDetail',false,['SC31'],school);
+ extend('createDuty','savePublicationPolicyWorkspace',root+'/publication-policy/save','school.settings','PublicationPolicyWorkspace',false,['SC31'],school,'PublicationPolicySave');
+ const saved=spec.paths[root+'/publication-policy/save'].post;saved.responses['200']=saved.responses['201'];delete saved.responses['201'];
+ extend('getClassOverview','getClassRuleWorkspace',root+'/years/{yearId}/classes/{classId}/rule-workspace','class.read+rules.read','ClassRuleWorkspace',false,['CL12'],[...school,...['yearId','classId'].map(name=>({name,in:'path',required:true,schema:uuid}))]);
+ extend('getClassOverview','getPublicationCenterWorkspace',root+'/publication-center','conduct.read','PublicationCenterWorkspace',false,['SC36'],[...school,{name:'weekId',in:'query',schema:uuid}]);
+}

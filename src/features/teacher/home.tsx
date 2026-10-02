@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Users, UserX, Trophy, Bell, ClipboardCheck, CheckCircle2, BookOpen, MapPin, CalendarDays, Clock, Megaphone, CalendarCheck, ChevronRight, ArrowRight } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
 import { teacherExtraRepo } from "@/lib/repositories";
+import { errorMessage } from "@/lib/repositories";
 import { useRepo } from "@/lib/query/hooks";
 import { demoNowISO, mondayOf } from "@/lib/calendar";
 import { fmtDate, fmtDateLong, fmtRelative, fmtPercent } from "@/lib/formatters";
@@ -57,7 +58,7 @@ export function TeacherHome({ schoolId }: { schoolId: string }) {
                           <p className="text-[12px] text-muted">hiện diện lớp {hr?.name} ({fmtPercent(att.presentAll, att.total)})</p>
                           <p className={attStatus === "none" ? "text-[12px] font-semibold text-danger-text" : "text-[12px] font-semibold text-primary-strong"}>{statusNote}</p>
                         </>
-                      ) : <p className="mt-1 text-sm text-muted">Không có lớp chủ nhiệm</p>}
+                      ) : <p className="mt-1 text-sm text-muted">{hr ? "Chưa có dữ liệu chuyên cần trong phạm vi được xem" : "Không có lớp chủ nhiệm"}</p>}
                     </div>
                   </div>
                   <div className="card card-pad flex min-w-0 items-center gap-4">
@@ -73,7 +74,7 @@ export function TeacherHome({ schoolId }: { schoolId: string }) {
                     <IconTile tone="amber"><Trophy className="size-7" /></IconTile>
                     <div className="min-w-0">
                       <p className="text-[13.5px] font-medium text-body">Ghi nhận thi đua chờ rà soát</p>
-                      <p className="text-[28px] font-extrabold leading-tight text-ink tabular-nums">{d.kpi.pendingConduct}</p>
+                      <p className="text-[28px] font-extrabold leading-tight text-ink tabular-nums">{d.kpi.pendingConduct ?? "—"}</p>
                       <p className="text-[12px] text-muted">Lớp bạn được giao rà soát</p>
                     </div>
                   </div>
@@ -106,8 +107,8 @@ export function TeacherHome({ schoolId }: { schoolId: string }) {
                   <CardHeader title="Lớp phụ trách" icon={<Users className="size-5 text-primary" />} action={<CardLink href={`/teacher/${schoolId}/classes`}>Quản lý lớp</CardLink>} />
                   <div className="grid gap-4 px-5 pb-5 md:grid-cols-2">
                     {d.classes.map((c) => {
-                      const periodSlot = !c.isHomeroom && c.nextLesson ? `?slot=period-${c.nextLesson.period}` : "";
-                      const showAttend = can(c.id, "attendance.record") && (c.isHomeroom || !!c.nextLesson);
+                      const periodSlot = !c.isHomeroom && c.nextLesson ? `?date=${d.today}&slot=lesson-${c.nextLesson.id}` : "";
+                      const showAttend = can(c.id, "attendance.record") && (c.isHomeroom || !!c.nextLesson?.canAttend);
                       return (
                         <div key={c.id} className="rounded-2xl border border-line bg-white p-4">
                           <div className="flex items-center gap-3">
@@ -117,9 +118,9 @@ export function TeacherHome({ schoolId }: { schoolId: string }) {
                             <Link href={base(c)} className="ml-auto rounded-full p-1.5 text-muted hover:bg-primary-light hover:text-primary" aria-label={`Mở lớp ${c.name}`}><ChevronRight className="size-5" /></Link>
                           </div>
                           <dl className="mt-3 space-y-1.5 text-[13.5px]">
-                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><Users className="size-4" aria-hidden />Sĩ số</dt><dd className="font-semibold text-ink">{c.size} học sinh</dd></div>
-                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><BookOpen className="size-4" aria-hidden />Tiết học tiếp theo</dt><dd className="font-semibold text-ink">{c.nextLesson ? `${c.nextLesson.subject} – Tiết ${c.nextLesson.period} (${c.nextLesson.start} – ${c.nextLesson.end})` : "Không có tiết của bạn hôm nay"}</dd></div>
-                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><MapPin className="size-4" aria-hidden />Phòng học</dt><dd className="font-semibold text-ink">{c.nextLesson?.room ?? c.room}</dd></div>
+                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><Users className="size-4" aria-hidden />Sĩ số</dt><dd className="font-semibold text-ink">{c.size === null ? "Chưa có quyền xem" : `${c.size} học sinh`}</dd></div>
+                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><BookOpen className="size-4" aria-hidden />Tiết học tiếp theo</dt><dd className="font-semibold text-ink">{c.nextLesson ? `${c.nextLesson.subject}${c.nextLesson.period === null ? "" : ` – Tiết ${c.nextLesson.period}`} (${c.nextLesson.start} – ${c.nextLesson.end})` : "Không có tiết của bạn hôm nay"}</dd></div>
+                            <div className="flex gap-2"><dt className="flex w-[132px] flex-none items-center gap-2 text-muted"><MapPin className="size-4" aria-hidden />Phòng học</dt><dd className="font-semibold text-ink">{c.nextLesson?.room ?? c.room ?? "Chưa có phòng"}</dd></div>
                           </dl>
                           <div className="mt-3 flex flex-wrap gap-2">
                             {can(c.id, "roster.view") && <ButtonLink href={`${base(c)}/students`} size="sm" variant="primary" icon={<Users className="size-4" />}>Xem danh sách</ButtonLink>}
@@ -176,7 +177,7 @@ function MyCalendar({ schoolId, today }: { schoolId: string; today: string }) {
       <div className="flex justify-center px-4"><MiniCalendar value={day} onSelect={setDay} marked={marked} /></div>
       <div className="m-4 rounded-xl bg-[#f3f8ff] p-3">
         <p className="mb-2 flex items-center justify-between text-[13.5px] font-semibold text-primary-strong">{day === today ? "Hôm nay – " : ""}{fmtDateLong(day)}</p>
-        {q.isLoading ? <Skeleton className="h-16" /> : !lessons || lessons.lessons.length === 0 ? (
+        {q.isLoading ? <Skeleton className="h-16" /> : q.isError ? <p role="alert" className="text-[13px] text-danger-text">{errorMessage(q.error)}</p> : !lessons || lessons.lessons.length === 0 ? (
           <p className="text-[13px] text-muted">{lessons?.holiday ? `Nghỉ: ${lessons.holiday}` : "Không có tiết dạy trong ngày."}</p>
         ) : (
           <ul className="space-y-1.5">
@@ -184,7 +185,7 @@ function MyCalendar({ schoolId, today }: { schoolId: string; today: string }) {
               <li key={l.id} className="flex items-center gap-2 border-l-2 border-primary pl-2 text-[13px]">
                 <span className="tabular-nums text-body">{l.start} – {l.end}</span>
                 <span className="min-w-0 flex-1 truncate font-medium text-ink">{l.subject} – {l.className}{l.cancelled ? " (nghỉ)" : ""}</span>
-                <span className="flex flex-none items-center gap-1 text-muted"><MapPin className="size-3.5" aria-hidden />{l.room}</span>
+                <span className="flex flex-none items-center gap-1 text-muted"><MapPin className="size-3.5" aria-hidden />{l.room ?? "Chưa có phòng"}</span>
               </li>
             ))}
           </ul>

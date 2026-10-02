@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog, Modal } from "@/components/ui/dialog";
 import { Combobox } from "@/components/ui/combobox";
-import { ErrorSummary, InlineSelect, NumberField, RadioGroup, SelectField, TextArea } from "@/components/ui/form";
+import { ErrorSummary, InlineSelect, NumberField, RadioGroup, SelectField, TextArea, TextField } from "@/components/ui/form";
 import { useUnsavedChanges } from "@/components/ui/guards";
 import { EmptyFiltered, EmptyState, QueryState, Skeleton } from "@/components/ui/states";
 import { Pagination } from "@/components/data/table";
@@ -115,7 +115,7 @@ function AdjList({ d }: { d: AdjData }) {
 export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boolean; onOpenChange: (o: boolean) => void; snapshotId?: string }) {
   const { schoolId, yearId, classId } = useClassroom();
   const list = useRepo(["conduct-adjustments", classId], (ctx) => conductRepo.adjustments(ctx, schoolId, yearId, classId));
-  const [f, setF] = useState<{ snapshotId: string; studentId: string; kind: AdjustmentRequest["kind"]; recordId: string; newPoints?: number; ruleId: string; reason: string }>({ snapshotId: snapshotId ?? "", studentId: "", kind: "remove_record", recordId: "", ruleId: "", reason: "" });
+  const [f, setF] = useState<{ snapshotId: string; studentId: string; kind: AdjustmentRequest["kind"]; recordId: string; newPoints?: number; ruleId: string; date: string; reason: string }>({ snapshotId: snapshotId ?? "", studentId: "", kind: "remove_record", recordId: "", ruleId: "", date: "", reason: "" });
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [askDiscard, setAskDiscard] = useState(false);
   const snapQ = useRepo(["conduct-snapshot", classId, f.snapshotId], (ctx) => conductRepo.snapshot(ctx, schoolId, yearId, classId, f.snapshotId), { enabled: !!f.snapshotId });
@@ -135,7 +135,7 @@ export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boo
     let delta: number | undefined;
     if (f.kind === "remove_record") delta = item ? -item.points : undefined;
     else if (f.kind === "change_points") delta = item && f.newPoints !== undefined ? f.newPoints - item.points : undefined;
-    else delta = rs.rules.find((r) => r.id === f.ruleId)?.points;
+    else { const rule=rs.rules.find((r)=>r.id===f.ruleId); delta=rule?.valueMode==='MANUAL'?f.newPoints:rule?.points; }
     if (delta === undefined) return undefined;
     const points = [...row.items.map((i) => i.points), delta];
     return conductRepo.simulate(rs, points);
@@ -148,11 +148,13 @@ export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boo
     if (f.kind !== "add_record" && !f.recordId) e.recordId = "Chọn ghi nhận";
     if (f.kind === "change_points" && f.newPoints === undefined) e.newPoints = "Nhập số điểm mới";
     if (f.kind === "add_record" && !f.ruleId) e.ruleId = "Chọn quy định";
+    if (f.kind === "add_record" && !f.date) e.date = "Chọn ngày sự việc trong tuần của bản công bố";
+    if (f.kind === "add_record" && rs?.rules.find(r=>r.id===f.ruleId)?.valueMode==='MANUAL' && f.newPoints===undefined) e.newPoints="Nhập điểm trong giới hạn nội quy";
     if (f.reason.trim().length < 10) e.reason = "Nêu rõ lý do (tối thiểu 10 ký tự)";
     setErrors(e);
     if (Object.keys(e).length) return;
     if(!snapQ.data?.source){setErrors({form:'Tải bản đã công bố trước khi gửi đề nghị.'});return;}
-    cmd.run({source:snapQ.data.source, snapshotId: f.snapshotId, studentId: f.studentId, kind: f.kind, recordId: f.kind === "add_record" ? undefined : f.recordId, newPoints: f.kind === "change_points" ? f.newPoints : undefined, ruleId: f.kind === "add_record" ? f.ruleId : undefined, reason: f.reason });
+    cmd.run({source:snapQ.data.source, snapshotId: f.snapshotId, studentId: f.studentId, kind: f.kind, recordId: f.kind === "add_record" ? undefined : f.recordId, newPoints: f.kind === "change_points" || f.kind === "add_record" ? f.newPoints : undefined, date: f.kind==='add_record'?f.date:undefined, ruleId: f.kind === "add_record" ? f.ruleId : undefined, reason: f.reason });
   };
   return (
     <Modal open={open} onOpenChange={onOpenChange} busy={cmd.pending} size="lg" title="Đề nghị điều chỉnh sau chốt"
@@ -188,8 +190,10 @@ export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boo
           {f.kind === "change_points" && <div data-field="newPoints"><NumberField label="Số điểm mới (dương là cộng, âm là trừ)" required value={f.newPoints} onChange={(v) => set("newPoints", v)} error={errors.newPoints} min={-100} max={100} /></div>}
           {f.kind === "add_record" && row && rs && (
             <div data-field="ruleId"><SelectField label={`Quy định (theo nội quy bản ${rs.versionNo} của bản công bố)`} required value={f.ruleId} error={errors.ruleId} placeholder="Chọn quy định" onChange={(e) => set("ruleId", e.target.value)}
-              options={rs.rules.map((r) => ({ value: r.id, label: `${r.category} — ${r.label} (${fmtPoints(r.points)})` }))} /></div>
+              options={rs.rules.filter(r=>!r.attendanceLink).map((r) => ({ value: r.id, label: `${r.category} — ${r.label} (${fmtPoints(r.points)})` }))} /></div>
           )}
+          {f.kind === "add_record" && <div data-field="date"><TextField label="Ngày sự việc" type="date" required value={f.date} onChange={e=>set("date",e.target.value)} error={errors.date} min={snapQ.data?.week.startDate} max={snapQ.data?.week.endDate} /></div>}
+          {f.kind === "add_record" && rs?.rules.find(r=>r.id===f.ruleId)?.valueMode==='MANUAL' && <div data-field="newPoints"><NumberField label="Điểm bổ sung (trong giới hạn nội quy)" required value={f.newPoints} onChange={v=>set("newPoints",v)} error={errors.newPoints} min={rs.rules.find(r=>r.id===f.ruleId)?.minimumDelta??undefined} max={rs.rules.find(r=>r.id===f.ruleId)?.maximumDelta??undefined} /></div>}
           <div data-field="reason"><TextArea label="Lý do điều chỉnh" required rows={3} maxChars={400} value={f.reason} onChange={(e) => set("reason", e.target.value)} error={errors.reason} helper="Tối thiểu 10 ký tự; lưu kèm bản mới và hiển thị trong lịch sử." placeholder="Ví dụ: Ghi nhận đi muộn nhầm học sinh, em đến đúng giờ" /></div>
           {row && (
             <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-[#f7fbff] px-4 py-3 text-sm" data-testid="adj-preview">

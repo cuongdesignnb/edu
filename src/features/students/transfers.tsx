@@ -26,7 +26,7 @@ export function TransfersPage({ schoolId }: { schoolId: string }) {
   const q = useRepo(["transfers", schoolId, list.query], (ctx) => studentsRepo.transfers(ctx, schoolId, list.query));
   const [create, setCreate] = useState(false);
   const [decide, setDecide] = useState<{ row: Row; approve: boolean } | null>(null);
-  const cmd = useCommand((ctx, id: string, approve: boolean, note: string) => studentsRepo.decideTransfer(ctx, schoolId, id, approve, note), { success: (t) => t.status === "approved" ? "Đã duyệt yêu cầu" : "Đã từ chối yêu cầu", onSuccess: () => setDecide(null) });
+  const cmd = useCommand((ctx, id: string, approve: boolean, note: string,version:number) => studentsRepo.decideTransfer(ctx, schoolId, id, approve, note,version), { success: (t) => t.status === "approved" ? "Đã duyệt yêu cầu" : "Đã từ chối yêu cầu", onSuccess: () => setDecide(null) });
   const base = `/school/${schoolId}`;
   const canDecide = q.data?.canDecide ?? can("student.transfer");
 
@@ -74,7 +74,7 @@ export function TransfersPage({ schoolId }: { schoolId: string }) {
         object={decide ? `${decide.row.studentName} (${decide.row.studentCode}): ${decide.row.fromName} → ${decide.row.kind === "leave" ? "ngừng theo học" : decide.row.toName} · hiệu lực ${fmtDate(decide.row.effectiveDate)}` : undefined}
         consequence={decide?.approve ? (decide.row.kind === "leave" ? "Học sinh chuyển sang “Ngừng theo học” từ ngày hiệu lực; link tra cứu đang hoạt động bị thu hồi. Lịch sử được giữ." : "Học sinh chuyển sang lớp mới từ ngày hiệu lực; lịch sử lớp cũ và báo cáo quá khứ không đổi.") : "Yêu cầu chuyển sang “Từ chối”. Học sinh giữ nguyên lớp hiện tại."}
         confirmLabel={decide?.approve ? "Duyệt" : "Từ chối"} variant={decide?.approve ? "primary" : "danger"} reasonLabel={decide?.approve ? "Ghi chú (không bắt buộc)" : "Lý do từ chối"} reasonRequired={!decide?.approve}
-        onConfirm={(note) => decide ? cmd.run(decide.row.id, decide.approve, note) : undefined} />
+        onConfirm={(note) => decide ? cmd.run(decide.row.id, decide.approve, note,decide.row.version) : undefined} />
     </div>
   );
 }

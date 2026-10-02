@@ -90,6 +90,17 @@ export function ReopenButton({ s }: { s: WeekSummary }) {
   );
 }
 
+/** Approval is retained for the exact locked snapshot and does not publish it. */
+function LeaderApprovalButton({s}:{s:WeekSummary}){
+ const {schoolId,yearId,classId}=useClassroom();
+ const [open,setOpen]=useState(false);
+ const cmd=useCommand((ctx:Ctx)=>conductRepo.approvePublication(ctx,schoolId,yearId,classId,s.week.id,s.source),{success:'BGH đã duyệt bản chốt; chờ công bố',onSuccess:()=>setOpen(false)});
+ if(!s.approval.required||s.period.status!=='locked')return null;
+ if(s.approval.approvedAt)return <p className="text-[12.5px] text-success-text">BGH đã duyệt lúc {fmtDate(s.approval.approvedAt)}</p>;
+ if(!s.approval.canApprove)return <p className="text-[12.5px] text-muted">Bản đã chốt đang chờ BGH duyệt.</p>;
+ return <><Button variant="secondary" icon={<ShieldCheck className="size-4" />} onClick={()=>setOpen(true)} data-testid="btn-leader-approve">BGH duyệt bản chốt</Button><ConfirmDialog open={open} onOpenChange={setOpen} title="BGH duyệt bản chốt" object={`Tuần ${s.week.index} · bản ${s.snapshot?.versionNo}`} consequence="Ghi nhận duyệt đúng bản đã chốt. Phụ huynh chỉ thấy sau thao tác công bố." confirmLabel="Duyệt bản chốt" busy={cmd.pending} error={cmd.error?.message} onConfirm={()=>cmd.run()} /></>;
+}
+
 /** Buttons for Chốt / Chốt và công bố / Công bố according to permissions + state. */
 export function LockPublishButtons({ s, onMode, vertical }: { s: WeekSummary; onMode: (m: PublishMode) => void; vertical?: boolean }) {
   const st = s.period.status;
@@ -97,11 +108,12 @@ export function LockPublishButtons({ s, onMode, vertical }: { s: WeekSummary; on
   const cls = vertical ? "w-full justify-center" : undefined;
   return (
     <>
+      <LeaderApprovalButton s={s} />
       {s.perms.lock && st === "open" && <Button className={cls} variant={s.perms.publish && noBlock ? "secondary" : "primary"} icon={<CheckCircle2 className="size-4" />} onClick={() => onMode("lock")} data-testid="btn-lock">Chốt tuần</Button>}
-      {s.perms.lock && s.perms.publish && noBlock && st === "open" && <Button className={cls} variant="primary" icon={<ShieldCheck className="size-4" />} onClick={() => onMode("lockPublish")} data-testid="btn-lock-publish">Chốt và công bố</Button>}
+      {s.perms.lock && s.perms.publish && noBlock && st === "open" && <Button className={cls} disabled={s.approval.required} title={s.approval.required ? 'Cần chốt, BGH duyệt rồi mới công bố' : undefined} variant="primary" icon={<ShieldCheck className="size-4" />} onClick={() => onMode("lockPublish")} data-testid="btn-lock-publish">Chốt và công bố</Button>}
       {s.perms.publish && st !== "published" && (
-        <Button className={cls} variant={st === "locked" ? "primary" : "secondary"} icon={<Send className="size-4" />} disabled={st !== "locked"} onClick={() => onMode("publish")} data-testid="btn-publish"
-          title={st !== "locked" ? "Cần chốt tuần trước khi công bố" : undefined}>Công bố cho phụ huynh</Button>
+        <Button className={cls} variant={st === "locked" ? "primary" : "secondary"} icon={<Send className="size-4" />} disabled={st !== "locked" || s.approval.required && !s.approval.approvedAt} onClick={() => onMode("publish")} data-testid="btn-publish"
+          title={st !== "locked" ? "Cần chốt tuần trước khi công bố" : s.approval.required && !s.approval.approvedAt ? 'Cần BGH duyệt bản đã chốt' : undefined}>Công bố cho phụ huynh</Button>
       )}
     </>
   );

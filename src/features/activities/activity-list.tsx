@@ -17,7 +17,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { ActionMenu, type MenuItem } from "@/components/ui/menu";
 import { InlineSelect } from "@/components/ui/form";
-import { EmptyFiltered, EmptyState, QueryState, Skeleton, ErrorState } from "@/components/ui/states";
+import { EmptyFiltered, EmptyState, QueryState, Skeleton, ErrorState,DeniedState } from "@/components/ui/states";
 import { FileThumb } from "@/components/ui/file";
 import { Avatar } from "@/components/ui/avatar";
 import { Pagination, useClientList } from "@/components/data/table";
@@ -69,9 +69,9 @@ function Body({ d, status, setStatus, q, setQ, base, classSize, readOnly }: { d:
     { label: "Mở chi tiết", icon: <Eye />, href: `${base}/activities/${a.id}` },
     ...(canManage && a.status !== "closed" ? [{ label: "Sửa hoạt động", icon: <Edit3 />, href: `${base}/activities/${a.id}/edit` }] : []),
     ...(canEvidence && a.status === "active" ? [{ label: "Ghi nhận minh chứng", icon: <Upload />, onSelect: () => setRecordFor(a.id) }] : []),
-    ...(canManage && a.status === "draft" ? [{ label: "Giao hoạt động", icon: <Send />, onSelect: () => setIntent({ id: a.id, title: a.title, to: "active", fromDraft: true, dueDate: a.dueDate, assigned: a.progress.total }) }] : []),
-    ...(canManage && a.status === "active" ? [{ label: "Kết thúc hoạt động", icon: <Lock />, danger: true, separatorBefore: true, onSelect: () => setIntent({ id: a.id, title: a.title, to: "closed", dueDate: a.dueDate }) }] : []),
-    ...(canManage && a.status === "closed" ? [{ label: "Mở lại hoạt động", icon: <PlayCircle />, onSelect: () => setIntent({ id: a.id, title: a.title, to: "active", dueDate: a.dueDate }) }] : []),
+    ...(canManage && a.status === "draft" ? [{ label: "Giao hoạt động", icon: <Send />, onSelect: () => setIntent({ activity:a, id: a.id, title: a.title, to: "active", fromDraft: true, dueDate: a.dueDate, assigned: a.progress.total }) }] : []),
+    ...(canManage && a.status === "active" ? [{ label: "Kết thúc hoạt động", icon: <Lock />, danger: true, separatorBefore: true, onSelect: () => setIntent({ activity:a, id: a.id, title: a.title, to: "closed", dueDate: a.dueDate }) }] : []),
+    ...(canManage && a.status === "closed" ? [{ label: "Mở lại hoạt động", icon: <PlayCircle />, onSelect: () => setIntent({ activity:a, id: a.id, title: a.title, to: "active", dueDate: a.dueDate }) }] : []),
   ];
   const activeItems = d.items.filter((a) => a.status !== "draft");
   const done = d.totals.approved;
@@ -143,7 +143,7 @@ function Body({ d, status, setStatus, q, setQ, base, classSize, readOnly }: { d:
             <div className="grid grid-cols-2 gap-3 px-5 pb-5">
               <Kpi icon={<CheckCircle2 className="size-6" />} tone="green" label="Đã hoàn thành" value={<>{done}/{total}</>} hint={fmtPercent(done, total)} />
               <Kpi icon={<AlarmClock className="size-6" />} tone="pink" label="Chưa nộp" value={d.totals.notReceived} hint={<span className="text-danger-text">{fmtPercent(d.totals.notReceived, total)}</span>} />
-              <Link href={`${base}/evidence?status=pending`} className="col-span-2"><Kpi icon={<FileCheck2 className="size-6" />} tone="amber" label="Minh chứng chờ duyệt" value={d.pendingEvidence} hint="Mở danh sách minh chứng" /></Link>
+              {d.canReadEvidence?<Link href={`${base}/evidence?status=pending`} className="col-span-2"><Kpi icon={<FileCheck2 className="size-6" />} tone="amber" label="Minh chứng chờ duyệt" value={d.pendingEvidence} hint="Mở danh sách minh chứng" /></Link>:<p className="col-span-2 text-sm text-muted">Bạn không có quyền xem minh chứng của lớp.</p>}
               <AnnouncementKpi />
             </div>
           </Card>
@@ -154,7 +154,7 @@ function Body({ d, status, setStatus, q, setQ, base, classSize, readOnly }: { d:
         </div>
       </div>
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <PendingEvidence base={base} canEvidence={canEvidence} />
+        {d.canReadEvidence?<PendingEvidence base={base} canEvidence={canEvidence} />:<Card><DeniedState message="Bạn không có quyền xem minh chứng của lớp này." /></Card>}
         <UpcomingAnnouncements base={base} />
       </div>
       <ActivityStatusConfirm intent={intent} onClose={() => setIntent(null)} />
@@ -178,8 +178,11 @@ function Kpi({ icon, tone, label, value, hint }: { icon: ReactNode; tone: "green
 }
 
 function AnnouncementKpi() {
-  const { schoolId, yearId, classId, base } = useClassroom();
-  const q = useRepo(["class-ann-panel", classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId));
+  const { schoolId, yearId, classId, base,can } = useClassroom();
+  const q = useRepo(["class-ann-panel", classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId),{enabled:can('announcement.class')});
+  if(!can('announcement.class'))return null;
+  if(q.isLoading)return <Skeleton className="col-span-2 h-16" />;
+  if(q.error)return <div className="col-span-2"><ErrorState compact error={q.error} onRetry={()=>q.refetch()} /></div>;
   if (!q.data) return null;
   const diff = q.data.thisWeek - q.data.lastWeek;
   return (
@@ -266,7 +269,7 @@ function PendingEvidence({ base, canEvidence }: { base: string; canEvidence: boo
           {q.data.items.length > 4 && <p className="px-2 pt-2 text-[12.5px] text-muted">Còn {q.data.items.length - 4} minh chứng chờ duyệt khác.</p>}
         </div>
       )}
-      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} />
+      <ReviewEvidenceDialog open={!!review} onOpenChange={(o) => { if (!o) setReview(null); }} evidenceIds={review?.ids ?? []} evidenceVersions={Object.fromEntries((q.data?.items??[]).map(e=>[e.id,e.version]))} decision={review?.decision ?? "approved"} subject={review?.subject ?? ""} />
       <FileViewerDialog open={!!view} onOpenChange={(o) => { if (!o) setView(null); }} file={view?.file}
         meta={view ? [{ label: "Học sinh", value: view.studentName }, { label: "Hoạt động", value: view.activityTitle }, { label: "Giáo viên ghi nhận", value: view.uploadedByName }] : undefined} />
     </Card>
@@ -310,6 +313,8 @@ function UpcomingAnnouncements({ base }: { base: string }) {
 function RecordForActivity({ activityId, onClose }: { activityId: string; onClose: () => void }) {
   const { schoolId, yearId, classId } = useClassroom();
   const q = useRepo(["evidence", classId, "", "", ""], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, {}));
+  if(q.isLoading)return <Skeleton className="h-24" />;
+  if(q.error)return <ErrorState compact error={q.error} onRetry={()=>q.refetch()} />;
   if (!q.data) return null;
   return <RecordEvidenceDialog open onOpenChange={(o) => { if (!o) onClose(); }} activities={q.data.activities} students={q.data.students} activityId={activityId} />;
 }

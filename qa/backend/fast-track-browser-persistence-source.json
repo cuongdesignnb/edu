@@ -1,12 +1,12 @@
 {
   "schoolId": "263ee6c7-d3c2-5356-af6f-d4a7b4124e74",
   "yearId": "71287cf6-c093-540a-a350-33d267ef09d6",
-  "classId": "8a91d832-2a46-4cde-a95c-9f14cc5dc13f",
+  "classId": "aeec13b5-125b-4741-8995-ebfd82042f70",
   "weekId": "b8d23896-aed1-561f-aaca-a841670e9dde",
-  "studentId": "9d5d33db-ba16-472c-b7b8-8b38d6bd0c17",
-  "recordId": "8217124d-5f20-476a-aa6c-e54223ca2426",
-  "oldPublicationId": "07529579-fc5d-41ce-80be-67ba7cd62401",
-  "currentPublicationId": "7c2d1132-7623-4db1-abc5-9d572c2e4723",
+  "studentId": "f1947e9a-0b17-4c1a-94ad-3d1b534dab64",
+  "recordId": "09e56188-e25b-4633-a71b-1c5de7dd8ee1",
+  "oldPublicationId": "efd78a59-abf6-4cf6-ac19-09d0d6a771e1",
+  "currentPublicationId": "5eaf0843-893c-4b8d-947f-1b07526c9239",
   "currentVersion": 2,
   "total": 100
 }

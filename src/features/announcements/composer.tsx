@@ -286,7 +286,7 @@ export function AnnouncementComposer({ schoolId, yearId, origin, classId, announ
           </div>
         </Card>
         <Card>
-          <CardHeader title="Công bố" icon={<Send className="size-5" />} subtitle="Lưu nháp để tiếp tục sau, công bố ngay hoặc đặt lịch công bố (mô phỏng theo đồng hồ demo)." />
+          <CardHeader title="Công bố" icon={<Send className="size-5" />} subtitle="Lưu nháp để tiếp tục sau, công bố ngay hoặc đặt lịch công bố." />
           <div className="space-y-4 px-5 pb-5">
             {!isPublished && (
               <div className="grid gap-3 sm:grid-cols-[1fr_160px]" data-field="scheduledAt">

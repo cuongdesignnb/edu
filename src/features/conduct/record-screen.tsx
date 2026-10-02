@@ -31,7 +31,7 @@ export function ConductRecordScreen() {
   const { query, weeks, week, setWeek } = useWeeks();
   const wid = week?.id;
   const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
-  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
+  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
   return (
     <div className="page">
       <ClassHeader title="Thi đua theo tuần" subtitle="Ghi nhận vi phạm / khen thưởng theo nội quy, rà soát rồi chốt và công bố" actions={<ModeToggle />} crumbs={[{ label: "Ghi nhận thi đua" }]} />

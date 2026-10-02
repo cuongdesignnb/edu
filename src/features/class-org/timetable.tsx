@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
-import { ChevronLeft, ChevronRight, CalendarDays, AlertTriangle, Send, Trash2, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Send, Trash2, Lock } from "lucide-react";
 import type { LessonChange } from "@/lib/model/types";
 import { classroomRepo } from "@/lib/repositories";
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
@@ -13,10 +13,10 @@ import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge, PUBLICATION_STATUS } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog, Drawer } from "@/components/ui/dialog";
-import { ErrorSummary, SelectField, TextArea } from "@/components/ui/form";
-import { useUnsavedChanges } from "@/components/ui/guards";
+import { ConfirmDialog } from "@/components/ui/dialog";
 import { EmptyState, QueryState } from "@/components/ui/states";
+import { LessonChangeDrawer } from "@/features/school-ops/lesson-change-drawer";
+import { TimetableDraftEditor } from "@/features/school-ops/timetable-draft-editor";
 
 type TT = Awaited<ReturnType<typeof classroomRepo.timetable>>;
 type Lesson = TT["days"][number]["lessons"][number];
@@ -42,6 +42,7 @@ export function ClassTimetable() {
       <QueryState query={q} skeleton="table">
         {(d) => {
           const activeDay = day && d.days.some((x) => x.date === day) ? day : d.days.find((x) => x.date === ctx.today)?.date ?? d.monday;
+          const periods = [...new Map([...PERIODS,...d.days.flatMap(x => x.lessons.map(l => ({ period:l.period,start:l.start,end:l.end,session:'morning' as const })))].map(p => [p.period,p])).values()].sort((a,b) => a.period-b.period);
           const Cell = ({ l, date }: { l: Lesson; date: string }) => {
             const past = date < ctx.today;
             const inner = (
@@ -49,6 +50,7 @@ export function ClassTimetable() {
                 <span className="flex items-center gap-1.5"><span className="size-2 flex-none rounded-full" style={{ background: l.color }} aria-hidden /><b className={clsx("text-ink", l.cancelled && "line-through")}>{l.subject}</b></span>
                 <span className="block text-muted">{l.teacher}{l.teacherStatus && l.teacherStatus !== "active" ? " (tạm khóa)" : ""}</span>
                 <span className="block text-muted">{roomLabel(l.room)}</span>
+                <span className="block text-[11.5px] text-muted">{l.start}–{l.end}</span>
                 {l.changed && <span className={clsx("mt-1 block rounded px-1.5 py-0.5 text-[11.5px] font-semibold", l.cancelled ? "bg-neutral-bg text-neutral-text" : "bg-warning-bg text-warning-text")}>{l.cancelled ? "Nghỉ" : KIND[l.changed.kind as LessonChange["kind"]] ?? "Thay đổi"}: {l.changed.reason}</span>}
               </>
             );
@@ -58,6 +60,7 @@ export function ClassTimetable() {
           return (
             <>
               {!d.canEdit && <Callout tone="neutral" icon={<Lock />}>Bạn xem lịch ở chế độ chỉ đọc. Đổi tiết do giáo viên chủ nhiệm hoặc giáo vụ thực hiện.</Callout>}
+              {d.canEdit && <TimetableDraftEditor schoolId={schoolId} classId={classId} weekStart={d.monday} />}
               <Card>
                 <CardHeader title={`Tuần ${d.week?.index ?? ""} · ${fmtDate(d.monday)} – ${fmtDate(addDays(d.monday, 5))}`} icon={<CalendarDays className="size-5 text-primary" />}
                   subtitle={d.canEdit ? "Bấm vào một tiết (từ hôm nay trở đi) để đổi tiết / đổi phòng / cho nghỉ." : undefined}
@@ -72,11 +75,11 @@ export function ClassTimetable() {
                       <caption className="sr-only">Thời khóa biểu tuần {fmtDate(d.monday)}</caption>
                       <thead><tr><th className="w-[88px]">Tiết</th>{d.days.map((x) => <th key={x.date} className={clsx(x.date === ctx.today && "!text-primary-strong")}>{weekdayLabel(weekdayOf(x.date))}<span className="block text-[12px] font-normal text-muted">{fmtDayMonth(x.date)}</span></th>)}</tr></thead>
                       <tbody>
-                        {PERIODS.map((p) => (
+                        {periods.map((p) => (
                           <tr key={p.period}>
                             <td className="align-top !px-3"><b className="text-ink">Tiết {p.period}</b><span className="block text-[12px] text-muted">{p.start} – {p.end}</span></td>
                             {d.days.map((x) => {
-                              if (x.holiday) return p.period === 1 ? <td key={x.date} rowSpan={PERIODS.length} className="bg-neutral-bg text-center align-middle text-[13px] font-semibold text-neutral-text">Nghỉ: {x.holiday}</td> : null;
+                              if (x.holiday) return p.period === periods[0].period ? <td key={x.date} rowSpan={periods.length} className="bg-neutral-bg text-center align-middle text-[13px] font-semibold text-neutral-text">Nghỉ: {x.holiday}</td> : null;
                               const l = x.lessons.find((y) => y.period === p.period);
                               return <td key={x.date} className={clsx("align-top", x.date === ctx.today && "bg-[#f8fbff]")}>{l ? <Cell l={l} date={x.date} /> : null}</td>;
                             })}
@@ -103,7 +106,7 @@ export function ClassTimetable() {
                 </div>
               </Card>
               {d.canEdit && <ChangesList changes={d.changes} />}
-              {d.canEdit && <ChangeDrawer target={edit} onClose={() => setEdit(null)} options={d.options} />}
+              {d.canEdit && <LessonChangeDrawer schoolId={schoolId} today={ctx.today} target={edit ? { classId, className: d.options.classes.find(c => c.id === classId)?.name ?? "", date: edit.date, period: edit.lesson.period } : null} onClose={() => setEdit(null)} />}
             </>
           );
         }}
@@ -117,8 +120,8 @@ function ChangesList({ changes }: { changes: TT["changes"] }) {
   const ctx = useCtx();
   const [confirm, setConfirm] = useState<{ kind: "publish" | "delete"; ch: TT["changes"][number] } | null>(null);
   const [err, setErr] = useState<string>();
-  const pub = useCommand((c, id: string) => classroomRepo.publishLessonChange(c, schoolId, id), { success: "Đã công bố thay đổi lịch", onSuccess: () => setConfirm(null), onError: (e) => setErr(e.message) });
-  const del = useCommand((c, id: string) => classroomRepo.deleteDraftChange(c, schoolId, id), { success: "Đã xóa bản nháp", onSuccess: () => setConfirm(null), onError: (e) => setErr(e.message) });
+  const pub = useCommand((c, change: TT["changes"][number]) => classroomRepo.publishLessonChange(c, schoolId, change.id, change), { success: "Đã công bố thay đổi lịch", onSuccess: () => setConfirm(null), onError: (e) => setErr(e.message) });
+  const del = useCommand((c, change: TT["changes"][number]) => classroomRepo.deleteDraftChange(c, schoolId, change.id, change), { success: "Đã xóa bản nháp", onSuccess: () => setConfirm(null), onError: (e) => setErr(e.message) });
   return (
     <Card>
       <CardHeader title="Thay đổi lịch của lớp" subtitle="Bản nháp chỉ nhân sự thấy; phụ huynh chỉ thấy thay đổi đã công bố" />
@@ -131,10 +134,10 @@ function ChangesList({ changes }: { changes: TT["changes"] }) {
                 <tr key={c.id}>
                   <td className="whitespace-nowrap">{fmtDate(c.date)} · Tiết {c.period}</td>
                   <td>{KIND[c.kind]}</td>
-                  <td className="text-[13px]">{c.kind === "cancel" ? "Nghỉ tiết" : [c.subjectId && c.subject, c.teacherMembershipId && c.teacher, c.roomId && roomLabel(c.room)].filter(Boolean).join(" · ") || "—"}</td>
+                  <td className="text-[13px]">{c.kind === "cancel" ? "Nghỉ tiết" : [c.subjectId && c.subject, c.teacherMembershipId && c.teacher, c.room && roomLabel(c.room)].filter(Boolean).join(" · ") || "—"}</td>
                   <td className="max-w-[220px] text-[13px]">{c.reason}</td>
                   <td><Badge tone={PUBLICATION_STATUS[c.status].tone}>{PUBLICATION_STATUS[c.status].label}</Badge><span className="block text-[11.5px] text-muted">{c.createdByName}</span></td>
-                  <td className="whitespace-nowrap">{c.status === "draft" && c.date >= ctx.today && <><Button size="sm" variant="secondary" icon={<Send className="size-3.5" />} onClick={() => { setErr(undefined); setConfirm({ kind: "publish", ch: c }); }}>Công bố</Button> <Button size="sm" variant="ghost" icon={<Trash2 className="size-3.5" />} onClick={() => { setErr(undefined); setConfirm({ kind: "delete", ch: c }); }}>Xóa nháp</Button></>}</td>
+                  <td className="whitespace-nowrap">{c.status === "draft" && c.canEdit && c.date >= ctx.today && <>{c.canPublish && <Button size="sm" variant="secondary" icon={<Send className="size-3.5" />} onClick={() => { setErr(undefined); setConfirm({ kind: "publish", ch: c }); }}>Công bố</Button>} <Button size="sm" variant="ghost" icon={<Trash2 className="size-3.5" />} onClick={() => { setErr(undefined); setConfirm({ kind: "delete", ch: c }); }}>Xóa nháp</Button></>}</td>
                 </tr>
               ))}
             </tbody>
@@ -146,75 +149,8 @@ function ChangesList({ changes }: { changes: TT["changes"] }) {
         object={confirm ? `${fmtDateLong(confirm.ch.date)} · Tiết ${confirm.ch.period} · ${KIND[confirm.ch.kind]}` : undefined}
         consequence={confirm?.kind === "publish" ? "Lịch lớp và lịch của giáo viên liên quan sẽ cập nhật; phụ huynh có quyền xem lịch sẽ thấy thay đổi. Hệ thống kiểm tra lại xung đột trước khi công bố." : "Bản nháp bị xóa, lịch giữ nguyên như trước."}
         confirmLabel={confirm?.kind === "publish" ? "Công bố" : "Xóa nháp"} variant={confirm?.kind === "delete" ? "danger" : "primary"}
-        onConfirm={async () => { if (!confirm) return; if (confirm.kind === "publish") await pub.run(confirm.ch.id); else await del.run(confirm.ch.id); }} />
+        onConfirm={async () => { if (!confirm) return; if (confirm.kind === "publish") await pub.run(confirm.ch); else await del.run(confirm.ch); }} />
     </Card>
-  );
-}
-
-/** O25 — change a lesson from a date: live conflict check, save draft or publish (blocked on conflicts). */
-function ChangeDrawer({ target, onClose, options }: { target: { lesson: Lesson; date: string } | null; onClose: () => void; options: TT["options"] }) {
-  const { schoolId, classId } = useClassroom();
-  const [kind, setKind] = useState<LessonChange["kind"]>("substitute");
-  const [subjectId, setSubjectId] = useState("");
-  const [teacher, setTeacher] = useState("");
-  const [room, setRoom] = useState("");
-  const [reason, setReason] = useState("");
-  const [err, setErr] = useState<Record<string, string>>({});
-  useEffect(() => { if (target) { setKind("substitute"); setSubjectId(""); setTeacher(""); setRoom(""); setReason(""); setErr({}); } }, [target]);
-  const dirty = !!target && (!!subjectId || !!teacher || !!room || !!reason);
-  useUnsavedChanges(dirty);
-  const needTeacher = kind === "substitute" || kind === "swap";
-  const needRoom = kind === "room";
-  const input = useMemo(() => target ? { classId, date: target.date, period: target.lesson.period, teacherMembershipId: needTeacher && teacher ? teacher : undefined, roomId: (needRoom || kind === "swap") && room ? room : undefined } : null, [target, classId, teacher, room, needTeacher, needRoom, kind]);
-  const conflicts = useRepo(["lesson-conflicts", input], (c) => classroomRepo.checkLessonChange(c, schoolId, input!), { enabled: !!input && (!!input.teacherMembershipId || !!input.roomId) });
-  const list = input && (input.teacherMembershipId || input.roomId) ? conflicts.data ?? [] : [];
-  const save = useCommand((c, publish: boolean) => classroomRepo.saveLessonChange(c, schoolId, {
-    classId, date: target!.date, period: target!.lesson.period, kind, subjectId: kind === "swap" && subjectId ? subjectId : undefined,
-    teacherMembershipId: needTeacher && teacher ? teacher : undefined, roomId: (needRoom || kind === "swap") && room ? room : undefined, reason, publish,
-  }), {
-    success: (r) => r.change.status === "published" ? "Đã công bố thay đổi tiết" : "Đã lưu nháp thay đổi tiết",
-    onSuccess: () => onClose(),
-    onError: (e) => setErr(e.fieldErrors ?? { form: e.message }),
-  });
-  const submit = (publish: boolean) => {
-    const e: Record<string, string> = {};
-    if (kind === "substitute" && !teacher) e.teacher = "Chọn giáo viên dạy thay";
-    if (kind === "swap" && !subjectId && !teacher) e.subjectId = "Chọn môn hoặc giáo viên mới";
-    if (kind === "room" && !room) e.room = "Chọn phòng mới";
-    if (reason.trim().length < 5) e.reason = "Ghi lý do đổi tiết (tối thiểu 5 ký tự)";
-    setErr(e);
-    if (Object.keys(e).length) return;
-    void save.run(publish);
-  };
-  const l = target?.lesson;
-  return (
-    <Drawer open={!!target} onOpenChange={(o) => { if (!o) onClose(); }} title="Đổi tiết / lịch nghỉ" description={target ? `${fmtDateLong(target.date)} · Tiết ${l!.period} (${l!.start} – ${l!.end})` : undefined} width={500} busy={save.pending}
-      footer={<>
-        <Button variant="ghost" onClick={onClose} disabled={save.pending}>Hủy</Button>
-        <Button variant="secondary" loading={save.pending} onClick={() => submit(false)}>Lưu nháp</Button>
-        <Button variant="primary" icon={<Send className="size-4" />} loading={save.pending} disabled={list.length > 0} onClick={() => submit(true)}>Công bố</Button>
-      </>}>
-      {target && l && (
-        <div className="space-y-4">
-          <div className="rounded-xl border border-line bg-[#f7fbff] p-3 text-sm"><p className="font-semibold text-ink">Hiện tại: {l.subject} · {l.teacher} · {roomLabel(l.room)}</p>{l.changed && <p className="text-warning-text">Đã có thay đổi: {l.changed.reason}</p>}</div>
-          <ErrorSummary errors={err} labels={{ teacher: "Giáo viên", subjectId: "Môn", room: "Phòng", reason: "Lý do", date: "Ngày", period: "Tiết", form: "Lỗi" }} />
-          <SelectField label="Loại thay đổi" value={kind} onChange={(e) => setKind(e.target.value as LessonChange["kind"])} options={Object.entries(KIND).map(([value, label]) => ({ value, label }))} />
-          {kind === "swap" && <div data-field="subjectId"><SelectField label="Môn mới" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} placeholder="Giữ môn hiện tại" options={options.subjects.map((s) => ({ value: s.id, label: s.name }))} error={err.subjectId} /></div>}
-          {needTeacher && <div data-field="teacher"><SelectField label={kind === "substitute" ? "Giáo viên dạy thay" : "Giáo viên mới"} required={kind === "substitute"} value={teacher} onChange={(e) => setTeacher(e.target.value)} placeholder="Chọn giáo viên…" options={options.teachers.filter((t) => t.id !== l.teacherMembershipId).map((t) => ({ value: t.id, label: t.name }))} error={err.teacher} /></div>}
-          {(needRoom || kind === "swap") && <div data-field="room"><SelectField label="Phòng mới" required={needRoom} value={room} onChange={(e) => setRoom(e.target.value)} placeholder={needRoom ? "Chọn phòng…" : "Giữ phòng hiện tại"} options={options.rooms.map((r) => ({ value: r.id, label: `${r.name} (${r.capacity} chỗ)` }))} error={err.room} /></div>}
-          {kind === "cancel" && <Callout tone="warning">Tiết sẽ hiển thị “Nghỉ” trong lịch lớp và lịch giáo viên sau khi công bố.</Callout>}
-          <div data-field="reason"><TextArea label="Lý do" required rows={3} value={reason} onChange={(e) => setReason(e.target.value)} error={err.reason} maxChars={200} /></div>
-          <div aria-live="polite">
-            {conflicts.isFetching ? <p className="text-[13px] text-muted">Đang kiểm tra xung đột…</p> : list.length > 0 ? (
-              <Callout tone="danger" icon={<AlertTriangle />} title="Có xung đột — không thể công bố">
-                <ul className="list-disc pl-4">{list.map((c, i) => <li key={i}>{c.message}</li>)}</ul>
-                <p className="mt-1">Bạn vẫn có thể lưu nháp để xử lý sau.</p>
-              </Callout>
-            ) : (input?.teacherMembershipId || input?.roomId) ? <Callout tone="success">Không có xung đột giáo viên/phòng ở tiết này.</Callout> : null}
-          </div>
-        </div>
-      )}
-    </Drawer>
   );
 }
 

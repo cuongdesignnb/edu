@@ -4,7 +4,10 @@ import Link from "next/link";
 import { clsx } from "clsx";
 import { FileSpreadsheet, FileText, Printer, Download, ArrowRight, Clock, Info } from "lucide-react";
 import type { ReportData } from "@/lib/repositories";
-import { downloadCSV, downloadXLSX, slugFile, type ExportColumn, type ExportRow } from "@/lib/export";
+import { downloadCSV, downloadXLSX, downloadBlob, slugFile, type ExportColumn, type ExportRow } from "@/lib/export";
+import type { ReportDownload } from "@/lib/repositories/connected/reports";
+import { RepoError, errorMessage } from "@/lib/repositories/errors";
+import { captureStaffAccess } from "@/lib/api/client";
 import { fmtDateTime } from "@/lib/formatters";
 import { ChartCard } from "@/components/data/charts";
 import { Button } from "@/components/ui/button";
@@ -37,7 +40,7 @@ export async function exportReportFile(data: ReportData, fileBase: string, forma
 export function ExportFormatDialog({ open, onOpenChange, data, onRun, busy }: { open: boolean; onOpenChange: (o: boolean) => void; data: ReportData; onRun: (f: ExportFormat) => void; busy?: boolean }) {
   const [format, setFormat] = useState<ExportFormat>("xlsx");
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Chọn định dạng xuất" description="Tệp được tạo ngay trên trình duyệt này — không gửi email hoặc lưu lên máy chủ." size="sm" busy={busy}
+    <Modal open={open} onOpenChange={onOpenChange} title="Chọn định dạng xuất" description="Máy chủ chụp dữ liệu theo bộ lọc và kiểm tra quyền khi tạo, xử lý và tải tệp. Tệp tải được trong 24 giờ." size="sm" busy={busy}
       footer={<><Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>Hủy</Button><Button variant="primary" loading={busy} icon={<Download className="size-4" />} onClick={() => onRun(format)}>Xuất tệp</Button></>}>
       <div className="space-y-3 text-sm">
         <div className="rounded-xl border border-line bg-[#f7fbff] px-3.5 py-2.5">
@@ -59,27 +62,30 @@ export function ExportFormatDialog({ open, onOpenChange, data, onRun, busy }: { 
  * C074 — report viewer with KPIs, chart (table alternative), data table with drill-down,
  * denominators, generated time and real CSV/XLSX/print export.
  */
-export function ReportViewer({ data, fileBase, onExported, canExport = true }: { data: ReportData; fileBase: string; onExported?: (format: ExportFormat, rowCount: number) => void; /** optional: hide file exports when the actor lacks export rights (print stays) */ canExport?: boolean }) {
+export function ReportViewer({ data, onExport, canExport = true }: { data: ReportData; fileBase: string; onExport?: (format: "csv" | "xlsx" | "pdf") => Promise<ReportDownload>; canExport?: boolean }) {
   const toast = useToast();
   const [dialog, setDialog] = useState(false);
   const [busy, setBusy] = useState<ExportFormat | null>(null);
   const run = async (format: ExportFormat) => {
     if (busy) return;
+    const owner = captureStaffAccess();
     setBusy(format);
     try {
       if (format === "print") {
         setDialog(false);
         await new Promise((r) => setTimeout(r, 60));
         window.print();
-        onExported?.("print", data.rows.length);
       } else {
-        const r = await exportReportFile(data, fileBase, format);
-        toast.push({ tone: "success", title: `Đã tạo tệp ${r.fileName}`, detail: `${r.rowCount} dòng — tệp được tạo cục bộ trên trình duyệt.` });
-        onExported?.(format, r.rowCount);
+        if (!canExport || !onExport) throw new RepoError("FORBIDDEN", "Chức năng xuất tệp chưa được xác nhận trong phạm vi này.");
+        const file = await onExport(format);
+        file.assertCurrent();
+        downloadBlob(file.blob, file.filename);
+        toast.push({ tone: "success", title: `Đã tải tệp ${file.filename}`, detail: "Bản xuất được máy chủ lưu theo dữ liệu tại thời điểm tạo." });
         setDialog(false);
       }
-    } catch {
-      toast.push({ tone: "error", title: "Không tạo được tệp", detail: "Vui lòng thử lại." });
+    } catch (error) {
+      try {owner.assertCurrent();} catch {return;}
+      toast.push({ tone: "error", title: "Không tải được tệp", detail: errorMessage(error) });
     } finally {
       setBusy(null);
     }
@@ -88,7 +94,7 @@ export function ReportViewer({ data, fileBase, onExported, canExport = true }: {
   return (
     <div className="space-y-5 report-print">
       <div className="print-only mb-4 border-b border-line pb-3">
-        <p className="text-[12px] text-muted">EduManage — bản in báo cáo (dữ liệu demo)</p>
+        <p className="text-[12px] text-muted">EduManage — bản in báo cáo</p>
         <h1 className="text-2xl font-extrabold text-ink">{data.title}</h1>
         <p className="text-sm text-body">{data.scopeLabel}</p>
         <p className="text-sm text-body">Kỳ báo cáo: {data.periodLabel} · Tạo lúc {fmtDateTime(data.generatedAt)}</p>

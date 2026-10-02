@@ -15,7 +15,7 @@ for name in names:
   continue
  # Leaf readable by non-root Docker UID; host parent is 0700. Not a vault/encryption.
  fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o444)
- with os.fdopen(fd,'w') as f:f.write(secrets.token_hex(32)+'\n')
+ with os.fdopen(fd,'w',newline='\n') as f:f.write(secrets.token_hex(32)+'\n')
  os.chmod(target,0o444)
 env=root/'.env.local-docker'
 if not env.exists():

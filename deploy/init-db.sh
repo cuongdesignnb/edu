@@ -1,10 +1,10 @@
 #!/bin/sh
 set -eu
 # Chỉ chạy tự động khi volume PostgreSQL còn trống. Không xoay password trên volume đang dùng.
-export EDU_MIGRATOR_PASSWORD="$(cat /run/secrets/db_migrator_password)"
-export EDU_APP_PASSWORD="$(cat /run/secrets/db_app_password)"
-export EDU_PARENT_PASSWORD="$(cat /run/secrets/db_parent_password)"
-export EDU_WORKER_PASSWORD="$(cat /run/secrets/db_worker_password)"
+export EDU_MIGRATOR_PASSWORD="$(tr -d '\r\n' < /run/secrets/db_migrator_password)"
+export EDU_APP_PASSWORD="$(tr -d '\r\n' < /run/secrets/db_app_password)"
+export EDU_PARENT_PASSWORD="$(tr -d '\r\n' < /run/secrets/db_parent_password)"
+export EDU_WORKER_PASSWORD="$(tr -d '\r\n' < /run/secrets/db_worker_password)"
 psql -X -q -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<'SQL'
 \getenv db POSTGRES_DB
 \getenv mig_pass EDU_MIGRATOR_PASSWORD

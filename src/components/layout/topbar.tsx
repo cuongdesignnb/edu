@@ -39,9 +39,10 @@ export function GlobalSearch({ schoolId, placeholder }: { schoolId?: string; pla
         <div className="mt-3 min-h-[120px]" aria-live="polite">
           {q.trim().length < 2 && <p className="py-6 text-center text-sm text-muted">Nhập ít nhất 2 ký tự.</p>}
           {q.trim().length >= 2 && res.isLoading && <p className="py-6 text-center text-sm text-muted">Đang tìm…</p>}
-          {res.data && res.data.length === 0 && debounced === q && <p className="py-6 text-center text-sm text-muted">Không có kết quả trong phạm vi của bạn.</p>}
+          {q.trim().length >= 2 && debounced === q && res.error && <p role="alert" className="py-6 text-center text-sm text-danger-text">{res.error.message}</p>}
+          {q.trim().length >= 2 && res.data && res.data.length === 0 && debounced === q && <p className="py-6 text-center text-sm text-muted">Không có kết quả trong phạm vi của bạn.</p>}
           <ul className="space-y-1">
-            {res.data?.map((h) => (
+            {(q.trim().length >= 2 && debounced === q ? res.data : undefined)?.map((h) => (
               <li key={`${h.kind}-${h.id}`}>
                 <button type="button" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-primary-light" onClick={() => { setOpen(false); router.push(h.href); }}>
                   <span className="icon-tile icon-tile-sm tone-blue !size-8">{icon(h.kind)}</span>

@@ -15,6 +15,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { InlineSelect } from "@/components/ui/form";
 import { EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 import { LessonChangeDrawer, LESSON_KIND_LABEL, type LessonTarget } from "./lesson-change-drawer";
+import { TimetableDraftEditor } from "./timetable-draft-editor";
 
 type TT = Awaited<ReturnType<typeof classroomRepo.schoolTimetable>>;
 type Cell = TT["cells"][number];
@@ -26,6 +27,7 @@ function LessonChip({ c, show, onClick, disabled }: { c: Cell; show: { cls: bool
       <span className="flex items-center gap-1.5"><span className="size-2 flex-none rounded-full" style={{ background: c.color }} aria-hidden />
         <span className={clsx("truncate font-semibold", c.cancelled ? "text-muted line-through" : "text-ink")}>{show.cls ? `${c.className} · ` : ""}{c.subject}</span></span>
       <span className="block truncate text-[11.5px] text-muted">{[show.teacher && c.teacher, show.room && `P. ${c.room}`].filter(Boolean).join(" · ")}</span>
+      <span className="block text-[11px] text-muted">{c.start}–{c.end}</span>
       {(c.changed || c.cancelled) && <span className="block truncate text-[11px] font-semibold text-warning-text">{c.cancelled ? "Nghỉ tiết" : LESSON_KIND_LABEL[c.changed!.kind as keyof typeof LESSON_KIND_LABEL] ?? "Đã đổi"}</span>}
     </>
   );
@@ -44,8 +46,8 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
   const [pending, setPending] = useState<{ ch: Change; action: "publish" | "delete" } | null>(null);
   const q = useRepo(["school-timetable", schoolId, week, classId, membershipId, roomId], (c) => classroomRepo.schoolTimetable(c, schoolId, { weekStart: week, classId: classId || undefined, membershipId: membershipId || undefined, roomId: roomId || undefined }));
   const changes = useRepo(["week-lesson-changes", schoolId, week], (c) => schoolOpsRepo.weekLessonChanges(c, schoolId, week));
-  const publishCmd = useCommand((ctx, id: string) => classroomRepo.publishLessonChange(ctx, schoolId, id), { success: "Đã công bố đổi tiết", onSuccess: () => setPending(null) });
-  const deleteCmd = useCommand((ctx, id: string) => classroomRepo.deleteDraftChange(ctx, schoolId, id), { success: "Đã xóa bản nháp đổi tiết", onSuccess: () => setPending(null) });
+  const publishCmd = useCommand((ctx, change: Change) => classroomRepo.publishLessonChange(ctx, schoolId, change.id, change), { success: "Đã công bố đổi tiết", onSuccess: () => setPending(null) });
+  const deleteCmd = useCommand((ctx, change: Change) => classroomRepo.deleteDraftChange(ctx, schoolId, change.id, change), { success: "Đã xóa bản nháp đổi tiết", onSuccess: () => setPending(null) });
   const d = q.data;
   const show = { cls: !classId, teacher: !membershipId, room: !roomId };
   const byKey = useMemo(() => {
@@ -56,9 +58,10 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
   const days = d?.days ?? [0, 1, 2, 3, 4, 5].map((i) => addDays(week, i));
   const activeDay = days.includes(day) ? day : days[0];
   const open = (c: Cell) => setTarget({ classId: c.classId, className: c.className, date: c.date, period: c.period });
-  const canClick = (c: Cell) => !!d?.canManage && c.date >= today;
+  const canClick = (c: Cell) => c.canEdit && c.date >= today;
   const moveWeek = (n: number) => { const w = addDays(week, 7 * n); setWeek(w); setDay(w); };
   const clashes = d?.clashes ?? [];
+  const periods = [...new Map([...PERIODS,...(d?.cells ?? []).map(c => ({ period:c.period,start:c.start,end:c.end,session:'morning' as const }))].map(p => [p.period,p])).values()].sort((a,b) => a.period-b.period);
   const filterLabel = [classId && d?.options.classes.find((x) => x.id === classId)?.name, membershipId && d?.options.teachers.find((x) => x.id === membershipId)?.name, roomId && `Phòng ${d?.options.rooms.find((x) => x.id === roomId)?.name}`].filter(Boolean).join(" · ");
 
   return (
@@ -79,7 +82,8 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
         </div>
       </Card>
 
-      {clashes.length > 0 && <Callout tone="danger" icon={<AlertTriangle />} title={`${clashes.length} xung đột giáo viên trong tuần`}><ul className="list-disc pl-5">{clashes.slice(0, 6).map((c) => <li key={c}>{c.replace(/^(\d{4})-(\d{2})-(\d{2})/, "$3/$2/$1")}</li>)}</ul>{clashes.length > 6 && <p>… và {clashes.length - 6} xung đột khác.</p>}</Callout>}
+      {d?.canManage && <TimetableDraftEditor schoolId={schoolId} classId={classId || undefined} weekStart={week} />}
+      {clashes.length > 0 && <Callout tone="danger" icon={<AlertTriangle />} title={`${clashes.length} xung đột giáo viên/phòng trong tuần`}><ul className="list-disc pl-5">{clashes.slice(0, 6).map((c) => <li key={c}>{c.replace(/^(\d{4})-(\d{2})-(\d{2})/, "$3/$2/$1")}</li>)}</ul>{clashes.length > 6 && <p>… và {clashes.length - 6} xung đột khác.</p>}</Callout>}
       {d?.canManage ? <p className="text-[13px] text-muted">Bấm vào một tiết từ hôm nay trở đi để đổi tiết. Lịch các ngày đã qua chỉ xem, không bị ghi đè.</p>
         : <p className="text-[13px] text-muted">Bạn đang xem lịch — đổi tiết cần quyền quản lý lịch toàn trường.</p>}
 
@@ -94,7 +98,7 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
                 <table className="table table-fixed" style={{ minWidth: 980 }}>
                   <thead><tr><th className="w-24">Tiết</th>{days.map((x, i) => <th key={x} className={clsx(x === today && "!bg-primary-light !text-primary-strong")}>{weekdayLabel(i + 1)}<span className="block text-[12px] font-normal text-muted">{fmtDate(x)}</span></th>)}</tr></thead>
                   <tbody>
-                    {PERIODS.map((p) => (
+                    {periods.map((p) => (
                       <tr key={p.period} className={clsx(p.period === 6 && "border-t-2 border-line-strong")}>
                         <td className="align-top"><p className="font-semibold text-ink">Tiết {p.period}</p><p className="text-[11.5px] text-muted">{p.start}–{p.end}</p></td>
                         {days.map((x) => {
@@ -112,7 +116,7 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
                 {days.map((x, i) => <button key={x} type="button" role="tab" aria-selected={x === activeDay} className="tab flex-col !gap-0 !px-3" onClick={() => setDay(x)}><span>{weekdayLabel(i + 1, true)}</span><span className="text-[11px] font-normal">{fmtDayMonth(x)}</span></button>)}
               </div>
               <ol className="space-y-2">
-                {PERIODS.map((p) => {
+                {periods.map((p) => {
                   const list = byKey.get(`${activeDay}|${p.period}`) ?? [];
                   if (!list.length) return null;
                   return (
@@ -143,7 +147,7 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
                 {ch.isPast && <Badge tone="neutral" dot={false}>Đã qua</Badge>}
                 {ch.canEdit && ch.status === "draft" && !ch.isPast && <div className="flex gap-1.5">
                   <Button size="sm" icon={<PenLine className="size-4" />} onClick={() => setTarget({ classId: ch.classId, className: ch.className, date: ch.date, period: ch.period })}>Sửa</Button>
-                  <Button size="sm" variant="primary" icon={<Send className="size-4" />} onClick={() => setPending({ ch, action: "publish" })}>Công bố</Button>
+                  {ch.canPublish && <Button size="sm" variant="primary" icon={<Send className="size-4" />} onClick={() => setPending({ ch, action: "publish" })}>Công bố</Button>}
                   <Button size="sm" variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setPending({ ch, action: "delete" })} aria-label="Xóa bản nháp đổi tiết" />
                 </div>}
               </li>
@@ -155,12 +159,12 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
       <LessonChangeDrawer schoolId={schoolId} target={target} today={today} onClose={() => setTarget(null)} />
       <ConfirmDialog open={pending?.action === "publish"} onOpenChange={(o) => !o && setPending(null)} title="Công bố đổi tiết" confirmLabel="Công bố" busy={publishCmd.pending}
         object={pending && `${pending.ch.className} · ${fmtDate(pending.ch.date)} · tiết ${pending.ch.period}`}
-        error={publishCmd.error?.code === "VALIDATION" ? publishCmd.error.message : undefined}
+        error={publishCmd.error?.message}
         consequence="Lịch lớp, lịch giáo viên và lịch phụ huynh hiển thị thay đổi cho đúng ngày/tiết này. Hệ thống kiểm tra lại xung đột trước khi công bố."
-        onConfirm={async () => { if (pending) await publishCmd.run(pending.ch.id); }} />
+        onConfirm={async () => { if (pending) await publishCmd.run(pending.ch); }} />
       <ConfirmDialog open={pending?.action === "delete"} onOpenChange={(o) => !o && setPending(null)} title="Xóa bản nháp đổi tiết" variant="danger" confirmLabel="Xóa bản nháp" busy={deleteCmd.pending}
         object={pending && `${pending.ch.className} · ${fmtDate(pending.ch.date)} · tiết ${pending.ch.period}`}
-        consequence="Bản nháp chưa công bố sẽ bị xóa; lịch đã công bố không thay đổi." onConfirm={async () => { if (pending) await deleteCmd.run(pending.ch.id); }} />
+        error={deleteCmd.error?.message} consequence="Bản nháp chưa công bố sẽ bị xóa; lịch đã công bố không thay đổi." onConfirm={async () => { if (pending) await deleteCmd.run(pending.ch); }} />
     </div>
   );
 }

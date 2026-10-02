@@ -9,6 +9,8 @@ import { PublicationsService,type ParentItem } from '../publications/publication
 import { FilesService } from '../files/files.service';
 import { notify } from '../notifications/notify';
 import type { Handler,RequestContext,Result } from '../../api.router';
+import {activityWorkspace,activityWorkspaceAccess} from './activity-workspace';
+import {canonical} from '../../common/commands';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
 const activity:Resource={table:'app.activities',fields:{...meta,classId:'class_id',yearId:'year_id',title:'title',description:'description',dueAt:'due_at',evidenceRequired:'evidence_required',status:'status',dataVersion:'data_version',assignedAt:'assigned_at',illustration:'illustration'},writeFields:[],search:['title','description'],filters:{status:'status'}};
@@ -19,7 +21,34 @@ function version(row:Row,expected:unknown,source=false){const n=Number(source?ro
 @Injectable()
 export class ActivitiesService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly publications:PublicationsService,private readonly files:FilesService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['listActivities','createActivity','getActivity','updateActivity','listParticipants','setParticipantStatus','assignActivity','publishActivity','listEvidence','createEvidence','reviewEvidence'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return {...Object.fromEntries(['listActivities','createActivity','getActivity','updateActivity','listParticipants','setParticipantStatus','assignActivity','publishActivity','listEvidence','createEvidence','reviewEvidence'].map(id=>[id,(c:RequestContext)=>this.handle(c)])),getClassActivitiesWorkspace:c=>this.db.transaction(async tx=>({data:await activityWorkspace(tx,this.policy,c)}),{schoolId:c.params.schoolId,userId:c.principal!.userId,readOnly:true}),saveActivityWorkspace:c=>this.workspaceCommand(c),reviewEvidenceBatch:c=>this.workspaceCommand(c),setActivityParticipantStatuses:c=>this.workspaceCommand(c)};}
+  private async workspaceCommand(c:RequestContext):Promise<Result>{
+    const permission=c.operation.id==='reviewEvidenceBatch'?'evidence.review':c.operation.id==='setActivityParticipantStatuses'?'activity.review':c.body.action==='publish'?'activity.publish':'activity.manage';
+    const authorize=(tx:Transaction)=>activityWorkspaceAccess(tx,this.policy,c,permission);
+    return this.commands.execute(c,authorize,async tx=>{
+      await authorize(tx);
+      const invoke=(id:string,permission:string,body:Row,params:Record<string,string>={})=>this.handle({...c,operation:{...c.operation,id,permission,method:id==='updateActivity'?'PATCH':'POST'},body,params:{...c.params,...params}},tx);
+      if(c.operation.id==='reviewEvidenceBatch'||c.operation.id==='setActivityParticipantStatuses'){
+        const items=c.body.items as {id:string;expectedVersion:number}[];if(!items.length||items.length>200||new Set(items.map(i=>i.id)).size!==items.length)validation('items','Chọn 1–200 đối tượng không trùng');
+        for(const item of items){if(c.operation.id==='reviewEvidenceBatch')await invoke('reviewEvidence','evidence.review',{expectedVersion:item.expectedVersion,decision:c.body.decision,reason:c.body.reason,shareWithGuardian:c.body.shareWithGuardian},{evidenceId:item.id});
+          else await invoke('setParticipantStatus','activity.review',{expectedVersion:item.expectedVersion,status:c.body.status,reason:c.body.reason},{activityId:String(c.body.activityId),participantId:item.id});}
+        return {data:{count:items.length}};
+      }
+      const source=c.body.source as Row|null,action=String(c.body.action);let row:Row|undefined;
+      if(source){row=await this.activity(tx,c,String(source.id),true);const pub=await one<Row>(tx,"SELECT id FROM app.publication_revisions WHERE school_id=$1 AND activity_id=$2 AND status='PUBLISHED'",[c.params.schoolId,row.id]);if(canonical(source)!==canonical({id:row.id,version:Number(row.version),dataVersion:Number(row.data_version),publicationId:pub?.id??null}))throw new Problem(409,'ACTIVITY_SOURCE_CHANGED');}
+      if(action==='draft'||action==='save'||action==='assign'){
+        const input=c.body.input as Row;if(!input)validation('input','Thiếu nội dung hoạt động');
+        const result=await invoke(row?'updateActivity':'createActivity','activity.manage',{...input,...(row?{expectedVersion:Number(row.version)}:{})},row?{activityId:String(row.id)}:{});
+        row=await this.activity(tx,c,String((result.data as Row).id),true);
+        if(action==='assign'&&row.status==='DRAFT'){await invoke('assignActivity','activity.manage',{expectedVersion:Number(row.version)},{activityId:String(row.id)});row=await this.activity(tx,c,String(row.id));}
+      }else{
+        if(!row)notFound();
+        if(action==='publish')await invoke('publishActivity','activity.publish',{expectedSourceVersion:Number(row.data_version),expectedPublicationId:source!.publicationId},{activityId:String(row.id)});
+        else await invoke('updateActivity','activity.manage',{expectedVersion:Number(row.version),status:action==='close'?'CLOSED':'ASSIGNED'},{activityId:String(row.id)});
+      }
+      const workspace=await activityWorkspace(tx,this.policy,c),saved=workspace.activities.find(a=>a.id===row!.id);if(!saved)notFound();return {data:saved};
+    });
+  }
   private async context(tx:Transaction,c:RequestContext){
     const schoolId=c.params.schoolId!,classId=c.params.classId!,access=await this.policy.require(tx,c.principal!,c.operation.permission,{schoolId,classId,allowSubject:c.operation.permission==='activity.read'});
     const cls=await getResource(tx,resource('class'),schoolId,classId),year=await getResource(tx,resource('year'),schoolId,String(cls.year_id));
@@ -37,7 +66,7 @@ export class ActivitiesService {
     const day=(await one<{day:string}>(tx,'SELECT ($2::timestamptz AT TIME ZONE timezone)::date AS day FROM platform.schools WHERE id=$1',[c.params.schoolId,value]))!.day;
     if(day<String(year.starts_on)||day>=String(year.ends_on)||day<today)validation('dueAt','Hạn hoàn thành từ hôm nay và thuộc năm học');
   }
-  private async handle(c:RequestContext):Promise<Result>{
+  private async handle(c:RequestContext,existingTx?:Transaction):Promise<Result>{
     const authorize=(tx:Transaction)=>this.context(tx,c),work=async(tx:Transaction):Promise<Result>=>{
       const ctx=await authorize(tx),op=c.operation.id;
       const canDraft=ctx.grants.some(g=>grantAllows(g,'activity.manage',{schoolId:ctx.schoolId,classId:ctx.classId},ctx.today));
@@ -113,9 +142,10 @@ export class ActivitiesService {
       version(evidenceRow!,c.body.expectedVersion);if(String(c.body.reason??'').trim().length<3)validation('reason','Cần lý do duyệt minh chứng');
       const file=await this.files.authorizeFile(tx,ctx.schoolId,String(evidenceRow!.file_id),c.principal!.userId,'file.read');if(file.status!=='READY')throw new Problem(409,'FILE_UNAVAILABLE');
       const saved=await one<Row>(tx,'UPDATE app.evidence SET status=$3,reviewed_by=$4,reviewed_at=now(),review_reason=$5,share_with_guardian=$6 WHERE school_id=$1 AND id=$2 RETURNING *',[ctx.schoolId,evidenceRow!.id,c.body.decision,c.principal!.userId,c.body.reason,c.body.decision==='APPROVED'&&c.body.shareWithGuardian===true]);
+      if(c.body.decision!=='APPROVED'||c.body.shareWithGuardian!==true)await tx.query('UPDATE app.parent_document_items SET revoked_at=now() WHERE school_id=$1 AND file_id=$2 AND revoked_at IS NULL',[ctx.schoolId,evidenceRow!.file_id]);
       const approved=await one(tx,"SELECT id FROM app.evidence WHERE school_id=$1 AND participant_id=$2 AND status='APPROVED' LIMIT 1",[ctx.schoolId,participantRow!.id]);
       const status=approved?'APPROVED':'NEEDS_REVISION';await tx.query('UPDATE app.activity_participants SET status=$3,review_note=$4,reviewed_by=$5,reviewed_at=now() WHERE school_id=$1 AND id=$2',[ctx.schoolId,participantRow!.id,status,c.body.reason,c.principal!.userId]);await audit(tx,c,'evidence',String(saved!.id),{activityId:row.id,status:saved!.status,shared:saved!.share_with_guardian});return {data:cleanDto(evidence,saved!)};
     };
-    return c.operation.method==='GET'?this.db.transaction(work,{schoolId:c.params.schoolId}):this.commands.execute(c,authorize,work);
+    return existingTx?work(existingTx):c.operation.method==='GET'?this.db.transaction(work,{schoolId:c.params.schoolId}):this.commands.execute(c,authorize,work);
   }
 }

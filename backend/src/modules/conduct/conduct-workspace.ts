@@ -8,12 +8,13 @@ import {Problem,validation} from '../../common/problem';
 import {conductPeriod,periodWritable,publicConductItems,version,reason} from './conduct-data';
 import {loadRules} from './rules.service';
 import {ruleWorkspaceView} from './rule-workspace';
+import {publicationPolicy,conductCloseDeadline} from './school-policy';
 import {score,points,ruleDelta} from './scoring';
 import type {ConductService} from './conduct.service';
 import type {PublicationsService} from '../publications/publications.service';
 import type {RequestContext,Result} from '../../api.router';
 
-export const conductWorkspaceOperations=['getConductWorkspaceWeeks','getConductWorkspaceRecords','getConductWorkspaceSummary','createConductWorkspaceRecord','updateConductWorkspaceRecord','reviewConductWorkspaceRecords','lockConductWorkspaceWeek','publishConductWorkspaceWeek','reopenConductWorkspaceWeek','getConductWorkspaceSnapshots','getConductWorkspaceSnapshot'];
+export const conductWorkspaceOperations=['getConductWorkspaceWeeks','getConductWorkspaceRecords','getConductWorkspaceSummary','createConductWorkspaceRecord','updateConductWorkspaceRecord','reviewConductWorkspaceRecords','lockConductWorkspaceWeek','publishConductWorkspaceWeek','approveConductWorkspaceWeek','reopenConductWorkspaceWeek','getConductWorkspaceSnapshots','getConductWorkspaceSnapshot'];
 const add=(d:string,n:number)=>new Date(Date.parse(d+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
 const bounded=(rows:Row[],max=5000)=>{if(rows.length>max)throw new Problem(422,'WORKSPACE_LIMIT');return rows;};
 type Context={s:string;y:string;c:string;today:string;reference:string;school:Row;cls:Row;grants:Grant[];userId:string};
@@ -24,7 +25,10 @@ export async function context(tx:Transaction,policy:Permissions,c:RequestContext
  return {s,y,c:cl,today:access.today,reference:access.today>=String(cls.ends_on)?add(String(cls.ends_on),-1):access.today<String(cls.starts_on)?String(cls.starts_on):access.today,school,cls,grants:access.grants,userId:c.principal!.userId};
 }
 export const scope=(x:Context)=>({schoolId:x.s,yearId:x.y,classId:x.c});
-export function can(x:Context,a:string,d?:string,lesson?:Row){return x.grants.some(g=>grantAllows(g,a,{...scope(x),date:d},x.today)||!!lesson&&lesson.user_id===x.userId&&grantAllows(g,a,{...scope(x),date:d,subjectId:String(lesson.subject_id),allowSubject:true},x.today));}
+export function can(x:Context,a:string,d?:string,lesson?:Row){
+ const policy=publicationPolicy(x.s,x.school),leader=a==='conduct.lock'&&policy.lockBy==='school_leader'||a==='conduct.publish'&&(policy.publishBy==='school_leader');
+ return x.grants.some(g=>(!leader||g.scope_type==='SCHOOL')&&(grantAllows(g,a,{...scope(x),date:d},x.today)||!!lesson&&lesson.user_id===x.userId&&grantAllows(g,a,{...scope(x),date:d,subjectId:String(lesson.subject_id),allowSubject:true},x.today)));
+}
 function readable(x:Context,d:string){return x.grants.some(g=>grantAllows(g,'conduct.read',{...scope(x),date:d,allowSubject:true},x.today));}
 function mutable(x:Context){if(x.cls.status==='ARCHIVED'||x.cls.year_status==='ARCHIVED')throw new Problem(409,'YEAR_ARCHIVED');}
 function weekReadable(x:Context,w:Row){return Array.from({length:7},(_,n)=>add(String(w.starts_on),n)).some(d=>d<String(w.ends_on)&&readable(x,d));}
@@ -43,7 +47,7 @@ export async function selected(tx:Transaction,x:Context,w:Row){
 }
 type Selection=Awaited<ReturnType<typeof selected>>;
 function status(d:Selection){return d.p?.status==='LOCKED'?(d.pub?.status==='PUBLISHED'?'published':'locked'):'open';}
-function weekDto(x:Context,w:Row,st='open'){return {id:w.id,index:w.week_number,startDate:w.starts_on,endDate:add(String(w.ends_on),-1),closeDeadline:w.input_deadline?new Date(w.input_deadline as Date).toISOString().slice(0,10):null,status:st,isCurrent:String(w.starts_on)<=x.reference&&String(w.ends_on)>x.reference};}
+function weekDto(x:Context,w:Row,st='open'){return {id:w.id,index:w.week_number,startDate:w.starts_on,endDate:add(String(w.ends_on),-1),closeDeadline:conductCloseDeadline(x.s,x.school,w),status:st,isCurrent:String(w.starts_on)<=x.reference&&String(w.ends_on)>x.reference};}
 export function checkSource(d:Selection,value:unknown){if(canonical(value)!==canonical(d.source))throw new Problem(409,'STALE_SOURCE',undefined,Number(d.p?.data_version??0));}
 export async function setView(tx:Transaction,x:Context,d:Selection){if(!d.set)return null;return ruleWorkspaceView(tx,{schoolId:x.s,today:x.today,ids:null,classIds:[x.c],can:()=>false},d.set,d.source.sourceHash);}
 function visibleRecords(x:Context,d:Selection){return d.records.filter(r=>can(x,'conduct.read',String(r.date))||r.recorded_by===x.userId&&x.grants.some(g=>grantAllows(g,'conduct.read',{...scope(x),date:String(r.date),subjectId:String(r.subject_id),allowSubject:true},x.today)));}
@@ -68,7 +72,7 @@ export async function snapshotView(tx:Transaction,x:Context,pub:Row){
  const actor=async(id:unknown)=>id?(await one<Row>(tx,'SELECT work_display_name FROM app.memberships WHERE school_id=$1 AND user_id=$2',[x.s,id]))?.work_display_name??null:null;
  return {id:pub.id,...scope(x),weekId:period.week_id,weekIndex:Number(period.week_number),rowCount:rows.length,avg:rows.length?Number(rows.reduce((sum,r)=>sum.plus(String(r.total)),new Decimal(0)).div(rows.length).toDecimalPlaces(1)):0,lockedByName:await actor(pub.created_by),publishedByName:await actor(pub.published_by),kind:'conduct_week',versionNo:pub.revision,ruleSetId:set.id,ruleSetVersionNo:snap.conductDisplay?.ruleSetRevision??set.revision,ruleSetName:snap.conductDisplay?.ruleSetName??set.name,lockedAt:iso(pub.created_at as Date),lockedBy:pub.created_by,publishedAt:pub.published_at?iso(pub.published_at as Date):null,publishedBy:pub.published_by??null,status:pub.status==='READY'?'locked':String(pub.status).toLowerCase(),rows,detailsAvailable:!!capture,sourceVersion:pub.source_version,publicationVersion:pub.version,supersedesId:(await one<Row>(tx,'SELECT id FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2 AND revision<$3 ORDER BY revision DESC LIMIT 1',[x.s,pub.conduct_period_id,pub.revision]))?.id??null,adjustmentNote:adjustment?.reason??null};
 }
-async function checks(tx:Transaction,x:Context,d:Selection,service:ConductService){
+export async function checks(tx:Transaction,x:Context,d:Selection,service:ConductService){
  const pending=d.records.filter(r=>r.status==='DRAFT').length,dups=d.records.reduce((n,r)=>n+twins(d.records,r).length,0)/2,blocking:string[]=[];
  if(pending)blocking.push(`${pending} ghi nhận chưa rà soát`);if(dups)blocking.push(`${dups} cặp ghi nhận có thể trùng`);if(!d.enrollments.length)blocking.push('Không có học sinh trong kỳ');
  for(const r of d.records.filter(r=>r.status!=='EXCLUDED'))try{await service.validateCurrentSource(tx,r);}catch(e){if(!(e instanceof Problem)||e.code!=='STALE_SOURCE')throw e;blocking.push('Nguồn sự kiện đã thay đổi, cần rà soát lại');}
@@ -86,7 +90,7 @@ export async function authorizeConductWorkspace(tx:Transaction,p:Permissions,c:R
  mutable(x);const w=await week(tx,x,c.params.weekId!),d=await selected(tx,x,w);
  if(op==='createConductWorkspaceRecord'){const lesson=c.body.lessonId?d.lessons.find(l=>l.id===c.body.lessonId):undefined;if(c.body.lessonId&&!lesson)throw new Problem(404,'RESOURCE_NOT_FOUND');requireAction(x,'conduct.record',String(c.body.date),lesson);}
  else if(op==='updateConductWorkspaceRecord'){const r=visibleRecords(x,d).find(r=>r.id===c.params.recordId);if(!r)throw new Problem(404,'RESOURCE_NOT_FOUND');if(!can(x,'conduct.review',String(r.date))&&(r.recorded_by!==x.userId||!can(x,'conduct.record',String(r.date),d.lessons.find(l=>l.id===r.lesson_id))))throw new Problem(404,'RESOURCE_NOT_FOUND');}
- else{requireAction(x,c.operation.permission,String(w.starts_on));if(op==='lockConductWorkspaceWeek'&&c.body.alsoPublish)requireAction(x,'conduct.publish',String(w.starts_on));}
+ else{if(op==='approveConductWorkspaceWeek'&&!x.grants.some(g=>g.scope_type==='SCHOOL'&&grantAllows(g,'conduct.review',{...scope(x),date:String(w.starts_on)},x.today)))throw new Problem(404,'RESOURCE_NOT_FOUND');requireAction(x,c.operation.permission,String(w.starts_on));if(op==='lockConductWorkspaceWeek'&&c.body.alsoPublish)requireAction(x,'conduct.publish',String(w.starts_on));}
 }
 export async function conductWorkspace(tx:Transaction,p:Permissions,c:RequestContext,service:ConductService,publications:PublicationsService):Promise<Result>{
  const x=await context(tx,p,c),op=c.operation.id;
@@ -115,8 +119,9 @@ export async function conductWorkspace(tx:Transaction,p:Permissions,c:RequestCon
   const records=visibleRecords(x,d);return {data:{...scope(x),today:x.today,source,records:records.filter(r=>!c.query.studentId||d.enrollments.some(e=>e.id===r.enrollment_id&&e.student_id===c.query.studentId)).map(r=>recordView(x,d,r,records)),roster:d.enrollments.map(e=>({id:e.student_id,enrollmentId:e.id,fullName:e.full_name,code:e.student_code,startsOn:e.starts_on,endsOn:e.ends_on??null})),ruleSet,week:weekDto(x,w,status(d)),period,canRecord:status(d)==='open'&&(can(x,'conduct.record',String(w.starts_on))||d.lessons.some(l=>can(x,'conduct.record',String(l.date),l))),isReviewer:can(x,'conduct.review',String(w.starts_on)),lessons:d.lessons.filter(l=>can(x,'conduct.read',String(l.date),l)).map(l=>({id:l.id,date:l.date,subjectId:l.subject_id,subject:l.subject_name,start:iso(l.starts_at as Date),end:iso(l.ends_at as Date),canRecord:can(x,'conduct.record',String(l.date),l)}))}};
  }
  if(op==='getConductWorkspaceSummary'){
+  const leaderApproval=d.pub?await one<Row>(tx,'SELECT approved_at,approved_by FROM app.conduct_publication_approvals WHERE school_id=$1 AND publication_id=$2 AND source_version=$3',[x.s,d.pub.id,d.pub.source_version]):undefined;
   if(!d.set)throw new Problem(422,'RULE_SET_NOT_APPLIED');const broad=can(x,'conduct.read',String(w.starts_on)),snap=broad&&d.pub&&d.p?.status==='LOCKED'?await snapshotView(tx,x,d.pub):null;
-  return {data:{...scope(x),today:x.today,source,week:weekDto(x,w,status(d)),period,ruleSet,snapshot:snap,rows:broad?(snap?.rows??rowsFor(d.set,d.config.thresholds,d.enrollments,d.records)):[],preview:broad?rowsFor(d.set,d.config.thresholds,d.enrollments,d.records,true):[],summaryAvailable:broad,checks:broad?await checks(tx,x,d,service):{pending:0,duplicates:0,blocking:[],warnings:[]},perms:{lock:broad&&can(x,'conduct.lock',String(w.starts_on)),publish:broad&&can(x,'conduct.publish',String(w.starts_on)),review:broad&&can(x,'conduct.review',String(w.starts_on))},policy:null}};
+  return {data:{...scope(x),today:x.today,source,week:weekDto(x,w,status(d)),period,ruleSet,snapshot:snap,rows:broad?(snap?.rows??rowsFor(d.set,d.config.thresholds,d.enrollments,d.records)):[],preview:broad?rowsFor(d.set,d.config.thresholds,d.enrollments,d.records,true):[],summaryAvailable:broad,checks:broad?await checks(tx,x,d,service):{pending:0,duplicates:0,blocking:[],warnings:[]},perms:{lock:broad&&can(x,'conduct.lock',String(w.starts_on)),publish:broad&&can(x,'conduct.publish',String(w.starts_on)),review:broad&&can(x,'conduct.review',String(w.starts_on))},policy:publicationPolicy(x.s,x.school),approval:{required:publicationPolicy(x.s,x.school).requireLeaderApproval===true,approvedAt:leaderApproval?iso(leaderApproval.approved_at as Date):null,canApprove:broad&&!!d.pub&&d.pub.status==='READY'&&!leaderApproval&&x.grants.some(g=>g.scope_type==='SCHOOL'&&grantAllows(g,'conduct.review',{...scope(x)},x.today))}}};
  }
  checkSource(d,c.body.source);mutable(x);
  const receipt=async(changed=0,id?:string)=>{const next=await selected(tx,x,w),r=id?next.records.find(r=>r.id===id):undefined;return {data:{source:next.source,changed,status:status(next),record:r?recordView(x,next,r):null,snapshot:next.pub&&next.p?.status==='LOCKED'?await snapshotView(tx,x,next.pub):null}};};
@@ -146,6 +151,11 @@ export async function conductWorkspace(tx:Transaction,p:Permissions,c:RequestCon
   if(!d.p||d.p.status!=='LOCKED'||!d.pub||d.pub.status!=='READY')throw new Problem(409,'PERIOD_NOT_REOPENABLE');
   if(await one(tx,"SELECT id FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2 AND status IN ('PUBLISHED','SUPERSEDED','WITHDRAWN') AND published_at IS NOT NULL",[x.s,d.p.id]))throw new Problem(409,'PUBLISHED_PERIOD_IMMUTABLE');
   await tx.query("UPDATE app.publication_revisions SET status='WITHDRAWN',withdrawn_at=now() WHERE school_id=$1 AND conduct_period_id=$2 AND status='READY'",[x.s,d.p.id]);await tx.query("UPDATE app.conduct_periods SET status='OPEN',locked_at=NULL,locked_by=NULL WHERE school_id=$1 AND id=$2",[x.s,d.p.id]);await audit(tx,c,'conductPeriod',String(d.p.id),{reopened:true,reason:reason(c.body.reason)});return receipt();
+ }
+ if(op==='approveConductWorkspaceWeek'){
+  if(!d.p||d.p.status!=='LOCKED'||!d.pub||d.pub.status!=='READY')throw new Problem(409,'PERIOD_NOT_LOCKED');
+  await tx.query('INSERT INTO app.conduct_publication_approvals(school_id,publication_id,source_version,approved_by) VALUES($1,$2,$3,$4) ON CONFLICT(school_id,publication_id) DO NOTHING',[x.s,d.pub.id,d.pub.source_version,x.userId]);
+  await audit(tx,c,'conduct-publication-approval',String(d.pub.id),{sourceVersion:d.pub.source_version});return receipt();
  }
  if(op==='publishConductWorkspaceWeek'){
   if(!d.p||d.p.status!=='LOCKED'||!d.pub||d.pub.status!=='READY')throw new Problem(409,'PERIOD_NOT_LOCKED');const own={...c,body:{...c.body,expectedPublicationId:d.source.publicationId}};await service.publish(tx,own,d.p);return receipt();

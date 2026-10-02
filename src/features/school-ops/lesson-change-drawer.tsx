@@ -34,27 +34,29 @@ function Inner({ schoolId, target, today, onClose }: { schoolId: string; target:
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [askClose, setAskClose] = useState(false);
   const slot = useRepo(["lesson-slot", schoolId, target.classId, date, period], (c) => schoolOpsRepo.lessonSlot(c, schoolId, target.classId, date ?? today, period), { enabled: !!date });
-  const prefilled = useRef(false);
+  const prefilled = useRef("");
   useEffect(() => {
     const dr = slot.data?.draft;
-    if (!dr || prefilled.current) return;
-    prefilled.current = true;
+    const key = `${date}-${period}`;
+    if (!dr || prefilled.current === key) return;
+    prefilled.current = key;
     setKind(dr.kind); setSubjectId(dr.subjectId ?? ""); setTeacherId(dr.teacherMembershipId ?? ""); setRoomId(dr.roomId ?? ""); setReason(dr.reason);
-  }, [slot.data]);
+  }, [slot.data,date,period]);
   const needTeacher = kind === "swap" || kind === "substitute";
   const needSubject = kind === "swap";
   const needRoom = kind === "room";
-  const check = useRepo(["lesson-check", schoolId, target.classId, date, period, needTeacher ? teacherId : "", needRoom ? roomId : ""],
-    (c) => classroomRepo.checkLessonChange(c, schoolId, { classId: target.classId, date: date!, period, teacherMembershipId: needTeacher && teacherId ? teacherId : undefined, roomId: needRoom && roomId ? roomId : undefined }),
-    { enabled: !!date && ((needTeacher && !!teacherId) || (needRoom && !!roomId)) });
+  const shouldCheck = !!date && kind !== "cancel" && ((needTeacher && !!teacherId) || (needRoom && !!roomId) || (needSubject && !!subjectId));
+  const check = useRepo(["lesson-check", schoolId, target.classId, date, period, needTeacher ? teacherId : "", needRoom ? roomId : "",needSubject ? subjectId : ""],
+    (c) => classroomRepo.checkLessonChange(c, schoolId, { classId: target.classId, date: date!, period, teacherMembershipId: needTeacher && teacherId ? teacherId : undefined, roomId: needRoom && roomId ? roomId : undefined,subjectId:needSubject && subjectId ? subjectId : undefined }),
+    { enabled: shouldCheck });
   const conflicts = kind === "cancel" ? [] : check.data ?? [];
   const dirty = !!(reason || teacherId || subjectId || roomId || date !== target.date || period !== target.period);
   const save = useCommand((ctx, publish: boolean) => classroomRepo.saveLessonChange(ctx, schoolId, {
-    classId: target.classId, date: date!, period, kind, subjectId: needSubject ? subjectId || undefined : undefined, teacherMembershipId: needTeacher ? teacherId || undefined : undefined, roomId: needRoom ? roomId || undefined : undefined, reason, publish,
+    classId: target.classId, date: date!, period, kind, subjectId: needSubject ? subjectId || undefined : undefined, teacherMembershipId: needTeacher ? teacherId || undefined : undefined, roomId: needRoom ? roomId || undefined : undefined, reason, publish,source:slot.data?.lesson?.source,expectedPublicationId:slot.data?.publicationId,
   }), {
     success: (r) => r.change.status === "published" ? "Đã công bố đổi tiết" : "Đã lưu nháp đổi tiết (chưa hiển thị cho lớp/phụ huynh)",
     onSuccess: () => onClose(),
-    onError: (e: RepoError) => { if (e.code === "VALIDATION") setErrors(e.fieldErrors ?? { form: e.message }); },
+    onError: (e: RepoError) => { setErrors(e.fieldErrors ?? { form: e.message }); },
   });
   const validate = () => {
     const e: Record<string, string> = {};
@@ -76,15 +78,15 @@ function Inner({ schoolId, target, today, onClose }: { schoolId: string; target:
         title="Đổi tiết" description={`Lớp ${target.className} — chỉ áp dụng cho ngày được chọn`}
         footer={<>
           <Button variant="ghost" onClick={() => (dirty ? setAskClose(true) : onClose())} disabled={save.pending}>Hủy</Button>
-          <Button icon={<Save className="size-4" />} loading={save.pending} onClick={() => submit(false)}>Lưu nháp</Button>
-          <Button variant="primary" icon={<Send className="size-4" />} disabled={save.pending || conflicts.length > 0} onClick={() => submit(true)} title={conflicts.length ? "Còn xung đột — không thể công bố" : undefined}>Công bố</Button>
+          <Button icon={<Save className="size-4" />} loading={save.pending} disabled={!s?.lesson?.canEdit || slot.isFetching || !!slot.error} onClick={() => submit(false)}>Lưu nháp</Button>
+          {s?.canPublish && <Button variant="primary" icon={<Send className="size-4" />} disabled={save.pending || !s.lesson?.canEdit || slot.isFetching || !!slot.error || conflicts.length > 0 || shouldCheck && (check.isFetching || !!check.error)} onClick={() => submit(true)} title={conflicts.length ? "Còn xung đột — không thể công bố" : undefined}>Công bố</Button>}
         </>}>
         <div className="space-y-4">
           <ErrorSummary errors={errors} labels={{ date: "Ngày", period: "Tiết", teacher: "Giáo viên", subject: "Môn", room: "Phòng", reason: "Lý do", form: "Biểu mẫu" }} />
           <div className="grid gap-3 sm:grid-cols-2">
             <div data-field="date"><DateField label="Ngày áp dụng" required value={date} min={today} onChange={(v) => { setDate(v); setErrors({}); }} error={errors.date} helper={date ? fmtDateLong(date) : undefined} /></div>
             <div data-field="period"><SelectField label="Tiết" required value={String(period)} onChange={(e) => { setPeriod(Number(e.target.value)); setErrors({}); }} error={errors.period}
-              options={PERIODS.map((p) => ({ value: String(p.period), label: `Tiết ${p.period} (${p.start}–${p.end})` }))} /></div>
+              options={[...PERIODS.map((p) => ({ value: String(p.period), label: `Tiết ${p.period} (${p.start}–${p.end})` })),...(!PERIODS.some(p => p.period === period) ? [{value:String(period),label:`Tiết ${period}${s?.start ? ` (${s.start}–${s.end})` : ""}`}] : [])]} /></div>
           </div>
           <div className="rounded-xl border border-line bg-[#f7fbff] px-4 py-3 text-sm">
             <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Tiết hiện tại (đã công bố)</p>
@@ -100,6 +102,7 @@ function Inner({ schoolId, target, today, onClose }: { schoolId: string; target:
           <div aria-live="polite">
             {kind === "cancel" ? <Callout tone="info" icon={<Info />}>Tiết sẽ hiển thị “Nghỉ tiết” trong lịch lớp và lịch phụ huynh sau khi công bố.</Callout>
               : check.isFetching ? <Skeleton className="h-12" />
+              : shouldCheck && check.error ? <Callout tone="danger">Không kiểm tra được xung đột: {check.error.message}</Callout>
               : conflicts.length ? <Callout tone="danger" icon={<AlertTriangle />} title="Phát hiện xung đột">{<ul className="list-disc pl-5">{conflicts.map((c, i) => <li key={i}>{c.message}</li>)}</ul>}<p className="mt-1">Có thể lưu nháp để xử lý sau; không công bố được khi còn xung đột.</p></Callout>
               : (needTeacher && teacherId) || (needRoom && roomId) ? <Callout tone="success" icon={<CheckCircle2 />}>Không có xung đột giáo viên/phòng ở tiết này.</Callout> : null}
           </div>

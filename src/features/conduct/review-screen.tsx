@@ -19,11 +19,11 @@ import type { RecordView } from "./record-form";
 
 /** CL08 — review & lock: checks, pending records (bulk), duplicate pairs, preview of the table that would be published. */
 export function ReviewScreen() {
-  const { schoolId, yearId, classId, can } = useClassroom();
+  const { schoolId, yearId, classId } = useClassroom();
   const { query, weeks, week, setWeek } = useWeeks();
   const wid = week?.id;
-  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
-  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && (can("conduct.review") || can("conduct.record")) });
+  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
+  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
   return (
     <div className="page">
       <ClassHeader title="Rà soát và chốt tuần" subtitle="Xử lý ghi nhận chờ rà soát và bản trùng, xem trước bảng sẽ công bố rồi chốt / công bố theo quyền" crumbs={[{ label: "Thi đua", href: `/classroom/${schoolId}/${yearId}/${classId}/conduct` }, { label: "Rà soát và chốt" }]} />
@@ -34,8 +34,10 @@ export function ReviewScreen() {
             {week ? <WeekSelect weeks={weeks} week={week} onChange={setWeek} className="flex-[1_1_320px]" /> : <Skeleton className="h-10 w-80" />}
             {week && <PeriodBadge status={week.status} />}
           </Card>
-          <QueryState query={sum} skeleton="detail">
+          <QueryState query={rec} skeleton="detail">
+            {(d) => !d.ruleSet ? <Card><EmptyState title="Chưa có nội quy ban hành cho tuần này" description="Nhà trường cần ban hành bộ nội quy thi đua trước khi rà soát và chốt." /></Card> : <QueryState query={sum} skeleton="detail">
             {(s) => !s.summaryAvailable?<Card className="p-5"><Callout tone="neutral">Bạn không có quyền rà soát bảng điểm cả lớp.</Callout></Card>:rec.error?<Card><ErrorState error={rec.error} onRetry={()=>rec.refetch()} /></Card>:<ReviewBody s={s} records={rec.data?.records ?? []} loadingRecords={rec.isLoading} />}
+            </QueryState>}
           </QueryState>
         </>
       )}

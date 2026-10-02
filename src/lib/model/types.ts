@@ -575,6 +575,9 @@ export interface Activity {
   createdBy: ID;
   createdAt: ISODateTime;
   version: number;
+  dataVersion?: number;
+  publicationId?: string | null;
+  canPublish?: boolean;
 }
 
 export type SubmissionStatus = "not_received" | "received" | "pending_review" | "approved" | "needs_supplement";
@@ -601,6 +604,7 @@ export interface Evidence {
   status: "pending" | "approved" | "rejected" | "supplement";
   reviewNote?: string;
   sharedWithParent: boolean;
+  version?: number;
 }
 
 export type FileShare = "internal" | "class_parents" | "student_parent";
@@ -614,11 +618,12 @@ export interface FileAsset {
   mime: string;
   size: number;
   /** Seed files render from a synthetic generator; uploads keep a Blob in IndexedDB. */
-  source: { kind: "synthetic"; pattern: string } | { kind: "blob"; blobKey: string };
+  source: { kind: "synthetic"; pattern: string } | { kind: "blob"; blobKey: string } | { kind: "staff_api"; schoolId: string; fileId: string; owner: {assertCurrent: () => void} };
+  version?: number;
   ownerId: ID;
   share: FileShare;
   category: "evidence" | "document" | "announcement" | "report";
-  status: "active" | "archived" | "revoked";
+  status: "active" | "archived" | "revoked" | "processing" | "rejected";
   createdAt: ISODateTime;
 }
 

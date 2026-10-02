@@ -16,6 +16,7 @@ export const TASK_KIND_LABEL: Record<string, string> = {
   conduct: "Thi đua",
   evidence: "Minh chứng",
   announcement: "Thông báo",
+  groups: "Phân tổ",
 };
 
 /** The button label of a task depends on what the task opens. */
@@ -48,7 +49,7 @@ export function feedIcon(action: string) {
 }
 
 /** R05 top class card: illustration, class name, role badges, size and motto. */
-export function ClassHeroCard({ href, name, roles, size, motto, homeroom }: { href: string; name: string; roles: string[]; size: number; motto?: string; homeroom: boolean }) {
+export function ClassHeroCard({ href, name, roles, size, motto, homeroom }: { href: string; name: string; roles: string[]; size: number | null; motto?: string; homeroom: boolean }) {
   return (
     <Link href={href} className="card group flex min-w-0 items-center gap-4 bg-gradient-to-r from-[#eef6ff] via-white to-white p-4 hover:border-[#9cc7f5]">
       <span className="flex size-[96px] flex-none items-end justify-center overflow-hidden rounded-full bg-[#dcebff] sm:size-[112px]" aria-hidden>
@@ -59,7 +60,7 @@ export function ClassHeroCard({ href, name, roles, size, motto, homeroom }: { hr
           <span className="text-[28px] font-extrabold leading-none text-ink">{name}</span>
           {roles.map((r) => <span key={r} className={clsx("rounded-full px-3 py-1 text-[13px] font-semibold", homeroom && r === "Chủ nhiệm" ? "bg-primary-soft text-primary-strong" : "bg-primary-light text-primary-strong")}>{r}</span>)}
         </span>
-        <span className="mt-2 flex items-center gap-1.5 text-[13.5px] text-body"><Users className="size-4 text-primary" aria-hidden />Sĩ số: <b className="text-ink">{size} học sinh</b></span>
+        <span className="mt-2 flex items-center gap-1.5 text-[13.5px] text-body"><Users className="size-4 text-primary" aria-hidden />Sĩ số: <b className="text-ink">{size === null ? "Chưa có quyền xem" : `${size} học sinh`}</b></span>
         {motto && <span className="quote mt-1 block text-[15px] sm:truncate">“{motto}”</span>}
       </span>
       <span className="flex size-10 flex-none items-center justify-center rounded-full border border-line bg-white text-primary shadow-sm group-hover:bg-primary-light" aria-hidden><ChevronRight className="size-5" /></span>

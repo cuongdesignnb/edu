@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight, BarChart3, BookX, CalendarCheck, Filter, Info, ListChecks, Trophy, UserRound } from "lucide-react";
 import { reportsRepo } from "@/lib/repositories";
 import { activitiesExtraRepo } from "@/lib/repositories";
-import { useCommand, useRepo } from "@/lib/query/hooks";
+import { useCtx, useRepo } from "@/lib/query/hooks";
 import { addDays, mondayOf } from "@/lib/calendar";
 import { fmtDate } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
@@ -18,10 +18,6 @@ import { DeniedState, EmptyState, ErrorState, QueryState, Skeleton } from "@/com
 
 const ICONS: Record<string, ReactNode> = { attendance: <CalendarCheck className="size-6" />, conduct: <Trophy className="size-6" />, activities: <ListChecks className="size-6" />, student: <UserRound className="size-6" /> };
 const TONES: Record<string, string> = { attendance: "tone-green", conduct: "tone-amber", activities: "tone-purple", student: "tone-blue" };
-
-function slugFile(s: string) {
-  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
-}
 
 /** CL25 — class report catalog (subject teachers see fewer reports, decided by the repository). */
 export function ClassReportsPage() {
@@ -86,6 +82,7 @@ type Catalog = Awaited<ReturnType<typeof activitiesExtraRepo.classReportCatalog>
 
 function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog; initialStudent: string }) {
   const { schoolId, yearId, classId, header } = useClassroom();
+  const ctx = useCtx();
   const today = cat.today;
   const [weekId, setWeekId] = useState(cat.weeks.find((w) => w.endDate < today)?.id ?? cat.weeks[0]?.id ?? "");
   const [from, setFrom] = useState(mondayOf(today));
@@ -100,8 +97,6 @@ function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog;
   }, [type, weekId, from, to, studentId]);
   const ready = type !== "student" || !!studentId;
   const q = useRepo(["class-report", classId, type, params], (ctx) => reportsRepo.classReport(ctx, schoolId, yearId, classId, type, params), { enabled: ready });
-  const record = useCommand((ctx, format: "csv" | "xlsx" | "print", rowCount: number, title: string, fileName: string) =>
-    reportsRepo.recordExport(ctx, schoolId, { title, reportType: `class-${type}`, format, params: Object.fromEntries(Object.entries(params).filter(([, v]) => !!v)) as Record<string, string>, fileName, rowCount, classId }), { silentError: true });
   const fileBase = q.data ? `${header.class.name} ${q.data.title} ${q.data.periodLabel}` : type;
   return (
     <div className="space-y-5">
@@ -122,11 +117,7 @@ function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog;
       {!ready ? <div className="card"><EmptyState compact icon={<UserRound className="size-6" />} title="Chọn học sinh để tạo báo cáo cá nhân" /></div>
         : q.isLoading ? <div className="space-y-3"><div className="grid grid-cols-2 gap-3 xl:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-[14px]" />)}</div><Skeleton className="h-72 rounded-[14px]" /></div>
         : q.error ? <div className="card"><ErrorState error={q.error} onRetry={() => q.refetch()} /></div>
-        : q.data && <ReportViewer data={q.data} fileBase={fileBase} canExport={cat.canExport} onExported={(format, rowCount) => {
-          if (!cat.canExport) return;
-          const ext = format === "print" ? "pdf" : format;
-          void record.run(format, rowCount, `Lớp ${header.class.name} — ${q.data!.title} — ${q.data!.periodLabel}`, `${slugFile(fileBase)}.${ext}`);
-        }} />}
+        : q.data && <ReportViewer data={q.data} fileBase={fileBase} canExport={cat.canExport} onExport={(format) => reportsRepo.exportReport(ctx, schoolId, q.data!, format)} />}
     </div>
   );
 }

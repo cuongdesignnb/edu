@@ -6,9 +6,9 @@ import {Permissions,grantAllows,type Grant} from '../../common/permissions';
 import {Problem,notFound,validation} from '../../common/problem';
 import {canonical} from '../../common/commands';
 import type {ReportData,ReportRow,ReportColumn} from './report-render';
-export interface ReportInput {reportType:string;yearId?:string;classId?:string;studentId?:string;gradeId?:string;weekId?:string;from?:string;to?:string;dataSource?:string;scope?:'SCHOOL'|'CLASS'}
+export interface ReportInput {reportType:string;yearId?:string;classId?:string;studentId?:string;studentIds?:string[];gradeId?:string;weekId?:string;from?:string;to?:string;dataSource?:string;scope?:'SCHOOL'|'CLASS'}
 export interface ReportContext {schoolId:string;userId:string;input:Required<Pick<ReportInput,'reportType'|'yearId'|'from'|'to'|'dataSource'>>&ReportInput;school:Row;year:Row;cls?:Row;grants:Grant[];today:string;fingerprint:string;bindings:unknown[]}
-const titles:Record<string,string>={attendance:'Chuyên cần',conduct:'Thi đua theo tuần',activities:'Hoạt động và minh chứng','class-progress':'Tiến độ vận hành lớp','parent-access':'Sử dụng link tra cứu',student:'Báo cáo cá nhân'};
+const titles:Record<string,string>={attendance:'Chuyên cần',conduct:'Thi đua theo tuần',activities:'Hoạt động và minh chứng','class-progress':'Tiến độ vận hành lớp','parent-access':'Sử dụng link tra cứu',student:'Báo cáo cá nhân','student-directory':'Danh sách học sinh được chọn'};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const contextSql=`filters AS (SELECT $6::date AS from_date,$7::date AS to_date,$8::uuid AS student_id,$9::uuid AS user_id,$10::uuid AS week_id),g AS (SELECT * FROM jsonb_to_recordset($2::jsonb) AS x(scope_type text,class_id uuid,subject_id uuid,starts_on date,ends_on date,actions text[])),
  base AS (SELECT c.* FROM app.classes c WHERE c.school_id=$1 AND c.year_id=$3::uuid AND ($4::uuid IS NULL OR c.id=$4::uuid) AND ($5::uuid IS NULL OR c.grade_level_id=$5::uuid))`;
@@ -20,7 +20,9 @@ export async function reportContext(tx:Transaction,policy:Permissions,schoolId:s
   if(!school)notFound();
   const cls=input.classId?await getResource(tx,resource('class'),schoolId,input.classId):undefined;
   if(input.scope==='CLASS'&&!cls)validation('classId','Bản xuất chi tiết lớp cần lớp cụ thể');
-  const access=await policy.require(tx,{userId},exporting?'report.read+report.export':'report.read',{schoolId,...(cls?{classId:String(cls.id)}:{}),allowSubject:!!cls&&['attendance','activities'].includes(input.reportType)});
+  const directory=input.reportType==='student-directory';if(directory&&(cls||input.scope==='CLASS'||!Array.isArray(input.studentIds)||!input.studentIds.length||input.studentIds.length>5000||input.studentIds.some(id=>!uuid.test(id))||new Set(input.studentIds).size!==input.studentIds.length))validation('studentIds','Chọn danh sách học sinh hợp lệ của trường');
+  if(!directory&&input.studentIds!==undefined)validation('studentIds','Báo cáo này không hỗ trợ danh sách học sinh');
+  const access=await policy.require(tx,{userId},directory?(exporting?'report.read+student.read+report.export':'report.read+student.read'):exporting?'report.read+report.export':'report.read',{schoolId,...(cls?{classId:String(cls.id)}:{}),allowSubject:!!cls&&['attendance','activities'].includes(input.reportType)});
   if(input.reportType==='student'&&(!cls||!input.studentId))validation('studentId','Chọn một học sinh của lớp');
   const yearId=input.yearId??cls?.year_id as string|undefined;
   const year=yearId?await getResource(tx,resource('year'),schoolId,yearId):await one<Row>(tx,"SELECT * FROM app.academic_years WHERE school_id=$1 AND status='ACTIVE' ORDER BY starts_on DESC,id LIMIT 1",[schoolId]);
@@ -30,9 +32,10 @@ export async function reportContext(tx:Transaction,policy:Permissions,schoolId:s
   const from=input.from??String(year.starts_on),to=input.to??String(year.ends_on);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(from)||!/^\d{4}-\d{2}-\d{2}$/.test(to)||!Number.isFinite(Date.parse(from))||!Number.isFinite(Date.parse(to))||new Date(from).toISOString().slice(0,10)!==from||new Date(to).toISOString().slice(0,10)!==to||from>=to||from<String(year.starts_on)||to>String(year.ends_on))validation('from','Khoảng ngày phải thuộc năm học; ngày kết thúc loại trừ');
   if(input.studentId){if(!cls)validation('classId','Báo cáo học sinh cần lớp cụ thể');if(!await one(tx,"SELECT id FROM app.enrollments WHERE school_id=$1 AND student_id=$2 AND class_id=$3 AND status<>'CANCELLED' AND daterange(starts_on,ends_on,'[)')&&daterange($4,$5,'[)')",[schoolId,input.studentId,cls.id,from,to]))notFound();}
-  const source=input.dataSource??'LIVE_INTERNAL';if(!['LIVE_INTERNAL','PUBLISHED_SNAPSHOT'].includes(source)||source==='PUBLISHED_SNAPSHOT'&&['class-progress','parent-access','student'].includes(input.reportType))validation('dataSource','Loại báo cáo không có nguồn công bố tương ứng');
-  const relevant=access.grants.filter(g=>['report.read','report.export'].some(a=>grantAllows(g,a,{schoolId,...(g.class_id?{classId:g.class_id}:{}),allowSubject:!!cls&&['attendance','activities'].includes(input.reportType)},access.today)))
-    .map(g=>({id:g.id,role_id:g.role_id,assignment_id:g.assignment_id,scope_type:g.scope_type,class_id:g.class_id,subject_id:g.subject_id,starts_on:g.starts_on,ends_on:g.ends_on,actions:g.actions.filter(a=>['report.read','report.export'].includes(a)).sort()})).sort((a,b)=>a.id.localeCompare(b.id));
+  const source=input.dataSource??'LIVE_INTERNAL';if(!['LIVE_INTERNAL','PUBLISHED_SNAPSHOT'].includes(source)||source==='PUBLISHED_SNAPSHOT'&&['class-progress','parent-access','student','student-directory'].includes(input.reportType))validation('dataSource','Loại báo cáo không có nguồn công bố tương ứng');
+  const relevantActions=directory?['report.read','report.export','student.read','guardian.read']:['report.read','report.export'];
+  const relevant=access.grants.filter(g=>relevantActions.some(a=>grantAllows(g,a,{schoolId,...(g.class_id?{classId:g.class_id}:{}),allowSubject:!!cls&&['attendance','activities'].includes(input.reportType)},access.today)))
+    .map(g=>({id:g.id,role_id:g.role_id,assignment_id:g.assignment_id,scope_type:g.scope_type,class_id:g.class_id,subject_id:g.subject_id,starts_on:g.starts_on,ends_on:g.ends_on,actions:g.actions.filter(a=>relevantActions.includes(a)).sort()})).sort((a,b)=>a.id.localeCompare(b.id));
   const fingerprint=crypto.createHash('sha256').update(canonical(relevant)).digest('hex');
   return {schoolId,userId,school,year,cls,grants:access.grants,today:access.today,fingerprint,input:{...input,yearId:String(year.id),from,to,dataSource:source},bindings:[schoolId,JSON.stringify(relevant),year.id,cls?.id??null,input.gradeId??null,from,to,input.studentId??null,userId,input.weekId??null]};
 }
@@ -126,7 +129,17 @@ async function operations(tx:Transaction,ctx:ReportContext){
 }
 export async function buildReport(tx:Transaction,ctx:ReportContext):Promise<ReportData>{
   let result:Awaited<ReturnType<typeof attendance>>;
-  if(ctx.input.reportType==='student'){
+  if(ctx.input.reportType==='student-directory'){
+    const seeGuardians=ctx.grants.some(g=>grantAllows(g,'guardian.read',{schoolId:ctx.schoolId},ctx.today)),ref=String((await one<{d:string}>(tx,'SELECT greatest($1::date,least($2::date,$3::date-1))::text AS d',[ctx.year.starts_on,ctx.today,ctx.year.ends_on]))!.d);
+    const rows=(await tx.query<Row>(`SELECT s.id,s.full_name,s.student_code,s.date_of_birth,s.gender,s.status,c.name AS class_name,
+      CASE WHEN $5::boolean THEN (SELECT count(*)::int FROM app.guardian_relationships gr WHERE gr.school_id=s.school_id AND gr.student_id=s.id AND gr.status<>'REVOKED' AND gr.revoked_at IS NULL) END AS guardians,
+      CASE WHEN $5::boolean THEN (SELECT count(*)::int FROM app.guardian_relationships gr WHERE gr.school_id=s.school_id AND gr.student_id=s.id AND gr.status='VERIFIED' AND gr.revoked_at IS NULL) END AS verified
+      FROM app.students s JOIN LATERAL(SELECT e.class_id FROM app.enrollments e WHERE e.school_id=s.school_id AND e.student_id=s.id AND e.year_id=$3 AND e.status<>'CANCELLED' AND e.starts_on<=$4::date ORDER BY (e.ends_on IS NULL OR e.ends_on>$4::date) DESC,e.starts_on DESC,e.id LIMIT 1) e ON true
+      JOIN app.classes c ON c.school_id=s.school_id AND c.id=e.class_id WHERE s.school_id=$1 AND s.id=ANY($2::uuid[]) ORDER BY s.full_name,s.id LIMIT 5001`,[ctx.schoolId,ctx.input.studentIds,ctx.year.id,ref,seeGuardians])).rows;
+    if(rows.length!==ctx.input.studentIds!.length)notFound();
+    const cols=columns([['code','Mã HS'],['dateOfBirth','Ngày sinh'],['gender','Giới tính'],['className','Lớp'],['status','Trạng thái'],['guardians','Số người giám hộ'],['verified','Đã xác minh']]);
+    result={rows:rows.map(r=>({label:String(r.full_name),studentId:String(r.id),values:{code:r.student_code,dateOfBirth:r.date_of_birth,gender:r.gender,className:r.class_name,status:r.status,guardians:r.guardians,verified:r.verified}})),columns:cols,pins:[]};
+  }else if(ctx.input.reportType==='student'){
     const a=await attendance(tx,ctx),c=await published(tx,ctx,'conduct'),act=await activities(tx,ctx);
     result={rows:[...a.rows.map(r=>({...r,values:{section:'Chuyên cần',item:`${ctx.input.from} - ${ctx.input.to}`,result:r.values}})),...c.rows.map(r=>({...r,values:{section:'Thi đua đã công bố',item:r.values.periodLabel,result:r.values}})),...act.rows.map(r=>({...r,values:{section:'Hoạt động',item:r.values.activity,result:r.values.status}}))],columns:columns([['section','Mục'],['item','Nội dung'],['result','Kết quả']]),pins:c.pins};
   }else if(ctx.input.dataSource==='PUBLISHED_SNAPSHOT')result=await published(tx,ctx);
