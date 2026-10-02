@@ -246,7 +246,7 @@ services:
     cap_drop: *id003
     security_opt: *id004
   web:
-    image: ${WEB_IMAGE:-edumanage-web}:${IMAGE_TAG:-local}
+    image: ${WEB_IMAGE:-edumanage-web}:${WEB_IMAGE_TAG:-${IMAGE_TAG:-local}}
     build:
       context: .
       dockerfile: deploy/Dockerfile.web

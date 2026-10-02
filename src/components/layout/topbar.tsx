@@ -9,6 +9,8 @@ import { searchRepo, sessionRepo, type SearchHit } from "@/lib/repositories";
 import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/dialog";
 import { Brand } from "./brand";
+import { fmtRelative } from "@/lib/formatters";
+import { demoNowISO } from "@/lib/calendar";
 
 /** C008 — scoped search dialog (Ctrl/⌘ + K). Parents have no system-wide search. */
 export function GlobalSearch({ schoolId, placeholder }: { schoolId?: string; placeholder: string }) {
@@ -99,13 +101,47 @@ export function UserMenu({ roleLabel }: { roleLabel: string }) {
 
 export function NotificationBell({ schoolId }: { schoolId?: string }) {
   const { actor } = useSession();
-  const q = useRepo(["notifications", "unread", schoolId], (ctx) => sessionRepo.notifications(ctx, { unreadOnly: true }), { enabled: actor.kind === "staff" });
-  const n = q.data?.length ?? 0;
+  const q = useRepo(["notifications", "center"], (ctx) => sessionRepo.notifications(ctx), { enabled: actor.kind === "staff", schoolId });
+  const rows = q.error ? [] : q.data ?? [];
+  const n = rows.filter(row => !row.readAt).length;
   return (
-    <Link href="/notifications" className="relative rounded-xl p-2.5 text-[#46618a] hover:bg-[#f2f7fe]" aria-label={n ? `Thông báo, ${n} chưa đọc` : "Thông báo"}>
-      <Bell className="size-[22px]" aria-hidden />
-      {n > 0 && <span className="absolute right-1 top-1 flex min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold leading-[18px] text-white">{n}</span>}
-    </Link>
+    <M.Root modal={false}>
+      <M.Trigger asChild>
+        <button type="button" className="relative rounded-xl p-2.5 text-[#46618a] hover:bg-[#f2f7fe]" aria-label={n ? `Thông báo, ${n} chưa đọc` : "Thông báo"}>
+          <Bell className="size-[22px]" aria-hidden />
+          {n > 0 && <span className="absolute right-1 top-1 flex min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold leading-[18px] text-white">{n > 99 ? "99+" : n}</span>}
+        </button>
+      </M.Trigger>
+      <M.Portal>
+        <M.Content aria-label="Thông báo gần đây" align="end" sideOffset={8} collisionPadding={12}
+          className="z-[70] flex max-h-[var(--radix-dropdown-menu-content-available-height)] w-[min(380px,calc(100vw-24px))] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-[var(--shadow-pop)]">
+          <M.Label className="flex items-center justify-between border-b border-line px-4 py-3 text-[15px] font-bold text-ink">
+            Thông báo <span className="text-xs font-medium text-muted">{n ? `${n} chưa đọc` : "Gần đây"}</span>
+          </M.Label>
+          <div className="min-h-0 overflow-y-auto p-1.5">
+            {q.isLoading ? <p role="status" className="px-3 py-5 text-center text-sm text-muted">Đang tải thông báo…</p>
+              : q.error ? <div className="px-3 py-4"><p role="alert" className="text-sm text-danger-text">Chưa tải được thông báo.</p><M.Item onSelect={event => { event.preventDefault(); void q.refetch(); }} className="mt-2 cursor-pointer rounded-lg px-3 py-2 text-sm font-semibold text-primary-strong outline-none data-[highlighted]:bg-primary-light">Thử lại</M.Item></div>
+              : rows.length === 0 ? <p className="px-3 py-5 text-center text-sm text-muted">{actor.kind === "platform" ? "Thông báo của trường dành cho nhân sự nhà trường." : "Chưa có thông báo."}</p>
+              : rows.slice(0, 6).map(row => (
+                <M.Item key={row.id} asChild>
+                  <Link href={`/notifications/${encodeURIComponent(row.id)}`} prefetch={false}
+                    className="flex items-start gap-3 rounded-lg px-3 py-3 outline-none data-[highlighted]:bg-primary-light">
+                    <span className="icon-tile icon-tile-sm !size-9 flex-none tone-blue" aria-hidden><Bell className="size-4" /></span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block text-sm text-ink ${row.readAt ? "font-medium" : "font-bold"}`}>{row.title}</span>
+                      <span className="mt-0.5 line-clamp-2 block text-xs text-body">{row.body}</span>
+                      <span className="mt-1 block text-[11px] text-muted">{row.schoolName} · {fmtRelative(row.createdAt, demoNowISO())}</span>
+                    </span>
+                    {!row.readAt && <span className="mt-1.5 size-2 flex-none rounded-full bg-primary" aria-label="Chưa đọc" />}
+                  </Link>
+                </M.Item>
+              ))}
+          </div>
+          <M.Separator className="h-px flex-none bg-line" />
+          <M.Item asChild><Link href="/notifications" className="flex flex-none items-center justify-center px-4 py-3 text-sm font-semibold text-primary-strong outline-none data-[highlighted]:bg-primary-light">Xem thêm</Link></M.Item>
+        </M.Content>
+      </M.Portal>
+    </M.Root>
   );
 }
 

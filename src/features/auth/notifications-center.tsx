@@ -1,8 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { Bell, CheckCheck, ClipboardList, Megaphone, ShieldCheck, Settings2, ExternalLink, Lock, Check } from "lucide-react";
+import { Bell, CheckCheck, ClipboardList, Megaphone, ShieldCheck, Settings2, Lock, Check } from "lucide-react";
 import type { StaffNotification } from "@/lib/model/types";
 import { sessionRepo } from "@/lib/repositories";
 import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
@@ -16,8 +15,6 @@ import { InlineSelect } from "@/components/ui/form";
 import { Tabs, TabPanel } from "@/components/ui/tabs";
 import { FilterBar, Pagination, useClientList } from "@/components/data/table";
 import { EmptyState, EmptyFiltered, ErrorState, Skeleton } from "@/components/ui/states";
-
-type Row = StaffNotification & { schoolName: string; accessible: boolean };
 
 const KIND: Record<StaffNotification["kind"], { label: string; icon: React.ReactNode; tone: string }> = {
   task: { label: "Việc cần xử lý", icon: <ClipboardList className="size-4" />, tone: "tone-blue" },
@@ -41,7 +38,6 @@ export function NotificationsCenter() {
 }
 
 function StaffNotifications() {
-  const router = useRouter();
   const [tab, setTab] = useState("all");
   const [school, setSchool] = useState("");
   const [kind, setKind] = useState("");
@@ -54,12 +50,6 @@ function StaffNotifications() {
   const mark = useCommand((ctx, ids: string[] | "all") => sessionRepo.markNotificationsRead(ctx, ids), { success: (n) => n ? `Đã đánh dấu ${n} thông báo là đã đọc` : "Không có thông báo chưa đọc" });
   const unreadVisible = filtered.filter((n) => !n.readAt).map((n) => n.id);
   const filtersActive = !!(list.q || school || kind);
-
-  const open = async (n: Row) => {
-    if (!n.accessible || !n.href) return;
-    if (!n.readAt) await mark.run([n.id]);
-    router.push(n.href);
-  };
 
   return (
     <div className="page">
@@ -88,7 +78,7 @@ function StaffNotifications() {
                     <span className={clsx("icon-tile icon-tile-sm !size-10 flex-none", KIND[n.kind].tone)} aria-hidden>{KIND[n.kind].icon}</span>
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-2">
-                        <span className={clsx("text-[14.5px] text-ink", !n.readAt ? "font-bold" : "font-medium")}>{n.title}</span>
+                        <ButtonLink href={`/notifications/${encodeURIComponent(n.id)}`} variant="ghost" size="sm" className={clsx("!h-auto !justify-start !p-0 text-left !text-ink hover:underline", !n.readAt ? "font-bold" : "font-medium")}>{n.title}</ButtonLink>
                         {!n.readAt && <Badge tone="info">Chưa đọc</Badge>}
                       </p>
                       <p className="mt-0.5 text-[13.5px] text-body">{n.body}</p>
@@ -97,8 +87,7 @@ function StaffNotifications() {
                     </div>
                     <div className="flex flex-none gap-1.5 max-sm:w-full max-sm:justify-end">
                       {!n.readAt && <Button size="sm" variant="ghost" icon={<Check className="size-4" />} onClick={() => mark.run([n.id])} disabled={mark.pending} aria-label={`Đánh dấu đã đọc: ${n.title}`}>Đã đọc</Button>}
-                      {n.href && <Button size="sm" variant="secondary" icon={n.accessible ? <ExternalLink className="size-4" /> : <Lock className="size-4" />} disabled={!n.accessible || mark.pending} onClick={() => open(n)}
-                        title={n.accessible ? undefined : "Không còn quyền truy cập mục này"}>Mở</Button>}
+                      <ButtonLink href={`/notifications/${encodeURIComponent(n.id)}`} size="sm" variant="secondary">Xem chi tiết</ButtonLink>
                     </div>
                   </li>
                 ))}
