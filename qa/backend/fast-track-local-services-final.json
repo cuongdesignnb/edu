@@ -1,0 +1,65 @@
+[
+  {
+    "Name": "edumanage_local-api-1",
+    "Service": "api",
+    "State": "running",
+    "Health": "healthy",
+    "ExitCode": 0,
+    "Image": "edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f",
+    "Ports": "3001/tcp"
+  },
+  {
+    "Name": "edumanage_local-gateway-1",
+    "Service": "gateway",
+    "State": "running",
+    "Health": "healthy",
+    "ExitCode": 0,
+    "Image": "nginx@sha256:ef8676b33d681f272ba429b27658bdd7e640963279714c96bddf1dc76307f7b6",
+    "Ports": "127.0.0.1:18763->8080/tcp"
+  },
+  {
+    "Name": "edumanage_local-migrate-1",
+    "Service": "migrate",
+    "State": "exited",
+    "Health": "",
+    "ExitCode": 0,
+    "Image": "edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f",
+    "Ports": ""
+  },
+  {
+    "Name": "edumanage_local-postgres-1",
+    "Service": "postgres",
+    "State": "running",
+    "Health": "healthy",
+    "ExitCode": 0,
+    "Image": "postgres:17.11-bookworm",
+    "Ports": "5432/tcp"
+  },
+  {
+    "Name": "edumanage_local-storage-init-1",
+    "Service": "storage-init",
+    "State": "exited",
+    "Health": "",
+    "ExitCode": 0,
+    "Image": "edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f",
+    "Ports": ""
+  },
+  {
+    "Name": "edumanage_local-web-1",
+    "Service": "web",
+    "State": "running",
+    "Health": "healthy",
+    "ExitCode": 0,
+    "Image": "edumanage-web:9173e978e66132781e2706af1b8f7f159e37b80f",
+    "Ports": "3000/tcp"
+  },
+  {
+    "Name": "edumanage_local-worker-1",
+    "Service": "worker",
+    "State": "running",
+    "Health": "healthy",
+    "ExitCode": 0,
+    "Image": "edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f",
+    "Ports": "3001/tcp"
+  }
+]

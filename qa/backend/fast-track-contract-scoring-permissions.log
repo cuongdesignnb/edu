@@ -1,0 +1,14 @@
+ Container edumanage_backend_test-runner-run-c38612f3da17 Creating 
+ Container edumanage_backend_test-runner-run-c38612f3da17 Created 
+✔ FAST native conduct commands require displayed source and declare their real creation and acknowledgement statuses (11.403808ms)
+✔ tests/unit/permissions.test.mjs (173.052681ms)
+✔ tests/unit/scoring.test.mjs (45.375366ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 183.678336
+EXIT_CODE=0

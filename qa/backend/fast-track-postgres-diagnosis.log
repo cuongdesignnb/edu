@@ -1,0 +1,5 @@
+ Container edumanage_backend_test-runner-run-49726ae29054 Creating 
+ Container edumanage_backend_test-runner-run-49726ae29054 Created 
+{"event":"diagnosis","name":"error","code":"42P01","message":"relation \"app.timetables\" does not exist"}
+
+EXIT_CODE=1

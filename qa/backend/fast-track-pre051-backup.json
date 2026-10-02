@@ -1,0 +1,8 @@
+{
+  "At": "2026-10-02T06:32:06.5698820+07:00",
+  "Database": "edumanage_test_local",
+  "Format": "pg_dump custom",
+  "Backup": "D:\\Edu\\.secrets\\edumanage-fast-track-pre051.dump",
+  "Bytes": 1841999195,
+  "Status": "BACKUP_CREATED_NOT_RESTORE_TESTED"
+}

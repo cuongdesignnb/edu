@@ -1,0 +1,27 @@
+{
+  "previousOperations": 379,
+  "currentOperations": 394,
+  "addedOperations": [
+    "createConductWorkspaceRecord",
+    "decideConductWorkspaceAdjustment",
+    "getConductAdjustmentWorkspace",
+    "getConductWorkspaceRecords",
+    "getConductWorkspaceSnapshot",
+    "getConductWorkspaceSnapshots",
+    "getConductWorkspaceSummary",
+    "getConductWorkspaceWeeks",
+    "lockConductWorkspaceWeek",
+    "publishConductWorkspaceAdjustment",
+    "publishConductWorkspaceWeek",
+    "reopenConductWorkspaceWeek",
+    "requestConductWorkspaceAdjustment",
+    "reviewConductWorkspaceRecords",
+    "updateConductWorkspaceRecord"
+  ],
+  "removedOperations": [],
+  "changedExistingOperations": [],
+  "previousSchemas": 539,
+  "currentSchemas": 571,
+  "removedSchemas": [],
+  "changedExistingSchemas": []
+}

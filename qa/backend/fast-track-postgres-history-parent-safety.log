@@ -1,0 +1,35 @@
+ Container edumanage_backend_test-runner-run-dfeca9c3e591 Creating 
+ Container edumanage_backend_test-runner-run-dfeca9c3e591 Created 
+✔ BE06 revoked membership is checked during an existing session and B stays independent (513.862202ms)
+✔ B4 private parent links expose only published child projections, preserve staff cookies and bind the active tab context (1464.354063ms)
+✖ FAST T6 manual adjustment replaces bounded points atomically while old publication stays frozen (814.573189ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3595.70662
+
+✖ failing tests:
+
+test at tests/integration/foundation.test.mjs:3948:1
+✖ FAST T6 manual adjustment replaces bounded points atomically while old publication stays frozen (814.573189ms)
+  AssertionError [ERR_ASSERTION]: {"type":"urn:edumanage:problem:validation_error","title":"VALIDATION_ERROR","status":422,"code":"VALIDATION_ERROR","requestId":"16a630c5-b822-47d1-954e-651511c6d72e","fieldErrors":[{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"required","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"},{"path":"/","code":"additionalProperties","message":"Dữ liệu không hợp lệ"}]}
+  
+  422 !== 200
+  
+      at TestContext.<anonymous> (file:///srv/api/tests/integration/foundation.test.mjs:3956:234)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 422,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+EXIT_CODE=1

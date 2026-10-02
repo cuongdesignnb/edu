@@ -1,0 +1,53 @@
+{
+  "kind": "REAL_BROWSER_REAL_HTTP_POSTGRES_NO_INTERCEPTION",
+  "evidence": [
+    {
+      "stage": "staff_login",
+      "at": "2026-10-01T23:57:55.803Z"
+    },
+    {
+      "stage": "assigned_class_real_roster",
+      "at": "2026-10-01T23:57:56.383Z"
+    },
+    {
+      "stage": "record_saved_postgres",
+      "at": "2026-10-01T23:57:56.681Z"
+    },
+    {
+      "stage": "T7_real_duplicate_409_not_saved_no_mock",
+      "at": "2026-10-01T23:57:56.899Z"
+    },
+    {
+      "stage": "review_approved",
+      "at": "2026-10-01T23:57:57.371Z"
+    },
+    {
+      "stage": "locked_unpublished",
+      "at": "2026-10-01T23:57:57.589Z"
+    },
+    {
+      "stage": "published_snapshot",
+      "at": "2026-10-01T23:57:57.822Z"
+    },
+    {
+      "stage": "parent_private_link_sees_102",
+      "at": "2026-10-01T23:57:58.528Z"
+    },
+    {
+      "stage": "adjustment_submitted",
+      "at": "2026-10-01T23:57:59.204Z"
+    },
+    {
+      "stage": "approved_parent_keeps_baseline",
+      "at": "2026-10-01T23:57:59.790Z"
+    },
+    {
+      "stage": "republished_parent_sees_100",
+      "at": "2026-10-01T23:58:00.157Z"
+    },
+    {
+      "stage": "immutable_history_verified",
+      "at": "2026-10-01T23:58:00.270Z"
+    }
+  ]
+}

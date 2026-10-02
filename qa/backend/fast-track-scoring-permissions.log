@@ -1,0 +1,18 @@
+ Container edumanage_backend_test-runner-run-0d1b53c178d4 Creating 
+ Container edumanage_backend_test-runner-run-0d1b53c178d4 Created 
+✔ grant action and class scope stay together (0.87674ms)
+✔ subject grants never authorize management without explicit subject policy (0.133805ms)
+✔ end dates are exclusive and assignment is mandatory for default teacher grants (0.151278ms)
+✔ a custom class grant authorizes only its delegated action and class (0.128074ms)
+✔ a delegated grant cannot outlive an expiring authority, including an unbounded target or future start (0.155295ms)
+✔ decimal scoring preserves fractional sums, negative penalties, explicit base, clamps and threshold boundaries (2.391547ms)
+✔ fixed deltas reject overrides and manual deltas require bounds (0.298088ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 180.174706
+EXIT_CODE=0

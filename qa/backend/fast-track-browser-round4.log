@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+
+(node:36788) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+HTTP 401 /api/v1/me/context
+STAGE staff_login
+STAGE assigned_class_real_roster
+STAGE record_saved_postgres
+HTTP 409 /api/v1/schools/263ee6c7-d3c2-5356-af6f-d4a7b4124e74/years/71287cf6-c093-540a-a350-33d267ef09d6/classes/981db6df-c39d-4624-9fc4-c78ac4dfd37d/conduct-workspace/weeks/b8d23896-aed1-561f-aaca-a841670e9dde/records/create
+STAGE T7_real_duplicate_409_not_saved_no_mock
+STAGE review_approved
+STAGE locked_unpublished
+STAGE published_snapshot
+STAGE parent_private_link_sees_102
+STAGE adjustment_submitted
+STAGE approved_parent_keeps_baseline
+HTTP 422 /api/v1/schools/263ee6c7-d3c2-5356-af6f-d4a7b4124e74/years/71287cf6-c093-540a-a350-33d267ef09d6/classes/981db6df-c39d-4624-9fc4-c78ac4dfd37d/conduct-workspace/adjustments/a8456d80-3dc4-40c0-b50e-b819e69dc24f/publish
+  x  1 tests\fast-track\postgres-conduct.spec.ts:6:5 › T1 T4 T6 real PostgreSQL browser conduct record review lock publish parent adjustment republish (19.1s)
+
+
+  1) tests\fast-track\postgres-conduct.spec.ts:6:5 › T1 T4 T6 real PostgreSQL browser conduct record review lock publish parent adjustment republish 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      21 |  await page.goto(base+'/adjustments');await page.getByTestId('btn-new-adjustment').click();const dialog=page.getByRole('dialog');await dialog.getByLabel(/^Bản đang công bố/).selectOption(published.snapshot.id);await dialog.getByRole('combobox',{name:/Học sinh/}).click();await page.getByRole('option',{name:/Học sinh walkthrough local/}).first().click();await dialog.getByLabel(/^Ghi nhận trong bản công bố/).selectOption(records.records[0].id);await dialog.getByLabel(/Lý do điều chỉnh/).fill('Bỏ ghi nhận sai sau chốt để kiểm tra công bố lại');await page.getByTestId('adj-submit').click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.getByTestId('adj-approve')).toBeVisible();stage('adjustment_submitted');
+      22 |  await parent.reload();await expect(parent.getByText(/^102(?:[.,]00)?$/).first()).toBeVisible();await page.getByTestId('adj-approve').click();await page.getByRole('dialog').getByRole('button',{name:/Duyệt/,exact:true}).click();await expect(page.getByTestId('adj-publish')).toBeVisible();await parent.reload();await expect(parent.getByText(/^102(?:[.,]00)?$/).first()).toBeVisible();stage('approved_parent_keeps_baseline');
+    > 23 |  await page.getByTestId('adj-publish').click();await page.getByRole('dialog').getByRole('button',{name:/Công bố lại/,exact:true}).click();await expect.poll(async()=> (await api(wp+'/summary')).snapshot.versionNo).toBe(2);await parent.reload();await expect(parent.getByText(/^100(?:[.,]00)?$/).first()).toBeVisible();stage('republished_parent_sees_100');
+         |                                                                                                                                                                                                                      ^
+      24 |  const final=await api(wp+'/summary'),old=await api(workspace+`/snapshots/${published.snapshot.id}`);expect(old.snapshot.status).toBe('superseded');expect(old.snapshot.rows).toEqual(published.snapshot.rows);fs.writeFileSync('qa/backend/fast-track-browser-persistence-source.json',JSON.stringify({schoolId:school,yearId:year,classId:cls,weekId:week.id,studentId:student,recordId:records.records[0].id,oldPublicationId:published.snapshot.id,currentPublicationId:final.snapshot.id,currentVersion:2,total:100},null,2));await parent.screenshot({path:'qa/backend/fast-track-parent-adjusted.png',fullPage:true});stage('immutable_history_verified');await parentContext.close();
+      25 | });
+      26 |
+        at D:\Edu\tests\fast-track\postgres-conduct.spec.ts:23:214
+
+    Error Context: qa\backend\fast-track-browser-artifacts\postgres-conduct-T1-T4-T6--91106-parent-adjustment-republish\error-context.md
+
+  1 failed
+    tests\fast-track\postgres-conduct.spec.ts:6:5 › T1 T4 T6 real PostgreSQL browser conduct record review lock publish parent adjustment republish 
+EXIT_CODE=1

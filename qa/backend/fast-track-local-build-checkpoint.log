@@ -1,0 +1,301 @@
+ Image edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f Building 
+ Image edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f Building 
+ Image edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f Building 
+ Image edumanage-web:9173e978e66132781e2706af1b8f7f159e37b80f Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.31kB done
+#1 DONE 0.0s
+
+#2 [web internal] load build definition from Dockerfile.web
+#2 transferring dockerfile: 946B done
+#2 DONE 0.0s
+
+#3 [api internal] load build definition from Dockerfile.api
+#3 transferring dockerfile: 848B done
+#3 DONE 0.0s
+
+#4 [api] resolve image config for docker-image://docker.io/docker/dockerfile:1
+#4 DONE 1.3s
+
+#5 [web] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#5 CACHED
+
+#6 [web internal] load metadata for docker.io/library/node@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
+#6 DONE 0.0s
+
+#7 [web internal] load .dockerignore
+#7 transferring context: 125B done
+#7 DONE 0.0s
+
+#8 [web deps 1/4] FROM docker.io/library/node@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
+#8 DONE 0.0s
+
+#9 [api internal] load build context
+#9 transferring context: 836.19kB 0.1s done
+#9 DONE 0.1s
+
+#10 [api deps 2/4] WORKDIR /srv/api
+#10 CACHED
+
+#11 [api deps 3/4] COPY backend/package.json backend/package-lock.json ./
+#11 CACHED
+
+#12 [api deps 4/4] RUN npm ci
+#12 CACHED
+
+#13 [web internal] load build context
+#13 transferring context: 1.36MB 0.2s done
+#13 DONE 0.2s
+
+#14 [web deps 2/4] WORKDIR /srv/web
+#14 CACHED
+
+#15 [web deps 3/4] COPY package.json package-lock.json ./
+#15 CACHED
+
+#16 [web deps 4/4] RUN npm ci
+#16 CACHED
+
+#17 [api build 1/2] COPY backend/ ./
+#17 DONE 0.2s
+
+#18 [web build 1/2] COPY . .
+#18 DONE 1.3s
+
+#19 [api build 2/2] RUN npm run build && npm prune --omit=dev
+#19 0.288 
+#19 0.288 > edumanage-backend@0.1.0 build
+#19 0.288 > tsc -p tsconfig.json
+#19 0.288 
+#19 ...
+
+#20 [web build 2/2] RUN npm run build
+#20 0.309 
+#20 0.309 > edumanage-frontend@0.1.0 build
+#20 0.309 > next build
+#20 0.309 
+#20 0.601 ▲ Next.js 16.3.6 (Turbopack)
+#20 0.634 ✓ Running next.config.ts took 32ms
+#20 0.645 
+#20 0.681   Creating an optimized production build ...
+#20 8.283 ✓ Compiled successfully in 7.4s
+#20 8.288   Running TypeScript ...
+#20 ...
+
+#19 [api build 2/2] RUN npm run build && npm prune --omit=dev
+#19 16.59 
+#19 16.59 removed 108 packages, and audited 250 packages in 10s
+#19 16.59 
+#19 16.59 61 packages are looking for funding
+#19 16.59   run `npm fund` for details
+#19 16.59 
+#19 16.59 found 0 vulnerabilities
+#19 16.59 npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+#19 16.59 npm warn install-scripts   argon2@0.45.1 (install: node-gyp rebuild)
+#19 16.59 npm warn install-scripts
+#19 16.59 npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+#19 DONE 16.6s
+
+#20 [web build 2/2] RUN npm run build
+#20 ...
+
+#21 [api runner 3/7] COPY --from=build --chown=node:node /srv/api/package.json ./package.json
+#21 CACHED
+
+#22 [api runner 4/7] COPY --from=build --chown=node:node /srv/api/node_modules ./node_modules
+#22 CACHED
+
+#23 [api runner 5/7] COPY --from=build --chown=node:node /srv/api/dist ./dist
+#23 CACHED
+
+#24 [api runner 6/7] COPY --from=build --chown=node:node /srv/api/migrations ./migrations
+#24 CACHED
+
+#25 [api runner 7/7] COPY --from=build --chown=node:node /srv/api/assets ./assets
+#25 CACHED
+
+#26 [api] exporting to image
+#26 exporting layers done
+#26 writing image sha256:5b695a93801b215947af9c6d4e845984dc0db509280427ab98a6a1e8a96ec716 done
+#26 naming to docker.io/library/edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f 0.0s done
+#26 DONE 0.0s
+
+#27 [api] resolving provenance for metadata file
+#27 DONE 0.0s
+
+#20 [web build 2/2] RUN npm run build
+#20 27.39   Finished TypeScript in 19.1s ...
+#20 27.40   Collecting page data using 7 workers ...
+#20 28.11   Generating static pages using 7 workers (0/36) ...
+#20 28.35   Generating static pages using 7 workers (9/36) 
+#20 28.45   Generating static pages using 7 workers (18/36) 
+#20 28.46   Generating static pages using 7 workers (27/36) 
+#20 28.49 ✓ Generating static pages using 7 workers (36/36) in 383ms
+#20 28.50   Finalizing page optimization ...
+#20 29.26 
+#20 29.26 Route (app)
+#20 29.26 ┌ ○ /
+#20 29.26 ├ ○ /_not-found
+#20 29.26 ├ ○ /access-denied
+#20 29.26 ├ ○ /account
+#20 29.26 ├ ○ /account/no-access
+#20 29.26 ├ ○ /account/profile
+#20 29.26 ├ ○ /account/security
+#20 29.26 ├ ○ /choose-school
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/[activityId]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/[activityId]/edit
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/activities/new
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/adjustments
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/[announcementId]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/[announcementId]/edit
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/announcements/new
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/attendance
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/attendance/weekly
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct/review
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/conduct/weekly
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/duties
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/evidence
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/files
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/groups
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/publications
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/publications/[publicationId]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/reports
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/reports/[reportType]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/rules
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/seating
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/students
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/students/[studentId]
+#20 29.26 ├ ƒ /classroom/[schoolId]/[yearId]/[classId]/timetable
+#20 29.26 ├ ○ /demo
+#20 29.26 ├ ○ /forgot-password
+#20 29.26 ├ ○ /help
+#20 29.26 ├ ○ /icon.svg
+#20 29.26 ├ ƒ /invitations/[inviteId]
+#20 29.26 ├ ○ /login
+#20 29.26 ├ ○ /maintenance
+#20 29.26 ├ ○ /notifications
+#20 29.26 ├ ƒ /p/[schoolSlug]
+#20 29.26 ├ ƒ /p/[schoolSlug]/access
+#20 29.26 ├ ƒ /p/[schoolSlug]/access-unavailable
+#20 29.26 ├ ƒ /p/[schoolSlug]/activities
+#20 29.26 ├ ƒ /p/[schoolSlug]/activities/[activityId]
+#20 29.26 ├ ƒ /p/[schoolSlug]/announcements
+#20 29.26 ├ ƒ /p/[schoolSlug]/announcements/[announcementId]
+#20 29.26 ├ ƒ /p/[schoolSlug]/attendance
+#20 29.26 ├ ƒ /p/[schoolSlug]/conduct
+#20 29.26 ├ ƒ /p/[schoolSlug]/conduct/[periodId]
+#20 29.26 ├ ƒ /p/[schoolSlug]/documents
+#20 29.26 ├ ƒ /p/[schoolSlug]/duties
+#20 29.26 ├ ƒ /p/[schoolSlug]/overview
+#20 29.26 ├ ƒ /p/[schoolSlug]/teachers
+#20 29.26 ├ ƒ /p/[schoolSlug]/timetable
+#20 29.26 ├ ○ /platform
+#20 29.26 ├ ○ /platform/audit
+#20 29.26 ├ ○ /platform/operations
+#20 29.26 ├ ○ /platform/schools
+#20 29.26 ├ ƒ /platform/schools/[schoolId]
+#20 29.26 ├ ƒ /platform/schools/[schoolId]/admins
+#20 29.26 ├ ○ /platform/schools/new
+#20 29.26 ├ ○ /platform/settings
+#20 29.26 ├ ○ /platform/support
+#20 29.26 ├ ○ /platform/support-access
+#20 29.26 ├ ƒ /platform/support/[ticketId]
+#20 29.26 ├ ○ /preview
+#20 29.26 ├ ○ /preview/checklist
+#20 29.26 ├ ○ /preview/components
+#20 29.26 ├ ○ /preview/crash
+#20 29.26 ├ ○ /preview/flows
+#20 29.26 ├ ○ /preview/references
+#20 29.26 ├ ○ /preview/sitemap
+#20 29.26 ├ ○ /preview/states
+#20 29.26 ├ ○ /privacy
+#20 29.26 ├ ○ /reset-password
+#20 29.26 ├ ○ /school-suspended
+#20 29.26 ├ ƒ /school/[schoolId]
+#20 29.26 ├ ƒ /school/[schoolId]/academic-years
+#20 29.26 ├ ƒ /school/[schoolId]/academic-years/[yearId]
+#20 29.26 ├ ƒ /school/[schoolId]/academic-years/[yearId]/calendar
+#20 29.26 ├ ƒ /school/[schoolId]/academic-years/[yearId]/rollover
+#20 29.26 ├ ƒ /school/[schoolId]/academic-years/new
+#20 29.26 ├ ƒ /school/[schoolId]/announcements
+#20 29.26 ├ ƒ /school/[schoolId]/announcements/[announcementId]
+#20 29.26 ├ ƒ /school/[schoolId]/announcements/[announcementId]/edit
+#20 29.26 ├ ƒ /school/[schoolId]/announcements/new
+#20 29.26 ├ ƒ /school/[schoolId]/assignments
+#20 29.26 ├ ƒ /school/[schoolId]/audit
+#20 29.26 ├ ƒ /school/[schoolId]/classes
+#20 29.26 ├ ƒ /school/[schoolId]/conduct-rules
+#20 29.26 ├ ƒ /school/[schoolId]/conduct-rules/[ruleSetId]
+#20 29.26 ├ ƒ /school/[schoolId]/dictionaries
+#20 29.26 ├ ƒ /school/[schoolId]/exports
+#20 29.26 ├ ƒ /school/[schoolId]/guardians
+#20 29.26 ├ ƒ /school/[schoolId]/guardians/[guardianId]
+#20 29.26 ├ ƒ /school/[schoolId]/handovers
+#20 29.26 ├ ƒ /school/[schoolId]/imports
+#20 29.26 ├ ƒ /school/[schoolId]/imports/[importId]
+#20 29.26 ├ ƒ /school/[schoolId]/imports/new
+#20 29.26 ├ ƒ /school/[schoolId]/parent-access
+#20 29.26 ├ ƒ /school/[schoolId]/parent-access/[accessId]
+#20 29.26 ├ ƒ /school/[schoolId]/parent-access/[accessId]/preview/[[...view]]
+#20 29.26 ├ ƒ /school/[schoolId]/profile
+#20 29.26 ├ ƒ /school/[schoolId]/publication-policy
+#20 29.26 ├ ƒ /school/[schoolId]/publications
+#20 29.26 ├ ƒ /school/[schoolId]/reports
+#20 29.26 ├ ƒ /school/[schoolId]/reports/[reportType]
+#20 29.26 ├ ƒ /school/[schoolId]/roles
+#20 29.26 ├ ƒ /school/[schoolId]/roles/[roleId]
+#20 29.26 ├ ƒ /school/[schoolId]/settings
+#20 29.26 ├ ƒ /school/[schoolId]/students
+#20 29.26 ├ ƒ /school/[schoolId]/students/[studentId]
+#20 29.26 ├ ƒ /school/[schoolId]/students/[studentId]/edit
+#20 29.26 ├ ƒ /school/[schoolId]/students/new
+#20 29.26 ├ ƒ /school/[schoolId]/support
+#20 29.26 ├ ƒ /school/[schoolId]/support/[ticketId]
+#20 29.26 ├ ƒ /school/[schoolId]/teachers
+#20 29.26 ├ ƒ /school/[schoolId]/teachers/[memberId]
+#20 29.26 ├ ƒ /school/[schoolId]/timetable
+#20 29.26 ├ ƒ /school/[schoolId]/transfers
+#20 29.26 ├ ƒ /schools/[schoolSlug]
+#20 29.26 ├ ƒ /schools/[schoolSlug]/announcements/[announcementId]
+#20 29.26 ├ ƒ /teacher/[schoolId]
+#20 29.26 ├ ƒ /teacher/[schoolId]/announcements
+#20 29.26 ├ ƒ /teacher/[schoolId]/classes
+#20 29.26 ├ ƒ /teacher/[schoolId]/reports
+#20 29.26 ├ ƒ /teacher/[schoolId]/schedule
+#20 29.26 ├ ƒ /teacher/[schoolId]/tasks
+#20 29.26 └ ○ /terms
+#20 29.26 
+#20 29.26 
+#20 29.26 ○  (Static)   prerendered as static content
+#20 29.26 ƒ  (Dynamic)  server-rendered on demand
+#20 29.26 
+#20 DONE 29.5s
+
+#14 [web deps 2/4] WORKDIR /srv/web
+#14 CACHED
+
+#28 [web runner 3/5] COPY --from=build --chown=node:node /srv/web/.next/standalone ./
+#28 DONE 0.8s
+
+#29 [web runner 4/5] COPY --from=build --chown=node:node /srv/web/.next/static ./.next/static
+#29 DONE 0.1s
+
+#30 [web runner 5/5] COPY --from=build --chown=node:node /srv/web/public ./public
+#30 DONE 0.4s
+
+#31 [web] exporting to image
+#31 exporting layers
+#31 exporting layers 0.4s done
+#31 writing image sha256:6a54ef5fc574e63f5ada5703c576a4ab6f8fdf19bfb78c6e023597b2a271b3a1 done
+#31 naming to docker.io/library/edumanage-web:9173e978e66132781e2706af1b8f7f159e37b80f done
+#31 DONE 0.4s
+
+#32 [web] resolving provenance for metadata file
+#32 DONE 0.0s
+ Image edumanage-api:9173e978e66132781e2706af1b8f7f159e37b80f Built 
+ Image edumanage-web:9173e978e66132781e2706af1b8f7f159e37b80f Built 
+EXIT_CODE=0

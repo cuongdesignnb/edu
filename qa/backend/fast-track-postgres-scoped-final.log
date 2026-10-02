@@ -1,0 +1,21 @@
+ Container edumanage_backend_test-runner-run-204e9783c407 Creating 
+ Container edumanage_backend_test-runner-run-204e9783c407 Created 
+✔ BE01 migration replay is a no-op, mismatch fails and metadata remains intact (606.449514ms)
+✔ B6 password/session commands use actual cookies, reject bad passwords and revoke every session after change (404.461888ms)
+✔ B2 staff delegation stays within the ceiling, custom class scope and immediate revocation (1086.634755ms)
+✔ B4 section/download rights, reissue, relationship revocation and foreign UUIDs are checked on each new parent request (758.276452ms)
+✔ FAST T1 T4 T5 native conduct persists review lock publish with immutable private explanations and source races (810.925597ms)
+✔ FAST T5 T6 native reopen preserves withdrawn history and independent lock publication rights (592.158539ms)
+✔ FAST T3 T6 private parent retains baseline until native adjustment publish then revocation invalidates current session (804.822099ms)
+✔ FAST T2 dated SUBJECT record visibility does not borrow review or foreign class authority and cached retry reauthorizes (716.125951ms)
+✔ FAST T4 T8 bounded manual edits duplicate distinction and atomic review reject void preserve scoring (653.961221ms)
+✔ FAST T6 manual adjustment replaces bounded points atomically while old publication stays frozen (663.223486ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7848.57722
+EXIT_CODE=0

@@ -1,0 +1,12 @@
+
+ RUN  v3.2.7 D:/Edu
+
+ ✓ tests/unit/api-conduct-workspace.test.ts (2 tests) 18ms
+ ✓ tests/unit/api-conduct-rules.test.ts (7 tests) 24ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  06:54:30
+   Duration  829ms (transform 397ms, setup 67ms, collect 636ms, tests 41ms, environment 0ms, prepare 192ms)
+
+EXIT_CODE=0

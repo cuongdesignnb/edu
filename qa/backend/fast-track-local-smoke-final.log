@@ -1,0 +1,7 @@
+PASS /gateway-health
+PASS /api/v1/health/live
+PASS /api/v1/health/ready
+PASS /login
+PASS anonymous /me/context=401
+SMOKE_BASIC=PASS; AUTHENTICATED_E2E=NOT_RUN_BY_THIS_SCRIPT
+EXIT_CODE=0

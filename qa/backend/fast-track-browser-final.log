@@ -1,0 +1,23 @@
+
+Running 1 test using 1 worker
+
+(node:29100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+HTTP 401 /api/v1/me/context
+STAGE staff_login
+STAGE assigned_class_real_roster
+STAGE record_saved_postgres
+HTTP 409 /api/v1/schools/263ee6c7-d3c2-5356-af6f-d4a7b4124e74/years/71287cf6-c093-540a-a350-33d267ef09d6/classes/8a91d832-2a46-4cde-a95c-9f14cc5dc13f/conduct-workspace/weeks/b8d23896-aed1-561f-aaca-a841670e9dde/records/create
+STAGE T7_real_duplicate_409_not_saved_no_mock
+STAGE review_approved
+STAGE locked_unpublished
+STAGE published_snapshot
+STAGE parent_private_link_sees_102
+STAGE adjustment_submitted
+STAGE approved_parent_keeps_baseline
+STAGE republished_parent_sees_100
+STAGE immutable_history_verified
+  ok 1 tests\fast-track\postgres-conduct.spec.ts:6:5 › T1 T4 T6 real PostgreSQL browser conduct record review lock publish parent adjustment republish (5.2s)
+
+  1 passed (6.1s)
+EXIT_CODE=0
