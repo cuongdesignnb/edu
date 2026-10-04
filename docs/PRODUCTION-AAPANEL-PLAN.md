@@ -21,7 +21,7 @@ API/Web dùng version tag để pull, kiểm OCI source SHA/version/repository r
 - `.production/current.json`, release history và last-operation journal chứa source SHA, image digests, migration revision/checksums, backup path, deployed_at; chúng được gitignore. Không gán image build-check chưa commit cho commit release mới.
 - Rollback image dùng receipt cũ và chỉ khi schema/checksums bằng target. Schema khác trả `ROLLBACK_BLOCKED_NEEDS_RESTORE`, không down SQL/restore âm thầm.
 
-## Kiểm tra package trước bàn giao
+## Kiểm tra package trước bàn giao ban đầu (lịch sử)
 
 Static Compose với input tổng hợp: PASS; không phải domain/SMTP thật. Nginx Docker gateway và fragment aaPanel: `nginx -t` PASS; vhost SSL thực tế vẫn phải test trên server. Workflow: YAML + actionlint PASS, GHCR publication chưa chạy. API Docker build/typecheck và 30 backend unit tests trên dist build mới: PASS. Frontend build/typecheck, ESLint file đổi, 24 core adapter/seating + 18 authentication unit tests: PASS. Frontend được build lại sau yêu cầu dọn demo, không dùng build cũ để chứng minh source mới. Browser Edge thực với Docker local: 2/2 PASS cho login/help không thông tin demo, URL demo/preview/preview-assets 404, login staff và workspace theo quyền, logout xóa trường đăng nhập. Script failure gates: 12/12 PASS trên Linux, bao gồm giữ lock qua update/exec.
 
@@ -29,19 +29,13 @@ Stack Docker riêng `edumanage_package_check_20261004`: health PASS, migration t
 
 Không chạy lại audit CMS hoặc thêm tính năng. Theo yêu cầu bổ sung, frontend bỏ email mẫu ở login, banner demo trong auth frame, nhánh chuyển trang demo và nội dung trợ giúp demo; gateway chặn cả preview assets. Login thật và chọn workspace theo quyền được giữ lại, kiểm tra bằng browser riêng. Các luồng Guided Tour, notification dropdown, classroom seating đã test ở các commit trước; backend/migrations không đổi. Production acceptance của chúng không được gán PASS chỉ từ build/static check.
 
-## Input và trạng thái chưa có
+## Cập nhật optional SMTP — v1.0.1
 
-| Input | Trạng thái |
-| --- | --- |
-| DOMAIN + DNS A/AAAA + certificate | Chưa cung cấp |
-| APP_PORT | Đề xuất 18763; host preflight phải xác nhận trống |
-| ADMIN_EMAIL | Chưa cung cấp; không dùng Git author email làm admin mặc định |
-| SMTP_HOST/PORT/TLS/USER/MAIL_FROM | Chưa cung cấp; password nhập file/prompt trên host |
-| Linux server/SSH hoặc phiên vận hành được phép | Chưa cung cấp |
-| GHCR visibility và server read access | Chưa xác minh, image chưa được publish |
-| Release tag | Đề xuất v1.0.0, chưa được cho phép push |
+Base source `02ceb3ca24d0b8fee27617ef5461db3136974d5e`. SMTP chuyển vào `/platform/settings`, permission `platform.mail.manage` chỉ cấp PLATFORM_OPERATOR; migration tiến mới `057-platform-mail-settings.sql`, FORCE RLS cho app/worker/migrator, parent bị deny. Credential AES-256-GCM với HKDF domain riêng từ mail_key; DTO chỉ có passwordConfigured, audit metadata, error SMTP chuẩn hóa.
 
-Package được hoàn thiện để có thể triển khai sau khi input/release sẵn sàng. Quyết định hiện tại: **BLOCKED_MISSING_INPUT**; không deploy production, không push tag. Không yêu cầu credential để hoàn thiện phần package có thể kiểm tra ở máy hiện tại.
+Preflight/startup không yêu cầu SMTP, giữ HTTPS/secure cookie/connected/keys/RLS/image/source/volume/backup/health gates. Compose không còn smtp_password, không truyền SMTP env cho API/worker. Worker disabled không claim/thay attempts/FAILED; enabled đọc DB mỗi lượt, TLS verify, gửi thư còn hiệu lực; test SMTP đi qua outbox và worker thật, giới hạn tốc độ. mail_key vẫn bắt buộc.
+
+Server được chủ hệ thống mô tả đã có domain chunhiemso.com, port18763, env/secrets, DNS/SSL/proxy và checkout v1.0.0, chưa có production containers/volumes. Agent không SSH và không xác minh host thật. Email admin thật nhập khi bootstrap trên server; SMTP có thể bổ sung sau, không phải blocker deploy. Release mới chỉ READY sau source push/tag/Actions/GHCR đều PASS. Kết quả kiểm tra focused: [OPTIONAL-SMTP-RESULT.md](OPTIONAL-SMTP-RESULT.md). Lệnh cấp tốc: [OWNER-SSH-FIRST-DEPLOY.md](OWNER-SSH-FIRST-DEPLOY.md).
 
 ## Acceptance trên server sau first deploy
 

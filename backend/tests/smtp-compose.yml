@@ -1,0 +1,7 @@
+services:
+  runner:
+    environment:
+      NODE_EXTRA_CA_CERTS: /srv/api/.runtime/smtp-test.crt
+      SMTP_TEST_CERT_ROOT: /srv/api/.runtime
+    volumes:
+      - ./.runtime:/srv/api/.runtime:ro

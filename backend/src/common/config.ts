@@ -37,8 +37,7 @@ export function runtimeConfig() {
   const secure = process.env.COOKIE_SECURE === 'true';
   if (process.env.DATA_MODE !== 'connected') throw new Error('Backend requires connected mode');
   if (process.env.UI_LAB_ENABLED === 'true' || process.env.ACADEMIC_RESULTS_ENABLED === 'true') throw new Error('Unsupported module enabled');
-  if (appEnv === 'production' && (url.protocol !== 'https:' || !secure || process.env.MAIL_MODE !== 'smtp'
-    || !process.env.SMTP_HOST || !secret('SMTP_PASSWORD', false))) throw new Error('Unsafe production configuration');
+  if (appEnv === 'production' && (url.protocol !== 'https:' || !secure)) throw new Error('Unsafe production configuration');
   return {
     appEnv, appUrl: url.origin, secure, key: Buffer.from(key, 'hex'), mailKey: Buffer.from(mailKey, 'hex'),
     staffCookie: secure ? '__Host-edu_staff' : 'edu_staff',

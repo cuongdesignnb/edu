@@ -10,12 +10,13 @@ import { InvitationsService } from '../identity/invitations.service';
 import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolView,platformAuditResource,operationResource,adminResource,platformSettings,platformAudit,auditView,operationView,type OperationalCounts } from './platform-data';
 import {operationsOverview} from './operations-overview';
 import {schoolCountSortResource} from './platform-data';
+import {mailSettings,mailSettingsDto,saveMailSettings,queueMailTest} from './platform-mail';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class PlatformService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformOperationsOverview','getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformMailSettings','updatePlatformMailSettings','testPlatformMailSettings','getPlatformOperationsOverview','getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async school(tx:Transaction,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${lock?' FOR UPDATE':''}`,[id]);if(!row)notFound();return row;}
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async inviteAdmin(tx:Transaction,c:RequestContext,schoolId:string,input:Record<string,unknown>){
@@ -46,6 +47,9 @@ export class PlatformService {
     const op=c.operation.id,schoolId=c.params.schoolId;
     const authorize=async(tx:Transaction)=>{await this.policy.platform(c.principal!,c.operation.permission,tx);if(op==='createSchool'&&c.body.firstAdmin)await this.policy.platform(c.principal!,'platform.admins.manage',tx);if(schoolId)await this.school(tx,schoolId);};
     const work=async(tx:Transaction):Promise<Result>=>{
+      if(op==='getPlatformMailSettings')return {data:mailSettingsDto(await mailSettings(tx))};
+      if(op==='updatePlatformMailSettings')return {data:await saveMailSettings(tx,c)};
+      if(op==='testPlatformMailSettings')return {data:await queueMailTest(tx,c)};
       if(op==='getPlatformOverview')return this.overview(tx,c);
       if(op==='getPlatformAuditOptions'){
         const actors=(await tx.query<{id:string;name:string}>("SELECT DISTINCT e.actor_id AS id,coalesce(u.display_name,'Hệ thống') AS name FROM platform.audit_events e LEFT JOIN identity.users u ON u.id=e.actor_id WHERE e.actor_id IS NOT NULL ORDER BY name,id LIMIT 1001")).rows;if(actors.length>1000)throw new Problem(422,'AUDIT_CHOICE_LIMIT');return {data:{actors}};

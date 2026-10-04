@@ -83,13 +83,13 @@ with p.deployment_lock():
             sec.mkdir(parents=True, mode=0o700)
             for name in prod.SECRETS:
                 f = sec / name
-                f.write_text(('synthetic-smtp' if name == 'smtp_password' else 'a' * 64) + '\n')
+                f.write_text('a' * 64 + '\n')
                 os.chmod(f, 0o444)
             env = root / '.env.production'
             e = dict(COMPOSE_PROJECT_NAME=prod.PROJECT, POSTGRES_DB=prod.PROJECT, APP_ENV='production',
                      COOKIE_SECURE='true', MAIL_MODE='smtp', APP_URL='https://school.example.net', APP_PORT='18763',
-                     SMTP_HOST='smtp.example.net', SMTP_USER='sender@example.net', MAIL_FROM='sender@example.net',
-                     SMTP_PORT='587', SMTP_SECURE='false', SOURCE_SHA='a'*40, SECRET_DIR='./.secrets/production',
+                     SMTP_HOST='', SMTP_USER='', MAIL_FROM='', SMTP_PASSWORD='',
+                     SMTP_PORT='', SMTP_SECURE='', SOURCE_SHA='a'*40, SECRET_DIR='./.secrets/production',
                      API_IMAGE_REF='ghcr.io/cuongdesignnb/edu-api:v1.0.0', WEB_IMAGE_REF='ghcr.io/cuongdesignnb/edu-web:v1.0.0',
                      POSTGRES_IMAGE='postgres@sha256:'+'b'*64, NGINX_IMAGE='nginx@sha256:'+'c'*64)
             env.write_text(''.join(k+'='+v+'\n' for k,v in e.items()))
@@ -101,6 +101,15 @@ with p.deployment_lock():
                 stack = prod.Stack()
                 stack.dc = lambda *args: json.dumps(config).encode()
                 prod.config_check(stack, host=False)
+                self.assertNotIn('smtp_password', prod.SECRETS)
+                for key in tuple(stack.values):
+                    if key.startswith('SMTP_') or key in ('MAIL_MODE', 'MAIL_FROM'):
+                        stack.values.pop(key)
+                prod.config_check(stack, host=False)
+                stack.values['COOKIE_SECURE']='false'
+                with self.assertRaisesRegex(prod.Blocked,'UNSAFE_COOKIE_MODE'):
+                    prod.config_check(stack, host=False)
+                stack.values['COOKIE_SECURE']='true'
                 config['services']['api']['ports'] = [{'target':3001,'published':'3001'}]
                 with self.assertRaisesRegex(prod.Blocked,'PUBLIC_DATABASE_API_WEB_PORT'):
                     prod.config_check(stack, host=False)
@@ -204,6 +213,28 @@ with p.deployment_lock():
 
     def test_migration_failure_blocks_app_update(self):
         self.release_failure('migrate')
+
+    def test_first_release_completes_without_smtp_or_existing_volume(self):
+        # Exercise the release orchestration; real Compose/config and container health
+        # are verified separately in the isolated production package lab.
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            stack = FakeStack(root)
+            stack.values.update(MAIL_MODE='smtp', SMTP_HOST='', SMTP_USER='', MAIL_FROM='')
+            with patch.object(prod.sys, 'platform', 'linux'), patch.object(prod, 'STATE', root / '.production'), \
+                 patch.object(prod, 'verified_tag', return_value='a'*40), patch.object(prod, 'Stack', return_value=stack), \
+                 patch.object(prod, 'config_check'), patch.object(prod, 'current', return_value=None), \
+                 patch.object(prod, 'deployment_lock'), patch.object(prod, 'image_receipt', return_value='pinned-image'), \
+                 patch.object(prod.subprocess, 'run', return_value=Mock(returncode=1)), \
+                 patch.object(prod, 'migration_snapshot', return_value=[]), patch.object(prod, 'start_apps') as start, \
+                 patch.object(prod, 'smoke') as smoke, patch.object(prod, 'backup') as backup, \
+                 patch.object(prod, 'record') as record:
+                prod.release('v1.0.1')
+                backup.assert_not_called()
+                start.assert_called_once_with(stack)
+                smoke.assert_called_once_with(stack, 'a'*40)
+                record.assert_called_once()
+                self.assertEqual(sum(c[-1] == 'migrate' for c in stack.calls), 1)
 
     def test_changed_schema_blocks_rollback_before_image_switch_or_backup(self):
         with tempfile.TemporaryDirectory() as temp:

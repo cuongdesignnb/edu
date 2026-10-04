@@ -61,3 +61,22 @@ export function decryptMail(value: string): unknown {
   decipher.setAuthTag(Buffer.from(tag, 'base64url'));
   return JSON.parse(Buffer.concat([decipher.update(Buffer.from(body, 'base64url')), decipher.final()]).toString('utf8')) as unknown;
 }
+
+// Credential encryption uses a separate derived key and authenticated domain.
+// Only the worker imports the decryptor; API responses expose a boolean only.
+function smtpKey() {
+  return Buffer.from(crypto.hkdfSync('sha256',runtimeConfig().mailKey,Buffer.alloc(0),'edumanage:smtp-credential:v1',32));
+}
+export function encryptSmtpPassword(password:string) {
+  const iv=crypto.randomBytes(12),cipher=crypto.createCipheriv('aes-256-gcm',smtpKey(),iv);
+  cipher.setAAD(Buffer.from('platform:smtp:singleton:v1'));
+  const body=Buffer.concat([cipher.update(password,'utf8'),cipher.final()]);
+  return `smtp1.${iv.toString('base64url')}.${cipher.getAuthTag().toString('base64url')}.${body.toString('base64url')}`;
+}
+export function decryptSmtpPassword(value:string) {
+  const [version,iv,tag,body]=value.split('.');
+  if(version!=='smtp1'||!iv||!tag||!body)throw new Error('SMTP_CREDENTIAL_INVALID');
+  const cipher=crypto.createDecipheriv('aes-256-gcm',smtpKey(),Buffer.from(iv,'base64url'));
+  cipher.setAAD(Buffer.from('platform:smtp:singleton:v1'));cipher.setAuthTag(Buffer.from(tag,'base64url'));
+  return Buffer.concat([cipher.update(Buffer.from(body,'base64url')),cipher.final()]).toString('utf8');
+}

@@ -645,6 +645,10 @@ export interface ApiSchemas {
   "OnboardingUpdate": { "schoolId": (string) | null; "tourVersion": 1; "status": "skipped" | "completed"; };
   "OnboardingProgressResponse": { "data": ApiSchemas["OnboardingProgress"]; "requestId": string; };
   "OnboardingPreferencesResponse": { "data": ApiSchemas["OnboardingPreferences"]; "requestId": string; };
+  "PlatformMailSettings": { "enabled": boolean; "host": string; "port": number; "security": "STARTTLS" | "TLS"; "username": string; "fromEmail": string; "fromName": string; "passwordConfigured": boolean; "version": number; "updatedAt": string; "lastTestedAt": (string) | null; "lastTestStatus": "NOT_TESTED" | "PENDING" | "SENT" | "FAILED" | "CANCELLED"; "lastErrorCode": (string) | null; "configurationStatus": "UNCONFIGURED" | "DISABLED" | "ENABLED_UNVERIFIED" | "WORKING" | "ERROR"; };
+  "PlatformMailSettingsResponse": { "data": ApiSchemas["PlatformMailSettings"]; "requestId": string; };
+  "PlatformMailUpdate": { "enabled": boolean; "host": string; "port": number; "security": "STARTTLS" | "TLS"; "username": string; "fromEmail": string; "fromName": string; "expectedVersion": number; "password"?: string; "clearPassword"?: boolean; };
+  "PlatformMailTest": { "expectedVersion": number; "recipient": string; };
   "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
   "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
   "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
@@ -4871,6 +4875,36 @@ export const apiOperations = {
     "response": "OnboardingProgress",
     "list": false,
     "permission": "session",
+    "readOnly": false
+  },
+  "getPlatformMailSettings": {
+    "method": "GET",
+    "path": "/api/v1/platform/settings/mail",
+    "auth": "staff",
+    "request": null,
+    "response": "PlatformMailSettings",
+    "list": false,
+    "permission": "platform.mail.manage",
+    "readOnly": true
+  },
+  "updatePlatformMailSettings": {
+    "method": "PUT",
+    "path": "/api/v1/platform/settings/mail",
+    "auth": "staff",
+    "request": "PlatformMailUpdate",
+    "response": "PlatformMailSettings",
+    "list": false,
+    "permission": "platform.mail.manage",
+    "readOnly": false
+  },
+  "testPlatformMailSettings": {
+    "method": "POST",
+    "path": "/api/v1/platform/settings/mail/test",
+    "auth": "staff",
+    "request": "PlatformMailTest",
+    "response": "PlatformMailSettings",
+    "list": false,
+    "permission": "platform.mail.manage",
     "readOnly": false
   },
   "getImportWorkspace": {

@@ -2,30 +2,11 @@
 
 Package dành cho Linux amd64, Docker Engine + Compose V2, Python 3.10+, Bash, Git và aaPanel Nginx. Khuyến nghị VPS tối thiểu 2 vCPU/4 GB RAM, đủ dung lượng cho database, private files và backup. Chạy bằng tài khoản vận hành có quyền Docker và thư mục repo; aaPanel chỉ quản lý domain/SSL/proxy.
 
-Chưa có domain, SMTP, email admin, server credential hoặc GHCR access được xác nhận. `v1.0.0` là release **đề xuất**, chưa được push. Các lệnh dưới đây có bước nhập đúng thông tin; không chứa secret thật. Không chạy deploy trước khi tag được duyệt, Actions publish thành công và aaPanel HTTPS sẵn sàng.
+Release mới v1.0.1 bổ sung SMTP OPTIONAL. Server đang checkout v1.0.0 với env/secrets đã có dùng section **FIRST DEPLOY WITHOUT SMTP — v1.0.1** trong [OWNER-SSH-FIRST-DEPLOY.md](OWNER-SSH-FIRST-DEPLOY.md). Không tạo lại env/secrets. Các bước dưới đây chỉ dành cho host mới. Chỉ deploy sau Actions PASS, đủ API/Web image và tag/source được xác minh; v1.0.0 giữ bất biến.
 
-## 1. Chủ repo tạo release sau khi duyệt candidate
+## 1. Release và source
 
-Thực hiện trong một checkout sạch, dùng CANDIDATE_SHA chính xác từ báo cáo bàn giao. Checkout làm việc hiện tại có ảnh/báo cáo QA riêng: không xóa chúng hoặc tạo tag từ worktree bẩn. Nếu đã có thư mục `edu-release`, chọn một thư mục mới.
-
-```bash
-set -euo pipefail
-git clone --branch codex/new-machine-audit-20261002 https://github.com/cuongdesignnb/edu edu-release
-cd edu-release
-git config --local user.name cuongdesign
-git config --local user.email dinhcuongdesign@gmail.com
-read -r -p 'Candidate SHA đã duyệt (40 ký tự): ' CANDIDATE_SHA
-[[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
-git fetch origin codex/new-machine-audit-20261002 --tags
-[[ "$(git ls-remote origin refs/heads/codex/new-machine-audit-20261002 | cut -f1)" == "$CANDIDATE_SHA" ]] || exit 1
-git checkout --detach "$CANDIDATE_SHA"
-[[ -z "$(git status --porcelain)" ]] || exit 1
-git tag -a v1.0.0 "$CANDIDATE_SHA" -m 'EduManage production v1.0.0'
-# Chỉ chạy dòng push sau khi chủ repo đã duyệt việc xuất bản release này.
-git push origin v1.0.0
-```
-
-Theo dõi workflow **Publish production images** ở GitHub Actions. Cả API và Web phải thành công; xem source SHA và hai digest trong job summary. Workflow không xuất `latest`, từ chối ghi đè release đã tồn tại, và build cả hai image trước khi push. Nếu registry lỗi giữa hai lần push, review partial publication; không đưa bản thiếu một image lên server hoặc di chuyển tag đã xuất bản.
+Workflow **Publish production images** chạy khi push tag bất biến. Nó kiểm typecheck, unit, production gates và PostgreSQL/TLS SMTP integration, build cả hai image trước khi publish, không dùng latest. Source SHA và digest được kiểm trực tiếp bằng release.sh. Không move tag đã publish.
 
 ## 2. Trên server: checkout release
 
@@ -37,7 +18,7 @@ cd /www/wwwroot
 git clone https://github.com/cuongdesignnb/edu edu
 cd /www/wwwroot/edu
 git fetch --tags origin
-git checkout --detach v1.0.0
+git checkout --detach v1.0.1
 [[ -z "$(git status --porcelain)" ]] || exit 1
 docker compose version
 python3 --version
@@ -45,7 +26,7 @@ python3 --version
 
 ## 3. Tạo cấu hình bằng input thật
 
-Port mặc định đề xuất 18763. Nếu bị chiếm, chọn port khác; script không kill dịch vụ đang dùng port. SMTP port 465 cần `SMTP_SECURE=true`; 587 thường dùng `false` để STARTTLS. MAIL_FROM phải là địa chỉ gửi đã được nhà cung cấp SMTP xác nhận.
+Port mặc định đề xuất 18763. Nếu bị chiếm, chọn port khác; script không kill dịch vụ đang dùng port. SMTP optional, cấu hình sau trong `/platform/settings` bằng quản trị nền tảng. Không cần SMTP để triển khai.
 
 ```bash
 set -euo pipefail
@@ -53,20 +34,13 @@ umask 077
 read -r -p 'Domain (chỉ hostname, không https://): ' DOMAIN
 read -r -p 'Gateway port [18763]: ' APP_PORT
 APP_PORT="${APP_PORT:-18763}"
-read -r -p 'SMTP host: ' SMTP_HOST
-read -r -p 'SMTP port [587]: ' SMTP_PORT
-SMTP_PORT="${SMTP_PORT:-587}"
-read -r -p 'SMTP implicit TLS true/false [false]: ' SMTP_SECURE
-SMTP_SECURE="${SMTP_SECURE:-false}"
-read -r -p 'SMTP user: ' SMTP_USER
-read -r -p 'MAIL_FROM (email): ' MAIL_FROM
-export DOMAIN APP_PORT SMTP_HOST SMTP_PORT SMTP_SECURE SMTP_USER MAIL_FROM
+export DOMAIN APP_PORT
 python3 - <<'PY'
 import os, re, subprocess
 from pathlib import Path
 f = Path('.env.production')
 if f.exists(): raise SystemExit('Không ghi đè .env.production đang có')
-tag = 'v1.0.0'
+tag = 'v1.0.1'
 sha = subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()
 domain = os.environ['DOMAIN']
 if not re.fullmatch(r'[A-Za-z0-9.-]+',domain) or '.' not in domain:
@@ -76,8 +50,7 @@ values = dict(COMPOSE_PROJECT_NAME='edumanage_production', APP_ENV='production',
     POSTGRES_DB='edumanage_production', SECRET_DIR='./.secrets/production',
     API_IMAGE_REF='ghcr.io/cuongdesignnb/edu-api:'+tag,
     WEB_IMAGE_REF='ghcr.io/cuongdesignnb/edu-web:'+tag, SOURCE_SHA=sha,
-    COOKIE_SECURE='true', MAIL_MODE='smtp',
-    **{k:os.environ[k] for k in ('SMTP_HOST','SMTP_PORT','SMTP_SECURE','SMTP_USER','MAIL_FROM')})
+    COOKIE_SECURE='true', MAIL_MODE='database')
 template = Path('deploy/.env.production.example').read_text()
 for line in template.splitlines():
     if line.startswith(('POSTGRES_IMAGE=','NGINX_IMAGE=')):
@@ -89,10 +62,10 @@ with f.open('x') as out:
 os.chmod(f,0o600)
 PY
 python3 scripts/prepare-production-secrets.py \
-  --directory .secrets/production --confirm-new --smtp-password
+  --directory .secrets/production --confirm-new
 ```
 
-Mật khẩu SMTP nhập trong prompt ẩn, không nằm trên command line/history. Không copy `.secrets/local`, local database, account kiểm thử hoặc parent link. Generator không ghi đè secret cũ. Leaf secret là 0444 để cả UID API và PostgreSQL đọc được bind mount; thư mục host là 0700, `.env.production` là 0600. Backup keys/SMTP riêng bằng lưu trữ mã hóa; mất app/mail keys có thể làm dữ liệu mã hóa không đọc được.
+Generator tạo 7 base secrets, không yêu cầu smtp_password. Không copy `.secrets/local`, local database, account kiểm thử hoặc parent link. Generator không ghi đè secret cũ. Leaf secret là 0444 để cả UID API và PostgreSQL đọc được bind mount; thư mục host là 0700, `.env.production` là 0600. Backup database chứa credential SMTP mã hóa và keys riêng bằng lưu trữ mã hóa; mất app/mail keys có thể làm dữ liệu mã hóa không đọc được.
 
 GHCR public: không cần login. GHCR private: dùng PAT classic có `read:packages`, tài khoản được phép đọc **cả hai** package; nếu org có SSO, cấp quyền SSO cho token. Ưu tiên Docker credential helper trên server.
 
@@ -140,7 +113,7 @@ Nếu aaPanel dùng binary Nginx ở vị trí khác, dùng đúng binary trong 
 set -euo pipefail
 cd /www/wwwroot/edu
 python3 scripts/production.py preflight
-bash scripts/release.sh v1.0.0
+bash scripts/release.sh v1.0.1
 bash scripts/prod-status.sh
 ```
 

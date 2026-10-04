@@ -24,7 +24,7 @@ PROJECT = 'edumanage_production'
 STATE = ROOT / '.production'
 SERVICES = ('postgres', 'api', 'worker', 'web', 'gateway')
 SECRETS = ('db_admin_password', 'db_migrator_password', 'db_app_password',
-           'db_parent_password', 'db_worker_password', 'app_key', 'mail_key', 'smtp_password')
+           'db_parent_password', 'db_worker_password', 'app_key', 'mail_key')
 OWN_JOURNAL = None
 
 
@@ -66,7 +66,8 @@ def read_env(path):
         if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
             v = v[1:-1]
         require(not any(c in v for c in ('$','`','\n','\r')), 'ENV_INTERPOLATION_NOT_ALLOWED')
-        require(not any(w in k for w in ('PASSWORD', 'TOKEN', 'PRIVATE_KEY')), 'SECRETS_MUST_BE_FILES')
+        # Legacy v1.0.0 templates may contain an empty SMTP password. No value is accepted.
+        require((k == 'SMTP_PASSWORD' and v == '') or not any(w in k for w in ('PASSWORD', 'TOKEN', 'PRIVATE_KEY')), 'SECRETS_MUST_BE_FILES')
         values[k] = v
     return values
 
@@ -137,19 +138,13 @@ def config_check(stack, host=True, clean=True, allow_running=True):
     e = stack.values
     require(e.get('COMPOSE_PROJECT_NAME', PROJECT) == PROJECT, 'WRONG_PRODUCTION_PROJECT')
     require(e.get('POSTGRES_DB') == PROJECT and e.get('APP_ENV') == 'production', 'WRONG_PRODUCTION_DATABASE_ENV')
-    require(e.get('COOKIE_SECURE') == 'true' and e.get('MAIL_MODE') == 'smtp', 'UNSAFE_COOKIE_OR_MAIL_MODE')
+    require(e.get('COOKIE_SECURE') == 'true', 'UNSAFE_COOKIE_MODE')
     url = urlsplit(e.get('APP_URL', ''))
     require(url.scheme == 'https' and url.hostname and '.' in url.hostname and not url.username
             and not url.password and not url.port and url.path in ('', '/') and not url.query and not url.fragment
             and not url.hostname.endswith(('.invalid', '.localhost')) and 'REPLACE' not in url.hostname,
             'MISSING_REAL_HTTPS_DOMAIN')
     require(e.get('APP_PORT', '').isdigit() and 1024 <= int(e['APP_PORT']) <= 65535, 'INVALID_APP_PORT')
-    for k in ('SMTP_HOST', 'SMTP_USER', 'MAIL_FROM'):
-        require(e.get(k) and not re.search(r'REPLACE|example\.invalid|[\r\n]', e[k]), 'MISSING_' + k)
-    require(re.fullmatch(r'[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+', e['MAIL_FROM']), 'INVALID_MAIL_FROM')
-    require(e.get('SMTP_PORT', '').isdigit() and 1 <= int(e['SMTP_PORT']) <= 65535
-            and e.get('SMTP_SECURE') in ('true', 'false'), 'INVALID_SMTP_PORT_TLS')
-    require(not (e['SMTP_PORT'] == '465' and e['SMTP_SECURE'] != 'true'), 'SMTP_465_REQUIRES_TLS')
     for k, name in (('API_IMAGE_REF', 'api'), ('WEB_IMAGE_REF', 'web')):
         require(re.fullmatch(r'ghcr\.io/cuongdesignnb/edu-' + name +
                             r'(?::v\d+\.\d+\.\d+|@sha256:[0-9a-f]{64})', e.get(k, '')), 'INVALID_' + k)
@@ -170,8 +165,7 @@ def config_check(stack, host=True, clean=True, allow_running=True):
         require(f.is_file() and not f.is_symlink(), 'MISSING_SECRET_' + name)
         value = f.read_text(encoding='utf8').rstrip('\r\n')
         require(bool(value) and '\r' not in value and '\n' not in value, 'INVALID_SECRET_' + name)
-        if name != 'smtp_password':
-            require(re.fullmatch(r'[0-9a-f]{64}', value), 'INVALID_KEY_' + name)
+        require(re.fullmatch(r'[0-9a-f]{64}', value), 'INVALID_KEY_' + name)
         if os.name == 'posix':
             require(stat.S_IMODE(f.stat().st_mode) == 0o444, 'SECRET_LEAF_MUST_BE_0444_' + name)
     config = json.loads(stack.dc('config', '--format', 'json'))
@@ -195,7 +189,7 @@ def config_check(stack, host=True, clean=True, allow_running=True):
             and 'Docker Desktop' not in info.get('OperatingSystem', ''), 'PRODUCTION_REQUIRES_LINUX_AMD64_SERVER')
     endpoint = json.loads(run(['docker', 'context', 'inspect']))[0]['Endpoints']['docker']['Host']
     require(endpoint.startswith('unix://') and not os.environ.get('DOCKER_HOST'), 'REMOTE_DOCKER_CONTEXT_REFUSED')
-    require(git('remote', 'get-url', 'origin') == REPO or git('remote', 'get-url', 'origin') == 'git@github.com:cuongdesignnb/edu.git', 'WRONG_SOURCE_REPOSITORY')
+    require(git('remote', 'get-url', 'origin').removesuffix('.git') in (REPO, 'git@github.com:cuongdesignnb/edu'), 'WRONG_SOURCE_REPOSITORY')
     if clean:
         require(not git('status', '--porcelain', '--untracked-files=normal'), 'DIRTY_WORKTREE_DEPLOY_REFUSED')
     for name in config['services']:

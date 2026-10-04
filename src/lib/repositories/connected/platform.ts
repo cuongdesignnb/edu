@@ -77,6 +77,14 @@ export const connectedPlatformRepo=withStaffAccess({
     const [page,options]=await Promise.all([apiPage('listPlatformAudit',{query:{q:q.q,actorId:q.filters?.actor,from:q.filters?.from,to:q.filters?.to,sort:q.sort??'createdAt',dir:q.dir??'desc'}},q,platformAudit),http('getPlatformAuditOptions')]);return {...page,actors:options.data.actors};
   },
   async settings(_ctx:Ctx){return settings((await http('getPlatformSettings')).data);},
+  async mailAuthority(_ctx:Ctx){return (await refreshStaffContext()).platformActions.includes('platform.mail.manage');},
+  async mailSettings(_ctx:Ctx){return (await http('getPlatformMailSettings')).data;},
+  async saveMailSettings(_ctx:Ctx,input:ApiSchemas['PlatformMailUpdate']){
+    return (await formResult(http('updatePlatformMailSettings',{body:input}),{expectedVersion:'version'})).data;
+  },
+  async testMailSettings(_ctx:Ctx,expectedVersion:number,recipient:string){
+    return (await formResult(http('testPlatformMailSettings',{body:{expectedVersion,recipient}}),{})).data;
+  },
   async saveSettings(_ctx:Ctx,patch:Omit<PlatformSettings,'version'|'dateFormat'|'timezone'>&{version:number}){
     return settings((await formResult(http('updatePlatformSettings',{body:{expectedVersion:displayedVersion(patch.version),brandName:patch.brandName.trim(),supportEmail:patch.supportEmail.trim()||null,publicSupportPhone:patch.supportPhone.trim()||null,footerNote:patch.footerNote.trim()}}),{expectedVersion:'version',publicSupportPhone:'supportPhone'})).data);
   },

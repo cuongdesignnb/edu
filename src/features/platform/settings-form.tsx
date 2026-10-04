@@ -11,6 +11,7 @@ import { TextField, TextArea, ErrorSummary } from "@/components/ui/form";
 import { ConflictDialog, useUnsavedChanges } from "@/components/ui/guards";
 import { LogoMark } from "@/components/layout/brand";
 import { QueryState } from "@/components/ui/states";
+import {PlatformMailSettingsCard} from './mail-settings-form';
 
 /** PL11 — platform settings with live preview. No plans, billing or payment settings exist. */
 export function PlatformSettingsPage() {
@@ -40,7 +41,7 @@ function Form({ s, reload }: { s: PlatformSettings; reload: () => void }) {
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
   return (
     <div className="page">
-      <PageHeader title="Cấu hình nền tảng" subtitle="Thương hiệu hiển thị, liên hệ hỗ trợ và quy ước hiển thị chung" breadcrumbs={[{ label: "Tổng quan", href: "/platform" }, { label: "Cấu hình" }]} />
+      <PageHeader title="Cấu hình nền tảng" subtitle="Thương hiệu, liên hệ hỗ trợ và gửi email tùy chọn" breadcrumbs={[{ label: "Tổng quan", href: "/platform" }, { label: "Cấu hình" }]} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <Card>
           <CardHeader title="Thương hiệu và hỗ trợ" icon={<Settings className="size-5" />} subtitle={`Phiên bản cấu hình: ${s.version}`} />
@@ -75,9 +76,10 @@ function Form({ s, reload }: { s: PlatformSettings; reload: () => void }) {
               </div>
             </div>
           </Card>
-          <Callout tone="info" icon={<Info />}>Không có gói cước, thanh toán hay hóa đơn trong EduManage. Cấu hình ở đây chỉ ảnh hưởng hiển thị và thông tin liên hệ.</Callout>
+          <Callout tone="info" icon={<Info />}>Thông tin thương hiệu và liên hệ hỗ trợ được dùng chung trên giao diện EduManage.</Callout>
         </div>
       </div>
+      <PlatformMailSettingsCard/>
       <ConflictDialog error={cmd.error} onClose={cmd.reset} onReload={() => { cmd.reset(); reload(); }} mine={<p className="text-sm">{f.brandName} · {f.supportEmail} · {f.supportPhone}</p>} />
     </div>
   );

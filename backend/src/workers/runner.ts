@@ -1,10 +1,9 @@
 import crypto from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import nodemailer from 'nodemailer';
 import { Database,one,type Transaction,type Row } from '../database/database';
-import { runtimeConfig,secret } from '../common/config';
-import { decryptMail } from '../common/security';
+import { runtimeConfig } from '../common/config';
+import { decryptMail,decryptSmtpPassword } from '../common/security';
+import type {MailSettingsRow} from '../modules/platform/platform-mail';
 import { Problem } from '../common/problem';
 import { Permissions } from '../common/permissions';
 import { Commands } from '../common/commands';
@@ -19,6 +18,10 @@ import { ReportsService } from '../modules/reports/reports.service';
 
 interface Job extends Row {id:string;school_id:string;kind:string;payload:Record<string,unknown>;attempts:number}
 interface Mail extends Row {id:string;school_id:string|null;template_key:string;encrypted_payload:string;attempts:number}
+function smtpFailure(error:unknown) {
+ const code=typeof error==='object'&&error&&'code' in error?String(error.code):'';
+ return code==='EAUTH'?'SMTP_AUTH_FAILED':['ETIMEDOUT','ECONNECTION','ECONNREFUSED','EDNS','ESOCKET'].includes(code)?'SMTP_CONNECTION_FAILED':code.startsWith('CERT_')||code==='ETLS'?'SMTP_TLS_FAILED':'SMTP_DELIVERY_FAILED';
+}
 export type JobHandler=(job:Job,guard:(tx:Transaction)=>Promise<void>)=>Promise<void>;
 export class WorkerRunner {
   readonly owner=crypto.randomUUID();
@@ -70,55 +73,66 @@ export class WorkerRunner {
       if(process.env.APP_ENV!=='test')process.stderr.write(JSON.stringify({event:'job_failed',jobId:job.id,kind:job.kind,code})+'\n');
     }finally{clearInterval(timer);}
   }
-  private async mailClaim(mailId?:string){
+  private async smtpSettings(){
+    return this.db.transaction(tx=>one<MailSettingsRow>(tx,'SELECT * FROM platform.mail_settings WHERE singleton'));
+  }
+  private async mailClaim(version:number,mailId?:string){
     return this.db.transaction(tx=>one<Mail>(tx,`WITH candidate AS (
       SELECT id FROM identity.mail_outbox WHERE attempts<5 AND run_after<=now() AND encrypted_payload<>''
       AND (status IN ('PENDING','FAILED') OR (status='LEASED' AND lease_until<=now()))
-      ${mailId?'AND id=$2::uuid':''} ORDER BY run_after,id FOR UPDATE SKIP LOCKED LIMIT 1
+      AND EXISTS(SELECT 1 FROM platform.mail_settings s WHERE s.enabled AND s.version=$2)
+      ${mailId?'AND id=$3::uuid':''} ORDER BY run_after,id FOR UPDATE SKIP LOCKED LIMIT 1
     ) UPDATE identity.mail_outbox q SET status='LEASED',attempts=q.attempts+1,lease_owner=$1,lease_until=now()+interval '60 seconds'
-      FROM candidate c WHERE q.id=c.id RETURNING q.*`,mailId?[this.owner,mailId]:[this.owner]));
+      FROM candidate c WHERE q.id=c.id RETURNING q.*`,mailId?[this.owner,version,mailId]:[this.owner,version]));
   }
   private async mailGuard(tx:Transaction,mail:Mail){
     if(!await one(tx,"SELECT id FROM identity.mail_outbox WHERE id=$1 AND status='LEASED' AND lease_owner=$2 AND lease_until>now() FOR UPDATE",[mail.id,this.owner]))throw new Problem(409,'JOB_LEASE_LOST');
   }
-  async deliver(mail:Mail){
+  private async testReceipt(tx:Transaction,mail:Mail,status:string,code:string|null,version:number){
+    if(mail.template_key==='SMTP_TEST')await tx.query(`UPDATE platform.mail_settings SET last_test_status=$2,last_error_code=$3
+      WHERE singleton AND version=$4 AND last_test_mail_id=$1`,[mail.id,status,code,version]);
+  }
+  async deliver(mail:Mail,settings?:MailSettingsRow){
+    const smtp=settings??await this.smtpSettings();
+    if(!smtp)return;
     try{
+      const current=await this.smtpSettings();
+      if(!current?.enabled||current.version!==smtp.version){
+        await this.db.transaction(async tx=>{await this.mailGuard(tx,mail);await tx.query(`UPDATE identity.mail_outbox
+          SET status='PENDING',attempts=greatest(attempts-1,0),lease_owner=NULL,lease_until=NULL WHERE id=$1`,[mail.id]);});return;
+      }
       const allowed=await this.db.transaction(async tx=>{
         await this.mailGuard(tx,mail);
         return (await one<{allowed:boolean}>(tx,'SELECT identity.mail_delivery_allowed($1) AS allowed',[mail.id]))?.allowed;
       },{schoolId:mail.school_id??undefined});
-      if(!allowed){await this.db.transaction(async tx=>{await this.mailGuard(tx,mail);await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='',lease_owner=NULL,lease_until=NULL,last_error_code='TOKEN_UNAVAILABLE' WHERE id=$1",[mail.id]);});return;}
+      if(!allowed){await this.db.transaction(async tx=>{await this.mailGuard(tx,mail);await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='',lease_owner=NULL,lease_until=NULL,last_error_code='TOKEN_UNAVAILABLE' WHERE id=$1",[mail.id]);await this.testReceipt(tx,mail,'CANCELLED','TOKEN_UNAVAILABLE',smtp.version);});return;}
       const decoded=decryptMail(mail.encrypted_payload);
       if(!decoded||typeof decoded!=='object')throw new Problem(422,'MAIL_PAYLOAD_REJECTED');
       const payload=decoded as Record<string,unknown>;
-      if(typeof payload.email!=='string'||typeof payload.url!=='string'||!payload.url.startsWith(runtimeConfig().appUrl+'/'))throw new Problem(422,'MAIL_PAYLOAD_REJECTED');
-      const subject=mail.template_key==='PASSWORD_RESET'?'EduManage — Đặt lại mật khẩu':'EduManage — Lời mời nhân sự';
-      const text=`${subject}\n\n${payload.url}\n\nLink riêng có thời hạn. Không chia sẻ cho người khác.`;
-      const mode=process.env.MAIL_MODE==='smtp'?'SMTP':'FILE';
-      if(mode==='FILE'){
-        if(runtimeConfig().appEnv==='production')throw new Problem(422,'LOCAL_MAIL_IN_PRODUCTION');
-        const root=runtimeConfig().mailRoot;await fs.mkdir(root,{recursive:true,mode:0o700});
-        const temporary=path.join(root,`${mail.id}.${this.owner}.tmp`),target=path.join(root,`${mail.id}.eml`);
-        const content=`X-EduManage-Delivery: LOCAL_FILE (không gửi Internet)\nTo: ${payload.email}\nSubject: ${subject}\nMessage-ID: <${mail.id}@edumanage.local>\n\n${text}\n`;
-        await fs.writeFile(temporary,content,{mode:0o600});await fs.rename(temporary,target);
-      }else{
-        const transport=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT??587),secure:process.env.SMTP_SECURE==='true',
-          requireTLS:true,auth:{user:process.env.SMTP_USER,pass:secret('SMTP_PASSWORD')},connectionTimeout:10_000,greetingTimeout:10_000,socketTimeout:20_000,
-          tls:{rejectUnauthorized:true,minVersion:'TLSv1.2'},disableFileAccess:true,disableUrlAccess:true});
-        try{await transport.sendMail({from:process.env.SMTP_FROM,to:payload.email,subject,text,messageId:`<${mail.id}@${new URL(runtimeConfig().appUrl).hostname}>`});}
-        finally{transport.close();}
-      }
-      await this.db.transaction(async tx=>{await this.mailGuard(tx,mail);await tx.query("UPDATE identity.mail_outbox SET status='SENT',delivery_mode=$2,sent_at=now(),encrypted_payload='',lease_owner=NULL,lease_until=NULL,last_error_code=NULL WHERE id=$1",[mail.id,mode]);});
+      const test=mail.template_key==='SMTP_TEST';
+      if(typeof payload.email!=='string'||!test&&(typeof payload.url!=='string'||!payload.url.startsWith(runtimeConfig().appUrl+'/')))throw new Problem(422,'MAIL_PAYLOAD_REJECTED');
+      const subject=test?'EduManage — Kiểm tra gửi email':mail.template_key==='PASSWORD_RESET'?'EduManage — Đặt lại mật khẩu':'EduManage — Lời mời nhân sự';
+      const text=test?'Email kiểm tra cấu hình gửi thư EduManage.':`${subject}\n\n${payload.url}\n\nLink riêng có thời hạn. Không chia sẻ cho người khác.`;
+      const transport=nodemailer.createTransport({host:smtp.host,port:smtp.port,secure:smtp.security==='TLS',
+        requireTLS:true,auth:{user:smtp.username,pass:decryptSmtpPassword(smtp.encrypted_password!)},connectionTimeout:10_000,greetingTimeout:10_000,socketTimeout:20_000,
+        tls:{rejectUnauthorized:true,minVersion:'TLSv1.2'},disableFileAccess:true,disableUrlAccess:true,logger:false,debug:false});
+      try{await transport.sendMail({from:{name:smtp.from_name,address:smtp.from_email},to:payload.email,subject,text,messageId:`<${mail.id}@${new URL(runtimeConfig().appUrl).hostname}>`});}
+      finally{transport.close();}
+      await this.db.transaction(async tx=>{await this.mailGuard(tx,mail);await tx.query("UPDATE identity.mail_outbox SET status='SENT',delivery_mode='SMTP',sent_at=now(),encrypted_payload='',lease_owner=NULL,lease_until=NULL,last_error_code=NULL WHERE id=$1",[mail.id]);await this.testReceipt(tx,mail,'SENT',null,smtp.version);});
     }catch(error){
-      const code=error instanceof Problem?error.code:'MAIL_DELIVERY_FAILED';
-      await this.db.transaction(tx=>tx.query(`UPDATE identity.mail_outbox SET status='FAILED',last_error_code=$3,lease_owner=NULL,lease_until=NULL,
+      const code=error instanceof Problem?error.code:smtpFailure(error);
+      await this.db.transaction(async tx=>{const updated=await tx.query(`UPDATE identity.mail_outbox SET status='FAILED',last_error_code=$3,lease_owner=NULL,lease_until=NULL,
         run_after=now()+($4::int*interval '1 second') WHERE id=$1 AND status='LEASED' AND lease_owner=$2 AND lease_until>now()`,
-      [mail.id,this.owner,code,Math.min(300,2**mail.attempts+crypto.randomInt(0,5))]));
+      [mail.id,this.owner,code,Math.min(300,2**mail.attempts+crypto.randomInt(0,5))]);if(updated.rowCount===1)await this.testReceipt(tx,mail,'FAILED',code,smtp.version);});
       if(process.env.APP_ENV!=='test')process.stderr.write(JSON.stringify({event:'mail_failed',mailId:mail.id,code})+'\n');
     }
   }
   /** A worker may retry one known mail while retaining the same lease and delivery checks. */
-  async processMail(mailId?:string){const mail=await this.mailClaim(mailId);if(!mail)return 0;await this.deliver(mail);return 1;}
+  async processMail(mailId?:string){
+    const settings=await this.smtpSettings();
+    if(!settings?.enabled||!settings.host||!settings.username||!settings.from_email||!settings.encrypted_password)return 0;
+    const mail=await this.mailClaim(settings.version,mailId);if(!mail)return 0;await this.deliver(mail,settings);return 1;
+  }
   async processOnce(){
     const schools=(await this.db.app.query<{id:string}>('SELECT id FROM platform.schools ORDER BY id')).rows;
     let processed=0;

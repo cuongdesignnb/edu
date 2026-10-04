@@ -106,7 +106,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,424);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,427);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('TOUR staff preferences are shared across sessions, scoped, owner-only and monotonically completed',async()=>{
@@ -546,7 +546,7 @@ test('B2 scoped guardian creation cannot acquire an unrelated family through rel
   assert.equal(rel.json().data.status,'UNVERIFIED');assert.equal(rel.json().data.canReceiveInfo,false);
 });
 
-test('B2/B5 uploads remain private until worker processing, leases serialize and local mail erases encrypted secrets',async()=>{
+test('B2/B5 uploads remain private until worker processing, leases serialize and disabled mail stays pending',async()=>{
   const csrf=await login('admin-a@example.invalid');
   async function upload(bytes,name,type,purpose='CLASS_DOCUMENT',classId=classA,key=crypto.randomUUID()){
     const form=new FormData();form.append('purpose',purpose);if(classId)form.append('classId',classId);form.append('file',new Blob([bytes],{type}),name);
@@ -562,6 +562,7 @@ test('B2/B5 uploads remain private until worker processing, leases serialize and
   const dangerous=await upload(Buffer.from('<html><script>bad()</script></html>'),'fake.png','image/png');assert.equal(dangerous.statusCode,200);
   const worker1=new WorkerRunner(),worker2=new WorkerRunner();
   try{
+    await worker1.db.app.query('UPDATE platform.mail_settings SET enabled=false WHERE singleton');
     assert.equal((await worker1.db.app.query('SELECT current_user AS role')).rows[0].role,'edu_worker');
     const [j1,j2]=await Promise.all([worker1.claim(schoolA),worker2.claim(schoolA)]);assert.ok(j1);assert.ok(j2);assert.notEqual(j1.id,j2.id);
     await assert.rejects(worker2.db.transaction(tx=>worker2.guard(tx,j1),{schoolId:schoolA}),error=>error.code==='JOB_LEASE_LOST');
@@ -595,13 +596,10 @@ test('B2/B5 uploads remain private until worker processing, leases serialize and
     assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${formula.json().data.id}`)).json().data.rejectionCode,'XLSX_ACTIVE_CONTENT_REJECTED');
     const invitation=await request('POST',`/api/v1/schools/${schoolA}/invitations`,{email:`mail-${crypto.randomUUID()}@example.invalid`,roleId:seedId('role:A:SCHOOL_ADMIN'),validFrom:'2026-09-01T00:00:00Z'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(invitation.statusCode,201);
     let mail=(await db.app.query('SELECT id,status,delivery_mode,encrypted_payload FROM identity.mail_outbox WHERE dedupe_key=$1',[`invitation:${invitation.json().data.id}`])).rows[0];
-    // Process the exact retained test mail; unrelated synthetic mail is not a
-    // prerequisite. The real SQL lease still permits only one concurrent owner.
-    const delivered=await Promise.all([worker1.processMail(mail.id),worker2.processMail(mail.id)]);assert.deepEqual(delivered.sort(),[0,1]);
+    // Disabled SMTP must let neither worker claim this retained synthetic mail.
+    const delivered=await Promise.all([worker1.processMail(mail.id),worker2.processMail(mail.id)]);assert.deepEqual(delivered,[0,0]);
     mail=(await db.app.query('SELECT id,status,delivery_mode,encrypted_payload FROM identity.mail_outbox WHERE id=$1',[mail.id])).rows[0];
-    assert.equal(mail.status,'SENT');assert.equal(mail.delivery_mode,'FILE');assert.equal(mail.encrypted_payload,'');
-    const eml=await fs.readFile(path.join(process.env.LOCAL_MAIL_ROOT,`${mail.id}.eml`),'utf8');assert.match(eml,/LOCAL_FILE/);assert.match(eml,/#token=/);
-    const stat=await fs.stat(path.join(process.env.LOCAL_MAIL_ROOT,`${mail.id}.eml`));assert.equal(stat.mode&0o077,0);
+    assert.equal(mail.status,'PENDING');assert.equal(mail.delivery_mode,null);assert.notEqual(mail.encrypted_payload,'');
     const archived=await request('POST',`/api/v1/schools/${schoolA}/files/${file.id}/archive`,{expectedVersion:file.version,reason:'Lưu trữ tệp kiểm thử'},csrf,{'idempotency-key':crypto.randomUUID()});assert.equal(archived.statusCode,200);
     assert.equal((await request('GET',`/api/v1/schools/${schoolA}/files/${file.id}/download`)).statusCode,409);
   }finally{await Promise.all([worker1.close(),worker2.close()]);}

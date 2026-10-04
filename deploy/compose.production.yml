@@ -114,13 +114,7 @@ services:
       PARENT_DB_PASSWORD_FILE: /run/secrets/db_parent_password
       SECRET_KEY_FILE: /run/secrets/app_key
       MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
-      MAIL_MODE: smtp
-      SMTP_HOST: ${SMTP_HOST:?Set SMTP host}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_SECURE: ${SMTP_SECURE:-false}
-      SMTP_USER: ${SMTP_USER:?Set SMTP user}
-      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
-      MAIL_FROM: ${MAIL_FROM:?Set verified mail sender}
+      MAIL_MODE: database
       COOKIE_SECURE: 'true'
       DATA_MODE: connected
       UI_LAB_ENABLED: 'false'
@@ -135,7 +129,6 @@ services:
     - db_parent_password
     - app_key
     - mail_key
-    - smtp_password
     volumes:
     - private_files:/data
     depends_on:
@@ -188,13 +181,7 @@ services:
       DB_PASSWORD_FILE: /run/secrets/db_worker_password
       SECRET_KEY_FILE: /run/secrets/app_key
       MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
-      MAIL_MODE: smtp
-      SMTP_HOST: ${SMTP_HOST:?Set SMTP host}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_SECURE: ${SMTP_SECURE:-false}
-      SMTP_USER: ${SMTP_USER:?Set SMTP user}
-      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
-      MAIL_FROM: ${MAIL_FROM:?Set verified mail sender}
+      MAIL_MODE: database
       COOKIE_SECURE: 'true'
       DATA_MODE: connected
       UI_LAB_ENABLED: 'false'
@@ -209,7 +196,6 @@ services:
     - db_worker_password
     - app_key
     - mail_key
-    - smtp_password
     volumes:
     - private_files:/data
     depends_on:
@@ -340,5 +326,3 @@ secrets:
     file: ${SECRET_DIR:?Set host secret directory}/app_key
   mail_key:
     file: ${SECRET_DIR:?Set host secret directory}/mail_key
-  smtp_password:
-    file: ${SECRET_DIR:?Set host secret directory}/smtp_password

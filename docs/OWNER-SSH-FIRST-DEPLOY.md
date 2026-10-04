@@ -1,26 +1,37 @@
 # EduManage — chủ hệ thống tự SSH first deploy
 
-Ngày chuẩn bị: 04/10/2026. Repository: `https://github.com/cuongdesignnb/edu`. Release: **v1.0.0**.
+Ngày chuẩn bị: 04/10/2026. Repository: `https://github.com/cuongdesignnb/edu`. Release mới: **v1.0.1**.
 
-Agent chỉ chuẩn bị Git/tag/GHCR và tài liệu này. Chủ hệ thống tự thực hiện các bước SSH, aaPanel, DNS và deploy bên dưới. Chỉ chạy khi báo cáo bàn giao xác nhận **READY_FOR_OWNER_SSH**, có source SHA, Actions PASS và đủ digest API/Web. Đây không phải xác nhận production đã chạy.
+Agent chỉ chuẩn bị source, tag, GHCR và lệnh; không SSH/deploy production. Chỉ chạy sau báo cáo **READY_FOR_OWNER_FAST_DEPLOY** xác nhận Actions PASS, tag đúng source và đủ API/Web image digest. Script kiểm trực tiếp source tag remote và OCI revision/version trước khi chạy, khóa runtime bằng digest.
 
-Release đã xác minh ngày 04/10/2026:
+## FIRST DEPLOY WITHOUT SMTP — v1.0.1
 
-| Mục | Giá trị |
-| --- | --- |
-| Tag | `v1.0.0` |
-| Source SHA của tag và cả hai image | `90103a33e83c2802090236ba8a92a2fe9cc7ce78` |
-| API | `ghcr.io/cuongdesignnb/edu-api@sha256:3e1ab754c86b6b64e080135ecec31b271807547a60b767698c2e20ea7c0dc285` |
-| Web | `ghcr.io/cuongdesignnb/edu-web@sha256:1c0f427b2ba6811d1e71ab6f5ad393b93c7d5728193f4f78956498e096b966bc` |
-| Actions | [Publish production images — PASS](https://github.com/cuongdesignnb/edu/actions/runs/37194038009) |
-| GHCR | Cả hai manifest/config đọc công khai được; revision/version/source/platform đã đối chiếu |
-| Static config | PASS với input tổng hợp; kiểm host thật do chủ hệ thống thực hiện |
+Trạng thái do chủ server cung cấp: `/www/wwwroot/edu` checkout v1.0.0; `.env.production` và `.secrets/production` đã có; `APP_URL=https://chunhiemso.com`, `APP_PORT=18763`; SMTP blank; DNS/SSL/aaPanel proxy xong; chưa có containers/volumes production. Đây là giả định đầu vào, chưa được agent kiểm tra trên server.
 
-Tài liệu này được cập nhật sau khi publish để bổ sung digest và sửa URL clone. Các commit tài liệu sau tag không thay source ứng dụng, production scripts hoặc image của release. Khi SSH, checkout đúng `v1.0.0` và dùng các block trong **bản hướng dẫn cập nhật này**; không checkout branch tài liệu làm source chạy.
+Trong phiên SSH do chủ hệ thống tự mở, chạy block này:
+
+```bash
+set -euo pipefail
+cd /www/wwwroot/edu
+test -z "$(git status --porcelain)"
+git fetch origin refs/tags/v1.0.1:refs/tags/v1.0.1
+git checkout --detach v1.0.1
+python3 scripts/production.py preflight
+bash scripts/release.sh v1.0.1
+bash scripts/prod-status.sh
+```
+
+Không cần migrate env legacy. SMTP_HOST/PORT/USER/SECURE/MAIL_FROM blank được chấp nhận; SMTP_PASSWORD nếu có chỉ được phép rỗng. Các giá trị SMTP env không còn điều khiển worker. Không tạo lại secrets, không rotate app_key/mail_key, không dùng SMTP giả. Giữ file smtp_password cũ nếu host đã có: Compose không mount/dùng file đó.
+
+SMTP mặc định chưa cấu hình/tắt. API/worker/Web vẫn healthy; mail chờ, không claim/tăng attempts/FAILED. Sau deploy và bootstrap admin thật ở mục 6, vào `/platform/settings`, bật SMTP với thông tin nhà cung cấp thật, lưu và gửi email kiểm tra. Mật khẩu không trả lại; để input rỗng giữ mật khẩu cũ; xóa cần hành động explicit khi đã tắt SMTP. Worker đọc cấu hình DB mỗi lượt, không cần rebuild/redeploy. Chỉ thư còn hiệu lực được gửi.
+
+## Bản v1.0.0 bất biến
+
+Tag/source cũ vẫn giữ `90103a33e83c2802090236ba8a92a2fe9cc7ce78`, workflow [37194038009](https://github.com/cuongdesignnb/edu/actions/runs/37194038009). API digest `sha256:3e1ab754c86b6b64e080135ecec31b271807547a60b767698c2e20ea7c0dc285`; Web digest `sha256:1c0f427b2ba6811d1e71ab6f5ad393b93c7d5728193f4f78956498e096b966bc`. Các lệnh bên dưới dành cho v1.0.1; server đã chuẩn bị chỉ cần block cấp tốc trên rồi bootstrap admin.
 
 ## 1. Chuẩn bị một lần
 
-Server cần Linux amd64, Docker Engine + Compose V2, Git, Bash, Python 3.10+ và aaPanel Nginx. Chuẩn bị domain/DNS, email admin thật, SMTP host/port/TLS/user/MAIL_FROM và mật khẩu SMTP. Nếu GHCR private, cần tài khoản có quyền đọc cả hai package và token `read:packages`. Không đưa mật khẩu/token vào chat hoặc Git.
+Server cần Linux amd64, Docker Engine + Compose V2, Git, Bash, Python 3.10+ và aaPanel Nginx. Chuẩn bị domain/DNS và email admin thật. SMTP là tùy chọn; cấu hình sau khi đăng nhập quản trị nền tảng. Nếu GHCR private, cần tài khoản có quyền đọc cả hai package và token `read:packages`. Không đưa mật khẩu/token vào chat hoặc Git.
 
 Port đề xuất **18763**, chỉ bind `127.0.0.1`. Không mở 18763, 5432, 3000, 3001 ra Internet. Public ứng dụng dùng 80/443 qua aaPanel; SSH theo chính sách của chủ server.
 
@@ -40,13 +51,14 @@ Các block tiếp theo chạy **trên server**, bằng tài khoản có quyền 
 
 ```bash
 set -euo pipefail
-EXPECTED_SHA=90103a33e83c2802090236ba8a92a2fe9cc7ce78
+EXPECTED_SHA="$(git ls-remote https://github.com/cuongdesignnb/edu 'refs/tags/v1.0.1^{}' | cut -f1)"
+[[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
 test ! -e /www/wwwroot/edu
-git clone --branch v1.0.0 --single-branch https://github.com/cuongdesignnb/edu /www/wwwroot/edu
+git clone --branch v1.0.1 --single-branch https://github.com/cuongdesignnb/edu /www/wwwroot/edu
 cd /www/wwwroot/edu
 [[ "$(git rev-parse HEAD)" == "$EXPECTED_SHA" ]]
-[[ "$(git rev-parse 'refs/tags/v1.0.0^{commit}')" == "$EXPECTED_SHA" ]]
-[[ "$(git ls-remote origin 'refs/tags/v1.0.0^{}' | cut -f1)" == "$EXPECTED_SHA" ]]
+[[ "$(git rev-parse 'refs/tags/v1.0.1^{commit}')" == "$EXPECTED_SHA" ]]
+[[ "$(git ls-remote origin 'refs/tags/v1.0.1^{}' | cut -f1)" == "$EXPECTED_SHA" ]]
 [[ -z "$(git status --porcelain)" ]]
 docker compose version
 python3 --version
@@ -54,7 +66,7 @@ python3 --version
 
 ## 3. Điền config thật và tạo secrets riêng
 
-Block này tạo file mới; không ghi đè cấu hình đã có. Nó điền release/source tự động, còn domain và SMTP phải do chủ hệ thống nhập.
+Block này tạo file mới; không ghi đè cấu hình đã có. Nó điền release/source tự động, còn domain phải do chủ hệ thống nhập.
 
 ```bash
 set -euo pipefail
@@ -67,22 +79,22 @@ from pathlib import Path
 import subprocess
 p=Path('.env.production')
 sha=subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()
-p.write_text(p.read_text().replace('REPLACE_RELEASE','v1.0.0').replace('REPLACE_SOURCE_SHA',sha))
+p.write_text(p.read_text().replace('REPLACE_RELEASE','v1.0.1').replace('REPLACE_SOURCE_SHA',sha))
 p.chmod(0o600)
 PY
 nano .env.production
 ```
 
-Trong editor, thay **REPLACE_DOMAIN, REPLACE_SMTP_HOST, REPLACE_SMTP_USER, REPLACE_MAIL_FROM** bằng giá trị thật; chọn port còn trống nếu 18763 đang được dùng. Giữ `COMPOSE_PROJECT_NAME=edumanage_production`, database production riêng, `SECRET_DIR=./.secrets/production`, `COOKIE_SECURE=true`, `MAIL_MODE=smtp` và các image digest hạ tầng. SMTP 465 dùng `SMTP_SECURE=true`; 587 thường dùng `false` cho STARTTLS, theo nhà cung cấp. Không đặt password/token vào `.env.production`.
+Trong editor, thay **REPLACE_DOMAIN** bằng domain thật; chọn port trống nếu 18763 đang dùng. Giữ project/database `edumanage_production`, `COOKIE_SECURE=true`, `SECRET_DIR=./.secrets/production`, image digest hạ tầng. SMTP lưu trong database, không yêu cầu env SMTP hoặc smtp_password.
 
 ```bash
 set -euo pipefail
 cd /www/wwwroot/edu
 python3 scripts/prepare-production-secrets.py \
-  --directory .secrets/production --confirm-new --smtp-password
+  --directory .secrets/production --confirm-new
 ```
 
-Mật khẩu SMTP nhập trong prompt ẩn. Không copy secrets, database, account hoặc link phụ huynh từ local. Generator từ chối ghi đè secrets cũ; không đổi secrets để sửa lỗi deploy.
+Generator tạo đúng 7 base secrets. Chỉ chạy cho server mới chưa có secrets. Không copy secrets, database, account hoặc link phụ huynh từ local. Generator từ chối ghi đè secrets cũ; không đổi secrets để sửa lỗi deploy.
 
 Chỉ chạy block sau nếu package GHCR private. Token nhập ẩn, truyền qua stdin:
 
@@ -97,14 +109,14 @@ unset GHCR_TOKEN
 
 Repo public không tự chứng minh container package public. Dùng credential helper của Docker nếu server có cấu hình.
 
-Hai image `v1.0.0` đã được xác minh pull công khai, nên release hiện tại không cần token GHCR. Trước deploy có thể đối chiếu digest trực tiếp (lệnh này không khởi động container):
+Khi báo cáo bàn giao xác nhận cả hai image `v1.0.1` public và PASS, release không cần token GHCR. Trước deploy có thể đối chiếu digest trực tiếp (lệnh này không khởi động container):
 
 ```bash
-docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-api:v1.0.0
-docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-web:v1.0.0
+docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-api:v1.0.1
+docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-web:v1.0.1
 ```
 
-Digest phải khớp bảng release ở đầu tài liệu. `release.sh` kiểm labels/source và khóa runtime bằng digest khi triển khai.
+Đối chiếu digest với báo cáo bàn giao release v1.0.1. `release.sh` kiểm labels/source và khóa runtime bằng digest khi triển khai.
 
 ## 4. Chủ hệ thống cấu hình aaPanel/DNS/SSL
 
@@ -140,7 +152,7 @@ Nếu binary khác, dùng đúng binary trong panel. Đây là cấu hình Nginx
 set -euo pipefail
 cd /www/wwwroot/edu
 python3 scripts/production.py preflight
-bash scripts/release.sh v1.0.0
+bash scripts/release.sh v1.0.1
 bash scripts/prod-status.sh
 ```
 

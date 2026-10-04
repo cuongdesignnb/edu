@@ -43443,6 +43443,272 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /platform/settings/mail:
+    get:
+      operationId: getPlatformMailSettings
+      tags:
+        - Platform
+      summary: getPlatformMailSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: platform.mail.manage
+      x-scope: staff
+      x-frontend-screen-ids:
+        - PL11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformMailSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      parameters: []
+    put:
+      operationId: updatePlatformMailSettings
+      tags:
+        - Platform
+      summary: updatePlatformMailSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: platform.mail.manage
+      x-scope: staff
+      x-frontend-screen-ids:
+        - PL11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformMailUpdate"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformMailSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /platform/settings/mail/test:
+    post:
+      operationId: testPlatformMailSettings
+      tags:
+        - Platform
+      summary: testPlatformMailSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: platform.mail.manage
+      x-scope: staff
+      x-frontend-screen-ids:
+        - PL11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformMailTest"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformMailSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/import-workspace:
     get:
       operationId: getImportWorkspace
@@ -67291,6 +67557,148 @@ components:
       required:
         - data
         - requestId
+      additionalProperties: false
+    PlatformMailSettings:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        host:
+          type: string
+          maxLength: 253
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        security:
+          type: string
+          enum:
+            - STARTTLS
+            - TLS
+        username:
+          type: string
+          maxLength: 320
+        fromEmail:
+          type: string
+          maxLength: 320
+        fromName:
+          type: string
+          maxLength: 120
+        passwordConfigured:
+          type: boolean
+        version:
+          type: integer
+          minimum: 1
+        updatedAt:
+          type: string
+          format: date-time
+        lastTestedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastTestStatus:
+          type: string
+          enum:
+            - NOT_TESTED
+            - PENDING
+            - SENT
+            - FAILED
+            - CANCELLED
+        lastErrorCode:
+          type: string
+          nullable: true
+        configurationStatus:
+          type: string
+          enum:
+            - UNCONFIGURED
+            - DISABLED
+            - ENABLED_UNVERIFIED
+            - WORKING
+            - ERROR
+      required:
+        - enabled
+        - host
+        - port
+        - security
+        - username
+        - fromEmail
+        - fromName
+        - passwordConfigured
+        - version
+        - updatedAt
+        - lastTestedAt
+        - lastTestStatus
+        - lastErrorCode
+        - configurationStatus
+      additionalProperties: false
+    PlatformMailSettingsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PlatformMailSettings"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PlatformMailUpdate:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        host:
+          type: string
+          maxLength: 253
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        security:
+          type: string
+          enum:
+            - STARTTLS
+            - TLS
+        username:
+          type: string
+          maxLength: 320
+        fromEmail:
+          type: string
+          maxLength: 320
+        fromName:
+          type: string
+          maxLength: 120
+        expectedVersion:
+          type: integer
+          minimum: 1
+        password:
+          type: string
+          maxLength: 512
+        clearPassword:
+          type: boolean
+      required:
+        - enabled
+        - host
+        - port
+        - security
+        - username
+        - fromEmail
+        - fromName
+        - expectedVersion
+      additionalProperties: false
+    PlatformMailTest:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        recipient:
+          type: string
+          format: email
+          maxLength: 320
+      required:
+        - expectedVersion
+        - recipient
       additionalProperties: false
     ImportWorkspaceKind:
       type: object
