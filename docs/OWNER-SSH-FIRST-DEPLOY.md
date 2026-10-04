@@ -4,6 +4,20 @@ Ngày chuẩn bị: 04/10/2026. Repository: `https://github.com/cuongdesignnb/ed
 
 Agent chỉ chuẩn bị Git/tag/GHCR và tài liệu này. Chủ hệ thống tự thực hiện các bước SSH, aaPanel, DNS và deploy bên dưới. Chỉ chạy khi báo cáo bàn giao xác nhận **READY_FOR_OWNER_SSH**, có source SHA, Actions PASS và đủ digest API/Web. Đây không phải xác nhận production đã chạy.
 
+Release đã xác minh ngày 04/10/2026:
+
+| Mục | Giá trị |
+| --- | --- |
+| Tag | `v1.0.0` |
+| Source SHA của tag và cả hai image | `90103a33e83c2802090236ba8a92a2fe9cc7ce78` |
+| API | `ghcr.io/cuongdesignnb/edu-api@sha256:3e1ab754c86b6b64e080135ecec31b271807547a60b767698c2e20ea7c0dc285` |
+| Web | `ghcr.io/cuongdesignnb/edu-web@sha256:1c0f427b2ba6811d1e71ab6f5ad393b93c7d5728193f4f78956498e096b966bc` |
+| Actions | [Publish production images — PASS](https://github.com/cuongdesignnb/edu/actions/runs/37194038009) |
+| GHCR | Cả hai manifest/config đọc công khai được; revision/version/source/platform đã đối chiếu |
+| Static config | PASS với input tổng hợp; kiểm host thật do chủ hệ thống thực hiện |
+
+Tài liệu này được cập nhật sau khi publish để bổ sung digest và sửa URL clone. Các commit tài liệu sau tag không thay source ứng dụng, production scripts hoặc image của release. Khi SSH, checkout đúng `v1.0.0` và dùng các block trong **bản hướng dẫn cập nhật này**; không checkout branch tài liệu làm source chạy.
+
 ## 1. Chuẩn bị một lần
 
 Server cần Linux amd64, Docker Engine + Compose V2, Git, Bash, Python 3.10+ và aaPanel Nginx. Chuẩn bị domain/DNS, email admin thật, SMTP host/port/TLS/user/MAIL_FROM và mật khẩu SMTP. Nếu GHCR private, cần tài khoản có quyền đọc cả hai package và token `read:packages`. Không đưa mật khẩu/token vào chat hoặc Git.
@@ -26,10 +40,9 @@ Các block tiếp theo chạy **trên server**, bằng tài khoản có quyền 
 
 ```bash
 set -euo pipefail
-read -r -p 'Source SHA từ báo cáo READY_FOR_OWNER_SSH (40 ký tự): ' EXPECTED_SHA
-[[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+EXPECTED_SHA=90103a33e83c2802090236ba8a92a2fe9cc7ce78
 test ! -e /www/wwwroot/edu
-git clone --branch v1.0.0 --single-branch https://github.com/cuongdesignnb/edu.git /www/wwwroot/edu
+git clone --branch v1.0.0 --single-branch https://github.com/cuongdesignnb/edu /www/wwwroot/edu
 cd /www/wwwroot/edu
 [[ "$(git rev-parse HEAD)" == "$EXPECTED_SHA" ]]
 [[ "$(git rev-parse 'refs/tags/v1.0.0^{commit}')" == "$EXPECTED_SHA" ]]
@@ -83,6 +96,15 @@ unset GHCR_TOKEN
 ```
 
 Repo public không tự chứng minh container package public. Dùng credential helper của Docker nếu server có cấu hình.
+
+Hai image `v1.0.0` đã được xác minh pull công khai, nên release hiện tại không cần token GHCR. Trước deploy có thể đối chiếu digest trực tiếp (lệnh này không khởi động container):
+
+```bash
+docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-api:v1.0.0
+docker buildx imagetools inspect ghcr.io/cuongdesignnb/edu-web:v1.0.0
+```
+
+Digest phải khớp bảng release ở đầu tài liệu. `release.sh` kiểm labels/source và khóa runtime bằng digest khi triển khai.
 
 ## 4. Chủ hệ thống cấu hình aaPanel/DNS/SSL
 

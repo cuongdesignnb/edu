@@ -10,7 +10,7 @@ Thực hiện trong một checkout sạch, dùng CANDIDATE_SHA chính xác từ 
 
 ```bash
 set -euo pipefail
-git clone --branch codex/new-machine-audit-20261002 https://github.com/cuongdesignnb/edu.git edu-release
+git clone --branch codex/new-machine-audit-20261002 https://github.com/cuongdesignnb/edu edu-release
 cd edu-release
 git config --local user.name cuongdesign
 git config --local user.email dinhcuongdesign@gmail.com
@@ -34,7 +34,7 @@ Theo dõi workflow **Publish production images** ở GitHub Actions. Cả API v�
 ```bash
 set -euo pipefail
 cd /www/wwwroot
-git clone https://github.com/cuongdesignnb/edu.git edu
+git clone https://github.com/cuongdesignnb/edu edu
 cd /www/wwwroot/edu
 git fetch --tags origin
 git checkout --detach v1.0.0
