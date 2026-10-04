@@ -1,0 +1,98 @@
+name: Publish production images
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing immutable release tag (vX.Y.Z)
+        required: true
+        type: string
+permissions:
+  contents: read
+  packages: write
+concurrency:
+  group: production-images-${{ inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+          fetch-depth: 0
+      - name: Verify exact release tag
+        id: release
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          [[ "$GITHUB_REPOSITORY" == cuongdesignnb/edu ]]
+          sha="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
+          [[ "$(git rev-parse HEAD)" == "$sha" ]]
+          remote="$(git ls-remote origin "refs/tags/$RELEASE_TAG^{}" | cut -f1)"
+          if [[ -z "$remote" ]]; then remote="$(git ls-remote origin "refs/tags/$RELEASE_TAG" | cut -f1)"; fi
+          [[ "$remote" == "$sha" ]]
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "short=${sha:0:12}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - name: Core release checks with lockfiles
+        run: |
+          npm ci
+          npm run typecheck
+          npx vitest run tests/unit/seating-layout.test.ts tests/unit/api-class-organization-adapter.test.ts tests/unit/api-class-header-adapter.test.ts tests/unit/api-scope-guard.test.ts tests/unit/api-session.test.ts tests/unit/api-session-adapter.test.ts tests/unit/api-auth-adapter.test.ts
+          npm ci --prefix backend
+          npm run typecheck --prefix backend
+          npm run build --prefix backend
+          npm test --prefix backend
+          python3 -m unittest discover -s tests/production -v
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build both images once before publishing either release tag
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          SHA: ${{ steps.release.outputs.sha }}
+          SHORT: ${{ steps.release.outputs.short }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Refuse moving a previously published version, including partial releases.
+          for kind in api web; do
+            if docker buildx imagetools inspect "ghcr.io/cuongdesignnb/edu-$kind:$TAG" >/dev/null 2>&1; then
+              echo "Release image already exists; use a new tag or review failed publication manually." >&2
+              exit 1
+            fi
+          done
+          for kind in api web; do
+            image="ghcr.io/cuongdesignnb/edu-$kind"
+            docker buildx build --load --platform linux/amd64 \
+              --file "deploy/Dockerfile.$kind" \
+              --build-arg NODE_IMAGE=node:24-bookworm-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 \
+              --build-arg "SOURCE_SHA=$SHA" --build-arg "RELEASE_VERSION=$TAG" \
+              --tag "$image:$TAG" --tag "$image:sha-$SHORT" .
+          done
+          for kind in api web; do
+            image="ghcr.io/cuongdesignnb/edu-$kind"
+            docker push "$image:$TAG"
+            docker push "$image:sha-$SHORT"
+            digest="$(docker image inspect "$image:$TAG" --format '{{index .RepoDigests 0}}')"
+            echo "### $kind" >> "$GITHUB_STEP_SUMMARY"
+            echo "Release: \`$image:$TAG\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "Source SHA: \`$SHA\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "Digest: \`$digest\`" >> "$GITHUB_STEP_SUMMARY"
+          done

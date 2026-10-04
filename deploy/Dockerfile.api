@@ -9,6 +9,12 @@ FROM deps AS build
 COPY backend/ ./
 RUN npm run build && npm prune --omit=dev
 FROM ${NODE_IMAGE} AS runner
+ARG SOURCE_SHA=development
+ARG RELEASE_VERSION=unreleased
+LABEL org.opencontainers.image.source="https://github.com/cuongdesignnb/edu" \
+      org.opencontainers.image.revision="${SOURCE_SHA}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}"
+ENV BUILD_SHA=${SOURCE_SHA}
 ENV NODE_ENV=production
 WORKDIR /srv/api
 COPY --from=build --chown=node:node /srv/api/package.json ./package.json

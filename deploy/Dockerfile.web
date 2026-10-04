@@ -12,8 +12,14 @@ ENV NEXT_PUBLIC_DATA_MODE=connected
 ENV NEXT_PUBLIC_API_BASE_URL=/api/v1
 ENV NEXT_PUBLIC_UI_LAB_ENABLED=false
 COPY . .
-RUN npm run build
+RUN npm run typecheck && npm run build
 FROM ${NODE_IMAGE} AS runner
+ARG SOURCE_SHA=development
+ARG RELEASE_VERSION=unreleased
+LABEL org.opencontainers.image.source="https://github.com/cuongdesignnb/edu" \
+      org.opencontainers.image.revision="${SOURCE_SHA}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}"
+ENV BUILD_SHA=${SOURCE_SHA}
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /srv/web
 COPY --from=build --chown=node:node /srv/web/.next/standalone ./

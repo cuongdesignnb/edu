@@ -1,0 +1,344 @@
+# Production sử dụng image đã build/test; không build nặng trên VPS mặc định.
+name: ${COMPOSE_PROJECT_NAME:-edumanage_production}
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:?Pin PostgreSQL 17 image digest}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-edumanage_production}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets:
+    - db_admin_password
+    - db_migrator_password
+    - db_app_password
+    - db_parent_password
+    - db_worker_password
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+    - ./deploy/init-db.sh:/docker-entrypoint-initdb.d/01-edumanage.sh:ro
+    networks:
+    - data
+    shm_size: 128m
+    command:
+    - postgres
+    - -c
+    - shared_buffers=128MB
+    - -c
+    - max_connections=100
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    logging: &id001
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+    cpus: 1.0
+    mem_limit: 768m
+    security_opt:
+    - no-new-privileges:true
+  migrate:
+    image: ${API_IMAGE_REF:?Set immutable API image tag or digest}
+    entrypoint:
+    - node
+    - dist/cli.js
+    command:
+    - migrate
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      DB_HOST: postgres
+      DB_PORT: '5432'
+      DB_NAME: ${POSTGRES_DB:-edumanage_production}
+      DB_USER: edu_migrator
+      DB_PASSWORD_FILE: /run/secrets/db_migrator_password
+      STORAGE_ROOT: /data/uploads
+    secrets:
+    - db_migrator_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+    - data
+    volumes:
+    - private_files:/data
+    restart: 'no'
+    read_only: true
+    tmpfs:
+    - /tmp:size=64m,uid=1000,gid=1000,mode=0700
+    logging: *id001
+    cap_drop: &id002
+    - ALL
+    security_opt: &id003
+    - no-new-privileges:true
+  storage-init:
+    image: ${API_IMAGE_REF:?Set immutable API image tag or digest}
+    user: 0:0
+    entrypoint:
+    - /bin/sh
+    - -ec
+    command:
+    - mkdir -p /data/uploads /data/mail && chown 1000:1000 /data /data/uploads /data/mail && chmod 700 /data/uploads
+      /data/mail
+    volumes:
+    - private_files:/data
+    network_mode: none
+    restart: 'no'
+    logging: *id001
+    cap_drop:
+    - ALL
+    cap_add:
+    - CHOWN
+    - FOWNER
+    - DAC_OVERRIDE
+    security_opt:
+    - no-new-privileges:true
+  api:
+    image: ${API_IMAGE_REF:?Set immutable API image tag or digest}
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      APP_URL: ${APP_URL:?Set https origin}
+      PORT: '3001'
+      DB_HOST: postgres
+      DB_PORT: '5432'
+      DB_NAME: ${POSTGRES_DB:-edumanage_production}
+      DB_USER: edu_app
+      DB_PASSWORD_FILE: /run/secrets/db_app_password
+      PARENT_DB_USER: edu_parent
+      PARENT_DB_PASSWORD_FILE: /run/secrets/db_parent_password
+      SECRET_KEY_FILE: /run/secrets/app_key
+      MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
+      MAIL_MODE: smtp
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP host}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:?Set SMTP user}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      MAIL_FROM: ${MAIL_FROM:?Set verified mail sender}
+      COOKIE_SECURE: 'true'
+      DATA_MODE: connected
+      UI_LAB_ENABLED: 'false'
+      ACADEMIC_RESULTS_ENABLED: 'false'
+      STORAGE_DRIVER: local
+      STORAGE_ROOT: /data/uploads
+      LOCAL_MAIL_ROOT: /data/mail
+      DB_POOL_MAX: '10'
+      BUILD_SHA: ${SOURCE_SHA:?Set verified source SHA}
+    secrets:
+    - db_app_password
+    - db_parent_password
+    - app_key
+    - mail_key
+    - smtp_password
+    volumes:
+    - private_files:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+    networks:
+    - edge
+    - data
+    expose:
+    - '3001'
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+    - /tmp:size=64m,uid=1000,gid=1000,mode=0700
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3001/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    logging: *id001
+    cpus: 1.0
+    mem_limit: 512m
+    stop_grace_period: 30s
+    cap_drop: *id002
+    security_opt: *id003
+  worker:
+    image: ${API_IMAGE_REF:?Set immutable API image tag or digest}
+    command:
+    - node
+    - dist/worker.js
+    environment:
+      NODE_ENV: production
+      APP_ENV: production
+      APP_URL: ${APP_URL:?Set https origin}
+      PORT: '3001'
+      DB_HOST: postgres
+      DB_PORT: '5432'
+      DB_NAME: ${POSTGRES_DB:-edumanage_production}
+      DB_USER: edu_worker
+      DB_PASSWORD_FILE: /run/secrets/db_worker_password
+      SECRET_KEY_FILE: /run/secrets/app_key
+      MAIL_PAYLOAD_KEY_FILE: /run/secrets/mail_key
+      MAIL_MODE: smtp
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP host}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:?Set SMTP user}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      MAIL_FROM: ${MAIL_FROM:?Set verified mail sender}
+      COOKIE_SECURE: 'true'
+      DATA_MODE: connected
+      UI_LAB_ENABLED: 'false'
+      ACADEMIC_RESULTS_ENABLED: 'false'
+      STORAGE_DRIVER: local
+      STORAGE_ROOT: /data/uploads
+      LOCAL_MAIL_ROOT: /data/mail
+      DB_POOL_MAX: '5'
+      BUILD_SHA: ${SOURCE_SHA:?Set verified source SHA}
+      WORKER_CONCURRENCY: '2'
+    secrets:
+    - db_worker_password
+    - app_key
+    - mail_key
+    - smtp_password
+    volumes:
+    - private_files:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+    networks:
+    - data
+    - egress
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+    - /tmp:size=128m,uid=1000,gid=1000,mode=0700
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - const fs=require('fs');try{process.exit(Date.now()-fs.statSync('/tmp/worker-heartbeat').mtimeMs<60000?0:1)}catch{process.exit(1)}
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 30s
+    logging: *id001
+    cpus: 1.0
+    mem_limit: 512m
+    stop_grace_period: 60s
+    cap_drop: *id002
+    security_opt: *id003
+  web:
+    image: ${WEB_IMAGE_REF:?Set immutable WEB image tag or digest}
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      HOSTNAME: 0.0.0.0
+      APP_ENV: production
+      APP_URL: ${APP_URL:?Set https origin}
+      API_INTERNAL_URL: http://api:3001/api/v1
+      DATA_MODE: connected
+      UI_LAB_ENABLED: 'false'
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+    - edge
+    expose:
+    - '3000'
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+    - /tmp:size=64m,uid=1000,gid=1000,mode=0700
+    - /srv/web/.next/cache:size=128m,uid=1000,gid=1000,mode=0700
+    healthcheck:
+      test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *id001
+    cpus: 1.0
+    mem_limit: 512m
+    stop_grace_period: 30s
+    cap_drop: *id002
+    security_opt: *id003
+  gateway:
+    image: ${NGINX_IMAGE:?Pin nginx image digest}
+    user: 101:101
+    entrypoint:
+    - nginx
+    - -g
+    - daemon off;
+    ports:
+    - 127.0.0.1:${APP_PORT:-18763}:8080
+    volumes:
+    - ./deploy/nginx.production.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks:
+    - edge
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+    - /tmp:size=64m,uid=101,gid=101,mode=0700
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget -q -O /dev/null http://127.0.0.1:8080/gateway-health
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging: *id001
+    cpus: 0.5
+    mem_limit: 128m
+    cap_drop: *id002
+    security_opt: *id003
+volumes:
+  pgdata: {}
+  private_files: {}
+networks:
+  edge: {}
+  data:
+    internal: true
+  egress: {}
+secrets:
+  db_admin_password:
+    file: ${SECRET_DIR:?Set host secret directory}/db_admin_password
+  db_migrator_password:
+    file: ${SECRET_DIR:?Set host secret directory}/db_migrator_password
+  db_app_password:
+    file: ${SECRET_DIR:?Set host secret directory}/db_app_password
+  db_parent_password:
+    file: ${SECRET_DIR:?Set host secret directory}/db_parent_password
+  db_worker_password:
+    file: ${SECRET_DIR:?Set host secret directory}/db_worker_password
+  app_key:
+    file: ${SECRET_DIR:?Set host secret directory}/app_key
+  mail_key:
+    file: ${SECRET_DIR:?Set host secret directory}/mail_key
+  smtp_password:
+    file: ${SECRET_DIR:?Set host secret directory}/smtp_password

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
+if [[ "${MODE:-local}" == production ]]; then
+  exec python3 "$(dirname "$0")/production.py" backup "$@"
+fi
 [[ "${1:-}" == '--confirm-maintenance' ]] || { echo 'Backup nhất quán cần --confirm-maintenance; sẽ dừng gateway/web/api/worker tạm thời'; exit 1; }
 source "$(dirname "$0")/common.sh"
 # Không backup stack đã bị lỗi/dừng rồi tự khởi động lại ngoài ý muốn.

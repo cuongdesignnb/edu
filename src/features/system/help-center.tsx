@@ -78,7 +78,7 @@ export function HelpCenter() {
           ))}
           <Callout tone="info" icon={<LifeBuoy />} title="Cần hỗ trợ thêm?">
             Liên hệ đầu mối quản trị của trường trước. Nhà trường có thể gửi yêu cầu hỗ trợ tới nền tảng qua mục Hỗ trợ.
-            {contact.data && <> Liên hệ nền tảng (mẫu): {contact.data.supportEmail} · {contact.data.supportPhone}.</>} Bản demo không có chat trực tuyến.
+            {contact.data && <> Liên hệ nền tảng: {contact.data.supportEmail} · {contact.data.supportPhone}.</>}
           </Callout>
           <p className="flex items-center gap-2 text-[13px] text-muted"><ListOrdered className="size-4" aria-hidden />Xem thêm <Link href="/privacy" className="font-semibold text-primary-strong hover:underline">Quyền riêng tư</Link> và <Link href="/terms" className="font-semibold text-primary-strong hover:underline">Điều kiện sử dụng</Link> (bản nháp).</p>
         </div>

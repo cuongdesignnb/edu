@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, LogIn, Info, Clock3, UserCheck, FlaskConical, MailOpen } from "lucide-react";
+import { Mail, LogIn, Info, Clock3, UserCheck } from "lucide-react";
 import { sessionRepo } from "@/lib/repositories";
-import { useCommand, useRepo, useSession } from "@/lib/query/hooks";
+import { useCommand, useSession } from "@/lib/query/hooks";
 import { isExpired } from "@/lib/api/session";
 import { demoNowISO } from "@/lib/calendar";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -81,7 +81,7 @@ export function LoginForm() {
       <form onSubmit={submit} noValidate className="space-y-4" aria-describedby={formError ? "login-error" : undefined}>
         {formError && <div id="login-error"><Callout tone="danger" title="Không đăng nhập được">{formError}</Callout></div>}
         <TextField ref={emailRef} label="Email công việc" type="email" autoComplete="username" inputMode="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-          error={errors.email} icon={<Mail className="size-4" />} placeholder="ten@truong.edu.test" />
+          error={errors.email} icon={<Mail className="size-4" />} placeholder="Email do nhà trường cấp" />
         <PasswordField id="login-password" label="Mật khẩu" required value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password}
           labelAction={<Link href="/forgot-password" className="text-[13px] font-semibold text-primary-strong hover:underline">Quên mật khẩu?</Link>}
           helper="Nhập mật khẩu của tài khoản nhân sự." />

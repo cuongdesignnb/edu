@@ -11,3 +11,8 @@ backups
 backend/dist
 test-results
 playwright-report
+
+.production
+.github
+tests
+**/__pycache__

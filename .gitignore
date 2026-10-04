@@ -61,3 +61,7 @@ public/preview-references/evidence/
 /qa/backend/b6-public-announcements-*browser*artifacts*/
 /qa/backend/b6-conduct-rules*browser*artifacts*/
 /qa/backend/fast-track-browser-artifacts/
+
+# Production runtime state, locks and release receipts stay on the host.
+.production/
+__pycache__/

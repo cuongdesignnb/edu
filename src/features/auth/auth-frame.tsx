@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ShieldCheck, Users, School, FlaskConical } from "lucide-react";
+import { ShieldCheck, Users, School } from "lucide-react";
 import { Brand } from "@/components/layout/brand";
-import { DemoScenarioBanner } from "@/components/ui/guards";
 
 /**
  * Shared frame for AU01–AU04 (login, forgot/reset password, invitation).
@@ -12,7 +11,6 @@ import { DemoScenarioBanner } from "@/components/ui/guards";
 export function AuthFrame({ title, subtitle, children, aside, wide }: { title: ReactNode; subtitle?: ReactNode; children: ReactNode; aside?: ReactNode; wide?: boolean }) {
   return (
     <div className="flex min-h-dvh flex-col bg-app">
-      <DemoScenarioBanner />
       <div className="mx-auto grid w-full max-w-6xl flex-1 gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:py-10">
         <AuthAside>{aside}</AuthAside>
         <main id="main" className={wide ? "w-full" : "mx-auto w-full max-w-[520px] lg:mx-0 lg:justify-self-end"}>
