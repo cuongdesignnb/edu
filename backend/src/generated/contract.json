@@ -292,6 +292,9 @@
             "ACTIVE",
             "LOCKED"
           ]
+        },
+        "mustChangePassword": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -31824,6 +31827,159 @@
       "required": [
         "expectedVersion",
         "recipient"
+      ],
+      "additionalProperties": false
+    },
+    "DirectSchoolAdminCreate": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 256
+        },
+        "mustChangePassword": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "displayName",
+        "email",
+        "password",
+        "mustChangePassword"
+      ],
+      "additionalProperties": false
+    },
+    "AssignExistingSchoolAdmin": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 320
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        }
+      },
+      "required": [
+        "displayName",
+        "email"
+      ],
+      "additionalProperties": false
+    },
+    "DirectSchoolAdmin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE"
+          ]
+        },
+        "grantId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "roleCode": {
+          "type": "string",
+          "enum": [
+            "SCHOOL_ADMIN"
+          ]
+        },
+        "scopeType": {
+          "type": "string",
+          "enum": [
+            "SCHOOL"
+          ]
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "mustChangePassword": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "displayName",
+        "email",
+        "status",
+        "grantId",
+        "roleCode",
+        "scopeType",
+        "validFrom",
+        "validUntil",
+        "mustChangePassword"
+      ],
+      "additionalProperties": false
+    },
+    "DirectSchoolAdminResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/components/schemas/DirectSchoolAdmin"
+        },
+        "requestId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data",
+        "requestId"
       ],
       "additionalProperties": false
     },
@@ -100650,6 +100806,346 @@
       }
     },
     {
+      "id": "createSchoolAdminAccount",
+      "method": "POST",
+      "path": "/api/v1/platform/schools/{schoolId}/admins",
+      "title": "createSchoolAdminAccount",
+      "tag": "Platform",
+      "permission": "platform.admins.create_direct",
+      "scope": "school",
+      "request": "DirectSchoolAdminCreate",
+      "response": "DirectSchoolAdmin",
+      "list": false,
+      "auth": "staff",
+      "async_job": true,
+      "frontend_ids": [
+        "PL05"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "X-CSRF-Token",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "Idempotency-Key",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DirectSchoolAdminCreate"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectSchoolAdminResponse"
+              }
+            }
+          }
+        },
+        "202": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectSchoolAdminResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "assignExistingSchoolAdmin",
+      "method": "POST",
+      "path": "/api/v1/platform/schools/{schoolId}/admins/assign-existing",
+      "title": "assignExistingSchoolAdmin",
+      "tag": "Platform",
+      "permission": "platform.admins.create_direct",
+      "scope": "school",
+      "request": "AssignExistingSchoolAdmin",
+      "response": "DirectSchoolAdmin",
+      "list": false,
+      "auth": "staff",
+      "async_job": true,
+      "frontend_ids": [
+        "PL05"
+      ],
+      "description": "Operational metadata under current native authority; no pupil or family data.",
+      "readOnly": false,
+      "parameters": [
+        {
+          "name": "schoolId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "X-CSRF-Token",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "Idempotency-Key",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssignExistingSchoolAdmin"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectSchoolAdminResponse"
+              }
+            }
+          }
+        },
+        "202": {
+          "description": "Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectSchoolAdminResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Sai cú pháp hoặc Content-Type.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Không có phiên/quyền link hợp lệ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Thiếu quyền, CSRF sai hoặc trường tạm dừng.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Không tìm thấy trong phạm vi được phép.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Xung đột phiên bản/trạng thái/idempotency.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Dữ liệu không hợp lệ theo nghiệp vụ.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Vượt giới hạn tần suất.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Lỗi nội bộ đã che chi tiết.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "Phụ thuộc chưa sẵn sàng; không báo lưu thành công.",
+          "content": {
+            "application/problem+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Error"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "id": "getImportWorkspace",
       "method": "GET",
       "path": "/api/v1/schools/{schoolId}/import-workspace",
@@ -101008,7 +101504,8 @@
     "publication.read",
     "publication.withdraw",
     "import.read",
-    "platform.mail.manage"
+    "platform.mail.manage",
+    "platform.admins.create_direct"
   ],
   "roles": [
     {
@@ -101256,7 +101753,8 @@
         "platform.schools.read",
         "platform.settings",
         "platform.support",
-        "platform.mail.manage"
+        "platform.mail.manage",
+        "platform.admins.create_direct"
       ],
       "notes": "Không là school-admin mọi trường; support data read cần grant trường duyệt."
     }

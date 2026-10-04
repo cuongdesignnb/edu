@@ -11,6 +11,7 @@ export interface UserRow {
   id: string; email_normalized: string; display_name: string; status: string;
   password_hash: string | null; version: number; created_at: Date; updated_at: Date;
   self_work_phone: string | null; self_bio: string | null;
+  must_change_password:boolean;
 }
 export interface Principal {
   sessionId: string; userId: string; csrfHash: string; tokenHash: string; user: UserRow;
@@ -19,7 +20,7 @@ export interface Principal {
 export function userDto(user: UserRow) {
   return { id: user.id, email: user.email_normalized, displayName: user.display_name,
     status: user.status, version: user.version, createdAt: iso(user.created_at), updatedAt: iso(user.updated_at),
-    workPhone: user.self_work_phone, bio: user.self_bio };
+    workPhone: user.self_work_phone, bio: user.self_bio,mustChangePassword:user.must_change_password===true };
 }
 
 @Injectable()
@@ -139,6 +140,7 @@ export class IdentityService {
     });
   }
   async change(principal: Principal, input: { currentPassword: string; newPassword: string }) {
+    if(principal.user.must_change_password&&input.currentPassword===input.newPassword)throw new Problem(422,'NEW_PASSWORD_REQUIRED');
     const hash = await hashPassword(input.newPassword);
     await this.db.transaction(async tx => {
       const user = await one<UserRow>(tx, 'SELECT * FROM identity.users WHERE id=$1 FOR UPDATE', [principal.userId]);
@@ -148,7 +150,7 @@ export class IdentityService {
     return { id: principal.userId, status: 'COMPLETED' };
   }
   private async setPassword(tx: Transaction, userId: string, hash: string) {
-    await tx.query(`UPDATE identity.users SET password_hash=$2,password_changed_at=now(),authz_version=authz_version+1 WHERE id=$1`, [userId,hash]);
+    await tx.query(`UPDATE identity.users SET password_hash=$2,must_change_password=false,password_changed_at=now(),authz_version=authz_version+1 WHERE id=$1`, [userId,hash]);
     await tx.query('UPDATE identity.staff_sessions SET revoked_at=now() WHERE user_id=$1 AND revoked_at IS NULL', [userId]);
   }
 }

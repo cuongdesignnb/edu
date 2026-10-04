@@ -106,7 +106,7 @@ beforeEach(async()=>{
 });
 
 test('B5 all 264 supplied operations and explicit frontend workflow extensions have registered real handlers',async()=>{
-  assert.equal(operations.length,427);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
+  assert.equal(operations.length,429);assert.equal(new Set(operations.map(op=>op.id)).size,operations.length);for(const op of operations)assert.equal(server.hasRoute({method:op.method,url:op.path.replace(/\{([^}]+)\}/g,':$1')}),true,op.id);
 });
 
 test('TOUR staff preferences are shared across sessions, scoped, owner-only and monotonically completed',async()=>{

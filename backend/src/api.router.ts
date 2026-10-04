@@ -69,6 +69,7 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
           const params=request.params as Record<string,string>,query=request.query as Record<string,string>;
           for(const [key,value] of Object.entries(params)) if(key.endsWith('Id') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw new Problem(404,'RESOURCE_NOT_FOUND');
           let principal=operation.auth==='staff'?await identity.authenticate(request):undefined;
+          if(principal?.user.must_change_password&&!['getMyContext','getMyProfile','listMySessions','logout','changePassword','revokeMySession'].includes(operation.id))throw new Problem(403,'PASSWORD_CHANGE_REQUIRED');
           if(request.headers['x-support-access']!==undefined){
             const policy=serverPermissions.get(server);if(!principal||!policy)throw new Problem(403,'SUPPORT_READ_ONLY');
             selectedSupport=await policy.resolveSupport(principal,operation,params,query,request.headers['x-support-access']);principal={...principal,support:selectedSupport};

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Database,one,type Row,type Transaction } from '../../database/database';
 import { listResource,dto } from '../../database/resources';
 import { Commands } from '../../common/commands';
-import { Permissions,grantDto,coversDelegatedExpiry } from '../../common/permissions';
+import { Permissions,coversDelegatedExpiry } from '../../common/permissions';
 import { roleTemplates } from '../../common/contract';
 import { Problem,notFound,validation } from '../../common/problem';
 import {validateSchoolWebsite} from '../../common/school-website';
@@ -11,12 +11,13 @@ import { schoolListResource,adminInvitationResource,schoolWriteColumns,schoolVie
 import {operationsOverview} from './operations-overview';
 import {schoolCountSortResource} from './platform-data';
 import {mailSettings,mailSettingsDto,saveMailSettings,queueMailTest} from './platform-mail';
+import {createSchoolAdmin,schoolAdminGrants} from './direct-school-admin';
 import type { Handler,RequestContext,Result } from '../../api.router';
 
 @Injectable()
 export class PlatformService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getPlatformMailSettings','updatePlatformMailSettings','testPlatformMailSettings','getPlatformOperationsOverview','getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
+  handlers():Record<string,Handler>{return Object.fromEntries(['createSchoolAdminAccount','assignExistingSchoolAdmin','getPlatformMailSettings','updatePlatformMailSettings','testPlatformMailSettings','getPlatformOperationsOverview','getPlatformOverview','listPlatformSchools','getPlatformSchoolOptions','checkPlatformSchoolIdentity','getPlatformAuditOptions','listSchoolAdminInvitations','revokePlatformAdminInvitation','createSchool','getPlatformSchool','updatePlatformSchool','setSchoolStatus','listSchoolAdmins','inviteSchoolAdmin','revokeSchoolAdmin','listPlatformAudit','listOperations','getPlatformSettings','updatePlatformSettings'].map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   private async school(tx:Transaction,id:string,lock=false){const row=await one<Row>(tx,`SELECT * FROM platform.schools WHERE id=$1${lock?' FOR UPDATE':''}`,[id]);if(!row)notFound();return row;}
   private version(row:Row,expected:unknown){if(row.version!==expected)throw new Problem(409,'VERSION_CONFLICT',undefined,Number(row.version));}
   private async inviteAdmin(tx:Transaction,c:RequestContext,schoolId:string,input:Record<string,unknown>){
@@ -95,6 +96,10 @@ export class PlatformService {
         return {data:await schoolView(tx,created),status:201};
       }
       const school=await this.school(tx,schoolId!,c.operation.method!=='GET');
+      if(op==='createSchoolAdminAccount'||op==='assignExistingSchoolAdmin'){
+        if(!['DRAFT','ACTIVE'].includes(String(school.status)))throw new Problem(409,'SCHOOL_UNAVAILABLE');
+        return {data:await createSchoolAdmin(tx,c,op==='assignExistingSchoolAdmin'),status:201};
+      }
       if(op==='listSchoolAdminInvitations')return listResource(tx,adminInvitationResource,schoolId!,{...c.query,sort:c.query.sort??'createdAt',dir:c.query.dir??'desc'},undefined,c.principal!.userId);
       if(op==='revokePlatformAdminInvitation'){
         const row=await one<Row>(tx,`SELECT i.* FROM app.staff_invitations i WHERE i.school_id=$1 AND i.id=$2 AND jsonb_array_length(i.proposed_assignments)=1 AND EXISTS(SELECT 1 FROM app.roles r WHERE r.school_id=i.school_id AND r.code='SCHOOL_ADMIN' AND r.system_role AND r.id::text=i.proposed_assignments->0->>'roleId' AND i.proposed_assignments->0->>'scopeType'='SCHOOL') FOR UPDATE`,[schoolId,c.params.invitationId]);if(!row)notFound();this.version(row,c.body.expectedVersion);
@@ -115,7 +120,7 @@ export class PlatformService {
       }
       if(op==='listSchoolAdmins'){
         const result=await listResource(tx,adminResource,schoolId!,c.query,undefined,c.principal!.userId);
-        for(const member of result.data)member.grants=(await this.policy.grants(tx,String(member.userId),schoolId!)).filter(g=>g.role_code==='SCHOOL_ADMIN'&&g.scope_type==='SCHOOL').map(grantDto);return result;
+        for(const member of result.data)member.grants=await schoolAdminGrants(tx,schoolId!,String(member.userId));return result;
       }
       if(op==='inviteSchoolAdmin'){
         if(!['DRAFT','ACTIVE'].includes(String(school.status)))throw new Problem(409,'SCHOOL_UNAVAILABLE');

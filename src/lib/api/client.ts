@@ -59,6 +59,12 @@ function error(status:number,p:HttpProblem,auth:string,read:boolean,retryAfter:s
   if(p.code==='INVALID_CREDENTIALS')code='VALIDATION';
   const messages:Partial<Record<RepoErrorCode,string>>={NO_SESSION:'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',REVOKED:'Link tra cứu không còn hiệu lực hoặc đã bị thu hồi.',NETWORK:'Không nhận được xác nhận lưu từ máy chủ. Nội dung của bạn vẫn còn; hãy thử lại.',READ_ERROR:'Không tải được dữ liệu từ máy chủ. Vui lòng thử lại.'};
   const problemMessages:Record<string,string>={
+    IDENTITY_EXISTS_USE_ASSIGN:'Tài khoản đã tồn tại. Hãy dùng “Gán tài khoản hiện có”; mật khẩu cũ được giữ nguyên.',
+    ALREADY_SCHOOL_MEMBER:'Tài khoản đã thuộc trường này. Không tạo hoặc cấp lại tự động.',
+    IDENTITY_NOT_ELIGIBLE:'Tài khoản hiện có chưa hoạt động hoặc chưa có mật khẩu. Không thể gán trực tiếp.',
+    IDENTITY_NOT_FOUND:'Không tìm thấy tài khoản hiện có. Kiểm tra lại email hoặc tạo tài khoản mới.',
+    PASSWORD_CHANGE_REQUIRED:'Bạn phải đổi mật khẩu tạm thời trước khi sử dụng chức năng nhà trường.',
+    NEW_PASSWORD_REQUIRED:'Mật khẩu mới phải khác mật khẩu tạm thời.',
     PARENT_ISSUE_SOURCE_CHANGED:'Nguồn cấp link đã thay đổi. Hãy tải lại và xác nhận học sinh, người nhận cùng thời hạn.',
     LINK_ALREADY_ISSUED:'Lệnh này đã cấp link, nhưng mã truy cập chỉ được trả một lần. Xem quyền đã cấp và chủ động cấp lại nếu chưa giữ được link.',
     SHARED_GUARDIAN_SCOPE:'Liên hệ này dùng chung cho nhiều học sinh. Cần người có quyền quản lý tất cả các lớp liên quan sửa liên hệ.',

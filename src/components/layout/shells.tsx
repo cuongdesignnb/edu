@@ -28,9 +28,12 @@ const PROMO = { image: "/assets/illustrations/school-sidebar.png", title: "Cùng
 /* ------------------------------ Session gate (ST11) ------------------------------ */
 export function RequireStaffSession({ children, kind = "staff" }: { children: ReactNode; kind?: "staff" | "platform" | "any" }) {
   const { session } = useSession();
+  const pathname=usePathname(),router=useRouter(),mustChange=session?.mustChangePassword===true;
+  useEffect(()=>{if(mustChange&&pathname!=='/account/security')router.replace('/account/security');},[mustChange,pathname,router]);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return <PageSkeleton />;
+  if(mustChange&&pathname!=='/account/security')return <PageSkeleton/>;
   if (!session || session.actor.kind === "anonymous") {
     return <CenterCard><EmptyState icon={<FlaskConical className="size-6" />} title="Vui lòng đăng nhập" description="Đăng nhập bằng tài khoản nhân sự được nhà trường mời." action={<ButtonLink href="/login" variant="primary">Đăng nhập</ButtonLink>} /></CenterCard>;
   }
@@ -63,13 +66,14 @@ function Frame({ nav, actions, homeHref, search, roleLabel, schoolId, children, 
   const prepareNavigation=()=>{previousMobile.current=mobile;if(window.innerWidth<1024){setTourNavigation(true);setMobile(true);}};
   const restoreNavigation=()=>{setTourNavigation(false);setMobile(previousMobile.current);};
   const close = useCallback(() => setMobile(false), []);
+  const {session:frameSession}=useSession();
   const content=(
     <div className="flex min-h-dvh bg-app">
       <a href="#main" className="sr-only-focusable fixed left-2 top-2 z-[90] rounded-lg bg-primary px-3 py-2 text-white">Bỏ qua điều hướng</a>
       <Sidebar entries={nav} actions={actions} promo={promo} homeHref={homeHref} mobileOpen={mobile} onMobileClose={close} footer={sidebarFooter} tourNavigation={tourNavigation} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DemoScenarioBanner />
-        <Topbar onMenu={() => setMobile(true)} homeHref={homeHref} search={search} right={<><TourHelp/><NotificationBell schoolId={schoolId} /><span className="mx-1 hidden h-8 w-px bg-line sm:block" aria-hidden /><UserMenu roleLabel={roleLabel} /></>} />
+        <Topbar onMenu={() => setMobile(true)} homeHref={homeHref} search={search} right={<>{!frameSession?.mustChangePassword&&<><TourHelp/><NotificationBell schoolId={schoolId} /></>}<span className="mx-1 hidden h-8 w-px bg-line sm:block" aria-hidden /><UserMenu roleLabel={roleLabel} /></>} />
         <main id="main" className="flex min-w-0 flex-1 flex-col">{children}</main>
         <AppFooter />
       </div>
@@ -220,9 +224,10 @@ function TeacherFrame({ schoolId, children }: { schoolId: string; children: Reac
 
 /* ------------------------------ Account / personal ------------------------------ */
 export function AccountShell({ children }: { children: ReactNode }) {
+  const {session}=useSession();
   return (
     <RequireStaffSession kind="any">
-      <Frame nav={accountNav()} homeHref="/choose-school" roleLabel="Tài khoản nhân sự" search={<GlobalSearch placeholder="Tìm trong phạm vi được phân công…" />} promo={null}>{children}</Frame>
+      <Frame nav={accountNav()} homeHref="/choose-school" roleLabel="Tài khoản nhân sự" search={session?.mustChangePassword?null:<GlobalSearch placeholder="Tìm trong phạm vi được phân công…" />} promo={null} tourEnabled={!session?.mustChangePassword}>{children}</Frame>
     </RequireStaffSession>
   );
 }

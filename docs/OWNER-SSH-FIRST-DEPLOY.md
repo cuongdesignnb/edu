@@ -201,3 +201,18 @@ MODE=production bash scripts/backup.sh --confirm-maintenance
 ```
 
 Backup phải mã hóa và copy ngoài host. Rollback dùng `bash scripts/rollback.sh <tag-đã-deploy-thành-công>` và chỉ được chấp nhận khi schema/checksum tương ứng; schema khác cần kế hoạch DBA/restore riêng. Không checkout script tag cũ để ép rollback, không tự chạy SQL down.
+
+## 8. Cập nhật v1.0.2 — tạo trực tiếp quản trị trường
+
+Sau khi nhận xác nhận `READY_FOR_OWNER_UPDATE` cho v1.0.2, chạy block sau trên server đã có source, `.env.production` và `.secrets/production`. Không cần bật SMTP. Script kiểm tag/source/digest và tự áp dụng migration 058; giữ cấu hình, secrets và volumes.
+
+```bash
+set -euo pipefail
+cd /www/wwwroot/edu
+bash scripts/update-production.sh v1.0.2
+bash scripts/prod-status.sh
+```
+
+Nếu server chưa có containers, update/release xử lý first deployment theo gate của package hiện có. Nếu đã chạy, script tạo backup và bảo trì trước migration. Không sửa tag v1.0.0/v1.0.1. Không dùng `latest`, không seed demo hoặc xóa volume.
+
+Sau khi status healthy, đăng nhập Platform Operator → Trường học → chọn trường → Quản trị trường. Hai lựa chọn: **Tạo tài khoản quản trị** (không email) và **Gửi lời mời qua email** (chờ khi SMTP tắt). Bật đổi mật khẩu lần đầu cho tài khoản mới; chuyển mật khẩu qua kênh riêng. Identity đã tồn tại phải gán explicit, giữ mật khẩu cũ. Xem [DIRECT-SCHOOL-ADMIN-RESULT.md](DIRECT-SCHOOL-ADMIN-RESULT.md).

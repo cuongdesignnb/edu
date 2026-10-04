@@ -7,7 +7,7 @@ export interface ApiSchemas {
   "VersionCommand": { "expectedVersion": number; };
   "PageInfo": { "nextCursor": (string) | null; "hasMore": boolean; "limit": number; "total"?: number; };
   "GrantView": { "id": (string) | null; "version": number; "roleId": (string) | null; "roleLabel": string; "roleCode": string; "assignmentStartsOn"?: (string) | null; "assignmentEndsOn"?: (string) | null; "actions": Array<string>; "scopeType": "SCHOOL" | "CLASS" | "SUBJECT"; "classId"?: string; "subjectId"?: string; "validFrom": string; "validUntil": (string) | null; "revokedAt"?: (string) | null; };
-  "User": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "displayName": string; "workPhone"?: (string) | null; "bio"?: (string) | null; "email": string; "status": "INVITED" | "ACTIVE" | "LOCKED"; };
+  "User": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "displayName": string; "workPhone"?: (string) | null; "bio"?: (string) | null; "email": string; "status": "INVITED" | "ACTIVE" | "LOCKED"; "mustChangePassword"?: boolean; };
   "Context": { "user": ApiSchemas["User"]; "memberships": Array<{ "schoolId": (string) | null; "schoolName": string; "schoolSlug": string; "schoolShortName": string; "schoolStatus": "DRAFT" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; "department": string; "timezone": string; "today": string; "schoolWorkspace": boolean; "teacherWorkspace": boolean; "duties": Array<{ "id": string; "classId": string; "className": string; "subjectId": (string) | null; "subjectName": (string) | null; "kind": "HOMEROOM" | "SUBJECT"; "startsOn": string; "endsOn": (string) | null; }>; "memberId": (string) | null; "status": string; "grants": Array<ApiSchemas["GrantView"]>; }>; "platformActions": Array<string>; "csrfToken": string; "mode": "connected"; "serverNow": string; };
   "LoginResult": { "user": ApiSchemas["User"]; "csrfToken": string; };
   "Csrf": { "csrfToken": string; };
@@ -649,6 +649,10 @@ export interface ApiSchemas {
   "PlatformMailSettingsResponse": { "data": ApiSchemas["PlatformMailSettings"]; "requestId": string; };
   "PlatformMailUpdate": { "enabled": boolean; "host": string; "port": number; "security": "STARTTLS" | "TLS"; "username": string; "fromEmail": string; "fromName": string; "expectedVersion": number; "password"?: string; "clearPassword"?: boolean; };
   "PlatformMailTest": { "expectedVersion": number; "recipient": string; };
+  "DirectSchoolAdminCreate": { "displayName": string; "email": string; "validFrom"?: (string) | null; "validUntil"?: (string) | null; "password": string; "mustChangePassword": boolean; };
+  "AssignExistingSchoolAdmin": { "displayName": string; "email": string; "validFrom"?: (string) | null; "validUntil"?: (string) | null; };
+  "DirectSchoolAdmin": { "id": string; "userId": string; "displayName": string; "email": string; "status": "ACTIVE"; "grantId": string; "roleCode": "SCHOOL_ADMIN"; "scopeType": "SCHOOL"; "validFrom": string; "validUntil": (string) | null; "mustChangePassword": boolean; };
+  "DirectSchoolAdminResponse": { "data": ApiSchemas["DirectSchoolAdmin"]; "requestId": string; };
   "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
   "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
   "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
@@ -4905,6 +4909,26 @@ export const apiOperations = {
     "response": "PlatformMailSettings",
     "list": false,
     "permission": "platform.mail.manage",
+    "readOnly": false
+  },
+  "createSchoolAdminAccount": {
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/admins",
+    "auth": "staff",
+    "request": "DirectSchoolAdminCreate",
+    "response": "DirectSchoolAdmin",
+    "list": false,
+    "permission": "platform.admins.create_direct",
+    "readOnly": false
+  },
+  "assignExistingSchoolAdmin": {
+    "method": "POST",
+    "path": "/api/v1/platform/schools/{schoolId}/admins/assign-existing",
+    "auth": "staff",
+    "request": "AssignExistingSchoolAdmin",
+    "response": "DirectSchoolAdmin",
+    "list": false,
+    "permission": "platform.admins.create_direct",
     "readOnly": false
   },
   "getImportWorkspace": {

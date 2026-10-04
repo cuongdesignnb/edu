@@ -16,8 +16,9 @@ export interface AdminOption { membershipId: string; name: string }
  * O02 — invite or replace a school admin. Replacing never removes the current admin first:
  * the new person is invited, and the old role is revoked only once another admin is active.
  */
-export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins, initialMode = "invite", onInvited }: {
+export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins, initialMode = "invite", onInvited,smtpEnabled }: {
   open: boolean; onClose: () => void; schoolId: string; schoolName: string; admins: AdminOption[]; initialMode?: "invite" | "replace"; onInvited?: (inviteId: string) => void;
+  smtpEnabled?:boolean|null;
 }) {
   const [mode, setMode] = useState<"invite" | "replace">(initialMode);
   const [f, setF] = useState({ fullName: "", email: "", days: "14", replaces: "" });
@@ -47,6 +48,7 @@ export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins,
       beforeClose={() => { if (!dirty) return true; leave(onClose); return false; }}
       footer={<><Button variant="ghost" onClick={onClose} disabled={cmd.pending}>Hủy</Button><Button variant="primary" icon={<MailPlus className="size-4" />} loading={cmd.pending} onClick={submit}>Tạo lời mời</Button></>}>
       <div className="space-y-4">
+        {smtpEnabled===false&&<Callout tone="warning">SMTP chưa được cấu hình hoặc đang tắt. Hãy dùng “Tạo tài khoản quản trị” hoặc cấu hình SMTP. Lời mời vẫn có thể tạo và chờ trong hàng đợi.</Callout>}
         <ErrorSummary errors={errors} labels={{ fullName: "Họ tên", email: "Email", replaces: "Quản trị cần thay", days: "Thời hạn" }} />
         {admins.length > 0 && (
           <RadioGroup label="Loại thao tác" direction="row" value={mode} onChange={setMode} options={[{ value: "invite", label: "Thêm quản trị" }, { value: "replace", label: "Thay người phụ trách" }]} />
@@ -60,7 +62,7 @@ export function InviteAdminDialog({ open, onClose, schoolId, schoolName, admins,
         {mode === "replace" && replaced && (
           <Callout tone="warning" icon={<Info />}>{replaced.name} vẫn giữ quyền cho đến khi người mới chấp nhận lời mời. Sau đó thu hồi quyền của {replaced.name} trong danh sách quản trị — hệ thống không cho phép để trường mất người quản trị cuối.</Callout>
         )}
-        <p className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted">Hệ thống sẽ gửi email chứa đường dẫn riêng. Không hiển thị lại mã bí mật sau khi tạo.</p>
+        <p className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted">Email chờ worker gửi khi SMTP bật và lời mời còn hiệu lực. Tạo lời mời không phải xác nhận email đã gửi. Không hiển thị lại mã bí mật.</p>
       </div>
     </Modal>
   );

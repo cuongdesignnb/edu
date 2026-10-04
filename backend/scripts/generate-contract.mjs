@@ -17,6 +17,7 @@ import {extendImportWorkspaceContract} from './import-workspace-contract.mjs';
 import {applyPublicSystemContract} from './public-system-contract.mjs';
 import {applyOnboardingContract} from './onboarding-contract.mjs';
 import {applyPlatformMailContract} from './platform-mail-contract.mjs';
+import {applyDirectSchoolAdminContract} from './direct-school-admin-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -615,8 +616,10 @@ const roles = JSON.parse(await fs.readFile(path.join(source, 'api/role-templates
 permissions.push('publication.read', 'publication.withdraw');
 permissions.push('import.read');
 permissions.push('platform.mail.manage');
+permissions.push('platform.admins.create_direct');
 for (const role of roles.roles) {
   if(role.code==='PLATFORM_OPERATOR')role.actions.push('platform.mail.manage');
+  if(role.code==='PLATFORM_OPERATOR')role.actions.push('platform.admins.create_direct');
   if (['HOMEROOM', 'SUBJECT_TEACHER'].includes(role.code)) role.actions.push('class.read');
   if (role.actions.includes('conduct.read')) role.actions.push('publication.read');
   if (role.code === 'SCHOOL_ADMIN' || role.code === 'SCHOOL_LEADERSHIP') role.actions.push('publication.withdraw');
@@ -771,6 +774,7 @@ extendReportWorkspaceContract(spec,extendOperation,{object,uuid,label,count,time
 applyPublicSystemContract(spec,extendOperation);
 applyOnboardingContract(spec,extendOperation,operations);
 applyPlatformMailContract(spec,extendOperation,operations);
+applyDirectSchoolAdminContract(spec,extendOperation);
 extendImportWorkspaceContract(spec,extendOperation,{object,uuid,label});
 extendTransferWorkspaceContract(spec,extendOperation,{object,uuid,label,timestamp});
 await SwaggerParser.validate(structuredClone(spec));

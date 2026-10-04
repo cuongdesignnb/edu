@@ -1,11 +1,13 @@
 import type { Actor } from "@/lib/permissions/can";
 import { makeCtx, sessionRepo } from "@/lib/repositories";
+import {readStaffSession} from '@/lib/api/session';
 
 /**
  * Where a freshly signed-in actor should land:
  * platform → /platform; exactly one usable workspace → that workspace; otherwise /choose-school.
  */
 export async function destinationFor(actor: Actor): Promise<string> {
+  if(readStaffSession()?.mustChangePassword)return '/account/security';
   if (actor.kind === "platform") return "/platform";
   if (actor.kind !== "staff") return "/login";
   const me = await sessionRepo.me(makeCtx(actor));

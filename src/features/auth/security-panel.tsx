@@ -31,6 +31,7 @@ export function SecurityPage() {
   const [outOpen, setOutOpen] = useState(false);
   return (
     <div className="page">
+      {session?.mustChangePassword&&<Callout tone="warning" title="Bắt buộc đổi mật khẩu lần đầu">Đổi mật khẩu tạm thời trước khi sử dụng chức năng nhà trường. Sau khi đổi, đăng nhập lại bằng mật khẩu mới.</Callout>}
       <PageHeader title="Bảo mật và phiên" subtitle="Mật khẩu và phiên làm việc của tài khoản hiện tại" breadcrumbs={[{ label: "Tài khoản", href: "/account/profile" }, { label: "Bảo mật và phiên" }]} badge={<DemoTag />} />
       <div className="grid gap-5 xl:grid-cols-2">
         <ChangePassword email={me.data?.user.email} />

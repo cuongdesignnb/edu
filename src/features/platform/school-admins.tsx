@@ -16,6 +16,8 @@ import { Timeline } from "@/components/ui/timeline";
 import { DeniedState, EmptyState, QueryState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
 import { InviteAdminDialog } from "./invite-admin-dialog";
+import {DirectAdminDialog} from './direct-admin-dialog';
+import type {ApiSchemas} from '@/lib/api/generated';
 
 type Data = Awaited<ReturnType<typeof platformRepo.school>>;
 type Admin = NonNullable<Data["admins"]>[number];
@@ -31,6 +33,7 @@ function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations
   const toast = useToast();
   const s = d.school;
   const [invite, setInvite] = useState<null | "invite" | "replace">(null);
+  const [direct,setDirect]=useState(false),[created,setCreated]=useState<ApiSchemas['DirectSchoolAdmin']|null>(null);
   const [revokeAdmin, setRevokeAdmin] = useState<Admin | null>(null);
   const [revokeInv, setRevokeInv] = useState<Inv | null>(null);
   const active = d.admins.filter((a) => a.status === "active");
@@ -41,7 +44,7 @@ function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations
 
   const adminCols: Column<Admin>[] = [
     { key: "name", header: "Quản trị", cell: (a) => <Identity name={a.name} sub={a.email} size={34} /> },
-    { key: "status", header: "Trạng thái", cell: (a) => <StatusBadge status={a.status} map={membershipStatus} /> },
+    { key: "status", header: "Trạng thái", cell: (a) => <StatusBadge status={a.status} map={{...membershipStatus,scheduled:{label:'Chờ hiệu lực',tone:'info'}}} /> },
     { key: "since", header: "Hiệu lực từ", cell: (a) => fmtDate(a.since), hideBelow: "sm" },
     { key: "act", header: <span className="sr-only">Hành động</span>, align: "center", cell: (a) => a.status !== "active" ? <span className="text-[12.5px] text-muted">—</span> : (
       <ActionMenu label={`Thao tác với ${a.name}`} items={[
@@ -58,7 +61,7 @@ function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations
     { key: "act", header: <span className="sr-only">Hành động</span>, align: "center", cell: (i) => (
       <ActionMenu label={`Thao tác với lời mời ${i.email}`} items={[
         ...(i.status === "pending" ? [
-          { label: "Đường dẫn được gửi qua email khi tạo lời mời", icon: <MailPlus />, disabled: true },
+          { label: "Email chờ gửi khi SMTP được bật", icon: <MailPlus />, disabled: true },
           { label: "Thu hồi lời mời", icon: <Ban />, danger: true, onSelect: () => setRevokeInv(i), separatorBefore: true },
         ] : []),
       ]} />
@@ -76,21 +79,22 @@ function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations
         illustration="/assets/illustrations/teachers-trio.png"
         actions={<>
           {active.length > 0 && <Button icon={<Repeat className="size-4" />} onClick={() => setInvite("replace")}>Thay quản trị</Button>}
-          <Button variant="primary" icon={<MailPlus className="size-4" />} onClick={() => setInvite("invite")}>Mời quản trị</Button>
+          {d.canCreateDirect&&<Button variant="primary" icon={<UserCog className="size-4"/>} onClick={()=>setDirect(true)}>Tạo tài khoản quản trị</Button>}
+          <Button icon={<MailPlus className="size-4" />} onClick={() => setInvite("invite")}>Gửi lời mời qua email</Button>
         </>} />
       {active.length <= 1 && (
         <Callout tone={active.length ? "info" : "warning"} icon={<ShieldAlert />} title={active.length ? "Trường chỉ còn một quản trị đang hoạt động" : "Trường chưa có quản trị đang hoạt động"}>
-          {active.length ? "Không thể thu hồi quản trị cuối cùng. Hãy mời người thay thế và chờ họ chấp nhận trước." : "Mời quản trị và chờ người đó chấp nhận lời mời. Trường không kích hoạt được khi thiếu quản trị."}
+          {active.length ? "Không thể thu hồi quản trị cuối cùng. Tạo quản trị mới hoặc mời người thay thế trước." : "Tạo tài khoản quản trị ngay hoặc gửi lời mời. Trường không kích hoạt được khi thiếu quản trị còn hiệu lực."}
         </Callout>
       )}
       <Card>
-        <CardHeader title="Quản trị hiện tại" icon={<UserCog className="size-5" />} subtitle={`${active.length} đang hoạt động / ${d.admins.length} tổng`} />
+        <CardHeader title="Quản trị viên đang hoạt động" icon={<UserCog className="size-5" />} subtitle={`${active.length} đang hoạt động / ${d.admins.length} tổng`} />
         {d.admins.length === 0 ? <EmptyState compact icon={<UserCog className="size-6" />} title="Chưa có quản trị" action={<Button variant="primary" size="sm" onClick={() => setInvite("invite")}>Mời quản trị</Button>} /> : (
           <div className="px-4 pb-4"><DataTable caption="Quản trị hiện tại" rows={d.admins} columns={adminCols} rowKey={(a) => a.membershipId} minWidth={520} /></div>
         )}
       </Card>
       <Card>
-        <CardHeader title="Lời mời quản trị" icon={<Link2 className="size-5" />} subtitle="Lời mời được gửi qua email; không hiển thị lại mã bí mật" />
+        <CardHeader title="Lời mời đang chờ" icon={<Link2 className="size-5" />} subtitle="Trạng thái lời mời email và lịch sử phản hồi; không hiển thị mã bí mật" />
         {d.invitations.length === 0 ? <EmptyState compact icon={<Link2 className="size-6" />} title="Chưa có lời mời" /> : (
           <div className="px-4 pb-4"><DataTable caption="Lời mời quản trị" rows={[...d.invitations].sort((a, b) => b.createdAt.localeCompare(a.createdAt))} columns={invCols} rowKey={(i) => i.id} minWidth={560} /></div>
         )}
@@ -100,7 +104,9 @@ function Body({ d }: { d: Data & {admins:NonNullable<Data["admins"]>;invitations
         <div className="px-5 pb-5">{d.history===null?<DeniedState message="Bạn không có quyền xem nhật ký." />:<Timeline items={history.slice(0, 10)} empty="Chưa có lịch sử quản trị." />}</div>
       </Card>
 
-      <InviteAdminDialog open={!!invite} initialMode={invite ?? "invite"} onClose={() => setInvite(null)} schoolId={s.id} schoolName={s.name} admins={active.map((a) => ({ membershipId: a.membershipId, name: a.name }))} />
+      {created&&<Callout tone="success" title={new Date(created.validFrom).getTime()>Date.now()?'Đã tạo tài khoản; quyền có hiệu lực theo lịch':'Tài khoản quản trị đã hoạt động'}>{created.displayName} · {created.email}. Không gửi email. {created.mustChangePassword?'Người dùng phải đổi mật khẩu lần đầu.':''}</Callout>}
+      {d.canCreateDirect&&<DirectAdminDialog open={direct} onClose={()=>setDirect(false)} schoolId={s.id} schoolName={s.name} onCreated={setCreated}/>}
+      <InviteAdminDialog open={!!invite} initialMode={invite ?? "invite"} onClose={() => setInvite(null)} schoolId={s.id} schoolName={s.name} smtpEnabled={d.smtpEnabled} admins={active.map((a) => ({ membershipId: a.membershipId, name: a.name }))} />
       <ConfirmDialog open={!!revokeAdmin} onOpenChange={(o) => !o && setRevokeAdmin(null)} title="Thu hồi quyền quản trị" object={revokeAdmin ? `${revokeAdmin.name} — ${s.name}` : ""}
         consequence="Người này mất quyền quản trị trường nhưng vẫn là thành viên (nếu có nhiệm vụ khác). Hệ thống từ chối nếu đây là quản trị cuối cùng." confirmLabel="Thu hồi quyền" variant="danger"
         reasonLabel="Lý do" reasonRequired busy={revokeA.pending} error={revokeA.error?.code === "VALIDATION" ? revokeA.error.message : undefined}
