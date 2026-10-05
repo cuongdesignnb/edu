@@ -6,15 +6,17 @@ import {Permissions,grantAllows,type Grant} from '../../common/permissions';
 import {Problem,notFound,validation} from '../../common/problem';
 import {canonical} from '../../common/commands';
 import type {ReportData,ReportRow,ReportColumn} from './report-render';
+import {parentConductReport} from './parent-conduct-data';
 export interface ReportInput {reportType:string;yearId?:string;classId?:string;studentId?:string;studentIds?:string[];gradeId?:string;weekId?:string;from?:string;to?:string;dataSource?:string;scope?:'SCHOOL'|'CLASS'}
 export interface ReportContext {schoolId:string;userId:string;input:Required<Pick<ReportInput,'reportType'|'yearId'|'from'|'to'|'dataSource'>>&ReportInput;school:Row;year:Row;cls?:Row;grants:Grant[];today:string;fingerprint:string;bindings:unknown[]}
-const titles:Record<string,string>={attendance:'Chuyên cần',conduct:'Thi đua theo tuần',activities:'Hoạt động và minh chứng','class-progress':'Tiến độ vận hành lớp','parent-access':'Sử dụng link tra cứu',student:'Báo cáo cá nhân','student-directory':'Danh sách học sinh được chọn'};
+const titles:Record<string,string>={'parent-conduct':'Phiếu báo cáo phụ huynh',attendance:'Chuyên cần',conduct:'Thi đua theo tuần',activities:'Hoạt động và minh chứng','class-progress':'Tiến độ vận hành lớp','parent-access':'Sử dụng link tra cứu',student:'Báo cáo cá nhân','student-directory':'Danh sách học sinh được chọn'};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const contextSql=`filters AS (SELECT $6::date AS from_date,$7::date AS to_date,$8::uuid AS student_id,$9::uuid AS user_id,$10::uuid AS week_id),g AS (SELECT * FROM jsonb_to_recordset($2::jsonb) AS x(scope_type text,class_id uuid,subject_id uuid,starts_on date,ends_on date,actions text[])),
  base AS (SELECT c.* FROM app.classes c WHERE c.school_id=$1 AND c.year_id=$3::uuid AND ($4::uuid IS NULL OR c.id=$4::uuid) AND ($5::uuid IS NULL OR c.grade_level_id=$5::uuid))`;
 export function allowed(date:string,cls:string,subject?:string){return `EXISTS(SELECT 1 FROM g WHERE 'report.read'=ANY(g.actions) AND (g.scope_type='SCHOOL' OR (g.class_id=${cls} AND (g.starts_on IS NULL OR g.starts_on<=${date}) AND (g.ends_on IS NULL OR g.ends_on>${date}) AND (g.scope_type='CLASS'${subject?` OR (g.scope_type='SUBJECT' AND ${subject==='*'?'true':`g.subject_id=${subject}`})`:''}))))`;}
 export async function reportContext(tx:Transaction,policy:Permissions,schoolId:string,userId:string,input:ReportInput,exporting=false):Promise<ReportContext>{
   if(!Object.hasOwn(titles,input.reportType))notFound();
+  if(input.reportType==='parent-conduct')input={...input,dataSource:'PUBLISHED_SNAPSHOT',scope:'CLASS'};
   for(const key of ['yearId','classId','studentId','gradeId','weekId'] as const)if(input[key]&&!uuid.test(input[key]!))validation(key,'Mã tham chiếu không hợp lệ');
   const school=(await one<Row>(tx,'SELECT * FROM platform.schools WHERE id=$1',[schoolId]))!;
   if(!school)notFound();
@@ -129,7 +131,8 @@ async function operations(tx:Transaction,ctx:ReportContext){
 }
 export async function buildReport(tx:Transaction,ctx:ReportContext):Promise<ReportData>{
   let result:Awaited<ReturnType<typeof attendance>>;
-  if(ctx.input.reportType==='student-directory'){
+  if(ctx.input.reportType==='parent-conduct')result=await parentConductReport(tx,ctx);
+  else if(ctx.input.reportType==='student-directory'){
     const seeGuardians=ctx.grants.some(g=>grantAllows(g,'guardian.read',{schoolId:ctx.schoolId},ctx.today)),ref=String((await one<{d:string}>(tx,'SELECT greatest($1::date,least($2::date,$3::date-1))::text AS d',[ctx.year.starts_on,ctx.today,ctx.year.ends_on]))!.d);
     const rows=(await tx.query<Row>(`SELECT s.id,s.full_name,s.student_code,s.date_of_birth,s.gender,s.status,c.name AS class_name,
       CASE WHEN $5::boolean THEN (SELECT count(*)::int FROM app.guardian_relationships gr WHERE gr.school_id=s.school_id AND gr.student_id=s.id AND gr.status<>'REVOKED' AND gr.revoked_at IS NULL) END AS guardians,

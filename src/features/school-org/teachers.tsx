@@ -26,6 +26,7 @@ import { Timeline } from "@/components/ui/timeline";
 import { EmptyFiltered, EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 import { fmtDate, fmtNumber, fmtRelative, invitationStatus } from "@/lib/formatters";
 import { downloadCSV, downloadXLSX } from "@/lib/export";
+import { DirectStaffDialog } from "./direct-staff-dialog";
 import { InviteModal } from "./invite-modal";
 import { AssignDrawer, type AssignPrefill } from "./assign-drawer";
 import { PermissionSummary } from "./permission-summary";
@@ -43,7 +44,7 @@ type StatusTarget = { membershipId: string; name: string; version: number; to: "
 
 /** SC10 — teachers & permissions (R04): KPIs, filtered table, detail panel, invitations, recent changes. */
 export function TeachersScreen() {
-  const { school } = useSchool();
+  const { school,actions } = useSchool();
   const ctx = useCtx();
   const toast = useToast();
   const wide = useIsWide();
@@ -52,6 +53,7 @@ export function TeachersScreen() {
   const [selected, setSelected] = useState<TeacherRow | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [invite, setInvite] = useState(false);
+  const [direct,setDirect]=useState(false);
   const [assign, setAssign] = useState<AssignPrefill | null>(null);
   const [status, setStatus] = useState<StatusTarget>(null);
   const [revokeInv, setRevokeInv] = useState<InvitationTarget | null>(null);
@@ -130,7 +132,8 @@ export function TeachersScreen() {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card className="min-w-0">
           <CardHeader title="Danh sách giáo viên" icon={<Presentation className="size-6 text-primary" />} action={<>
-            {q.data?.canInvite && <Button variant="primary" icon={<UserPlus className="size-4" />} onClick={() => setInvite(true)}>Mời giáo viên</Button>}
+            {q.data?.canInvite && actions.has("role.manage") && <Button variant="primary" onClick={()=>setDirect(true)}>Tạo tài khoản giáo viên</Button>}
+            {q.data?.canInvite && <Button variant="primary" icon={<UserPlus className="size-4" />} onClick={() => setInvite(true)}>Gửi lời mời</Button>}
             {q.data?.canExport && <ActionMenu label="Xuất dữ liệu" trigger={<Button icon={<Download className="size-4" />} loading={exporting} iconRight={<ChevronDown className="size-4" />}>Xuất dữ liệu</Button>} items={[
               { label: "Tệp CSV (UTF-8)", icon: <FileText />, hint: "Theo bộ lọc hiện tại", onSelect: () => exportRows("csv") },
               { label: "Tệp Excel (.xlsx)", icon: <FileSpreadsheet />, hint: "Theo bộ lọc hiện tại", onSelect: () => exportRows("xlsx") },
@@ -167,7 +170,7 @@ export function TeachersScreen() {
           {panel}
         </Drawer>
       )}
-      <InviteModal open={invite} onClose={() => setInvite(false)} />
+      <DirectStaffDialog open={direct} onClose={()=>setDirect(false)} schoolId={school.id} schoolName={school.name} onCreated={()=>{void q.refetch();toast.push({tone:"success",title:"Đã tạo tài khoản giáo viên"});}}/><InviteModal open={invite} onClose={() => setInvite(false)} />
       <AssignDrawer prefill={assign} onClose={() => setAssign(null)} />
       <ConfirmDialog open={!!status} onOpenChange={(o) => { if (!o) setStatus(null); }} busy={suspend.pending}
         title={status?.to === "active" ? "Mở khóa thành viên" : "Tạm khóa thành viên tại trường"} object={status?.name}

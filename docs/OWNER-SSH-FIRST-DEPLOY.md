@@ -216,3 +216,16 @@ bash scripts/prod-status.sh
 Nếu server chưa có containers, update/release xử lý first deployment theo gate của package hiện có. Nếu đã chạy, script tạo backup và bảo trì trước migration. Không sửa tag v1.0.0/v1.0.1. Không dùng `latest`, không seed demo hoặc xóa volume.
 
 Sau khi status healthy, đăng nhập Platform Operator → Trường học → chọn trường → Quản trị trường. Hai lựa chọn: **Tạo tài khoản quản trị** (không email) và **Gửi lời mời qua email** (chờ khi SMTP tắt). Bật đổi mật khẩu lần đầu cho tài khoản mới; chuyển mật khẩu qua kênh riêng. Identity đã tồn tại phải gán explicit, giữ mật khẩu cũ. Xem [DIRECT-SCHOOL-ADMIN-RESULT.md](DIRECT-SCHOOL-ADMIN-RESULT.md).
+
+## 9. Cập nhật v1.0.3 — P0 tài khoản giáo viên, tour, cổng lớp, PDF và nhập TKB
+
+Chỉ chạy sau khi báo cáo bàn giao xác nhận `READY_FOR_OWNER_UPDATE` cho v1.0.3: source/tag đúng SHA, Actions PASS và đủ hai image. Server đang dùng v1.0.2 giữ nguyên domain, `.env.production`, `.secrets/production`, SSL/proxy và volumes. Không cần cấu hình SMTP để tạo trực tiếp tài khoản. Script áp dụng migration 059/060 qua quy trình release hiện có.
+
+```bash
+set -euo pipefail
+cd /www/wwwroot/edu
+bash scripts/update-production.sh v1.0.3
+bash scripts/prod-status.sh
+```
+
+Sau khi healthy, quản trị trường tạo giáo viên ở Nhân sự; GVCN/quản trị vào Báo cáo lớp bật cổng công khai/QR nếu muốn, hoặc tải phiếu PDF phụ huynh. Nhập TKB ở Lịch lớp, ánh xạ tên và nhập giờ thật trước khi lưu nháp/validate/công bố. Không tự bật các mục công khai khi cập nhật. Chi tiết và P1 còn lại: [TODAY-P0-RESULT.md](TODAY-P0-RESULT.md). Agent chưa deploy production.

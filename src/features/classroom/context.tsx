@@ -19,7 +19,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Callout, IconTile } from "@/components/ui/card";
 import { ErrorState, PageSkeleton } from "@/components/ui/states";
 import { ProgressBar } from "@/components/ui/progress";
-import {useTour} from '@/components/onboarding/provider';
+import {TourProvider,useTour} from '@/components/onboarding/provider';
 import type {TourKey} from '@/components/onboarding/registry';
 
 type Header = Awaited<ReturnType<typeof classroomRepo.header>>;
@@ -48,9 +48,8 @@ function ClassroomInner({ schoolId, yearId, classId, children }: { schoolId: str
       {children}
     </Ctx.Provider>
   );
-  if(value.header.workspaceKind==='TEACHER')return <TeacherShell schoolId={schoolId}>{content}</TeacherShell>;
-  if(value.header.workspaceKind==='SCHOOL')return <SchoolShell schoolId={schoolId} classWorkspace>{content}</SchoolShell>;
-  return <ScopedClassShell schoolId={schoolId} base={value.base} className={value.header.class.name}>{content}</ScopedClassShell>;
+  const shell=value.header.workspaceKind==='TEACHER'?<TeacherShell schoolId={schoolId} classWorkspace>{content}</TeacherShell>:value.header.workspaceKind==='SCHOOL'?<SchoolShell schoolId={schoolId} classWorkspace>{content}</SchoolShell>:<ScopedClassShell schoolId={schoolId} base={value.base} className={value.header.class.name}>{content}</ScopedClassShell>;
+  return <TourProvider tourKey={value.header.workspaceKind==='TEACHER'?(value.header.myDuties.some(d=>/chủ nhiệm/i.test(d))?'class-homeroom':'class-subject'):'class-staff'} schoolId={schoolId} contextKey={`${schoolId}/${yearId}/${classId}`} enabled={!value.readOnly&&!header.error}>{shell}</TourProvider>;
 }
 
 /**

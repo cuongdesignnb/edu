@@ -23,6 +23,7 @@ export function onboardingHandlers(db:Database,policy:Permissions):Record<string
     if(!membership.rowCount)throw new Problem(404,'RESOURCE_NOT_FOUND');
     if(write){
      if(tourKey==='school-overview')await policy.require(tx,c.principal!,'school.read',{schoolId:schoolId as string});
+     else if(tourKey==='teacher-overview')await policy.require(tx,c.principal!,'teacher.self',{schoolId:schoolId as string,allowScopedContext:true,allowSubject:true});
      else {
       const permitted=await policy.collection(tx,c.principal!,'class.read',schoolId as string,true);
       if(!permitted.all&&!permitted.classIds.length)throw new Problem(403,'FORBIDDEN');

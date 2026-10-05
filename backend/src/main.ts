@@ -1,3 +1,4 @@
+import {PublicClassService} from "./modules/classroom/public-class.service";
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter,type NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -69,6 +70,7 @@ export async function createApplication() {
   registerHandlers(server,app.get(PlatformService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(SupportService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(ReportsService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(PublicClassService).handlers(),app.get(IdentityService));
   const parent=app.get(ParentService);
   registerHandlers(server,parent.handlers(),app.get(IdentityService),(request,slug)=>parent.authenticate(request,slug));
   app.enableShutdownHooks();

@@ -43922,6 +43922,718 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/staff-accounts:
+    post:
+      operationId: createSchoolStaffAccount
+      tags:
+        - Staff
+      summary: createSchoolStaffAccount
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.create_direct+role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DirectStaffCreate"
+      responses:
+        "201":
+          description: Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectStaffResponse"
+        "202":
+          description: Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectStaffResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/staff-accounts/assign-existing:
+    post:
+      operationId: assignExistingSchoolStaffAccount
+      tags:
+        - Staff
+      summary: assignExistingSchoolStaffAccount
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: member.create_direct+role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC10
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DirectStaffAssign"
+      responses:
+        "201":
+          description: Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectStaffResponse"
+        "202":
+          description: Thành công — đã tiếp nhận job, chưa hoàn tất nghiệp vụ.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectStaffResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/classes/{classId}/public-portal:
+    get:
+      operationId: getClassPublicPortalSettings
+      tags:
+        - School
+      summary: getClassPublicPortalSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent_access.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL25
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassPublicPortalSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: saveClassPublicPortalSettings
+      tags:
+        - Classroom
+      summary: saveClassPublicPortalSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: parent_access.manage
+      x-scope: class
+      x-frontend-screen-ids:
+        - CL25
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassPublicPortalPatch"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassPublicPortalSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /public/classes/{publicClassSlug}:
+    get:
+      operationId: getPublicClassPortal
+      tags:
+        - Public
+      summary: getPublicClassPortal
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: public.read
+      x-scope: none
+      x-frontend-screen-ids: []
+      x-implementation-status: not_started
+      security: []
+      parameters:
+        - name: publicClassSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-f0-9]{24}$
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicClassPortalResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /public/classes/{publicClassSlug}/students/{studentId}:
+    get:
+      operationId: getPublicClassStudent
+      tags:
+        - Public
+      summary: getPublicClassStudent
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: public.read
+      x-scope: none
+      x-frontend-screen-ids: []
+      x-implementation-status: not_started
+      security: []
+      parameters:
+        - name: publicClassSlug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-f0-9]{24}$
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicClassStudentDetailResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/schedule-import-settings:
+    get:
+      operationId: getScheduleImportSettings
+      tags:
+        - Settings
+      summary: getScheduleImportSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: school.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleImportSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: saveScheduleImportSettings
+      tags:
+        - Staff
+      summary: saveScheduleImportSettings
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: school.settings
+      x-scope: school
+      x-frontend-screen-ids:
+        - CL15
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleImportSettingsPatch"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleImportSettingsResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /schools/{schoolId}/import-workspace:
     get:
       operationId: getImportWorkspace
@@ -50450,6 +51162,7 @@ components:
             - parent-access
             - student
             - student-directory
+            - parent-conduct
         format:
           type: string
           enum:
@@ -50519,6 +51232,7 @@ components:
             - parent-access
             - student
             - student-directory
+            - parent-conduct
         format:
           type: string
           enum:
@@ -67362,6 +68076,7 @@ components:
             - student
             - class-progress
             - links
+            - parent-conduct
         title:
           type: string
         description:
@@ -67520,7 +68235,7 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ReportCatalogItem"
-                maxItems: 4
+                maxItems: 5
             required:
               - classId
               - yearId
@@ -68029,6 +68744,640 @@ components:
       required:
         - data
         - requestId
+      additionalProperties: false
+    DirectStaffCreate:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 3
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 320
+        roleId:
+          type: string
+          format: uuid
+        department:
+          type: string
+          maxLength: 120
+        validFrom:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+          nullable: true
+        assignment:
+          type: object
+          properties:
+            classId:
+              type: string
+              format: uuid
+            kind:
+              type: string
+              enum:
+                - HOMEROOM
+                - SUBJECT
+            subjectId:
+              type: string
+              format: uuid
+            startsOn:
+              type: string
+              format: date
+            endsOn:
+              type: string
+              format: date
+              nullable: true
+            reason:
+              type: string
+              minLength: 5
+              maxLength: 4000
+            expectedMemberVersion:
+              type: integer
+              minimum: 1
+            expectedClassVersion:
+              type: integer
+              minimum: 1
+          required:
+            - classId
+            - kind
+            - startsOn
+          additionalProperties: false
+        password:
+          type: string
+          minLength: 12
+          maxLength: 256
+        mustChangePassword:
+          type: boolean
+      required:
+        - displayName
+        - email
+        - roleId
+        - password
+        - mustChangePassword
+      additionalProperties: false
+    DirectStaffAssign:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 3
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 320
+        roleId:
+          type: string
+          format: uuid
+        department:
+          type: string
+          maxLength: 120
+        validFrom:
+          type: string
+          format: date-time
+        validUntil:
+          type: string
+          format: date-time
+          nullable: true
+        assignment:
+          type: object
+          properties:
+            classId:
+              type: string
+              format: uuid
+            kind:
+              type: string
+              enum:
+                - HOMEROOM
+                - SUBJECT
+            subjectId:
+              type: string
+              format: uuid
+            startsOn:
+              type: string
+              format: date
+            endsOn:
+              type: string
+              format: date
+              nullable: true
+            reason:
+              type: string
+              minLength: 5
+              maxLength: 4000
+            expectedMemberVersion:
+              type: integer
+              minimum: 1
+            expectedClassVersion:
+              type: integer
+              minimum: 1
+          required:
+            - classId
+            - kind
+            - startsOn
+          additionalProperties: false
+      required:
+        - displayName
+        - email
+        - roleId
+      additionalProperties: false
+    DirectStaff:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        email:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+        mustChangePassword:
+          type: boolean
+      required:
+        - id
+        - userId
+        - displayName
+        - email
+        - status
+        - mustChangePassword
+      additionalProperties: false
+    DirectStaffResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/DirectStaff"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassPublicPortalSettings:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        slug:
+          type: string
+          nullable: true
+        publicPortalEnabled:
+          type: boolean
+        publicStudentConductEnabled:
+          type: boolean
+        publicStudentAttendanceEnabled:
+          type: boolean
+        publicStudentActivitiesEnabled:
+          type: boolean
+        publicRankingEnabled:
+          type: boolean
+        publicSeatingEnabled:
+          type: boolean
+      required:
+        - version
+        - slug
+        - publicPortalEnabled
+        - publicStudentConductEnabled
+        - publicStudentAttendanceEnabled
+        - publicStudentActivitiesEnabled
+        - publicRankingEnabled
+        - publicSeatingEnabled
+      additionalProperties: false
+    ClassPublicPortalSettingsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ClassPublicPortalSettings"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ClassPublicPortalPatch:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 0
+        publicPortalEnabled:
+          type: boolean
+        publicStudentConductEnabled:
+          type: boolean
+        publicStudentAttendanceEnabled:
+          type: boolean
+        publicStudentActivitiesEnabled:
+          type: boolean
+        publicRankingEnabled:
+          type: boolean
+        publicSeatingEnabled:
+          type: boolean
+        rotateSlug:
+          type: boolean
+      required:
+        - expectedVersion
+        - publicPortalEnabled
+        - publicStudentConductEnabled
+        - publicStudentAttendanceEnabled
+        - publicStudentActivitiesEnabled
+        - publicRankingEnabled
+        - publicSeatingEnabled
+        - rotateSlug
+      additionalProperties: false
+    PublicClassStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        groupName:
+          type: string
+          nullable: true
+        roles:
+          type: array
+          maxItems: 5000
+          items:
+            type: string
+      required:
+        - id
+        - fullName
+        - groupName
+        - roles
+      additionalProperties: false
+    PublicClassConduct:
+      type: object
+      properties:
+        publicationId:
+          type: string
+          format: uuid
+        periodLabel:
+          type: string
+        finalPoints:
+          type: string
+        classification:
+          type: string
+          nullable: true
+        publishedAt:
+          type: string
+      required:
+        - publicationId
+        - periodLabel
+        - finalPoints
+        - classification
+        - publishedAt
+      additionalProperties: false
+    PublicClassAttendance:
+      type: object
+      properties:
+        date:
+          type: string
+        slotLabel:
+          type: string
+        status:
+          type: string
+        publishedAt:
+          type: string
+      required:
+        - date
+        - slotLabel
+        - status
+        - publishedAt
+      additionalProperties: false
+    PublicClassActivity:
+      type: object
+      properties:
+        title:
+          type: string
+        studentStatus:
+          type: string
+        publishedAt:
+          type: string
+      required:
+        - title
+        - studentStatus
+        - publishedAt
+      additionalProperties: false
+    PublicClassStudentDetail:
+      type: object
+      properties:
+        student:
+          $ref: "#/components/schemas/PublicClassStudent"
+        conduct:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/PublicClassConduct"
+        attendance:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/PublicClassAttendance"
+        activities:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/PublicClassActivity"
+      required:
+        - student
+        - conduct
+        - attendance
+        - activities
+      additionalProperties: false
+    PublicClassPortal:
+      type: object
+      properties:
+        schoolName:
+          type: string
+        className:
+          type: string
+        yearName:
+          type: string
+        homeroomName:
+          type: string
+          nullable: true
+        settings:
+          type: object
+          properties:
+            publicStudentConductEnabled:
+              type: boolean
+            publicStudentAttendanceEnabled:
+              type: boolean
+            publicStudentActivitiesEnabled:
+              type: boolean
+            publicRankingEnabled:
+              type: boolean
+            publicSeatingEnabled:
+              type: boolean
+          required:
+            - publicStudentConductEnabled
+            - publicStudentAttendanceEnabled
+            - publicStudentActivitiesEnabled
+            - publicRankingEnabled
+            - publicSeatingEnabled
+          additionalProperties: false
+        students:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: "#/components/schemas/PublicClassStudent"
+        timetable:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              subjectName:
+                type: string
+              teacherName:
+                type: string
+              startsAt:
+                type: string
+              endsAt:
+                type: string
+            required:
+              - subjectName
+              - teacherName
+              - startsAt
+              - endsAt
+            additionalProperties: false
+        duties:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              task:
+                type: string
+            required:
+              - date
+              - task
+            additionalProperties: false
+        announcements:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              href:
+                type: string
+              publishedAt:
+                type: string
+                format: date-time
+            required:
+              - id
+              - title
+              - href
+              - publishedAt
+            additionalProperties: false
+        rules:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              points:
+                type: string
+            required:
+              - label
+              - points
+            additionalProperties: false
+        seating:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+              column:
+                type: integer
+              studentName:
+                type: string
+                nullable: true
+            required:
+              - row
+              - column
+              - studentName
+            additionalProperties: false
+        ranking:
+          type: array
+          maxItems: 5000
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              fullName:
+                type: string
+              finalPoints:
+                type: string
+              periodLabel:
+                type: string
+            required:
+              - studentId
+              - fullName
+              - finalPoints
+              - periodLabel
+            additionalProperties: false
+      required:
+        - schoolName
+        - className
+        - yearName
+        - homeroomName
+        - settings
+        - students
+        - timetable
+        - duties
+        - announcements
+        - rules
+        - seating
+        - ranking
+      additionalProperties: false
+    PublicClassPortalResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicClassPortal"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PublicClassStudentDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PublicClassStudentDetail"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleImportSettings:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        aliases:
+          type: object
+          properties:
+            subjects:
+              type: object
+              maxProperties: 1000
+              additionalProperties:
+                type: string
+                format: uuid
+            teachers:
+              type: object
+              maxProperties: 1000
+              additionalProperties:
+                type: string
+                format: uuid
+          required:
+            - subjects
+            - teachers
+          additionalProperties: false
+        periodTimes:
+          type: object
+          maxProperties: 36
+          additionalProperties:
+            type: object
+            properties:
+              start:
+                type: string
+                pattern: ^([01]\d|2[0-3]):[0-5]\d$
+              end:
+                type: string
+                pattern: ^([01]\d|2[0-3]):[0-5]\d$
+            required:
+              - start
+              - end
+            additionalProperties: false
+      required:
+        - version
+        - aliases
+        - periodTimes
+      additionalProperties: false
+    ScheduleImportSettingsResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/ScheduleImportSettings"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    ScheduleImportSettingsPatch:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 0
+        aliases:
+          type: object
+          properties:
+            subjects:
+              type: object
+              maxProperties: 1000
+              additionalProperties:
+                type: string
+                format: uuid
+            teachers:
+              type: object
+              maxProperties: 1000
+              additionalProperties:
+                type: string
+                format: uuid
+          required:
+            - subjects
+            - teachers
+          additionalProperties: false
+        periodTimes:
+          type: object
+          maxProperties: 36
+          additionalProperties:
+            type: object
+            properties:
+              start:
+                type: string
+                pattern: ^([01]\d|2[0-3]):[0-5]\d$
+              end:
+                type: string
+                pattern: ^([01]\d|2[0-3]):[0-5]\d$
+            required:
+              - start
+              - end
+            additionalProperties: false
+      required:
+        - expectedVersion
+        - aliases
+        - periodTimes
       additionalProperties: false
     ImportWorkspaceKind:
       type: object

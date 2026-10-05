@@ -14,11 +14,11 @@ const text=(v:unknown)=>typeof v==='string'&&!!v.trim();
 const date=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v+'T00:00:00Z'))&&new Date(v+'T00:00:00Z').toISOString().slice(0,10)===v;
 const timestamp=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(v)&&Number.isFinite(Date.parse(v));
 const count=(v:unknown)=>Number.isInteger(v)&&Number(v)>=0;
-const types=['attendance','conduct','activities','class-progress','parent-access','student','student-directory'];
+const types=['parent-conduct','attendance','conduct','activities','class-progress','parent-access','student','student-directory'];
 const nativeType=(type:string)=>type==='links'?'parent-access':type;
 function unique(rows:{id:string}[]){if(new Set(rows.map(r=>r.id)).size!==rows.length)throw invalid();}
 function catalogReports(rows:ApiSchemas['ReportCatalogItem'][],classOnly:boolean){
- const allowed=classOnly?['attendance','conduct','activities','student']:['attendance','conduct','activities','class-progress','links'];
+ const allowed=classOnly?['parent-conduct','attendance','conduct','activities','student']:['attendance','conduct','activities','class-progress','links'];
  if(!Array.isArray(rows)||rows.length>allowed.length||new Set(rows.map(r=>r.type)).size!==rows.length||rows.some(r=>!allowed.includes(r.type)||!text(r.title)||!text(r.description)))throw invalid();return rows;
 }
 export function nativeReportCatalog(row:ApiSchemas['ReportCatalog'],schoolId:string,yearId?:string,classId?:string){

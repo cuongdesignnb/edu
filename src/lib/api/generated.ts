@@ -159,8 +159,8 @@ export interface ApiSchemas {
   "ImportCreate": { "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "yearId": (string) | null; "classId"?: (string) | null; };
   "ImportMapping": { "expectedVersion": number; "mapping": Array<{ "sourceColumn": string; "targetField": string; }>; "mode": "ADD_ONLY" | "UPSERT_VERIFIED_CODE"; };
   "ImportRow": { "rowNumber": number; "status": string; "errors": Array<{ "field": string; "code": string; "message": string; }>; "values": { [key: string]: unknown; }; "decision"?: "ADD" | "UPDATE" | "SKIP"; "matchedId"?: string; };
-  "ExportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory"; "format": "CSV" | "XLSX" | "PDF"; "status": "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"; "fileId"?: (string) | null; "expiresAt"?: string; "classId"?: string; "requestedBy"?: string; "asOf"?: string; "contentHash"?: string; "lastErrorCode"?: string; "title"?: string; "rowCount"?: number; "filters"?: { [key: string]: unknown; }; "fileName"?: string; };
-  "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; "studentIds"?: Array<string>; };
+  "ExportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory" | "parent-conduct"; "format": "CSV" | "XLSX" | "PDF"; "status": "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"; "fileId"?: (string) | null; "expiresAt"?: string; "classId"?: string; "requestedBy"?: string; "asOf"?: string; "contentHash"?: string; "lastErrorCode"?: string; "title"?: string; "rowCount"?: number; "filters"?: { [key: string]: unknown; }; "fileName"?: string; };
+  "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory" | "parent-conduct"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; "studentIds"?: Array<string>; };
   "Report": { "reportType": string; "metrics": Array<ApiSchemas["Metric"]>; "asOf": string; "rows": Array<{ "studentId"?: (string) | null; "classId"?: (string) | null; "label": string; "values": { [key: string]: unknown; }; }>; "dataSource": "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "title"?: string; "schoolName"?: string; "yearName"?: string; "scopeLabel"?: string; "from"?: string; "to"?: string; "columns"?: Array<{ "key": string; "label": string; }>; "publicationIds"?: Array<string>; "notes"?: Array<string>; };
   "Notification": { "yearId"?: string; "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "title": string; "kind": string; "schoolId": (string) | null; "targetType": string; "targetId": (string) | null; "readAt"?: (string) | null; "body"?: string; "schoolName"?: string; "classId"?: string; "accessible"?: boolean; };
   "AuditEvent": { "id": (string) | null; "actorLabel": string; "action": string; "targetType": string; "targetId"?: (string) | null; "createdAt": string; "reason"?: string; "changes": Array<{ "field": string; "before": (string) | null; "after": (string) | null; }>; "actorId"?: (string) | null; };
@@ -653,6 +653,24 @@ export interface ApiSchemas {
   "AssignExistingSchoolAdmin": { "displayName": string; "email": string; "validFrom"?: (string) | null; "validUntil"?: (string) | null; };
   "DirectSchoolAdmin": { "id": string; "userId": string; "displayName": string; "email": string; "status": "ACTIVE"; "grantId": string; "roleCode": "SCHOOL_ADMIN"; "scopeType": "SCHOOL"; "validFrom": string; "validUntil": (string) | null; "mustChangePassword": boolean; };
   "DirectSchoolAdminResponse": { "data": ApiSchemas["DirectSchoolAdmin"]; "requestId": string; };
+  "DirectStaffCreate": { "displayName": string; "email": string; "roleId": string; "department"?: string; "validFrom"?: string; "validUntil"?: (string) | null; "assignment"?: { "classId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: string; "startsOn": string; "endsOn"?: (string) | null; "reason"?: string; "expectedMemberVersion"?: number; "expectedClassVersion"?: number; }; "password": string; "mustChangePassword": boolean; };
+  "DirectStaffAssign": { "displayName": string; "email": string; "roleId": string; "department"?: string; "validFrom"?: string; "validUntil"?: (string) | null; "assignment"?: { "classId": string; "kind": "HOMEROOM" | "SUBJECT"; "subjectId"?: string; "startsOn": string; "endsOn"?: (string) | null; "reason"?: string; "expectedMemberVersion"?: number; "expectedClassVersion"?: number; }; };
+  "DirectStaff": { "id": string; "userId": string; "displayName": string; "email": string; "status": "ACTIVE"; "mustChangePassword": boolean; };
+  "DirectStaffResponse": { "data": ApiSchemas["DirectStaff"]; "requestId": string; };
+  "ClassPublicPortalSettings": { "version": number; "slug": (string) | null; "publicPortalEnabled": boolean; "publicStudentConductEnabled": boolean; "publicStudentAttendanceEnabled": boolean; "publicStudentActivitiesEnabled": boolean; "publicRankingEnabled": boolean; "publicSeatingEnabled": boolean; };
+  "ClassPublicPortalSettingsResponse": { "data": ApiSchemas["ClassPublicPortalSettings"]; "requestId": string; };
+  "ClassPublicPortalPatch": { "expectedVersion": number; "publicPortalEnabled": boolean; "publicStudentConductEnabled": boolean; "publicStudentAttendanceEnabled": boolean; "publicStudentActivitiesEnabled": boolean; "publicRankingEnabled": boolean; "publicSeatingEnabled": boolean; "rotateSlug": boolean; };
+  "PublicClassStudent": { "id": string; "fullName": string; "groupName": (string) | null; "roles": Array<string>; };
+  "PublicClassConduct": { "publicationId": string; "periodLabel": string; "finalPoints": string; "classification": (string) | null; "publishedAt": string; };
+  "PublicClassAttendance": { "date": string; "slotLabel": string; "status": string; "publishedAt": string; };
+  "PublicClassActivity": { "title": string; "studentStatus": string; "publishedAt": string; };
+  "PublicClassStudentDetail": { "student": ApiSchemas["PublicClassStudent"]; "conduct": Array<ApiSchemas["PublicClassConduct"]>; "attendance": Array<ApiSchemas["PublicClassAttendance"]>; "activities": Array<ApiSchemas["PublicClassActivity"]>; };
+  "PublicClassPortal": { "schoolName": string; "className": string; "yearName": string; "homeroomName": (string) | null; "settings": { "publicStudentConductEnabled": boolean; "publicStudentAttendanceEnabled": boolean; "publicStudentActivitiesEnabled": boolean; "publicRankingEnabled": boolean; "publicSeatingEnabled": boolean; }; "students": Array<ApiSchemas["PublicClassStudent"]>; "timetable": Array<{ "subjectName": string; "teacherName": string; "startsAt": string; "endsAt": string; }>; "duties": Array<{ "date": string; "task": string; }>; "announcements": Array<{ "id": string; "title": string; "href": string; "publishedAt": string; }>; "rules": Array<{ "label": string; "points": string; }>; "seating": Array<{ "row": number; "column": number; "studentName": (string) | null; }>; "ranking": Array<{ "studentId": string; "fullName": string; "finalPoints": string; "periodLabel": string; }>; };
+  "PublicClassPortalResponse": { "data": ApiSchemas["PublicClassPortal"]; "requestId": string; };
+  "PublicClassStudentDetailResponse": { "data": ApiSchemas["PublicClassStudentDetail"]; "requestId": string; };
+  "ScheduleImportSettings": { "version": number; "aliases": { "subjects": { [key: string]: string; }; "teachers": { [key: string]: string; }; }; "periodTimes": { [key: string]: { "start": string; "end": string; }; }; };
+  "ScheduleImportSettingsResponse": { "data": ApiSchemas["ScheduleImportSettings"]; "requestId": string; };
+  "ScheduleImportSettingsPatch": { "expectedVersion": number; "aliases": { "subjects": { [key: string]: string; }; "teachers": { [key: string]: string; }; }; "periodTimes": { [key: string]: { "start": string; "end": string; }; }; };
   "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
   "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
   "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
@@ -4929,6 +4947,86 @@ export const apiOperations = {
     "response": "DirectSchoolAdmin",
     "list": false,
     "permission": "platform.admins.create_direct",
+    "readOnly": false
+  },
+  "createSchoolStaffAccount": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/staff-accounts",
+    "auth": "staff",
+    "request": "DirectStaffCreate",
+    "response": "DirectStaff",
+    "list": false,
+    "permission": "member.create_direct+role.manage",
+    "readOnly": false
+  },
+  "assignExistingSchoolStaffAccount": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/staff-accounts/assign-existing",
+    "auth": "staff",
+    "request": "DirectStaffAssign",
+    "response": "DirectStaff",
+    "list": false,
+    "permission": "member.create_direct+role.manage",
+    "readOnly": false
+  },
+  "getClassPublicPortalSettings": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/public-portal",
+    "auth": "staff",
+    "request": null,
+    "response": "ClassPublicPortalSettings",
+    "list": false,
+    "permission": "parent_access.manage",
+    "readOnly": true
+  },
+  "saveClassPublicPortalSettings": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/classes/{classId}/public-portal",
+    "auth": "staff",
+    "request": "ClassPublicPortalPatch",
+    "response": "ClassPublicPortalSettings",
+    "list": false,
+    "permission": "parent_access.manage",
+    "readOnly": false
+  },
+  "getPublicClassPortal": {
+    "method": "GET",
+    "path": "/api/v1/public/classes/{publicClassSlug}",
+    "auth": "none",
+    "request": null,
+    "response": "PublicClassPortal",
+    "list": false,
+    "permission": "public.read",
+    "readOnly": true
+  },
+  "getPublicClassStudent": {
+    "method": "GET",
+    "path": "/api/v1/public/classes/{publicClassSlug}/students/{studentId}",
+    "auth": "none",
+    "request": null,
+    "response": "PublicClassStudentDetail",
+    "list": false,
+    "permission": "public.read",
+    "readOnly": true
+  },
+  "getScheduleImportSettings": {
+    "method": "GET",
+    "path": "/api/v1/schools/{schoolId}/schedule-import-settings",
+    "auth": "staff",
+    "request": null,
+    "response": "ScheduleImportSettings",
+    "list": false,
+    "permission": "school.read",
+    "readOnly": true
+  },
+  "saveScheduleImportSettings": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/schedule-import-settings",
+    "auth": "staff",
+    "request": "ScheduleImportSettingsPatch",
+    "response": "ScheduleImportSettings",
+    "list": false,
+    "permission": "school.settings",
     "readOnly": false
   },
   "getImportWorkspace": {

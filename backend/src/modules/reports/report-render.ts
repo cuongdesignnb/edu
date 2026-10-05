@@ -6,6 +6,7 @@ import {once} from 'node:events';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
 import {Problem} from '../../common/problem';
+import {renderParentConductPdf} from './parent-conduct-pdf';
 export interface ReportColumn {key:string;label:string}
 export interface ReportRow {studentId?:string;classId?:string;label:string;values:Record<string,unknown>}
 export interface ReportData {reportType:string;title:string;schoolName:string;yearName:string;scopeLabel:string;from:string;to:string;
@@ -15,6 +16,7 @@ function scalar(value:unknown){if(value===null||value===undefined)return '';if(t
 export function spreadsheetText(value:unknown){const text=scalar(value);return /^[\s\x00-\x1f]*[=+\-@]/u.test(text)?"'"+text:text;}
 export async function renderReport(filename:string,format:string,report:ReportData){
   await fs.mkdir(path.dirname(filename),{recursive:true,mode:0o700});
+  if(format==='PDF'&&report.reportType==='parent-conduct')return renderParentConductPdf(filename,report);
   const columns=[{key:'label',label:report.rows.some(r=>r.studentId)?'Học sinh':'Lớp'},...report.columns];
   const cells=(row:ReportRow)=>[row.label,...report.columns.map(col=>row.values[col.key])];
   const contextColumns=['Trường','Năm học','Từ ngày','Đến ngày (loại trừ)','Thời điểm dữ liệu','Nguồn dữ liệu'];

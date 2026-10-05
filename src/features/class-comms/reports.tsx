@@ -9,6 +9,7 @@ import { useCtx, useRepo } from "@/lib/query/hooks";
 import { addDays, mondayOf } from "@/lib/calendar";
 import { fmtDate } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
+import {PublicPortalSettings} from "./public-portal-settings";
 import { ReportViewer } from "@/features/reports/viewer";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,7 @@ export function ClassReportsPage() {
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Báo cáo lớp" subtitle={<>Báo cáo chuyên cần, thi đua, hoạt động của lớp {header.class.name}</>} />
+      <PublicPortalSettings/>
       {!allowed ? <div className="card"><DeniedState /></div> : (
         <QueryState query={q} skeleton="cards">
           {(d) => (
@@ -91,8 +93,8 @@ function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog;
   const params = useMemo(() => {
     const p: Record<string, string | undefined> = {};
     if (type === "conduct") p.weekId = weekId || undefined;
-    if (type === "attendance") { p.from = from; p.to = to; }
-    if (type === "student") p.studentId = studentId || undefined;
+    if ((type === "attendance" || type === "parent-conduct")) { p.from = from; p.to = to; }
+    if (type === "student" || type === "parent-conduct") p.studentId = studentId || undefined;
     return p;
   }, [type, weekId, from, to, studentId]);
   const ready = type !== "student" || !!studentId;
@@ -104,13 +106,13 @@ function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog;
         <CardHeader title="Tham số" icon={<Filter className="size-5" />} subtitle={`Chỉ dữ liệu lớp ${header.class.name}.`} action={!cat.canExport ? <Badge tone="neutral" dot={false}>Chỉ xem và in</Badge> : undefined} />
         <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2 xl:grid-cols-3">
           {type === "conduct" && <SelectField label="Tuần" value={weekId} onChange={(e) => setWeekId(e.target.value)} options={cat.weeks.map((w) => ({ value: w.id, label: `Tuần ${w.index} (${fmtDate(w.startDate)} – ${fmtDate(w.endDate)})` }))} />}
-          {type === "attendance" && <>
+          {(type === "attendance" || type === "parent-conduct") && <>
             <DateField label="Từ ngày" value={from} max={today} onChange={(v) => v && setFrom(v)} />
             <DateField label="Đến ngày" value={to} min={from} max={today} onChange={(v) => v && setTo(v)} helper={`Tối đa đến ${fmtDate(today)}`} />
-            <SelectField label="Chọn nhanh" value="" placeholder="Khoảng thời gian…" onChange={(e) => { const v = e.target.value; if (v === "week") { setFrom(mondayOf(today)); setTo(today); } if (v === "last") { const m = addDays(mondayOf(today), -7); setFrom(m); setTo(addDays(m, 6)); } if (v === "30") { setFrom(addDays(today, -29)); setTo(today); } }}
-              options={[{ value: "week", label: "Tuần này" }, { value: "last", label: "Tuần trước" }, { value: "30", label: "30 ngày gần nhất" }]} />
+            <SelectField label="Chọn nhanh" value="" placeholder="Khoảng thời gian…" onChange={(e) => { const v = e.target.value; if(v==="month"){const first=today.slice(0,7)+"-01",last=addDays(first,-1);setFrom(last.slice(0,7)+"-01");setTo(last);} if (v === "week") { setFrom(mondayOf(today)); setTo(today); } if (v === "last") { const m = addDays(mondayOf(today), -7); setFrom(m); setTo(addDays(m, 6)); } if (v === "30") { setFrom(addDays(today, -29)); setTo(today); } }}
+              options={[{value:"month",label:"Tháng trước"},{ value: "week", label: "Tuần này" }, { value: "last", label: "Tuần trước" }, { value: "30", label: "30 ngày gần nhất" }]} />
           </>}
-          {type === "student" && <Combobox label="Học sinh" required value={studentId} onChange={(v) => setStudentId(String(v))} options={cat.students.map((s) => ({ value: s.id, label: s.fullName, hint: s.code }))} placeholder="Tìm học sinh của lớp…" />}
+          {(type === "student" || type === "parent-conduct") && <Combobox label="Học sinh (để trống để xuất cả lớp)" required={type==="student"} value={studentId} onChange={(v) => setStudentId(String(v))} options={cat.students.map((s) => ({ value: s.id, label: s.fullName, hint: s.code }))} placeholder="Tìm học sinh của lớp…" />}
           {type === "activities" && <p className="self-end text-sm text-muted">Tình trạng đến ngày {fmtDate(today)}; ô trống là học sinh không được giao.</p>}
         </div>
       </Card>

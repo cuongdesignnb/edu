@@ -65,8 +65,8 @@ export function ExportFormatDialog({ open, onOpenChange, data, onRun, busy }: { 
 export function ReportViewer({ data, onExport, canExport = true }: { data: ReportData; fileBase: string; onExport?: (format: "csv" | "xlsx" | "pdf") => Promise<ReportDownload>; canExport?: boolean }) {
   const toast = useToast();
   const [dialog, setDialog] = useState(false);
-  const [busy, setBusy] = useState<ExportFormat | null>(null);
-  const run = async (format: ExportFormat) => {
+  const [busy, setBusy] = useState<ExportFormat | 'pdf' | null>(null);
+  const run = async (format: ExportFormat | 'pdf') => {
     if (busy) return;
     const owner = captureStaffAccess();
     setBusy(format);
@@ -103,6 +103,7 @@ export function ReportViewer({ data, onExport, canExport = true }: { data: Repor
         <p className="mr-auto flex items-center gap-1.5 text-[13px] text-muted"><Clock className="size-4" aria-hidden />Tạo lúc {fmtDateTime(data.generatedAt)} · {data.periodLabel}</p>
         {canExport && <Button size="sm" icon={<FileText className="size-4" />} loading={busy === "csv"} onClick={() => run("csv")}>Tải CSV</Button>}
         {canExport && <Button size="sm" icon={<FileSpreadsheet className="size-4" />} loading={busy === "xlsx"} onClick={() => run("xlsx")}>Tải Excel (.xlsx)</Button>}
+        {canExport && data.type==='parent-conduct'&&<Button size="sm" variant="primary" icon={<FileText className="size-4" />} loading={busy==='pdf'} onClick={()=>run('pdf')}>Tải PDF phiếu phụ huynh</Button>}
         <Button size="sm" icon={<Printer className="size-4" />} onClick={() => run("print")}>In / Lưu PDF</Button>
         {canExport ? <Button size="sm" variant="primary" icon={<Download className="size-4" />} onClick={() => setDialog(true)}>Xuất báo cáo</Button>
           : <span className="text-[12px] text-muted">Bạn không có quyền xuất tệp dữ liệu.</span>}

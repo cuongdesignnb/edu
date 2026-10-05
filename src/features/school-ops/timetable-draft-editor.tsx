@@ -17,7 +17,7 @@ type Draft=ApiSchemas['Timetable'];
 type Entry=ApiSchemas['TimetableEntry'] & {key:string};
 export function TimetableDraftEditor({schoolId,classId,weekStart}:{schoolId:string;classId?:string;weekStart:string}){
  const [open,setOpen]=useState(false);
- return <Card className="flex flex-wrap items-center justify-between gap-3 p-4"><div><p className="text-sm font-semibold text-ink">Quản lý bản thời khóa biểu</p><p className="text-[12.5px] text-muted">Lưu nháp, kiểm tra trùng giờ rồi công bố. Chọn một lớp để lập lịch.</p></div><Button icon={<CalendarDays className="size-4"/>} disabled={!classId} onClick={()=>setOpen(true)}>Soạn thời khóa biểu</Button>{open&&classId&&<DraftPanel key={`${schoolId}-${classId}`} schoolId={schoolId} classId={classId} weekStart={weekStart} onClose={()=>setOpen(false)}/>}</Card>;
+ return <Card className="flex flex-wrap items-center justify-between gap-3 p-4"><div><p className="text-sm font-semibold text-ink">Quản lý bản thời khóa biểu</p><p className="text-[12.5px] text-muted">Lưu nháp, kiểm tra trùng giờ rồi công bố. Chọn một lớp để lập lịch.</p></div><Button icon={<CalendarDays className="size-4"/>} disabled={!classId} onClick={()=>setOpen(true)}>Nhập tay / Sao chép TKB</Button>{open&&classId&&<DraftPanel key={`${schoolId}-${classId}`} schoolId={schoolId} classId={classId} weekStart={weekStart} onClose={()=>setOpen(false)}/>}</Card>;
 }
 function DraftPanel({schoolId,classId,weekStart,onClose}:{schoolId:string;classId:string;weekStart:string;onClose:()=>void}){
  const q=useRepo(['timetable-drafts',schoolId,classId,weekStart],c=>classroomRepo.timetableDrafts(c,schoolId,classId,weekStart));

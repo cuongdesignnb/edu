@@ -44,6 +44,8 @@ function directoryRow(row:ApiSchemas['StaffDirectoryRow']){
   return {...base,kind:'member' as const,membershipId:requiredId(row.memberId),userId:requiredId(row.userId),status:statuses[status],invitationStatus:undefined};
 }
 export const connectedStaffRepo=withStaffAccess({
+  async createStaffAccount(_ctx:Ctx,schoolId:ID,body:ApiSchemas['DirectStaffCreate']){return (await http('createSchoolStaffAccount',{params:{schoolId},body})).data;},
+  async assignExistingStaff(_ctx:Ctx,schoolId:ID,body:ApiSchemas['DirectStaffAssign']){return (await http('assignExistingSchoolStaffAccount',{params:{schoolId},body})).data;},
   async invitationOptions(_ctx:Ctx,schoolId:ID){return (await http('getStaffInvitationOptions',{params:{schoolId}})).data;},
   async assignmentClasses(_ctx:Ctx,schoolId:ID,yearId:ID){
     if(!yearId)throw new RepoError('VALIDATION','Chọn năm học trước khi phân công.');

@@ -79,7 +79,7 @@ function Frame({ nav, actions, homeHref, search, roleLabel, schoolId, children, 
       </div>
     </div>
   );
-  return tourKey?<TourProvider tourKey={tourKey} schoolId={schoolId} contextKey={`${homeHref}/${selectedSchool?.yearId??''}`} enabled={tourEnabled} prepareNavigation={prepareNavigation} restoreNavigation={restoreNavigation}>{content}</TourProvider>:content;
+  return tourKey&&tourEnabled?<TourProvider tourKey={tourKey} schoolId={schoolId} contextKey={`${homeHref}/${selectedSchool?.yearId??''}`} prepareNavigation={prepareNavigation} restoreNavigation={restoreNavigation}>{content}</TourProvider>:content;
 }
 
 /* ------------------------------ Platform ------------------------------ */
@@ -154,11 +154,11 @@ export function SchoolShell({ schoolId, children, classWorkspace = false }: { sc
   const independent = classWorkspace || /^\/(profile|settings|dictionaries|academic-years|teachers|roles|audit|support|students|guardians|parent-access|conduct-rules)(\/|$)/.test(pathname.slice(`/school/${schoolId}`.length));
   return (
     <RequireStaffSession>
-      <SchoolContextProvider schoolId={schoolId} loading={<Frame nav={[]} homeHref={`/school/${schoolId}`} roleLabel="" search={null} schoolId={schoolId}><PageSkeleton /></Frame>}>
+      <SchoolContextProvider schoolId={schoolId} loading={<Frame nav={[]} homeHref={`/school/${schoolId}`} roleLabel="" search={null} schoolId={schoolId} tourEnabled={!classWorkspace}><PageSkeleton /></Frame>}>
         {(ctx) => (
           <Frame nav={schoolNav(schoolId)} actions={ctx.actions} homeHref={`/school/${schoolId}`} schoolId={schoolId}
             roleLabel={ctx.roleNames.join(", ") || "Nhân sự nhà trường"} search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, giáo viên, lớp học…" />}
-            sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="teacher" />} tourEnabled={!ctx.contextError}>
+            sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="teacher" />} tourEnabled={!classWorkspace&&!ctx.contextError}>
             {ctx.contextError && <div className="px-6 pt-4"><ErrorState error={ctx.contextError} onRetry={ctx.retryContext} compact /></div>}
             {ctx.yearId || independent ? <PrivateYearScope key={independent ? schoolId : `${schoolId}/${ctx.yearId}`}>{children}</PrivateYearScope> : <div className="page"><EmptyState title={ctx.years === null ? "Danh mục năm học không thuộc phạm vi của bạn" : "Chưa có năm học"} description={ctx.years === null ? "Mở chức năng thuộc quyền được cấp để xem dữ liệu phù hợp." : "Nhà trường cần tạo năm học trước khi tổ chức lớp và nhập dữ liệu học sinh."} action={ctx.can("year.manage") ? <ButtonLink href={`/school/${schoolId}/academic-years/new`} variant="primary">Tạo năm học</ButtonLink> : undefined} /></div>}
           </Frame>
@@ -196,17 +196,17 @@ export function SchoolYearBar() {
 /* ------------------------------ Teacher ------------------------------ */
 /** A current delegated class reader need not have a teacher-directory grant. */
 export function ScopedClassShell({schoolId,base,className,children}:{schoolId:string;base:string;className:string;children:ReactNode}) {
-  return <Frame nav={[{label:`Lớp ${className}`,href:base,icon:'layers',exact:true},{label:'Chọn không gian',href:'/choose-school',icon:'school'}]} homeHref={base} schoolId={schoolId} roleLabel="Quyền được cấp trong lớp" search={null}>{children}</Frame>;
+  return <Frame nav={[{label:`Lớp ${className}`,href:base,icon:'layers',exact:true},{label:'Chọn không gian',href:'/choose-school',icon:'school'}]} homeHref={base} schoolId={schoolId} roleLabel="Quyền được cấp trong lớp" search={null} tourEnabled={false}>{children}</Frame>;
 }
-export function TeacherShell({ schoolId, children }: { schoolId: string; children: ReactNode }) {
+export function TeacherShell({ schoolId, children,classWorkspace=false }: { schoolId: string; children: ReactNode;classWorkspace?:boolean }) {
   return (
     <RequireStaffSession>
-      <TeacherFrame schoolId={schoolId}>{children}</TeacherFrame>
+      <TeacherFrame schoolId={schoolId} classWorkspace={classWorkspace}>{children}</TeacherFrame>
     </RequireStaffSession>
   );
 }
 
-function TeacherFrame({ schoolId, children }: { schoolId: string; children: ReactNode }) {
+function TeacherFrame({ schoolId, children,classWorkspace=false }: { schoolId: string; children: ReactNode;classWorkspace?:boolean }) {
   const classes = useRepo(["teacher-classes", schoolId], (c) => classroomRepo.teacherClasses(c, schoolId));
   const me = useRepo(["me"], (c) => sessionRepo.me(c));
   const ws = me.data?.workspaces.find((w) => w.school.id === schoolId);
@@ -216,7 +216,7 @@ function TeacherFrame({ schoolId, children }: { schoolId: string; children: Reac
   const content = transientDirectoryError ? <><div className="px-6 pt-4"><ErrorState compact error={classes.error} onRetry={() => classes.refetch()} /></div>{children}</> : classes.error ? <div className="page"><Card className="card-pad"><ErrorState error={classes.error} onRetry={() => classes.refetch()} /></Card></div> : children;
   return (
     <Frame nav={nav} homeHref={`/teacher/${schoolId}`} schoolId={schoolId} roleLabel={role} promo={{ ...PROMO, text: "EduManage đồng hành cùng thầy cô trên hành trình truyền cảm hứng và phát triển thế hệ tương lai." }}
-      search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />} tourEnabled={!!classes.data&&!classes.error&&!!ws?.teacherWorkspace}>
+      search={<GlobalSearch schoolId={schoolId} placeholder="Tìm học sinh, lớp học của tôi…" />} sidebarFooter={<WorkspaceSwitch schoolId={schoolId} target="school" />} tourEnabled={!classWorkspace&&!!classes.data&&!classes.error&&!!ws?.teacherWorkspace}>
       {content}
     </Frame>
   );

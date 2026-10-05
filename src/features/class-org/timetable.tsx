@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { EmptyState, QueryState } from "@/components/ui/states";
 import { LessonChangeDrawer } from "@/features/school-ops/lesson-change-drawer";
+import {TimetableImportDialog} from "@/features/school-ops/timetable-import-dialog";
 import { TimetableDraftEditor } from "@/features/school-ops/timetable-draft-editor";
 
 type TT = Awaited<ReturnType<typeof classroomRepo.timetable>>;
@@ -60,7 +61,7 @@ export function ClassTimetable() {
           return (
             <>
               {!d.canEdit && <Callout tone="neutral" icon={<Lock />}>Bạn xem lịch ở chế độ chỉ đọc. Đổi tiết do giáo viên chủ nhiệm hoặc giáo vụ thực hiện.</Callout>}
-              {d.canEdit && <TimetableDraftEditor schoolId={schoolId} classId={classId} weekStart={d.monday} />}
+              {d.canEdit && <><TimetableImportDialog schoolId={schoolId} classId={classId} yearId={yearId} onSaved={()=>void q.refetch()}/><TimetableDraftEditor schoolId={schoolId} classId={classId} weekStart={d.monday} /></>}
               <Card>
                 <CardHeader title={`Tuần ${d.week?.index ?? ""} · ${fmtDate(d.monday)} – ${fmtDate(addDays(d.monday, 5))}`} icon={<CalendarDays className="size-5 text-primary" />}
                   subtitle={d.canEdit ? "Bấm vào một tiết (từ hôm nay trở đi) để đổi tiết / đổi phòng / cho nghỉ." : undefined}

@@ -10,6 +10,10 @@ const classroom=[
  step('class-conduct','Thi đua','Ghi nhận hoặc xem kết quả theo nhiệm vụ đang được giao.'),
  step('class-publication','Chốt và công bố','Lưu không đồng nghĩa công bố. Phụ huynh chỉ thấy thông tin đã được công bố.'),
  step(['class-timetable','class-activities','class-more'],'Lịch và hoạt động','Xem các mục được phép của lớp; trên điện thoại, mở Thêm để xem các mục còn lại.'),
+ step(['class-duties','class-more'],'Trực nhật','Xem lịch trực nhật đã công bố của lớp.'),
+ step(['class-seating','class-more'],'Sơ đồ lớp','Xem sơ đồ chỗ ngồi và tổ chức lớp.'),
+ step(['class-announcements','class-more'],'Thông báo','Soạn và công bố thông báo theo quyền được giao.'),
+ step(['class-reports','class-more'],'Báo cáo phụ huynh','Xuất phiếu PDF từ kết quả đã công bố.'),
  step('class-tour','Hướng dẫn lớp này','Mở nút này để xem lại cách dùng trong lớp hiện tại.'),
 ];
 export const TOURS:Record<TourKey,{version:1;autoPrompt:boolean;steps:readonly TourStep[]}>= {
@@ -32,9 +36,9 @@ export const TOURS:Record<TourKey,{version:1;autoPrompt:boolean;steps:readonly T
   step(['teacher-tasks','teacher-tasks-nav'],'Việc cần làm hôm nay','Theo dõi các việc còn thiếu và thời hạn cần xử lý tại đây.'),
   step('teacher-schedule','Lịch dạy của bạn','Xem lịch theo ngày hoặc tuần trong phạm vi được phân công.'),
   step('teacher-announcements','Thông báo liên quan','Các thông báo bạn được phép đọc tập trung tại đây.'),help]},
- 'class-homeroom':{version:1,autoPrompt:false,steps:classroom},
- 'class-subject':{version:1,autoPrompt:false,steps:classroom.filter(s=>!s.targets.includes('class-publication'))},
- 'class-staff':{version:1,autoPrompt:false,steps:classroom},
+ 'class-homeroom':{version:1,autoPrompt:true,steps:classroom},
+ 'class-subject':{version:1,autoPrompt:true,steps:classroom.filter(s=>!s.targets.includes('class-publication'))},
+ 'class-staff':{version:1,autoPrompt:true,steps:classroom},
  'parent-overview':{version:1,autoPrompt:true,steps:[
   step(['parent-overview','parent-context'],'Thông tin của con','Thông tin được nhà trường cho phép tra cứu, chỉ xem.'),
   step('parent-attendance','Chuyên cần','Xem tình hình chuyên cần đã được chia sẻ.'),
