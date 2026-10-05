@@ -79,12 +79,13 @@ export class ParentService {
   private async published(p:ParentPrincipal,section:string,query:Record<string,string>,detail?:{key:string;id:string},dailyOnly=false){
     this.allow(p,section);if(query.sort&&!['id','createdAt','publishedAt'].includes(query.sort))validation('sort','Chỉ sắp xếp theo thời gian công bố');
     const values:unknown[]=[p.studentId,p.yearId,section],where=['t.student_id=$1','t.year_id=$2','t.section=$3'];
+    if(query.periodType){if(section!=='conduct'||!['WEEK','MONTH','TERM','YEAR'].includes(query.periodType))validation('periodType','Chọn tuần, tháng, học kỳ hoặc năm');values.push(query.periodType);where.push(`coalesce(t.payload->>'periodType','WEEK')=$${values.length}`);}
     if(['attendance','timetable','duties'].includes(section))where.push("app.parent_dated_item_visible(t.school_id,t.student_id,t.year_id,t.section,t.publication_id,(t.payload->>'date')::date)");
     if(dailyOnly){if(section!=='attendance')throw new Problem(500,'PARENT_ATTENDANCE_SOURCE_INVALID');where.push('app.parent_attendance_is_daily(t.school_id,t.student_id,t.year_id,t.publication_id)');}
     if(detail){values.push(detail.id);where.push(`t.payload->>'${detail.key}'=$${values.length}`);}
     for(const bound of ['from','to'])if(query[bound]){if(!/^\d{4}-\d{2}-\d{2}$/.test(query[bound]!))validation(bound,'Ngày ISO bắt buộc');values.push(query[bound]);where.push(`t.payload->>'date'${bound==='from'?'>=':'<'}$${values.length}`);}
     const result=await this.db.transaction(async tx=>{
-      const result=await listResource(tx,projection,p.schoolId,{...query,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId);
+      const {periodType:_periodType,...pageQuery}=query;const result=await listResource(tx,projection,p.schoolId,{...pageQuery,sort:query.sort??'publishedAt',dir:query.dir??'desc'},{sql:where.join(' AND '),values},p.sessionId);
       if(section==='activities'||section==='announcements')for(const row of result.data){
         const payload=row.payload as Record<string,unknown>,documents=Array.isArray(payload.documents)?payload.documents as {id:string}[]:[];
         const visible=(p.link.allowed_sections as string[]).includes('documents')&&documents.length?(await tx.query<Row>(`SELECT d.id,d.title,d.published_at,d.download_allowed,app.parent_document_metadata(d.school_id,d.id) AS metadata

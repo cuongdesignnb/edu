@@ -19,6 +19,7 @@ import {applyOnboardingContract} from './onboarding-contract.mjs';
 import {applyPlatformMailContract} from './platform-mail-contract.mjs';
 import {applyDirectSchoolAdminContract} from './direct-school-admin-contract.mjs';
 import {applyTodayP0Contract} from './today-p0-contract.mjs';
+import {applyAllRemainingContract} from './all-remaining-contract.mjs';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const source = path.join(root, 'docs/backend-handoff');
@@ -777,6 +778,7 @@ applyOnboardingContract(spec,extendOperation,operations);
 applyPlatformMailContract(spec,extendOperation,operations);
 applyDirectSchoolAdminContract(spec,extendOperation);
 applyTodayP0Contract(spec,extendOperation,permissions,roles,operations);
+applyAllRemainingContract(spec,extendOperation,operations);
 extendImportWorkspaceContract(spec,extendOperation,{object,uuid,label});
 extendTransferWorkspaceContract(spec,extendOperation,{object,uuid,label,timestamp});
 await SwaggerParser.validate(structuredClone(spec));

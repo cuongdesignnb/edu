@@ -61,8 +61,10 @@ jobs:
         run: bash backend/tests/run-optional-smtp.sh
       - name: Direct school admin native PostgreSQL integration
         run: bash backend/tests/run-direct-school-admin.sh
-      - name: Migration 058 to 060 tenant RLS upgrade regression
+      - name: Migration 058 to current tenant RLS upgrade regression
         run: bash backend/tests/run-migration-rls.sh
+      - name: All remaining populated 060 upgrade and targeted workflows
+        run: bash backend/tests/run-all-remaining.sh
       - name: Today P0 targeted PostgreSQL integration
         run: |
           npx vitest run tests/unit/timetable-import.test.ts

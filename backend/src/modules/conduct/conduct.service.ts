@@ -11,6 +11,7 @@ import type { RequestContext,Handler,Result } from '../../api.router';
 import {conductWorkspaceOperations,authorizeConductWorkspace,conductWorkspace} from './conduct-workspace';
 import {schoolConductWorkspace} from './school-workspace';
 import {publicationPolicy} from './school-policy';
+import {capturePositionBonus} from './position-bonus';
 
 @Injectable()
 export class ConductService {
@@ -197,6 +198,7 @@ export class ConductService {
       if(op==='lockConductPeriod')version(p,c.body.expectedVersion);else if(p.data_version!==c.body.expectedSourceVersion)throw new Problem(409,'STALE_SOURCE',undefined,Number(p.data_version));
       if(op!=='publishConductPeriod'){
         if(p.status==='LOCKED')throw new Problem(409,'PERIOD_LOCKED');const review=await this.review(tx,p);if(!review.canLock)throw new Problem(422,'REVIEW_BLOCKED');
+        await capturePositionBonus(tx,p);
         await tx.query("UPDATE app.conduct_periods SET status='LOCKED',locked_at=now(),locked_by=$3 WHERE school_id=$1 AND id=$2",[schoolId,p.id,c.principal!.userId]);p=await conductPeriod(tx,schoolId,classId,String(p.id));
         if(op==='lockConductPeriod'){
           const revision=(await one<{next:number}>(tx,'SELECT coalesce(max(revision),0)+1 AS next FROM app.publication_revisions WHERE school_id=$1 AND conduct_period_id=$2',[schoolId,p.id]))!.next,data=await publicConductItems(tx,p,revision);

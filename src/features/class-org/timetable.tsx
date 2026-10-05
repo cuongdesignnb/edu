@@ -1,4 +1,5 @@
 "use client";
+import {ScheduleCopyControls} from "@/features/notebook/schedule-copy";
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
@@ -40,7 +41,7 @@ export function ClassTimetable() {
   return (
     <div className="page">
       <ClassHeader title="Lịch học của lớp" subtitle="Thời khóa biểu theo tuần; thay đổi có ngày áp dụng, không sửa lịch quá khứ" crumbs={[{ label: "Lịch lớp" }]} />
-      <QueryState query={q} skeleton="table">
+      <ScheduleCopyControls kind="TIMETABLE"/><QueryState query={q} skeleton="table">
         {(d) => {
           const activeDay = day && d.days.some((x) => x.date === day) ? day : d.days.find((x) => x.date === ctx.today)?.date ?? d.monday;
           const periods = [...new Map([...PERIODS,...d.days.flatMap(x => x.lessons.map(l => ({ period:l.period,start:l.start,end:l.end,session:'morning' as const })))].map(p => [p.period,p])).values()].sort((a,b) => a.period-b.period);

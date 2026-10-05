@@ -64,9 +64,10 @@ export function ClassroomLayout({ schoolId, yearId, classId, children }: { schoo
 const TAB_ICONS: Record<string, ReactNode> = {
   overview: <LayoutDashboard />, students: <Users />, attendance: <CalendarCheck />, conduct: <Trophy />, timetable: <CalendarDays />,
   groups: <LayoutGrid />, activities: <Star />, announcements: <Megaphone />, files: <FolderOpen />, reports: <BarChart3 />,
+  notebook:<ClipboardList/>,periodic:<Trophy/>,duties:<ClipboardList/>,seating:<LayoutGrid/>,'public-portal':<Link2/>,'notebook-settings':<LayoutGrid/>,
 };
 const MATCH: Record<string, string[]> = {
-  groups: ["/groups", "/seating", "/duties"], conduct: ["/conduct", "/publications", "/adjustments", "/rules"], activities: ["/activities", "/evidence"], attendance: ["/attendance"],
+  groups: ["/groups"], conduct: ["/conduct", "/publications", "/adjustments", "/rules"], activities: ["/activities", "/evidence"], attendance: ["/attendance"],
 };
 
 /** C007 — class section nav: full row on desktop, 4 items + "Thêm" menu on small screens. */

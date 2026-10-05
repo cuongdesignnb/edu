@@ -36,6 +36,10 @@ import { ReportsService } from './modules/reports/reports.service';
 import {publicSystemHandlers} from './modules/platform/public-system';
 import {onboardingHandlers} from './modules/identity/onboarding';
 import { runtimeConfig } from './common/config';
+import {NotebookService} from './modules/classroom/notebook.service';
+import {OfficersService} from './modules/classroom/officers.service';
+import {PeriodicService} from './modules/conduct/periodic.service';
+import {EvidenceAccessService} from './modules/activities/evidence-access.service';
 
 export async function createApplication() {
   runtimeConfig();
@@ -71,6 +75,12 @@ export async function createApplication() {
   registerHandlers(server,app.get(SupportService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(ReportsService).handlers(),app.get(IdentityService));
   registerHandlers(server,app.get(PublicClassService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(NotebookService).handlers(),app.get(IdentityService));
+  registerHandlers(server,app.get(PeriodicService).handlers(),app.get(IdentityService));
+  const officers=app.get(OfficersService);
+  registerHandlers(server,officers.handlers(),app.get(IdentityService),undefined,(request,slug)=>officers.authenticate(request,slug));
+  const evidenceAccess=app.get(EvidenceAccessService);
+  registerHandlers(server,evidenceAccess.handlers(),app.get(IdentityService),undefined,(request,slug)=>evidenceAccess.authenticate(request,slug));
   const parent=app.get(ParentService);
   registerHandlers(server,parent.handlers(),app.get(IdentityService),(request,slug)=>parent.authenticate(request,slug));
   app.enableShutdownHooks();

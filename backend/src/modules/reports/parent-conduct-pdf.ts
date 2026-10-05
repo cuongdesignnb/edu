@@ -23,8 +23,9 @@ export async function renderParentConductPdf(filename:string,report:ReportData){
  for(const student of report.rows){
   const v=student.values,department=String(v.reportHeader??'');let y=header(student.label,false,department);
   text(`Lớp: ${String(v.className??report.scopeLabel)}     GVCN: ${String(v.homeroomName??'')}`,left,y,width);y+=25;
-  doc.rect(left,y,width,52).stroke();doc.moveTo(left+width/2,y).lineTo(left+width/2,y+52).stroke();text('ĐIỂM TỔNG HỢP CÁC TUẦN',left+7,y+7,width/2-14,true,10,'center');text(String(v.totalPoints??'—'),left+7,y+27,width/2-14,true,13,'center');
-  text('XẾP LOẠI TUẦN CUỐI ĐÃ CÔNG BỐ',left+width/2+7,y+7,width/2-14,true,9,'center');text(String(v.classification??'Chưa xếp loại').toLocaleUpperCase('vi'),left+width/2+7,y+27,width/2-14,true,13,'center');y+=64;
+  doc.rect(left,y,width,52).stroke();doc.moveTo(left+width/2,y).lineTo(left+width/2,y+52).stroke();text(String(v.scoreLabel??'ĐIỂM TỔNG HỢP CÁC TUẦN'),left+7,y+7,width/2-14,true,10,'center');text(String(v.totalPoints??'—'),left+7,y+27,width/2-14,true,13,'center');
+  text(String(v.classificationLabel??'XẾP LOẠI TUẦN CUỐI ĐÃ CÔNG BỐ'),left+width/2+7,y+7,width/2-14,true,9,'center');text(String(v.classification??'Chưa xếp loại').toLocaleUpperCase('vi'),left+width/2+7,y+27,width/2-14,true,13,'center');y+=64;
+  if(v.overrideReason){text('Lý do điều chỉnh xếp loại: '+String(v.overrideReason),left,y,width,false,9);y+=doc.heightOfString('Lý do điều chỉnh xếp loại: '+String(v.overrideReason),{width})+10;}
   text('2. BẢNG KÊ CHI TIẾT ĐIỂM SỐ & VI PHẠM KỶ LUẬT',left,y,width,true,10);y+=21;
   const drawRow=(week:string,points:string,detail:string)=>{
    doc.font('regular').fontSize(10);const h=Math.max(30,doc.heightOfString(detail,{width:width-157})+14);
@@ -44,7 +45,7 @@ export async function renderParentConductPdf(filename:string,report:ReportData){
   if(y+95>750)y=header(student.label,true,department);
   y+=18;text('Phụ huynh học sinh',left,y,245,true,11,'center');text('Giáo viên chủ nhiệm',300,y,259,true,11,'center');
   text('(Ký và ghi rõ họ tên)',left,y+20,245,false,9,'center');text(String(v.homeroomName??''),300,y+56,259,true,10,'center');
-  text('Nguồn: các bản công bố được ghim khi tạo báo cáo. Chưa có xếp loại tháng độc lập.',left,783,width,false,7);
+  text(v.periodLabel?'Nguồn: bản xếp loại định kỳ và các tuần công bố được ghim khi tạo báo cáo.':'Nguồn: các bản tuần công bố được ghim khi tạo báo cáo.',left,783,width,false,7);
  }
  if(!report.rows.length){header('Chưa có kết quả đã công bố');text('Không có dữ liệu trong khoảng đã chọn.',left,185,width);}
  doc.end();await completed;return 'application/pdf';

@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import {useState} from 'react';
+import {ParentPeriodicSection} from '@/features/notebook/parent-periodic';
 import { clsx } from "clsx";
 import { Award, ChevronRight, Printer, History, Info, CheckCircle2, MinusCircle } from "lucide-react";
 import { parentRepo } from "@/lib/repositories";
@@ -13,12 +15,14 @@ import { PState, usePRead, useHref, ParentHeader, ParentPage, GRADE_TONE } from 
 
 /** PA04 — published weeks only; never a class ranking, never unpublished results. */
 export function ParentConductListView() {
+  const [periodType,setPeriodType]=useState<'WEEK'|'MONTH'|'TERM'|'YEAR'>('WEEK');
   const q = usePRead(["conduct"], (k, s) => parentRepo.conductList(k, s));
   const href = useHref();
   return (
     <ParentPage>
-      <ParentHeader title="Thi đua đã công bố của con" subtitle="Kết quả rèn luyện theo tuần, chỉ gồm các tuần nhà trường đã công bố" />
-      <PState query={q}>
+      <ParentHeader title="Rèn luyện đã công bố của con" subtitle="Kết quả tuần, tháng, học kỳ và năm nhà trường đã công bố" />
+      <label className="block">Kỳ tra cứu<select className="input ml-2" value={periodType} onChange={e=>setPeriodType(e.target.value as typeof periodType)}><option value="WEEK">Tuần</option><option value="MONTH">Tháng</option><option value="TERM">Học kỳ</option><option value="YEAR">Năm</option></select></label>
+      {periodType!=='WEEK'?<ParentPeriodicSection periodType={periodType}/>:<PState query={q}>
         {(list) => list.length === 0 ? (
           <Card><EmptyState icon={<Award className="size-6" />} title="Chưa có kết quả công bố" description="Kết quả thi đua chỉ hiện sau khi nhà trường công bố. Chưa công bố không phải là 0 điểm." /></Card>
         ) : (
@@ -47,7 +51,7 @@ export function ParentConductListView() {
             <Callout tone="info" icon={<Info />}>Trang chỉ hiển thị kết quả của con, không có bảng xếp hạng cả lớp. Tuần đang diễn ra hoặc chưa công bố sẽ chưa xuất hiện ở đây.</Callout>
           </>
         )}
-      </PState>
+      </PState>}
     </ParentPage>
   );
 }

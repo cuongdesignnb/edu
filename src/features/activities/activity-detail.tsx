@@ -68,6 +68,7 @@ function DetailBody({ d }: { d: Detail }) {
             <div className="mt-3 flex flex-wrap gap-2">
               {canManage && a.status !== "closed" && <ButtonLink href={`${base}/activities/${a.id}/edit`} size="sm" icon={<Edit3 className="size-4" />}>Sửa</ButtonLink>}
               {canEvidence && <Button size="sm" variant="primary" icon={<Upload className="size-4" />} onClick={() => setRecord({})}>Ghi nhận minh chứng</Button>}
+              {canEvidence&&canManage&&<ButtonLink size="sm" href={`${base}/activities/${a.id}/access`}>Link học sinh nộp & nhắc bài</ButtonLink>}
               {canManage && a.status === "draft" && <Button size="sm" variant="primary" icon={<Send className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "active", fromDraft: true, dueDate: a.dueDate, assigned: p.total })}>Giao hoạt động</Button>}
               {canManage && a.status === "active" && <Button size="sm" variant="danger-soft" icon={<Lock className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "closed", dueDate: a.dueDate })}>Kết thúc</Button>}
               {canManage && a.status === "closed" && <Button size="sm" icon={<PlayCircle className="size-4" />} onClick={() => setIntent({ activity:a, id: a.id, title: a.title, to: "active", dueDate: a.dueDate })}>Mở lại</Button>}

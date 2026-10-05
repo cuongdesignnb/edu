@@ -123,6 +123,7 @@ services:
       STORAGE_ROOT: /data/uploads
       LOCAL_MAIL_ROOT: /data/mail
       DB_POOL_MAX: '10'
+      STUDENT_EVIDENCE_MAX_MB: ${STUDENT_EVIDENCE_MAX_MB:-10}
       BUILD_SHA: ${SOURCE_SHA:?Set verified source SHA}
     secrets:
     - db_app_password

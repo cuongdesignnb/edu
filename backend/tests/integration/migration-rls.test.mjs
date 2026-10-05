@@ -13,12 +13,13 @@ const version = '059-direct-school-staff.sql';
 const checksum = '5d6b104ad36b5e2774737d849eef2b428c59d6d308ba7ae79c44201ab05123c5';
 const schoolIds = [1, 2, 3].map(n => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`);
 const pools = [];
-let admin, baseline, migrations, historicalSql;
+let admin, baseline, migrations, historicalSql, migrationFiles, pending;
 
 before(async () => {
   assert.equal(process.env.APP_ENV, 'test');
   assert.equal(process.env.DB_NAME, 'edumanage_test_local');
   migrations = path.resolve('migrations');
+  migrationFiles=(await fs.readdir(migrations)).filter(n=>/^\d{3}-.*\.sql$/.test(n)).sort();pending=migrationFiles.filter(n=>Number(n.slice(0,3))>58);
   const source = await fs.readFile(path.join(migrations, version));
   assert.equal(crypto.createHash('sha256').update(source).digest('hex'), checksum);
   historicalSql = source.toString('utf8').replace(/^\s*BEGIN\s*;/im, '').replace(/^\s*COMMIT\s*;/im, '');
@@ -100,9 +101,9 @@ async function assertUpgrade(pool) {
     });
   }
   assert.equal((await pool.query('SELECT checksum FROM public.schema_migrations WHERE version=$1', [version])).rows[0].checksum, checksum);
-  assert.equal((await history(pool)).length, 60);
+  assert.equal((await history(pool)).length, migrationFiles.length);
   assert.deepEqual(await verifyInstallation(pool), {
-    schemaRevision: '060-public-class-portals.sql', migrations: 60, rolesSafe: true, forceRls: true,
+    schemaRevision: migrationFiles.at(-1), migrations: migrationFiles.length, rolesSafe: true, forceRls: true,
   });
 }
 
@@ -119,7 +120,7 @@ test('reproduces production 058/42501, then upgrades all tenants without changin
     await assert.rejects(tx.query(historicalSql), error => error.code === '42501' && /roles/.test(error.message));
   } finally { await tx.query('ROLLBACK'); tx.release(); }
   assert.deepEqual(await history(pool), before);
-  assert.deepEqual((await migrate({ config })).applied, [version, '060-public-class-portals.sql']);
+  assert.deepEqual((await migrate({ config })).applied, pending);
   await assertUpgrade(pool);
   assert.deepEqual((await history(pool)).slice(0, 58), before);
   assert.deepEqual((await pool.query('SELECT * FROM platform.schools ORDER BY id')).rows, data);
@@ -129,10 +130,10 @@ test('reproduces production 058/42501, then upgrades all tenants without changin
   assert.deepEqual((await migrate({ config })).applied, []);
 });
 
-test('empty 058 database and complete fresh install both reach 060 with original 059 checksum', async () => {
+test('empty 058 database and complete fresh install both reach current schema with original 059 checksum', async () => {
   const { config, pool } = await fixture(false);
-  assert.deepEqual((await migrate({ config })).applied, [version, '060-public-class-portals.sql']);
-  assert.equal((await history(pool)).length, 60);
+  assert.deepEqual((await migrate({ config })).applied, pending);
+  assert.equal((await history(pool)).length, migrationFiles.length);
   assert.equal((await history(pool))[58].checksum, checksum);
   const database = 'edumanage_test_migration_' + crypto.randomBytes(8).toString('hex');
   await admin.query(`CREATE DATABASE "${database}" OWNER edu_migrator`);
@@ -140,7 +141,7 @@ test('empty 058 database and complete fresh install both reach 060 with original
   const bootstrap = new Pool({ ...fresh, user: 'postgres', password: (await fs.readFile('/run/secrets/db_admin_password', 'utf8')).trim() });
   try { await bootstrap.query('CREATE EXTENSION btree_gist; REVOKE CREATE ON SCHEMA public FROM PUBLIC'); }
   finally { await bootstrap.end(); }
-  assert.equal((await migrate({ config: fresh })).applied.length, 60);
+  assert.equal((await migrate({ config: fresh })).applied.length, migrationFiles.length);
   assert.deepEqual((await migrate({ config: fresh })).applied, []);
 });
 
@@ -180,7 +181,7 @@ test('compatibility rejects modified pending 059 and normal checksum gate reject
 test('concurrent migration runners serialize and record 059 once', async () => {
   const { config, pool } = await fixture();
   const results = await Promise.all([migrate({ config }), migrate({ config })]);
-  assert.deepEqual(results.map(result => result.applied.length).sort(), [0, 2]);
+  assert.deepEqual(results.map(result => result.applied.length).sort(), [0, pending.length]);
   await assertUpgrade(pool);
 });
 

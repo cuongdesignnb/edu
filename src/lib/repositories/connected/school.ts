@@ -16,7 +16,7 @@ function school(row:ApiSchemas['School']){
 }
 export {school as mapSchool};
 function settings(row:ApiSchemas['Settings'],schoolId:ID){
-  return {schoolId,language:'vi' as const,timezone:row.timezone,linkDefaultDays:row.parentLinkTtlDays,reportHeader:requiredValue(row.reportHeader,'reportHeader'),shareTeacherPhone:requiredValue(row.shareTeacherPhone,'shareTeacherPhone'),shareTeacherEmail:requiredValue(row.shareTeacherEmail,'shareTeacherEmail'),contactHours:requiredValue(row.contactHours,'contactHours'),version:row.version};
+  return {weeklyDeadlineDay:row.weeklyDeadlineDay??4,weeklySubmitTime:row.weeklySubmitTime??'18:00',weeklyLockTime:row.weeklyLockTime??'20:00',schoolId,language:'vi' as const,timezone:row.timezone,linkDefaultDays:row.parentLinkTtlDays,reportHeader:requiredValue(row.reportHeader,'reportHeader'),shareTeacherPhone:requiredValue(row.shareTeacherPhone,'shareTeacherPhone'),shareTeacherEmail:requiredValue(row.shareTeacherEmail,'shareTeacherEmail'),contactHours:requiredValue(row.contactHours,'contactHours'),version:row.version};
 }
 type DictionaryKind='grade'|'subject'|'room';
 const paths={grade:'grades',subject:'subjects',room:'rooms'} as const;
@@ -43,7 +43,7 @@ export const connectedSchoolRepo=withStaffAccess({
   },
   async settings(_ctx:Ctx,schoolId:ID){const [value,context]=await Promise.all([http('getSchoolSettings',{params:{schoolId}}),refreshStaffContext()]);return {settings:settings(value.data,schoolId),canEdit:uiActions(context,{schoolId}).has('school.settings.edit')};},
   async saveSettings(_ctx:Ctx,schoolId:ID,patch:Omit<SchoolSettings,'schoolId'|'language'|'timezone'>){
-    const value=await formResult(http('updateSchoolSettings',{params:{schoolId},validateData:row=>confirmed(row,undefined,version(patch.version)),body:{expectedVersion:version(patch.version),parentLinkTtlDays:patch.linkDefaultDays,reportHeader:patch.reportHeader,shareTeacherPhone:patch.shareTeacherPhone,shareTeacherEmail:patch.shareTeacherEmail,contactHours:patch.contactHours}}),{expectedVersion:'version',parentLinkTtlDays:'linkDefaultDays'});return settings(value.data,schoolId);
+    const value=await formResult(http('updateSchoolSettings',{params:{schoolId},validateData:row=>confirmed(row,undefined,version(patch.version)),body:{expectedVersion:version(patch.version),parentLinkTtlDays:patch.linkDefaultDays,reportHeader:patch.reportHeader,shareTeacherPhone:patch.shareTeacherPhone,shareTeacherEmail:patch.shareTeacherEmail,contactHours:patch.contactHours,weeklyDeadlineDay:patch.weeklyDeadlineDay,weeklySubmitTime:patch.weeklySubmitTime,weeklyLockTime:patch.weeklyLockTime}}),{expectedVersion:'version',parentLinkTtlDays:'linkDefaultDays'});return settings(value.data,schoolId);
   },
   async dictionaries(_ctx:Ctx,schoolId:ID){
     const [grades,subjects,rooms,context]=await Promise.all([apiList('listDictionary',{params:{schoolId,dictionary:'grades'}},100),apiList('listDictionary',{params:{schoolId,dictionary:'subjects'}},500),apiList('listDictionary',{params:{schoolId,dictionary:'rooms'}},500),refreshStaffContext()]);

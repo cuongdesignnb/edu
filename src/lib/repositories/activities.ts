@@ -76,7 +76,7 @@ export const activitiesRepo = {
   },
 
   /** Create/edit. "Giao" publishes to assigned students' families; completion never adds conduct points. */
-  async save(ctx: Ctx, schoolId: ID, yearId: ID, classId: ID, input: { id?: ID; title: string; description: string; illustration: Activity["illustration"]; dueDate: string; assignedStudentIds: ID[]; assignedGroupId?: ID; evidenceRequired: boolean; publish: boolean; version?: number }) {
+  async save(ctx: Ctx, schoolId: ID, yearId: ID, classId: ID, input: { id?: ID; title: string; description: string; illustration: Activity["illustration"]; dueDate: string; startsAt?: string|null; maxFiles?: number; assignedStudentIds: ID[]; assignedGroupId?: ID; evidenceRequired: boolean; publish: boolean; version?: number }) {
     return write((db) => {
       const c = classGuard(db, ctx, schoolId, yearId, classId);
       requireAction(db, ctx, "activity.manage", { schoolId, classId });

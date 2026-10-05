@@ -15,7 +15,7 @@ type Form = Omit<SchoolSettings, "schoolId" | "language" | "timezone" | "linkDef
 /** SC41 — display & sharing settings with version-conflict handling. Values are suggestions, not legal conclusions. */
 export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string; data: Data; schoolName: string }) {
   const [s, setReviewed] = useState(data.settings);
-  const init = useMemo<Form>(() => ({ linkDefaultDays: s.linkDefaultDays, reportHeader: s.reportHeader, shareTeacherPhone: s.shareTeacherPhone, shareTeacherEmail: s.shareTeacherEmail, contactHours: s.contactHours, version: s.version }), [s]);
+  const init = useMemo<Form>(() => ({ linkDefaultDays: s.linkDefaultDays, reportHeader: s.reportHeader, shareTeacherPhone: s.shareTeacherPhone, shareTeacherEmail: s.shareTeacherEmail, contactHours: s.contactHours, weeklyDeadlineDay:s.weeklyDeadlineDay??4,weeklySubmitTime:s.weeklySubmitTime??"18:00",weeklyLockTime:s.weeklyLockTime??"20:00",version: s.version }), [s]);
   const [f, setF] = useState<Form>(init);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const ro = !data.canEdit;
@@ -38,7 +38,7 @@ export function SettingsForm({ schoolId, data, schoolName }: { schoolId: string;
       <Callout tone="warning" icon={<Scale />} title="Thông số là đề xuất, không kết luận tuân thủ pháp luật">Nhà trường quản lý các thông số vận hành dưới đây. Nhà trường tự đối chiếu quy định hiện hành về dữ liệu cá nhân trước khi dùng thật.</Callout>
       {ro && <Callout tone="neutral" icon={<Lock />}>Bạn chỉ có quyền xem cài đặt này.</Callout>}
       <ErrorSummary errors={errors} labels={{ linkDefaultDays: "Hạn link mặc định", reportHeader: "Tiêu đề báo cáo", contactHours: "Giờ liên hệ" }} />
-      <div className="grid gap-5 xl:grid-cols-2">
+      <Card className="space-y-3 p-5"><h2 className="font-bold">Hạn nhập sổ lớp mặc định toàn trường</h2><div className="grid gap-3 sm:grid-cols-3"><label>Ngày hạn<select aria-label="Ngày hạn tuần" className="input w-full" disabled={ro} value={f.weeklyDeadlineDay} onChange={e=>setF({...f,weeklyDeadlineDay:Number(e.target.value)})}>{["Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy","Chủ nhật"].map((day,i)=><option key={i} value={i}>{day}</option>)}</select></label><label>Giờ nộp<input aria-label="Giờ nộp tuần" type="time" className="input w-full" disabled={ro} value={f.weeklySubmitTime} onChange={e=>setF({...f,weeklySubmitTime:e.target.value})}/></label><label>Giờ khóa<input aria-label="Giờ khóa tuần" type="time" className="input w-full" disabled={ro} value={f.weeklyLockTime} onChange={e=>setF({...f,weeklyLockTime:e.target.value})}/></label></div><p className="text-sm">Lớp có thể đặt hạn riêng; hạn của từng tuần được ưu tiên. Giờ tính theo múi giờ trường.</p></Card><div className="grid gap-5 xl:grid-cols-2">
         <Card>
           <CardHeader title="Link tra cứu phụ huynh" icon={<Link2 className="size-5" />} />
           <div className="space-y-3 px-5 pb-5" data-field="linkDefaultDays">

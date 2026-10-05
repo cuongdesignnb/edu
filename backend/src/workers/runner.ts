@@ -15,6 +15,7 @@ import { IdentityService } from '../modules/identity/identity.service';
 import { PublicationsService } from '../modules/publications/publications.service';
 import { AnnouncementsService } from '../modules/announcements/announcements.service';
 import { ReportsService } from '../modules/reports/reports.service';
+import {expireWeekly} from '../modules/classroom/notebook-common';
 
 interface Job extends Row {id:string;school_id:string;kind:string;payload:Record<string,unknown>;attempts:number}
 interface Mail extends Row {id:string;school_id:string|null;template_key:string;encrypted_payload:string;attempts:number}
@@ -135,6 +136,7 @@ export class WorkerRunner {
   }
   async processOnce(){
     const schools=(await this.db.app.query<{id:string}>('SELECT id FROM platform.schools ORDER BY id')).rows;
+    for(const school of schools)await this.db.transaction(tx=>expireWeekly(tx,school.id),{schoolId:school.id});
     let processed=0;
     for(const school of schools){
       const jobs:Job[]=[];for(let slot=0;slot<2;slot++){const job=await this.claim(school.id);if(job)jobs.push(job);}

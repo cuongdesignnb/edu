@@ -1,0 +1,12 @@
+"use client";
+import {useState} from 'react';
+import {http} from '@/lib/api/client';
+import {Button} from '@/components/ui/button';
+import {Card} from '@/components/ui/card';
+import {Modal} from '@/components/ui/dialog';
+export function StaffCredentialControls({schoolId,memberId,version}:{schoolId:string;memberId:string;version:number}){
+ const [action,setAction]=useState<'reset'|'revoke'|null>(null),[password,setPassword]=useState(''),[reason,setReason]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ const close=()=>{setAction(null);setPassword('');setReason('');};
+ const save=async()=>{setBusy(true);setMessage('');try{const params={schoolId,memberId},body={expectedVersion:version,reason};if(action==='reset')await http('resetSchoolStaffPassword',{params,body:{...body,password}});else await http('revokeSchoolStaffSessions',{params,body});setMessage(action==='reset'?'Đã đặt lại mật khẩu và thu hồi phiên đăng nhập. Người nhận phải đổi mật khẩu khi đăng nhập.':'Đã thu hồi toàn bộ phiên đăng nhập.');close();window.dispatchEvent(new Event('edumanage:mutation'));}catch(e){setMessage(e instanceof Error?e.message:'Chưa lưu được');}finally{setBusy(false);}};
+ return <Card className="space-y-3 p-4"><h2 className="font-bold">An toàn tài khoản</h2><p className="text-sm">Chỉ đặt lại tài khoản nhân sự riêng của trường. Danh tính dùng ở nhiều trường cần chủ tài khoản tự khôi phục.</p><div className="flex flex-wrap gap-2"><Button onClick={()=>{close();setAction('reset');}}>Đặt lại mật khẩu</Button><Button onClick={()=>{close();setAction('revoke');}}>Thu hồi phiên đăng nhập</Button></div>{message&&<p role="status">{message}</p>}<Modal open={!!action} onOpenChange={o=>{if(!o)close();}} title={action==='reset'?'Đặt lại mật khẩu nhân sự':'Thu hồi toàn bộ phiên đăng nhập'} busy={busy} footer={<Button variant="primary" disabled={busy||reason.trim().length<5||action==='reset'&&password.length<12} onClick={()=>void save()}>Xác nhận</Button>}><div className="space-y-3">{action==='reset'&&<label className="block">Mật khẩu mới<input type="password" autoComplete="new-password" className="input mt-1 w-full" minLength={12} maxLength={128} value={password} onChange={e=>setPassword(e.target.value)}/><span className="text-sm">12–128 ký tự, gồm chữ và số. Người nhận phải đổi mật khẩu sau đăng nhập.</span></label>}<label className="block">Lý do<textarea className="input mt-1 w-full" value={reason} onChange={e=>setReason(e.target.value)} minLength={5}/></label></div></Modal></Card>;
+}

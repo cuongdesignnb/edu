@@ -13,7 +13,7 @@ import {activityWorkspace,activityWorkspaceAccess} from './activity-workspace';
 import {canonical} from '../../common/commands';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
-const activity:Resource={table:'app.activities',fields:{...meta,classId:'class_id',yearId:'year_id',title:'title',description:'description',dueAt:'due_at',evidenceRequired:'evidence_required',status:'status',dataVersion:'data_version',assignedAt:'assigned_at',illustration:'illustration'},writeFields:[],search:['title','description'],filters:{status:'status'}};
+const activity:Resource={table:'app.activities',fields:{...meta,classId:'class_id',yearId:'year_id',title:'title',description:'description',dueAt:'due_at',startsAt:'starts_at',maxFiles:'max_files',evidenceRequired:'evidence_required',status:'status',dataVersion:'data_version',assignedAt:'assigned_at',illustration:'illustration'},writeFields:[],search:['title','description'],filters:{status:'status'}};
 const participant:Resource={table:'app.activity_participants',fields:{...meta,activityId:'activity_id',enrollmentId:'enrollment_id',status:'status',reviewNote:'review_note',cancelledAt:'cancelled_at'},writeFields:[],search:[],filters:{status:'status'}};
 const evidence:Resource={table:'app.evidence',fields:{...meta,participantId:'participant_id',fileId:'file_id',submittedBy:'submitted_by',caption:'caption',status:'status',reviewReason:'review_reason',shareWithGuardian:'share_with_guardian'},writeFields:[],search:['caption'],filters:{status:'status',participantId:'participant_id'}};
 function cleanDto(r:Resource,row:Row){const value=dto(r,row);for(const key of ['reviewNote','caption','reviewReason'])if(value[key]===null)delete value[key];return value;}
@@ -77,7 +77,8 @@ export class ActivitiesService {
       if(op==='listEvidence')return listResource(tx,evidence,ctx.schoolId,c.query,{sql:`EXISTS(SELECT 1 FROM app.activity_participants p JOIN app.activities a ON a.school_id=p.school_id AND a.id=p.activity_id WHERE p.school_id=t.school_id AND p.id=t.participant_id AND p.class_id=$1${c.query.activityId?' AND p.activity_id=$2':''}${canDraft?'':" AND a.status<>'DRAFT'"})`,values:c.query.activityId?[ctx.classId,c.query.activityId]:[ctx.classId]},c.principal!.userId).then(result=>({...result,data:result.data.map(value=>{for(const key of ['caption','reviewReason'])if(value[key]===null)delete value[key];return value;})}));
       if(op==='createActivity'){
         await this.due(tx,c,c.body.dueAt,ctx.year,ctx.today);await this.roster(tx,c,c.body.enrollmentIds as string[],ctx.today);
-        const row=(await one<Row>(tx,'INSERT INTO app.activities(school_id,class_id,year_id,title,description,due_at,evidence_required,created_by,illustration) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *',[ctx.schoolId,ctx.classId,ctx.year.id,c.body.title,c.body.description,c.body.dueAt,c.body.evidenceRequired,c.principal!.userId,c.body.illustration??'heart']))!;
+        if(c.body.startsAt&&new Date(String(c.body.startsAt))>=new Date(String(c.body.dueAt)))validation('startsAt','Ngày bắt đầu phải trước hạn hoàn thành');
+        const row=(await one<Row>(tx,'INSERT INTO app.activities(school_id,class_id,year_id,title,description,due_at,evidence_required,created_by,illustration,starts_at,max_files) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *',[ctx.schoolId,ctx.classId,ctx.year.id,c.body.title,c.body.description,c.body.dueAt,c.body.evidenceRequired,c.principal!.userId,c.body.illustration??'heart',c.body.startsAt??null,c.body.maxFiles??5]))!;
         for(const id of c.body.enrollmentIds as string[])await tx.query('INSERT INTO app.activity_participants(school_id,class_id,activity_id,enrollment_id) VALUES($1,$2,$3,$4)',[ctx.schoolId,ctx.classId,row.id,id]);
         await audit(tx,c,'activity',String(row.id),{participantCount:(c.body.enrollmentIds as string[]).length});return {data:await this.counts(tx,await this.activity(tx,c,String(row.id))),status:201};
       }
@@ -94,6 +95,9 @@ export class ActivitiesService {
       if(row.status==='ARCHIVED')throw new Problem(409,'ACTIVITY_ARCHIVED');
       if(op==='updateActivity'){
         version(row,c.body.expectedVersion);if(c.body.dueAt)await this.due(tx,c,c.body.dueAt,ctx.year,ctx.today);
+        const start=Object.hasOwn(c.body,'startsAt')?c.body.startsAt:row.starts_at;
+        if(start&&new Date(String(start))>=new Date(String(c.body.dueAt??row.due_at)))validation('startsAt','Ngày bắt đầu phải trước hạn hoàn thành');
+        if(c.body.maxFiles&&await one(tx,'SELECT participant_id FROM app.evidence WHERE school_id=$1 AND participant_id IN (SELECT id FROM app.activity_participants WHERE school_id=$1 AND activity_id=$2) GROUP BY participant_id HAVING count(*)>$3 LIMIT 1',[ctx.schoolId,row.id,c.body.maxFiles]))validation('maxFiles','Không giảm giới hạn dưới số tệp đã nộp');
         if(c.body.status==='DRAFT'||(c.body.status==='CLOSED'&&row.status==='DRAFT'))throw new Problem(409,'INVALID_STATE');
         if(c.body.status==='ASSIGNED'&&row.status==='DRAFT')throw new Problem(409,'ASSIGNMENT_REQUIRED');
         if(c.body.enrollmentIds){
@@ -102,7 +106,7 @@ export class ActivitiesService {
           for(const p of removed){if(p.status!=='ASSIGNED'||await one(tx,'SELECT id FROM app.evidence WHERE school_id=$1 AND participant_id=$2 LIMIT 1',[ctx.schoolId,p.id]))validation('enrollmentIds','Không bỏ học sinh đã có bài hoặc minh chứng');await tx.query('UPDATE app.activity_participants SET cancelled_at=now() WHERE school_id=$1 AND id=$2',[ctx.schoolId,p.id]);}
           for(const id of ids)await tx.query('INSERT INTO app.activity_participants(school_id,class_id,activity_id,enrollment_id) VALUES($1,$2,$3,$4) ON CONFLICT(school_id,activity_id,enrollment_id) DO UPDATE SET cancelled_at=NULL',[ctx.schoolId,ctx.classId,row.id,id]);
         }
-        const fields:Record<string,string>={title:'title',description:'description',dueAt:'due_at',evidenceRequired:'evidence_required',illustration:'illustration',status:'status'},values:unknown[]=[ctx.schoolId,row.id],changes=[];
+        const fields:Record<string,string>={title:'title',description:'description',dueAt:'due_at',startsAt:'starts_at',maxFiles:'max_files',evidenceRequired:'evidence_required',illustration:'illustration',status:'status'},values:unknown[]=[ctx.schoolId,row.id],changes=[];
         for(const [key,col] of Object.entries(fields))if(Object.hasOwn(c.body,key)){values.push(c.body[key]);changes.push(`${col}=$${values.length}`);}if(changes.length)await tx.query(`UPDATE app.activities SET ${changes.join(',')} WHERE school_id=$1 AND id=$2`,values);
         await audit(tx,c,'activity',String(row.id));return {data:await this.counts(tx,await this.activity(tx,c,String(row.id)))};
       }

@@ -11,6 +11,7 @@ import {memberDetails,memberHistory,schoolRoleChoices,staffActivity} from './mem
 import {assignmentMatrix} from './assignment-matrix';
 import {roleDetails,roleSummaryResource,ownsHeldRole,validateLiveRoleExpiry} from './role-details';
 import {createDirectStaff} from './direct-staff';
+import {manageStaffCredential} from './credential-management';
 import type { RequestContext,Result,Handler } from '../../api.router';
 
 const meta={id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at'};
@@ -35,7 +36,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['createSchoolStaffAccount','assignExistingSchoolStaffAccount','listStaffActivity','getStaffInvitationOptions','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['resetSchoolStaffPassword','revokeSchoolStaffSessions','createSchoolStaffAccount','assignExistingSchoolStaffAccount','listStaffActivity','getStaffInvitationOptions','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewStaffAssignment','previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -72,6 +73,7 @@ export class StaffService {
         member.schoolRoleGrants=await this.schoolRoleGrants(tx,schoolId,c.params.memberId!);return {data:member};
       }
       if(op==='replaceMemberSchoolRoles')return {data:await this.replaceSchoolRoles(tx,c)};
+      if(op==='resetSchoolStaffPassword'||op==='revokeSchoolStaffSessions')return manageStaffCredential(tx,c,this.policy);
       if(op==='createSchoolStaffAccount'||op==='assignExistingSchoolStaffAccount'){
         if(!(await this.policy.grants(tx,c.principal!.userId,schoolId)).some(g=>g.role_code==='SCHOOL_ADMIN'&&g.scope_type==='SCHOOL'&&g.actions.includes('member.create_direct')))throw new Problem(403,'FORBIDDEN');
         return {data:await createDirectStaff(tx,c,op==='assignExistingSchoolStaffAccount',async body=>{const p=await this.validateGrant(tx,c,body,true);if(p.role.code==='SCHOOL_ADMIN')throw new Problem(403,'FORBIDDEN');return p;},body=>this.createAssignment(tx,c,body)),status:201};

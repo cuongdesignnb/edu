@@ -20,6 +20,7 @@ import { fmtDate, fmtDateTime } from "@/lib/formatters";
 import { staffMembershipStatus } from "./staff-display";
 import { AssignDrawer, type AssignPrefill } from "./assign-drawer";
 import { PermissionSummary } from "./permission-summary";
+import {StaffCredentialControls} from '@/features/notebook/staff-credentials';
 import { assignmentStatusLabel, fmtRange, SchoolSourceState } from "./common";
 
 type Member = Awaited<ReturnType<typeof staffRepo.member>>;
@@ -68,6 +69,7 @@ function Body({ m }: { m: Member }) {
         </>} />
       {m.membership.statusReason && !active && <Callout tone="warning" title={`${staffMembershipStatus[m.membership.status].label}`}>{m.membership.statusReason} — mọi quyền tại trường này đang bị chặn; danh tính và lịch sử được giữ.</Callout>}
       {m.isSelf && <Callout tone="neutral" icon={<Info />}>Đây là hồ sơ của chính bạn. Bạn không thể tự khóa, tự thu hồi hoặc tự đổi mẫu quyền của mình.</Callout>}
+      {m.canRole&&!m.isSelf&&<StaffCredentialControls schoolId={school.id} memberId={m.membership.id} version={m.membership.version}/>}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card>

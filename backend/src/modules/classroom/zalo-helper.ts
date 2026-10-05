@@ -1,0 +1,20 @@
+import {one,type Row,type Transaction} from '../../database/database';
+import {Permissions} from '../../common/permissions';
+import {notFound} from '../../common/problem';
+import type {RequestContext} from '../../api.router';
+const template='Kính gửi phụ huynh {student}, lớp {class}. {period}: {score} điểm, xếp loại {classification}. Điểm cộng: {bonus}; điểm trừ: {penalty}. Chuyên cần: {attendance}.';
+export function zaloPhone(raw:unknown){let digits=String(raw??'').replace(/[\s()+.-]/g,'');if(/^0[35789][0-9]{8}$/.test(digits))digits='84'+digits.slice(1);return /^84[35789][0-9]{8}$/.test(digits)?'https://zalo.me/'+digits:null;}
+export async function classZalo(tx:Transaction,c:RequestContext,policy:Permissions,cls:Row){
+ const schoolId=c.params.schoolId!,classId=c.params.classId!;
+ const sources=(await tx.query<Row>(`SELECT p.id,p.kind,p.conduct_period_id,p.periodic_conduct_id,coalesce(pc.period_label,'Tuần '||w.week_number::text) AS label,coalesce(pc.starts_on,w.starts_on) AS starts_on,coalesce(pc.ends_on,w.ends_on) AS ends_on
+ FROM app.publication_revisions p LEFT JOIN app.periodic_conduct pc ON pc.school_id=p.school_id AND pc.id=p.periodic_conduct_id LEFT JOIN app.conduct_periods cp ON cp.school_id=p.school_id AND cp.id=p.conduct_period_id LEFT JOIN app.school_weeks w ON w.school_id=cp.school_id AND w.id=cp.week_id
+ WHERE p.school_id=$1 AND p.class_id=$2 AND p.year_id=$3 AND p.kind IN ('CONDUCT','PERIODIC_CONDUCT') AND p.status='PUBLISHED' ORDER BY coalesce(pc.starts_on,w.starts_on) DESC,p.id`,[schoolId,classId,cls.year_id])).rows;
+ const selected=c.query.publicationId?sources.find(p=>p.id===c.query.publicationId):sources[0];if(c.query.publicationId&&!selected)notFound();
+ if(selected)for(const date of [String(selected.starts_on),new Date(Date.parse(String(selected.ends_on))-86400000).toISOString().slice(0,10)])await policy.require(tx,c.principal!,'conduct.read+guardian.read',{schoolId,classId,date});
+ const students=selected?(await tx.query<Row>(`SELECT s.id AS student_id,s.full_name,i.payload,contact.phone,contact.guardian_name,
+  (SELECT jsonb_object_agg(status,n) FROM (SELECT ar.status,count(*)::integer AS n FROM app.attendance_records ar JOIN app.attendance_sessions a ON a.school_id=ar.school_id AND a.id=ar.session_id JOIN app.enrollments ae ON ae.school_id=ar.school_id AND ae.id=ar.enrollment_id WHERE ar.school_id=s.school_id AND ae.student_id=s.id AND a.class_id=$2 AND a.session_date>=$4 AND a.session_date<$5 AND EXISTS(SELECT 1 FROM app.publication_revisions ap WHERE ap.school_id=a.school_id AND ap.attendance_session_id=a.id AND ap.status='PUBLISHED' AND ap.source_version=a.data_version) GROUP BY ar.status) totals) AS attendance
+ FROM app.parent_publication_items i JOIN app.students s ON s.school_id=i.school_id AND s.id=i.student_id
+ LEFT JOIN LATERAL(SELECT g.phone,g.full_name AS guardian_name FROM app.guardian_relationships gr JOIN app.guardians g ON g.school_id=gr.school_id AND g.id=gr.guardian_id WHERE gr.school_id=s.school_id AND gr.student_id=s.id AND gr.status='VERIFIED' AND gr.can_receive_info AND gr.revoked_at IS NULL AND g.status='ACTIVE' ORDER BY gr.is_primary DESC,gr.id LIMIT 1) contact ON true
+ WHERE i.school_id=$1 AND i.publication_id=$3 AND i.section='conduct' AND EXISTS(SELECT 1 FROM app.enrollments e WHERE e.school_id=s.school_id AND e.student_id=s.id AND e.class_id=$2 AND e.status<>'CANCELLED' AND daterange(e.starts_on,e.ends_on,'[)')&&daterange($4,$5,'[)')) ORDER BY s.full_name,s.id`,[schoolId,classId,selected.id,selected.starts_on,selected.ends_on])).rows:[];
+ return {data:{className:cls.name,version:cls.version,template:(cls.notebook_settings as Row)?.zaloTemplate??template,sources:sources.map(p=>({id:p.id,label:p.label})),selectedPublicationId:selected?.id??null,students:students.map(s=>{const p=s.payload as Row;return {studentId:s.student_id,studentName:s.full_name,guardianName:s.guardian_name??null,phone:s.phone??null,zaloUrl:zaloPhone(s.phone),period:selected!.label,score:p.finalPoints,classification:p.classification,bonus:p.bonusPoints,penalty:p.penaltyPoints,attendance:s.attendance??{}};})}};
+}

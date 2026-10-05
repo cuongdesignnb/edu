@@ -36,6 +36,7 @@ export class SettingsService {
       if(!await one(tx,'SELECT name FROM pg_timezone_names WHERE name=$1',[timezone]))validation('timezone','Múi giờ IANA không hợp lệ');
       if(timezone!==school.timezone&&await one(tx,'SELECT id FROM app.academic_years WHERE school_id=$1 LIMIT 1',[schoolId]))throw new Problem(409,'TIMEZONE_LOCKED');
       const values={...school.settings as Record<string,unknown>,...Object.fromEntries(settingsKeys.filter(key=>Object.hasOwn(c.body,key)).map(key=>[key,c.body[key]]))};
+      if(String(values.weeklySubmitTime??'18:00')>String(values.weeklyLockTime??'20:00'))validation('weeklyLockTime','Giờ khóa phải từ giờ nộp trở đi');
       if(c.body.parentSectionsDefault&&new Set(c.body.parentSectionsDefault as string[]).size!==(c.body.parentSectionsDefault as string[]).length)validation('parentSectionsDefault','Mục chia sẻ bị trùng');
       const saved=await one<Row>(tx,'UPDATE platform.schools SET name=$2,timezone=$3,settings=$4 WHERE id=$1 RETURNING *',[schoolId,c.body.schoolName??school.name,timezone,values]);
       const data=schoolSettings(saved!);await audit(tx,c,'school-settings',schoolId,{status:'UPDATED'});return {data};

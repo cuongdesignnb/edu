@@ -567,6 +567,8 @@ export interface Activity {
   description: string;
   illustration: "trophy" | "stem" | "clean" | "book" | "heart";
   dueDate: ISODate;
+  startsAt?: ISODateTime | null;
+  maxFiles?: number;
   assignedStudentIds: ID[];
   assignedGroupId?: ID;
   evidenceRequired: boolean;
@@ -758,6 +760,7 @@ export interface PublicationPolicy {
 }
 
 export interface SchoolSettings {
+  weeklyDeadlineDay?: number;weeklySubmitTime?: string;weeklyLockTime?: string;
   schoolId: ID;
   language: "vi";
   timezone: "Asia/Ho_Chi_Minh";

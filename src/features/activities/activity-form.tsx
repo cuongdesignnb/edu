@@ -49,7 +49,7 @@ function initial(d: Detail | null, o: Options) {
   const mode: Mode = !a ? "class" : a.assignedGroupId ? "group" : a.assignedStudentIds.length >= o.students.length ? "class" : "students";
   return {
     title: a?.title ?? "", description: a?.description ?? "", illustration: (a?.illustration ?? "trophy") as Activity["illustration"], dueDate: a?.dueDate as string | undefined,
-    mode, groupId: a?.assignedGroupId ?? "", studentIds: mode === "students" ? a?.assignedStudentIds ?? [] : [], evidenceRequired: a?.evidenceRequired ?? true,
+    startsAt:a?.startsAt?new Date(new Date(a.startsAt).getTime()-new Date(a.startsAt).getTimezoneOffset()*60000).toISOString().slice(0,16):"",maxFiles:a?.maxFiles??5,mode, groupId: a?.assignedGroupId ?? "", studentIds: mode === "students" ? a?.assignedStudentIds ?? [] : [], evidenceRequired: a?.evidenceRequired ?? true,
   };
 }
 
@@ -96,7 +96,7 @@ function ActivityForm({ options: o, detail: d }: { options: Options; detail: Det
     if (!validate()) return false;
     const r = await cmd.run({
       id: d?.activity.id, title: f.title, description: f.description, illustration: f.illustration, dueDate: f.dueDate!, assignedStudentIds: assigned,
-      assignedGroupId: f.mode === "group" ? f.groupId : undefined, evidenceRequired: f.evidenceRequired, publish, version: d?.activity.version,dataVersion:d?.activity.dataVersion,publicationId:d?.activity.publicationId,
+      assignedGroupId: f.mode === "group" ? f.groupId : undefined, evidenceRequired: f.evidenceRequired, startsAt:f.startsAt?new Date(f.startsAt).toISOString():null,maxFiles:f.maxFiles,publish, version: d?.activity.version,dataVersion:d?.activity.dataVersion,publicationId:d?.activity.publicationId,
     });
     if (r) { setSaved(true); router.push(`${base}/activities/${r.id}`); return true; }
     return false;
@@ -128,7 +128,7 @@ function ActivityForm({ options: o, detail: d }: { options: Options; detail: Det
             </div>
           </fieldset>
           <div data-field="dueDate" className="max-w-xs"><DateField label="Hạn hoàn thành" required value={f.dueDate} min={o.today} onChange={(v) => set("dueDate", v)} error={errors.dueDate || undefined} /></div>
-          <div data-field="assignedStudentIds" className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2"><label className="label">Bắt đầu (tùy chọn)<input aria-label="Bắt đầu hoạt động" type="datetime-local" className="input mt-1 w-full" value={f.startsAt} onChange={e=>set("startsAt",e.target.value)}/></label><label className="label">Tối đa tệp mỗi học sinh<input aria-label="Tối đa tệp minh chứng" type="number" min={1} max={20} className="input mt-1 w-full" value={f.maxFiles} onChange={e=>set("maxFiles",Number(e.target.value))}/></label></div><div data-field="assignedStudentIds" className="space-y-3">
             <RadioGroup<Mode> label="Giao cho" value={f.mode} onChange={(v) => set("mode", v)} direction="row"
               options={[{ value: "class", label: "Cả lớp", description: `${o.students.length} học sinh` }, { value: "group", label: "Theo tổ" }, { value: "students", label: "Chọn học sinh" }]} />
             {f.mode === "group" && <div data-field="group"><SelectField label="Tổ" required value={f.groupId} placeholder="Chọn tổ" options={groupOptions} onChange={(e) => set("groupId", e.target.value)} error={errors.group || undefined} /></div>}
@@ -138,7 +138,7 @@ function ActivityForm({ options: o, detail: d }: { options: Options; detail: Det
             {errors.assignedStudentIds && <p className="error-text" role="alert">{errors.assignedStudentIds}</p>}
             <p className="text-[13px] text-body">Mẫu số tiến độ: <span className="font-semibold text-ink">{assigned.length} học sinh được giao</span>{lockedIds.size > 0 && ` · ${lockedIds.size} em đã có minh chứng (không thể bỏ)`}</p>
           </div>
-          <Toggle checked={f.evidenceRequired} onChange={(v) => set("evidenceRequired", v)} label="Yêu cầu minh chứng" description="Giáo viên ghi nhận minh chứng (ảnh/PDF) cho từng học sinh; phụ huynh không tải tệp lên." />
+          <Toggle checked={f.evidenceRequired} onChange={(v) => set("evidenceRequired", v)} label="Yêu cầu minh chứng" description="Học sinh nộp ảnh bằng link riêng được cấp tại chi tiết hoạt động; giáo viên duyệt trước khi chia sẻ." />
           <div className="flex flex-wrap justify-end gap-2 border-t border-line pt-4">
             <Button variant="ghost" onClick={() => router.push(d ? `${base}/activities/${d.activity.id}` : `${base}/activities`)} disabled={cmd.pending}>Hủy</Button>
             {isDraft && <Button variant="secondary" icon={<Save className="size-4" />} loading={cmd.pending} onClick={() => submit(false)}>Lưu nháp</Button>}

@@ -8,7 +8,7 @@ import { Problem } from '../../common/problem';
 import { validateSchema } from '../../common/contract';
 import type { RequestContext,ActorContext,Handler,Result } from '../../api.router';
 
-const columns:Record<string,string>={CONDUCT:'conduct_period_id',ATTENDANCE:'attendance_session_id',TIMETABLE:'timetable_id',DUTY:'duty_schedule_id',ACTIVITY:'activity_id',ANNOUNCEMENT:'announcement_id'};
+const columns:Record<string,string>={CONDUCT:'conduct_period_id',PERIODIC_CONDUCT:'periodic_conduct_id',ATTENDANCE:'attendance_session_id',TIMETABLE:'timetable_id',DUTY:'duty_schedule_id',ACTIVITY:'activity_id',ANNOUNCEMENT:'announcement_id'};
 const r:Resource={table:'app.publication_revisions',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',kind:'kind',classId:'class_id',yearId:'year_id',revision:'revision',sourceVersion:'source_version',status:'status',publishedAt:'published_at',contentHash:'content_hash',
   ...Object.fromEntries(Object.entries(columns).map(([kind,column])=>[kind,column]))},writeFields:[],search:[],filters:{kind:'kind',status:'status',yearId:'year_id',classId:'class_id'}};
 export function publicationDto(row:Row){const value=dto(r,row);for(const kind of Object.keys(columns)){if(value[kind])value.sourceId=value[kind];delete value[kind];}return value;}

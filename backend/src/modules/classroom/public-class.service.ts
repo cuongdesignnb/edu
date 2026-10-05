@@ -57,7 +57,7 @@ export class PublicClassService{
    if(c.operation.id==='getPublicClassStudent'){
     const student=studentList.find(s=>s.id===c.params.studentId);if(!student)notFound();
     const histories=published.filter(p=>p.student_id===student.id);
-    const conduct=settings.publicStudentConductEnabled?histories.filter(p=>p.kind==='CONDUCT').map(p=>({publicationId:p.id,...this.child(p.payload as Row,'conduct')})):[];
+    const conduct=settings.publicStudentConductEnabled?histories.filter(p=>['CONDUCT','PERIODIC_CONDUCT'].includes(String(p.kind))).map(p=>({publicationId:p.id,...this.child(p.payload as Row,'conduct'),periodType:(p.payload as Row).periodType??'WEEK',periodKey:(p.payload as Row).periodKey??''})):[];
     return {data:{student,conduct,attendance:settings.publicStudentAttendanceEnabled?histories.filter(p=>p.kind==='ATTENDANCE').map(p=>this.child(p.payload as Row,'attendance')):[],activities:settings.publicStudentActivitiesEnabled?histories.filter(p=>p.kind==='ACTIVITY').map(p=>this.child(p.payload as Row,'activities')):[]}};
    }
    const timetable=published.find(p=>p.kind==='TIMETABLE'),duty=published.find(p=>p.kind==='DUTY');
@@ -68,7 +68,10 @@ export class PublicClassService{
    const seating=seats.map(s=>({row:Number(s.row),column:Number(s.column),studentName:students.find(st=>st.enrollment_id===s.enrollmentId)?.full_name??null}));
    const latest=new Map<string,Row>();for(const p of published)if(p.kind==='CONDUCT'&&p.student_id&&!latest.has(String(p.student_id)))latest.set(String(p.student_id),p.payload as Row);
    const ranking=settings.publicRankingEnabled&&settings.publicStudentConductEnabled?studentList.flatMap(s=>{const score=latest.get(String(s.id));return score?[{studentId:s.id,fullName:s.fullName,finalPoints:String(score.finalPoints),periodLabel:String(score.periodLabel)}]:[];}).sort((a,b)=>Number(b.finalPoints)-Number(a.finalPoints)):[];
-   return {data:{schoolName:info.school_name,className:info.class_name,yearName:info.year_name,homeroomName:info.homeroom??null,settings,students:studentList,
+   const periodic=settings.publicStudentConductEnabled?[...new Set(published.filter(p=>p.kind==='PERIODIC_CONDUCT').map(p=>String(p.id)))].map(pubId=>{const pub=published.find(p=>p.id===pubId)!,payload=pub.payload as Row,results=((pub.staff_snapshot as Row).periodic as Row).results as Row[];
+    const visible=results.filter(r=>studentList.some(s=>s.id===r.studentId));const ordered=[...visible].sort((a,b)=>Number(b.score)-Number(a.score)||Number(a.penaltyCount)-Number(b.penaltyCount)||String(a.studentCode||a.fullName).localeCompare(String(b.studentCode||b.fullName),'vi',{numeric:true})||String(a.studentId).localeCompare(String(b.studentId)));
+    return {publicationId:pubId,periodType:payload.periodType,periodKey:payload.periodKey,periodLabel:payload.periodLabel,publishedAt:(pub.published_at as Date).toISOString(),students:visible.map(r=>({studentId:r.studentId,fullName:r.fullName,finalPoints:r.score,classification:r.finalClassification})),ranking:settings.publicRankingEnabled?ordered.map((r,i)=>({studentId:r.studentId,rank:i+1,fullName:r.fullName,finalPoints:r.score,classification:r.finalClassification})):[]};}):[];
+   return {data:{schoolName:info.school_name,className:info.class_name,yearName:info.year_name,homeroomName:info.homeroom??null,settings,students:studentList,periodic,
     timetable:this.lessons(timetable?.payload as Row|undefined),duties:this.duties(duty?.staff_snapshot as Row|undefined),announcements,rules,seating,ranking}};
   },{schoolId:String(portal.school_id),readOnly:true});
  }

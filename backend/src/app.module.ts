@@ -28,6 +28,10 @@ import { PlatformService } from './modules/platform/platform.service';
 import { SupportService } from './modules/support/support.service';
 import { ReportsService } from './modules/reports/reports.service';
 import {PublicClassService} from "./modules/classroom/public-class.service";
+import {NotebookService} from './modules/classroom/notebook.service';
+import {OfficersService} from './modules/classroom/officers.service';
+import {PeriodicService} from './modules/conduct/periodic.service';
+import {EvidenceAccessService} from './modules/activities/evidence-access.service';
 const services=[PublicClassService,Database,IdentityService,Permissions,Commands,OrganizationService,StudentsService,InvitationsService,StaffService,TransitionsService,FilesService,ImportsService,PublicationsService,AttendanceService,RulesService,ConductService,AdjustmentsService,ParentService,ParentAccessService,ClassroomService,ScheduleService,ActivitiesService,AnnouncementsService,SettingsService,NotificationsService,DashboardsService,PlatformService,SupportService,ReportsService];
-@Module({providers:services,exports:services})
+@Module({providers:[...services,NotebookService,OfficersService,PeriodicService,EvidenceAccessService],exports:[...services,NotebookService,OfficersService,PeriodicService,EvidenceAccessService]})
 export class AppModule {}

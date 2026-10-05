@@ -12,6 +12,7 @@ import {classDutyCommand} from './class-duty-commands';
 import {scheduleImportSettings} from './import-settings';
 import {scheduleWorkspace} from './schedule-workspace';
 import {scheduleLessonCheck,scheduleLessonCommand} from './lesson-change-commands';
+import type {Principal} from '../identity/identity.service';
 
 @Injectable()
 export class ScheduleService {
@@ -27,7 +28,40 @@ export class ScheduleService {
   private async row(tx:Transaction,r:Resource,c:RequestContext,id:string,lock=false){
     const row=await one<Row>(tx,`SELECT * FROM ${r.table} WHERE school_id=$1 AND class_id=$2 AND id=$3${lock?' FOR UPDATE':''}`,[c.params.schoolId,c.params.classId,id]);if(!row)notFound();return row;
   }
-  private async handle(c:RequestContext):Promise<Result>{
+  async draftWithin(tx:Transaction,c:RequestContext,kind:'DUTY'|'TIMETABLE',week:Row,input:Row=c.body):Promise<Result>{
+    let body:Row={...input,startsOn:week.starts_on,endsOn:week.ends_on};
+    if(input.copyPrevious===true){
+      const target=await one<Row>(tx,`SELECT * FROM app.${kind==='DUTY'?'duty_schedules':'timetable_versions'} WHERE school_id=$1 AND class_id=$2 AND starts_on<$3 AND status<>'ARCHIVED' ORDER BY starts_on DESC,id DESC LIMIT 1`,[c.params.schoolId,c.params.classId,week.starts_on]);
+      if(!target)throw new Problem(409,'PREVIOUS_WEEK_UNAVAILABLE');
+      if(kind==='TIMETABLE')body.entries=(await timetableDto(tx,target)).entries;
+      else{
+        const data=await dutyDto(tx,target),offset=Date.parse(String(week.starts_on))-Date.parse(String(target.starts_on));
+        const grouped=new Set((await tx.query<Row>('SELECT id FROM app.duty_assignments WHERE school_id=$1 AND schedule_id=$2 AND group_plan_id IS NOT NULL',[c.params.schoolId,target.id])).rows.map(r=>r.id));
+        const assignments:Row[]=(data.assignments as Row[]).filter(a=>!grouped.has(a.id)).map(a=>({...a,status:'ASSIGNED',dutyDate:new Date(Date.parse(String(a.dutyDate))+offset).toISOString().slice(0,10)}));
+        const eligible=[];for(const a of assignments)if(await one(tx,"SELECT id FROM app.enrollments WHERE school_id=$1 AND class_id=$2 AND id=$3 AND status<>'CANCELLED' AND starts_on<=$4 AND (ends_on IS NULL OR ends_on>$4)",[c.params.schoolId,c.params.classId,a.enrollmentId,a.dutyDate]))eligible.push(a);
+        const plans:Row[]=[];
+        for(const old of data.groupAssignments as Row[]){const date=new Date(Date.parse(String(old.dutyDate))+offset).toISOString().slice(0,10);
+         const members=(await tx.query<Row>(`SELECT gm.enrollment_id FROM app.group_memberships gm JOIN app.enrollments e ON e.school_id=gm.school_id AND e.id=gm.enrollment_id WHERE gm.school_id=$1 AND gm.class_id=$2 AND gm.group_id=$3 AND gm.cancelled_at IS NULL AND gm.starts_on<=$4 AND (gm.ends_on IS NULL OR gm.ends_on>$4) AND e.status<>'CANCELLED' AND e.starts_on<=$4 AND (e.ends_on IS NULL OR e.ends_on>$4) AND ($5::uuid[] IS NULL OR gm.enrollment_id=ANY($5::uuid[]))`,[c.params.schoolId,c.params.classId,old.groupId,date,old.enrollmentIds??null])).rows;
+         if(members.length)plans.push({groupId:old.groupId,dutyDate:date,task:old.task,status:'ASSIGNED',...(old.enrollmentIds?{enrollmentIds:members.map(m=>m.enrollment_id)}:{})});
+        }
+        body.assignments=eligible;body.groupAssignments=plans;
+      }
+    }
+    const operationId=kind==='DUTY'?'createDuty':'createTimetable';
+    body=kind==='DUTY'?{startsOn:week.starts_on,endsOn:week.ends_on,assignments:body.assignments??[],groupAssignments:body.groupAssignments??[]}:{startsOn:week.starts_on,endsOn:week.ends_on,entries:body.entries??[]};
+    return this.handle({...c,body,operation:{...c.operation,id:operationId,method:'POST',permission:kind==='DUTY'?'duty.manage':'schedule.manage'}},tx);
+  }
+  async officerDraft(tx:Transaction,c:RequestContext,p:Row,kind:'DUTY'|'TIMETABLE',week:Row){
+    return this.draftWithin(tx,{...c,principal:{userId:String(p.created_by)} as Principal,params:{...c.params,schoolId:String(p.school_id),classId:String(p.class_id)}},kind,week);
+  }
+  async withdrawWeek(tx:Transaction,c:RequestContext,week:Row){
+    const made=await this.draftWithin(tx,c,'TIMETABLE',week,{entries:[]}),row=made.data as Row;
+    const params={...c.params,timetableId:String(row.id)},current=await one<Row>(tx,"SELECT id FROM app.publication_revisions WHERE school_id=$1 AND class_id=$2 AND kind='TIMETABLE' AND status='PUBLISHED'",[c.params.schoolId,c.params.classId]);
+    await this.handle({...c,params,body:{expectedVersion:row.version},operation:{...c.operation,id:'validateTimetable',permission:'schedule.manage'}},tx);
+    const refreshed=await one<Row>(tx,'SELECT data_version FROM app.timetable_versions WHERE school_id=$1 AND id=$2',[c.params.schoolId,row.id]);
+    return this.handle({...c,params,body:{expectedSourceVersion:refreshed!.data_version,expectedPublicationId:current?.id??null},operation:{...c.operation,id:'publishTimetable',permission:'schedule.publish'}},tx);
+  }
+  private async handle(c:RequestContext,existingTx?:Transaction):Promise<Result>{
     if(['listSchoolLessons','listMySchedule'].includes(c.operation.id))return this.lessons(c);
     const authorize=(tx:Transaction)=>this.context(tx,c),work=async(tx:Transaction):Promise<Result>=>{
       const ctx=await authorize(tx),op=c.operation.id,isDuty=op.includes('Duty')||op==='listDuties',r=isDuty?dutyResource:timetableResource;
@@ -102,6 +136,7 @@ export class ScheduleService {
       const result=await this.publications.create(tx,{...c,body:{...c.body,expectedPublicationId:null}},{kind,id:String(row.id),schoolId:ctx.schoolId,classId:ctx.classId,yearId:String(ctx.year.id),version:Number(published.data_version)},snapshot,items,true);
       await audit(tx,c,isDuty?'duty':'timetable',String(row.id),{status:'PUBLISHED',sourceVersion:row.data_version});return {data:result};
     };
+    if(existingTx){await authorize(existingTx);return work(existingTx);}
     return c.operation.method==='GET'?this.db.transaction(work,{schoolId:c.params.schoolId}):this.commands.execute(c,authorize,work);
   }
   private publicationView(row:Row){

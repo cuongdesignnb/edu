@@ -6,12 +6,15 @@ import type {RequestContext} from '../../api.router';
 const subjectActions=new Set(['class.read','school.read','year.read','teacher.self','student.read','conduct.read','conduct.record','conduct.adjust.request','schedule.read','attendance.read','attendance.record','activity.read','announcement.read','file.read','file.download','report.read','rules.read']);
 const tabs=[
   ['overview','Tổng quan','',['class.read']],['students','Học sinh','/students',['student.read']],
-  ['attendance','Điểm danh','/attendance',['attendance.read','attendance.record']],
-  ['conduct','Thi đua','/conduct',['conduct.read','conduct.record','conduct.review','conduct.adjust.approve']],
-  ['timetable','Lịch lớp','/timetable',['schedule.read']],['groups','Tổ & sơ đồ','/groups',['group.manage','seating.manage','duty.read','duty.manage']],
-  ['activities','Hoạt động','/activities',['activity.read','activity.manage','evidence.read','evidence.manage']],
+  ['attendance','Chuyên cần','/attendance',['attendance.read','attendance.record']],
+  ['conduct','Rèn luyện','/conduct',['conduct.read','conduct.record','conduct.review','conduct.adjust.approve']],
+  ['notebook','Báo cáo tuần','/notebook',['group.manage']],['periodic','Xếp loại định kỳ','/periodic',['conduct.review','conduct.lock','conduct.publish']],
+  ['timetable','Thời khóa biểu','/timetable',['schedule.read']],['groups','Tổ chức lớp','/groups',['group.manage']],
+  ['duties','Trực nhật','/duties',['duty.read','duty.manage']],['seating','Sơ đồ lớp','/seating',['seating.manage']],
+  ['activities','Hoạt động & minh chứng','/activities',['activity.read','activity.manage','evidence.read','evidence.manage']],
   ['announcements','Thông báo','/announcements',['announcement.read','announcement.manage']],
   ['files','Tệp lớp','/files',['file.read','file.manage']],['reports','Báo cáo','/reports',['report.read']],
+  ['public-portal','Cổng QR','/public-portal',['parent_access.manage']],['notebook-settings','Cài đặt lớp','/notebook-settings',['group.manage']],
 ] as const;
 type Context={schoolId:string;classId:string;yearId:string;today:string;referenceDate:string;grants:Grant[]};
 export function headerAllows(ctx:Context,action:string,allowSubject=false,date?:string){

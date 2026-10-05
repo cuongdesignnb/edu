@@ -7,7 +7,7 @@ import {Problem,notFound,validation} from '../../common/problem';
 import {canonical} from '../../common/commands';
 import type {ReportData,ReportRow,ReportColumn} from './report-render';
 import {parentConductReport} from './parent-conduct-data';
-export interface ReportInput {reportType:string;yearId?:string;classId?:string;studentId?:string;studentIds?:string[];gradeId?:string;weekId?:string;from?:string;to?:string;dataSource?:string;scope?:'SCHOOL'|'CLASS'}
+export interface ReportInput {reportType:string;yearId?:string;classId?:string;studentId?:string;studentIds?:string[];gradeId?:string;weekId?:string;periodId?:string;periodType?:'WEEK'|'MONTH'|'TERM'|'YEAR';from?:string;to?:string;dataSource?:string;scope?:'SCHOOL'|'CLASS'}
 export interface ReportContext {schoolId:string;userId:string;input:Required<Pick<ReportInput,'reportType'|'yearId'|'from'|'to'|'dataSource'>>&ReportInput;school:Row;year:Row;cls?:Row;grants:Grant[];today:string;fingerprint:string;bindings:unknown[]}
 const titles:Record<string,string>={'parent-conduct':'Phiếu báo cáo phụ huynh',attendance:'Chuyên cần',conduct:'Thi đua theo tuần',activities:'Hoạt động và minh chứng','class-progress':'Tiến độ vận hành lớp','parent-access':'Sử dụng link tra cứu',student:'Báo cáo cá nhân','student-directory':'Danh sách học sinh được chọn'};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -17,7 +17,7 @@ export function allowed(date:string,cls:string,subject?:string){return `EXISTS(S
 export async function reportContext(tx:Transaction,policy:Permissions,schoolId:string,userId:string,input:ReportInput,exporting=false):Promise<ReportContext>{
   if(!Object.hasOwn(titles,input.reportType))notFound();
   if(input.reportType==='parent-conduct')input={...input,dataSource:'PUBLISHED_SNAPSHOT',scope:'CLASS'};
-  for(const key of ['yearId','classId','studentId','gradeId','weekId'] as const)if(input[key]&&!uuid.test(input[key]!))validation(key,'Mã tham chiếu không hợp lệ');
+  for(const key of ['yearId','classId','studentId','gradeId','weekId','periodId'] as const)if(input[key]&&!uuid.test(input[key]!))validation(key,'Mã tham chiếu không hợp lệ');
   const school=(await one<Row>(tx,'SELECT * FROM platform.schools WHERE id=$1',[schoolId]))!;
   if(!school)notFound();
   const cls=input.classId?await getResource(tx,resource('class'),schoolId,input.classId):undefined;
@@ -31,7 +31,10 @@ export async function reportContext(tx:Transaction,policy:Permissions,schoolId:s
   if(!year)validation('yearId','Trường chưa có năm học để báo cáo');if(cls&&cls.year_id!==year.id)notFound();
   if(input.gradeId)await getResource(tx,resource('grade'),schoolId,input.gradeId);
   if(input.weekId){const week=await getResource(tx,resource('week'),schoolId,input.weekId);if(week.year_id!==year.id)notFound();input={...input,from:String(week.starts_on),to:String(week.ends_on)};}
+  if(input.periodId){if(input.reportType!=='parent-conduct'||!cls)validation('periodId','Xếp loại định kỳ cần báo cáo lớp');const period=await one<Row>(tx,"SELECT * FROM app.periodic_conduct WHERE school_id=$1 AND class_id=$2 AND year_id=$3 AND id=$4 AND status='PUBLISHED'",[schoolId,cls.id,year.id,input.periodId]);if(!period||input.periodType&&input.periodType!==period.period_type)notFound();input={...input,periodType:period.period_type as 'MONTH'|'TERM'|'YEAR',from:String(period.starts_on),to:String(period.ends_on)};}
+  if(input.periodType&&input.periodType!=='WEEK'&&!input.periodId)validation('periodId','Chọn bản định kỳ đã công bố');
   const from=input.from??String(year.starts_on),to=input.to??String(year.ends_on);
+  if(input.periodId){for(const date of [from,new Date(Date.parse(to)-86400000).toISOString().slice(0,10)])await policy.require(tx,{userId},exporting?'report.read+report.export':'report.read',{schoolId,classId:String(cls!.id),date});}
   if(!/^\d{4}-\d{2}-\d{2}$/.test(from)||!/^\d{4}-\d{2}-\d{2}$/.test(to)||!Number.isFinite(Date.parse(from))||!Number.isFinite(Date.parse(to))||new Date(from).toISOString().slice(0,10)!==from||new Date(to).toISOString().slice(0,10)!==to||from>=to||from<String(year.starts_on)||to>String(year.ends_on))validation('from','Khoảng ngày phải thuộc năm học; ngày kết thúc loại trừ');
   if(input.studentId){if(!cls)validation('classId','Báo cáo học sinh cần lớp cụ thể');if(!await one(tx,"SELECT id FROM app.enrollments WHERE school_id=$1 AND student_id=$2 AND class_id=$3 AND status<>'CANCELLED' AND daterange(starts_on,ends_on,'[)')&&daterange($4,$5,'[)')",[schoolId,input.studentId,cls.id,from,to]))notFound();}
   const source=input.dataSource??'LIVE_INTERNAL';if(!['LIVE_INTERNAL','PUBLISHED_SNAPSHOT'].includes(source)||source==='PUBLISHED_SNAPSHOT'&&['class-progress','parent-access','student','student-directory'].includes(input.reportType))validation('dataSource','Loại báo cáo không có nguồn công bố tương ứng');

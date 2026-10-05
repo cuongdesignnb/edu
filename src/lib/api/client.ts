@@ -6,7 +6,7 @@ export interface ApiEnvelope<T> {data:T;requestId:string;page?:ApiPage}
 export interface ApiOptions<K extends OperationId> {
   params?:Record<string,string>;query?:Record<string,string|number|boolean|null|undefined>;
   body?:ApiRequest<K>;multipart?:FormData;idempotencyKey?:string;signal?:AbortSignal;
-  parentViewId?:string;parentCsrf?:string;supportAccessId?:string;
+  parentViewId?:string;parentCsrf?:string;capabilityCsrf?:string;supportAccessId?:string;
   validateData?:(data:ApiData<K>)=>boolean;
 }
 interface HttpProblem {code?:string;status?:number;currentVersion?:number;resultId?:string;requestId?:string;fieldErrors?:{path:string;message:string}[]}
@@ -107,7 +107,7 @@ async function send<K extends OperationId>(id:K,options:ApiOptions<K>):Promise<{
   if(options.parentViewId)headers['X-Parent-View']=options.parentViewId;
   if(options.supportAccessId)headers['X-Support-Access']=options.supportAccessId;
   if(op.method!=='GET'){
-    headers['X-CSRF-Token']=op.auth==='staff'?await sessionCsrf():op.auth==='parent'?options.parentCsrf??'':await csrfBootstrap();
+    headers['X-CSRF-Token']=op.auth==='staff'?await sessionCsrf():op.auth==='parent'?options.parentCsrf??'':['officer','evidence'].includes(op.auth)?options.capabilityCsrf??'':await csrfBootstrap();
     if(!headers['X-CSRF-Token'])throw new RepoError('REVOKED','Phiên tra cứu chưa được mở.');
     if(!read){hash=await fingerprint({id,params:options.params,query:options.query,body:options.multipart?formIdentity(options.multipart):options.body});headers['Idempotency-Key']=retryKey(hash,options.idempotencyKey);}
   }

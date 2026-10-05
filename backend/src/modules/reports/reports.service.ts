@@ -27,7 +27,7 @@ export class ReportsService {
   handlers():Record<string,Handler>{return {...Object.fromEntries(['getSchoolReportCatalog','getClassReportCatalog','getTeacherReportCatalog'].map(id=>[id,(c:RequestContext)=>reportCatalog(this.db,this.policy,c)])),searchWorkspace:(c:RequestContext)=>searchWorkspace(this.db,this.policy,c),...Object.fromEntries(['getSchoolReport','getClassReport','listExports','createExport','getExport','downloadExport','cancelExport'].map(id=>[id,(c:RequestContext)=>this.handle(c)]))};}
   private async get(tx:Transaction,schoolId:string,id:string,lock=false){const job=await one<Row>(tx,`SELECT * FROM app.export_jobs WHERE school_id=$1 AND id=$2${lock?' FOR UPDATE':''}`,[schoolId,id]);if(!job)notFound();return job;}
   private input(c:RequestContext):ReportInput{
-    const source=c.operation.id==='createExport'?c.body:c.query,allowed=new Set(['yearId','classId','studentId','gradeId','weekId','from','to','dataSource',...(c.operation.id==='createExport'?['reportType','format','scope','studentIds']:[])]);
+    const source=c.operation.id==='createExport'?c.body:c.query,allowed=new Set(['yearId','classId','studentId','gradeId','weekId','periodId','periodType','from','to','dataSource',...(c.operation.id==='createExport'?['reportType','format','scope','studentIds']:[])]);
     for(const key of Object.keys(source))if(!allowed.has(key))validation(key,'Bộ lọc không được hỗ trợ');
     if(c.params.classId&&source.classId&&c.params.classId!==source.classId)notFound();
     return {...source,reportType:String(c.params.reportType??c.body.reportType),...(c.operation.id==='getSchoolReport'?{scope:'SCHOOL'}:c.operation.id==='getClassReport'?{scope:'CLASS'}:{}),...(c.params.classId?{classId:c.params.classId}:{})} as ReportInput;

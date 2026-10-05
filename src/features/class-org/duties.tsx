@@ -1,4 +1,5 @@
 "use client";
+import {ScheduleCopyControls} from "@/features/notebook/schedule-copy";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
@@ -39,7 +40,7 @@ export function DutyBoard() {
     <div className="page">
       <ClassHeader title="Lịch trực nhật" subtitle="Phân công trực nhật theo ngày cho tổ hoặc học sinh; phụ huynh chỉ thấy việc của con khi đã công bố" crumbs={[{ label: "Trực nhật" }]} />
       <ClassOrgNav />
-      <QueryState query={q} skeleton="cards">
+      <ScheduleCopyControls kind="DUTY"/><QueryState query={q} skeleton="cards">
         {(d) => {
           const editable = d.canEdit && !readOnly;
           const pv = d.preview.filter(x=>x.studentId===preview);

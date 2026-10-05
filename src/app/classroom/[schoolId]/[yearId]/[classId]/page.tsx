@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import {NotebookQuickStatus} from "@/features/notebook/quick-status";
 import {Archive,CalendarCheck,CalendarDays,ClipboardCheck,LayoutGrid,Star,ArrowRight,CheckCircle2} from "lucide-react";
 import {classroomRepo} from "@/lib/repositories";
 import {CLASS_OVERVIEW_TASKS} from "@/lib/repositories/connected/classroom-overview";
@@ -20,7 +21,7 @@ const restricted=<p className="px-5 pb-5 text-sm text-muted">Không có quyền 
 export default function ClassOverview(){
  const {schoolId,yearId,classId,base}=useClassroom();
  const q=useRepo(["class-overview",schoolId,yearId,classId],ctx=>classroomRepo.overview(ctx,schoolId,yearId,classId),{schoolId});
- return <div className="page"><ClassHeader variant="full"/><QueryState query={q} skeleton="none">{d=>{
+ return <div className="page"><ClassHeader variant="full"/><NotebookQuickStatus/><QueryState query={q} skeleton="none">{d=>{
   const a=d.attendance,c=a?.counts;
   const attendanceLabel=a?.session?.status==='PUBLISHED'?"Đã công bố":a?.session?.status==='LOCKED'?"Đã chốt":a?.session?"Đang ghi nhận":a?.calendarState==='HOLIDAY'?"Ngày nghỉ theo lịch trường":"Chưa tạo buổi điểm danh";
   return <div className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">

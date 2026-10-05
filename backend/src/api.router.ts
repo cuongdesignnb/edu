@@ -18,7 +18,9 @@ export interface ActorContext {
 }
 export interface RequestContext extends ActorContext {
   request:FastifyRequest;reply:FastifyReply;principal?:Principal;parent?:ParentPrincipal;
+  capability?:CapabilityPrincipal;
 }
+export interface CapabilityPrincipal {sessionId:string;schoolId:string;classId:string;yearId:string;tokenHash:string;csrfHash:string;assignmentId?:string;accessId?:string;role?:string;row:Record<string,unknown>}
 export interface Result { data:unknown;status?:number;page?:{limit:number;nextCursor:string|null;hasMore:boolean;total?:number};
   binary?:{stream:Readable;contentType:string;filename:string;byteSize?:number} }
 export type Handler=(context:RequestContext)=>Promise<Result>;
@@ -46,7 +48,7 @@ export function installRoutes(server:FastifyInstance,db:Database,identity:Identi
   registerHandlers(server,handlers,identity);
   return Object.keys(handlers);
 }
-export function registerHandlers(server:FastifyInstance,handlers:Record<string,Handler>,identity:IdentityService,parentAuthenticate?:(request:FastifyRequest,slug:string)=>Promise<ParentPrincipal>) {
+export function registerHandlers(server:FastifyInstance,handlers:Record<string,Handler>,identity:IdentityService,parentAuthenticate?:(request:FastifyRequest,slug:string)=>Promise<ParentPrincipal>,capabilityAuthenticate?:(request:FastifyRequest,slug:string,kind:string)=>Promise<CapabilityPrincipal>) {
   for(const operation of operations) {
     const handler=handlers[operation.id];
     if(!handler) continue; // Unimplemented operations remain absent and NOT_STARTED.
@@ -64,7 +66,7 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
           .header('Referrer-Policy','no-referrer').header('X-Content-Type-Options','nosniff');
         if(operation.path.startsWith('/api/v1/parent/'))reply.header('X-Robots-Tag','noindex, nofollow');
         try {
-          if(operation.request&&operation.id!=='uploadFile') validateSchema(operation.request,request.body);
+          if(operation.request&&!['uploadFile','uploadStudentEvidence'].includes(operation.id)) validateSchema(operation.request,request.body);
           else if(request.body!==undefined && request.body!==null) throw new Problem(422,'VALIDATION_ERROR');
           const params=request.params as Record<string,string>,query=request.query as Record<string,string>;
           for(const [key,value] of Object.entries(params)) if(key.endsWith('Id') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw new Problem(404,'RESOURCE_NOT_FOUND');
@@ -76,12 +78,15 @@ export function registerHandlers(server:FastifyInstance,handlers:Record<string,H
           }
           const parent=operation.auth==='parent'&&parentAuthenticate?await parentAuthenticate(request,params.schoolSlug!):undefined;
           if(operation.auth==='parent'&&!parent)throw new Problem(401,'PARENT_ACCESS_INVALID');
+          const capability=['officer','evidence'].includes(operation.auth)&&capabilityAuthenticate?await capabilityAuthenticate(request,params.publicClassSlug!,operation.auth):undefined;
+          if(['officer','evidence'].includes(operation.auth)&&!capability)throw new Problem(401,'CAPABILITY_SESSION_INVALID');
           if(operation.method!=='GET') {
             if(principal) requireSessionCsrf(request,principal.csrfHash);
             else if(parent)requireSessionCsrf(request,parent.csrfHash);
+            else if(capability)requireSessionCsrf(request,capability.csrfHash);
             else requireBootstrapCsrf(request);
           }
-          const context={request,reply,requestId,operation,principal,parent,params,query,body:(request.body??{}) as Record<string,unknown>};
+          const context={request,reply,requestId,operation,principal,parent,capability,params,query,body:(request.body??{}) as Record<string,unknown>};
           const result=await (selectedSupport?runSupportRead(selectedSupport,()=>handler(context)):handler(context));
           const status=result.status??200;
           if(result.binary){

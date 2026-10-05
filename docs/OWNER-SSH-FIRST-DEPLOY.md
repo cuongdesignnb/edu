@@ -237,3 +237,16 @@ bash scripts/prod-status.sh
 ```
 
 Kết quả mong đợi: `RELEASE=v1.0.4`, `MIGRATION=060-public-class-portals.sql`, `SCHEMA_MATCHES_RELEASE=YES`, các service healthy và `HTTPS=PASS`. Nếu script dừng, gửi output đã loại secret cùng `prod-status`; giữ dữ liệu và dùng hotfix theo lỗi được báo, không sửa checksum/ledger hoặc chạy SQL tay. Không restore DB, không xóa volume, không move tag. Chi tiết kiểm thử: [V103-MIGRATION-RLS-HOTFIX.md](V103-MIGRATION-RLS-HOTFIX.md).
+
+## 11. Toàn bộ phần còn lại — v1.0.5
+
+Owner đã xác nhận production v1.0.4/schema 060 healthy. Chỉ chạy sau `EDUMANAGE_ALL_REMAINING_RESULT` có `DECISION=READY_FOR_OWNER_UPDATE`, tag/source đúng SHA, Actions PASS và đủ digest API/Web. Agent không SSH hoặc xác minh trực tiếp production.
+
+```bash
+set -euo pipefail
+cd /www/wwwroot/edu
+bash scripts/update-production.sh v1.0.5
+bash scripts/prod-status.sh
+```
+
+Kỳ vọng: `RELEASE=v1.0.5`, `MIGRATION=065-position-bonus-settings.sql`, `SCHEMA_MATCHES_RELEASE=YES`, service healthy và HTTPS PASS. Updater tự xác minh tag/OCI revision/digest, backup, chạy 061–065 và verify-installation. Giữ env, secrets, database, uploads và volume, domain/SSL/aaPanel proxy; SMTP blank vẫn hợp lệ. Không seed demo, SQL tay, xóa volume hoặc move tag. Rollback về image schema cũ bị chặn sau migration; cần hotfix tương thích nếu có lỗi. Phạm vi và bằng chứng: [ALL-REMAINING-RESULT.md](ALL-REMAINING-RESULT.md).
