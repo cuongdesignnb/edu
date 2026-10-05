@@ -182,7 +182,7 @@ Lưu mật khẩu trong password manager. Đăng nhập qua HTTPS và hoàn tấ
 
 ## 7. Cập nhật, kiểm trạng thái và backup
 
-Mỗi lần cập nhật cần source/tag mới được duyệt và cả hai image publish thành công. `v1.0.4` là **ví dụ**, chỉ dùng khi tag đó thật sự tồn tại:
+Mỗi lần cập nhật cần source/tag mới được duyệt và cả hai image publish thành công. Với hotfix `v1.0.4`, chỉ chạy sau khi nhận báo cáo xác nhận đủ các gate ở mục 10:
 
 ```bash
 set -euo pipefail
@@ -219,13 +219,21 @@ Sau khi status healthy, đăng nhập Platform Operator → Trường học → 
 
 ## 9. Cập nhật v1.0.3 — P0 tài khoản giáo viên, tour, cổng lớp, PDF và nhập TKB
 
-Chỉ chạy sau khi báo cáo bàn giao xác nhận `READY_FOR_OWNER_UPDATE` cho v1.0.3: source/tag đúng SHA, Actions PASS và đủ hai image. Server đang dùng v1.0.2 giữ nguyên domain, `.env.production`, `.secrets/production`, SSL/proxy và volumes. Không cần cấu hình SMTP để tạo trực tiếp tài khoản. Script áp dụng migration 059/060 qua quy trình release hiện có.
+**Đã thay thế bằng hotfix v1.0.4 ở mục 10.** Production xác nhận v1.0.3 lỗi RLS tại migration 059 khi database đã có trường; active release vẫn v1.0.2 và schema 058. Giữ nguyên tag/image v1.0.3 để truy vết; không chạy lại bản này.
+
+Các tính năng P0 vẫn được giữ trong v1.0.4. Sau khi healthy, quản trị trường tạo giáo viên ở Nhân sự; GVCN/quản trị vào Báo cáo lớp bật cổng công khai/QR nếu muốn, hoặc tải phiếu PDF phụ huynh. Nhập TKB ở Lịch lớp, ánh xạ tên và nhập giờ thật trước khi lưu nháp/validate/công bố. Không tự bật các mục công khai khi cập nhật. Chi tiết: [TODAY-P0-RESULT.md](TODAY-P0-RESULT.md).
+
+## 10. Hotfix v1.0.4 — nâng schema 058 qua migration 059 có RLS
+
+Chỉ chạy sau báo cáo `EDUMANAGE_V103_MIGRATION_HOTFIX_RESULT` xác nhận source/tag đúng SHA, Actions PASS, đủ API/Web image và production config static check PASS. Theo owner, server đang healthy ở v1.0.2/schema 058; agent không SSH hoặc xác minh trực tiếp host này.
+
+Chạy block sau bằng SSH của owner. Script tự fetch tag chính xác, kiểm source/image digest/config, backup theo quy trình hiện có, chạy migration 059 theo từng trường trong một transaction, rồi 060 và verify-installation/health/HTTPS. Giữ `.env.production`, `.secrets/production`, database, uploads và volumes hiện tại; SMTP blank vẫn được hỗ trợ.
 
 ```bash
 set -euo pipefail
 cd /www/wwwroot/edu
-bash scripts/update-production.sh v1.0.3
+bash scripts/update-production.sh v1.0.4
 bash scripts/prod-status.sh
 ```
 
-Sau khi healthy, quản trị trường tạo giáo viên ở Nhân sự; GVCN/quản trị vào Báo cáo lớp bật cổng công khai/QR nếu muốn, hoặc tải phiếu PDF phụ huynh. Nhập TKB ở Lịch lớp, ánh xạ tên và nhập giờ thật trước khi lưu nháp/validate/công bố. Không tự bật các mục công khai khi cập nhật. Chi tiết và P1 còn lại: [TODAY-P0-RESULT.md](TODAY-P0-RESULT.md). Agent chưa deploy production.
+Kết quả mong đợi: `RELEASE=v1.0.4`, `MIGRATION=060-public-class-portals.sql`, `SCHEMA_MATCHES_RELEASE=YES`, các service healthy và `HTTPS=PASS`. Nếu script dừng, gửi output đã loại secret cùng `prod-status`; giữ dữ liệu và dùng hotfix theo lỗi được báo, không sửa checksum/ledger hoặc chạy SQL tay. Không restore DB, không xóa volume, không move tag. Chi tiết kiểm thử: [V103-MIGRATION-RLS-HOTFIX.md](V103-MIGRATION-RLS-HOTFIX.md).

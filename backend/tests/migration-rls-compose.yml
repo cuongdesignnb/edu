@@ -1,0 +1,5 @@
+# Administrative credentials are used only to create isolated test databases.
+# Every migration and tenant write is executed as edu_migrator NOBYPASSRLS.
+services:
+  runner:
+    secrets: [db_admin_password]
