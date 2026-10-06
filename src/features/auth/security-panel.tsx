@@ -65,7 +65,7 @@ export function SecurityPage() {
 
 function ChangePassword({ email }: { email?: string }) {
   const router=useRouter();
-  const command=useCommand((_ctx,current:string,next:string)=>formResult(changeStaffPassword(current,next),{currentPassword:"current",newPassword:"password"}),{changesAuthentication:true,success:"Đã đổi mật khẩu. Vui lòng đăng nhập lại.",onSuccess:()=>router.push("/login"),onError:e=>setErrors(e.fieldErrors??{form:e.message}),silentError:true});
+  const command=useCommand((_ctx,current:string,next:string)=>formResult(changeStaffPassword(current,next),{currentPassword:"current",newPassword:"password"}),{changesAuthentication:true,success:"Đã đổi mật khẩu. Vui lòng đăng nhập lại.",onSuccess:()=>router.push("/login"),onError:e=>setErrors(e.fieldErrors??{form:e.message}),});
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");

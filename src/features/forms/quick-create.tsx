@@ -8,6 +8,7 @@ import {useCtx} from '@/lib/query/hooks';
 import {refreshFormOptions} from '@/lib/query/form-options';
 import {SchoolContextProvider,useOptionalSchool} from '@/components/layout/shells';
 import {Button} from '@/components/ui/button';
+import {useToast} from '@/components/ui/toast';
 import {Modal,ConfirmDialog} from '@/components/ui/dialog';
 
 const YearWizard=dynamic(()=>import('@/features/school-org/year-wizard').then(m=>m.YearWizard));
@@ -22,7 +23,7 @@ const labels:Record<QuickCreateKind,string>={year:'Tạo năm học',grade:'Thê
 
 /** Each child stays inside the mounted parent; success refetches before selecting the new ID. */
 export function QuickCreate({kind,schoolId,yearId,classId,onCreated,disabled=false}:{kind:QuickCreateKind;schoolId:string;yearId?:string;classId?:string;onCreated?:(row:CreatedOption)=>void|Promise<void>;disabled?:boolean}){
- useCtx(schoolId);const school=useOptionalSchool(),client=useQueryClient(),trigger=useRef<HTMLButtonElement>(null);
+ useCtx(schoolId);const school=useOptionalSchool(),client=useQueryClient(),trigger=useRef<HTMLButtonElement>(null),toast=useToast();
  const [open,setOpen]=useState(false),[error,setError]=useState(''),[dirty,setDirty]=useState(false),[discard,setDiscard]=useState(false);
  const requestClose=()=>{if(dirty)setDiscard(true);else close();};
  const beforeClose=()=>{if(dirty){setDiscard(true);return false;}return true;};
@@ -30,7 +31,7 @@ export function QuickCreate({kind,schoolId,yearId,classId,onCreated,disabled=fal
  const close=()=>{setOpen(false);requestAnimationFrame(()=>trigger.current?.focus());};
  const saved=async(row:CreatedOption)=>{
   try{await refreshFormOptions(client,schoolId);await onCreated?.(row);setError('');close();}
-  catch(e){setError(e instanceof Error?e.message:'Đã tạo dữ liệu nhưng chưa tải được lựa chọn mới. Bấm thử lại ở trường dữ liệu.');close();}
+  catch(e){toast.push({tone:'warning',title:'Đã tạo dữ liệu nhưng chưa tải được lựa chọn mới',detail:'Bấm thử lại ở trường dữ liệu, không tạo lại.'});setError(e instanceof Error?e.message:'Đã tạo dữ liệu nhưng chưa tải được lựa chọn mới. Bấm thử lại ở trường dữ liệu.');close();}
  };
  if(!canQuickCreate(readStaffContext(),kind,schoolId,classId))return null;
  const child=kind==='year'?<Modal open beforeClose={beforeClose} onOpenChange={o=>{if(!o)requestClose();}} title="Tạo năm học" size="xl"><YearWizard embedded onDirtyChange={setDirty} onCancel={requestClose} onCreated={r=>saved({id:r.id,name:r.label})}/></Modal>

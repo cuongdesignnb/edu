@@ -17,8 +17,8 @@ export function DirectAdminDialog({open,onClose,schoolId,schoolName,onCreated}:{
  const [from,setFrom]=useState(''),[until,setUntil]=useState(''),[errors,setErrors]=useState<Record<string,string>>({});
  useEffect(()=>{if(open){setMode('new');setName('');setEmail('');setPassword('');setConfirm('');setForce(true);setConfirmed(false);setFrom('');setUntil('');setErrors({});}},[open]);
  const dirty=open&&!!(name||email||password),leave=useLeaveGuard();useUnsavedChanges(dirty);
- const create=useCommand((ctx,input:ApiSchemas['DirectSchoolAdminCreate'])=>platformRepo.createSchoolAdmin(ctx,schoolId,input),{silentError:true,onError:e=>setErrors(e.fieldErrors??{form:e.message})});
- const assign=useCommand((ctx,input:ApiSchemas['AssignExistingSchoolAdmin'])=>platformRepo.assignExistingAdmin(ctx,schoolId,input),{silentError:true,onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const create=useCommand((ctx,input:ApiSchemas['DirectSchoolAdminCreate'])=>platformRepo.createSchoolAdmin(ctx,schoolId,input),{onError:e=>setErrors(e.fieldErrors??{form:e.message})});
+ const assign=useCommand((ctx,input:ApiSchemas['AssignExistingSchoolAdmin'])=>platformRepo.assignExistingAdmin(ctx,schoolId,input),{onError:e=>setErrors(e.fieldErrors??{form:e.message})});
  const existing=create.error?.details?.problemCode==='IDENTITY_EXISTS_USE_ASSIGN',busy=create.pending||assign.pending;
  const changeMode=(v:'new'|'existing')=>{setMode(v);setPassword('');setConfirm('');setConfirmed(false);setErrors({});create.reset();assign.reset();};
  const submit=async()=>{

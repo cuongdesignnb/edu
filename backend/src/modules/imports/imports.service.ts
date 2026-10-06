@@ -13,12 +13,13 @@ import { objectPath,digestFile } from '../files/storage';
 import { readXlsx } from '../files/xlsx';
 import { readImportContext } from './import-context';
 import {importWorkspace} from './import-workspace';
+import {createStudentPaste,isStudentPaste} from './student-paste';
 import type { RequestContext,Result,Handler } from '../../api.router';
 const importResource:Resource={table:'app.import_jobs',fields:{id:'id',version:'version',createdAt:'created_at',updatedAt:'updated_at',
   kind:'kind',fileId:'file_id',status:'status',previewHash:'preview_hash',summary:'summary',yearId:'year_id',classId:'class_id',columns:'source_columns'},
   writeFields:[],search:[],filters:{kind:'kind',status:'status'}};
 const rowResource:Resource={table:'app.import_rows',fields:{id:'id',rowNumber:'row_number',status:'status',errors:'errors',values:'source_data',plan:'normalized_data'},writeFields:[],search:[],filters:{status:'status'}};
-const importReadResource:Resource={...importResource,table:'(SELECT j.*,f.original_name AS file_name,cl.name AS class_name,m.work_display_name AS requester_name FROM app.import_jobs j JOIN app.files f ON f.school_id=j.school_id AND f.id=j.file_id LEFT JOIN app.classes cl ON cl.school_id=j.school_id AND cl.id=j.class_id LEFT JOIN app.memberships m ON m.school_id=j.school_id AND m.user_id=j.requested_by)',fields:{...importResource.fields,fileName:'file_name',className:'class_name',createdByName:'requester_name'}};
+const importReadResource:Resource={...importResource,table:"(SELECT j.*,CASE WHEN j.kind='STUDENTS' AND j.column_mapping->>'source'='PASTE' THEN 'PASTE' ELSE 'FILE' END AS import_source,f.original_name AS file_name,cl.name AS class_name,m.work_display_name AS requester_name FROM app.import_jobs j JOIN app.files f ON f.school_id=j.school_id AND f.id=j.file_id LEFT JOIN app.classes cl ON cl.school_id=j.school_id AND cl.id=j.class_id LEFT JOIN app.memberships m ON m.school_id=j.school_id AND m.user_id=j.requested_by)",fields:{...importResource.fields,source:'import_source',fileName:'file_name',className:'class_name',createdByName:'requester_name'}};
 const fieldSets:Record<string,readonly string[]>={
   STUDENTS:['studentCode','fullName','dateOfBirth','gender','preferredName','classCode','startsOn','guardianName','guardianPhone','guardianEmail','relationshipLabel'],
   CLASSES:['code','name','gradeCode','capacity'],
@@ -27,18 +28,18 @@ const fieldSets:Record<string,readonly string[]>={
 };
 const actions:Record<string,string>={STUDENTS:'student.manage',CLASSES:'class.manage',STAFF:'member.manage',TIMETABLE:'schedule.manage'};
 export const emptySummary=()=>({added:0,updated:0,skipped:0,invalid:0,processed:0});
-export function importDto(row:Row){const value=dto(importResource,row);if(value.previewHash===null)delete value.previewHash;
+export function importDto(row:Row){const value:Record<string,unknown>={...dto(importResource,row),source:row.import_source??(isStudentPaste(row)?'PASTE':'FILE')};if(value.previewHash===null)delete value.previewHash;
   if(!value.summary||Object.keys(value.summary as object).length===0)value.summary=emptySummary();return value;}
 export function csvCell(value:unknown){let text=String(value??'');if(/^[\s\u0000-\u001f]*[=+\-@]/.test(text))text="'"+text;
   return '"'+text.replace(/"/g,'""')+'"';}
 @Injectable()
 export class ImportsService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly files:FilesService){}
-  handlers():Record<string,Handler>{return Object.fromEntries(['getImportWorkspace','listImports','createImport','getImport','validateImport','listImportRows','commitImport','cancelImport','downloadImportErrors']
+  handlers():Record<string,Handler>{return Object.fromEntries(['createStudentPasteImport','getImportWorkspace','listImports','createImport','getImport','validateImport','listImportRows','commitImport','cancelImport','downloadImportErrors']
     .map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
-  async authorize(tx:Transaction,schoolId:string,userId:string,kind:string,classId?:string){
+  async authorize(tx:Transaction,schoolId:string,userId:string,kind:string,classId?:string,paste=false){
     const user=await one(tx,"SELECT id FROM identity.users WHERE id=$1 AND status='ACTIVE'",[userId]);if(!user)throw new Problem(403,'REQUESTER_REVOKED');
-    await this.policy.require(tx,{userId},'import.manage',{schoolId});
+    if(!paste)await this.policy.require(tx,{userId},'import.manage',{schoolId});
     if(kind)await this.policy.require(tx,{userId},actions[kind]!,{schoolId,classId:kind==='STUDENTS'||kind==='TIMETABLE'?classId:undefined});
   }
   private async job(tx:Transaction,schoolId:string,id:string,lock=false){
@@ -49,12 +50,16 @@ export class ImportsService {
     const schoolId=c.params.schoolId!,op=c.operation.id;
     if(op==='getImportWorkspace')return this.db.transaction(async tx=>({data:await importWorkspace(tx,this.policy,c)}),{schoolId});
     const authorize=async(tx:Transaction)=>{
+      if(op==='createStudentPasteImport')return this.authorize(tx,schoolId,c.principal!.userId,'STUDENTS',String(c.body.classId),true);
       if(c.principal!.support&&['listImports','getImport'].includes(op))return this.policy.require(tx,c.principal!,'import.read',{schoolId});
       if(op==='listImports')return this.authorize(tx,schoolId,c.principal!.userId,'');
       const row=op==='createImport'?c.body:await this.job(tx,schoolId,c.params.importId!);
-      await this.authorize(tx,schoolId,c.principal!.userId,String(row.kind),(row.class_id??row.classId) as string|undefined);
+      const paste=isStudentPaste(row);
+      if(paste&&row.requested_by!==c.principal!.userId)throw new Problem(403,'FORBIDDEN');
+      await this.authorize(tx,schoolId,c.principal!.userId,String(row.kind),(row.class_id??row.classId) as string|undefined,paste);
     };
     const work=async(tx:Transaction):Promise<Result>=>{
+      if(op==='createStudentPasteImport'){const row=await createStudentPaste(tx,this.policy,c);await this.enqueue(tx,schoolId,'VALIDATE_IMPORT',row,{});await audit(tx,c,'import',String(row.id),{source:'PASTE',status:'VALIDATING',rows:(c.body.rows as unknown[]).length});return {data:importDto(row),status:201};}
       if(op==='listImports'){
         const result=await listResource(tx,importReadResource,schoolId,c.query,undefined,c.principal!.userId);
         result.data=result.data.map(row=>({...row,summary:Object.keys(row.summary as object).length?row.summary:emptySummary()}));
@@ -76,7 +81,7 @@ export class ImportsService {
         const result=await listResource(tx,rowResource,schoolId,{...c.query,sort:'rowNumber'},
           {sql:'t.import_id=$1',values:[c.params.importId]},c.principal!.userId);
         for(const row of result.data){const plan=row.plan as {decision?:string;id?:string};
-          if(plan.decision)row.decision=plan.decision;if(plan.id)row.matchedId=plan.id;delete row.plan;delete row.id;}return result;
+          if(plan.decision)row.decision=plan.decision;if(plan.id)row.matchedId=plan.id;if((plan as {warnings?:string[]}).warnings)row.warnings=(plan as {warnings:string[]}).warnings;delete row.plan;delete row.id;}return result;
       }
       if(op==='downloadImportErrors'){
         const rows=(await tx.query<{row_number:number;errors:{field:string;message:string}[];source_data:Record<string,string>}>(
@@ -96,6 +101,7 @@ export class ImportsService {
         await audit(tx,c,'import',String(row.id),{status:'CANCELLED',summary:row.summary});return {data:importDto(saved!)};
       }
       if(op==='validateImport'){
+        if(isStudentPaste(row)&&c.body.mode!=='ADD_ONLY')validation('mode','Dán danh sách chỉ tạo hồ sơ mới, không ghi đè');
         if(!row.parsed_at)throw new Problem(409,'IMPORT_PARSE_PENDING');
         if(!['UPLOADED','READY','FAILED'].includes(String(row.status)))throw new Problem(409,'INVALID_STATE');
         if(Number((row.summary as Record<string,number>).processed)>0)throw new Problem(409,'IMPORT_ALREADY_PARTIAL');
@@ -103,12 +109,12 @@ export class ImportsService {
         if(new Set(mapping.map(m=>m.sourceColumn)).size!==mapping.length||new Set(mapping.map(m=>m.targetField)).size!==mapping.length)validation('mapping','Cột ghép bị trùng');
         for(const entry of mapping)if(!(row.source_columns as string[]).includes(entry.sourceColumn)||!fieldSets[String(row.kind)]!.includes(entry.targetField))validation('mapping','Cột nguồn/đích không hợp lệ');
         if(mapping.some(entry=>entry.targetField.startsWith('guardian')||entry.targetField==='relationshipLabel'))await this.policy.require(tx,c.principal!,'guardian.manage',{schoolId,classId:row.class_id as string|undefined});
-        const saved=await one<Row>(tx,"UPDATE app.import_jobs SET status='VALIDATING',column_mapping=$3,preview_hash=NULL,summary=$4 WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,{mapping,mode:c.body.mode},emptySummary()]);
+        const saved=await one<Row>(tx,"UPDATE app.import_jobs SET status='VALIDATING',column_mapping=$3,preview_hash=NULL,summary=$4 WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id,{...row.column_mapping as object,mapping,mode:c.body.mode},emptySummary()]);
         await this.enqueue(tx,schoolId,'VALIDATE_IMPORT',saved!,{});await audit(tx,c,'import',String(row.id),{status:'VALIDATING'});return {data:importDto(saved!),status:202};
       }
       if(row.status!=='READY'||row.preview_hash!==c.body.previewHash)throw new Problem(409,'STALE_PREVIEW');
       if(canonical((row.column_mapping as Record<string,unknown>).preview)!==canonical(await readImportContext(tx,schoolId,String(row.kind))))throw new Problem(409,'STALE_PREVIEW');
-      if(Number((row.summary as Record<string,number>).invalid)>0)throw new Problem(422,'IMPORT_HAS_ERRORS');
+      if(Number((row.summary as Record<string,number>).invalid)>0&&!isStudentPaste(row)||isStudentPaste(row)&&Number((row.summary as Record<string,number>).added)<1)throw new Problem(422,'IMPORT_HAS_ERRORS');
       const saved=await one<Row>(tx,"UPDATE app.import_jobs SET status='APPLYING' WHERE school_id=$1 AND id=$2 RETURNING *",[schoolId,row.id]);
       await this.enqueue(tx,schoolId,'COMMIT_IMPORT',saved!,{previewHash:c.body.previewHash});await audit(tx,c,'import',String(row.id),{status:'APPLYING'});return {data:importDto(saved!),status:202};
     };

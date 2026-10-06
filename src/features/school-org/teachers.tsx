@@ -172,7 +172,7 @@ export function TeachersScreen() {
           {panel}
         </Drawer>
       )}
-      <DirectStaffDialog open={direct} onClose={()=>setDirect(false)} schoolId={school.id} schoolName={school.name} onCreated={()=>{void q.refetch();toast.push({tone:"success",title:"Đã tạo tài khoản giáo viên"});}}/><InviteModal open={invite} onClose={() => setInvite(false)} />
+      <DirectStaffDialog open={direct} onClose={()=>setDirect(false)} schoolId={school.id} schoolName={school.name} onCreated={async()=>{await q.refetch();}}/><InviteModal open={invite} onClose={() => setInvite(false)} />
       <AssignDrawer prefill={assign} onClose={() => setAssign(null)} />
       <ConfirmDialog open={!!status} onOpenChange={(o) => { if (!o) setStatus(null); }} busy={suspend.pending}
         title={status?.to === "active" ? "Mở khóa thành viên" : "Tạm khóa thành viên tại trường"} object={status?.name}

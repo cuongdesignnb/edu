@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from 'next/dynamic';
+const StudentPasteDialog=dynamic(()=>import('./student-paste-dialog').then(m=>m.StudentPasteDialog));
 import { Plus, Upload, Eye, Pencil, Shuffle, FileSpreadsheet, FileText, GraduationCap, Users, ShieldAlert, Link2 } from "lucide-react";
 import { studentsRepo } from "@/lib/repositories";
 import { studentsExtraRepo } from "@/lib/repositories";
@@ -23,6 +25,7 @@ type Row = Awaited<ReturnType<typeof studentsRepo.list>>["items"][number];
 
 /** SC16 — school-wide student list: real search/filter/sort/paging; same names distinguished by code/class/dob. */
 export function StudentList({ schoolId }: { schoolId: string }) {
+  const [paste,setPaste]=useState(false);
   const { can, school, yearId } = useSchool();
   const router = useRouter();
   const list = useListQuery({ pageSize: 10, sort: "name", dir: "asc" });
@@ -64,10 +67,12 @@ export function StudentList({ schoolId }: { schoolId: string }) {
       <PageHeader title="Học sinh" subtitle={`${q.data?.year?.name ?? "Năm học chưa được chọn"} — ${school.name}${q.data?.referenceDate ? ` · mốc ${fmtDate(q.data.referenceDate)}` : ""}`} breadcrumbs={[{ label: "Nhà trường", href: base }, { label: "Học sinh" }]}
         quote={["Mỗi học sinh là một tiềm năng", "cần được ghi nhận riêng"]} illustration="/assets/illustrations/students-trio.png"
         actions={<>
+          {q.data?.canCreate&&<Button onClick={()=>setPaste(true)}>Dán danh sách</Button>}
           {can("import.run") && <ButtonLink href={`${base}/imports/new`} icon={<Upload className="size-4" />}>Nhập từ tệp</ButtonLink>}
           {q.data?.canCreate && <ButtonLink href={`${base}/students/new`} variant="primary" icon={<Plus className="size-4" />}>Thêm học sinh</ButtonLink>}
         </>} />
       <Card>
+        {paste&&<StudentPasteDialog schoolId={schoolId} initialYearId={requested.filters.yearId} initialClassId={list.query.filters?.classId} onClose={()=>setPaste(false)}/>}
         <CardHeader title={`Danh sách học sinh${q.data ? ` (${q.data.total})` : ""}`} icon={<GraduationCap className="size-5" />} subtitle="Học sinh trùng tên là hồ sơ riêng — phân biệt bằng mã, ngày sinh và lớp." />
         <FilterBar q={list.query.q ?? ""} onQ={list.setQ} placeholder="Tìm theo họ tên hoặc mã học sinh…" onReset={list.reset} active={list.active}>
           <InlineSelect label="Năm học" allLabel="Năm học hiện tại" value={list.query.filters?.yearId ?? ""} onChange={(v) => { list.setFilter("yearId", v); list.setFilter("classId", ""); }} options={(q.data?.yearOptions ?? []).map(y => ({value:y.id,label:y.name}))} />

@@ -27,7 +27,7 @@ export function LoginForm() {
   useEffect(() => setMounted(true), []);
 
   const login = useCommand((_ctx, e: string, p: string) => sessionRepo.demoLogin(e, p), {
-    silentError: true, changesAuthentication: true,
+     changesAuthentication: true,
     onError: (err) => {
       if (err.fieldErrors) { setErrors(err.fieldErrors); setFormError(null); return; }
       setErrors({});
@@ -35,7 +35,7 @@ export function LoginForm() {
       setFormError(err.code === "VALIDATION" ? "Email hoặc mật khẩu không đúng. Kiểm tra lại, hoặc dùng email trong lời mời của nhà trường." : err.message);
     },
   });
-  const logout = useCommand(() => signOut(), {changesAuthentication:true, silentError:true, onError:e=>setFormError(e.message)});
+  const logout = useCommand(() => signOut(), {changesAuthentication:true,  onError:e=>setFormError(e.message)});
 
   const expired = mounted && !!session && isExpired(session, demoNowISO());
   const active = mounted && !!session && !expired && session.actor.kind !== "anonymous";

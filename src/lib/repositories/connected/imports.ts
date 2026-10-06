@@ -5,13 +5,18 @@ import type {Ctx} from '../core';
 import {RepoError} from '../errors';
 import {withStaffAccess,requiredId,displayedVersion} from './common';
 
-export type ImportJob=ApiSchemas['ImportJob'];
+export type ImportJob=ApiSchemas['ImportJob'] & {id:string;summary:NonNullable<ApiSchemas['ImportJob']['summary']>};
 const invalid=()=>new RepoError('READ_ERROR','Phản hồi lô nhập không hợp lệ. Hãy tải lại.');
-function job(v:ImportJob,id?:string){requiredId(v.id);if(id&&v.id!==id||!Number.isSafeInteger(v.version)||v.version<1||!v.summary||Object.values(v.summary).some(n=>!Number.isSafeInteger(n)||n<0)||!['STUDENTS','STAFF','CLASSES','TIMETABLE'].includes(v.kind)||!['UPLOADED','VALIDATING','READY','APPLYING','COMPLETED','FAILED','CANCELLED'].includes(v.status)||v.previewHash!==undefined&&!/^[a-f0-9]{64}$/.test(v.previewHash)||v.columns!==undefined&&(!Array.isArray(v.columns)||v.columns.length>50||new Set(v.columns).size!==v.columns.length))throw invalid();return {...v,id:requiredId(v.id),summary:v.summary};}
+function job(v:ApiSchemas['ImportJob'],id?:string):ImportJob{requiredId(v.id);if(id&&v.id!==id||!Number.isSafeInteger(v.version)||v.version<1||!v.summary||Object.values(v.summary).some(n=>!Number.isSafeInteger(n)||n<0)||!['STUDENTS','STAFF','CLASSES','TIMETABLE'].includes(v.kind)||!['UPLOADED','VALIDATING','READY','APPLYING','COMPLETED','FAILED','CANCELLED'].includes(v.status)||v.previewHash!==undefined&&!/^[a-f0-9]{64}$/.test(v.previewHash)||v.columns!==undefined&&(!Array.isArray(v.columns)||v.columns.length>50||new Set(v.columns).size!==v.columns.length))throw invalid();return {...v,id:requiredId(v.id),summary:v.summary};}
 const wait=()=>new Promise<void>(resolve=>setTimeout(resolve,400));
 const uploaded=new WeakMap<File,{schoolId:string;id:string;owner:ReturnType<typeof captureStaffAccess>}>();
 async function workspace(s:string){const v=(await http('getImportWorkspace',{params:{schoolId:s}})).data;if(v.schoolId!==s||v.kinds.length!==4||new Set(v.kinds.map(k=>k.kind)).size!==4)throw invalid();return v;}
 export const connectedImportsRepo=withStaffAccess({
+ async createStudentPaste(_ctx:Ctx,s:string,input:ApiSchemas['StudentPasteCreate']){return job((await http('createStudentPasteImport',{params:{schoolId:s},body:input})).data);},
+ async waitImport(_ctx:Ctx,s:string,id:string,target:'READY'|'COMPLETED'){
+  const owner=captureStaffAccess();for(let i=0;i<150;i++){owner.assertCurrent();const value=job((await http('getImport',{params:{schoolId:s,importId:id}})).data,id);if(value.status===target)return value;if(['FAILED','CANCELLED'].includes(value.status))throw new RepoError('VALIDATION','Không thể nhập danh sách. Mở lịch sử nhập để kiểm tra.');await wait();}
+  throw new RepoError('NETWORK','Lô nhập vẫn đang được xử lý. Hãy bấm tải kết quả, không gửi thêm lô mới.');
+ },
  async importWorkspace(_ctx:Ctx,s:string){return workspace(s);},
  async importKinds(_ctx:Ctx,s:string){return (await workspace(s)).kinds;},
  async imports(_ctx:Ctx,s:string){return (await apiList('listImports',{params:{schoolId:s},query:{sort:'createdAt',dir:'desc'}},1000)).map(v=>job(v));},

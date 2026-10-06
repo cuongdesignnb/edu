@@ -26,7 +26,7 @@ export function YearsScreen() {
   const [err, setErr] = useState<string>();
   const cmd = useCommand((c, row: AcademicYear, to: "active" | "archived", reason?: string) => schoolRepo.setYearStatus(c, school.id, row.id, to, row.version, reason), {
     success: (y) => y.status === "active" ? `Năm học ${y.label} đã hoạt động` : `Đã lưu trữ năm học ${y.label}`,
-    onError: (e) => setErr(e.message), silentError: true,
+    onError: (e) => setErr(e.message),
   });
   const b = `/school/${school.id}`;
   return (

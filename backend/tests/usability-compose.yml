@@ -1,0 +1,9 @@
+services:
+  runner:
+    environment:
+      MAIL_MODE: disabled
+networks:
+  test_data:
+    ipam:
+      config:
+        - subnet: ${USABILITY_TEST_SUBNET:?USABILITY_TEST_SUBNET is required}

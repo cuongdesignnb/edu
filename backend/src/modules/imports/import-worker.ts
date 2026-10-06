@@ -7,13 +7,15 @@ import { ImportsService,emptySummary } from './imports.service';
 import { placeEnrollment,checkCapacity } from '../students/enrollment';
 import { InvitationsService,type Proposal,type WorkProfile } from '../identity/invitations.service';
 import { readImportContext,type ImportContext } from './import-context';
+import {isStudentPaste} from './student-paste';
+import {nextStudentCode} from '../students/student-form';
 
 type Context=ImportContext;
 type Values=Record<string,string>;
 interface Plan {values:Values;decision:'ADD'|'UPDATE'|'SKIP';id?:string;version?:number;classId?:string;gradeId?:string;
-  enrollmentId?:string;subjectId?:string;memberId?:string;roomId?:string;proposal?:Proposal;businessKey:string}
+  enrollmentId?:string;subjectId?:string;memberId?:string;roomId?:string;proposal?:Proposal;businessKey:string;warnings?:string[]}
 interface Ref {table:string;id:string;version:number}
-interface Mapping {mapping:{sourceColumn:string;targetField:string}[];mode:string;preview?:Context}
+interface Mapping {mapping:{sourceColumn:string;targetField:string}[];mode:string;source?:'PASTE';reservedCodes?:string[];preview?:Context}
 interface Job extends Row {id:string;school_id:string;kind:string;year_id:string;class_id:string|null;requested_by:string;status:string;column_mapping:Mapping}
 type Guard=(tx:Transaction)=>Promise<void>;
 function invalid(field:string,message:string):never{throw new Problem(422,'IMPORT_ROW_INVALID',[{path:field,code:'INVALID',message}]);}
@@ -56,17 +58,23 @@ export class ImportWorker {
       await tx.query('SELECT app.lock_school()');await guard(tx);const job=await this.job(tx,schoolId,id,true);
       if(job.status==='CANCELLED'||job.status==='READY')return;
       if(job.status!=='VALIDATING'&&job.status!=='FAILED')throw new Problem(422,'INVALID_STATE');
-      await this.imports.authorize(tx,schoolId,job.requested_by,job.kind,job.class_id??undefined);
+      await this.imports.authorize(tx,schoolId,job.requested_by,job.kind,job.class_id??undefined,isStudentPaste(job));
       const rows=(await tx.query<Row>('SELECT * FROM app.import_rows WHERE school_id=$1 AND import_id=$2 ORDER BY row_number',[schoolId,id])).rows;
       if(!rows.length||rows.some(row=>['APPLIED','SKIPPED'].includes(String(row.status))))throw new Problem(422,'IMPORT_ALREADY_PARTIAL');
       const file=await one<{sha256:string}>(tx,"SELECT sha256 FROM app.files WHERE school_id=$1 AND id=$2 AND status='READY'",[schoolId,job.file_id]);
       if(!file)throw new Problem(422,'FILE_UNAVAILABLE');
       const seen=new Set<string>(),plans:Plan[]=[],summary=emptySummary();
+      const fold=(n:string)=>n.normalize('NFD').replace(/\p{M}/gu,'').replace(/đ/gi,'d').toLowerCase().replace(/\s+/g,' ').trim();
+      const existingNames=isStudentPaste(job)?new Set((await tx.query<{full_name:string}>('SELECT full_name FROM app.students WHERE school_id=$1',[schoolId])).rows.map(s=>fold(s.full_name))):new Set<string>();
+      const nameCounts=new Map<string,number>();if(isStudentPaste(job))for(const row of rows){const name=fold(String((row.source_data as Values).fullName??''));nameCounts.set(name,(nameCounts.get(name)??0)+1);}
       for(const row of rows){
         const values:Values={};for(const entry of job.column_mapping.mapping)values[entry.targetField]=String((row.source_data as Values)[entry.sourceColumn]??'').trim();
         let plan:Plan|undefined;let errors:{field:string;code:string;message:string}[]=[];
         try{
-          plan=await this.plan(tx,job,values,file.sha256,seen);
+          plan=await this.plan(tx,job,values,file.sha256,seen,Number(row.row_number));
+          if(isStudentPaste(job)){
+            if(existingNames.has(fold(values.fullName!))||(nameCounts.get(fold(values.fullName!))??0)>1)plan.warnings=['Có học sinh cùng tên; nếu tiếp tục sẽ tạo hồ sơ riêng'];
+          }
           if(job.kind==='STUDENTS'&&plan.decision==='ADD'){
             const cls=await one<Row>(tx,'SELECT * FROM app.classes WHERE school_id=$1 AND id=$2',[schoolId,plan.classId]);
             const year=await one<Row>(tx,'SELECT * FROM app.academic_years WHERE school_id=$1 AND id=$2',[schoolId,job.year_id]);
@@ -86,21 +94,23 @@ export class ImportWorker {
         await tx.query(`UPDATE app.import_rows SET normalized_data=$3,errors=$4,status=$5,business_key=$6,result_id=NULL,result_metadata='{}'
           WHERE school_id=$1 AND id=$2`,[schoolId,row.id,row.normalized_data,JSON.stringify(errors),errors.length?'INVALID':'VALID',plan?.businessKey??null]);
       }
-      const mapping={...job.column_mapping,preview:await this.context(tx,job)};job.column_mapping=mapping;
+      const mapping={...job.column_mapping,...(isStudentPaste(job)?{reservedCodes:plans.map(p=>p.values.studentCode).filter((s):s is string=>!!s)}:{}),preview:await this.context(tx,job)};job.column_mapping=mapping;
       const previewHash=await this.imports.sourceHash(tx,schoolId,job,rows);
       await tx.query("UPDATE app.import_jobs SET status='READY',column_mapping=$3,preview_hash=$4,summary=$5 WHERE school_id=$1 AND id=$2",[schoolId,id,mapping,previewHash,summary]);
     },{schoolId});
   }
-  private async plan(tx:Transaction,job:Job,v:Values,fileHash:string,seen:Set<string>):Promise<Plan>{
+  private async plan(tx:Transaction,job:Job,v:Values,fileHash:string,seen:Set<string>,rowNumber:number):Promise<Plan>{
     const year=await one<Row>(tx,"SELECT * FROM app.academic_years WHERE school_id=$1 AND id=$2 AND status<>'ARCHIVED'",[job.school_id,job.year_id]);
     if(!year)invalid('yearId','Năm học không khả dụng');
     for(const [key,value] of Object.entries(v))if(value.length>200)invalid(key,'Giá trị quá dài');
-    const p:Plan={values:v,decision:'ADD',businessKey:hashToken(canonical({fileHash,kind:job.kind,year:job.year_id,classId:job.class_id,mapping:job.column_mapping.mapping,values:v}))};
+    const paste=isStudentPaste(job);
+    const p:Plan={values:v,decision:'ADD',businessKey:hashToken(canonical({fileHash,kind:job.kind,year:job.year_id,classId:job.class_id,mapping:job.column_mapping.mapping,values:v,...(paste?{rowNumber}: {})}))};
     let key='';
     if(job.kind==='STUDENTS'){
-      key=code(v,'studentCode');required(v,'fullName');
+      key=paste&&!v.studentCode?`paste-row:${rowNumber}`:code(v,'studentCode');required(v,'fullName');
+      if(paste){v.fullName=v.fullName!.replace(/\s+/g,' ');if(!v.gender)delete v.gender;}
       if(Object.hasOwn(v,'gender')){const normalized=v.gender!.normalize('NFD').replace(/\p{M}/gu,'').trim().toLowerCase();if(!['nam','nu'].includes(normalized))invalid('gender','Giới tính phải là Nam hoặc Nữ');v.gender=normalized==='nam'?'Nam':'Nữ';}
-      if(v.dateOfBirth){v.dateOfBirth=date(v.dateOfBirth,'dateOfBirth');if(v.dateOfBirth>String(year.ends_on)||v.dateOfBirth<'1900-01-01')invalid('dateOfBirth','Ngày sinh ngoài phạm vi');}
+      if(v.dateOfBirth){v.dateOfBirth=date(v.dateOfBirth,'dateOfBirth');const today=paste?(await one<{today:string}>(tx,'SELECT (now() AT TIME ZONE timezone)::date::text AS today FROM platform.schools WHERE id=$1',[job.school_id]))!.today:String(year.ends_on);if(v.dateOfBirth>today||v.dateOfBirth<'1900-01-01')invalid('dateOfBirth','Ngày sinh ngoài phạm vi');}
       const cls=await this.classFor(tx,job,v.classCode);p.classId=String(cls.id);
       await this.policy.require(tx,{userId:job.requested_by},'student.manage',{schoolId:job.school_id,classId:p.classId});
       if(v.guardianName||v.guardianPhone||v.guardianEmail){
@@ -112,6 +122,7 @@ export class ImportWorker {
       if(v.startsOn<String(year.starts_on)||v.startsOn>=String(year.ends_on))invalid('startsOn','Ngoài năm học');
       const existing=await one<Row>(tx,'SELECT * FROM app.students WHERE school_id=$1 AND student_code=$2',[job.school_id,key]);
       if(existing){
+        if(paste)invalid('studentCode','Mã học sinh đã tồn tại; không ghi đè hồ sơ');
         p.id=String(existing.id);p.version=Number(existing.version);p.decision=job.column_mapping.mode==='ADD_ONLY'?'SKIP':'UPDATE';
         const enrollment=await one<Row>(tx,"SELECT * FROM app.enrollments WHERE school_id=$1 AND student_id=$2 AND year_id=$3 AND status<>'CANCELLED' ORDER BY starts_on LIMIT 1",[job.school_id,existing.id,job.year_id]);
         if(existing.status!=='ACTIVE'||!enrollment||enrollment.class_id!==cls.id)invalid('studentCode','Mã hiện có không thuộc lớp/năm này; dùng quy trình chuyển lớp');
@@ -153,7 +164,7 @@ export class ImportWorker {
       [job.school_id,cls.id,year.starts_on,year.ends_on,weekday,v.startsAt,v.endsAt,p.memberId,p.roomId??null])).rowCount;
       if(clash)invalid('slot','Trùng giáo viên/phòng với lịch đã công bố');
     }
-    if(seen.has(key))invalid('row','Mã hoặc tiết bị trùng trong file');seen.add(key);
+    if(seen.has(key))invalid(paste?'studentCode':'row','Mã hoặc tiết bị trùng trong danh sách');seen.add(key);
     const applied=await one<Row>(tx,"SELECT result_id FROM app.import_rows WHERE school_id=$1 AND business_key=$2 AND status='APPLIED'",[job.school_id,p.businessKey]);
     if(applied){p.decision='SKIP';p.id??=String(applied.result_id);}return p;
   }
@@ -192,9 +203,9 @@ export class ImportWorker {
         await tx.query('SELECT app.lock_school()');await guard(tx);const job=await this.job(tx,schoolId,id,true);
         if(job.status==='CANCELLED'||job.status==='COMPLETED')return true;
         if(!['APPLYING','FAILED'].includes(job.status))throw new Problem(422,'INVALID_STATE');
-        await this.imports.authorize(tx,schoolId,job.requested_by,job.kind,job.class_id??undefined);
+        await this.imports.authorize(tx,schoolId,job.requested_by,job.kind,job.class_id??undefined,isStudentPaste(job));
         const rows=(await tx.query<Row>('SELECT * FROM app.import_rows WHERE school_id=$1 AND import_id=$2 ORDER BY row_number FOR UPDATE',[schoolId,id])).rows;
-        if(rows.some(row=>row.status==='INVALID')||!job.preview_hash||await this.imports.sourceHash(tx,schoolId,job,rows)!==job.preview_hash)throw new Problem(422,'STALE_PREVIEW');
+        if(rows.some(row=>row.status==='INVALID')&&!isStudentPaste(job)||!job.preview_hash||await this.imports.sourceHash(tx,schoolId,job,rows)!==job.preview_hash)throw new Problem(422,'STALE_PREVIEW');
         const expected=structuredClone(job.column_mapping.preview!);if(!expected)throw new Problem(422,'STALE_PREVIEW');
         for(const row of rows)for(const ref of ((row.result_metadata as {refs?:Ref[]}).refs??[]))expected[ref.table]![ref.id]=ref.version;
         if(canonical(expected)!==canonical(await this.context(tx,job)))throw new Problem(422,'STALE_PREVIEW');
@@ -213,9 +224,9 @@ export class ImportWorker {
           row.status=plan.decision==='SKIP'?'SKIPPED':'APPLIED';row.result_metadata={refs:result.refs,...(timetableId?{timetableId}:{})};
           await tx.query('UPDATE app.import_rows SET status=$3,result_id=$4,result_metadata=$5 WHERE school_id=$1 AND id=$2',[schoolId,row.id,row.status,result.id??null,row.result_metadata]);
         }
-        const done=rows.every(row=>['APPLIED','SKIPPED'].includes(String(row.status))),summary=emptySummary();
+        const done=rows.every(row=>['APPLIED','SKIPPED',...(isStudentPaste(job)?['INVALID']:[])].includes(String(row.status))),summary=emptySummary();
         for(const row of rows){const plan=row.normalized_data as Plan;if(row.status==='APPLIED')summary[plan.decision==='ADD'?'added':'updated']++;
-          if(row.status==='SKIPPED')summary.skipped++;if(row.status==='APPLIED'||row.status==='SKIPPED')summary.processed++;}
+          if(row.status==='INVALID')summary.invalid++;if(row.status==='SKIPPED')summary.skipped++;if(row.status==='APPLIED'||row.status==='SKIPPED')summary.processed++;}
         await tx.query("UPDATE app.import_jobs SET status=$3,summary=$4,completed_at=CASE WHEN $3='COMPLETED' THEN now() ELSE NULL END WHERE school_id=$1 AND id=$2",[schoolId,id,done?'COMPLETED':'APPLYING',summary]);
         await tx.query(`INSERT INTO app.audit_events(school_id,actor_user_id,actor_kind,action,target_type,target_id,request_id,redacted_after)
           VALUES($1,$2,'SYSTEM','importChunkApplied','import',$3,$4,$5)`,[schoolId,job.requested_by,id,`import:${id}`,{summary,status:done?'COMPLETED':'APPLYING'}]);return done;
@@ -226,6 +237,7 @@ export class ImportWorker {
     const refs:Ref[]=[],v=p.values;const track=(table:string,row:Row)=>{refs.push({table,id:String(row.id),version:Number(row.version)});return String(row.id);};let id='';
     if(job.kind==='STUDENTS'){
       await this.policy.require(tx,{userId:job.requested_by},'student.manage',{schoolId:job.school_id,classId:p.classId});
+      if(isStudentPaste(job)&&p.decision==='ADD'&&!v.studentCode){const today=(await one<{today:string}>(tx,'SELECT (now() AT TIME ZONE timezone)::date::text AS today FROM platform.schools WHERE id=$1',[job.school_id]))!.today;let next=await nextStudentCode(tx,job.school_id,today);const prefix=next.slice(0,4);while(job.column_mapping.reservedCodes?.includes(next))next=prefix+(BigInt(next.slice(4))+1n).toString().padStart(3,'0');v.studentCode=next;}
       const student=p.decision==='ADD'?await one<Row>(tx,`INSERT INTO app.students(school_id,student_code,full_name,date_of_birth,preferred_name,gender) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,[job.school_id,v.studentCode,v.fullName,v.dateOfBirth||null,v.preferredName||null,v.gender??null]):
         await one<Row>(tx,`UPDATE app.students SET full_name=$4,date_of_birth=CASE WHEN $5::boolean THEN $6::date ELSE date_of_birth END,
           preferred_name=CASE WHEN $7::boolean THEN $8 ELSE preferred_name END,gender=CASE WHEN $9::boolean THEN $10 ELSE gender END WHERE school_id=$1 AND id=$2 AND version=$3 RETURNING *`,[job.school_id,p.id,p.version,v.fullName,Object.hasOwn(v,'dateOfBirth'),v.dateOfBirth||null,Object.hasOwn(v,'preferredName'),v.preferredName||null,Object.hasOwn(v,'gender'),v.gender??null]);

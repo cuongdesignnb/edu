@@ -32,7 +32,7 @@ export function InviteModal({ open, onClose }: { open: boolean; onClose: () => v
   const close = () => { setV(EMPTY); setErrors({}); onClose(); };
   const { beforeClose, confirmNode } = useDirtyClose(dirty, close);
   const cmd = useCommand((c, input: Parameters<typeof staffRepo.invite>[2]) => staffRepo.invite(c, school.id, input), {
-    success: (r) => `Đã tạo lời mời cho ${r.fullName} — email đã được xếp hàng gửi`, onError: e => { onError(e); setErrors(s => ({ ...s, _form: e.message })); }, silentError: true,
+    success: (r) => `Đã tạo lời mời cho ${r.fullName} — email đã được xếp hàng gửi`, onError: e => { onError(e); setErrors(s => ({ ...s, _form: e.message })); },
   });
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k as string); };
 

@@ -43,7 +43,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
 
   const preview = useRepo(["assign-preview", school.id, v, attempt], (c) => staffRepo.previewAssignment(c, school.id, { membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: v.validFrom!, validTo: v.validTo, reason: v.reason.trim() || undefined }), { enabled: open && step === "preview" });
   useEffect(() => { if (step === "preview" && preview.data && !reviewed) setReviewed(preview.data); }, [step, preview.data, reviewed]);
-  const cmd = useCommand((c, input: Parameters<typeof staffRepo.assign>[2]) => staffRepo.assign(c, school.id, input), { success: "Đã lưu phân công", onError: (e) => { onError(e); setErrors(s => ({ ...s, _form: e.message })); }, silentError: true });
+  const cmd = useCommand((c, input: Parameters<typeof staffRepo.assign>[2]) => staffRepo.assign(c, school.id, input), { success: "Đã lưu phân công", onError: (e) => { onError(e); setErrors(s => ({ ...s, _form: e.message })); }, });
 
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k as string); };
   const toPreview = () => {

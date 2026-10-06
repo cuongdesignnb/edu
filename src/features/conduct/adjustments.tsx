@@ -51,7 +51,7 @@ function AdjList({ d }: { d: AdjData }) {
   const [pub, setPub] = useState<AdjItem | null>(null);
   const [decideErr, setDecideErr] = useState<string>();
   const decideCmd = useCommand((ctx: Ctx, id: string, approve: boolean, note: string) => {const displayed=d.items.find(a=>a.id===id);if(!displayed)throw new RepoError('CONFLICT','Hãy tải lại đề nghị điều chỉnh.');return conductRepo.decideAdjustment(ctx, schoolId, yearId, classId, id, approve, note,displayed);}, {
-    success: (a) => a.status === "approved" ? "Đã duyệt đề nghị — chờ công bố lại" : "Đã từ chối đề nghị", silentError: true,
+    success: (a) => a.status === "approved" ? "Đã duyệt đề nghị — chờ công bố lại" : "Đã từ chối đề nghị",
     onError: (e) => setDecideErr(e.code === "FORBIDDEN" ? `Không thể duyệt: ${e.message}` : e.fieldErrors?.note ?? e.message), onSuccess: () => setDecide(null),
   });
   const pubCmd = useCommand((ctx: Ctx, id: string) => {const displayed=d.items.find(a=>a.id===id);if(!displayed)throw new RepoError('CONFLICT','Hãy tải lại đề nghị điều chỉnh.');return conductRepo.publishAdjustment(ctx, schoolId, yearId, classId, id,displayed);}, { success: (s) => `Đã công bố lại — bản ${s.versionNo}`, onSuccess: () => setPub(null) });

@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import dynamic from 'next/dynamic';
+const StudentPasteDialog=dynamic(()=>import('@/features/students/student-paste-dialog').then(m=>m.StudentPasteDialog));
 import Link from "next/link";
 import { ClipboardList, Plus, ArrowLeftRight, Eye, Users2, History, LayoutGrid, Pencil, Crown, UserRound } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
@@ -32,6 +34,7 @@ const PAGE = 10;
 
 /** CL02 — class roster (R06) with groups / positions and a seating preview. */
 export function ClassRoster() {
+  const [paste,setPaste]=useState(false);
   const { schoolId, yearId, classId, base, readOnly, header } = useClassroom();
   const [q, setQ] = useState("");
   const [groupId, setGroupId] = useState("");
@@ -78,6 +81,7 @@ export function ClassRoster() {
                 <CardHeader title={`Danh sách học sinh (${d.total})`} icon={<ClipboardList className="size-5 text-primary" />}
                   action={!readOnly && <>
                     {d.canAdd && <ButtonLink href={`/school/${schoolId}/students/new?classId=${classId}`} size="sm" variant="primary" icon={<Plus className="size-4" />}>Thêm học sinh</ButtonLink>}
+                    {d.canAdd&&<Button size="sm" onClick={()=>setPaste(true)}>Dán danh sách vào lớp</Button>}
                     {d.canTransfer && <Button size="sm" icon={<ArrowLeftRight className="size-4" />} onClick={() => setTransfer({ open: true, preset: null })}>Chuyển lớp</Button>}
                   </>} />
                 <FilterBar q={q} onQ={(v) => { setQ(v); setPage(1); }} placeholder="Tìm học sinh theo họ tên, mã…" active={active} onReset={reset}>
@@ -138,6 +142,7 @@ export function ClassRoster() {
               </div>
             )}
             <ChangeGroupDialog open={!!groupFor} onOpenChange={(o) => { if (!o) setGroupFor(null); }} schoolId={schoolId} yearId={yearId} classId={classId} expectedClassVersion={groupFor?.classVersion??d.classVersion} student={groupFor} groups={d.groups} />
+            {paste&&<StudentPasteDialog schoolId={schoolId} initialYearId={yearId} initialClassId={classId} onClose={()=>setPaste(false)}/>}
             <TransferDialog open={transfer.open} onOpenChange={(o) => setTransfer((t) => ({ ...t, open: o }))} schoolId={schoolId} yearId={yearId} classId={classId} preset={transfer.preset} students={d.rows} />
           </div>
         );

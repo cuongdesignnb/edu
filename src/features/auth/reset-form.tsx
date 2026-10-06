@@ -34,7 +34,7 @@ function ResetForm({onDone}:{onDone:()=>void}) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const cmd = useCommand((_c, p: string, c: string) => authDemoRepo.completePasswordReset("", p, c), { silentError: true, changesAuthentication: true, onError: (e) => setErrors(e.fieldErrors ?? { form: e.message }) });
+  const cmd = useCommand((_c, p: string, c: string) => authDemoRepo.completePasswordReset("", p, c), {  changesAuthentication: true, onError: (e) => setErrors(e.fieldErrors ?? { form: e.message }) });
   useUnsavedChanges(!!password || !!confirm);
 
   const submit = async (e: FormEvent) => {

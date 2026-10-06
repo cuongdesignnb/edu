@@ -14,7 +14,7 @@ export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>();
   const [done, setDone] = useState(false);
-  const cmd = useCommand((_c, e: string) => authDemoRepo.requestPasswordReset(e), { silentError: true, onError: (e) => setError(e.fieldErrors?.email ?? e.message) });
+  const cmd = useCommand((_c, e: string) => authDemoRepo.requestPasswordReset(e), {  onError: (e) => setError(e.fieldErrors?.email ?? e.message) });
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();

@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       {children}
-      <div aria-live="polite" aria-atomic="false" className="pointer-events-none fixed inset-x-3 bottom-3 z-[80] flex flex-col items-end gap-2 sm:left-auto sm:right-5 sm:bottom-5 sm:w-[380px]">
+      <div aria-live="polite" aria-atomic="false" className="pointer-events-none fixed inset-x-3 top-3 z-[80] flex flex-col items-end gap-2 sm:top-auto sm:left-auto sm:right-5 sm:bottom-5 sm:w-[380px]">
         {items.map((t) => {
           const Icon = ICON[t.tone];
           return (
@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <Icon className="ic mt-0.5 size-5 flex-none" aria-hidden />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-ink">{t.title}</p>
-                {t.detail && <p className="mt-0.5 text-[13px] text-body">{t.detail}</p>}
+                {t.detail && <p className="mt-0.5 line-clamp-3 break-words text-[13px] text-body">{t.detail}</p>}
                 {t.action && <button type="button" className="mt-2 text-[13px] font-semibold text-primary-strong hover:underline" onClick={t.action.onClick}>{t.action.label}</button>}
               </div>
               <button type="button" onClick={() => dismiss(t.id)} className="flex-none rounded-md p-1 text-muted hover:bg-neutral-bg" aria-label="Đóng thông báo"><X className="size-4" /></button>

@@ -242,7 +242,7 @@ export function ErrorSummary({ errors, labels, title = "Vui lòng kiểm tra l�
       <p className="flex items-center gap-2 font-semibold"><AlertCircle className="size-4" aria-hidden />{title}</p>
       <ul className="mt-1 list-disc space-y-0.5 pl-6">
         {list.map(([k, v]) => (
-          <li key={k}><button type="button" className="text-left underline-offset-2 hover:underline" onClick={() => { const el = document.querySelector<HTMLElement>(`[data-field="${k}"] input, [data-field="${k}"] select, [data-field="${k}"] textarea, [data-field="${k}"] button`); el?.focus(); }}>{labels?.[k] ? `${labels[k]}: ` : ""}{v}</button></li>
+          <li key={k}><button type="button" className="text-left underline-offset-2 hover:underline" onClick={() => { const scope=ref.current?.closest("[role=dialog]")??document; const field=scope.querySelector<HTMLElement>(`[data-field="${CSS.escape(k)}"]`); const el=field?.matches("input,select,textarea,button")?field:field?.querySelector<HTMLElement>("input,select,textarea,button"); el?.focus(); }}>{labels?.[k] ? `${labels[k]}: ` : ""}{v}</button></li>
         ))}
       </ul>
     </div>

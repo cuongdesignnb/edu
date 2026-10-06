@@ -88,7 +88,7 @@ function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
   const ownRole = d.ownRole;
   const cmd = useCommand((c, permissions: ApiSchemas["Role"]["permissions"], reasonText: string) => staffRepo.saveRole(c, school.id, source.id, permissions, source.version, reasonText), {
     success: (r) => `Đã lưu mẫu quyền ${r.name} (phiên bản ${r.version})`,
-    onError: (e) => { if (e.code === "CONFLICT") { setConfirm(false); setConflict(e); } else setErr(e.fieldErrors?.reason ?? e.message); }, silentError: true,
+    onError: (e) => { if (e.code === "CONFLICT") { setConfirm(false); setConflict(e); } else setErr(e.fieldErrors?.reason ?? e.message); },
   });
   const groups = useMemo(() => {
     const m = new Map<string, typeof d.all>();

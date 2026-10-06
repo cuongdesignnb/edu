@@ -45,7 +45,7 @@ function Body({ m }: { m: Member }) {
   const revokeCmd = useCommand((c, source: Asg, reason: string) => staffRepo.revokeAssignment(c, school.id, source.id, reason, source.version), { success: "Đã thu hồi phân công — có hiệu lực ở lần đọc/ghi kế tiếp" });
   const statusCmd = useCommand((c, to: "active" | "suspended" | "revoked", reason: string) => staffRepo.setMembershipStatus(c, school.id, m.membership.id, to, reason, status?.version), {
     success: (x) => x.status === "active" ? "Đã mở khóa thành viên" : x.status === "suspended" ? "Đã tạm khóa thành viên tại trường này" : "Đã thu hồi thành viên tại trường này",
-    onError: (e) => setStatusErr(e.message), silentError: true,
+    onError: (e) => setStatusErr(e.message),
   });
   const active = m.membership.status === "active";
   const rows = (m.assignments ?? []).filter((a) => {
@@ -164,7 +164,7 @@ function RolesModal({ m, onClose }: { m: Member; onClose: () => void }) {
   const choices = m.roleTemplates;
   const newLimits = (choices ?? []).filter(t => sel.includes(t.id) && !init.includes(t.id) && t.delegationUntil).map(t => t.delegationUntil!).sort();
   const deadline = newLimits[0];
-  const cmd = useCommand((c, ids: string[], r: string) => staffRepo.setMemberRoles(c, school.id, m.membership.id, ids, r, m.membership.version, deadline), { success: "Đã cập nhật mẫu quyền nhà trường", onError: e => setErr(e.message), silentError: true });
+  const cmd = useCommand((c, ids: string[], r: string) => staffRepo.setMemberRoles(c, school.id, m.membership.id, ids, r, m.membership.version, deadline), { success: "Đã cập nhật mẫu quyền nhà trường", onError: e => setErr(e.message), });
   const name = (ids: string[]) => ids.map(i => choices?.find(t => t.id === i)?.label ?? m.roles.find(t => t.roleId === i)?.roleLabel ?? "Mẫu quyền đã chọn").join(", ") || "Không có";
   const changed = JSON.stringify([...sel].sort()) !== JSON.stringify([...init].sort());
   return <Modal open onOpenChange={o => { if (!o) onClose(); }} busy={cmd.pending} size="md" title="Thay đổi mẫu quyền nhà trường" description={`${m.user.displayName} — nguồn phiên bản ${m.membership.version}`}

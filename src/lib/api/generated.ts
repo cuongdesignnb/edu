@@ -155,10 +155,10 @@ export interface ApiSchemas {
   "AnnouncementCreate": { "yearId": string; "classId"?: string; "title": string; "sanitizedHtml": string; "targets": Array<ApiSchemas["Audience"]>; "fileIds"?: Array<string>; "summary"?: string; "audience"?: "FAMILIES" | "STAFF" | "ALL"; "internalNote"?: string; };
   "AnnouncementPatch": { "expectedVersion": number; "title"?: string; "sanitizedHtml"?: string; "targets"?: Array<ApiSchemas["Audience"]>; "fileIds"?: Array<string>; "summary"?: string; "audience"?: "FAMILIES" | "STAFF" | "ALL"; "internalNote"?: string; "discard"?: boolean; };
   "SchedulePublish": { "expectedVersion": number; "scheduledAt": string; };
-  "ImportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "status": "UPLOADED" | "VALIDATING" | "READY" | "APPLYING" | "COMPLETED" | "FAILED" | "CANCELLED"; "previewHash"?: string; "summary"?: { "added": number; "updated": number; "skipped": number; "invalid": number; "processed": number; }; "yearId"?: string; "classId"?: string; "columns"?: Array<string>; "fileName"?: string; "className"?: (string) | null; "createdByName"?: (string) | null; };
+  "ImportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "status": "UPLOADED" | "VALIDATING" | "READY" | "APPLYING" | "COMPLETED" | "FAILED" | "CANCELLED"; "previewHash"?: string; "summary"?: { "added": number; "updated": number; "skipped": number; "invalid": number; "processed": number; }; "yearId"?: string; "classId"?: string; "columns"?: Array<string>; "fileName"?: string; "className"?: (string) | null; "createdByName"?: (string) | null; "source"?: "FILE" | "PASTE"; };
   "ImportCreate": { "kind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "fileId": (string) | null; "yearId": (string) | null; "classId"?: (string) | null; };
   "ImportMapping": { "expectedVersion": number; "mapping": Array<{ "sourceColumn": string; "targetField": string; }>; "mode": "ADD_ONLY" | "UPSERT_VERIFIED_CODE"; };
-  "ImportRow": { "rowNumber": number; "status": string; "errors": Array<{ "field": string; "code": string; "message": string; }>; "values": { [key: string]: unknown; }; "decision"?: "ADD" | "UPDATE" | "SKIP"; "matchedId"?: string; };
+  "ImportRow": { "rowNumber": number; "status": string; "errors": Array<{ "field": string; "code": string; "message": string; }>; "values": { [key: string]: unknown; }; "decision"?: "ADD" | "UPDATE" | "SKIP"; "matchedId"?: string; "warnings"?: Array<string>; };
   "ExportJob": { "id": (string) | null; "version": number; "createdAt": string; "updatedAt": string; "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory" | "parent-conduct"; "format": "CSV" | "XLSX" | "PDF"; "status": "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"; "fileId"?: (string) | null; "expiresAt"?: string; "classId"?: string; "requestedBy"?: string; "asOf"?: string; "contentHash"?: string; "lastErrorCode"?: string; "title"?: string; "rowCount"?: number; "filters"?: { [key: string]: unknown; }; "fileName"?: string; };
   "ExportCreate": { "reportType": "attendance" | "conduct" | "activities" | "class-progress" | "parent-access" | "student" | "student-directory" | "parent-conduct"; "format": "CSV" | "XLSX" | "PDF"; "yearId": (string) | null; "classId"?: (string) | null; "studentId"?: (string) | null; "from": string; "to": string; "gradeId"?: string; "weekId"?: string; "dataSource"?: "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "scope"?: "SCHOOL" | "CLASS"; "studentIds"?: Array<string>; "periodId"?: string; "periodType"?: "WEEK" | "MONTH" | "TERM" | "YEAR"; };
   "Report": { "reportType": string; "metrics": Array<ApiSchemas["Metric"]>; "asOf": string; "rows": Array<{ "studentId"?: (string) | null; "classId"?: (string) | null; "label": string; "values": { [key: string]: unknown; }; }>; "dataSource": "LIVE_INTERNAL" | "PUBLISHED_SNAPSHOT"; "title"?: string; "schoolName"?: string; "yearName"?: string; "scopeLabel"?: string; "from"?: string; "to"?: string; "columns"?: Array<{ "key": string; "label": string; }>; "publicationIds"?: Array<string>; "notes"?: Array<string>; };
@@ -697,6 +697,8 @@ export interface ApiSchemas {
   "EvidenceAccessExchange": { "accessToken": string; };
   "StaffCredentialReset": { "expectedVersion": number; "password": string; "reason": string; };
   "StaffSessionRevoke": { "expectedVersion": number; "reason": string; };
+  "StudentPasteRow": { "studentCode"?: string; "fullName"?: string; "dateOfBirth"?: string; "gender"?: string; "guardianName"?: string; "guardianPhone"?: string; "guardianEmail"?: string; "relationshipLabel"?: string; };
+  "StudentPasteCreate": { "yearId": string; "classId": string; "startsOn": string; "rows": Array<ApiSchemas["StudentPasteRow"]>; };
   "ImportWorkspaceKind": { "kind": "students" | "teachers" | "classes" | "timetable"; "apiKind": "STUDENTS" | "STAFF" | "CLASSES" | "TIMETABLE"; "title": string; "description": string; "enabled": boolean; "columns": Array<{ "key": string; "label": string; "required": boolean; }>; "sampleRows": Array<{ [key: string]: string; }>; };
   "ImportWorkspace": { "schoolId": string; "today": string; "timezone": string; "kinds": Array<ApiSchemas["ImportWorkspaceKind"]>; "years": Array<{ "id": string; "name": string; "startsOn": string; "endsOn": string; "status": "DRAFT" | "ACTIVE"; }>; "classes": Array<{ "id": string; "yearId": string; "name": string; "code": string; "status": "DRAFT" | "ACTIVE"; }>; };
   "ImportWorkspaceResponse": { "data": ApiSchemas["ImportWorkspace"]; "requestId": string; };
@@ -5423,6 +5425,16 @@ export const apiOperations = {
     "response": "NotebookData",
     "list": false,
     "permission": "member.manage+role.manage",
+    "readOnly": false
+  },
+  "createStudentPasteImport": {
+    "method": "POST",
+    "path": "/api/v1/schools/{schoolId}/student-paste-imports",
+    "auth": "staff",
+    "request": "StudentPasteCreate",
+    "response": "ImportJob",
+    "list": false,
+    "permission": "student.manage",
     "readOnly": false
   },
   "getImportWorkspace": {

@@ -70,6 +70,10 @@ jobs:
           npx vitest run tests/unit/timetable-import.test.ts
           bash backend/tests/run-today-p0.sh
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Direct Staff, clipboard import and command feedback regressions
+        run: |
+          npx vitest run tests/unit/student-paste.test.ts tests/unit/command-toast.test.ts tests/unit/native-command-toast.test.tsx tests/unit/staff-effective-dates.test.ts tests/unit/api-query-boundary.test.ts
+          bash backend/tests/run-usability.sh
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
