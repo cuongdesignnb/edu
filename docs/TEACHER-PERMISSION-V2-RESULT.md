@@ -3,7 +3,9 @@
 Repository: https://github.com/cuongdesignnb/edu
 Branch: `codex/new-machine-audit-20261002`
 Baseline: `v1.0.8` / `3ea1223f3803b1ecbba581a4d699fad4434c9044`
-Release dự kiến: `v1.0.9`, chỉ tạo sau khi các kiểm tra bên dưới PASS.
+Release dự kiến: `v1.0.10`, chỉ tạo sau khi các kiểm tra bên dưới PASS.
+
+Tag `v1.0.9` giữ nguyên ở `f559e8eeea3f726fad0e64691481f08aa490830a`. CI của tag này dừng ở test migration cũ do assertion lấy `teacher.self` của mọi role. Patch `v1.0.10` chỉ giới hạn assertion vào đúng TEACHER được giữ nguyên trong fixture và cập nhật tài liệu release; không đổi thêm logic ứng dụng hay migration.
 
 ## Kết quả ứng dụng
 
@@ -39,6 +41,7 @@ Nhập học sinh/TKB có `classId` kiểm tra quyền CLASS và quyền nghiệ
 
 - Backend unit: 40 PASS; danh mục, preset, binding ngày/lớp/môn và delegation.
 - PostgreSQL integration quyền: 7 PASS; nâng cấp populated 065 → 066 của hai tenant, admin thứ hai toàn quyền, clone, phạm vi sai, mặc định, đổi phân công, thao tác các tab, nhập HS/TKB đúng lớp, từ chối lớp/môn khác, hết hạn/thu hồi và phiên đang đăng nhập.
+- Migration RLS: 8 PASS — kiểm tra nâng cấp/rollback/checksum/serialization/tenant-context và bảo toàn role TEACHER; assertion bảo toàn permission lọc đúng role ID.
 - Populated 060 → 066 / all-remaining: 3 PASS, giữ checksum cũ và RLS.
 - Frontend targeted: 41 PASS; editor, role/assignment adapters, permission/session/query boundaries.
 - Browser: admin 16/16 tab, GVCN đầy đủ 16/16 tab, GVBM 9 tab được phép; không có read API 403/404 trong tab được phép. Catalog 75/75; nút TKB theo quyền; form thêm/import HS của GVCN tải được; thêm/bỏ quyền cập nhật không reload.
@@ -51,7 +54,7 @@ Pipeline **Publish production images** bổ sung suite quyền này và giữ c�
 ## Owner update
 
 ```bash
-cd /www/wwwroot/edu && bash scripts/update-production.sh v1.0.9 && bash scripts/prod-status.sh
+cd /www/wwwroot/edu && bash scripts/update-production.sh v1.0.10 && bash scripts/prod-status.sh
 ```
 
 Không SSH hoặc deploy production trong job này. Không đưa env, secret, token, mật khẩu, private uploads, dump, backup hay log riêng vào commit. Các QA/handoff cũ ngoài phạm vi được giữ local.

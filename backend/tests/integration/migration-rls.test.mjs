@@ -216,7 +216,7 @@ test('existing TEACHER role and conflict permissions retain identity and scope',
   await migrate({ config });
   await scoped(pool, schoolIds[1], async tx => {
     assert.deepEqual((await tx.query("SELECT * FROM app.roles WHERE code='TEACHER'")).rows, [existing.role]);
-    assert.deepEqual((await tx.query("SELECT * FROM app.role_permissions WHERE action_code='teacher.self'")).rows, [existing.permission]);
+    assert.deepEqual((await tx.query("SELECT * FROM app.role_permissions WHERE role_id=$1 AND action_code='teacher.self'", [existing.role.id])).rows, [existing.permission]);
     assert.equal((await tx.query('SELECT count(*)::int AS n FROM app.role_permissions WHERE role_id=$1', [existing.role.id])).rows[0].n, 3);
   });
 });
