@@ -1,4 +1,4 @@
-import type {ApiSchemas} from '../../api/generated';
+import {permissionCatalog,type ApiSchemas} from '../../api/generated';
 import type {ID} from '../../model/types';
 import {nativeActionLabel} from '../../api/action-labels';
 import {RepoError} from '../errors';
@@ -19,6 +19,6 @@ export function rolePermissions(value:ApiSchemas['Role']['permissions']){
 }
 export function staffRoleDetails(row:ApiSchemas['RoleDetails'],schoolId:ID){
   return {role:staffRole(row.role,schoolId),canEdit:row.canEdit,ownRole:row.ownRole,systemRole:row.systemRole,canViewMembers:row.canViewMembers,canViewHistory:row.canViewHistory,
-    all:row.actions.map(a=>({...a,key:a.action,...nativeActionLabel(a.action)})),myActions:row.actions.filter(a=>a.canGrant).map(a=>a.action),
+    all:row.actions.map(a=>({...nativeActionLabel(a.action),...permissionCatalog.find(p=>p.action===a.action),...a,key:a.action})),myActions:row.actions.filter(a=>a.canGrant).map(a=>a.action),
     members:requiredValue(row.members,'members'),history:requiredValue(row.history,'history')?.map(e=>({id:requiredId(e.id),at:e.createdAt,action:e.action==='updateRole'?'Sửa mẫu quyền':e.action==='createRole'?'Tạo mẫu quyền':e.action,operationId:e.action,actorName:e.actorLabel,reason:e.reason,changes:e.changes}))??null};
 }

@@ -31,7 +31,7 @@ export async function handoverSource(tx:Transaction,schoolId:string,body:Record<
   const grant=(await one<Row>(tx,'SELECT * FROM app.role_grants WHERE school_id=$1 AND id=$2',[schoolId,previous.role_grant_id]))!;
   const roles=(await tx.query<Row>(`SELECT r.id,r.version,r.status,r.code,coalesce((SELECT jsonb_agg(jsonb_build_object('action',p.action_code,'scopes',p.allowed_scopes) ORDER BY p.action_code)
     FROM app.role_permissions p WHERE p.school_id=r.school_id AND p.role_id=r.id),'[]'::jsonb) AS permissions
-    FROM app.roles r WHERE r.school_id=$1 AND (r.id=$2 OR r.code='HOMEROOM') ORDER BY r.id`,[schoolId,grant.role_id])).rows;
+    FROM app.roles r WHERE r.school_id=$1 AND (r.id=$2 OR r.code='HOMEROOM' OR r.id=(SELECT (settings->>'homeroomRoleId')::uuid FROM platform.schools WHERE id=$1)) ORDER BY r.id`,[schoolId,grant.role_id])).rows;
   const school=(await one<Row>(tx,"SELECT version,timezone,settings->'homeroomMayPublish' AS publish FROM platform.schools WHERE id=$1",[schoolId]))!;
   const identities=(await tx.query<Row>('SELECT id,status,version FROM identity.users WHERE id=ANY($1::uuid[]) ORDER BY id',[[from.user_id,target.user_id]])).rows;
   return {classId:cls.id,classVersion:cls.version,yearId:year.id,yearVersion:year.version,yearStatus:year.status,

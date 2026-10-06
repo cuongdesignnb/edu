@@ -1,0 +1,46 @@
+const groups={school:'Nhà trường',year:'Nhà trường',calendar:'Nhà trường',dictionary:'Nhà trường',class:'Nhà trường',member:'Nhân sự & phân quyền',assignment:'Nhân sự & phân quyền',role:'Nhân sự & phân quyền',grant:'Nhân sự & phân quyền',student:'Học sinh',import:'Học sinh',guardian:'Người giám hộ / phụ huynh',parent_access:'Người giám hộ / phụ huynh',attendance:'Chuyên cần',conduct:'Rèn luyện / thi đua',rules:'Nội quy',group:'Tổ chức lớp',seating:'Tổ chức lớp',duty:'Trực nhật',schedule:'Thời khóa biểu',activity:'Hoạt động',evidence:'Minh chứng',announcement:'Thông báo',file:'Tệp',report:'Báo cáo',teacher:'Giáo viên',audit:'Audit / hỗ trợ trường',support:'Audit / hỗ trợ trường',publication:'Công bố'};
+const nouns={school:'nhà trường',year:'năm học',calendar:'lịch nhà trường',dictionary:'danh mục',class:'lớp',member:'nhân sự',assignment:'phân công',role:'mẫu quyền',grant:'quyền được cấp',student:'học sinh',import:'dữ liệu nhập',guardian:'người giám hộ',parent_access:'link phụ huynh',attendance:'chuyên cần',conduct:'rèn luyện',rules:'nội quy',group:'tổ học sinh',seating:'sơ đồ/chỗ ngồi',duty:'trực nhật',schedule:'thời khóa biểu',activity:'hoạt động',evidence:'minh chứng',announcement:'thông báo',file:'tệp',report:'báo cáo',teacher:'giáo viên',audit:'nhật ký',support:'hỗ trợ trường',publication:'bản công bố'};
+const verbs={read:'Xem',manage:'Quản lý',record:'Ghi nhận',publish:'Công bố',review:'Rà soát',reopen:'Mở lại',lock:'Chốt',upload:'Tải lên',download:'Tải xuống',verify:'Xác minh',issue:'Cấp',preview:'Xem trước',revoke:'Thu hồi',export:'Xuất',apply:'Áp dụng',approve:'Duyệt',withdraw:'Rút'};
+const labels={'student.manage':'Thêm và chỉnh sửa học sinh','seating.manage':'Quản lý sơ đồ/chỗ ngồi','schedule.manage':'Nhập và chỉnh thời khóa biểu','member.create_direct':'Tạo trực tiếp tài khoản giáo viên','school.settings':'Cài đặt nhà trường','teacher.self':'Không gian cá nhân giáo viên','student.transfer':'Duyệt chuyển lớp / ngừng theo học','student.transfer.request':'Đề nghị chuyển lớp / ngừng theo học','conduct.adjust.request':'Đề nghị điều chỉnh rèn luyện','conduct.adjust.approve':'Duyệt điều chỉnh rèn luyện'};
+export const FULL_HOMEROOM=('student.read student.manage student.transfer.request import.manage import.read group.manage seating.manage attendance.read attendance.record attendance.publish conduct.read conduct.record conduct.review conduct.lock conduct.publish conduct.adjust.request rules.read rules.manage rules.apply schedule.read schedule.manage schedule.publish duty.read duty.manage duty.publish activity.read activity.manage activity.review activity.publish evidence.read evidence.manage evidence.review announcement.read announcement.manage announcement.publish guardian.read guardian.manage guardian.verify parent_access.issue parent_access.manage parent_access.preview parent_access.revoke file.read file.upload file.download file.manage report.read report.export school.read year.read teacher.self class.read publication.read').split(' ');
+export const STANDARD_SUBJECT=('student.read attendance.read attendance.record conduct.read conduct.record activity.read announcement.read file.read file.download report.read rules.read schedule.read school.read year.read teacher.self class.read publication.read').split(' ');
+export function permissionCatalog(permissions,roles){
+ const classActions=new Set([...FULL_HOMEROOM,'attendance.reopen','conduct.adjust.approve','publication.withdraw',...roles.roles.filter(r=>r.scope==='CLASS').flatMap(r=>r.actions)]);
+ return permissions.filter(a=>!a.startsWith('platform.')).map(action=>{const [noun,verb]=action.split('.');return {action,label:labels[action]??(nouns[noun]&&verbs[verb]?`${verbs[verb]} ${nouns[noun]}`:'Quyền khác'),group:groups[noun]??'Quyền khác',allowedScopes:['SCHOOL',...(classActions.has(action)?['CLASS']:[]),...(STANDARD_SUBJECT.includes(action)?['SUBJECT']:[])],description:'Chỉ có hiệu lực trong phạm vi và thời hạn được cấp.',teacherRelevant:classActions.has(action)||STANDARD_SUBJECT.includes(action),schoolAdminGrantable:true};});
+}
+export function teacherPermissionContract(spec,extend,permissions,roles){
+ const s=spec.components.schemas,str={type:'string'},uuid={type:'string',format:'uuid'},reason={type:'string',minLength:5,maxLength:4000},version={type:'integer',minimum:1},ref=n=>({$ref:'#/components/schemas/'+n}),obj=(properties,required=Object.keys(properties))=>({type:'object',properties,required,additionalProperties:false}),arr=items=>({type:'array',items});
+ roles.roles.find(r=>r.code==='SCHOOL_ADMIN').actions=[...permissions.filter(a=>!a.startsWith('platform.'))];
+ const catalog=permissionCatalog(permissions,roles);
+ const metadata={action:str,label:str,group:str,allowedScopes:arr({type:'string',enum:['SCHOOL','CLASS','SUBJECT']}),description:str,teacherRelevant:{type:'boolean'},schoolAdminGrantable:{type:'boolean'}};
+ Object.assign(s.RoleDetails.properties.actions.items.properties,metadata);s.RoleDetails.properties.actions.items.required.push(...Object.keys(metadata).filter(k=>k!=='action'));
+ s.PermissionCatalogEntry=obj(metadata);
+ s.TeacherPermissionProfiles=obj({version,homeroomRoleId:uuid,subjectTeacherRoleId:uuid,roles:arr(ref('Role')),catalog:arr(ref('PermissionCatalogEntry'))});
+ s.CloneRole=obj({code:{type:'string',pattern:'^[A-Z][A-Z0-9_]{2,63}$'},label:{type:'string',minLength:3,maxLength:200},reason});
+ s.AssignmentProfileChange=obj({expectedVersion:version,roleId:uuid,reason});
+ s.AssignmentProfilePreview=obj({assignmentId:uuid,version,roleId:uuid,roleLabel:str,classId:uuid,startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date',nullable:true},added:arr(str),removed:arr(str)});
+ s.DefaultTeacherProfile=obj({expectedVersion:version,kind:{type:'string',enum:['HOMEROOM','SUBJECT']},roleId:uuid,applyCurrent:{type:'boolean'},reason});
+ s.DefaultTeacherProfilePreview=obj({version,kind:{type:'string',enum:['HOMEROOM','SUBJECT']},roleId:uuid,roleLabel:str,affected:{type:'integer',minimum:0},classIds:arr(uuid)});
+ for(const name of ['TeacherPermissionProfiles','AssignmentProfilePreview','DefaultTeacherProfilePreview'])s[name+'Response']=obj({data:ref(name),requestId:str});
+ Object.assign(s.AssignmentCreate.properties,{roleId:uuid});Object.assign(s.DirectStaffCreate.properties.assignment.properties,{roleId:uuid});Object.assign(s.DirectStaffAssign.properties.assignment.properties,{roleId:uuid});
+ s.MemberAssignmentDetails.properties.yearId=uuid;s.MemberAssignmentDetails.required.push('yearId');
+ s.MemberAssignmentDetails.properties.roleId=uuid;s.MemberAssignmentDetails.required.push('roleId');
+ s.GrantView.properties.assignmentId=uuid;
+ Object.assign(s.ClassRuleWorkspace.properties,{canApply:{type:'boolean'},classVersion:version,availableSets:arr(obj({id:uuid,name:str})),futureWeeks:arr(obj({id:uuid,startsOn:{type:'string',format:'date'},endsOn:{type:'string',format:'date'}}))});
+ s.ClassRuleWorkspace.required.push('canApply','classVersion','availableSets','futureWeeks');
+ const base='/schools/{schoolId}';
+ extend('getRole','getTeacherPermissionProfiles',base+'/teacher-permission-profiles','role.read','TeacherPermissionProfiles',false,['SC13','SC11']);
+ extend('createRole','cloneSchoolRole',base+'/roles/{roleId}/clone','role.manage','Role',false,['SC14'],undefined,'CloneRole');
+ extend('createAssignment','previewAssignmentProfile',base+'/assignments/{assignmentId}/permission-profile/preview','assignment.manage','AssignmentProfilePreview',false,['SC11'],undefined,'AssignmentProfileChange');
+ extend('createAssignment','changeAssignmentProfile',base+'/assignments/{assignmentId}/permission-profile','assignment.manage','Assignment',false,['SC11'],undefined,'AssignmentProfileChange');
+ extend('createRole','previewDefaultTeacherProfile',base+'/teacher-permission-profiles/default/preview','role.manage','DefaultTeacherProfilePreview',false,['SC13'],undefined,'DefaultTeacherProfile');
+ extend('createRole','setDefaultTeacherProfile',base+'/teacher-permission-profiles/default','role.manage','TeacherPermissionProfiles',false,['SC13'],undefined,'DefaultTeacherProfile');
+ for(const paths of Object.values(spec.paths))for(const op of Object.values(paths)){if(['changeAssignmentProfile','previewAssignmentProfile','previewDefaultTeacherProfile','setDefaultTeacherProfile'].includes(op?.operationId)){op.responses['200']=op.responses['201'];delete op.responses['201'];}if(['previewAssignmentProfile','previewDefaultTeacherProfile'].includes(op?.operationId))op['x-read-only']=true;}
+ return catalog;
+}
+
+export function permissionPresets(catalog){
+ const full=catalog.filter(p=>FULL_HOMEROOM.includes(p.action)&&p.allowedScopes.includes('CLASS'));
+ const make=(id,label,rows,scope)=>({id,label,permissions:rows.map(p=>({action:p.action,scopes:[scope]}))});
+ return [make('homeroom-full','GVCN đầy đủ',full,'CLASS'),make('homeroom-entry','GVCN chỉ nhập liệu',full.filter(p=>!/(publish|lock|review|approve|verify)$/.test(p.action)),'CLASS'),make('homeroom-read','GVCN chỉ xem',full.filter(p=>/read$|download$|teacher.self/.test(p.action)),'CLASS'),make('subject-standard','GVBM tiêu chuẩn',catalog.filter(p=>STANDARD_SUBJECT.includes(p.action)&&p.allowedScopes.includes('SUBJECT')),'SUBJECT')];
+}

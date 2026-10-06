@@ -39,7 +39,7 @@ export class ImportsService {
     .map(id=>[id,(c:RequestContext)=>this.handle(c)]));}
   async authorize(tx:Transaction,schoolId:string,userId:string,kind:string,classId?:string,paste=false){
     const user=await one(tx,"SELECT id FROM identity.users WHERE id=$1 AND status='ACTIVE'",[userId]);if(!user)throw new Problem(403,'REQUESTER_REVOKED');
-    if(!paste)await this.policy.require(tx,{userId},'import.manage',{schoolId});
+    if(!paste)await this.policy.require(tx,{userId},'import.manage',{schoolId,...(['STUDENTS','TIMETABLE'].includes(kind)&&classId?{classId}:{})});
     if(kind)await this.policy.require(tx,{userId},actions[kind]!,{schoolId,classId:kind==='STUDENTS'||kind==='TIMETABLE'?classId:undefined});
   }
   private async job(tx:Transaction,schoolId:string,id:string,lock=false){
@@ -52,7 +52,7 @@ export class ImportsService {
     const authorize=async(tx:Transaction)=>{
       if(op==='createStudentPasteImport')return this.authorize(tx,schoolId,c.principal!.userId,'STUDENTS',String(c.body.classId),true);
       if(c.principal!.support&&['listImports','getImport'].includes(op))return this.policy.require(tx,c.principal!,'import.read',{schoolId});
-      if(op==='listImports')return this.authorize(tx,schoolId,c.principal!.userId,'');
+      if(op==='listImports')return this.policy.collection(tx,c.principal!,'import.manage',schoolId);
       const row=op==='createImport'?c.body:await this.job(tx,schoolId,c.params.importId!);
       const paste=isStudentPaste(row);
       if(paste&&row.requested_by!==c.principal!.userId)throw new Problem(403,'FORBIDDEN');
@@ -61,7 +61,8 @@ export class ImportsService {
     const work=async(tx:Transaction):Promise<Result>=>{
       if(op==='createStudentPasteImport'){const row=await createStudentPaste(tx,this.policy,c);await this.enqueue(tx,schoolId,'VALIDATE_IMPORT',row,{});await audit(tx,c,'import',String(row.id),{source:'PASTE',status:'VALIDATING',rows:(c.body.rows as unknown[]).length});return {data:importDto(row),status:201};}
       if(op==='listImports'){
-        const result=await listResource(tx,importReadResource,schoolId,c.query,undefined,c.principal!.userId);
+        const access=await this.policy.collection(tx,c.principal!,'import.manage',schoolId);
+        const result=await listResource(tx,importReadResource,schoolId,c.query,access.all?undefined:{sql:"t.kind IN ('STUDENTS','TIMETABLE') AND t.class_id=ANY($1::uuid[])",values:[access.classIds]},c.principal!.userId);
         result.data=result.data.map(row=>({...row,summary:Object.keys(row.summary as object).length?row.summary:emptySummary()}));
         for(const row of result.data)if(row.previewHash===null)delete row.previewHash;return result;
       }

@@ -27,7 +27,7 @@ export async function schoolRoleChoices(tx:Transaction,schoolId:string,grants:Gr
 
 async function memberAssignments(tx:Transaction,schoolId:string,memberId:string,today:string,effective:Grant[],accessActive:boolean){
   const rows=(await tx.query<Row>(`SELECT a.*,cl.name AS class_name,y.name AS year_name,s.name AS subject_name,r.label AS role_label,
-    g.valid_from,g.valid_until,g.revoked_at AS grant_revoked_at,r.status AS role_status,g.granted_by,
+    g.role_id,g.valid_from,g.valid_until,g.revoked_at AS grant_revoked_at,r.status AS role_status,g.granted_by,
     (SELECT m.work_display_name FROM app.memberships m WHERE m.school_id=a.school_id AND m.user_id=g.granted_by) AS creator_name
     FROM app.teaching_assignments a JOIN app.classes cl ON cl.school_id=a.school_id AND cl.id=a.class_id
     JOIN app.academic_years y ON y.school_id=cl.school_id AND y.id=cl.year_id
@@ -38,7 +38,7 @@ async function memberAssignments(tx:Transaction,schoolId:string,memberId:string,
   if(rows.length>2000)throw new Problem(422,'MEMBER_ASSIGNMENT_LIMIT');
   const currentIds=new Set(effective.filter(g=>g.assignment_id).map(g=>g.assignment_id));
   return rows.map(row=>({id:row.id,version:row.version,classId:row.class_id,className:row.class_name,yearName:row.year_name,
-    memberId:row.member_id,roleGrantId:row.role_grant_id,kind:row.kind,subjectId:row.subject_id,subjectName:row.subject_name,
+    memberId:row.member_id,yearId:row.year_id,roleId:row.role_id,roleGrantId:row.role_grant_id,kind:row.kind,subjectId:row.subject_id,subjectName:row.subject_name,
     startsOn:row.starts_on,endsOn:row.ends_on,revokedAt:row.revoked_at?iso(row.revoked_at as Date):null,
     grantValidFrom:iso(row.valid_from as Date),grantValidUntil:row.valid_until?iso(row.valid_until as Date):null,
     grantRevokedAt:row.grant_revoked_at?iso(row.grant_revoked_at as Date):null,roleLabel:row.role_label,roleStatus:row.role_status,

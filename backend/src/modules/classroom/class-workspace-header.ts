@@ -70,7 +70,7 @@ export async function classWorkspaceHeader(db:Database,policy:Permissions,c:Requ
       JOIN app.guardians guardian ON guardian.school_id=gr.school_id AND guardian.id=gr.guardian_id AND guardian.status='ACTIVE'
       WHERE e.school_id=$1 AND e.class_id=$2 AND e.year_id=$3 AND e.status<>'CANCELLED' AND e.starts_on<=$4::date AND (e.ends_on IS NULL OR e.ends_on>$4::date)
       AND l.revoked_at IS NULL AND l.expires_at>now() AND gr.status='VERIFIED' AND gr.can_receive_info AND gr.revoked_at IS NULL`,[schoolId,classId,yearId,ctx.referenceDate]))!:null;
-    const publicationBounds=Object.entries({CONDUCT:'conduct.read',ATTENDANCE:'attendance.read',TIMETABLE:'schedule.read',DUTY:'duty.manage',ACTIVITY:'activity.read',ANNOUNCEMENT:'announcement.read'}).flatMap(([kind,action])=>access.grants.filter(g=>grantAllows(g,action,{schoolId,classId},access.today)).map(g=>({kind,from_day:g.role_code==='HOMEROOM'?g.starts_on:null,until_day:g.role_code==='HOMEROOM'?g.ends_on:null})));
+    const publicationBounds=Object.entries({CONDUCT:'conduct.read',ATTENDANCE:'attendance.read',TIMETABLE:'schedule.read',DUTY:'duty.manage',ACTIVITY:'activity.read',ANNOUNCEMENT:'announcement.read'}).flatMap(([kind,action])=>access.grants.filter(g=>grantAllows(g,action,{schoolId,classId},access.today)).map(g=>({kind,from_day:g.assignment_id?g.starts_on:null,until_day:g.assignment_id?g.ends_on:null})));
     const published=(await one<{at:Date|null}>(tx,`SELECT max(p.published_at) AS at FROM app.publication_revisions p
       JOIN platform.schools s ON s.id=p.school_id
       LEFT JOIN app.conduct_periods cp ON cp.school_id=p.school_id AND cp.id=p.conduct_period_id
@@ -99,7 +99,7 @@ async function pendingConduct(tx:Transaction,ctx:Context,userId:string){
   if(!headerAllows(ctx,'conduct.read',true))return null;
   const broad=headerAllows(ctx,'conduct.read');
   const bounds=ctx.grants.filter(g=>g.subject_id&&grantAllows(g,'conduct.read',{schoolId:ctx.schoolId,classId:ctx.classId,subjectId:g.subject_id,allowSubject:true},ctx.today))
-    .map(g=>({subject_id:g.subject_id,from_day:g.role_code==='SUBJECT_TEACHER'?g.starts_on:null,until_day:g.role_code==='SUBJECT_TEACHER'?g.ends_on:null}));
+    .map(g=>({subject_id:g.subject_id,from_day:g.assignment_id?g.starts_on:null,until_day:g.assignment_id?g.ends_on:null}));
   return (await one<{n:number}>(tx,`SELECT count(*)::int AS n FROM app.conduct_records r JOIN app.conduct_periods p ON p.school_id=r.school_id AND p.id=r.period_id
     WHERE r.school_id=$1 AND r.class_id=$2 AND p.year_id=$3 AND r.status='DRAFT' AND ($4::boolean OR r.recorded_by=$5::uuid AND EXISTS(
       SELECT 1 FROM jsonb_to_recordset($6::jsonb) AS g(subject_id uuid,from_day date,until_day date) JOIN platform.schools s ON s.id=r.school_id

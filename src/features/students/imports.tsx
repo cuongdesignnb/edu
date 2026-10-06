@@ -1,6 +1,6 @@
 "use client";
 import {QuickCreate} from "@/features/forms/quick-create";
-import {useMemo,useState} from 'react';
+import {useEffect,useMemo,useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {Upload,Download,FileSpreadsheet,FileText,GraduationCap,Users,School as SchoolIcon,CalendarDays,History,ArrowRight,ShieldCheck} from 'lucide-react';
@@ -9,6 +9,8 @@ import type {ApiSchemas} from '@/lib/api/generated';
 import {useCommand,useRepo} from '@/lib/query/hooks';
 import {fmtDateTime,fmtNumber} from '@/lib/formatters';
 import {downloadBlob,downloadCSV,downloadXLSX} from '@/lib/export';
+import {readStaffContext} from '@/lib/api/session';
+import {uiActions} from '@/lib/api/permissions';
 import {useSchool} from '@/components/layout/shells';
 import {PageHeader} from '@/components/layout/page';
 import {KpiCard} from '@/components/data/kpi';
@@ -22,6 +24,7 @@ import {useUnsavedChanges} from '@/components/ui/guards';
 import {DeniedState,EmptyFiltered,EmptyState,ErrorState,QueryState,Skeleton} from '@/components/ui/states';
 import {DataTable,FilterBar,Pagination,useClientList,type Column} from '@/components/data/table';
 
+function canImport(schoolId:string){const context=readStaffContext(),member=context?.memberships.find(m=>m.schoolId===schoolId);return !!context&&!!member&&member.grants.some(g=>uiActions(context,{schoolId,classId:g.classId,subjectId:g.subjectId}).has('import.run'));}
 const KIND_ICON: Record<ImportKind, React.ReactNode> = { students: <GraduationCap className="size-6" />, teachers: <Users className="size-6" />, classes: <SchoolIcon className="size-6" />, timetable: <CalendarDays className="size-6" /> };
 const KIND_TONE: Record<ImportKind, "blue" | "green" | "amber" | "purple"> = { students: "blue", teachers: "purple", classes: "green", timetable: "amber" };
 
@@ -33,14 +36,15 @@ async function downloadTemplate(k:ImportKindInfo,fmt:'csv'|'xlsx'){
 
 /* ------------------------------ SC26 — import center ------------------------------ */
 export function ImportsCenter({ schoolId }: { schoolId: string }) {
-  const { can } = useSchool();
+  useSchool();
+  const allowed=canImport(schoolId);
   const base = `/school/${schoolId}`;
-  const kinds = useRepo(["import-kinds", schoolId], (ctx) => studentsExtraRepo.importKinds(ctx, schoolId), { enabled: can("import.run") });
-  const hist = useRepo(["imports", schoolId], (ctx) => studentsRepo.imports(ctx, schoolId), { enabled: can("import.run") });
+  const kinds = useRepo(["import-kinds", schoolId], (ctx) => studentsExtraRepo.importKinds(ctx, schoolId), { enabled:allowed });
+  const hist = useRepo(["imports", schoolId], (ctx) => studentsRepo.imports(ctx, schoolId), { enabled:allowed });
   const [status, setStatus] = useState("");
   const rows = useMemo(() => (hist.data ?? []).filter((i) => !status || (status === "errors" ? i.summary.invalid > 0 : i.summary.invalid === 0)), [hist.data, status]);
   const list = useClientList(rows, { search: (r) => `${r.fileName} ${r.id} ${r.className} ${r.createdByName}`, pageSize: 8 });
-  if (!can("import.run")) return <div className="page"><DeniedState message="Bạn không có quyền nhập dữ liệu từ tệp." /></div>;
+  if (!allowed) return <div className="page"><DeniedState message="Bạn không có quyền nhập dữ liệu từ tệp." /></div>;
   type H = NonNullable<typeof hist.data>[number];
   const columns: Column<H>[] = [
     { key: "file", header: "Tệp", cell: (r) => <Link href={`${base}/imports/${r.id}`} className="block min-w-[180px] hover:underline"><span className="block font-semibold text-ink">{r.fileName}</span><span className="block text-[12px] text-muted">{r.id}</span></Link> },
@@ -97,12 +101,13 @@ const STEPS = ["Tệp", "Ghép cột", "Kiểm tra", "Xem trước", "Nhập"];
 const JOB_LABEL:Record<string,string>={UPLOADED:'Đã tải tệp',VALIDATING:'Đang kiểm tra',READY:'Đã kiểm tra',APPLYING:'Đang nhập',COMPLETED:'Hoàn tất',FAILED:'Thất bại',CANCELLED:'Đã hủy'};
 
 export function ImportWizard({schoolId}:{schoolId:string}){
- const {can}=useSchool(),router=useRouter();
- const catalog=useRepo(['import-workspace',schoolId],ctx=>studentsRepo.importWorkspace(ctx,schoolId),{enabled:can('import.run')});
+ useSchool();const allowed=canImport(schoolId),router=useRouter();
+ const catalog=useRepo(['import-workspace',schoolId],ctx=>studentsRepo.importWorkspace(ctx,schoolId),{enabled:allowed});
  const [kind,setKind]=useState<ImportKind>('students'),[yearId,setYearId]=useState(''),[classId,setClassId]=useState(''),[file,setFile]=useState<File>();
+ useEffect(()=>{const query=new URLSearchParams(window.location.search);setYearId(query.get('yearId')??'');setClassId(query.get('classId')??'');},[]);
  const upload=useCommand((ctx,k:ApiSchemas['ImportCreate']['kind'],y:string,cl:string|undefined,f:File)=>studentsRepo.uploadImport(ctx,schoolId,k,y,cl,f),{success:'Đã tạo lô nhập; đang phân tích tệp',onSuccess:j=>router.push(`/school/${schoolId}/imports/${j.id}`)});
  useUnsavedChanges(!!file&&!upload.pending);
- if(!can('import.run'))return <div className="page"><DeniedState message="Bạn không có quyền nhập dữ liệu từ tệp." /></div>;
+ if(!allowed)return <div className="page"><DeniedState message="Bạn không có quyền nhập dữ liệu từ tệp." /></div>;
  return <QueryState query={catalog} skeleton="detail">{d=>{
   const selected=d.kinds.find(k=>k.kind===kind)!,y=yearId||d.years.find(y=>y.status==='ACTIVE')?.id||d.years[0]?.id||'',classes=d.classes.filter(c=>c.yearId===y),needsClass=kind==='students'||kind==='timetable';
   return <div className="page"><PageHeader title="Nhập dữ liệu" subtitle="Chọn loại dữ liệu, tải tệp và kiểm tra kết quả trước khi xác nhận nhập." breadcrumbs={[{label:'Nhập dữ liệu',href:`/school/${schoolId}/imports`},{label:'Tạo lô nhập'}]} /><Card className="p-4"><Stepper steps={STEPS} current={0} /></Card><Card><CardHeader title="Bước 1 — Chọn loại, phạm vi và tệp" icon={<Upload className="size-5" />} /><div className="space-y-4 px-5 pb-5"><div className="grid gap-4 sm:grid-cols-2"><SelectField label="Loại dữ liệu" value={kind} onChange={e=>{setKind(e.target.value as ImportKind);setClassId('');}} options={d.kinds.map(k=>({value:k.kind,label:k.title,disabled:!k.enabled}))} /><SelectField label="Năm học" labelAction={<QuickCreate kind="year" schoolId={schoolId} onCreated={async r=>{const fresh=await catalog.refetch();if(fresh.error)throw fresh.error;if(!fresh.data?.years.some(y=>y.id===r.id))throw new Error('Đã tạo năm học nhưng chưa hợp lệ cho luồng nhập dữ liệu.');setYearId(r.id);setClassId('');}}/>} required value={y} onChange={e=>{setYearId(e.target.value);setClassId('');}} options={d.years.map(y=>({value:y.id,label:y.name}))} /></div>{needsClass&&<SelectField label="Lớp nhận" labelAction={<QuickCreate kind="class" schoolId={schoolId} yearId={y} onCreated={async r=>{const fresh=await catalog.refetch();if(fresh.data?.classes.some(c=>c.id===r.id&&c.yearId===y))setClassId(r.id);else throw new Error("Đã tạo lớp nhưng chưa hợp lệ cho loại nhập và năm học đang chọn.");}}/>} required value={classId} onChange={e=>setClassId(e.target.value)} placeholder="Chọn lớp" options={classes.map(c=>({value:c.id,label:`${c.name} (${c.code})`}))} />}<p className="text-sm text-body">{selected.description}</p><FileDropzone accept={['.csv','.xlsx']} maxBytes={2*1024*1024} onFiles={files=>setFile(files[0])} disabled={upload.pending} label="Kéo thả CSV/XLSX hoặc bấm để chọn" />{file&&<p className="text-sm">{file.name} · {file.size} byte</p>}<div className="flex flex-wrap gap-2"><Button icon={<FileText className="size-4" />} onClick={()=>downloadTemplate(selected,'csv')}>Mẫu CSV</Button><Button icon={<FileSpreadsheet className="size-4" />} onClick={()=>downloadTemplate(selected,'xlsx')}>Mẫu XLSX</Button></div>{upload.error&&<Callout tone="warning">{upload.error.message}</Callout>}<div className="flex justify-end"><Button variant="primary" loading={upload.pending} disabled={!file||!y||needsClass&&!classId||!selected.enabled} iconRight={<ArrowRight className="size-4" />} onClick={()=>file&&upload.run(selected.apiKind,y,needsClass?classId:undefined,file)}>Tải và phân tích tệp</Button></div></div></Card></div>;

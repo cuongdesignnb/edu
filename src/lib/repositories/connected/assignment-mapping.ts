@@ -6,13 +6,13 @@ import {displayedVersion,requiredId,requiredValue} from './common';
 
 export interface StaffAssignmentInput {
   membershipId:ID;kind:'homeroom'|'subject';classId:ID;subjectId?:ID;
-  validFrom:string;validTo?:string;reason?:string;memberVersion?:number;classVersion?:number;
+  roleId?:ID;validFrom:string;validTo?:string;reason?:string;memberVersion?:number;classVersion?:number;
 }
 export function assignmentBody(input:StaffAssignmentInput,versions=false):ApiSchemas['AssignmentCreate']{
   if(!['homeroom','subject'].includes(input.kind))throw new RepoError('VALIDATION','Nhiệm vụ phân công không hợp lệ.');
   if(input.kind==='subject'&&!input.subjectId)throw new RepoError('VALIDATION','Chọn môn được phân công.',{fieldErrors:{subjectId:'Chọn môn.'}});
   return {memberId:requiredId(input.membershipId),classId:requiredId(input.classId),kind:input.kind==='homeroom'?'HOMEROOM':'SUBJECT',
-    ...(input.kind==='subject'?{subjectId:requiredId(input.subjectId)}:{}),startsOn:dateDays(input.validFrom,0),
+    ...(input.roleId?{roleId:requiredId(input.roleId)}:{}),...(input.kind==='subject'?{subjectId:requiredId(input.subjectId)}:{}),startsOn:dateDays(input.validFrom,0),
     ...(input.validTo!==undefined?{endsOn:exclusiveDate(input.validTo)}:{}),...(input.reason?.trim()?{reason:input.reason.trim()}:{}),
     ...(versions||input.memberVersion!==undefined?{expectedMemberVersion:displayedVersion(input.memberVersion)}:{}),
     ...(versions||input.classVersion!==undefined?{expectedClassVersion:displayedVersion(input.classVersion)}:{})};

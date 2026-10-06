@@ -27,8 +27,8 @@ export function onboardingHandlers(db:Database,policy:Permissions):Record<string
      else {
       const permitted=await policy.collection(tx,c.principal!,'class.read',schoolId as string,true);
       if(!permitted.all&&!permitted.classIds.length)throw new Problem(403,'FORBIDDEN');
-      if(tourKey==='class-homeroom'&&!permitted.grants.some(g=>g.role_code==='HOMEROOM'&&permitted.classIds.includes(g.class_id!)))throw new Problem(403,'FORBIDDEN');
-      if(tourKey==='class-subject'&&!permitted.grants.some(g=>g.role_code==='SUBJECT_TEACHER'&&permitted.classIds.includes(g.class_id!)))throw new Problem(403,'FORBIDDEN');
+      if(tourKey==='class-homeroom'&&!permitted.grants.some(g=>g.assignment_kind==='HOMEROOM'&&permitted.classIds.includes(g.class_id!)))throw new Problem(403,'FORBIDDEN');
+      if(tourKey==='class-subject'&&!permitted.grants.some(g=>g.assignment_kind==='SUBJECT'&&permitted.classIds.includes(g.class_id!)))throw new Problem(403,'FORBIDDEN');
      }
     }
    }

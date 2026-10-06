@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {teacherPermissionContract,permissionPresets} from './teacher-permission-contract.mjs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
@@ -781,6 +782,7 @@ applyTodayP0Contract(spec,extendOperation,permissions,roles,operations);
 applyAllRemainingContract(spec,extendOperation,operations);
 extendImportWorkspaceContract(spec,extendOperation,{object,uuid,label});
 extendTransferWorkspaceContract(spec,extendOperation,{object,uuid,label,timestamp});
+const permissionCatalog=teacherPermissionContract(spec,extendOperation,permissions,roles);
 await SwaggerParser.validate(structuredClone(spec));
 await fs.writeFile(path.join(root,'backend/api/openapi.yaml'),YAML.stringify(spec,{aliasDuplicateObjects:false}));
 for (const [name, schema] of Object.entries(spec.components.schemas)) schemas[name] = schema;
@@ -795,7 +797,7 @@ const resolvedOperations = operations.map(op => {
 await fs.mkdir(path.join(root, 'backend/src/generated'), { recursive: true });
 await fs.writeFile(path.join(root, 'backend/src/generated/contract.json'), JSON.stringify({
   sha256: crypto.createHash('sha256').update(text).digest('hex'),
-  schemas, operations: resolvedOperations, permissions, roles: roles.roles,
+  schemas, operations: resolvedOperations, permissions, permissionCatalog, permissionPresets:permissionPresets(permissionCatalog), roles: roles.roles,
 }, null, 2) + '\n');
 const progress = {
   baseline: '14dfad5', operations: operations.map(op => ({ operationId: op.id,

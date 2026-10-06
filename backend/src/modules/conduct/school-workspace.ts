@@ -26,12 +26,16 @@ export async function schoolConductWorkspace(tx:Transaction,p:Permissions,c:Requ
   await audit(tx,c,'publication-policy',s,{status:'UPDATED'});return {data:publicationPolicy(s,updated)};
  }
  if(c.operation.id==='getClassRuleWorkspace'){
-  const cls=await one<Row>(tx,'SELECT c.id,y.starts_on,y.ends_on FROM app.classes c JOIN app.academic_years y ON y.school_id=c.school_id AND y.id=c.year_id WHERE c.school_id=$1 AND c.id=$2 AND c.year_id=$3',[s,c.params.classId,c.params.yearId]);if(!cls)throw new Problem(404,'RESOURCE_NOT_FOUND');
+  const cls=await one<Row>(tx,'SELECT c.id,c.version,c.status,y.status AS year_status,y.starts_on,y.ends_on FROM app.classes c JOIN app.academic_years y ON y.school_id=c.school_id AND y.id=c.year_id WHERE c.school_id=$1 AND c.id=$2 AND c.year_id=$3',[s,c.params.classId,c.params.yearId]);if(!cls)throw new Problem(404,'RESOURCE_NOT_FOUND');
   const day=access.today>=String(cls.ends_on)?add(String(cls.ends_on),-1):access.today<String(cls.starts_on)?String(cls.starts_on):access.today;
   const periods=bounded((await tx.query<Row>(`SELECT r.*,cp.starts_on AS applied_from,cp.ends_on AS applied_to FROM app.class_rule_periods cp JOIN app.rule_sets r ON r.school_id=cp.school_id AND r.id=cp.rule_set_id WHERE cp.school_id=$1 AND cp.class_id=$2 AND r.status='ISSUED' AND r.discarded_at IS NULL AND (cp.ends_on IS NULL OR cp.ends_on>$3) ORDER BY cp.starts_on,cp.id LIMIT 5001`,[s,cls.id,day])).rows);
   const ctx={schoolId:s,today:day,ids:null,classIds:[String(cls.id)],can:()=>false},hash=crypto.createHash('sha256').update(JSON.stringify(periods.map(r=>[r.id,r.version,r.applied_from,r.applied_to]))).digest('hex');
   const view=async(row:Row|undefined)=>row?{...await ruleWorkspaceView(tx,ctx,row,hash),effectiveFrom:row.applied_from,effectiveTo:row.applied_to?add(String(row.applied_to),-1):null}:null;
-  return {data:{schoolId:s,yearId:c.params.yearId,classId:cls.id,current:await view(periods.find(r=>String(r.applied_from)<=day)),next:await view(periods.find(r=>String(r.applied_from)>day)),policy:publicationPolicy(s,school)}};
+  const canApply=cls.status!=='ARCHIVED'&&cls.year_status!=='ARCHIVED'&&access.grants.some(g=>grantAllows(g,'rules.apply',{schoolId:s,classId:String(cls.id)},access.today));
+  const availableSets=canApply?(await tx.query<{id:string;name:string}>("SELECT id,name FROM app.rule_sets WHERE school_id=$1 AND status='ISSUED' AND discarded_at IS NULL ORDER BY revision DESC LIMIT 201",[s])).rows:[];
+  if(availableSets.length>200)throw new Problem(422,'WORKSPACE_LIMIT');
+  const futureWeeks=canApply?(await tx.query<{id:string;startsOn:string;endsOn:string}>(`SELECT id,starts_on AS "startsOn",ends_on AS "endsOn" FROM app.school_weeks WHERE school_id=$1 AND year_id=$2 AND starts_on>$3 ORDER BY starts_on LIMIT 111`,[s,c.params.yearId,access.today])).rows:[];
+  return {data:{schoolId:s,yearId:c.params.yearId,classId:cls.id,canApply,classVersion:cls.version,availableSets,futureWeeks,current:await view(periods.find(r=>String(r.applied_from)<=day)),next:await view(periods.find(r=>String(r.applied_from)>day)),policy:publicationPolicy(s,school)}};
  }
  const year=await one<Row>(tx,"SELECT id FROM app.academic_years WHERE school_id=$1 AND status='ACTIVE' ORDER BY starts_on DESC LIMIT 1",[s]);
  if(!year)return {data:{weeks:[],week:null,rows:[],adjustments:[],announcements:[]}};

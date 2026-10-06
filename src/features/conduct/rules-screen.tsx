@@ -1,8 +1,13 @@
 "use client";
+import {useState} from "react";
+import {http} from "@/lib/api/client";
+import {Button} from "@/components/ui/button";
+import {Modal} from "@/components/ui/dialog";
+import {SelectField} from "@/components/ui/form";
 import { BookOpen, CalendarClock, Calculator, GitCompare, Link2 } from "lucide-react";
 import type { RuleItem } from "@/lib/repositories/connected/conduct";
 import { conductRepo } from "@/lib/repositories";
-import { useRepo } from "@/lib/query/hooks";
+import { useRepo,useCommand } from "@/lib/query/hooks";
 import { fmtDate, fmtPoints } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
@@ -54,8 +59,11 @@ function diffRules(a: RuleItem, b: RuleItem) {
 export function RulesScreen() {
   const { schoolId, yearId, classId, base } = useClassroom();
   const q = useRepo(["conduct-class-rules", schoolId, yearId, classId], (ctx) => conductRepo.classRules(ctx, schoolId, yearId, classId));
+  const [apply,setApply]=useState(false);
   return (
     <div className="page">
+      {q.data?.canApply&&<Button onClick={()=>setApply(true)}>Điều chỉnh nội quy áp dụng cho lớp</Button>}
+      {apply&&q.data&&<ClassRuleApply schoolId={schoolId} classId={classId} value={q.data} onClose={()=>setApply(false)} onSaved={()=>void q.refetch()}/>}
       <ClassHeader title="Nội quy áp dụng tại lớp" subtitle="Bộ nội quy nhà trường ban hành, cách tính điểm tuần và thời hạn nhập" crumbs={[{ label: "Thi đua", href: `${base}/conduct` }, { label: "Nội quy" }]} />
       <ConductNav />
       <QueryState query={q} skeleton="detail">
@@ -121,4 +129,11 @@ export function RulesScreen() {
       </QueryState>
     </div>
   );
+}
+
+function ClassRuleApply({schoolId,classId,value,onClose,onSaved}:{schoolId:string;classId:string;value:Awaited<ReturnType<typeof conductRepo.classRules>>;onClose:()=>void;onSaved:()=>void}){
+ const [rule,setRule]=useState(value.availableSets[0]?.id??''),[week,setWeek]=useState(value.futureWeeks[0]?.id??''),[review,setReview]=useState(false),[error,setError]=useState('');
+ const chosen=value.futureWeeks.find(w=>w.id===week);
+ const cmd=useCommand(()=>http('applyClassRules',{params:{schoolId,classId},body:{expectedClassVersion:value.classVersion,ruleSetId:rule,startsOn:chosen!.startsOn}}),{success:'Đã điều chỉnh nội quy áp dụng cho lớp',onError:e=>setError(e.message)});
+ return <Modal open title="Điều chỉnh nội quy lớp" busy={cmd.pending} onOpenChange={v=>{if(!v)onClose();}} footer={<><Button disabled={cmd.pending} onClick={onClose}>Hủy</Button><Button variant="primary" loading={cmd.pending} disabled={!chosen||!rule} onClick={async()=>{if(!review){setReview(true);return;}if(await cmd.run()){onSaved();onClose();}}}>{review?'Xác nhận áp dụng':'Xem trước'}</Button></>}><div className="space-y-4"><SelectField label="Nội quy đã ban hành" value={rule} onChange={e=>{setRule(e.target.value);setReview(false);}} options={value.availableSets.map(r=>({value:r.id,label:r.name}))}/><SelectField label="Áp dụng từ đầu tuần" value={week} onChange={e=>{setWeek(e.target.value);setReview(false);}} options={value.futureWeeks.map(w=>({value:w.id,label:w.startsOn}))}/><Callout tone="info">Thay đổi chỉ áp dụng cho lớp đang mở, từ tuần tương lai. Các kỳ đã ghi nhận và bộ nội quy nhà trường được giữ nguyên.</Callout>{review&&<Callout tone="warning">Áp dụng {value.availableSets.find(r=>r.id===rule)?.name} từ {chosen?.startsOn}. Lịch sử ghi nhận tài khoản của bạn.</Callout>}{error&&<p role="alert" className="error-text">{error}</p>}</div></Modal>;
 }

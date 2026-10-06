@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { ShieldCheck, Building2, Presentation, ArrowRight, Users, Info, Lock, History, Code2, PlusCircle, MinusCircle } from "lucide-react";
@@ -19,6 +19,8 @@ import { ConflictDialog, useUnsavedChanges } from "@/components/ui/guards";
 import { Timeline } from "@/components/ui/timeline";
 import { EmptyState, QueryState } from "@/components/ui/states";
 import { fmtDateTime } from "@/lib/formatters";
+import {PermissionEditor} from './permission-editor';
+import {CloneProfileDialog,DefaultProfileDialog} from './profile-dialogs';
 import { SchoolSourceState } from "./common";
 
 /** SC13 — school role templates with Vietnamese descriptions. */
@@ -74,7 +76,7 @@ export function RoleDetail({ roleId }: { roleId: string }) {
 function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
   const { school } = useSchool();
   const b = `/school/${school.id}`;
-  const [source, setSource] = useState(d.role);
+  const [source, setSource] = useState(d.role),[clone,setClone]=useState(false),[defaultKind,setDefaultKind]=useState<'HOMEROOM'|'SUBJECT'>();
   const [sel, setSel] = useState<Set<string>>(() => permissionSet(d.role.permissions));
   const [reason, setReason] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -90,16 +92,12 @@ function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
     success: (r) => `Đã lưu mẫu quyền ${r.name} (phiên bản ${r.version})`,
     onError: (e) => { if (e.code === "CONFLICT") { setConfirm(false); setConflict(e); } else setErr(e.fieldErrors?.reason ?? e.message); },
   });
-  const groups = useMemo(() => {
-    const m = new Map<string, typeof d.all>();
-    d.all.forEach((a) => m.set(a.group, [...(m.get(a.group) ?? []), a]));
-    return [...m.entries()];
-  }, [d]);
+
 
   return (
     <div className="page">
       <PageHeader title={d.role.name} subtitle={d.role.description ?? undefined} badge={<Badge tone={d.role.level === "school" ? "success" : "purple"} dot={false}>{d.role.level === "school" ? "Cấp trường" : d.role.level === "class" ? "Cấp lớp/môn" : "Nhiều phạm vi"}</Badge>}
-        breadcrumbs={[{ label: "Nhà trường", href: b }, { label: "Mẫu quyền", href: `${b}/roles` }, { label: d.role.name }]} />
+        breadcrumbs={[{ label: "Nhà trường", href: b }, { label: "Mẫu quyền", href: `${b}/roles` }, { label: d.role.name }]} actions={d.myActions.includes("role.manage")?<><Button onClick={()=>setClone(true)}>Sao chép & tùy chỉnh</Button>{source.scopes.includes("CLASS")&&source.key!=="SCHOOL_ADMIN"&&<Button onClick={()=>setDefaultKind("HOMEROOM")}>Đặt làm mặc định cho GVCN</Button>}{source.scopes.includes("SUBJECT")&&source.key!=="SCHOOL_ADMIN"&&<Button onClick={()=>setDefaultKind("SUBJECT")}>Đặt làm mặc định cho GVBM</Button>}</>:undefined} />
       {!d.canEdit && !ownRole && <Callout tone="neutral" icon={<Lock />}>{d.systemRole ? "Mẫu quyền hệ thống được bảo vệ." : "Bạn chỉ xem được mẫu quyền trong quyền hiện tại."}</Callout>}
       {ownRole && <Callout tone="warning" icon={<Lock />} title="Bạn đang giữ mẫu quyền này">Không thể tự chỉnh mẫu quyền của chính mình. Nhờ một quản trị khác thực hiện nếu cần.</Callout>}
       {d.role.level === "class" && <Callout tone="info" icon={<Info />}>Quyền chỉ áp dụng trong đúng phạm vi lớp/môn được cấp. Mẫu quyền hệ thống được bảo vệ; thay đổi mẫu tùy chỉnh có hiệu lực ở lần đọc/ghi kế tiếp.</Callout>}
@@ -107,24 +105,7 @@ function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
         <Card>
           <CardHeader title="Hành động được phép" icon={<ShieldCheck className="size-5 text-primary" />} subtitle={`${new Set([...sel].map(k => k.split("|")[0])).size} hành động · nguồn phiên bản ${source.version} · cập nhật ${fmtDateTime(source.updatedAt)}`} />
           <div className="space-y-4 px-5 pb-5">
-            {groups.map(([group, items]) => (
-              <fieldset key={group} className="rounded-xl border border-line p-4">
-                <legend className="px-1 text-[14px] font-bold text-ink">{group}</legend>
-                <div className="grid gap-2.5 sm:grid-cols-2">
-                  {items.map((a) => {
-                    return <div key={a.key} className="rounded-lg border border-line p-2.5">
-                      <p className="mb-1.5 text-[13px] font-semibold text-ink">{a.label}</p>
-                      <div className="flex flex-wrap gap-2">{SCOPES.map(scope => {
-                        const key = `${a.key}|${scope}`, checked = sel.has(key);
-                        return <Checkbox key={scope} label={SCOPE_LABEL[scope]} checked={checked} disabled={!d.canEdit || cmd.pending || !checked && !a.canGrant}
-                          description={!checked && !a.canGrant ? "Bạn không thể cấp quyền này" : undefined}
-                          onChange={on => setSel(s => { const next = new Set(s); if (on) next.add(key); else next.delete(key); return next; })} />;
-                      })}</div>
-                    </div>;
-                  })}
-                </div>
-              </fieldset>
-            ))}
+            <PermissionEditor catalog={d.all} selected={sel} onChange={setSel} disabled={!d.canEdit||cmd.pending} preferredScope={source.scopes.includes('CLASS')?'CLASS':source.scopes.includes('SUBJECT')?'SUBJECT':'SCHOOL'}/>
             <details className="rounded-xl border border-line bg-[#fafcff] p-3 text-[12.5px]">
               <summary className="flex cursor-pointer items-center gap-2 font-semibold text-body"><Code2 className="size-4" aria-hidden />Chi tiết kỹ thuật (mã hành động)</summary>
               <ul className="mt-2 grid gap-1 sm:grid-cols-2">{[...sel].sort().map((k) => <li key={k} className="text-muted"><code className="font-mono text-ink">{k}</code> — {permissionLabel(k)}</li>)}</ul>
@@ -165,6 +146,8 @@ function RoleBody({ d, onReload }: { d: RoleData; onReload: () => void }) {
         onConfirm={async () => { const r = await cmd.run(selectedPermissions(sel), reason.trim()); if (r) { setSource(r); setSel(permissionSet(r.permissions)); setConfirm(false); setReason(""); } }}>
         <DiffList added={added} removed={removed} />
       </ConfirmDialog>
+      {clone&&<CloneProfileDialog schoolId={school.id} roleId={source.id} name={source.name} onClose={()=>setClone(false)}/>}
+      {defaultKind&&<DefaultProfileDialog schoolId={school.id} roleId={source.id} name={source.name} kind={defaultKind} onClose={()=>setDefaultKind(undefined)}/>}
       <ConflictDialog error={conflict} onClose={() => setConflict(null)} onReload={() => { setConflict(null); onReload(); }} mine={<DiffList added={added} removed={removed} />} />
     </div>
   );

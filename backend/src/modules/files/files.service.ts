@@ -130,7 +130,7 @@ export class FilesService {
       const upload=file,id=crypto.randomUUID(),key=`${id}.source`;
       const authorize=async(tx:Transaction)=>{
         await this.policy.require(tx,c.principal!,'file.upload',{schoolId,classId:fields.classId as string|undefined});
-        if(fields.purpose==='IMPORT')await this.policy.require(tx,c.principal!,'import.manage',{schoolId});
+        if(fields.purpose==='IMPORT')await this.policy.require(tx,c.principal!,'import.manage',{schoolId,classId:fields.classId as string|undefined});
         if(fields.purpose==='SCHOOL_LOGO')await this.policy.require(tx,c.principal!,'school.settings',{schoolId});
       };
       return await this.commands.execute(c,authorize,async tx=>{

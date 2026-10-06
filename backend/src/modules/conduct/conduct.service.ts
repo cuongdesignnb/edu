@@ -162,7 +162,7 @@ export class ConductService {
           return listResource(tx,periodResource,schoolId,{...c.query,classId},{sql:'t.week_id=ANY($1::uuid[])',values:[weeks]},c.principal!.userId);
         }
         const bounds=scope.grants.filter(g=>g.subject_id&&grantAllows(g,'conduct.read',{schoolId,classId,subjectId:g.subject_id,allowSubject:true},scope.today))
-          .map(g=>({subject_id:g.subject_id,from_day:g.role_code==='SUBJECT_TEACHER'?g.starts_on:null,until_day:g.role_code==='SUBJECT_TEACHER'?g.ends_on:null}));
+          .map(g=>({subject_id:g.subject_id,from_day:g.assignment_id?g.starts_on:null,until_day:g.assignment_id?g.ends_on:null}));
         const result=await listResource(tx,recordResource,schoolId,{...c.query,classId},broad?undefined:{sql:`t.recorded_by=$1 AND EXISTS(
           SELECT 1 FROM jsonb_to_recordset($2::jsonb) AS g(subject_id uuid,from_day date,until_day date) JOIN platform.schools s ON s.id=t.school_id
           WHERE g.subject_id=t.subject_id AND (g.from_day IS NULL OR g.from_day<=(t.occurred_at AT TIME ZONE s.timezone)::date)

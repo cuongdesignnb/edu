@@ -75,7 +75,7 @@ export async function classRosterWorkspace(db:Database,policy:Permissions,c:Requ
     AND (app.fold_vi(full_name) LIKE $3 ESCAPE '\\' OR app.fold_vi(student_code) LIKE $3 ESCAPE '\\')`,[schoolId,[...matches],'%'+folded.replace(/[\\%_]/g,'\\$&')+'%'])).rows;matches=new Set(ids.map(r=>r.id));}
   const filtered=students.filter(s=>matches.has(String(s.id))&&(!c.query.groupId||(c.query.groupId==='none'?s.groupId===null:s.groupId===c.query.groupId))&&(!c.query.linkStatus||s.linkStatus===c.query.linkStatus));
   return {data:{schoolId,yearId,classId,today,referenceDate,classVersion:ctx.classVersion,readOnly:ctx.readOnly,seeGuardians,seeLinks,
-   canAdd:canChange&&ctx.grants.some(g=>g.scope_type==='SCHOOL'&&grantAllows(g,'student.manage',{schoolId},today)),
+   canAdd:canChange&&allows(ctx,'student.manage',today),
    canTransfer:canChange&&allows(ctx,'student.transfer.request',today),canGroups:canChange&&allows(ctx,'group.manage',today),canReadGroups:allows(ctx,'group.manage'),
    canSeating:allows(ctx,'seating.manage'),groups:groups.map(g=>({id:g.id,name:g.name})),total:students.length,rows:filtered,
    leftRecently:left.map(r=>({id:r.id,enrollmentId:r.enrollment_id,fullName:r.full_name,studentCode:r.student_code,endsOn:r.ends_on,reason:r.end_reason??null})),

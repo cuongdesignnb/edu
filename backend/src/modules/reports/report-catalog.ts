@@ -18,7 +18,7 @@ async function catalog(tx:Transaction,schoolId:string,today:string,grants:Grant[
  const grades=!cls?(await tx.query<Row>("SELECT id,name FROM app.grade_levels WHERE school_id=$1 AND status='ACTIVE' ORDER BY sort_order,id LIMIT 201",[schoolId])).rows:[];
  if(weeks.length>110||students.length>5000||grades.length>200)throw new Problem(422,'REPORT_CATALOG_LIMIT');
  return {schoolId,yearId:year?.id??null,yearStart:year?.starts_on??null,yearEnd:year?.ends_on??null,classId:cls?.id??null,today:ref,reports,canExport:!!year&&can(grants,schoolId,today,'report.export',cls?String(cls.id):undefined,subjectOnly),hiddenCount:(cls?classReports.length:schoolReports.length)-reports.length,
-  role:subjectOnly?'Bộ môn':cls&&grants.some(g=>g.role_code==='HOMEROOM'&&grantAllows(g,'report.read',{schoolId,classId:String(cls.id)},today))?'Chủ nhiệm':'Nhà trường',students:students.map(s=>({id:s.id,fullName:s.full_name,code:s.student_code})),weeks:weeks.map(w=>({id:w.id,index:w.week_number,startDate:w.starts_on,endDate:w.end_date})),grades:grades.map(g=>({id:g.id,name:g.name}))};
+  role:subjectOnly?'Bộ môn':cls&&grants.some(g=>g.assignment_kind==='HOMEROOM'&&grantAllows(g,'report.read',{schoolId,classId:String(cls.id)},today))?'Chủ nhiệm':'Nhà trường',students:students.map(s=>({id:s.id,fullName:s.full_name,code:s.student_code})),weeks:weeks.map(w=>({id:w.id,index:w.week_number,startDate:w.starts_on,endDate:w.end_date})),grades:grades.map(g=>({id:g.id,name:g.name}))};
 }
 export async function reportCatalog(db:Database,policy:Permissions,c:RequestContext){
  return db.transaction(async tx=>{

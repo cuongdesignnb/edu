@@ -57,7 +57,7 @@ before(async()=>{
 });
 after(async()=>{await app?.close();await db?.onApplicationShutdown();await raw?.end();});
 test('populated 060 upgrade retains two schools, staff, roster and published snapshots; checksums, retry, forced RLS and installation pass',async()=>{
- assert.equal(upgrade.applied.length,5);assert.equal(upgrade.current,'065-position-bonus-settings.sql');
+ assert.equal(upgrade.applied.length,6);assert.equal(upgrade.current,'066-school-admin-permission-authority.sql');
  const history=(await raw.query('SELECT version,checksum FROM public.schema_migrations ORDER BY version')).rows;assert.deepEqual(history.slice(0,60),baselineHistory);assert.deepEqual((await migrate()).applied,[]);
  assert.equal((await verifyInstallation(raw)).schemaRevision,upgrade.current);
  for(const [i,k]of ['A','B'].entries())await scoped(seedId('school:'+k),async tx=>{for(const [name,table]of [['students','students'],['staff','memberships'],['published','publication_revisions'],['children','parent_publication_items']]){const sql=name==='published'?" WHERE status='PUBLISHED'":'';assert.deepEqual((await tx.query('SELECT * FROM app.'+table+sql+' ORDER BY id')).rows.map(r=>{if(name==='published')delete r.periodic_conduct_id;return r;}),original[i][name]);}

@@ -35,7 +35,7 @@ const PAGE = 10;
 /** CL02 — class roster (R06) with groups / positions and a seating preview. */
 export function ClassRoster() {
   const [paste,setPaste]=useState(false);
-  const { schoolId, yearId, classId, base, readOnly, header } = useClassroom();
+  const { schoolId, yearId, classId, base, readOnly, header,can } = useClassroom();
   const [q, setQ] = useState("");
   const [groupId, setGroupId] = useState("");
   const [link, setLink] = useState("");
@@ -81,6 +81,7 @@ export function ClassRoster() {
                 <CardHeader title={`Danh sách học sinh (${d.total})`} icon={<ClipboardList className="size-5 text-primary" />}
                   action={!readOnly && <>
                     {d.canAdd && <ButtonLink href={`/school/${schoolId}/students/new?classId=${classId}`} size="sm" variant="primary" icon={<Plus className="size-4" />}>Thêm học sinh</ButtonLink>}
+                    {d.canAdd&&can("import.run")&&<ButtonLink size="sm" href={`/school/${schoolId}/imports/new?classId=${classId}&yearId=${yearId}`}>Nhập học sinh từ tệp</ButtonLink>}
                     {d.canAdd&&<Button size="sm" onClick={()=>setPaste(true)}>Dán danh sách vào lớp</Button>}
                     {d.canTransfer && <Button size="sm" icon={<ArrowLeftRight className="size-4" />} onClick={() => setTransfer({ open: true, preset: null })}>Chuyển lớp</Button>}
                   </>} />

@@ -36,7 +36,7 @@ export function uiActions(context:ApiSchemas['Context'],scope:UiScope):Set<Actio
     if(grant.scopeType!=='SCHOOL'){
       if(!scope.classId||grant.classId!==scope.classId)continue;
       if(grant.scopeType==='SUBJECT'&&scope.subjectId&&grant.subjectId!==scope.subjectId)continue;
-      if(['HOMEROOM','SUBJECT_TEACHER'].includes(grant.roleCode??'')&&(!grant.assignmentStartsOn||reference<grant.assignmentStartsOn||grant.assignmentEndsOn&&reference>=grant.assignmentEndsOn))continue;
+      if((grant.assignmentId||grant.assignmentStartsOn||['HOMEROOM','SUBJECT_TEACHER'].includes(grant.roleCode??''))&&(!grant.assignmentStartsOn||reference<grant.assignmentStartsOn||grant.assignmentEndsOn&&reference>=grant.assignmentEndsOn))continue;
     }
     for(const [key,actions]of Object.entries(UI_ACTIONS))if(actions.every(action=>grant.actions.includes(action)))result.add(key as ActionKey);
   }

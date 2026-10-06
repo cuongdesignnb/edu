@@ -127,7 +127,7 @@ async function classTasks(tx:Transaction,ctx:Context,allowed:TaskKind[],attendan
       AND NOT EXISTS(SELECT 1 FROM app.calendar_events h WHERE h.school_id=l.school_id AND h.year_id=$3 AND h.kind='HOLIDAY' AND h.starts_on<=$4::date AND h.ends_on>$4::date AND (h.class_id IS NULL OR h.class_id=l.class_id))`,[ctx.schoolId,ownLessons.map(l=>l.id),ctx.yearId,ctx.today]))!;
     add('lesson-attendance',missing.n);
   }
-  const bounds=ctx.grants.flatMap(g=>g.actions.filter(a=>grantAllows(g,a,{schoolId:ctx.schoolId,classId:ctx.classId},ctx.today)).map(action=>({action,from_day:g.role_code==='HOMEROOM'?g.starts_on:null,until_day:g.role_code==='HOMEROOM'?g.ends_on:null})));
+  const bounds=ctx.grants.flatMap(g=>g.actions.filter(a=>grantAllows(g,a,{schoolId:ctx.schoolId,classId:ctx.classId},ctx.today)).map(action=>({action,from_day:g.assignment_id?g.starts_on:null,until_day:g.assignment_id?g.ends_on:null})));
   const scope=(action:string)=>`EXISTS(SELECT 1 FROM jsonb_to_recordset($4::jsonb) AS g(action text,from_day date,until_day date) WHERE g.action='${action}' AND (g.from_day IS NULL OR g.from_day<=w.starts_on) AND (g.until_day IS NULL OR g.until_day>w.starts_on))`;
   const rows=(await tx.query<{kind:TaskKind;n:number}>(`SELECT 'conduct-review'::text AS kind,count(*)::int AS n FROM app.conduct_records r JOIN app.conduct_periods p ON p.school_id=r.school_id AND p.id=r.period_id
     JOIN app.school_weeks w ON w.school_id=p.school_id AND w.id=p.week_id WHERE p.school_id=$1 AND p.class_id=$2 AND p.year_id=$3 AND p.status<>'LOCKED' AND r.status='DRAFT' AND ${scope('conduct.read')} AND ${scope('conduct.review')}

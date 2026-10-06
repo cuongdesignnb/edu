@@ -9,6 +9,7 @@ import { InvitationsService,type Proposal,type WorkProfile } from '../identity/i
 import { readImportContext,type ImportContext } from './import-context';
 import {isStudentPaste} from './student-paste';
 import {nextStudentCode} from '../students/student-form';
+import {assignmentProfile} from '../staff/teacher-profiles';
 
 type Context=ImportContext;
 type Values=Record<string,string>;
@@ -174,7 +175,8 @@ export class ImportWorker {
   }
   private async proposal(tx:Transaction,job:Job,v:Values,year:Row):Promise<Proposal>{
     const role=await one<Row>(tx,"SELECT * FROM app.roles WHERE school_id=$1 AND code=$2 AND status='ACTIVE'",[job.school_id,required(v,'roleCode',64)]);if(!role)invalid('roleCode','Vai trò không khả dụng');
-    const scope=role.code==='HOMEROOM'?'CLASS':role.code==='SUBJECT_TEACHER'?'SUBJECT':'SCHOOL';
+    const scope=v.classCode?(v.subjectCode?'SUBJECT':'CLASS'):'SCHOOL';
+    if(scope!=='SCHOOL')await assignmentProfile(tx,String(job.school_id),scope==='CLASS'?'HOMEROOM':'SUBJECT',role.id);
     if(scope==='SCHOOL'&&(v.classCode||v.subjectCode))invalid('roleCode','Vai trò này cần phạm vi trường');
     const cls=scope==='SCHOOL'?undefined:await this.classFor(tx,{...job,class_id:null},required(v,'classCode'));
     const subject=scope==='SUBJECT'?await one<Row>(tx,"SELECT id FROM app.subjects WHERE school_id=$1 AND code=$2 AND status='ACTIVE'",[job.school_id,required(v,'subjectCode')]):undefined;

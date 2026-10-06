@@ -7,6 +7,7 @@ export type Operation = (typeof contract.operations)[number];
 export const operations = contract.operations;
 export const permissions: readonly string[] = contract.permissions;
 export const roleTemplates = contract.roles;
+export const permissionCatalog = contract.permissionCatalog;
 const ajv = new Ajv({ strict: false, allErrors: true, coerceTypes: false, removeAdditional: false });
 addFormats(ajv);
 ajv.addFormat('binary',()=>true); // Multipart bytes are separately streamed/validated.

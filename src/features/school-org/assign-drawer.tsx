@@ -21,15 +21,16 @@ const LABELS = { yearId: "Năm học", membershipId: "Giáo viên", classId: "L�
 /** O06 — create a grant (person → duty → class/subject → validity) with the O07 permission preview before saving. */
 export function AssignDrawer({prefill,onClose}:{prefill:AssignPrefill|null;onClose:()=>void}) { return prefill ? <AssignForm key={JSON.stringify(prefill)} prefill={prefill} onClose={onClose} /> : null; }
 function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () => void }) {
-  const { school, yearId: ctxYear } = useSchool();
+  const { school,can, yearId: ctxYear } = useSchool();
   const ctx = useCtx();
+  const profiles=useRepo(['teacher-permission-profiles',school.id],c=>staffRepo.permissionProfiles(c,school.id),{enabled:can('role.manage')});
   const open = !!prefill;
   const [yearId,setYearId] = useState(prefill?.yearId ?? ctxYear);
   const opts = useRepo(["school-form-options", school.id], (c) => schoolRepo.formOptions(c, school.id), { enabled: open });
   const classes = useRepo(["school-assignment-classes", school.id, yearId], (c) => staffRepo.assignmentClasses(c, school.id, yearId), { enabled: open && !!yearId });
   const [initial] = useState(() => ({
     membershipId: prefill?.membershipId ?? "", kind: prefill?.kind ?? "subject" as "homeroom" | "subject", classId: prefill?.classId ?? "", subjectId: prefill?.subjectId ?? "",
-    validFrom: ctx.today as string | undefined, validTo: undefined as string | undefined, reason: "",
+    roleId:'',validFrom: ctx.today as string | undefined, validTo: undefined as string | undefined, reason: "",
   }));
   const [v, setV] = useState(initial);
   useEffect(()=>{if(classes.data&&!classes.isFetching&&!validPickerValue(v.classId,classes.data))setV(old=>({...old,classId:''}));},[classes.data,classes.isFetching,v.classId]);
@@ -41,7 +42,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
   const close = () => { setErrors({}); setStep("form"); onClose(); };
   const { beforeClose, confirmNode } = useDirtyClose(dirty, close);
 
-  const preview = useRepo(["assign-preview", school.id, v, attempt], (c) => staffRepo.previewAssignment(c, school.id, { membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: v.validFrom!, validTo: v.validTo, reason: v.reason.trim() || undefined }), { enabled: open && step === "preview" });
+  const preview = useRepo(["assign-preview", school.id, v, attempt], (c) => staffRepo.previewAssignment(c, school.id, { membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, roleId:v.roleId||undefined,validFrom: v.validFrom!, validTo: v.validTo, reason: v.reason.trim() || undefined }), { enabled: open && step === "preview" });
   useEffect(() => { if (step === "preview" && preview.data && !reviewed) setReviewed(preview.data); }, [step, preview.data, reviewed]);
   const cmd = useCommand((c, input: Parameters<typeof staffRepo.assign>[2]) => staffRepo.assign(c, school.id, input), { success: "Đã lưu phân công", onError: (e) => { onError(e); setErrors(s => ({ ...s, _form: e.message })); }, });
 
@@ -62,7 +63,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
   };
   const save = async () => {
     if (!reviewed || preview.error) return;
-    const r = await cmd.run({ membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, validFrom: reviewed.validFrom, validTo: reviewed.validTo, reason: v.reason.trim() || undefined, memberVersion: reviewed.memberVersion, classVersion: reviewed.classVersion });
+    const r = await cmd.run({ membershipId: v.membershipId, kind: v.kind, classId: v.classId, subjectId: v.kind === "subject" ? v.subjectId : undefined, roleId:v.roleId||undefined,validFrom: reviewed.validFrom, validTo: reviewed.validTo, reason: v.reason.trim() || undefined, memberVersion: reviewed.memberVersion, classVersion: reviewed.classVersion });
     if (r) close();
   };
 
@@ -83,7 +84,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
             <SelectField label="Năm học" required placeholder="Chọn năm học" value={yearId} onChange={e=>{setYearId(e.target.value);setV(old=>({...old,classId:'',subjectId:''}));}} options={opts.data.years.filter(y=>y.status!=='archived').map(y=>({value:y.id,label:`${y.label}${y.status==='draft'?' (Nháp)':''}`}))} labelAction={<QuickCreate kind="year" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(!fresh.data?.years.some(y=>y.id===r.id&&y.status!=='archived'))throw new Error('Đã tạo năm học nhưng chưa thuộc lựa chọn được phép phân công.');setYearId(r.id);setV(old=>({...old,classId:'',subjectId:''}));}}/>}/>
             <div data-field="membershipId"><Combobox label="Giáo viên" labelAction={<QuickCreate kind="teacher" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(fresh.data?.teachers?.some(t=>t.membershipId===r.id))set('membershipId',r.id);else throw new Error('Giáo viên mới chưa thuộc danh sách được phép phân công.');}}/>} required placeholder="Chọn giáo viên" value={v.membershipId} onChange={(x) => set("membershipId", x as string)} error={errors.membershipId}
               options={opts.data.teachers.map((t) => ({ value: t.membershipId, label: t.name, hint: t.department }))} emptyText="Không có giáo viên đang hoạt động phù hợp" /></div>
-            <RadioGroup label="Nhiệm vụ" value={v.kind} onChange={(k) => {set('kind',k);set('subjectId','');}} direction="row" options={[
+            <RadioGroup label="Nhiệm vụ" value={v.kind} onChange={(k) => {set('kind',k);set('subjectId','');set('roleId','');}} direction="row" options={[
               { value: "subject", label: "Giáo viên bộ môn", description: "Theo đúng lớp và môn" },
               { value: "homeroom", label: "Giáo viên chủ nhiệm", description: "Một lớp tại một thời điểm" },
             ]} />
@@ -93,6 +94,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
               {v.kind === "subject" && <div data-field="subjectId"><SelectField label="Môn" labelAction={<QuickCreate kind="subject" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(fresh.data?.subjects?.some(s=>s.id===r.id))set('subjectId',r.id);else throw new Error('Môn mới chưa thuộc lựa chọn phân công hiện tại.');}}/>} required placeholder="Chọn môn" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)} error={errors.subjectId}
                 options={opts.data.subjects.map((s) => ({ value: s.id, label: s.name }))} /></div>}
             </div>
+            {profiles.data&&<SelectField label="Mẫu quyền phân công" value={v.roleId} onChange={e=>set('roleId',e.target.value)} options={[{value:'',label:'Dùng mẫu mặc định của trường'},...profiles.data.roles.filter(r=>r.code!=='SCHOOL_ADMIN'&&r.permissions.some(p=>p.scopes.includes(v.kind==='homeroom'?'CLASS':'SUBJECT'))).map(r=>({value:r.id!,label:r.label}))]}/>}
             <div className="grid gap-4 sm:grid-cols-2">
               <div data-field="validFrom"><DateField label="Hiệu lực từ" required value={v.validFrom} onChange={(d) => set("validFrom", d)} error={errors.validFrom} /></div>
               <div data-field="validTo"><DateField label="Hiệu lực đến" value={v.validTo} min={v.validFrom} onChange={(d) => set("validTo", d)} error={errors.validTo} helper="Để trống = đến khi thu hồi" /></div>

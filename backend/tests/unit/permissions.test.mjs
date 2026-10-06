@@ -34,3 +34,13 @@ test('a delegated grant cannot outlive an expiring authority, including an unbou
   assert.equal(coversDelegatedExpiry({valid_until:expiry},expiry,new Date(expiry.getTime()+1)),false);
   assert.equal(coversDelegatedExpiry({valid_until:null},from,null),true);
 });
+
+test('a custom assignment profile is bound to its dates, class and subject just like a system profile',()=>{
+ const custom={...base,role_code:'CUSTOM_HOMEROOM_FULL'};
+ assert.equal(grantAllows(custom,'student.read',{schoolId:'s',classId:'A'},'2026-10-06'),true);
+ assert.equal(grantAllows(custom,'student.read',{schoolId:'s',classId:'B'},'2026-10-06'),false);
+ assert.equal(grantAllows(custom,'student.read',{schoolId:'s',classId:'A'},'2027-06-01'),false);
+ assert.equal(grantAllows(custom,'student.read',{schoolId:'s',classId:'A',date:'2026-08-31'},'2026-10-06'),false);
+ const subject={...custom,scope_type:'SUBJECT',subject_id:'math'};
+ assert.equal(grantAllows(subject,'student.read',{schoolId:'s',classId:'A',subjectId:'art',allowSubject:true},'2026-10-06'),false);
+});

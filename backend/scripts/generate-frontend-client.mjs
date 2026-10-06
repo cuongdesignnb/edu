@@ -19,6 +19,8 @@ const schemas=Object.entries(contract.schemas).map(([name,schema])=>`  ${JSON.st
 const operations=Object.fromEntries(contract.operations.map(o=>[o.id,{method:o.method,path:o.path,auth:o.auth,request:o.request,response:o.response,list:o.list,permission:o.permission,readOnly:o.readOnly}]));
 const text='// Generated from the validated backend contract. Do not hand-edit.\n'
   +`export interface ApiSchemas {\n${schemas}\n}\n\nexport const apiOperations = ${JSON.stringify(operations,null,2)} as const;\n`
+  +`export const permissionPresets = ${JSON.stringify(contract.permissionPresets)} as const;\n`
+  +`export const permissionCatalog = ${JSON.stringify(contract.permissionCatalog)} as const;\n`
   +`export type OperationId = keyof typeof apiOperations;\nexport type ApiRequest<K extends OperationId> = (typeof apiOperations)[K]['request'] extends keyof ApiSchemas ? ApiSchemas[(typeof apiOperations)[K]['request']] : never;\n`
   +`export type ApiItem<K extends OperationId> = (typeof apiOperations)[K]['response'] extends keyof ApiSchemas ? ApiSchemas[(typeof apiOperations)[K]['response']] : unknown;\n`
   +`export type ApiData<K extends OperationId> = (typeof apiOperations)[K]['list'] extends true ? Array<ApiItem<K>> : ApiItem<K>;\n`

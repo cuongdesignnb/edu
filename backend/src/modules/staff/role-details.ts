@@ -1,7 +1,7 @@
 import {one,iso,type Transaction,type Row} from '../../database/database';
 import {getResource,dto,type Resource} from '../../database/resources';
 import {auditResource,auditView} from '../../database/audit-view';
-import {permissions} from '../../common/contract';
+import {permissions,permissionCatalog} from '../../common/contract';
 import type {Permissions} from '../../common/permissions';
 import {Problem,validation} from '../../common/problem';
 import type {RequestContext} from '../../api.router';
@@ -45,7 +45,7 @@ export async function roleDetails(tx:Transaction,c:RequestContext,policy:Permiss
     ORDER BY e.created_at DESC,e.id DESC LIMIT 2001`,[schoolId,roleId])).rows:null;
   if(history&&history.length>2000)throw new Problem(422,'ROLE_HISTORY_LIMIT');
   return {role,canEdit,ownRole,systemRole:role.systemRole,canViewMembers:members!==null,canViewHistory:history!==null,
-    actions:permissions.filter(action=>!action.startsWith('platform.')).map(action=>({action,canGrant:can(action)})),
+    actions:permissionCatalog.map(item=>({...item,canGrant:can(item.action)})),
     members:members?.map(m=>({grantId:m.id,memberId:m.member_id,name:m.work_display_name,scopeType:m.scope_type,classId:m.class_id,subjectId:m.subject_id,
       validFrom:iso(m.valid_from as Date),validUntil:m.valid_until?iso(m.valid_until as Date):null}))??null,
     history:history?.map(row=>auditView(dto(auditResource,row)))??null};

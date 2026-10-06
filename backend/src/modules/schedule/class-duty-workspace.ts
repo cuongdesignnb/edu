@@ -19,7 +19,7 @@ export async function dutyContext(tx:Transaction,policy:Permissions,c:RequestCon
  const ctx={schoolId,yearId,classId,today:access.today,startsOn:String(cls.starts_on),endsOn:String(cls.ends_on),readOnly:cls.status==='ARCHIVED'||cls.year_status==='ARCHIVED',grants:access.grants};
  if(lock&&ctx.readOnly)throw new Problem(409,'YEAR_ARCHIVED');return ctx;
 }
-const bounds=(ctx:DutyContext,action:string)=>JSON.stringify(ctx.grants.filter(g=>grantAllows(g,action,{schoolId:ctx.schoolId,yearId:ctx.yearId,classId:ctx.classId},ctx.today)).map(g=>({from_day:g.role_code==='HOMEROOM'?g.starts_on:null,until_day:g.role_code==='HOMEROOM'?g.ends_on:null})));
+const bounds=(ctx:DutyContext,action:string)=>JSON.stringify(ctx.grants.filter(g=>grantAllows(g,action,{schoolId:ctx.schoolId,yearId:ctx.yearId,classId:ctx.classId},ctx.today)).map(g=>({from_day:g.assignment_id?g.starts_on:null,until_day:g.assignment_id?g.ends_on:null})));
 const dateAllowed=(date:string,param:string)=>`EXISTS(SELECT 1 FROM jsonb_to_recordset(${param}::jsonb) b(from_day date,until_day date) WHERE (b.from_day IS NULL OR b.from_day<=${date}) AND (b.until_day IS NULL OR b.until_day>${date}))`;
 export async function currentDutyPublication(tx:Transaction,ctx:DutyContext){return one<Row>(tx,"SELECT id,version FROM app.publication_revisions WHERE school_id=$1 AND class_id=$2 AND year_id=$3 AND kind='DUTY' AND status='PUBLISHED'",[ctx.schoolId,ctx.classId,ctx.yearId]);}
 

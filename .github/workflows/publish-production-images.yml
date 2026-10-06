@@ -74,6 +74,10 @@ jobs:
         run: |
           npx vitest run tests/unit/student-paste.test.ts tests/unit/command-toast.test.ts tests/unit/native-command-toast.test.tsx tests/unit/staff-effective-dates.test.ts tests/unit/api-query-boundary.test.ts
           bash backend/tests/run-usability.sh
+      - name: School authority and assignment-bound teacher permission profiles
+        run: |
+          npx vitest run tests/unit/permission-editor.test.tsx tests/unit/permissions.test.ts tests/unit/api-role-adapter.test.ts tests/unit/api-assignment-adapter.test.ts
+          bash backend/tests/run-teacher-permissions.sh
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io

@@ -65,6 +65,12 @@ export const connectedStaffRepo=withStaffAccess({
   async handoverPreview(_ctx:Ctx,schoolId:ID,classId:ID,input:HandoverPreviewInput={}){return readHandoverPreview(schoolId,classId,input);},
   async handoverReceipt(_ctx:Ctx,schoolId:ID,clientRequestId:string){return readHandoverReceipt(schoolId,clientRequestId);},
   async handover(_ctx:Ctx,schoolId:ID,input:HandoverInput){return applyHandover(schoolId,input);},
+  async permissionProfiles(_ctx:Ctx,schoolId:ID){return (await http('getTeacherPermissionProfiles',{params:{schoolId}})).data;},
+  async cloneRole(_ctx:Ctx,schoolId:ID,roleId:ID,input:ApiSchemas['CloneRole']){return staffRole((await http('cloneSchoolRole',{params:{schoolId,roleId},body:input})).data,schoolId);},
+  async previewProfile(_ctx:Ctx,schoolId:ID,assignmentId:ID,input:ApiSchemas['AssignmentProfileChange']){return (await http('previewAssignmentProfile',{params:{schoolId,assignmentId},body:input})).data;},
+  async changeProfile(_ctx:Ctx,schoolId:ID,assignmentId:ID,input:ApiSchemas['AssignmentProfileChange']){return (await http('changeAssignmentProfile',{params:{schoolId,assignmentId},body:input})).data;},
+  async previewDefaultProfile(_ctx:Ctx,schoolId:ID,input:ApiSchemas['DefaultTeacherProfile']){return (await http('previewDefaultTeacherProfile',{params:{schoolId},body:input})).data;},
+  async setDefaultProfile(_ctx:Ctx,schoolId:ID,input:ApiSchemas['DefaultTeacherProfile']){return (await http('setDefaultTeacherProfile',{params:{schoolId},body:input})).data;},
   async roles(_ctx:Ctx,schoolId:ID){return (await apiList('listRoles',{params:{schoolId},query:{sort:'label',dir:'asc'}},1000)).map(r=>staffRole(r,schoolId));},
   async role(_ctx:Ctx,schoolId:ID,roleId:ID){return staffRoleDetails((await http('getRoleDetails',{params:{schoolId,roleId}})).data,schoolId);},
   async saveRole(_ctx:Ctx,schoolId:ID,roleId:ID,permissions:ApiSchemas['Role']['permissions'],version:number,reason:string){

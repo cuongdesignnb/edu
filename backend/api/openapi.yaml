@@ -48345,6 +48345,555 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/teacher-permission-profiles:
+    get:
+      operationId: getTeacherPermissionProfiles
+      tags:
+        - Staff
+      summary: getTeacherPermissionProfiles
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: role.read
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC13
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherPermissionProfilesResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/roles/{roleId}/clone:
+    post:
+      operationId: cloneSchoolRole
+      tags:
+        - Staff
+      summary: cloneSchoolRole
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC14
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CloneRole"
+      responses:
+        "201":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/assignments/{assignmentId}/permission-profile/preview:
+    post:
+      operationId: previewAssignmentProfile
+      tags:
+        - Staff
+      summary: previewAssignmentProfile
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignmentProfileChange"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssignmentProfilePreviewResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-read-only: true
+  /schools/{schoolId}/assignments/{assignmentId}/permission-profile:
+    post:
+      operationId: changeAssignmentProfile
+      tags:
+        - Staff
+      summary: changeAssignmentProfile
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: assignment.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC11
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignmentProfileChange"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssignmentResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /schools/{schoolId}/teacher-permission-profiles/default/preview:
+    post:
+      operationId: previewDefaultTeacherProfile
+      tags:
+        - Staff
+      summary: previewDefaultTeacherProfile
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC13
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DefaultTeacherProfile"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefaultTeacherProfilePreviewResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      x-read-only: true
+  /schools/{schoolId}/teacher-permission-profiles/default:
+    post:
+      operationId: setDefaultTeacherProfile
+      tags:
+        - Staff
+      summary: setDefaultTeacherProfile
+      description: Operational metadata under current native authority; no pupil or
+        family data.
+      x-permission: role.manage
+      x-scope: school
+      x-frontend-screen-ids:
+        - SC13
+      x-implementation-status: not_started
+      security:
+        - StaffCookie: []
+      parameters:
+        - name: schoolId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DefaultTeacherProfile"
+      responses:
+        "200":
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherPermissionProfilesResponse"
+        "400":
+          description: Sai cú pháp hoặc Content-Type.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Không có phiên/quyền link hợp lệ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Thiếu quyền, CSRF sai hoặc trường tạm dừng.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Không tìm thấy trong phạm vi được phép.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Xung đột phiên bản/trạng thái/idempotency.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Dữ liệu không hợp lệ theo nghiệp vụ.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vượt giới hạn tần suất.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Lỗi nội bộ đã che chi tiết.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Phụ thuộc chưa sẵn sàng; không báo lưu thành công.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -48516,6 +49065,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        assignmentId:
+          type: string
+          format: uuid
       required:
         - id
         - version
@@ -50580,6 +51132,9 @@ components:
         expectedClassVersion:
           type: integer
           minimum: 1
+        roleId:
+          type: string
+          format: uuid
       required:
         - classId
         - memberId
@@ -58725,6 +59280,12 @@ components:
           nullable: true
         live:
           type: boolean
+        yearId:
+          type: string
+          format: uuid
+        roleId:
+          type: string
+          format: uuid
       required:
         - id
         - version
@@ -58748,6 +59309,8 @@ components:
         - createdBy
         - createdByName
         - live
+        - yearId
+        - roleId
       additionalProperties: false
     MemberDetails:
       type: object
@@ -58879,9 +59442,33 @@ components:
                 type: string
               canGrant:
                 type: boolean
+              label:
+                type: string
+              group:
+                type: string
+              allowedScopes:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - SCHOOL
+                    - CLASS
+                    - SUBJECT
+              description:
+                type: string
+              teacherRelevant:
+                type: boolean
+              schoolAdminGrantable:
+                type: boolean
             required:
               - action
               - canGrant
+              - label
+              - group
+              - allowedScopes
+              - description
+              - teacherRelevant
+              - schoolAdminGrantable
             additionalProperties: false
         members:
           type: array
@@ -69593,6 +70180,44 @@ components:
                 - null
         policy:
           $ref: "#/components/schemas/PublicationPolicyWorkspace"
+        canApply:
+          type: boolean
+        classVersion:
+          type: integer
+          minimum: 1
+        availableSets:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+            required:
+              - id
+              - name
+            additionalProperties: false
+        futureWeeks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              startsOn:
+                type: string
+                format: date
+              endsOn:
+                type: string
+                format: date
+            required:
+              - id
+              - startsOn
+              - endsOn
+            additionalProperties: false
       required:
         - schoolId
         - yearId
@@ -69600,6 +70225,10 @@ components:
         - current
         - next
         - policy
+        - canApply
+        - classVersion
+        - availableSets
+        - futureWeeks
       additionalProperties: false
     PublicationCenterWeek:
       type: object
@@ -72430,6 +73059,9 @@ components:
             expectedClassVersion:
               type: integer
               minimum: 1
+            roleId:
+              type: string
+              format: uuid
           required:
             - classId
             - kind
@@ -72503,6 +73135,9 @@ components:
             expectedClassVersion:
               type: integer
               minimum: 1
+            roleId:
+              type: string
+              format: uuid
           required:
             - classId
             - kind
@@ -73921,6 +74556,237 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/TransferSources"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    PermissionCatalogEntry:
+      type: object
+      properties:
+        action:
+          type: string
+        label:
+          type: string
+        group:
+          type: string
+        allowedScopes:
+          type: array
+          items:
+            type: string
+            enum:
+              - SCHOOL
+              - CLASS
+              - SUBJECT
+        description:
+          type: string
+        teacherRelevant:
+          type: boolean
+        schoolAdminGrantable:
+          type: boolean
+      required:
+        - action
+        - label
+        - group
+        - allowedScopes
+        - description
+        - teacherRelevant
+        - schoolAdminGrantable
+      additionalProperties: false
+    TeacherPermissionProfiles:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        homeroomRoleId:
+          type: string
+          format: uuid
+        subjectTeacherRoleId:
+          type: string
+          format: uuid
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        catalog:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionCatalogEntry"
+      required:
+        - version
+        - homeroomRoleId
+        - subjectTeacherRoleId
+        - roles
+        - catalog
+      additionalProperties: false
+    CloneRole:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z][A-Z0-9_]{2,63}$
+        label:
+          type: string
+          minLength: 3
+          maxLength: 200
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
+      required:
+        - code
+        - label
+        - reason
+      additionalProperties: false
+    AssignmentProfileChange:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        roleId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
+      required:
+        - expectedVersion
+        - roleId
+        - reason
+      additionalProperties: false
+    AssignmentProfilePreview:
+      type: object
+      properties:
+        assignmentId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        roleId:
+          type: string
+          format: uuid
+        roleLabel:
+          type: string
+        classId:
+          type: string
+          format: uuid
+        startsOn:
+          type: string
+          format: date
+        endsOn:
+          type: string
+          format: date
+          nullable: true
+        added:
+          type: array
+          items:
+            type: string
+        removed:
+          type: array
+          items:
+            type: string
+      required:
+        - assignmentId
+        - version
+        - roleId
+        - roleLabel
+        - classId
+        - startsOn
+        - endsOn
+        - added
+        - removed
+      additionalProperties: false
+    DefaultTeacherProfile:
+      type: object
+      properties:
+        expectedVersion:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          enum:
+            - HOMEROOM
+            - SUBJECT
+        roleId:
+          type: string
+          format: uuid
+        applyCurrent:
+          type: boolean
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 4000
+      required:
+        - expectedVersion
+        - kind
+        - roleId
+        - applyCurrent
+        - reason
+      additionalProperties: false
+    DefaultTeacherProfilePreview:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          enum:
+            - HOMEROOM
+            - SUBJECT
+        roleId:
+          type: string
+          format: uuid
+        roleLabel:
+          type: string
+        affected:
+          type: integer
+          minimum: 0
+        classIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - version
+        - kind
+        - roleId
+        - roleLabel
+        - affected
+        - classIds
+      additionalProperties: false
+    TeacherPermissionProfilesResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TeacherPermissionProfiles"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    AssignmentProfilePreviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/AssignmentProfilePreview"
+        requestId:
+          type: string
+      required:
+        - data
+        - requestId
+      additionalProperties: false
+    DefaultTeacherProfilePreviewResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/DefaultTeacherProfilePreview"
         requestId:
           type: string
       required:

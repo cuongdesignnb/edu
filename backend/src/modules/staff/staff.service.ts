@@ -3,13 +3,14 @@ import { Database,one,iso,type Transaction,type Row } from '../../database/datab
 import { resource,dto,getResource,updateResource,listResource,type Resource } from '../../database/resources';
 import { Permissions,grantDto,grantAllows,coversDelegatedExpiry } from '../../common/permissions';
 import { Commands,audit } from '../../common/commands';
-import { permissions as actionAllowlist } from '../../common/contract';
+import { permissions as actionAllowlist,permissionCatalog } from '../../common/contract';
 import { Problem,validation,notFound } from '../../common/problem';
 import { InvitationsService,invitationDto } from '../identity/invitations.service';
 import {staffDirectory,staffDirectorySummary} from './staff-directory';
 import {memberDetails,memberHistory,schoolRoleChoices,staffActivity} from './member-details';
 import {assignmentMatrix} from './assignment-matrix';
 import {roleDetails,roleSummaryResource,ownsHeldRole,validateLiveRoleExpiry} from './role-details';
+import {assignmentProfile,teacherProfiles,switchAssignmentProfile,defaultProfilePreview} from './teacher-profiles';
 import {createDirectStaff} from './direct-staff';
 import {manageStaffCredential} from './credential-management';
 import type { RequestContext,Result,Handler } from '../../api.router';
@@ -36,7 +37,7 @@ export class StaffService {
   constructor(private readonly db:Database,private readonly policy:Permissions,private readonly commands:Commands,private readonly invitations:InvitationsService){}
   handlers():Record<string,Handler>{
     const handlers:Record<string,Handler>={};
-    for(const id of ['resetSchoolStaffPassword','revokeSchoolStaffSessions','createSchoolStaffAccount','assignExistingSchoolStaffAccount','listStaffActivity','getStaffInvitationOptions','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
+    for(const id of ['getTeacherPermissionProfiles','cloneSchoolRole','previewAssignmentProfile','changeAssignmentProfile','previewDefaultTeacherProfile','setDefaultTeacherProfile','resetSchoolStaffPassword','revokeSchoolStaffSessions','createSchoolStaffAccount','assignExistingSchoolStaffAccount','listStaffActivity','getStaffInvitationOptions','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory','listStaffDirectory','getStaffDirectorySummary','listMembers','getMember','updateMember','suspendMember','reactivateMember','endMember','replaceMemberSchoolRoles','inviteSchoolStaff','listRoles','getRole','createRole','updateRole',
       'previewStaffAssignment','previewGrant','createGrant','revokeGrant','listAssignments','createAssignment','revokeAssignment','listInvitations','inviteStaff','revokeInvitation'])
       handlers[id]=c=>this.handle(c);
     return handlers;
@@ -97,6 +98,26 @@ export class StaffService {
         data.schoolRoleGrants=await this.schoolRoleGrants(tx,schoolId,id);
         await audit(tx,c,'member',id,{status:data.status,version:data.version});return {data};
       }
+      if(op==='getTeacherPermissionProfiles')return {data:await teacherProfiles(tx,schoolId)};
+      if(op==='cloneSchoolRole'){
+        const original=await this.role(tx,schoolId,c.params.roleId!);
+        return {data:await this.saveRole(tx,{...c,params:{schoolId},body:{...c.body,permissions:original.permissions}}),status:201};
+      }
+      if(op==='previewAssignmentProfile'||op==='changeAssignmentProfile'){
+        const changed=await switchAssignmentProfile(tx,c,body=>this.validateGrant(tx,c,body),op==='previewAssignmentProfile');
+        return {data:op==='previewAssignmentProfile'?changed:dto(assignmentResource,changed)};
+      }
+      if(op==='previewDefaultTeacherProfile'||op==='setDefaultTeacherProfile'){
+        const preview=await defaultProfilePreview(tx,c);
+        for(const p of preview.permissions)await this.policy.require(tx,c.principal!,p.action,{schoolId});
+        if(c.body.applyCurrent)await this.policy.require(tx,c.principal!,'assignment.manage',{schoolId});
+        if(op==='previewDefaultTeacherProfile')return {data:{version:preview.version,kind:preview.kind,roleId:preview.roleId,roleLabel:preview.roleLabel,affected:preview.affected,classIds:preview.classIds}};
+        for(const a of c.body.applyCurrent?preview.current:[])await switchAssignmentProfile(tx,c,body=>this.validateGrant(tx,c,body),false,String(a.id),c.body.roleId,a.version);
+        const key=c.body.kind==='HOMEROOM'?'homeroomRoleId':'subjectTeacherRoleId';
+        await tx.query('UPDATE platform.schools SET settings=settings||jsonb_build_object($2::text,$3::text) WHERE id=$1',[schoolId,key,c.body.roleId]);
+        await audit(tx,c,'school',schoolId,{kind:c.body.kind,roleId:c.body.roleId,affected:preview.affected});
+        return {data:await teacherProfiles(tx,schoolId)};
+      }
       if(op==='listRoles'){
         return listResource(tx,roleSummaryResource,schoolId,c.query,undefined,c.principal!.userId);
       }
@@ -137,7 +158,7 @@ export class StaffService {
         const role=await this.role(tx,schoolId,String(c.body.roleId));
         const scopeType=c.body.subjectId?'SUBJECT':c.body.classId?'CLASS':'SCHOOL';
         await this.validateGrant(tx,c,{...c.body,scopeType},true);
-        if((scopeType==='CLASS'&&role.code!=='HOMEROOM')||(scopeType==='SUBJECT'&&role.code!=='SUBJECT_TEACHER'))validation('roleId','Lời mời phân công cần đúng mẫu giáo viên');
+        if(scopeType!=='SCHOOL')await assignmentProfile(tx,schoolId,scopeType==='CLASS'?'HOMEROOM':'SUBJECT',role.id);
         const data=await this.invitations.create(tx,schoolId,c.principal!.userId,String(c.body.email),{
           roleId:String(c.body.roleId),scopeType,classId:c.body.classId as string|undefined,subjectId:c.body.subjectId as string|undefined,
           validFrom:String(c.body.validFrom),validUntil:c.body.validUntil as string|null|undefined,reason:c.body.reason as string|undefined},
@@ -150,7 +171,7 @@ export class StaffService {
       await tx.query("UPDATE identity.mail_outbox SET status='CANCELLED',encrypted_payload='' WHERE dedupe_key=$1 AND status IN ('PENDING','FAILED')",[`invitation:${row.id}`]);
       await audit(tx,c,'invitation',String(row.id),{status:'REVOKED'});return {data:invitationDto(invitation)};
     };
-    if(op==='previewStaffAssignment')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:true});
+    if(['previewStaffAssignment','previewAssignmentProfile','previewDefaultTeacherProfile'].includes(op))return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId});
     if(c.operation.method==='GET')return this.db.transaction(async tx=>{await authorize(tx);return work(tx);},{schoolId,userId:c.principal!.userId,readOnly:['getStaffInvitationOptions','listRoles','getRole','getRoleDetails','getStaffAssignmentMatrix','getMemberDetails','listMemberHistory'].includes(op)});
     return this.commands.execute(c,authorize,work);
   }
@@ -212,6 +233,7 @@ export class StaffService {
   }
   private async validateGrant(tx:Transaction,c:RequestContext,body:Record<string,unknown>,invitation=false){
     const schoolId=c.params.schoolId!,role=await this.role(tx,schoolId,String(body.roleId));
+    if(role.status!=='ACTIVE')validation('roleId','Mẫu quyền đã ngừng hoạt động');
     if(!invitation){const member=await getResource(tx,resource('member'),schoolId,String(body.memberId));if(member.status!=='ACTIVE')validation('memberId','Thành viên chưa hoạt động');}
     const scopes=['SCHOOL','CLASS','SUBJECT'];if(!scopes.includes(String(body.scopeType)))validation('scopeType','Phạm vi không hợp lệ');
     if((body.scopeType==='SCHOOL'&&(body.classId||body.subjectId))||(body.scopeType==='CLASS'&&(!body.classId||body.subjectId))
@@ -262,6 +284,8 @@ export class StaffService {
     for(const p of inputs){
       if(!actionAllowlist.includes(p.action)||p.action.startsWith('platform.'))throw new Problem(403,'DELEGATION_CEILING');
       if(!p.scopes.length||new Set(p.scopes).size!==p.scopes.length)validation('permissions','Phạm vi bị thiếu hoặc trùng');
+      const allowed=permissionCatalog.find(item=>item.action===p.action)?.allowedScopes;
+      if(!allowed||p.scopes.some(scope=>!allowed.includes(scope)))throw new Problem(422,'INVALID_PERMISSION_SCOPE',[{path:'permissions',code:'INVALID_SCOPE',message:'Phạm vi không phù hợp với quyền đã chọn'}]);
       await this.policy.require(tx,c.principal!,p.action,{schoolId});
     }
     if(id)await validateLiveRoleExpiry(tx,c,this.policy,previous,inputs);
@@ -290,8 +314,7 @@ export class StaffService {
     if(starts<String(year.starts_on)||starts>=ends||ends>String(year.ends_on)||year.status==='ARCHIVED'||cls.status==='ARCHIVED')validation('startsOn','Khoảng phân công không thuộc năm/lớp đang quản lý');
     const current=(await one<{today:string}>(tx,"SELECT (now() AT TIME ZONE timezone)::date AS today FROM platform.schools WHERE id=$1",[schoolId]))!.today;
     if(starts<current&&(typeof body.reason!=='string'||body.reason.trim().length<5))validation('reason','Phân công lùi ngày cần lý do ít nhất 5 ký tự');
-    const role=await one<Row>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code=$2 AND status='ACTIVE'",[schoolId,body.kind==='HOMEROOM'?'HOMEROOM':'SUBJECT_TEACHER']);
-    if(!role)validation('kind','Thiếu mẫu quyền giáo viên');
+    const role=await assignmentProfile(tx,schoolId,String(body.kind),body.roleId);
     const dates=await one<{valid_from:Date;valid_until:Date}>(tx,`SELECT $2::date::timestamp AT TIME ZONE timezone AS valid_from,
       $3::date::timestamp AT TIME ZONE timezone AS valid_until FROM platform.schools WHERE id=$1`,[schoolId,starts,ends]);
     const grantBody={memberId:body.memberId,roleId:role.id,scopeType:body.kind==='HOMEROOM'?'CLASS':'SUBJECT',
@@ -306,8 +329,8 @@ export class StaffService {
     await this.assignmentOverlap(tx,schoolId,body,p.starts,p.ends,String(p.cls.year_id));
     const current=await this.policy.grants(tx,String(p.member.user_id),schoolId),scope={schoolId,classId:String(body.classId),subjectId:body.subjectId as string|undefined,allowSubject:body.kind==='SUBJECT'};
     const held=new Set(current.flatMap(g=>g.actions.filter(action=>grantAllows(g,action,scope,p.current))));
-    const homeroom=body.kind==='SUBJECT'?(await one<{id:string}>(tx,"SELECT id FROM app.roles WHERE school_id=$1 AND code='HOMEROOM' AND status='ACTIVE'",[schoolId])):undefined;
-    const excluded=homeroom?(await this.rolePermissions(tx,schoolId,homeroom.id)).filter(a=>a.scopes.includes('CLASS')&&!p.actions.includes(a.action)).map(a=>a.action):[];
+    const homeroom=body.kind==='SUBJECT'?await assignmentProfile(tx,schoolId,'HOMEROOM'):undefined;
+    const excluded=homeroom?(await this.rolePermissions(tx,schoolId,String(homeroom.id))).filter(a=>a.scopes.includes('CLASS')&&!p.actions.includes(a.action)).map(a=>a.action):[];
     const subject=body.subjectId?await getResource(tx,resource('subject'),schoolId,String(body.subjectId)):undefined;
     const warnings=[];if(p.starts>p.current)warnings.push('Quyền chỉ có hiệu lực từ ngày bắt đầu phân công.');
     const settings=(await one<{settings:{homeroomMayPublish?:boolean}}>(tx,'SELECT settings FROM platform.schools WHERE id=$1',[schoolId]))!.settings;

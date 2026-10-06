@@ -19,6 +19,7 @@ import { EmptyState, QueryState } from "@/components/ui/states";
 import { fmtDate, fmtDateTime } from "@/lib/formatters";
 import { staffMembershipStatus } from "./staff-display";
 import { AssignDrawer, type AssignPrefill } from "./assign-drawer";
+import {AssignmentProfileDialog} from './profile-dialogs';
 import { PermissionSummary } from "./permission-summary";
 import {StaffCredentialControls} from '@/features/notebook/staff-credentials';
 import { assignmentStatusLabel, fmtRange, SchoolSourceState } from "./common";
@@ -36,6 +37,7 @@ export function MemberDetail({ membershipId }: { membershipId: string }) {
 function Body({ m }: { m: Member }) {
   const { school, yearId } = useSchool();
   const b = `/school/${school.id}`;
+  const [profile,setProfile]=useState<Asg|null>(null);
   const [assign, setAssign] = useState<AssignPrefill | null>(null);
   const [revoke, setRevoke] = useState<Asg | null>(null);
   const [status, setStatus] = useState<{ to: "active" | "suspended" | "revoked"; version: number } | null>(null);
@@ -64,6 +66,7 @@ function Body({ m }: { m: Member }) {
       <PageHeader title={m.user.displayName} subtitle={[m.membership.department, m.membership.staffCode && `Mã ${m.membership.staffCode}`].filter(Boolean).join(" · ")} badge={<StatusBadge status={m.membership.status} map={staffMembershipStatus} />}
         breadcrumbs={[{ label: "Nhà trường", href: b }, { label: "Giáo viên", href: `${b}/teachers` }, { label: m.user.displayName }]}
         actions={<>
+          {m.canRole&&<Button onClick={()=>document.getElementById("quyen-giao-vien")?.scrollIntoView({behavior:"smooth"})}>Quản lý quyền</Button>}
           {m.canAssign && active && <Button variant="primary" icon={<UserCog className="size-4" />} onClick={() => setAssign({ membershipId: m.membership.id, yearId })}>Phân công mới</Button>}
           {statusItems.length > 0 && <ActionMenu label="Trạng thái thành viên" items={statusItems} trigger={<Button icon={<ShieldCheck className="size-4" />}>Trạng thái thành viên</Button>} />}
         </>} />
@@ -73,7 +76,7 @@ function Body({ m }: { m: Member }) {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card>
-            <CardHeader title="Phân công" icon={<Briefcase className="size-5 text-primary" />} subtitle={counts.live === null ? "Bạn không được phép xem phân công" : `${counts.live} phân công đang hiệu lực`} action={
+            <CardHeader title="Quyền theo phân công" icon={<Briefcase className="size-5 text-primary" />} subtitle={counts.live === null ? "Bạn không được phép xem phân công" : `${counts.live} phân công đang hiệu lực`} action={
               <div className="flex flex-wrap gap-1" role="group" aria-label="Lọc phân công">
                 {(["all", "live", "ended", "revoked"] as const).map((k) => <button key={k} type="button" className={clsx("chip", filter === k && "chip-active")} aria-pressed={filter === k} onClick={() => setFilter(k)}>{{ all: "Tất cả", live: "Đang hiệu lực", ended: "Đã kết thúc", revoked: "Đã thu hồi" }[k]}</button>)}
               </div>
@@ -88,13 +91,15 @@ function Body({ m }: { m: Member }) {
                       {rows.map((a) => {
                         const st = assignmentStatusLabel(a, m.referenceDate);
                         const items: MenuItem[] = [
-                          ...(a.live ? [{ label: "Mở không gian lớp", href: `/classroom/${school.id}/${yearId}/${a.classId}` }] : []),
+                          ...(a.roleId?[{label:"Xem quyền",href:`${b}/roles/${a.roleId}`}]:[]),
+                          ...(m.canAssign&&a.status==='active' ? [{label:"Đổi mẫu quyền",onSelect:()=>setProfile(a)}] : []),
+                          ...(a.live ? [{ label: "Mở không gian lớp", href: `/classroom/${school.id}/${a.yearId??yearId}/${a.classId}` }] : []),
                           ...(m.canAssign && a.type === "homeroom" && a.status === "active" ? [{ label: "Bàn giao chủ nhiệm", icon: <RefreshCw />, href: `${b}/handovers?class=${a.classId}` }] : []),
                           ...(m.canAssign && a.status === "active" ? [{ label: "Thu hồi phân công", icon: <Ban />, danger: true, separatorBefore: true, onSelect: () => setRevoke(a) }] : []),
                         ];
                         return (
                           <tr key={a.id}>
-                            <td className="min-w-[160px]"><p className="whitespace-nowrap font-semibold text-ink">{a.label}</p><p className="whitespace-nowrap text-[12px] text-muted">{a.type === "homeroom" ? "Giáo viên chủ nhiệm" : "Giáo viên bộ môn"}</p></td>
+                            <td className="min-w-[160px]"><p className="whitespace-nowrap font-semibold text-ink">{a.label}</p><p className="whitespace-nowrap text-[12px] text-muted">{a.type === "homeroom" ? "Giáo viên chủ nhiệm" : "Giáo viên bộ môn"} · {a.roleLabel} · {m.effectiveGrants.find(g=>g.id===a.roleGrantId)?.actions.length??0} quyền đang hiệu lực</p></td>
                             <td className="whitespace-nowrap text-[13px]">{fmtRange(a.validFrom, a.validTo)}</td>
                             <td><Badge tone={st.tone} className="whitespace-nowrap">{st.label}</Badge></td>
                             <td className="whitespace-nowrap text-[13px]">{a.createdByName}<p className="text-[12px] text-muted">{fmtDate(a.createdAt)}</p></td>
@@ -126,9 +131,10 @@ function Body({ m }: { m: Member }) {
             </dl>
             {m.otherSchools > 0 && <p className="mt-2 text-[12.5px] text-muted">Chỉ hiển thị số lượng. Phân công, dữ liệu và danh tính ở trường khác không bị ảnh hưởng bởi thao tác tại đây.</p>}
           </Card>
-          <Card>
-            <CardHeader title="Mẫu quyền nhà trường" icon={<KeyRound className="size-5 text-primary" />} action={m.canRole ? <Button size="sm" onClick={() => setRolesTarget(m)} disabled={m.isSelf} title={m.isSelf ? "Không thể tự đổi mẫu quyền của mình" : undefined}>Thay đổi</Button> : undefined} />
+          <Card id="quyen-giao-vien">
+            <CardHeader title="Quyền toàn trường" icon={<KeyRound className="size-5 text-primary" />} action={m.canRole ? <Button size="sm" onClick={() => setRolesTarget(m)} disabled={m.isSelf} title={m.isSelf ? "Không thể tự đổi mẫu quyền của mình" : undefined}>Thay đổi</Button> : undefined} />
             <div className="px-5 pb-5">
+              <p className="mb-2 text-sm text-muted">Quyền toàn trường là quyền chung. Quyền thao tác lớp/môn đến từ phân công GVCN/GVBM.</p>
               {m.roles.length === 0 ? <p className="text-[13px] text-muted">Chưa có mẫu quyền cấp trường.</p> : <ul className="flex flex-wrap gap-1.5">{m.roles.map((r) => <li key={r.id}><Badge tone="success" dot={false}>{r.roleLabel}</Badge><p className="text-[11px] text-muted">Từ {fmtDateTime(r.validFrom)}{r.validUntil ? ` đến trước ${fmtDateTime(r.validUntil)}` : " — không thời hạn"}</p></li>)}</ul>}
             </div>
           </Card>
@@ -138,6 +144,7 @@ function Body({ m }: { m: Member }) {
           </Card>
         </div>
       </div>
+      {profile&&<AssignmentProfileDialog schoolId={school.id} assignment={{id:profile.id,version:profile.version,roleId:profile.roleId,kind:profile.kind,className:profile.className,startsOn:profile.startsOn,endsOn:profile.endsOn}} onClose={()=>setProfile(null)}/>}
       <AssignDrawer prefill={assign} onClose={() => setAssign(null)} />
       <ConfirmDialog open={!!revoke} onOpenChange={(o) => { if (!o) setRevoke(null); }} busy={revokeCmd.pending} title="Thu hồi phân công" variant="danger" confirmLabel="Thu hồi"
         object={revoke ? `${m.user.displayName} — ${revoke.label}` : undefined}

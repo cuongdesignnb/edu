@@ -13,19 +13,19 @@ export interface Scope {
 export interface Grant {
   id: string; version: number; role_id: string; role_code: string; label: string; scope_type: string;
   class_id: string | null; subject_id: string | null; valid_from: Date; valid_until: Date | null;
-  actions: string[]; assignment_id: string | null; starts_on: string | null; ends_on: string | null;
+  actions: string[]; assignment_id: string | null; assignment_kind?: string; starts_on: string | null; ends_on: string | null;
 }
 const scopedContext = new Set(['school.read', 'year.read', 'teacher.self']);
 export function grantAllows(grant: Grant, action: string, scope: Scope, today: string) {
   if (!grant.actions.includes(action)) return false;
-  if (grant.scope_type === 'SCHOOL') return true;
-  // Default teacher grants are inseparable from their assignment. A deliberately
+  // Every assignment-linked grant, including a custom profile, follows its dates. A deliberately
   // delegated custom CLASS role is usable within its own grant validity without
   // inventing a teaching assignment. Request handlers still restrict SUBJECT DTOs.
-  if (['HOMEROOM','SUBJECT_TEACHER'].includes(grant.role_code)) {
+  if (grant.assignment_id || ['HOMEROOM','SUBJECT_TEACHER'].includes(grant.role_code)) {
     if (!grant.assignment_id || !grant.starts_on || grant.starts_on > today || (grant.ends_on && grant.ends_on <= today)) return false;
     if (scope.date && (scope.date < grant.starts_on || (grant.ends_on && scope.date >= grant.ends_on))) return false;
   }
+  if (grant.scope_type === 'SCHOOL') return true;
   if (!scope.classId) return !!scope.allowScopedContext && scopedContext.has(action);
   if (grant.class_id !== scope.classId) return false;
   if (grant.scope_type === 'CLASS') return true;
@@ -36,7 +36,7 @@ export function grantDto(grant: Grant) {
   return { id: grant.id, version: grant.version, roleId: grant.role_id, roleLabel: grant.label,roleCode:grant.role_code,
     actions: grant.actions, scopeType: grant.scope_type,
     ...(grant.class_id ? { classId: grant.class_id } : {}), ...(grant.subject_id ? { subjectId: grant.subject_id } : {}),
-    validFrom: iso(grant.valid_from), validUntil: grant.valid_until ? iso(grant.valid_until) : null,
+    ...(grant.assignment_id?{assignmentId:grant.assignment_id}:{}),validFrom: iso(grant.valid_from), validUntil: grant.valid_until ? iso(grant.valid_until) : null,
     ...(grant.assignment_id?{assignmentStartsOn:grant.starts_on,assignmentEndsOn:grant.ends_on}:{}) };
 }
 export function coversDelegatedExpiry(grant:Pick<Grant,'valid_until'>,from:Date,until:Date|null){
@@ -67,16 +67,16 @@ export class Permissions {
   }
   async grants(tx: Transaction, userId: string, schoolId: string): Promise<Grant[]> {
     return (await tx.query<Grant>(`SELECT g.id,g.version,g.role_id,r.code AS role_code,r.label,g.scope_type,g.class_id,g.subject_id,g.valid_from,g.valid_until,
-      array_agg(DISTINCT p.action_code) AS actions, a.id AS assignment_id,a.starts_on,a.ends_on
+      array_agg(DISTINCT p.action_code) AS actions, a.id AS assignment_id,a.kind AS assignment_kind,a.starts_on,a.ends_on
       FROM app.memberships m JOIN identity.users u ON u.id=m.user_id AND u.status='ACTIVE'
       JOIN app.role_grants g ON g.school_id=m.school_id AND g.member_id=m.id
       JOIN platform.schools config ON config.id=m.school_id
       JOIN app.roles r ON r.school_id=g.school_id AND r.id=g.role_id AND r.status='ACTIVE'
       JOIN app.role_permissions p ON p.school_id=r.school_id AND p.role_id=r.id AND g.scope_type=ANY(p.allowed_scopes)
-      LEFT JOIN app.teaching_assignments a ON a.school_id=g.school_id AND a.role_grant_id=g.id AND a.revoked_at IS NULL
+      LEFT JOIN app.teaching_assignments a ON a.school_id=g.school_id AND a.role_grant_id=g.id
       WHERE m.user_id=$1 AND m.school_id=$2 AND m.status='ACTIVE' AND m.ended_at IS NULL
-      AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
-      AND NOT(r.code='HOMEROOM' AND coalesce(config.settings->>'homeroomMayPublish','true')='false' AND p.action_code LIKE '%.publish')
+      AND a.revoked_at IS NULL AND g.revoked_at IS NULL AND g.valid_from<=now() AND (g.valid_until IS NULL OR g.valid_until>now())
+      AND NOT(coalesce(a.kind='HOMEROOM',false) AND coalesce(config.settings->>'homeroomMayPublish','true')='false' AND p.action_code LIKE '%.publish')
       GROUP BY g.id,r.code,r.label,a.id`, [userId,schoolId])).rows;
   }
   async require(tx: Transaction, principal: Pick<Principal,'userId'>, actions: string, scope: Scope) {
@@ -128,7 +128,7 @@ export class Permissions {
     for (const membership of memberships) {
       const {grants,duties}=await this.db.transaction(async tx=>{
         const raw=await this.grants(tx,principal.userId,membership.school_id);
-        const grants=membership.school_status==='ACTIVE'?raw.filter(g=>!['HOMEROOM','SUBJECT_TEACHER'].includes(g.role_code)||!!g.class_id&&g.actions.some(action=>grantAllows(g,action,{schoolId:membership.school_id,classId:g.class_id!,allowSubject:true},membership.today))):[];
+        const grants=membership.school_status==='ACTIVE'?raw.filter(g=>!(g.assignment_id||['HOMEROOM','SUBJECT_TEACHER'].includes(g.role_code))||!!g.class_id&&g.actions.some(action=>grantAllows(g,action,{schoolId:membership.school_id,classId:g.class_id!,allowSubject:true},membership.today))):[];
         const ids=grants.filter(g=>g.assignment_id).map(g=>g.assignment_id!);
         const duties=ids.length?(await tx.query<{id:string;class_id:string;class_name:string;subject_id:string|null;subject_name:string|null;kind:string;starts_on:string;ends_on:string|null}>(`SELECT a.id,a.class_id,c.name AS class_name,a.subject_id,s.name AS subject_name,a.kind,a.starts_on,a.ends_on
           FROM app.teaching_assignments a JOIN app.classes c ON c.school_id=a.school_id AND c.id=a.class_id
