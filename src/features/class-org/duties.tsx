@@ -142,10 +142,10 @@ function DutyDrawer({ target, onClose, d }: { target: EditTarget | null; onClose
       {target && (
         <div className="space-y-4">
           <ErrorSummary errors={err} labels={{ date: "Ngày", task: "Nhiệm vụ", studentIds: "Học sinh", form: "Lỗi" }} />
-          <div data-field="date"><DateField label="Ngày trực" required value={date} onChange={setDate} min={d.today} max={addDays(d.endsOn,-1)} error={err.date} /></div>
+          <div data-field="date"><DateField label="Ngày trực" required value={date} onChange={value=>{setDate(value);setGroupId("");setIds([]);}} min={d.today} max={addDays(d.endsOn,-1)} error={err.date} /></div>
           <div data-field="task"><TextField label="Nhiệm vụ" required value={task} onChange={(e) => setTask(e.target.value)} error={err.task} maxLength={120} placeholder="Ví dụ: Lau bảng, quét lớp đầu giờ" /></div>
           <QueryState query={choices} skeleton="cards">{options=><>
-          <SelectField label="Tổ trực (tuỳ chọn)" value={groupId} onChange={(e) => { const g = e.target.value; setGroupId(g); const grp = options.groups.find((x) => x.id === g); if (grp) setIds(grp.members.map((m) => m.id)); }} placeholder="Không theo tổ" options={options.groups.map((g) => ({ value: g.id, label: `${g.name} (${g.members.length} học sinh)` }))} helper="Chọn tổ sẽ điền sẵn thành viên theo ngày trực; có thể bỏ bớt." />
+          <SelectField label="Tổ trực (tuỳ chọn)" value={groupId} onChange={(e) => { const g = e.target.value; setGroupId(g); const grp = options.groups.find((x) => x.id === g); setIds(grp?grp.members.map((m) => m.id):[]); }} placeholder="Không theo tổ" options={options.groups.map((g) => ({ value: g.id, label: `${g.name} (${g.members.length} học sinh)` }))} helper="Chọn tổ sẽ điền sẵn thành viên theo ngày trực; có thể bỏ bớt." />
           <div data-field="studentIds"><ChipToggleGroup label={`Học sinh (${ids.length} đã chọn)`} value={ids} onChange={setIds} error={err.studentIds} options={(groupId ? options.groups.find((g) => g.id === groupId)?.members ?? options.students : options.students).map((s) => ({ value: s.id, label: s.fullName }))} /></div>
           {ids.some(id=>!options.students.some(s=>s.id===id))&&<Button variant="secondary" onClick={()=>{setIds([]);setGroupId("");}}>Chọn lại học sinh theo ngày trực</Button>}
           {!options.canPublish&&<p className="text-sm text-muted">Bạn chưa được cấp quyền công bố lịch trực tại ngày này.</p>}

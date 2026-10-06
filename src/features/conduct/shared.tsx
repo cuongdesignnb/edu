@@ -113,7 +113,7 @@ export function useWeekParam() {
 /** Week options + the currently selected week (URL param, else the current week). */
 export function useWeeks() {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["conduct-weeks", classId], (ctx) => conductRepo.weekOptions(ctx, schoolId, yearId, classId));
+  const q = useRepo(["conduct-weeks", schoolId, yearId, classId], (ctx) => conductRepo.weekOptions(ctx, schoolId, yearId, classId));
   const [param, setWeek] = useWeekParam();
   const weeks = q.data ?? [];
   const week = weeks.find((w) => w.id === param) ?? weeks.find((w) => w.isCurrent) ?? weeks[0];

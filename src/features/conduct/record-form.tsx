@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect,useMemo, useState } from "react";
 import { Info, Link2, ShieldAlert, Copy } from "lucide-react";
 import type {RuleItem,RuleEditorRule} from '@/lib/repositories/connected/conduct';
 import type {ConductSource} from '@/lib/repositories/connected/conduct-workspace';
@@ -69,7 +69,9 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
   const dirty = JSON.stringify(form) !== JSON.stringify(initial);
   useUnsavedChanges(dirty);
   const rule = ruleSet.rules.find((r) => r.id === form.ruleId);
-  const student = roster.find((s) => s.id === form.studentId);
+  const eligibleRoster=roster.filter(s=>s.startsOn<=form.date&&(!s.endsOn||s.endsOn>form.date));
+  const student = eligibleRoster.find((s) => s.id === form.studentId);
+  useEffect(()=>{if(editing)return;setForm(old=>({...old,studentId:old.studentId&&!eligibleRoster.some(s=>s.id===old.studentId)?"":old.studentId,lessonId:old.lessonId&&!lessons.some(l=>l.id===old.lessonId&&l.date===old.date&&l.canRecord)?"":old.lessonId}));},[form.date,roster,lessons,editing]);
 
   const handleError = (e: RepoError) => {
     if (e.code === "VALIDATION") setErrors(e.fieldErrors ?? { form: e.message });
@@ -139,7 +141,7 @@ function RecordDialogInner({ onOpenChange, ruleSet, roster, week, studentId, rul
               <div className="field"><span className="label">Học sinh</span><p className="font-semibold text-ink">{editing.studentName} · {editing.studentCode}</p></div>
             ) : (
               <Combobox label="Học sinh" required value={form.studentId} onChange={(v) => set("studentId", v as string)} error={errors.studentId}
-                options={roster.map((s) => ({ value: s.id, label: s.fullName, hint: s.code }))} placeholder="Chọn học sinh trong lớp" />
+                options={eligibleRoster.map((s) => ({ value: s.id, label: s.fullName, hint: s.code }))} placeholder="Chọn học sinh trong lớp" />
             )}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">

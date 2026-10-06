@@ -44796,6 +44796,11 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: Thành công
@@ -46650,6 +46655,11 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: onDate
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: Thành công

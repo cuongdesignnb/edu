@@ -48,7 +48,7 @@ export function ClassFilesPage() {
   const [q, setQ] = useState("");
   const [share, setShare] = useState("");
   const [status, setStatus] = useState("");
-  const query = useRepo(["class-files", classId, q, share, status], (ctx) => activitiesRepo.files(ctx, schoolId, yearId, classId, { q, share: share || undefined, status: status || undefined }), { enabled: allowed });
+  const query = useRepo(["class-files", schoolId, yearId, classId, q, share, status], (ctx) => activitiesRepo.files(ctx, schoolId, yearId, classId, { q, share: share || undefined, status: status || undefined }), { enabled: allowed });
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Tệp lớp" subtitle={<>Tài liệu của lớp {header.class.name} và phạm vi chia sẻ với gia đình</>} />
@@ -143,7 +143,7 @@ function ShareDialog({ row, onClose, run, busy }: { row: Row | null; onClose: ()
 
 function UploadDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const { schoolId, yearId, classId } = useClassroom();
-  const roster = useRepo(["class-file-options", classId], (ctx) => activitiesRepo.fileFormOptions(ctx, schoolId, yearId, classId), { enabled: open });
+  const roster = useRepo(["class-file-options", schoolId, yearId, classId], (ctx) => activitiesRepo.fileFormOptions(ctx, schoolId, yearId, classId), { enabled: open });
   const [file, setFile] = useState<File | null>(null);
   const [share, setShare] = useState<FileShare>("internal");
   const [studentId, setStudentId] = useState("");

@@ -1,0 +1,9 @@
+services:
+  runner:
+    environment:
+      MAIL_MODE: disabled
+networks:
+  test_data:
+    ipam:
+      config:
+        - subnet: ${FORM_DATA_TEST_SUBNET:?FORM_DATA_TEST_SUBNET is required}

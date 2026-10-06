@@ -1,5 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
+import {useOptionalSchool} from "@/components/layout/shells";
+import {QuickCreate} from "@/features/forms/quick-create";
+import { useEffect,useMemo, useState } from "react";
 import { clsx } from "clsx";
 import { ChevronLeft, ChevronRight, CalendarDays, AlertTriangle, Filter, History, Send, Trash2, PenLine } from "lucide-react";
 import { classroomRepo } from "@/lib/repositories";
@@ -37,6 +39,7 @@ function LessonChip({ c, show, onClick, disabled }: { c: Cell; show: { cls: bool
 
 /** SC32 — school-wide timetable: filters, week navigation, desktop grid / mobile agenda, clashes, lesson changes (O25). */
 export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: string }) {
+  const yearId=useOptionalSchool()?.yearId;
   const [week, setWeek] = useState(mondayOf(today));
   const [classId, setClassId] = useState("");
   const [membershipId, setMembershipId] = useState("");
@@ -44,10 +47,11 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
   const [day, setDay] = useState(today);
   const [target, setTarget] = useState<LessonTarget | null>(null);
   const [pending, setPending] = useState<{ ch: Change; action: "publish" | "delete" } | null>(null);
-  const q = useRepo(["school-timetable", schoolId, week, classId, membershipId, roomId], (c) => classroomRepo.schoolTimetable(c, schoolId, { weekStart: week, classId: classId || undefined, membershipId: membershipId || undefined, roomId: roomId || undefined }));
-  const changes = useRepo(["week-lesson-changes", schoolId, week], (c) => schoolOpsRepo.weekLessonChanges(c, schoolId, week));
+  const q = useRepo(["school-timetable", schoolId,yearId, week, classId, membershipId, roomId], (c) => classroomRepo.schoolTimetable(c, schoolId, { yearId:yearId||undefined,weekStart: week, classId: classId || undefined, membershipId: membershipId || undefined, roomId: roomId || undefined }));
+  const changes = useRepo(["week-lesson-changes", schoolId,yearId, week], (c) => schoolOpsRepo.weekLessonChanges(c, schoolId, week,yearId||undefined));
   const publishCmd = useCommand((ctx, change: Change) => classroomRepo.publishLessonChange(ctx, schoolId, change.id, change), { success: "Đã công bố đổi tiết", onSuccess: () => setPending(null) });
   const deleteCmd = useCommand((ctx, change: Change) => classroomRepo.deleteDraftChange(ctx, schoolId, change.id, change), { success: "Đã xóa bản nháp đổi tiết", onSuccess: () => setPending(null) });
+  useEffect(()=>{setClassId("");setMembershipId("");setRoomId("");setTarget(null);},[yearId]);
   const d = q.data;
   const show = { cls: !classId, teacher: !membershipId, room: !roomId };
   const byKey = useMemo(() => {
@@ -78,6 +82,7 @@ export function SchoolTimetable({ schoolId, today }: { schoolId: string; today: 
           <InlineSelect label="Lọc lớp" allLabel="Tất cả lớp" value={classId} onChange={setClassId} options={(d?.options.classes ?? []).map((x) => ({ value: x.id, label: x.name }))} />
           <InlineSelect label="Lọc giáo viên" allLabel="Tất cả giáo viên" value={membershipId} onChange={setMembershipId} options={(d?.options.teachers ?? []).map((x) => ({ value: x.id, label: x.name }))} />
           <InlineSelect label="Lọc phòng" allLabel="Tất cả phòng" value={roomId} onChange={setRoomId} options={(d?.options.rooms ?? []).map((x) => ({ value: x.id, label: x.name }))} />
+          <QuickCreate kind="class" schoolId={schoolId} yearId={yearId} onCreated={async r=>{const fresh=await q.refetch();if(fresh.data?.options.classes.some(c=>c.id===r.id))setClassId(r.id);else throw new Error("Đã tạo lớp. Kích hoạt lớp và kiểm tra năm học trước khi soạn lịch.");}}/>
           {(classId || membershipId || roomId) && <Button size="sm" variant="ghost" onClick={() => { setClassId(""); setMembershipId(""); setRoomId(""); }}>Xóa lọc</Button>}
         </div>
       </Card>

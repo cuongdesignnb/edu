@@ -24,7 +24,7 @@ const TONES: Record<string, string> = { attendance: "tone-green", conduct: "tone
 export function ClassReportsPage() {
   const { schoolId, yearId, classId, base, header, can } = useClassroom();
   const allowed = can("report.class");
-  const q = useRepo(["class-report-catalog", classId], (ctx) => activitiesExtraRepo.classReportCatalog(ctx, schoolId, yearId, classId), { enabled: allowed });
+  const q = useRepo(["class-report-catalog", schoolId, yearId, classId], (ctx) => activitiesExtraRepo.classReportCatalog(ctx, schoolId, yearId, classId), { enabled: allowed });
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Báo cáo lớp" subtitle={<>Báo cáo chuyên cần, thi đua, hoạt động của lớp {header.class.name}</>} />
@@ -68,7 +68,7 @@ export function ClassReportDetailPage({ reportType }: { reportType: string }) {
   const { schoolId, yearId, classId, base, can } = useClassroom();
   const sp = useSearchParams();
   const allowed = can("report.class");
-  const cat = useRepo(["class-report-catalog", classId], (ctx) => activitiesExtraRepo.classReportCatalog(ctx, schoolId, yearId, classId), { enabled: allowed });
+  const cat = useRepo(["class-report-catalog", schoolId, yearId, classId], (ctx) => activitiesExtraRepo.classReportCatalog(ctx, schoolId, yearId, classId), { enabled: allowed });
   const meta = cat.data?.reports.find((r) => r.type === reportType);
   return (
     <div className="page">
@@ -98,7 +98,7 @@ function ReportBody({ type, cat, initialStudent }: { type: string; cat: Catalog;
     return p;
   }, [type, weekId, from, to, studentId]);
   const ready = type !== "student" || !!studentId;
-  const q = useRepo(["class-report", classId, type, params], (ctx) => reportsRepo.classReport(ctx, schoolId, yearId, classId, type, params), { enabled: ready });
+  const q = useRepo(["class-report", schoolId, yearId, classId, type, params], (ctx) => reportsRepo.classReport(ctx, schoolId, yearId, classId, type, params), { enabled: ready });
   const fileBase = q.data ? `${header.class.name} ${q.data.title} ${q.data.periodLabel}` : type;
   return (
     <div className="space-y-5">

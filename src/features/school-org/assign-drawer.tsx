@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, CheckCircle2, MinusCircle, PlusCircle, ShieldCheck } from "lucide-react";
 import { schoolRepo, staffRepo } from "@/lib/repositories";
+import {QuickCreate} from '@/features/forms/quick-create';
+import {validPickerValue} from '@/lib/query/form-options';
 import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { useSchool } from "@/components/layout/shells";
 import { Drawer } from "@/components/ui/dialog";
@@ -14,7 +16,7 @@ import { nativeActionLabel } from "@/lib/api/action-labels";
 import { FormError, fmtRange, useDirtyClose, useFormErrors } from "./common";
 
 export interface AssignPrefill { membershipId?: string; kind?: "homeroom" | "subject"; classId?: string; subjectId?: string; yearId?: string }
-const LABELS = { membershipId: "Giáo viên", classId: "Lớp", subjectId: "Môn", validFrom: "Hiệu lực từ", validTo: "Hiệu lực đến" };
+const LABELS = { yearId: "Năm học", membershipId: "Giáo viên", classId: "Lớp", subjectId: "Môn", validFrom: "Hiệu lực từ", validTo: "Hiệu lực đến" };
 
 /** O06 — create a grant (person → duty → class/subject → validity) with the O07 permission preview before saving. */
 export function AssignDrawer({prefill,onClose}:{prefill:AssignPrefill|null;onClose:()=>void}) { return prefill ? <AssignForm key={JSON.stringify(prefill)} prefill={prefill} onClose={onClose} /> : null; }
@@ -22,7 +24,7 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
   const { school, yearId: ctxYear } = useSchool();
   const ctx = useCtx();
   const open = !!prefill;
-  const yearId = prefill?.yearId ?? ctxYear;
+  const [yearId,setYearId] = useState(prefill?.yearId ?? ctxYear);
   const opts = useRepo(["school-form-options", school.id], (c) => schoolRepo.formOptions(c, school.id), { enabled: open });
   const classes = useRepo(["school-assignment-classes", school.id, yearId], (c) => staffRepo.assignmentClasses(c, school.id, yearId), { enabled: open && !!yearId });
   const [initial] = useState(() => ({
@@ -30,11 +32,12 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
     validFrom: ctx.today as string | undefined, validTo: undefined as string | undefined, reason: "",
   }));
   const [v, setV] = useState(initial);
+  useEffect(()=>{if(classes.data&&!classes.isFetching&&!validPickerValue(v.classId,classes.data))setV(old=>({...old,classId:''}));},[classes.data,classes.isFetching,v.classId]);
   const [step, setStep] = useState<"form" | "preview">("form");
   const [attempt, setAttempt] = useState(0);
   const [reviewed, setReviewed] = useState<Awaited<ReturnType<typeof staffRepo.previewAssignment>> | null>(null);
   const { errors, setErrors, onError, clear } = useFormErrors();
-  const dirty = open && JSON.stringify(v) !== JSON.stringify(initial);
+  const dirty = open && (yearId !== (prefill.yearId ?? ctxYear) || JSON.stringify(v) !== JSON.stringify(initial));
   const close = () => { setErrors({}); setStep("form"); onClose(); };
   const { beforeClose, confirmNode } = useDirtyClose(dirty, close);
 
@@ -45,8 +48,11 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k as string); };
   const toPreview = () => {
     const local: Record<string, string> = {};
+    if (!yearId) local.yearId = "Chọn năm học";
     if (!v.membershipId) local.membershipId = "Chọn giáo viên";
+    else if (!opts.data?.teachers?.some(t => t.membershipId === v.membershipId)) local.membershipId = "Giáo viên không còn thuộc lựa chọn được phép phân công.";
     if (!v.classId) local.classId = "Chọn lớp";
+    else if (classes.isFetching || classes.error || !classes.data?.some(c => c.id === v.classId)) local.classId = "Tải lại lớp thuộc năm học đang chọn.";
     if (v.kind === "subject" && !v.subjectId) local.subjectId = "Chọn môn";
     if (!v.validFrom) local.validFrom = "Chọn ngày bắt đầu";
     if (v.validFrom && v.validTo && v.validTo < v.validFrom) local.validTo = "Ngày kết thúc phải sau ngày bắt đầu";
@@ -70,20 +76,21 @@ function AssignForm({ prefill, onClose }: { prefill: AssignPrefill; onClose: () 
         footer={step === "form"
           ? <><Button variant="ghost" onClick={() => { if (beforeClose()) close(); }}>Hủy</Button><Button variant="primary" icon={<ShieldCheck className="size-4" />} onClick={toPreview}>Xem trước quyền</Button></>
           : <><Button variant="ghost" icon={<ArrowLeft className="size-4" />} onClick={() => { setReviewed(null); setStep("form"); }} disabled={cmd.pending}>Quay lại sửa</Button><Button variant="primary" loading={cmd.pending} disabled={!reviewed || !!preview.error} onClick={save}>Xác nhận phân công</Button></>}>
-        {!yearId ? <Callout tone="neutral">Tạo hoặc chọn năm học trước khi phân công.</Callout> : opts.error || classes.error ? <ErrorState error={opts.error ?? classes.error} onRetry={() => { opts.refetch(); classes.refetch(); }} compact /> : !opts.data || !classes.data ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : !opts.data.canAssign || !opts.data.teachers || !opts.data.subjects ? <Callout tone="neutral">Bạn không có quyền phân công giáo viên.</Callout> : step === "form" ? (
+        {opts.error || classes.error ? <ErrorState error={opts.error ?? classes.error} onRetry={() => { opts.refetch(); classes.refetch(); }} compact /> : !opts.data || (!!yearId && !classes.data) ? <div className="space-y-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16" />)}</div> : !opts.data.canAssign || !opts.data.teachers || !opts.data.subjects ? <Callout tone="neutral">Bạn không có quyền phân công giáo viên.</Callout> : step === "form" ? (
           <form className="space-y-4" noValidate onSubmit={(e) => { e.preventDefault(); toPreview(); }}>
             <ErrorSummary errors={Object.fromEntries(Object.entries(errors).filter(([k]) => k !== "_form"))} labels={LABELS} />
             <FormError message={errors._form} />
-            <div data-field="membershipId"><Combobox label="Giáo viên" required placeholder="Chọn giáo viên" value={v.membershipId} onChange={(x) => set("membershipId", x as string)} error={errors.membershipId}
+            <SelectField label="Năm học" required placeholder="Chọn năm học" value={yearId} onChange={e=>{setYearId(e.target.value);setV(old=>({...old,classId:'',subjectId:''}));}} options={opts.data.years.filter(y=>y.status!=='archived').map(y=>({value:y.id,label:`${y.label}${y.status==='draft'?' (Nháp)':''}`}))} labelAction={<QuickCreate kind="year" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(!fresh.data?.years.some(y=>y.id===r.id&&y.status!=='archived'))throw new Error('Đã tạo năm học nhưng chưa thuộc lựa chọn được phép phân công.');setYearId(r.id);setV(old=>({...old,classId:'',subjectId:''}));}}/>}/>
+            <div data-field="membershipId"><Combobox label="Giáo viên" labelAction={<QuickCreate kind="teacher" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(fresh.data?.teachers?.some(t=>t.membershipId===r.id))set('membershipId',r.id);else throw new Error('Giáo viên mới chưa thuộc danh sách được phép phân công.');}}/>} required placeholder="Chọn giáo viên" value={v.membershipId} onChange={(x) => set("membershipId", x as string)} error={errors.membershipId}
               options={opts.data.teachers.map((t) => ({ value: t.membershipId, label: t.name, hint: t.department }))} emptyText="Không có giáo viên đang hoạt động phù hợp" /></div>
-            <RadioGroup label="Nhiệm vụ" value={v.kind} onChange={(k) => set("kind", k)} direction="row" options={[
+            <RadioGroup label="Nhiệm vụ" value={v.kind} onChange={(k) => {set('kind',k);set('subjectId','');}} direction="row" options={[
               { value: "subject", label: "Giáo viên bộ môn", description: "Theo đúng lớp và môn" },
               { value: "homeroom", label: "Giáo viên chủ nhiệm", description: "Một lớp tại một thời điểm" },
             ]} />
             <div className="grid gap-4 sm:grid-cols-2">
-              <div data-field="classId"><SelectField label="Lớp" required placeholder="Chọn lớp" value={v.classId} onChange={(e) => set("classId", e.target.value)} error={errors.classId}
-                options={classes.data.filter((c) => c.status !== "archived").map((c) => ({ value: c.id, label: `${c.name}${c.status === "draft" ? " (nháp)" : ""}` }))} /></div>
-              {v.kind === "subject" && <div data-field="subjectId"><SelectField label="Môn" required placeholder="Chọn môn" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)} error={errors.subjectId}
+              <div data-field="classId"><SelectField label="Lớp" labelAction={<QuickCreate kind="class" schoolId={school.id} yearId={yearId} onCreated={async r=>{const fresh=await classes.refetch();if(fresh.error)throw fresh.error;if(r.yearId===yearId&&fresh.data?.some(c=>c.id===r.id))set('classId',r.id);else throw new Error('Đã tạo lớp nhưng không thuộc năm học đang chọn.');}}/>} required placeholder="Chọn lớp" value={v.classId} onChange={(e) => set("classId", e.target.value)} error={errors.classId}
+                disabled={!yearId} options={(classes.data??[]).filter((c) => c.status !== "archived").map((c) => ({ value: c.id, label: `${c.name}${c.status === "draft" ? " (nháp)" : ""}` }))} helper={!yearId?'Chọn năm học trước.':!classes.data?.length?'Chưa có lớp trong năm học này.':undefined} /></div>
+              {v.kind === "subject" && <div data-field="subjectId"><SelectField label="Môn" labelAction={<QuickCreate kind="subject" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.error)throw fresh.error;if(fresh.data?.subjects?.some(s=>s.id===r.id))set('subjectId',r.id);else throw new Error('Môn mới chưa thuộc lựa chọn phân công hiện tại.');}}/>} required placeholder="Chọn môn" value={v.subjectId} onChange={(e) => set("subjectId", e.target.value)} error={errors.subjectId}
                 options={opts.data.subjects.map((s) => ({ value: s.id, label: s.name }))} /></div>}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

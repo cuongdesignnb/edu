@@ -54,7 +54,7 @@ export const connectedClassroomRepo=withStaffAccess({
   async dutyChoices(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate:string){return readDutyWorkspace(schoolId,yearId,classId,mondayOf(onDate),onDate);},
   async saveDuty(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof saveDutyTask>[2]){return saveDutyTask(schoolId,classId,input);},
   async deleteDuty(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof removeDutyTask>[2]){return removeDutyTask(schoolId,classId,input);},
-  async groups(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readGroupWorkspace(schoolId,yearId,classId);},
+  async groups(_ctx:Ctx,schoolId:string,yearId:string,classId:string,onDate?:string){return readGroupWorkspace(schoolId,yearId,classId,onDate);},
   async seating(_ctx:Ctx,schoolId:string,yearId:string,classId:string){return readSeatingWorkspace(schoolId,yearId,classId);},
   async setGroup(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof moveClassGroup>[2]){return moveClassGroup(schoolId,classId,input);},
   async setPosition(_ctx:Ctx,schoolId:string,classId:string,input:Parameters<typeof changeClassPosition>[2]){return changeClassPosition(schoolId,classId,input);},

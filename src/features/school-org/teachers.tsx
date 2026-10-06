@@ -1,4 +1,6 @@
 "use client";
+import {canQuickCreate} from "@/features/forms/quick-create";
+import {readStaffContext} from "@/lib/api/session";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
@@ -132,7 +134,7 @@ export function TeachersScreen() {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card className="min-w-0">
           <CardHeader title="Danh sách giáo viên" icon={<Presentation className="size-6 text-primary" />} action={<>
-            {q.data?.canInvite && actions.has("role.manage") && <Button variant="primary" onClick={()=>setDirect(true)}>Tạo tài khoản giáo viên</Button>}
+            {canQuickCreate(readStaffContext(),"teacher",school.id) && <Button variant="primary" onClick={()=>setDirect(true)}>Tạo tài khoản giáo viên</Button>}
             {q.data?.canInvite && <Button variant="primary" icon={<UserPlus className="size-4" />} onClick={() => setInvite(true)}>Gửi lời mời</Button>}
             {q.data?.canExport && <ActionMenu label="Xuất dữ liệu" trigger={<Button icon={<Download className="size-4" />} loading={exporting} iconRight={<ChevronDown className="size-4" />}>Xuất dữ liệu</Button>} items={[
               { label: "Tệp CSV (UTF-8)", icon: <FileText />, hint: "Theo bộ lọc hiện tại", onSelect: () => exportRows("csv") },

@@ -12,7 +12,8 @@ export type ScheduleChange=ApiSchemas['ScheduleLessonChange'];
 const invalid=()=>new RepoError('READ_ERROR','Máy chủ chưa xác nhận đầy đủ lịch của phạm vi này.');
 const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 export function nativeScheduleWorkspace(value:Workspace,schoolId:string,classId?:string,yearId?:string,week?:string){
- if(!value||value.schoolId!==schoolId||classId&&value.classId!==classId||yearId&&value.yearId!==yearId||week&&value.weekStart!==week||mondayOf(value.weekStart)!==value.weekStart||!Array.isArray(value.lessons)||value.lessons.length>5000||!Array.isArray(value.changes)||value.changes.length>2000||!value.options||!Array.isArray(value.options.classes))throw invalid();
+ if(!value||value.schoolId!==schoolId||classId&&value.classId!==classId||yearId&&(classId?value.yearId!==yearId:value.yearId!==null&&value.yearId!==yearId)||week&&value.weekStart!==week||mondayOf(value.weekStart)!==value.weekStart||!Array.isArray(value.lessons)||value.lessons.length>5000||!Array.isArray(value.changes)||value.changes.length>2000||!value.options||!Array.isArray(value.options.classes))throw invalid();
+ if(yearId&&value.options.classes.some(cl=>cl.yearId!==yearId))throw invalid();
  const visible=new Map(value.options.classes.map(cl=>[cl.id,cl]));
  if(classId&&!visible.has(classId)||new Set(value.lessons.map(l=>l.id)).size!==value.lessons.length||new Set(value.changes.map(l=>l.id)).size!==value.changes.length)throw invalid();
  for(const lesson of value.lessons){const cls=visible.get(lesson.classId);if(!uuid(lesson.id)||!cls||lesson.yearId!==cls.yearId||classId&&lesson.classId!==classId||lesson.date<value.weekStart||lesson.date>=addDays(value.weekStart,7)||!Number.isInteger(lesson.period)||lesson.period<1||lesson.end<=lesson.start||Date.parse(lesson.endsAt)<=Date.parse(lesson.startsAt)||lesson.source.lessonId!==lesson.id||lesson.source.lessonVersion!==lesson.version)throw invalid();}
@@ -34,8 +35,8 @@ export function scheduleClashes(lessons:Workspace['lessons']){
 
 export const connectedScheduleClassroomRepo=withStaffAccess({
  async timetable(_ctx:Ctx,schoolId:string,yearId:string,classId:string,weekStart?:string){return classResult(await workspace(schoolId,{yearId,classId,weekStart}));},
- async schoolTimetable(_ctx:Ctx,schoolId:string,filter:{classId?:string;membershipId?:string;roomId?:string;weekStart:string}){
-  const d=await workspace(schoolId,{classId:filter.classId,weekStart:filter.weekStart}),cells=d.lessons.filter(l=>(!filter.membershipId||l.teacherMembershipId===filter.membershipId)&&(!filter.roomId||l.roomId===filter.roomId));
+ async schoolTimetable(_ctx:Ctx,schoolId:string,filter:{yearId?:string;classId?:string;membershipId?:string;roomId?:string;weekStart:string}){
+  const d=await workspace(schoolId,{yearId:filter.yearId,classId:filter.classId,weekStart:filter.weekStart}),cells=d.lessons.filter(l=>(!filter.membershipId||l.teacherMembershipId===filter.membershipId)&&(!filter.roomId||l.roomId===filter.roomId));
   return {days:Array.from({length:7},(_,i)=>addDays(d.weekStart,i)),cells,clashes:scheduleClashes(d.lessons),options:d.options,canManage:d.canManage,canPublish:d.canPublish};
  },
  async checkLessonChange(_ctx:Ctx,schoolId:string,input:{classId:string;date:string;period:number;teacherMembershipId?:string;roomId?:string;subjectId?:string}){return (await http('checkScheduleLessonChange',{params:{schoolId},body:{classId:input.classId,date:input.date,period:input.period,teacherMembershipId:input.teacherMembershipId??null,roomId:input.roomId??null,subjectId:input.subjectId??null}})).data.conflicts;},
@@ -58,5 +59,5 @@ export const connectedScheduleClassroomRepo=withStaffAccess({
 });
 export const connectedScheduleSchoolOpsRepo=withStaffAccess({
  async lessonSlot(_ctx:Ctx,schoolId:string,classId:string,date:string,period:number){const d=await workspace(schoolId,{classId,weekStart:mondayOf(date)}),cls=d.options.classes.find(c=>c.id===classId)!;if(!d.canEdit)throw new RepoError('FORBIDDEN','Bạn không có quyền đổi tiết lớp này.');const lesson=d.lessons.find(l=>l.date===date&&l.period===period)??null;return {className:cls.name,yearId:cls.yearId,date,period,start:lesson?.start,end:lesson?.end,isPast:date<d.today,today:d.today,lesson,draft:d.changes.find(ch=>ch.status==='draft'&&ch.date===date&&ch.period===period)??null,options:d.options,publicationId:d.publicationId,canPublish:d.canPublish};},
- async weekLessonChanges(_ctx:Ctx,schoolId:string,weekStart:string){return (await workspace(schoolId,{weekStart})).changes;},
+ async weekLessonChanges(_ctx:Ctx,schoolId:string,weekStart:string,yearId?:string){return (await workspace(schoolId,{weekStart,yearId})).changes;},
 });

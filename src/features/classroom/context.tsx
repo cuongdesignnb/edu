@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useLayoutEffect, useRef, type ReactNode } from "react";
+import {visibleTabScroll} from './tab-scroll';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
@@ -72,32 +73,48 @@ const MATCH: Record<string, string[]> = {
 
 /** C007 — class section nav: full row on desktop, 4 items + "Thêm" menu on small screens. */
 export function ClassTabs() {
-  const { header, base } = useClassroom();
+  const { header, base, schoolId, yearId, classId } = useClassroom();
+  const row=useRef<HTMLDivElement>(null);
+  const storageKey=`class-tabs:${schoolId}:${yearId}:${classId}`;
+  const saveScroll=()=>{if(row.current)try{sessionStorage.setItem(storageKey,String(row.current.scrollLeft));}catch{/* Storage may be unavailable. */}};
   const pathname = usePathname();
   const rel = pathname.slice(base.length) || "";
   const isActive = (key: string, path: string) => (key === "overview" ? rel === "" : (MATCH[key] ?? [path]).some((p) => rel === p || rel.startsWith(`${p}/`)));
   const tabs = header.tabs;
   const primary = tabs.slice(0, 4);
   const rest = tabs.slice(4);
+  useLayoutEffect(()=>{
+    const el=row.current;if(!el)return;
+    const restore=()=>{
+      if(!el.clientWidth)return;
+      let left=el.scrollLeft;try{const stored=sessionStorage.getItem(storageKey);if(stored!==null&&Number.isFinite(Number(stored)))left=Number(stored);}catch{/* Use the current layout. */}
+      const active=el.querySelector<HTMLElement>('[aria-current="page"]');
+      // Rectangle differences also work when the row is not the offsetParent.
+      const tab=active?{left:active.getBoundingClientRect().left-el.getBoundingClientRect().left+el.scrollLeft,width:active.offsetWidth}:null;
+      el.scrollTo({left:visibleTabScroll(left,el.clientWidth,el.scrollWidth,tab),behavior:'auto'});
+    };
+    restore();const observer=new ResizeObserver(restore);observer.observe(el);
+    return()=>{observer.disconnect();};
+  },[pathname,storageKey,tabs]);
   const item = (t: (typeof tabs)[number], extra?: string) => (
-    <Link data-tour={`class-${t.key}`} key={t.key} href={`${base}${t.path}`} className={clsx("tab flex-none whitespace-nowrap !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
+    <Link data-tour={`class-${t.key}`} key={t.key} href={`${base}${t.path}`} scroll={false} onClick={saveScroll} className={clsx("tab flex-none whitespace-nowrap !gap-2 [&_svg]:size-[18px]", extra)} aria-current={isActive(t.key, t.path) ? "page" : undefined}>
       <span aria-hidden>{TAB_ICONS[t.key]}</span>{t.label}
     </Link>
   );
   return (
     <nav className="card no-print flex items-center gap-1 p-1.5" aria-label={`Mục của lớp ${header.class.name}`}>
-      <div className="hidden min-w-0 flex-1 gap-1 overflow-x-auto lg:flex">{tabs.map((t) => item(t))}</div>
+      <div ref={row} data-class-tabs="desktop" onScroll={saveScroll} className="hidden min-w-0 flex-1 gap-1 overflow-x-auto lg:flex">{tabs.map((t) => item(t))}</div>
       <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto lg:hidden">{primary.map((t) => item(t, "!px-3"))}</div>
       {rest.length > 0 && (
         <M.Root modal={false}>
           <M.Trigger asChild>
-            <button data-tour="class-more" type="button" className={clsx("tab !px-3 lg:hidden", rest.some((t) => isActive(t.key, t.path)) && "bg-primary-light text-primary-strong")}><MoreHorizontal className="size-[18px]" aria-hidden />Thêm</button>
+            <button data-tour="class-more" type="button" aria-current={rest.some(t=>isActive(t.key,t.path))?'page':undefined} className={clsx("tab !px-3 lg:hidden", rest.some((t) => isActive(t.key, t.path)) && "bg-primary-light text-primary-strong")}><MoreHorizontal className="size-[18px]" aria-hidden />Thêm</button>
           </M.Trigger>
           <M.Portal>
             <M.Content align="end" sideOffset={6} className="z-[70] min-w-[220px] rounded-xl border border-line bg-white p-1.5 shadow-[var(--shadow-pop)]">
               {rest.map((t) => (
                 <M.Item key={t.key} asChild>
-                  <Link href={`${base}${t.path}`} className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm text-ink outline-none data-[highlighted]:bg-primary-light [&_svg]:size-4 [&_svg]:text-muted">{TAB_ICONS[t.key]}{t.label}</Link>
+                  <Link href={`${base}${t.path}`} scroll={false} onClick={saveScroll} aria-current={isActive(t.key,t.path)?'page':undefined} className="flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm text-ink outline-none data-[highlighted]:bg-primary-light [&_svg]:size-4 [&_svg]:text-muted">{TAB_ICONS[t.key]}{t.label}</Link>
                 </M.Item>
               ))}
             </M.Content>

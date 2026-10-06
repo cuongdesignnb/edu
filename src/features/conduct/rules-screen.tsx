@@ -53,7 +53,7 @@ function diffRules(a: RuleItem, b: RuleItem) {
 /** CL12 — rule set in effect at this class (read-only; editing lives in school SC30). */
 export function RulesScreen() {
   const { schoolId, yearId, classId, base } = useClassroom();
-  const q = useRepo(["conduct-class-rules", classId], (ctx) => conductRepo.classRules(ctx, schoolId, yearId, classId));
+  const q = useRepo(["conduct-class-rules", schoolId, yearId, classId], (ctx) => conductRepo.classRules(ctx, schoolId, yearId, classId));
   return (
     <div className="page">
       <ClassHeader title="Nội quy áp dụng tại lớp" subtitle="Bộ nội quy nhà trường ban hành, cách tính điểm tuần và thời hạn nhập" crumbs={[{ label: "Thi đua", href: `${base}/conduct` }, { label: "Nội quy" }]} />

@@ -41,7 +41,7 @@ export function ActivitiesDashboard() {
   const { schoolId, yearId, classId, base, header, readOnly } = useClassroom();
   const [status, setStatus] = useState("");
   const [q, setQ] = useState("");
-  const list = useRepo(["activities", classId, status, q], (ctx) => activitiesRepo.list(ctx, schoolId, yearId, classId, { status: status || undefined, q }));
+  const list = useRepo(["activities", schoolId, yearId, classId, status, q], (ctx) => activitiesRepo.list(ctx, schoolId, yearId, classId, { status: status || undefined, q }));
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Hoạt động lớp" subtitle={<>Quản lý hoạt động, minh chứng và thông báo của lớp {header.class.name}</>} />
@@ -179,7 +179,7 @@ function Kpi({ icon, tone, label, value, hint }: { icon: ReactNode; tone: "green
 
 function AnnouncementKpi() {
   const { schoolId, yearId, classId, base,can } = useClassroom();
-  const q = useRepo(["class-ann-panel", classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId),{enabled:can('announcement.class')});
+  const q = useRepo(["class-ann-panel", schoolId, yearId, classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId),{enabled:can('announcement.class')});
   if(!can('announcement.class'))return null;
   if(q.isLoading)return <Skeleton className="col-span-2 h-16" />;
   if(q.error)return <div className="col-span-2"><ErrorState compact error={q.error} onRetry={()=>q.refetch()} /></div>;
@@ -209,7 +209,7 @@ const RECENT_ICON: Record<string, { icon: ReactNode; cls: string }> = {
 function RecentList({ base }: { base: string }) {
   const { schoolId, yearId, classId } = useClassroom();
   const ctx = useCtx();
-  const q = useRepo(["activity-recent", classId], (c) => activitiesExtraRepo.recentFeed(c, schoolId, yearId, classId, 5));
+  const q = useRepo(["activity-recent", schoolId, yearId, classId], (c) => activitiesExtraRepo.recentFeed(c, schoolId, yearId, classId, 5));
   if (q.isLoading) return <div className="px-5 pb-5"><Skeleton className="h-40" /></div>;
   if (q.error) return <ErrorState compact error={q.error} onRetry={() => q.refetch()} />;
   const items = q.data ?? [];
@@ -235,7 +235,7 @@ function RecentList({ base }: { base: string }) {
 
 function PendingEvidence({ base, canEvidence }: { base: string; canEvidence: boolean }) {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["evidence", classId, "pending", "", ""], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, { status: "pending" }));
+  const q = useRepo(["evidence", schoolId, yearId, classId, "pending", "", ""], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, { status: "pending" }));
   const [review, setReview] = useState<{ ids: string[]; decision: ReviewDecision; subject: string } | null>(null);
   const [view, setView] = useState<EvidenceData["items"][number] | null>(null);
   return (
@@ -278,7 +278,7 @@ function PendingEvidence({ base, canEvidence }: { base: string; canEvidence: boo
 
 function UpcomingAnnouncements({ base }: { base: string }) {
   const { schoolId, yearId, classId, can } = useClassroom();
-  const q = useRepo(["class-ann-panel", classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId));
+  const q = useRepo(["class-ann-panel", schoolId, yearId, classId], (ctx) => activitiesExtraRepo.announcementsPanel(ctx, schoolId, yearId, classId));
   if (!can("announcement.class")) return null;
   return (
     <Card className="min-w-0">
@@ -312,7 +312,7 @@ function UpcomingAnnouncements({ base }: { base: string }) {
 
 function RecordForActivity({ activityId, onClose }: { activityId: string; onClose: () => void }) {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["evidence", classId, "", "", ""], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, {}));
+  const q = useRepo(["evidence", schoolId, yearId, classId, "", "", ""], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, {}));
   if(q.isLoading)return <Skeleton className="h-24" />;
   if(q.error)return <ErrorState compact error={q.error} onRetry={()=>q.refetch()} />;
   if (!q.data) return null;

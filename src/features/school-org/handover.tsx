@@ -1,4 +1,5 @@
 "use client";
+import {QuickCreate} from "@/features/forms/quick-create";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
@@ -129,7 +130,7 @@ export function HandoverWizard() {
               ))}
               {step === 2 && (opts.error ? <ErrorState error={opts.error} onRetry={() => opts.refetch()} compact /> : !opts.data ? <Skeleton className="h-16" /> : !opts.data.canAssign || !opts.data.teachers ? <DeniedState compact message="Bạn không được phép chọn người nhận." /> : (
                 <div className="max-w-md">
-                  <Combobox label="Giáo viên nhận chủ nhiệm" required placeholder="Chọn giáo viên" value={to} onChange={(v) => { setTo(v as string); setErrors({}); }} error={errors.toMembershipId}
+                  <Combobox label="Giáo viên nhận chủ nhiệm" labelAction={<QuickCreate kind="teacher" schoolId={school.id} onCreated={async r=>{const fresh=await opts.refetch();if(fresh.data?.teachers?.some(t=>t.membershipId===r.id&&t.membershipId!==cur?.membershipId))setTo(r.id);else throw new Error("Đã tạo giáo viên nhưng chưa đủ điều kiện nhận bàn giao.");}}/>} required placeholder="Chọn giáo viên" value={to} onChange={(v) => { setTo(v as string); setErrors({}); }} error={errors.toMembershipId}
                     options={(opts.data?.teachers ?? []).filter((t) => t.membershipId !== cur?.membershipId).map((t) => ({ value: t.membershipId, label: t.name, hint: t.department }))}
                     helper="Giáo viên đang chủ nhiệm lớp khác trong cùng năm sẽ bị từ chối." />
                 </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { CalendarCheck, Trophy, Sparkles, LayoutList, Link2, ArrowRight, Download, Filter, Info, BookX } from "lucide-react";
 import { reportsRepo } from "@/lib/repositories";
@@ -88,9 +88,15 @@ export function SchoolReportView({ schoolId, type, today, initial = {} }: { scho
   }, [type, gradeId, effWeek, range, from, to, weeks, today, cat.data?.yearId]);
   const q = useRepo(["school-report", schoolId, type, params], (c) => reportsRepo.school(c, schoolId, type, params), { enabled: !!cat.data });
   const grades = cat.data?.grades ?? [];
+  useEffect(() => {
+    if (!cat.data || cat.isFetching || cat.error) return;
+    if (weekId && !cat.data.weeks.some(w => w.id === weekId)) setWeekId("");
+    if (gradeId && !cat.data.grades.some(g => g.id === gradeId)) setGradeId("");
+  }, [cat.data, cat.isFetching, cat.error, weekId, gradeId]);
   const gradeName = grades.find((g) => g.id === gradeId)?.name;
   const fileBase = q.data ? `${q.data.title} ${q.data.periodLabel}${gradeName ? ` ${gradeName}` : ""}` : type;
   if (cat.error) return <div className="card"><ErrorState error={cat.error} onRetry={() => cat.refetch()} /></div>;
+  if (!cat.data) return <Skeleton className="h-48" />;
   return (
     <div className="space-y-5">
       <Card className="no-print">

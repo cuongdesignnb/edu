@@ -93,7 +93,7 @@ function DictTable({ kind, rows, canManage }: { kind: Kind; rows: Item[]; canMan
   );
 }
 
-function ItemDialog({ kind, item, onClose }: { kind: Kind; item: Item | "new" | null; onClose: () => void }) {
+export function ItemDialog({ kind, item, onClose, onSaved }: { kind: Kind; item: Item | "new" | null; onClose: () => void; onSaved?:(item:Item)=>void|Promise<void> }) {
   const { school } = useSchool();
   const cur = item && item !== "new" ? item : null;
   const init = { name: cur?.name ?? "", code: cur?.code ?? "", level: cur?.level ?? undefined, color: cur?.color ?? "#0a72e6", capacity: (cur?.capacity ?? 40) as number | undefined };
@@ -115,7 +115,7 @@ function ItemDialog({ kind, item, onClose }: { kind: Kind; item: Item | "new" | 
     if (Object.keys(e).length) { setErrors(e); return; }
     const payload = { id: cur?.id, version: cur?.version, name: v.name.trim(), ...(kind === "grade" ? { level: v.level } : { code: v.code.trim().toUpperCase() }), ...(kind === "subject" ? { color: v.color } : {}), ...(kind === "room" ? { capacity: v.capacity } : {}) };
     const r = await cmd.run(payload);
-    if (r) close();
+    if (r) { await onSaved?.(r); close(); }
   };
   return (
     <>

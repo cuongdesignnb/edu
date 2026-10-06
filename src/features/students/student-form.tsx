@@ -1,14 +1,15 @@
 "use client";
 import { StickyActionBar } from "@/components/ui/sticky-bar";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import {QuickCreate} from '@/features/forms/quick-create';
 import { useRouter } from "next/navigation";
 import { Save, UserPlus, Users, Info, Lock } from "lucide-react";
 import type { Gender, GuardianRelationship } from "@/lib/model/types";
-import { studentsExtraRepo, studentsRepo } from "@/lib/repositories";
-import { useCommand, useRepo } from "@/lib/query/hooks";
+import { schoolRepo, studentsExtraRepo, studentsRepo } from "@/lib/repositories";
+import { useCommand, useCtx, useRepo } from "@/lib/query/hooks";
 import { addDays } from "@/lib/calendar";
 import { fmtDate, fmtDateTime } from "@/lib/formatters";
-import { useSchool } from "@/components/layout/shells";
+import { useSchool, useOptionalSchool } from "@/components/layout/shells";
 import { PageHeader } from "@/components/layout/page";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,20 +22,30 @@ import { SchoolSourceState } from "@/features/school-org/common";
 const LABELS: Record<string, string> = { fullName: "Họ và tên", dob: "Ngày sinh", gender: "Giới tính", code: "Mã học sinh", classId: "Lớp", startDate: "Ngày vào lớp", "guardian.fullName": "Họ tên người giám hộ", "guardian.phone": "SĐT người giám hộ" };
 
 /* ------------------------------ SC17 — add student ------------------------------ */
-export function StudentCreateForm({ schoolId }: { schoolId: string }) {
+type CreateProps={schoolId:string;initialYearId?:string;initialClassId?:string;embedded?:boolean;onDirtyChange?:(dirty:boolean)=>void;onCancel?:()=>void;onCreated?:(row:Awaited<ReturnType<typeof studentsRepo.create>>)=>void|Promise<void>};
+export function StudentCreateForm(props:CreateProps) {
+  const {schoolId}=props;
   const q = useRepo(["student-create-options", schoolId], (c) => studentsExtraRepo.createOptions(c, schoolId));
-  return <SchoolSourceState query={q}>{(source) => <CreateBody schoolId={schoolId} source={source} />}</SchoolSourceState>;
+  return <SchoolSourceState query={q}>{(source) => <CreateBody {...props} source={source} />}</SchoolSourceState>;
 }
 
-function CreateBody({schoolId,source}:{schoolId:string;source:Awaited<ReturnType<typeof studentsExtraRepo.createOptions>>}) {
+function CreateBody({schoolId,source,initialYearId,initialClassId,embedded=false,onCreated,onDirtyChange,onCancel}:CreateProps&{source:Awaited<ReturnType<typeof studentsExtraRepo.createOptions>>}) {
+  const ctx=useCtx(schoolId);
+  const school=useOptionalSchool();
   const router = useRouter();
   const leave = useLeaveGuard();
   const base = `/school/${schoolId}`;
-  const [init] = useState(() => ({ fullName: "", dob: undefined as string | undefined, gender: "" as Gender | "", code: "", classId: "", startDate: source.today as string | undefined, withGuardian: false, gName: "", gRelation: "Mẹ" as GuardianRelationship["relation"], gPhone: "" }));
+  const [createdYears,setCreatedYears]=useState<{id:string;name:string}[]>([]);
+  const [yearId,setYearId]=useState(initialYearId??source.classes.find(c=>c.id===initialClassId)?.yearId??school?.yearId??'');
+  const [init] = useState(() => ({ fullName: "", dob: undefined as string | undefined, gender: "" as Gender | "", code: "", classId: initialClassId??"", startDate: source.today as string | undefined, withGuardian: false, gName: "", gRelation: "Mẹ" as GuardianRelationship["relation"], gPhone: "" }));
   const [f, setF] = useState(init);
   const chosen = source.classes.find((c) => c.id === f.classId);
+  const classes=source.classes.filter(c=>c.yearId===yearId);
+  const years=[...new Map([...createdYears,...(school?.years??[]).filter(y=>y.status!=='archived').map(y=>({id:y.id,name:y.label})),...source.classes.map(c=>({id:c.yearId,name:c.yearName}))].map(y=>[y.id,y])).values()];
+  useEffect(()=>{if(f.classId&&!classes.some(c=>c.id===f.classId))setF(old=>({...old,classId:'',withGuardian:false}));},[yearId,source.classes,f.classId]);
   const [local, setLocal] = useState<Record<string, string>>({});
   const dirty = JSON.stringify(f) !== JSON.stringify(init);
+  useEffect(()=>{onDirtyChange?.(dirty);},[dirty,onDirtyChange]);
   const cmd = useCommand((c, input: Parameters<typeof studentsRepo.create>[2]) => studentsRepo.create(c, schoolId, input), { success: (s) => `Đã thêm học sinh ${s.fullName} (${s.code})` });
 
   const save = useCallback(async () => {
@@ -56,10 +67,10 @@ function CreateBody({schoolId,source}:{schoolId:string;source:Awaited<ReturnType
     if (Object.keys(e).length) return false;
     const s = await cmd.run({ fullName: f.fullName, dob: f.dob!, gender: f.gender as Gender, code: f.code.trim() || undefined, classId: f.classId, startDate: f.startDate!,
       guardian: f.withGuardian ? { fullName: f.gName, relation: f.gRelation, phone: f.gPhone.trim() } : undefined });
-    if (s) { setF(init); router.push(`${base}/students/${s.id}`); return true; }
+    if (s) { setF(init);if(onCreated)await onCreated(s);else router.push(`${base}/students/${s.id}`); return true; }
     return false;
-  }, [f, cmd, init, router, base, chosen]);
-  useUnsavedChanges(dirty && !cmd.pending, save);
+  }, [f, cmd, init, router, base, chosen,onCreated]);
+  useUnsavedChanges(dirty && !cmd.pending&&!embedded, save);
   const errs = { ...local, ...fieldErrorsOf(cmd.error) };
 
   return (
@@ -78,8 +89,9 @@ function CreateBody({schoolId,source}:{schoolId:string;source:Awaited<ReturnType
               <div data-field="dob"><DateField label="Ngày sinh" required value={f.dob} onChange={(v) => setF({ ...f, dob: v })} max={addDays(source.today, -365 * 5)} error={errs.dob} /></div>
               <div data-field="gender"><RadioGroup label="Giới tính" value={f.gender} onChange={(v) => setF({ ...f, gender: v })} direction="row" error={errs.gender} options={[{ value: "Nam", label: "Nam" }, { value: "Nữ", label: "Nữ" }]} /></div>
               <div data-field="code"><TextField label="Mã học sinh (tùy chọn)" value={f.code} onChange={(e) => setF({ ...f, code: e.target.value.toUpperCase() })} error={errs.code} helper="Để trống để hệ thống tự cấp mã. Mã phải là duy nhất trong trường." /></div>
-              <div data-field="classId"><SelectField label="Lớp" required value={f.classId} onChange={(e) => setF({ ...f, classId: e.target.value })} error={errs.classId} placeholder="Chọn lớp"
-                options={source.classes.map((c) => ({ value: c.id, label: `${c.name} · ${c.yearName}${c.status === "DRAFT" ? " (nháp)" : ""}` }))} /></div>
+              <SelectField label="Năm học" required value={yearId} placeholder="Chọn năm học" onChange={e=>{setYearId(e.target.value);setF(old=>({...old,classId:'',withGuardian:false}));}} options={years.map(y=>({value:y.id,label:y.name}))} labelAction={<QuickCreate kind="year" schoolId={schoolId} onCreated={async r=>{const fresh=await schoolRepo.years(ctx,schoolId),year=fresh.find(y=>y.id===r.id&&y.status!=='archived');if(!year)throw new Error('Đã tạo năm học nhưng chưa thuộc lựa chọn hợp lệ.');setCreatedYears(old=>[...old.filter(y=>y.id!==year.id),{id:year.id,name:year.label}]);setYearId(r.id);setF(old=>({...old,classId:'',withGuardian:false}));}}/>}/>
+              <div data-field="classId"><SelectField label="Lớp" required value={f.classId} disabled={!yearId} onChange={(e) => setF({ ...f, classId: e.target.value,withGuardian:false })} error={errs.classId} placeholder="Chọn lớp" labelAction={<QuickCreate kind="class" schoolId={schoolId} yearId={yearId} disabled={!yearId} onCreated={async r=>{const fresh=await studentsExtraRepo.createOptions(ctx,schoolId);if(r.yearId===yearId&&fresh.classes.some(c=>c.id===r.id&&c.yearId===yearId))setF(old=>({...old,classId:r.id,withGuardian:false}));else throw new Error('Đã tạo lớp ở năm học khác hoặc lớp chưa thuộc lựa chọn hiện tại. Chọn đúng năm học trước khi chọn lớp.');}}/>}
+                options={classes.map((c) => ({ value: c.id, label: `${c.name} · ${c.yearName}${c.status === "DRAFT" ? " (nháp)" : ""}` }))} /></div>
               <div data-field="startDate"><DateField label="Ngày vào lớp" required min={chosen?.yearStartsOn} max={chosen?.yearEndsOn} value={f.startDate} onChange={(v) => setF({ ...f, startDate: v })} error={errs.startDate} /></div>
             </div>
           </Card>
@@ -97,7 +109,7 @@ function CreateBody({schoolId,source}:{schoolId:string;source:Awaited<ReturnType
             </div>
           </Card>
           <div className="flex flex-wrap justify-end gap-2">
-            <Button variant="ghost" onClick={() => leave(() => router.push(`${base}/students`))} disabled={cmd.pending}>Hủy</Button>
+            <Button variant="ghost" onClick={() => embedded?onCancel?.():leave(() => router.push(`${base}/students`))} disabled={cmd.pending}>Hủy</Button>
             <Button type="submit" variant="primary" icon={<Save className="size-4" />} loading={cmd.pending}>Lưu học sinh</Button>
           </div>
         </div>

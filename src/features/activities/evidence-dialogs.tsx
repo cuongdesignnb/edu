@@ -1,9 +1,10 @@
 "use client";
+import {QuickActivity} from "@/features/forms/quick-activity";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CheckCircle2, Download, FileWarning, RotateCcw, XCircle } from "lucide-react";
 import type { FileAsset } from "@/lib/model/types";
 import { activitiesRepo, UPLOAD_LIMITS } from "@/lib/repositories";
-import { useCommand } from "@/lib/query/hooks";
+import { useCommand,useCtx } from "@/lib/query/hooks";
 import { fmtBytes, fmtDateTime } from "@/lib/formatters";
 import { useClassroom } from "@/features/classroom/context";
 import { Modal } from "@/components/ui/dialog";
@@ -35,6 +36,7 @@ export function RecordEvidenceDialog({ open, onOpenChange, activities, students,
   activityId?: string; studentId?: string;
 }) {
   const { schoolId, yearId, classId } = useClassroom();
+  const ctx=useCtx(schoolId);
   const [activityId, setActivityId] = useState(fixedActivity ?? "");
   const [studentId, setStudentId] = useState(fixedStudent ?? "");
   const [file, setFile] = useState<File | null>(null);
@@ -44,7 +46,10 @@ export function RecordEvidenceDialog({ open, onOpenChange, activities, students,
   useEffect(() => { if (open) { setActivityId(fixedActivity ?? ""); setStudentId(fixedStudent ?? ""); setFile(null); setNote(""); setErrors({}); setAskDiscard(false); } }, [open, fixedActivity, fixedStudent]);
   const dirty = open && (!!file || !!note.trim() || (!fixedStudent && !!studentId));
   useUnsavedChanges(dirty);
-  const act = activities.find((a) => a.id === activityId);
+  const [created,setCreated]=useState<{id:string;title:string;assigned:string[]}[]>([]);
+  const available=[...activities,...created.filter(a=>!activities.some(x=>x.id===a.id))];
+  const act = available.find((a) => a.id === activityId);
+  useEffect(()=>{if(studentId&&act&&!act.assigned.includes(studentId))setStudentId('');},[act,studentId]);
   const options = useMemo(() => students.filter((s) => !act || act.assigned.includes(s.id)).map((s) => ({ value: s.id, label: s.fullName })), [students, act]);
   const cmd = useCommand((ctx, input: Parameters<typeof activitiesRepo.addEvidence>[4]) => activitiesRepo.addEvidence(ctx, schoolId, yearId, classId, input), {
     success: "Đã ghi nhận minh chứng — chờ duyệt",
@@ -72,8 +77,8 @@ export function RecordEvidenceDialog({ open, onOpenChange, activities, students,
         {fixedActivity ? (
           <InfoRow label="Hoạt động">{act?.title ?? "—"}</InfoRow>
         ) : (
-          <div data-field="activityId"><SelectField label="Hoạt động" required value={activityId} placeholder="Chọn hoạt động" error={errors.activityId}
-            options={activities.map((a) => ({ value: a.id, label: a.title }))} onChange={(e) => { setActivityId(e.target.value); setStudentId(""); }} /></div>
+          <div data-field="activityId"><SelectField label="Hoạt động" labelAction={<QuickActivity onCreated={async row=>{const detail=await activitiesRepo.detail(ctx,schoolId,yearId,classId,row.id);if(detail.activity.status==='draft'||detail.activity.status==='closed')throw new Error("Đã lưu hoạt động. Giao hoạt động trước khi ghi nhận minh chứng.");setCreated(old=>[...old,{id:row.id,title:detail.activity.title,assigned:detail.activity.assignedStudentIds}]);setActivityId(row.id);setStudentId('');}}/>} required value={activityId} placeholder="Chọn hoạt động" error={errors.activityId}
+            options={available.map((a) => ({ value: a.id, label: a.title }))} onChange={(e) => { setActivityId(e.target.value); setStudentId(""); }} /></div>
         )}
         <div data-field="studentId">
           <Combobox label="Học sinh" required value={studentId} onChange={(v) => setStudentId(String(v))} options={options} error={errors.studentId} disabled={!!fixedStudent || (!fixedActivity && !activityId)}
@@ -107,6 +112,7 @@ export function ReviewEvidenceDialog({ open, onOpenChange, evidenceIds, evidence
   open: boolean; onOpenChange: (o: boolean) => void; evidenceIds: string[]; evidenceVersions:Record<string,number>; decision: ReviewDecision; subject: string; onDone?: () => void;
 }) {
   const { schoolId, yearId, classId } = useClassroom();
+  const ctx=useCtx(schoolId);
   const [note, setNote] = useState("");
   const [share, setShare] = useState(false);
   const [error, setError] = useState<string>();

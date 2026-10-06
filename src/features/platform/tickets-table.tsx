@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, UserCheck, LifeBuoy, Inbox, Loader, Clock, CheckCircle2 } from "lucide-react";
 import { platformRepo } from "@/lib/repositories";
@@ -17,6 +17,7 @@ import { Modal } from "@/components/ui/dialog";
 import { DataTable, FilterBar, Pagination, useListQuery, type Column } from "@/components/data/table";
 import { EmptyFiltered, EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 import { TICKET_PRIORITY, TICKET_STATUS } from "./support-labels";
+import { PickerState } from "@/features/forms/picker-state";
 
 type Row = Awaited<ReturnType<typeof platformRepo.tickets>>["items"][number];
 
@@ -80,11 +81,13 @@ export function AssignDialog({ ticket, onClose }: { ticket: { id: string; title:
   const { actor } = useSession();
   const ops = useRepo(["platform-operators"], (ctx) => platformExtraRepo.operators(ctx), { enabled: !!ticket });
   const [who, setWho] = useState("");
+  useEffect(() => { setWho(""); }, [ticket?.id]);
   const cmd = useCommand((ctx, id: string, uid: string) => platformExtraRepo.assignTicket(ctx, id, uid, ticket?.version), { success: "Đã phân công người xử lý", onSuccess: onClose });
   const value = who || ticket?.assigneeUserId || (actor.kind === "platform" ? actor.userId : "");
   return (
     <Modal open={!!ticket} onOpenChange={(o) => { if (!o) { setWho(""); onClose(); } }} size="sm" busy={cmd.pending} title="Phân công người xử lý" description={ticket?.title}
-      footer={<><Button variant="ghost" onClick={onClose} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} disabled={!value || value === ticket?.assigneeUserId} onClick={() => ticket && cmd.run(ticket.id, value)}>Phân công</Button></>}>
+      footer={<><Button variant="ghost" onClick={onClose} disabled={cmd.pending}>Hủy</Button><Button variant="primary" loading={cmd.pending} disabled={ops.isFetching || ops.isError || !ops.data?.some(o => o.id === value) || value === ticket?.assigneeUserId} onClick={() => ticket && cmd.run(ticket.id, value)}>Phân công</Button></>}>
+      <PickerState query={ops} empty={!ops.data?.length} emptyText="Chưa có người vận hành phù hợp để phân công." />
       <SelectField label="Người xử lý (vận hành nền tảng)" value={value} onChange={(e) => setWho(e.target.value)} options={(ops.data ?? []).map((o) => ({ value: o.id, label: o.name }))} helper="Chỉ phân công nội bộ nền tảng. Việc này không cấp quyền xem dữ liệu của trường." />
     </Modal>
   );

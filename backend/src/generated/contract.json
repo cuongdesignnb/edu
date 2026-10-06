@@ -104365,6 +104365,14 @@
             "type": "string",
             "format": "uuid"
           }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
         }
       ],
       "responses": {
@@ -107304,6 +107312,14 @@
           "schema": {
             "type": "string",
             "format": "uuid"
+          }
+        },
+        {
+          "name": "onDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
           }
         }
       ],

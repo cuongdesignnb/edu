@@ -81,6 +81,11 @@ export function TransferDialog({ open, onOpenChange, schoolId, yearId, classId, 
     void cmd.run({ studentId,enrollmentId:selected.enrollmentId,expectedEnrollmentVersion:selected.enrollmentVersion,kind,toClassId:kind==='transfer'?to:undefined,effectiveDate:date,reason });
   };
   const choices=targets.isError||targets.isFetching?undefined:targets.data;
+  useEffect(() => {
+    if (!choices) return;
+    if (!preset && studentId && !choices.students.some(s => s.id === studentId)) setStudentId("");
+    if (to && !choices.targets.some(t => t.id === to)) setTo("");
+  }, [choices, preset, studentId, to]);
   const s = choices?.students.find((x) => x.id === studentId);
   return (
     <Modal open={open} onOpenChange={onOpenChange} title="Đề nghị chuyển lớp / ngừng theo học" size="md" busy={cmd.pending}
@@ -94,12 +99,12 @@ export function TransferDialog({ open, onOpenChange, schoolId, yearId, classId, 
             : <SelectField label="Học sinh" required value={studentId} onChange={(e) => setStudentId(e.target.value)} error={err.studentId} placeholder="Chọn học sinh…" disabled={!choices} options={choices?.students.map(x=>({value:x.id,label:`${x.fullName} (${x.studentCode})`}))??[]} />}
           {preset && err.studentId && <p className="error-text mt-1">{err.studentId}</p>}
         </div>
-        <RadioGroup label="Loại đề nghị" direction="row" value={kind} onChange={setKind} options={[{ value: "transfer", label: "Chuyển sang lớp khác" }, { value: "leave", label: "Ngừng theo học" }]} />
+        <RadioGroup label="Loại đề nghị" direction="row" value={kind} onChange={k => {setKind(k);setTo("");}} options={[{ value: "transfer", label: "Chuyển sang lớp khác" }, { value: "leave", label: "Ngừng theo học" }]} />
         {kind === "transfer" && (
           <div data-field="toClassId"><SelectField label="Lớp đích (cùng năm học)" required value={to} onChange={(e) => setTo(e.target.value)} error={err.toClassId} placeholder={targets.isLoading ? "Đang tải…" : "Chọn lớp…"}
             disabled={!choices} options={choices?.targets.map(t=>({value:t.id,label:`${t.name} — ${t.size}${t.capacity===null?'':`/${t.capacity}`} học sinh`,disabled:t.capacity!==null&&t.size>=t.capacity}))??[]} /></div>
         )}
-        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={date} onChange={setDate} min={ctx.today} max={choices?inclusiveDate(choices.endsOn):undefined} error={err.effectiveDate} /></div>
+        <div data-field="effectiveDate"><DateField label="Ngày hiệu lực" required value={date} onChange={v => {setDate(v);setTo("");if(!preset)setStudentId("");}} min={ctx.today} max={choices?inclusiveDate(choices.endsOn):undefined} error={err.effectiveDate} /></div>
         <div data-field="reason"><TextArea label="Lý do" required rows={3} value={reason} onChange={(e) => setReason(e.target.value)} error={err.reason} maxChars={300} /></div>
         <Callout tone="neutral">Đây là đề nghị. Nhà trường duyệt mới thay đổi lớp; hồ sơ và lịch sử ở lớp {"hiện tại"} không bị xóa.</Callout>
       </div>

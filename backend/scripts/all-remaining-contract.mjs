@@ -3,7 +3,7 @@ export function applyAllRemainingContract(spec,extendOperation,operations){
  // These aggregate workspaces contain native row DTOs; mutation inputs remain closed schemas.
  s.NotebookData={type:'object',additionalProperties:true};s.NotebookDataResponse=obj({data:ref('NotebookData'),requestId:str});s.NotebookDataPage=obj({data:arr(ref('NotebookData')),requestId:str});
  const base='/schools/{schoolId}/classes/{classId}/notebook',params=['schoolId','classId'].map(name=>({name,in:'path',required:true,schema:uuid})),week={name:'weekId',in:'query',schema:uuid};
- const add=(id,suffix,permission,body,read=false,list=false)=>{extendOperation(read?'getClass':'createRole',id,base+suffix,permission,'NotebookData',list,[],read?[...params,...(id==='getClassNotebookWorkspace'?[week]:[])]:params,body);const op=spec.paths[base+suffix][read?'get':'post'];if(!read){op.responses['200']=op.responses['201'];delete op.responses['201'];}};
+ const add=(id,suffix,permission,body,read=false,list=false)=>{extendOperation(read?'getClass':'createRole',id,base+suffix,permission,'NotebookData',list,[],read?[...params,...(id==='getClassNotebookWorkspace'?[week,{name:'onDate',in:'query',schema:day}]:[])]:params,body);const op=spec.paths[base+suffix][read?'get':'post'];if(!read){op.responses['200']=op.responses['201'];delete op.responses['201'];}};
  s.OfficerAssign=obj({enrollmentId:uuid,role:{...str,enum:['GROUP_LEADER','CLASS_LEADER','LABOR_VICE']},groupId:uuid,positionId:uuid,validFrom:day,validUntil:{...day,nullable:true},pin:{...str,minLength:6,maxLength:128}},['enrollmentId','role','validFrom']);
  s.OfficerRotate=obj({assignmentId:uuid,expectedVersion:v,pin:{...str,minLength:6,maxLength:128}},['assignmentId','expectedVersion']);
  s.OfficerRevoke=obj({assignmentId:uuid,expectedVersion:v,reason:{...str,minLength:5,maxLength:2000}});
@@ -32,7 +32,7 @@ export function applyAllRemainingContract(spec,extendOperation,operations){
  s.OfficerTimetable=obj({...state,copyPrevious:{type:'boolean'},entries:s.TimetableCreate.properties.entries},Object.keys(state));
  spec.components.securitySchemes.classOfficerCookie={type:'apiKey',in:'cookie',name:'edu_officer'};spec.components.securitySchemes.evidenceCookie={type:'apiKey',in:'cookie',name:'edu_evidence'};
  const publicAdd=(id,suffix,body,auth='officer',read=false)=>{
-  extendOperation(read?'getPublicSchoolWorkspace':'login',id,publicBase+suffix,'officer.self','NotebookData',false,[],[...publicParams,...(read?[week]:[])],body);
+  extendOperation(read?'getPublicSchoolWorkspace':'login',id,publicBase+suffix,'officer.self','NotebookData',false,[],[...publicParams,...(read?[week,{name:'onDate',in:'query',schema:day}]:[])],body);
   const op=operations.find(o=>o.id===id);op.auth=auth;op.scope='none';const actual=spec.paths[publicBase+suffix][read?'get':'post'];actual.security=auth==='none'?[]:[{classOfficerCookie:[]}];actual['x-scope']='none';
  };
  publicAdd('loginClassOfficer','/login','OfficerLogin','none');publicAdd('getClassOfficerWorkspace','','', 'officer',true);

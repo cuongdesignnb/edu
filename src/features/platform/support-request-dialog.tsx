@@ -1,4 +1,5 @@
 "use client";
+import {PickerState} from "@/features/forms/picker-state";
 import { useEffect, useState } from "react";
 import { KeyRound, ShieldAlert } from "lucide-react";
 import type { SupportScope } from "@/lib/model/types";
@@ -43,6 +44,7 @@ export function RequestSupportDialog({ open, onClose, schoolId, ticketId }: { op
       beforeClose={() => { if (!dirty) return true; leave(onClose); return false; }}
       footer={<><Button variant="ghost" onClick={onClose} disabled={cmd.pending}>Hủy</Button><Button variant="primary" icon={<KeyRound className="size-4" />} loading={cmd.pending} onClick={submit}>Gửi đề nghị</Button></>}>
       <div className="space-y-4">
+        <PickerState query={targets} empty={targets.data?.schools.length===0}/>
         <ErrorSummary errors={errors} labels={{ schoolId: "Trường", scopes: "Phạm vi", reason: "Lý do", days: "Thời hạn" }} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div data-field="schoolId"><SelectField label="Trường" required value={f.schoolId} placeholder="Chọn trường đang hoạt động" onChange={(e) => setF({ ...f, schoolId: e.target.value, ticketId: "" })} error={errors.schoolId} options={(targets.data?.schools ?? []).map((s) => ({ value: s.id, label: s.name }))} /></div>

@@ -1,4 +1,5 @@
 "use client";
+import {PickerState} from "@/features/forms/picker-state";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, FilePen, Info, Search, Send, CheckCircle2, XCircle } from "lucide-react";
@@ -24,7 +25,7 @@ type AdjItem = AdjData["items"][number];
 /** CL11 — adjustments after lock: list, request (O21), approve / reject, re-publish (ST18). */
 export function AdjustmentsScreen() {
   const { schoolId, yearId, classId, base } = useClassroom();
-  const q = useRepo(["conduct-adjustments", classId], (ctx) => conductRepo.adjustments(ctx, schoolId, yearId, classId));
+  const q = useRepo(["conduct-adjustments", schoolId, yearId, classId], (ctx) => conductRepo.adjustments(ctx, schoolId, yearId, classId));
   const [form, setForm] = useState(false);
   return (
     <div className="page">
@@ -114,11 +115,11 @@ function AdjList({ d }: { d: AdjData }) {
 /** O21 — request an adjustment on a published snapshot. After total is computed with the snapshot's own rule version. */
 export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boolean; onOpenChange: (o: boolean) => void; snapshotId?: string }) {
   const { schoolId, yearId, classId } = useClassroom();
-  const list = useRepo(["conduct-adjustments", classId], (ctx) => conductRepo.adjustments(ctx, schoolId, yearId, classId));
+  const list = useRepo(["conduct-adjustments", schoolId, yearId, classId], (ctx) => conductRepo.adjustments(ctx, schoolId, yearId, classId));
   const [f, setF] = useState<{ snapshotId: string; studentId: string; kind: AdjustmentRequest["kind"]; recordId: string; newPoints?: number; ruleId: string; date: string; reason: string }>({ snapshotId: snapshotId ?? "", studentId: "", kind: "remove_record", recordId: "", ruleId: "", date: "", reason: "" });
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [askDiscard, setAskDiscard] = useState(false);
-  const snapQ = useRepo(["conduct-snapshot", classId, f.snapshotId], (ctx) => conductRepo.snapshot(ctx, schoolId, yearId, classId, f.snapshotId), { enabled: !!f.snapshotId });
+  const snapQ = useRepo(["conduct-snapshot", schoolId, yearId, classId, f.snapshotId], (ctx) => conductRepo.snapshot(ctx, schoolId, yearId, classId, f.snapshotId), { enabled: !!f.snapshotId });
   const dirty = !!(f.studentId || f.reason || (!snapshotId && f.snapshotId));
   useUnsavedChanges(dirty);
   const cmd = useCommand((ctx: Ctx, input: Parameters<typeof conductRepo.requestAdjustment>[4]) => conductRepo.requestAdjustment(ctx, schoolId, yearId, classId, input), {
@@ -164,6 +165,7 @@ export function AdjustmentDialog({ open, onOpenChange, snapshotId }: { open: boo
         <Button variant="ghost" disabled={cmd.pending} onClick={() => (dirty ? setAskDiscard(true) : onOpenChange(false))}>Hủy</Button>
         <Button variant="primary" loading={cmd.pending} onClick={submit} data-testid="adj-submit">Gửi đề nghị</Button>
       </>}>
+      <PickerState query={list}/>{f.snapshotId&&<PickerState query={snapQ}/>}
       {list.isLoading ? <Skeleton className="h-48" /> : (
         <div className="space-y-4">
           {askDiscard && <Callout tone="warning" title="Bỏ đề nghị đang soạn?" action={<div className="flex flex-col gap-1.5 sm:flex-row"><Button size="sm" variant="ghost" onClick={() => setAskDiscard(false)}>Tiếp tục soạn</Button><Button size="sm" variant="danger-soft" onClick={() => onOpenChange(false)}>Bỏ nội dung</Button></div>}>Đề nghị chưa được gửi.</Callout>}

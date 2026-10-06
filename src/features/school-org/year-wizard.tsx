@@ -31,14 +31,14 @@ function weekCount(t: TermDraft) {
 }
 
 /** SC04 — new academic year wizard: year → terms → weeks/holidays → review. Never moves students (that is SC07). */
-export function YearWizard() {
+export function YearWizard({onCreated,onDirtyChange,onCancel,embedded=false}:{onCreated?:(year:{id:string;label:string})=>void|Promise<void>;embedded?:boolean;onDirtyChange?:(dirty:boolean)=>void;onCancel?:()=>void}={}) {
   const { school, can } = useSchool();
   const years = useRepo(["school-years", school.id], (c) => schoolRepo.years(c, school.id));
   if (!can("year.manage")) return <div className="page"><div className="card"><DeniedState message="Chỉ người có quyền quản lý năm học mới tạo được năm học." /></div></div>;
-  return <QueryState query={years} skeleton="form">{(rows) => <WizardBody rows={rows} />}</QueryState>;
+  return <QueryState query={years} skeleton="form">{(rows) => <WizardBody rows={rows} onCreated={onCreated} embedded={embedded} onDirtyChange={onDirtyChange} onCancel={onCancel} />}</QueryState>;
 }
 
-function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years>> }) {
+function WizardBody({ rows,onCreated,embedded,onDirtyChange,onCancel }: { rows: Awaited<ReturnType<typeof schoolRepo.years>>;onCreated?:(year:{id:string;label:string})=>void|Promise<void>;embedded:boolean;onDirtyChange?:(dirty:boolean)=>void;onCancel?:()=>void }) {
   const { school, setYearId, can } = useSchool();
   const ctx = useCtx();
   const router = useRouter();
@@ -57,7 +57,8 @@ function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years
   const [done, setDone] = useState<{ id: string; label: string } | null>(null);
   const { errors, setErrors, onError, clear } = useFormErrors();
   const dirty = !done && JSON.stringify(v) !== JSON.stringify(initial);
-  useUnsavedChanges(dirty);
+  useUnsavedChanges(dirty&&!embedded);
+  useEffect(()=>{onDirtyChange?.(dirty);},[dirty,onDirtyChange]);
   useEffect(() => { if (!done) setV(initial); }, [initial]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cmd = useCommand((c, input: Parameters<typeof schoolRepo.createYear>[2]) => schoolRepo.createYear(c, school.id, input), {
@@ -99,7 +100,7 @@ function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years
   const submit = async () => {
     for (const s of [0, 1, 2]) if (!validate(s)) { setStep(s); return; }
     const r = await cmd.run({ label: v.label, startDate: v.startDate!, endDate: v.endDate!, terms: v.terms.map((t) => ({ name: t.name.trim(), startDate: t.startDate!, endDate: t.endDate!, openingDate: t.openingDate })), holidays: v.holidays.map((h) => ({ name: h.name.trim(), startDate: h.startDate!, endDate: h.endDate! })), copyRules: v.copyRules });
-    if (r) setDone({ id: r.id, label: v.label });
+    if (r) { const created={id:r.id,label:v.label};setDone(created);await onCreated?.(created); }
   };
   const setTerm = (i: number, patch: Partial<TermDraft>) => { setV((s) => ({ ...s, terms: s.terms.map((t, k) => k === i ? { ...t, ...patch } : t) })); clear(`terms.${i}`); };
   const setHol = (i: number, patch: Partial<HolidayDraft>) => { setV((s) => ({ ...s, holidays: s.holidays.map((t, k) => k === i ? { ...t, ...patch } : t) })); clear(`holidays.${i}`); };
@@ -209,7 +210,7 @@ function WizardBody({ rows }: { rows: Awaited<ReturnType<typeof schoolRepo.years
             </div>
           )}
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-4">
-            <ButtonLink href={`${b}/academic-years`} variant="ghost">Hủy</ButtonLink>
+            {embedded?<Button variant="ghost" onClick={onCancel}>Hủy</Button>:<ButtonLink href={`${b}/academic-years`} variant="ghost">Hủy</ButtonLink>}
             <div className="flex gap-2">
               {step > 0 && <Button icon={<ArrowLeft className="size-4" />} onClick={() => setStep((s) => s - 1)} disabled={cmd.pending}>Quay lại</Button>}
               {step < 3 ? <Button variant="primary" iconRight={<ArrowRight className="size-4" />} onClick={next}>Tiếp tục</Button> : <Button variant="primary" loading={cmd.pending} onClick={submit}>Tạo năm học</Button>}

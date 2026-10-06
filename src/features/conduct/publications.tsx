@@ -22,7 +22,7 @@ type SnapItem = Awaited<ReturnType<typeof conductRepo.snapshots>>[number];
 /** CL09 — history of locked / published snapshots. Opening never recomputes from the current rule set. */
 export function PublicationsScreen() {
   const { schoolId, yearId, classId, base } = useClassroom();
-  const q = useRepo(["conduct-snapshots", classId], (ctx) => conductRepo.snapshots(ctx, schoolId, yearId, classId));
+  const q = useRepo(["conduct-snapshots", schoolId, yearId, classId], (ctx) => conductRepo.snapshots(ctx, schoolId, yearId, classId));
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState<"week" | "avg">("week");
@@ -70,7 +70,7 @@ export function PublicationsScreen() {
 /** CL10 — one immutable snapshot: table, rule version explanation, versions + diff, print/export, adjustment request. */
 export function PublicationDetailScreen({ snapshotId }: { snapshotId: string }) {
   const { schoolId, yearId, classId, base, header } = useClassroom();
-  const q = useRepo(["conduct-snapshot", classId, snapshotId], (ctx) => conductRepo.snapshot(ctx, schoolId, yearId, classId, snapshotId));
+  const q = useRepo(["conduct-snapshot", schoolId, yearId, classId, snapshotId], (ctx) => conductRepo.snapshot(ctx, schoolId, yearId, classId, snapshotId));
   const [explain, setExplain] = useState<SnapshotRow | null>(null);
   const [adj, setAdj] = useState(false);
   return (

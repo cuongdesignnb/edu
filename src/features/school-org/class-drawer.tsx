@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Info } from "lucide-react";
 import {useQueryClient} from "@tanstack/react-query";
+import {QuickCreate} from "@/features/forms/quick-create";
 import { schoolRepo } from "@/lib/repositories";
 type ClassRow = Awaited<ReturnType<typeof schoolRepo.classes>>["items"][number];
 import { useCommand, useRepo } from "@/lib/query/hooks";
@@ -24,7 +25,7 @@ const LABELS: Record<string, string> = { yearId: "Năm học", gradeId: "Khối"
  * O03 — create / edit class. Homeroom is optional: without one the class stays "Nháp"
  * (the repository enforces it). Year is fixed to non-archived years.
  */
-export function ClassDrawer({ target, onClose, onSaved }: { target: ClassDrawerTarget | ClassEditTarget | null; onClose: () => void; onSaved?: (row: Awaited<ReturnType<typeof schoolRepo.saveClass>>) => void }) {
+export function ClassDrawer({ target, onClose, onSaved }: { target: ClassDrawerTarget | ClassEditTarget | null; onClose: () => void; onSaved?: (row: Awaited<ReturnType<typeof schoolRepo.saveClass>>) => void|Promise<void> }) {
   const { school, yearId: ctxYear } = useSchool();
   const qc = useQueryClient();
   const open = !!target;
@@ -62,12 +63,19 @@ export function ClassDrawer({ target, onClose, onSaved }: { target: ClassDrawerT
     if (v.capacity === undefined) local.capacity = "Nhập sức chứa";
     if (Object.keys(local).length) { setErrors(local); return false; }
     const r = await cmd.run({ id: edit?.id, yearId: v.yearId, gradeId: v.gradeId, name: v.name, capacity: v.capacity!, roomId: v.roomId || undefined, homeroomMembershipId: v.homeroom || undefined, version: edit?.version });
-    if (r) { onSaved?.(r); close(); return true; }
+    if (r) { await onSaved?.(r); close(); return true; }
     return false;
   };
 
   const teacherOptions = (opts.data?.teachers ?? []).map((t) => ({ value: t.membershipId, label: t.name, hint: t.department }));
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => { setV((s) => ({ ...s, [k]: val })); clear(k === "homeroom" ? "homeroomMembershipId" : (k as string)); };
+
+  const chooseCreated = async (field:"yearId"|"gradeId"|"roomId",id:string) => {
+    const fresh=await opts.refetch();if(fresh.error)throw fresh.error;
+    const choices=field==="yearId"?fresh.data?.years.filter(y=>y.status!=="archived"):field==="gradeId"?fresh.data?.grades:fresh.data?.rooms;
+    if(!choices?.some(row=>row.id===id))throw new Error("Đã tạo dữ liệu nhưng chưa thuộc lựa chọn hợp lệ của biểu mẫu. Hãy tải lại lựa chọn.");
+    set(field,id);
+  };
 
   return (
     <>
@@ -78,13 +86,13 @@ export function ClassDrawer({ target, onClose, onSaved }: { target: ClassDrawerT
           <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
             <ErrorSummary errors={Object.fromEntries(Object.entries(errors).filter(([k]) => k !== "_form"))} labels={LABELS} />
             <FormError message={errors._form} />
-            <div data-field="yearId"><SelectField label="Năm học" value={v.yearId} disabled={!!edit} onChange={(e) => set("yearId", e.target.value)} error={errors.yearId}
+            <div data-field="yearId"><SelectField label="Năm học" labelAction={!edit&&<QuickCreate kind="year" schoolId={school.id} onCreated={r=>chooseCreated("yearId",r.id)}/>} value={v.yearId} disabled={!!edit} onChange={(e) => set("yearId", e.target.value)} error={errors.yearId}
               options={opts.data.years.filter(y => y.status !== "archived" || y.id === edit?.yearId).map((y) => ({ value: y.id, label: `${y.label}${y.status === "draft" ? " (nháp)" : ""}` }))} /></div>
-            <div data-field="gradeId"><SelectField label="Khối" required placeholder="Chọn khối lớp" value={v.gradeId} onChange={(e) => set("gradeId", e.target.value)} error={errors.gradeId}
+            <div data-field="gradeId"><SelectField label="Khối" labelAction={<QuickCreate kind="grade" schoolId={school.id} onCreated={r=>chooseCreated("gradeId",r.id)}/>} required placeholder="Chọn khối lớp" value={v.gradeId} onChange={(e) => set("gradeId", e.target.value)} error={errors.gradeId}
               options={grades.map((g) => ({ value: g.id, label: g.name }))} /></div>
             <div data-field="name"><TextField label="Tên lớp" required placeholder={grade ? `Ví dụ: ${grade.level}A1` : "Ví dụ: 10A1"} value={v.name} onChange={(e) => set("name", e.target.value)} error={errors.name} autoComplete="off" helper="Duy nhất trong năm học; tự viết hoa khi lưu." /></div>
             <div data-field="capacity"><NumberField label="Sức chứa tối đa" required value={v.capacity} min={10} max={60} allowNegative={false} onChange={(n) => set("capacity", n)} error={errors.capacity} helper="Số lượng học sinh tối đa của lớp (10–60)." /></div>
-            <div data-field="roomId"><SelectField label="Phòng học" placeholder="Chưa gán phòng" value={v.roomId} onChange={(e) => set("roomId", e.target.value)} options={opts.data.rooms.map((r) => ({ value: r.id, label: `${r.code} — ${r.name}` }))} /></div>
+            <div data-field="roomId"><SelectField label="Phòng học" labelAction={<QuickCreate kind="room" schoolId={school.id} onCreated={r=>chooseCreated("roomId",r.id)}/>} placeholder="Chưa gán phòng" value={v.roomId} onChange={(e) => set("roomId", e.target.value)} options={opts.data.rooms.map((r) => ({ value: r.id, label: `${r.code} — ${r.name}` }))} /></div>
             {edit ? (
               <Callout tone="neutral" icon={<Info />} title={`Giáo viên chủ nhiệm: ${edit.homeroomName ?? "chưa có"}`}>
                 {edit.homeroomName ? "Đổi người chủ nhiệm qua Bàn giao chủ nhiệm để giữ lịch sử và ngày hiệu lực." : "Chọn giáo viên dưới đây để phân công chủ nhiệm từ hôm nay."}
@@ -92,7 +100,7 @@ export function ClassDrawer({ target, onClose, onSaved }: { target: ClassDrawerT
             ) : null}
             {opts.data.canAssign && (!edit || !edit.homeroomName) && (
               <div data-field="homeroomMembershipId">
-                <Combobox label="Giáo viên chủ nhiệm (tùy chọn)" placeholder="Chọn giáo viên" options={teacherOptions} value={v.homeroom} onChange={(x) => set("homeroom", x as string)} error={errors.homeroomMembershipId}
+                <Combobox label="Giáo viên chủ nhiệm (tùy chọn)" labelAction={<QuickCreate kind="teacher" schoolId={school.id} onCreated={async r=>{const result=await opts.refetch();if(result.error)throw result.error;if(result.data?.teachers?.some(t=>t.membershipId===r.id))set("homeroom",r.id);else throw new Error("Giáo viên mới chưa đủ điều kiện phân công chủ nhiệm.");}}/>} placeholder="Chọn giáo viên" options={teacherOptions} value={v.homeroom} onChange={(x) => set("homeroom", x as string)} error={errors.homeroomMembershipId}
                   helper={v.homeroom ? "GVCN nhận quyền chủ nhiệm lớp này từ hôm nay." : "Chưa chọn GVCN — lớp giữ trạng thái Nháp, chưa kích hoạt được."} emptyText="Không tìm thấy giáo viên đang hoạt động" />
                 {v.homeroom && <button type="button" className="mt-1 text-[13px] font-semibold text-primary-strong hover:underline" onClick={() => set("homeroom", "")}>Bỏ chọn giáo viên</button>}
               </div>

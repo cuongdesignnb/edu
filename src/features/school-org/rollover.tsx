@@ -1,4 +1,5 @@
 "use client";
+import {QuickCreate} from "@/features/forms/quick-create";
 import { useMemo, useState } from "react";
 import { clsx } from "clsx";
 import { ArrowLeft, ArrowRight, CalendarPlus, CheckCircle2, ChevronDown, Info, Plus, ShieldCheck } from "lucide-react";
@@ -26,10 +27,10 @@ const STEPS = ["Năm học đích", "Quyết định theo lớp", "Xem trước 
 export function Rollover({ yearId }: { yearId: string }) {
   const { school } = useSchool();
   const q = useRepo(["school-rollover", school.id, yearId], (c) => schoolRepo.rolloverPreview(c, school.id, yearId));
-  return <QueryState query={q} skeleton="form">{(d) => <RolloverBody d={d} />}</QueryState>;
+  return <QueryState query={q} skeleton="form">{(d) => <RolloverBody d={d} reload={()=>q.refetch()} />}</QueryState>;
 }
 
-function RolloverBody({ d }: { d: Preview }) {
+function RolloverBody({ d,reload }: { d: Preview;reload:()=>Promise<{data?:Preview}> }) {
   const { school } = useSchool();
   const b = `/school/${school.id}`;
   const [step, setStep] = useState(0);
@@ -95,15 +96,15 @@ function RolloverBody({ d }: { d: Preview }) {
       {step === 0 && (
         <Card>
           <CardHeader title="Chọn năm học đích" icon={<CalendarPlus className="size-5 text-primary" />} subtitle="Học sinh được ghi danh vào lớp của năm học đích; năm hiện tại giữ nguyên." />
-          <div className="space-y-4 px-5 pb-5">
+          <div className="space-y-4 px-5 pb-5"><QuickCreate kind="year" schoolId={school.id} onCreated={async r=>{const fresh=await reload();if(fresh.data?.targets.some(t=>t.year.id===r.id))pickTarget(r.id);else throw new Error("Đã tạo năm học nhưng chưa hợp lệ làm năm đích. Kiểm tra ngày bắt đầu và trạng thái năm.");}}/>
             {d.targets.length === 0 ? (
               <EmptyState compact icon={<CalendarPlus className="size-6" />} title="Chưa có năm học mới" description={`Cần tạo năm học sau ${d.from.label} (trạng thái Nháp) trước khi xếp lớp. Việc tạo năm không di chuyển học sinh.`}
-                action={<ButtonLink href={`${b}/academic-years/new`} variant="primary" icon={<Plus className="size-4" />}>Tạo năm học mới</ButtonLink>} />
+                action={<QuickCreate kind="year" schoolId={school.id} onCreated={async r=>{const fresh=await reload();if(fresh.data?.targets.some(t=>t.year.id===r.id))pickTarget(r.id);else throw new Error("Đã tạo năm học nhưng chưa đủ điều kiện làm năm đích.");}}/>} />
             ) : (
               <>
                 <RadioGroup label="Năm học đích" value={targetId} onChange={pickTarget} options={d.targets.map((t) => ({ value: t.year.id, label: `Năm học ${t.year.label}`, description: `${yearStatus[t.year.status].label} · ${fmtDate(t.year.startDate)} – ${fmtDate(t.year.endDate)} · ${t.classes.length} lớp đã tạo` }))} />
                 {target && target.classes.length === 0 && (
-                  <Callout tone="warning" title="Năm đích chưa có lớp" action={<ButtonLink size="sm" href={`${b}/classes?new=1&year=${target.year.id}`}>Tạo lớp năm mới</ButtonLink>}>Tạo các lớp (ví dụ 11A1, 12A1…) cho năm {target.year.label} rồi quay lại bước này.</Callout>
+                  <Callout tone="warning" title="Năm đích chưa có lớp" action={<QuickCreate kind="class" schoolId={school.id} yearId={target.year.id} onCreated={async()=>{await reload();}}/>}>Tạo các lớp (ví dụ 11A1, 12A1…) cho năm {target.year.label} ; danh sách đích cập nhật ngay sau khi tạo.</Callout>
                 )}
                 <div className="flex justify-end"><Button variant="primary" iconRight={<ArrowRight className="size-4" />} disabled={!target || target.classes.length === 0} onClick={() => setStep(1)}>Tiếp tục</Button></div>
               </>

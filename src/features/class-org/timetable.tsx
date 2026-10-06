@@ -34,7 +34,7 @@ export function ClassTimetable() {
   const pathname = usePathname();
   const w = sp.get("week");
   const monday = w && /^\d{4}-\d{2}-\d{2}$/.test(w) ? mondayOf(w) : undefined;
-  const q = useRepo(["class-timetable", classId, monday ?? "cur"], (c) => classroomRepo.timetable(c, schoolId, yearId, classId, monday));
+  const q = useRepo(["class-timetable", schoolId, yearId, classId, monday ?? "cur"], (c) => classroomRepo.timetable(c, schoolId, yearId, classId, monday));
   const setWeek = (m: string) => router.replace(`${pathname}?week=${m}`, { scroll: false });
   const [edit, setEdit] = useState<{ lesson: Lesson; date: string } | null>(null);
   const [day, setDay] = useState<string | null>(null);

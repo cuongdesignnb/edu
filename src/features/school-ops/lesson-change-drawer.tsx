@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Callout } from "@/components/ui/card";
 import { ConfirmDialog, Drawer } from "@/components/ui/dialog";
 import { DateField, ErrorSummary, RadioGroup, SelectField, TextArea } from "@/components/ui/form";
-import { Skeleton } from "@/components/ui/states";
+import { Skeleton,ErrorState } from "@/components/ui/states";
 
 export interface LessonTarget { classId: string; className: string; date: string; period: number }
 type Kind = LessonChange["kind"];
@@ -82,10 +82,11 @@ function Inner({ schoolId, target, today, onClose }: { schoolId: string; target:
           {s?.canPublish && <Button variant="primary" icon={<Send className="size-4" />} disabled={save.pending || !s.lesson?.canEdit || slot.isFetching || !!slot.error || conflicts.length > 0 || shouldCheck && (check.isFetching || !!check.error)} onClick={() => submit(true)} title={conflicts.length ? "Còn xung đột — không thể công bố" : undefined}>Công bố</Button>}
         </>}>
         <div className="space-y-4">
+          {slot.error&&<ErrorState error={slot.error} onRetry={()=>void slot.refetch()} compact/>}{slot.isFetching&&<p role="status">Đang tải lựa chọn cho tiết…</p>}
           <ErrorSummary errors={errors} labels={{ date: "Ngày", period: "Tiết", teacher: "Giáo viên", subject: "Môn", room: "Phòng", reason: "Lý do", form: "Biểu mẫu" }} />
           <div className="grid gap-3 sm:grid-cols-2">
-            <div data-field="date"><DateField label="Ngày áp dụng" required value={date} min={today} onChange={(v) => { setDate(v); setErrors({}); }} error={errors.date} helper={date ? fmtDateLong(date) : undefined} /></div>
-            <div data-field="period"><SelectField label="Tiết" required value={String(period)} onChange={(e) => { setPeriod(Number(e.target.value)); setErrors({}); }} error={errors.period}
+            <div data-field="date"><DateField label="Ngày áp dụng" required value={date} min={today} onChange={(v) => { setDate(v);setSubjectId("");setTeacherId("");setRoomId(""); setErrors({}); }} error={errors.date} helper={date ? fmtDateLong(date) : undefined} /></div>
+            <div data-field="period"><SelectField label="Tiết" required value={String(period)} onChange={(e) => { setPeriod(Number(e.target.value));setSubjectId("");setTeacherId("");setRoomId(""); setErrors({}); }} error={errors.period}
               options={[...PERIODS.map((p) => ({ value: String(p.period), label: `Tiết ${p.period} (${p.start}–${p.end})` })),...(!PERIODS.some(p => p.period === period) ? [{value:String(period),label:`Tiết ${period}${s?.start ? ` (${s.start}–${s.end})` : ""}`}] : [])]} /></div>
           </div>
           <div className="rounded-xl border border-line bg-[#f7fbff] px-4 py-3 text-sm">
@@ -95,7 +96,7 @@ function Inner({ schoolId, target, today, onClose }: { schoolId: string; target:
             ) : <p className="mt-1 text-warning-text">Không có tiết {period} trong lịch ngày này.</p>}
             {s?.draft && <p className="mt-1 text-[12.5px] text-warning-text">Đã có bản nháp đổi tiết cho ô này — lưu mới sẽ thay bản nháp đó.</p>}
           </div>
-          <RadioGroup label="Loại thay đổi" value={kind} onChange={(v) => { setKind(v); setErrors({}); }} direction="row" options={(Object.keys(KIND_LABEL) as Kind[]).map((k) => ({ value: k, label: KIND_LABEL[k] }))} />
+          <RadioGroup label="Loại thay đổi" value={kind} onChange={(v) => { setKind(v);setSubjectId("");setTeacherId("");setRoomId(""); setErrors({}); }} direction="row" options={(Object.keys(KIND_LABEL) as Kind[]).map((k) => ({ value: k, label: KIND_LABEL[k] }))} />
           {needSubject && <div data-field="subject"><SelectField label="Môn thay" required value={subjectId} placeholder="Chọn môn" onChange={(e) => setSubjectId(e.target.value)} error={errors.subject} options={(s?.options.subjects ?? []).map((x) => ({ value: x.id, label: x.name }))} /></div>}
           {needTeacher && <div data-field="teacher"><SelectField label={kind === "substitute" ? "Giáo viên dạy thay" : "Giáo viên"} required value={teacherId} placeholder="Chọn giáo viên" onChange={(e) => setTeacherId(e.target.value)} error={errors.teacher} options={(s?.options.teachers ?? []).filter((t) => t.id !== s?.lesson?.teacherMembershipId || kind === "swap").map((x) => ({ value: x.id, label: x.name }))} /></div>}
           {needRoom && <div data-field="room"><SelectField label="Phòng mới" required value={roomId} placeholder="Chọn phòng" onChange={(e) => setRoomId(e.target.value)} error={errors.room} options={(s?.options.rooms ?? []).filter((r) => r.id !== s?.lesson?.roomId).map((x) => ({ value: x.id, label: x.name }))} /></div>}

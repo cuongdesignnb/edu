@@ -19,8 +19,8 @@ export function WeeklySummaryScreen() {
   const { schoolId, yearId, classId, header } = useClassroom();
   const { query, weeks, week, setWeek } = useWeeks();
   const wid = week?.id;
-  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
-  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
+  const rec = useRepo(["conduct-records", schoolId, yearId, classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
+  const sum = useRepo(["conduct-summary", schoolId, yearId, classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
   const [explain, setExplain] = useState<SnapshotRow | null>(null);
   const statusById = useMemo(() => new Map((rec.data?.records ?? []).map((r) => [r.id, r.status])), [rec.data]);
   const versionById = useMemo(() => new Map((rec.data?.records ?? []).map((r) => [r.id, r.ruleSetVersion])), [rec.data]);

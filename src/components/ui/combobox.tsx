@@ -11,9 +11,9 @@ export interface ComboOption { value: string; label: string; hint?: string; disa
  * C015 — searchable select (single or multi) with keyboard support.
  * Options must already be restricted to the actor's school/class scope by the caller.
  */
-export function Combobox({ label, options, value, onChange, multiple, placeholder = "Chọn…", error, required, helper, emptyText = "Không có lựa chọn phù hợp", id, disabled, onSearchChange, selectedLabel }: {
+export function Combobox({ label, options, value, onChange, multiple, placeholder = "Chọn…", error, required, helper, emptyText = "Không có lựa chọn phù hợp", id, disabled, onSearchChange, selectedLabel,labelAction }: {
   label: ReactNode; options: ComboOption[]; value: string | string[]; onChange: (v: string | string[]) => void; multiple?: boolean; placeholder?: string;
-  error?: string; required?: boolean; helper?: ReactNode; emptyText?: string; id?: string; disabled?: boolean;onSearchChange?:(query:string)=>void;selectedLabel?:string;
+  error?: string; required?: boolean; helper?: ReactNode; emptyText?: string; id?: string; disabled?: boolean;onSearchChange?:(query:string)=>void;selectedLabel?:string;labelAction?:ReactNode;
 }) {
   const auto = useId();
   const fid = id ?? auto;
@@ -41,7 +41,7 @@ export function Combobox({ label, options, value, onChange, multiple, placeholde
 
   return (
     <div className="field">
-      <label className="label" htmlFor={fid}>{label}{required && <span className="req" aria-hidden>*</span>}</label>
+      <div className="flex items-center justify-between gap-2"><label className="label" htmlFor={fid}>{label}{required && <span className="req" aria-hidden>*</span>}</label>{labelAction}</div>
       <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) {setQ("");onSearchChange?.("");} }}>
         <Popover.Trigger asChild disabled={disabled}>
           <button id={fid} type="button" role="combobox" aria-expanded={open} aria-invalid={!!error || undefined} aria-controls={`${fid}-list`}

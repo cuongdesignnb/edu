@@ -11,6 +11,7 @@ import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DateField, SelectField, TextField } from "@/components/ui/form";
+import {useDirtyClose} from "@/features/school-org/common";
 import { Drawer } from "@/components/ui/dialog";
 import { QueryState } from "@/components/ui/states";
 
@@ -20,22 +21,22 @@ const COL_TONE = ["bg-[#fff4e0] text-[#9a5700]", "bg-[#f1ecff] text-[#5b3cc4]", 
 /** CL13 — groups & positions board (C065 / O23): drag-and-drop AND keyboard/select moves, effective date. */
 export function GroupsBoard() {
   const { schoolId, yearId, classId } = useClassroom();
-  const q = useRepo(["class-groups", schoolId, yearId, classId], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId));
+  const [date,setDate]=useState<string|undefined>();
+  const q = useRepo(["class-groups", schoolId, yearId, classId,date], (ctx) => classroomRepo.groups(ctx, schoolId, yearId, classId,date));
   return (
     <div className="page">
       <ClassHeader title="Tổ & chức vụ" subtitle="Phân tổ và giao chức vụ cho học sinh theo ngày hiệu lực" crumbs={[{ label: "Tổ & chức vụ" }]} />
       <ClassOrgNav />
       <Callout tone="info" icon={<Info />} title="Chức vụ là dữ liệu tổ chức lớp, không phải tài khoản">Lớp trưởng, tổ trưởng… không đăng nhập và không nhập liệu thay giáo viên. Mỗi thay đổi có ngày hiệu lực; lịch sử cũ được giữ.</Callout>
-      <QueryState query={q} skeleton="cards">{(d) => <Board d={d} />}</QueryState>
+      <QueryState query={q} skeleton="cards">{(d) => <Board d={d} date={date??(d.date<d.today?d.today:d.date)} setDate={setDate} />}</QueryState>
     </div>
   );
 }
 
-function Board({ d }: { d: Data }) {
+function Board({ d,date,setDate }: { d: Data;date:string|undefined;setDate:(date:string|undefined)=>void }) {
   const { schoolId, yearId, classId, readOnly } = useClassroom();
   const ctx = useCtx();
   const editable = d.canEdit && !readOnly;
-  const [date, setDate] = useState<string | undefined>(d.date < d.today ? d.today : d.date);
   const [configuration, setConfiguration] = useState<"group" | "position" | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [target, setTarget] = useState("");
@@ -120,10 +121,12 @@ function Board({ d }: { d: Data }) {
   );
 }
 
-function OrganizationDrawer({kind,d,onClose}:{kind:"group"|"position";d:Data;onClose:()=>void}){
+export function OrganizationDrawer({kind,d,onClose,onSaved}:{kind:"group"|"position";d:Data;onClose:()=>void;onSaved?:(id:string)=>void|Promise<void>}){
  const {schoolId,classId}=useClassroom();const [name,setName]=useState("");const [groupId,setGroupId]=useState("");const [singleHolder,setSingleHolder]=useState(true);const [error,setError]=useState("");const [code]=useState(()=>"p_"+crypto.randomUUID().replaceAll("-",""));
- const save=useCommand(async c=>kind==="group"?classroomRepo.createGroup(c,schoolId,classId,name.trim(),Math.max(-1,...d.groups.map(g=>g.sortOrder))+1):classroomRepo.createPosition(c,schoolId,classId,{code,name:name.trim(),singleHolder,groupId:groupId||undefined}),{success:kind==="group"?"Đã thêm tổ":"Đã thêm chức vụ",onSuccess:onClose,onError:e=>setError(e.message)});
- return <Drawer open onOpenChange={open=>{if(!open)onClose();}} title={kind==="group"?"Thêm tổ":"Thêm chức vụ"} busy={save.pending} footer={<><Button variant="ghost" disabled={save.pending} onClick={onClose}>Hủy</Button><Button variant="primary" loading={save.pending} disabled={!name.trim()} onClick={()=>void save.run()}>Lưu</Button></>}><div className="space-y-4"><TextField label={kind==="group"?"Tên tổ":"Tên chức vụ"} required value={name} onChange={e=>setName(e.target.value)} maxLength={200} />{kind==="position"&&<><SelectField label="Phạm vi chức vụ" value={groupId} onChange={e=>setGroupId(e.target.value)} options={[{value:"",label:"Cả lớp"},...d.groups.map(g=>({value:g.id,label:g.name}))]} /><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={singleHolder} onChange={e=>setSingleHolder(e.target.checked)} />Chỉ một học sinh giữ chức vụ tại cùng thời điểm</label></>}{error&&<p role="alert" className="error-text">{error}</p>}</div></Drawer>;
+ const save=useCommand(async c=>kind==="group"?classroomRepo.createGroup(c,schoolId,classId,name.trim(),Math.max(-1,...d.groups.map(g=>g.sortOrder))+1):classroomRepo.createPosition(c,schoolId,classId,{code,name:name.trim(),singleHolder,groupId:groupId||undefined}),{success:kind==="group"?"Đã thêm tổ":"Đã thêm chức vụ",onError:e=>setError(e.message)});
+ const {beforeClose,confirmNode,requestClose}=useDirtyClose(!!name||!!groupId||!singleHolder,onClose);
+ const submit=async()=>{const result=await save.run();if(result){await onSaved?.(result.id!);onClose();}};
+ return <><Drawer beforeClose={beforeClose} open onOpenChange={open=>{if(!open)onClose();}} title={kind==="group"?"Thêm tổ":"Thêm chức vụ"} busy={save.pending} footer={<><Button variant="ghost" disabled={save.pending} onClick={requestClose}>Hủy</Button><Button variant="primary" loading={save.pending} disabled={!name.trim()} onClick={()=>void submit()}>Lưu</Button></>}><div className="space-y-4"><TextField label={kind==="group"?"Tên tổ":"Tên chức vụ"} required value={name} onChange={e=>setName(e.target.value)} maxLength={200} />{kind==="position"&&<><SelectField label="Phạm vi chức vụ" value={groupId} onChange={e=>setGroupId(e.target.value)} options={[{value:"",label:"Cả lớp"},...d.groups.map(g=>({value:g.id,label:g.name}))]} /><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={singleHolder} onChange={e=>setSingleHolder(e.target.checked)} />Chỉ một học sinh giữ chức vụ tại cùng thời điểm</label></>}{error&&<p role="alert" className="error-text">{error}</p>}</div></Drawer>{confirmNode}</>;
 }
 
 function PositionRow({ label, current, options, editable, busy, error, pick, onPick, onAssign, onRemove }: {

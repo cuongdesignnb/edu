@@ -2,9 +2,11 @@
 import * as D from "@radix-ui/react-dialog";
 import { clsx } from "clsx";
 import { X, AlertTriangle } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Button, type ButtonVariant } from "./button";
 import { TextArea } from "./form";
+
+const DialogDepth = createContext(0);
 
 interface BaseProps {
   open: boolean;
@@ -29,14 +31,15 @@ function guard(props: BaseProps) {
 
 /** C037 — modal with focus trap; Escape closes unless busy; focus returns to the opener. */
 export function Modal(props: BaseProps & { size?: "sm" | "md" | "lg" | "xl" }) {
+  const depth = useContext(DialogDepth);
   const { open, title, description, children, footer, size = "md" } = props;
   return (
-    <D.Root open={open} onOpenChange={guard(props)}>
+    <DialogDepth.Provider value={depth + 1}><D.Root open={open} onOpenChange={guard(props)}>
       <D.Portal>
-        <D.Overlay className="fixed inset-0 z-[60] bg-[#0b1b3a]/40 animate-[var(--animate-fade-in)]" />
-        <D.Content className={clsx("fixed inset-x-3 top-1/2 z-[61] mx-auto flex max-h-[calc(100dvh-24px)] -translate-y-1/2 flex-col rounded-2xl border border-line bg-white shadow-[var(--shadow-pop)] animate-[var(--animate-pop-in)] focus:outline-none",
+        <D.Overlay style={{zIndex:60 + depth * 2}} className="fixed inset-0 bg-[#0b1b3a]/40 animate-[var(--animate-fade-in)]" />
+        <D.Content style={{zIndex:61 + depth * 2,pointerEvents:'auto'}} className={clsx("fixed inset-x-3 top-1/2 mx-auto flex max-h-[calc(100dvh-24px)] -translate-y-1/2 flex-col rounded-2xl border border-line bg-white shadow-[var(--shadow-pop)] animate-[var(--animate-pop-in)] focus:outline-none",
           size === "sm" && "max-w-[440px]", size === "md" && "max-w-[560px]", size === "lg" && "max-w-[760px]", size === "xl" && "max-w-[1040px]")}
-          aria-describedby={description ? undefined : undefined}>
+          aria-describedby={description ? undefined : undefined} onSubmit={e=>e.stopPropagation()}>
           <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
             <div className="min-w-0">
               <D.Title className="text-lg font-bold text-ink">{title}</D.Title>
@@ -48,19 +51,20 @@ export function Modal(props: BaseProps & { size?: "sm" | "md" | "lg" | "xl" }) {
           {footer && <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}
         </D.Content>
       </D.Portal>
-    </D.Root>
+    </D.Root></DialogDepth.Provider>
   );
 }
 
 /** C038 — side drawer; becomes full-screen on phones. */
 export function Drawer(props: BaseProps & { width?: number; side?: "right" | "bottom" }) {
+  const depth = useContext(DialogDepth);
   const { open, title, description, children, footer, width = 440, side = "right" } = props;
   return (
-    <D.Root open={open} onOpenChange={guard(props)}>
+    <DialogDepth.Provider value={depth + 1}><D.Root open={open} onOpenChange={guard(props)}>
       <D.Portal>
-        <D.Overlay className="fixed inset-0 z-[60] bg-[#0b1b3a]/30 animate-[var(--animate-fade-in)]" />
-        <D.Content style={{ ["--dw" as string]: `${width}px` }}
-          className={clsx("fixed z-[61] flex flex-col bg-white shadow-[var(--shadow-pop)] focus:outline-none",
+        <D.Overlay style={{zIndex:60 + depth * 2}} className="fixed inset-0 bg-[#0b1b3a]/30 animate-[var(--animate-fade-in)]" />
+        <D.Content style={{ ["--dw" as string]: `${width}px`,zIndex:61 + depth * 2,pointerEvents:'auto' }} onSubmit={e=>e.stopPropagation()}
+          className={clsx("fixed flex flex-col bg-white shadow-[var(--shadow-pop)] focus:outline-none",
             side === "right" ? "inset-0 sm:inset-y-3 sm:left-auto sm:right-3 sm:w-[min(var(--dw),calc(100vw-24px))] sm:rounded-2xl sm:border sm:border-line animate-[var(--animate-slide-in)]"
               : "inset-x-0 bottom-0 max-h-[88dvh] rounded-t-2xl border-t border-line animate-[var(--animate-pop-in)]")}>
           {side === "bottom" && <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-line-strong" aria-hidden />}
@@ -75,7 +79,7 @@ export function Drawer(props: BaseProps & { width?: number; side?: "right" | "bo
           {footer && <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line px-5 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">{footer}</div>}
         </D.Content>
       </D.Portal>
-    </D.Root>
+    </D.Root></DialogDepth.Provider>
   );
 }
 

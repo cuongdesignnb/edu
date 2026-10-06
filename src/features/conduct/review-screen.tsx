@@ -22,8 +22,8 @@ export function ReviewScreen() {
   const { schoolId, yearId, classId } = useClassroom();
   const { query, weeks, week, setWeek } = useWeeks();
   const wid = week?.id;
-  const rec = useRepo(["conduct-records", classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
-  const sum = useRepo(["conduct-summary", classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
+  const rec = useRepo(["conduct-records", schoolId, yearId, classId, wid], (ctx) => conductRepo.records(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid });
+  const sum = useRepo(["conduct-summary", schoolId, yearId, classId, wid], (ctx) => conductRepo.weekSummary(ctx, schoolId, yearId, classId, wid!), { enabled: !!wid && rec.data?.week.id === wid && !!rec.data.ruleSet });
   return (
     <div className="page">
       <ClassHeader title="Rà soát và chốt tuần" subtitle="Xử lý ghi nhận chờ rà soát và bản trùng, xem trước bảng sẽ công bố rồi chốt / công bố theo quyền" crumbs={[{ label: "Thi đua", href: `/classroom/${schoolId}/${yearId}/${classId}/conduct` }, { label: "Rà soát và chốt" }]} />

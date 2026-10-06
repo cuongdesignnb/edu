@@ -47,6 +47,13 @@ export const connectedStaffRepo=withStaffAccess({
   async createStaffAccount(_ctx:Ctx,schoolId:ID,body:ApiSchemas['DirectStaffCreate']){return (await http('createSchoolStaffAccount',{params:{schoolId},body})).data;},
   async assignExistingStaff(_ctx:Ctx,schoolId:ID,body:ApiSchemas['DirectStaffAssign']){return (await http('assignExistingSchoolStaffAccount',{params:{schoolId},body})).data;},
   async invitationOptions(_ctx:Ctx,schoolId:ID){return (await http('getStaffInvitationOptions',{params:{schoolId}})).data;},
+  async assignmentOptions(_ctx:Ctx,schoolId:ID){
+    const [years,subjects]=await Promise.all([
+      apiList('listYears',{params:{schoolId},query:{purpose:'assignment-picker',sort:'startsOn',dir:'desc'}},100),
+      apiList('listDictionary',{params:{schoolId,dictionary:'subjects'},query:{purpose:'assignment-picker',sort:'name'}},500),
+    ]);
+    return {years:years.map(y=>year(y,schoolId)),subjects:subjects.map(s=>({id:requiredId(s.id),name:s.name,status:s.status}))};
+  },
   async assignmentClasses(_ctx:Ctx,schoolId:ID,yearId:ID){
     if(!yearId)throw new RepoError('VALIDATION','Chọn năm học trước khi phân công.');
     return (await apiList('listClasss',{params:{schoolId},query:{yearId,purpose:'assignment-picker',sort:'name'}},200)).map(row=>({id:requiredId(row.id),name:row.name,status:row.status.toLowerCase()}));

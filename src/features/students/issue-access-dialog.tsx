@@ -17,6 +17,8 @@ import {Combobox} from '@/components/ui/combobox';
 import {ErrorState,Skeleton} from '@/components/ui/states';
 import {ConflictDialog} from '@/components/ui/guards';
 import {ALL_MODULES,MODULE_HINT,QrImage,LinkBox,QrPrintCard,fieldErrorsOf,usePrintQr} from './shared';
+import {QuickGuardian} from '@/features/forms/quick-guardian';
+import {QuickCreate} from '@/features/forms/quick-create';
 
 export interface ParentLinkReplacement {accessId:string;version?:number;relationshipId:string;modules:ParentModule[];allowDownload?:boolean;label:string}
 interface Props {open:boolean;onOpenChange:(open:boolean)=>void;schoolId:string;studentId?:string;relationshipId?:string;replace?:ParentLinkReplacement|null}
@@ -44,6 +46,7 @@ function IssueSelector(props:Props&{context:Context}){
       options={choices.error||choices.isFetching||search!==query?[]:(choices.data?.items??[]).map(s=>({value:s.id,label:`${s.fullName} (${s.studentCode})`,hint:`Lớp ${s.className}`}))} placeholder="Tìm theo tên hoặc mã…" emptyText={choices.isFetching||search!==query?'Đang tìm học sinh…':'Không có học sinh phù hợp'}
       helper={choices.data?.total&&choices.data.total>100?`Đang hiển thị ${choices.data.items.length}/${choices.data.total} kết quả. Nhập thêm tên hoặc mã để tìm đúng học sinh.`:undefined}/>
     {choices.error&&<ErrorState error={choices.error} onRetry={()=>choices.refetch()} compact/>}
+    <QuickCreate kind="student" schoolId={props.schoolId} yearId={context.year!.id} onCreated={async row=>{const response=await choices.refetch();if(response.error)throw response.error;if(row.yearId!==context.year!.id)throw new Error("Đã thêm học sinh ở năm học khác. Chọn đúng năm học trước khi cấp link.");setStudentId(row.id);setSelectedLabel(row.name);}}/>
   </div>:null;
   if(!studentId)return <Modal open onOpenChange={props.onOpenChange} title="Cấp đường dẫn riêng cho phụ huynh" size="lg" footer={<Button variant="ghost" onClick={()=>props.onOpenChange(false)}>Hủy</Button>}>{selector}</Modal>;
   if(source.error&&source.error.code!=='READ_ERROR'||!source.data)return <SourceModal onOpenChange={props.onOpenChange} error={source.error} retry={()=>source.refetch()}/>;
@@ -74,6 +77,7 @@ function ReviewedIssueForm(props:Props&{source:ParentIssueSource;selector:ReactN
       {cmd.error&&<Callout tone="warning" title={lostReceipt?'Link đã được cấp':'Chưa cấp được link'}>{cmd.error.message}{typeof cmd.error.details?.resultId==='string'&&<Link href={`/school/${props.schoolId}/parent-access/${cmd.error.details.resultId}`} className="card-link block mt-2">Xem quyền đã cấp để chủ động cấp lại</Link>}{linkChanged&&<p className="mt-2">Đóng hộp thoại và tải lại trang đang xem để kiểm tra phiên bản link trước khi cấp lại.</p>}</Callout>}
       {replacement&&<Callout tone="info" icon={<Info/>}>Cấp lại sẽ thu hồi link cũ ({replacement.label}) và tạo link mới cho cùng người nhận.</Callout>}
       {props.selector}<p className="text-sm text-muted">{source.student.fullName} ({source.student.studentCode}) · Lớp {source.class.name}</p>
+      <QuickGuardian schoolId={props.schoolId} source={source} reload={props.reload} onSource={setSource} onSelect={setRelId}/>
       <fieldset data-field="relationshipId" className="field"><legend className="label mb-1.5">Người giám hộ được cấp<span className="req" aria-hidden>*</span></legend>
         {!source.relationships.length?<p className="text-sm text-muted">Thêm và xác minh người giám hộ trước khi cấp link.</p>:<div className="space-y-2" role="radiogroup">{source.relationships.map(r=>{const locked=!!replacement&&r.id!==replacement.relationshipId;return <label key={r.id} className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 text-sm ${relId===r.id?'border-[#9cc7f5] bg-primary-light':'border-line'} ${r.canIssue&&!locked?'cursor-pointer':'cursor-not-allowed opacity-70'}`}>
           <input type="radio" name="issue-rel" className="mt-1 size-4 accent-[var(--color-primary)]" checked={relId===r.id} disabled={!r.canIssue||locked} onChange={()=>setRelId(r.id)}/><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-2"><b className="text-ink">{r.guardianName}</b><span className="text-muted">{r.relationshipLabel}</span><StatusBadge status={r.status.toLowerCase()} map={verificationStatus}/></span><span className="block text-[12.5px] text-muted">{r.activeLinkIds.length?`Đang có ${r.activeLinkIds.length} link hoạt động`:''}</span>{!r.canIssue&&<span className="mt-0.5 block text-[12.5px] font-semibold text-warning-text">Cần xác minh và cho phép nhận thông tin</span>}</span></label>;})}</div>}{errs.relationshipId&&<p className="error-text mt-1">{errs.relationshipId}</p>}</fieldset>

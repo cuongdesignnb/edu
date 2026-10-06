@@ -10,6 +10,14 @@ beforeEach(()=>{authenticationChanged();setStaffCsrf('query-csrf');});
 afterEach(()=>{authenticationChanged();vi.unstubAllGlobals();vi.useRealTimers();});
 
 describe('native staff query boundary',()=>{
+  it('does not lose a second confirmed mutation while option refetch is pending',async()=>{
+    const client=new QueryClient(),gate=Promise.withResolvers<void>(),restore=vi.fn(async()=>null);
+    const invalidate=vi.spyOn(client,'invalidateQueries').mockImplementationOnce(()=>gate.promise).mockResolvedValue(undefined);
+    const bridge=bindStaffQueries(client,{onReady:vi.fn(),onError:vi.fn(),restore});
+    vi.stubGlobal('fetch',vi.fn().mockImplementation(async()=>envelope({actual:true})));
+    const mutate=()=>http('updateRole',{params:{schoolId,roleId:schoolId},body:{expectedVersion:1,reason:'Đổi lựa chọn kiểm thử',permissions:[]}});
+    try{await mutate();await vi.waitFor(()=>expect(invalidate).toHaveBeenCalledTimes(1));await mutate();gate.resolve();await vi.waitFor(()=>expect(invalidate).toHaveBeenCalledTimes(2));expect(restore).toHaveBeenCalledTimes(2);}finally{gate.resolve();bridge.dispose();client.clear();}
+  });
   it('cancels private queries and removes their cache immediately while leaving parent/public partitions intact',async()=>{
     const client=new QueryClient(),cancel=vi.spyOn(client,'cancelQueries'),bridge=bindStaffQueries(client,{onReady:vi.fn(),onError:vi.fn(),restore:async()=>null});
     try{client.setQueryData([STAFF_QUERY_DOMAIN,staffAccessRevision(),'class'],{private:true});client.setQueryData(['parent-api','view-id'],{ownChild:true});client.setQueryData(['public-api','school'],{published:true});

@@ -70,7 +70,7 @@ export function StudentList({ schoolId }: { schoolId: string }) {
       <Card>
         <CardHeader title={`Danh sách học sinh${q.data ? ` (${q.data.total})` : ""}`} icon={<GraduationCap className="size-5" />} subtitle="Học sinh trùng tên là hồ sơ riêng — phân biệt bằng mã, ngày sinh và lớp." />
         <FilterBar q={list.query.q ?? ""} onQ={list.setQ} placeholder="Tìm theo họ tên hoặc mã học sinh…" onReset={list.reset} active={list.active}>
-          <InlineSelect label="Năm học" allLabel="Năm học hiện tại" value={list.query.filters?.yearId ?? ""} onChange={(v) => list.setFilter("yearId", v)} options={(q.data?.yearOptions ?? []).map(y => ({value:y.id,label:y.name}))} />
+          <InlineSelect label="Năm học" allLabel="Năm học hiện tại" value={list.query.filters?.yearId ?? ""} onChange={(v) => { list.setFilter("yearId", v); list.setFilter("classId", ""); }} options={(q.data?.yearOptions ?? []).map(y => ({value:y.id,label:y.name}))} />
           <InlineSelect label="Lọc theo lớp" allLabel="Tất cả lớp" value={list.query.filters?.classId ?? ""} onChange={(v) => list.setFilter("classId", v)} options={(q.data?.classOptions ?? []).map((c) => ({ value: c.id, label: c.name }))} />
           <InlineSelect label="Lọc trạng thái" allLabel="Tất cả trạng thái" value={list.query.filters?.status ?? ""} onChange={(v) => list.setFilter("status", v)} options={Object.entries(studentStatus).map(([value, s]) => ({ value, label: s.label }))} />
           {q.data?.canSeeGuardians && <InlineSelect label="Lọc người giám hộ" allLabel="Mọi tình trạng giám hộ" value={list.query.filters?.guardian ?? ""} onChange={(v) => list.setFilter("guardian", v)} options={[{ value: "unverified", label: "Chưa xác minh giám hộ" }]} />}

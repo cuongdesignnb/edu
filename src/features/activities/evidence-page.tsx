@@ -30,7 +30,7 @@ export function EvidencePage() {
   const [status, setStatus] = useState(sp.get("status") ?? "");
   const [activityId, setActivityId] = useState(sp.get("activity") ?? "");
   const [q, setQ] = useState("");
-  const query = useRepo(["evidence", classId, status, activityId, q], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, { status: status || undefined, activityId: activityId || undefined, q }));
+  const query = useRepo(["evidence", schoolId, yearId, classId, status, activityId, q], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, { status: status || undefined, activityId: activityId || undefined, q }));
   return (
     <div className="page">
       <ClassHeader variant="compact" title="Minh chứng của lớp" subtitle={<>Minh chứng hoạt động lớp {header.class.name} do giáo viên ghi nhận và duyệt</>} />

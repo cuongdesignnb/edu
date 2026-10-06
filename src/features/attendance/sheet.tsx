@@ -57,7 +57,7 @@ export function AttendanceScreen() {
         </div>
         <div className="field min-w-[220px] max-w-[300px] flex-[1_1_220px]">
           <label className="label" htmlFor="att-slot">Buổi / tiết</label>
-          {slots.isLoading || !slot ? <Skeleton className="h-10" /> : (
+          {slots.isError ? <ErrorState compact error={slots.error} onRetry={() => void slots.refetch()} /> : slots.isLoading ? <Skeleton className="h-10" /> : !slot ? <p role="status" className="text-sm text-muted">Chưa có buổi hoặc tiết thuộc quyền xem trong ngày này.</p> : (
             <select id="att-slot" className="select" value={slot} onChange={(e) => go(date, e.target.value)}>
               {!slots.data?.some((s) => s.slot === slot) && <option value={slot}>{slot.startsWith("period-") ? `Tiết ${slot.slice(7)} (không có trong lịch ngày này)` : slot}</option>}
               {slots.data?.map((s) => <option key={s.slot} value={s.slot}>{s.label}{s.canRecord ? "" : " — chỉ xem"}</option>)}
