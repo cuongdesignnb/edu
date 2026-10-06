@@ -155,7 +155,12 @@ test('periodic month, term and year publish immutable classifications and actual
  for(const [name,status]of [['admin-a',422],['multi',409]]){const m=(await scoped(school,tx=>tx.query('SELECT id,version FROM app.memberships WHERE user_id=$1',[seedId('user:'+name)]))).rows[0];assert.equal((await req('POST',route('resetSchoolStaffPassword',{memberId:m.id}),{expectedVersion:m.version,password:newPassword,reason:'Kiểm thử danh tính được bảo vệ'},true)).statusCode,status);}
  await login('teacher-b@example.invalid');assert.equal((await req('POST',route('resetSchoolStaffPassword',{memberId:teacher.id}),{expectedVersion:teacher.version,password:newPassword,reason:'Giáo viên bộ môn không có quyền quản trị'},true)).statusCode,403);assert.equal((await req('GET',namespace)).statusCode,404);await login();
  const zalo=await good('GET',namespace+'/zalo');assert.equal(zalo.students.length,6);assert.ok(zalo.students.every(s=>s.zaloUrl===null||/^https:\/\/zalo\.me\/84\d{9}$/.test(s.zaloUrl)));assert.ok(!JSON.stringify(zalo).includes(draft.id));
- const weeks=(await good('GET',namespace)).weeks,targetWeek=weeks.find(w=>w.week_number===7),sourceWeek=weeks.find(w=>w.week_number===6);
+ const workspace=await good('GET',namespace),weeks=[...workspace.weeks].sort((a,b)=>a.starts_on.localeCompare(b.starts_on));
+ const sourceIndex=weeks.findIndex(w=>w.starts_on>=workspace.today);
+ assert.ok(sourceIndex>=0,'Fixture needs a source week starting on or after workspace.today');
+ assert.ok(weeks[sourceIndex+1],'Fixture needs a following target week');
+ const sourceWeek=weeks[sourceIndex],targetWeek=weeks[sourceIndex+1];
+ assert.equal(sourceWeek.ends_on,targetWeek.starts_on,'Copy fixture weeks must be consecutive');
  const teaching=(await scoped(school,tx=>tx.query("SELECT member_id,subject_id FROM app.teaching_assignments WHERE class_id=$1 AND kind='SUBJECT' AND revoked_at IS NULL LIMIT 1",[cls]))).rows[0];assert.ok(teaching);
  const entries=[{weekday:1,periodNumber:12,subjectId:teaching.subject_id,memberId:teaching.member_id,startsAtLocal:'16:00',endsAtLocal:'16:45'}];
  await good('POST',route('createTimetable'),{startsOn:sourceWeek.starts_on,endsOn:sourceWeek.ends_on,entries},true);
