@@ -74,7 +74,7 @@ test('schedule import settings round trip and cross-tenant aliases rejected',asy
 
 test('optional teaching assignment is atomic and temporary password blocks usage until changed',async()=>{
  const subjectId=crypto.randomUUID();await tx(t=>t.query("INSERT INTO app.subjects(id,school_id,code,name) VALUES($1,$2,$3,'Môn kiểm thử mới')",[subjectId,school,'TEST_'+subjectId]));
- const b=body({roleId:await teacherRole(),validFrom:undefined,validUntil:undefined,mustChangePassword:true,assignment:{kind:'SUBJECT',classId:cls,subjectId,startsOn:'2026-10-06',endsOn:'2027-06-01'}}),r=await req('POST',directUrl,b,true);assert.equal(r.statusCode,201,r.body);
+ const b=body({roleId:await teacherRole(),validFrom:undefined,validUntil:undefined,mustChangePassword:true,assignment:{kind:'SUBJECT',classId:cls,subjectId,startsOn:'2026-10-06',endsOn:'2027-06-01',reason:'Kiểm thử phân công lùi ngày'}}),r=await req('POST',directUrl,b,true);assert.equal(r.statusCode,201,r.body);
  const assignments=(await tx(t=>t.query('SELECT id FROM app.teaching_assignments WHERE member_id=$1',[r.json().data.id]))).rows;assert.equal(assignments.length,1);
  const auth=await login(b.email);assert.equal(auth.user.mustChangePassword,true);assert.equal((await req('GET',`/api/v1/schools/${school}/profile`)).json().code,'PASSWORD_CHANGE_REQUIRED');
 });
