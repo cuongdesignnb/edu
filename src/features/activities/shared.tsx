@@ -1,10 +1,8 @@
 "use client";
 import { clsx } from "clsx";
-import { BookOpen, FileImage, Heart, ListChecks, Megaphone } from "lucide-react";
+import { BookOpen, Heart } from "lucide-react";
 import type { Activity } from "@/lib/model/types";
 import type { Tone } from "@/lib/formatters";
-import { LinkTabs } from "@/components/ui/tabs";
-import { useClassroom } from "@/features/classroom/context";
 
 export const ILLUSTRATION_OPTIONS: { value: Activity["illustration"]; label: string }[] = [
   { value: "trophy", label: "Thi đua / phong trào" },
@@ -61,18 +59,6 @@ export const SHARE_LABEL: Record<string, string> = {
   class_parents: "Phụ huynh cả lớp",
   student_parent: "Riêng phụ huynh một em",
 };
-
-/** R09 section tabs "Hoạt động | Minh chứng | Thông báo" (real routes; each shown only with the matching permission). */
-export function ActivitySectionTabs() {
-  const { base, can } = useClassroom();
-  const items = [
-    ...(can("activity.manage") || can("evidence.manage") || can("report.class") ? [{ href: `${base}/activities`, label: "Hoạt động", icon: <ListChecks /> }] : []),
-    ...(can("evidence.manage") || can("report.class") ? [{ href: `${base}/evidence`, label: "Minh chứng", icon: <FileImage /> }] : []),
-    ...(can("announcement.class") ? [{ href: `${base}/announcements`, label: "Thông báo", icon: <Megaphone /> }] : []),
-  ];
-  if (items.length < 2) return null;
-  return <LinkTabs items={items} exactFirst={false} className="no-print w-full sm:w-auto" />;
-}
 
 /** Stable key for the reference date used in queries. */
 export function daysBetween(a: string, b: string) {

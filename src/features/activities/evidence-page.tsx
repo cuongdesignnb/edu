@@ -15,7 +15,6 @@ import { InlineSelect } from "@/components/ui/form";
 import { FileThumb } from "@/components/ui/file";
 import { EmptyFiltered, EmptyState, QueryState } from "@/components/ui/states";
 import { BulkSelectionBar, DataTable, FilterBar, Pagination, type Column } from "@/components/data/table";
-import { ActivitySectionTabs } from "./shared";
 import { EvidenceStatusBadge, FileViewerDialog, RecordEvidenceDialog, ReviewEvidenceDialog, type ReviewDecision } from "./evidence-dialogs";
 
 type Data = Awaited<ReturnType<typeof activitiesRepo.evidence>>;
@@ -33,8 +32,7 @@ export function EvidencePage() {
   const query = useRepo(["evidence", schoolId, yearId, classId, status, activityId, q], (ctx) => activitiesRepo.evidence(ctx, schoolId, yearId, classId, { status: status || undefined, activityId: activityId || undefined, q }));
   return (
     <div className="page">
-      <ClassHeader variant="compact" title="Minh chứng của lớp" subtitle={<>Minh chứng hoạt động lớp {header.class.name} do giáo viên ghi nhận và duyệt</>} />
-      <ActivitySectionTabs />
+      <ClassHeader title="Minh chứng của lớp" subtitle={<>Minh chứng hoạt động lớp {header.class.name} do giáo viên ghi nhận và duyệt</>} />
       <QueryState query={query} skeleton="cards">
         {(d) => <Body d={d} status={status} setStatus={setStatus} activityId={activityId} setActivityId={setActivityId} q={q} setQ={setQ} />}
       </QueryState>

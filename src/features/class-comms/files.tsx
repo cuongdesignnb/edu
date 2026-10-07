@@ -51,7 +51,7 @@ export function ClassFilesPage() {
   const query = useRepo(["class-files", schoolId, yearId, classId, q, share, status], (ctx) => activitiesRepo.files(ctx, schoolId, yearId, classId, { q, share: share || undefined, status: status || undefined }), { enabled: allowed });
   return (
     <div className="page">
-      <ClassHeader variant="compact" title="Tệp lớp" subtitle={<>Tài liệu của lớp {header.class.name} và phạm vi chia sẻ với gia đình</>} />
+      <ClassHeader title="Tệp lớp" subtitle={<>Tài liệu của lớp {header.class.name} và phạm vi chia sẻ với gia đình</>} />
       {!allowed ? <div className="card"><DeniedState message="Chỉ giáo viên chủ nhiệm quản lý tệp của lớp." /></div> : (
         <QueryState query={query} skeleton="table">
           {(rows) => <Body rows={rows} q={q} setQ={setQ} share={share} setShare={setShare} status={status} setStatus={setStatus} />}

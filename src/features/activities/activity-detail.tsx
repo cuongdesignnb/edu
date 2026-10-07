@@ -31,7 +31,7 @@ export function ActivityDetailPage({ activityId }: { activityId: string }) {
   const q = useRepo(["activity", schoolId, yearId, classId, activityId], (ctx) => activitiesRepo.detail(ctx, schoolId, yearId, classId, activityId));
   return (
     <div className="page">
-      <ClassHeader variant="compact" title={q.data?.activity.title ?? "Chi tiết hoạt động"} crumbs={[{ label: "Hoạt động", href: `${base}/activities` }, { label: q.data?.activity.title ?? "Chi tiết" }]}
+      <ClassHeader title={q.data?.activity.title ?? "Chi tiết hoạt động"} crumbs={[{ label: "Hoạt động", href: `${base}/activities` }, { label: q.data?.activity.title ?? "Chi tiết" }]}
         subtitle={q.data ? <>Hạn {fmtDate(q.data.activity.dueDate)} · Tạo bởi {q.data.createdByName}</> : undefined} />
       <QueryState query={q} skeleton="detail">
         {(d) => <Suspense><DetailBody d={d} /></Suspense>}

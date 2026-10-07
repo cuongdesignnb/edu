@@ -8,7 +8,6 @@ import { announcementsRepo } from "@/lib/repositories";
 import { useCommand, useRepo } from "@/lib/query/hooks";
 import { fmtDateTime } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
-import { ActivitySectionTabs } from "@/features/activities/shared";
 import { AnnouncementComposer, ParentPreview, type AnnouncementDetail } from "@/features/announcements/composer";
 import { AnnouncementBody } from "@/features/announcements/body";
 import { Card, CardHeader, Callout, InfoRow } from "@/components/ui/card";
@@ -40,9 +39,8 @@ export function ClassAnnouncementsPage() {
   const canCompose = allowed && !readOnly && q.data?.canCompose === true;
   return (
     <div className="page">
-      <ClassHeader variant="compact" title="Thông báo lớp" subtitle={<>Thông báo gửi gia đình học sinh lớp {header.class.name} — chỉ trong lớp này</>}
+      <ClassHeader title="Thông báo lớp" subtitle={<>Thông báo gửi gia đình học sinh lớp {header.class.name} — chỉ trong lớp này</>}
         actions={canCompose ? <ButtonLink href={`${base}/announcements/new`} variant="primary" icon={<Plus className="size-4" />}>Soạn thông báo</ButtonLink> : undefined} />
-      <ActivitySectionTabs />
       {!allowed ? <div className="card"><DeniedState message="Bạn không được phân công gửi thông báo cho lớp này (chỉ giáo viên chủ nhiệm)." /></div> : (
         <QueryState query={q} skeleton="table">{(d) => <ListBody d={d} />}</QueryState>
       )}
@@ -120,7 +118,7 @@ export function ClassAnnouncementComposePage({ announcementId }: { announcementI
   const back = announcementId ? `${base}/announcements/${announcementId}` : `${base}/announcements`;
   return (
     <div className="page">
-      <ClassHeader variant="compact" title={title} subtitle="Chỉ gửi đến gia đình học sinh của lớp này — cả lớp hoặc riêng từng em. Không chọn lớp hoặc trường khác."
+      <ClassHeader title={title} subtitle="Chỉ gửi đến gia đình học sinh của lớp này — cả lớp hoặc riêng từng em. Không chọn lớp hoặc trường khác."
         crumbs={[{ label: "Thông báo", href: `${base}/announcements` }, { label: title }]} actions={<ButtonLink href={back} variant="ghost">Hủy</ButtonLink>} />
       {!allowed ? <div className="card"><DeniedState message={readOnly ? "Năm học đã lưu trữ — không soạn thông báo." : "Bạn không được phân công gửi thông báo cho lớp này."} /></div> : (
         <QueryState query={q} skeleton="form">
@@ -140,7 +138,7 @@ export function ClassAnnouncementDetailPage({ announcementId }: { announcementId
   const q = useRepo(["announcement", schoolId, yearId, classId, announcementId], (ctx) => announcementsRepo.detail(ctx, schoolId, announcementId, {yearId,classId}), { enabled: allowed });
   return (
     <div className="page">
-      <ClassHeader variant="compact" title={q.data?.title ?? "Chi tiết thông báo"} crumbs={[{ label: "Thông báo", href: `${base}/announcements` }, { label: q.data?.title ?? "Chi tiết" }]}
+      <ClassHeader title={q.data?.title ?? "Chi tiết thông báo"} crumbs={[{ label: "Thông báo", href: `${base}/announcements` }, { label: q.data?.title ?? "Chi tiết" }]}
         subtitle={q.data ? <span className="inline-flex flex-wrap items-center gap-2"><StatusBadge status={q.data.status} map={PUBLICATION_STATUS} />Thông báo của lớp {q.data.className}</span> : undefined} />
       {!allowed ? <div className="card"><DeniedState message="Bạn không được phân công gửi thông báo cho lớp này." /></div> : (
         <QueryState query={q} skeleton="detail">

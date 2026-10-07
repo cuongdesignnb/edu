@@ -32,7 +32,7 @@ export function ActivityFormPage({ activityId,embedded=false,onCreated,onDirtyCh
   const crumbs = [{ label: "Hoạt động", href: `${base}/activities` }, ...(activityId && detail.data ? [{ label: detail.data.activity.title, href: `${base}/activities/${activityId}` }] : []), { label: title }];
   return (
     <div className="page">
-      {!embedded&&<ClassHeader variant="compact" title={title} subtitle="Giao hoạt động cho cả lớp, một tổ hoặc từng học sinh; gia đình của học sinh được giao xem qua link tra cứu." crumbs={crumbs} />}
+      {!embedded&&<ClassHeader title={title} subtitle="Giao hoạt động cho cả lớp, một tổ hoặc từng học sinh; gia đình của học sinh được giao xem qua link tra cứu." crumbs={crumbs} />}
       {!can("activity.manage") || readOnly ? <div className="card"><DeniedState message={readOnly ? "Năm học đã lưu trữ — không tạo hoặc sửa hoạt động." : "Bạn không có quyền tạo hoặc sửa hoạt động của lớp này."} /></div> : (
         <QueryState query={opts} skeleton="form">
           {(o) => (

@@ -4,16 +4,11 @@ export interface TourStep {targets:readonly string[];title:string;description:st
 const step=(target:string|string[],title:string,description:string):TourStep=>({targets:Array.isArray(target)?target:[target],title,description});
 const help=step('tour-help','Cần xem lại hướng dẫn?','Mở Trợ giúp → Xem lại hướng dẫn. Bạn có thể bỏ qua bất kỳ lúc nào.');
 const classroom=[
- step('class-context','Lớp đang mở','Kiểm tra lớp, trường và năm học trước khi làm việc.'),
- step('class-students','Học sinh của lớp','Xem danh sách học sinh trong phạm vi được cấp.'),
- step('class-attendance','Chuyên cần','Điểm danh và xem chuyên cần theo quyền của bạn.'),
- step('class-conduct','Thi đua','Ghi nhận hoặc xem kết quả theo nhiệm vụ đang được giao.'),
+ step('class-context','Lớp đang mở','Kiểm tra lớp, trường và năm học trước khi làm việc. Nếu dạy nhiều lớp, chọn lớp khác ở ô Lớp đang mở.'),
+ step('class-sections','Sáu mục của lớp','Tổng quan, Học sinh, Điểm danh & Rèn luyện, Lịch & Tổ chức, Hoạt động, Phụ huynh & Báo cáo. Mở một mục, các phần nhỏ hiện ngay bên dưới.'),
+ step('class-tasks','Việc cần làm hôm nay','Mỗi việc có sẵn nút để làm ngay. Làm xong, việc tự biến mất khỏi danh sách.'),
+ step('class-quick','Thao tác nhanh','Lối tắt tới các việc làm hằng ngày: điểm danh, ghi rèn luyện, soạn thông báo…'),
  step('class-publication','Chốt và công bố','Lưu không đồng nghĩa công bố. Phụ huynh chỉ thấy thông tin đã được công bố.'),
- step(['class-timetable','class-activities','class-more'],'Lịch và hoạt động','Xem các mục được phép của lớp; trên điện thoại, mở Thêm để xem các mục còn lại.'),
- step(['class-duties','class-more'],'Trực nhật','Xem lịch trực nhật đã công bố của lớp.'),
- step(['class-seating','class-more'],'Sơ đồ lớp','Xem sơ đồ chỗ ngồi và tổ chức lớp.'),
- step(['class-announcements','class-more'],'Thông báo','Soạn và công bố thông báo theo quyền được giao.'),
- step(['class-reports','class-more'],'Báo cáo phụ huynh','Xuất phiếu PDF từ kết quả đã công bố.'),
  step('class-tour','Hướng dẫn lớp này','Mở nút này để xem lại cách dùng trong lớp hiện tại.'),
 ];
 export const TOURS:Record<TourKey,{version:1;autoPrompt:boolean;steps:readonly TourStep[]}>= {

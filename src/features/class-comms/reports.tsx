@@ -27,7 +27,7 @@ export function ClassReportsPage() {
   const q = useRepo(["class-report-catalog", schoolId, yearId, classId], (ctx) => activitiesExtraRepo.classReportCatalog(ctx, schoolId, yearId, classId), { enabled: allowed });
   return (
     <div className="page">
-      <ClassHeader variant="compact" title="Báo cáo lớp" subtitle={<>Báo cáo chuyên cần, thi đua, hoạt động của lớp {header.class.name}</>} />
+      <ClassHeader title="Báo cáo lớp" subtitle={<>Báo cáo chuyên cần, thi đua, hoạt động của lớp {header.class.name}</>} />
       <PublicPortalSettings/>
       {!allowed ? <div className="card"><DeniedState /></div> : (
         <QueryState query={q} skeleton="cards">
@@ -72,7 +72,7 @@ export function ClassReportDetailPage({ reportType }: { reportType: string }) {
   const meta = cat.data?.reports.find((r) => r.type === reportType);
   return (
     <div className="page">
-      <ClassHeader variant="compact" title={meta?.title ?? "Báo cáo lớp"} subtitle={meta?.description} crumbs={[{ label: "Báo cáo", href: `${base}/reports` }, { label: meta?.title ?? "Chi tiết" }]} />
+      <ClassHeader title={meta?.title ?? "Báo cáo lớp"} subtitle={meta?.description} crumbs={[{ label: "Báo cáo", href: `${base}/reports` }, { label: meta?.title ?? "Chi tiết" }]} />
       {!allowed ? <div className="card"><DeniedState /></div> : cat.isLoading ? <Skeleton className="h-72 rounded-[14px]" /> : cat.error ? <div className="card"><ErrorState error={cat.error} onRetry={() => cat.refetch()} /></div> : !meta ? (
         <div className="card"><EmptyState icon={<BarChart3 className="size-6" />} title="Báo cáo không có trong phạm vi của bạn" description="Loại báo cáo không tồn tại hoặc chỉ dành cho giáo viên chủ nhiệm/nhà trường." /></div>
       ) : <ReportBody type={reportType} cat={cat.data!} initialStudent={sp.get("studentId") ?? ""} />}

@@ -6,7 +6,7 @@ import { ClassRoster } from "@/features/class-org/roster";
 export default function Page() {
   return (
     <div className="page">
-      <ClassHeader variant="full" />
+      <ClassHeader />
       <ClassRoster />
     </div>
   );

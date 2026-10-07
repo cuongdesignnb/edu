@@ -9,7 +9,6 @@ import { useCommand, useRepo } from "@/lib/query/hooks";
 import { addDays, mondayOf, weekdayOf } from "@/lib/calendar";
 import { fmtDate, fmtDateLong, fmtDayMonth, weekdayLabel } from "@/lib/formatters";
 import { useClassroom, ClassHeader } from "@/features/classroom/context";
-import { ClassOrgNav } from "./org-nav";
 import { Card, CardHeader, Callout } from "@/components/ui/card";
 import { Badge, PUBLICATION_STATUS } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,6 @@ export function DutyBoard() {
   return (
     <div className="page">
       <ClassHeader title="Lịch trực nhật" subtitle="Phân công trực nhật theo ngày cho tổ hoặc học sinh; phụ huynh chỉ thấy việc của con khi đã công bố" crumbs={[{ label: "Trực nhật" }]} />
-      <ClassOrgNav />
       <ScheduleCopyControls kind="DUTY"/><QueryState query={q} skeleton="cards">
         {(d) => {
           const editable = d.canEdit && !readOnly;

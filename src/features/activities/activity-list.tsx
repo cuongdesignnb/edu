@@ -21,7 +21,7 @@ import { EmptyFiltered, EmptyState, QueryState, Skeleton, ErrorState,DeniedState
 import { FileThumb } from "@/components/ui/file";
 import { Avatar } from "@/components/ui/avatar";
 import { Pagination, useClientList } from "@/components/data/table";
-import { ActivityArt, ActivitySectionTabs, activityState, scopeLabel } from "./shared";
+import { ActivityArt, activityState, scopeLabel } from "./shared";
 import { ActivityStatusConfirm, type StatusIntent } from "./activity-actions";
 import { FileViewerDialog, RecordEvidenceDialog, ReviewEvidenceDialog, type ReviewDecision } from "./evidence-dialogs";
 
@@ -44,14 +44,7 @@ export function ActivitiesDashboard() {
   const list = useRepo(["activities", schoolId, yearId, classId, status, q], (ctx) => activitiesRepo.list(ctx, schoolId, yearId, classId, { status: status || undefined, q }));
   return (
     <div className="page">
-      <ClassHeader variant="compact" title="Hoạt động lớp" subtitle={<>Quản lý hoạt động, minh chứng và thông báo của lớp {header.class.name}</>} />
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <ActivitySectionTabs />
-        <div className="no-print hidden items-center gap-3 xl:flex" aria-hidden>
-          <p className="quote max-w-[340px] text-right !text-[15px] !leading-snug">“Mỗi hoạt động nhỏ là một bước tiến lớn<br />trong hành trình trưởng thành”</p>
-          <img src="/assets/illustrations/students-duo.png" alt="" className="h-[84px] w-auto [mask-image:linear-gradient(to_right,transparent,black_18%)]" />
-        </div>
-      </div>
+      <ClassHeader title="Hoạt động lớp" subtitle={<>Quản lý hoạt động, minh chứng và thông báo của lớp {header.class.name}</>} />
       <QueryState query={list} skeleton="cards">
         {(d) => <Body d={d} status={status} setStatus={setStatus} q={q} setQ={setQ} base={base} classSize={header.size} readOnly={readOnly} />}
       </QueryState>

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
-import { ChevronLeft, ChevronRight, CalendarCheck, Trophy, Save, Send, Info, Link2, History, CalendarRange, AlertTriangle, Lock, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarCheck, CheckCheck, Trophy, Save, Send, Info, Link2, History, CalendarRange, AlertTriangle, Lock, Search } from "lucide-react";
 import type { AttendanceStatus } from "@/lib/model/types";
 import { attendanceRepo, type RepoError } from "@/lib/repositories";
 import { teacherExtraRepo } from "@/lib/repositories";
@@ -173,6 +173,15 @@ function SheetEditor({ sheet, onReload }: { sheet: Sheet; onReload: () => void }
           </ul>
         </div>
         <p className="px-5 pb-2 text-[12.5px] text-muted">Sĩ số {counts.total} = {counts.present} có mặt + {counts.late} đi muộn + {counts.excused} có phép + {counts.unexcused} không phép + {counts.unmarked} chưa điểm danh · Hiện diện {counts.presentAll}/{counts.total}</p>
+        {editable && counts.unmarked > 0 && (
+          <div className="mx-5 mb-3 flex flex-wrap items-center gap-3 rounded-xl border border-[#bfe8d6] bg-success-bg px-4 py-3">
+            <p className="min-w-0 flex-[1_1_240px] text-[13.5px] text-success-text"><b>Điểm danh nhanh:</b> đánh dấu các em còn lại là có mặt, sau đó chỉ cần chỉnh các em vắng hoặc đi muộn rồi bấm Lưu điểm danh.</p>
+            <Button size="sm" variant="success" icon={<CheckCheck className="size-4" aria-hidden />}
+              onClick={() => setDraft((m) => { const n = new Map(m); for (const r of sheet.rows) { const e = n.get(r.studentId)!; if (e.status === "unmarked") n.set(r.studentId, { ...e, status: "present" }); } return n; })}>
+              Có mặt cho {counts.unmarked} em còn lại
+            </Button>
+          </div>
+        )}
         {editable && (
           <BulkSelectionBar selected={selected} pageIds={pageIds} allIds={allIds} onChange={setSelected} what="học sinh">
             <span className="text-[13px] text-body">Đặt trạng thái:</span>
